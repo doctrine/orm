@@ -1,0 +1,10 @@
+Doctrine\Tests\ORM\Mapping\SingleTableEntityNoDiscriminatorColumnMapping:
+  type: entity
+  inheritanceType: SINGLE_TABLE
+  discriminatorMap:
+    ONE: SingleTableEntityNoDiscriminatorColumnMappingSub1
+    TWO: SingleTableEntityNoDiscriminatorColumnMappingSub2
+  id:
+    id: 
+      generator:
+        strategy: NONE

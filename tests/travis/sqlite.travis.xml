@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit>
-
-    <logging>
-        <log type="coverage-clover" target="../../build/logs/clover.xml"/>
-    </logging>
+<phpunit bootstrap="../Doctrine/Tests/TestInit.php" colors="true">
 
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>
      </testsuite>
     </testsuites>
-
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./../../lib/Doctrine</directory>
+        </whitelist>
+    </filter>
     <groups>
       <exclude>
          <group>performance</group>

@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
-
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1454
  */
@@ -45,7 +41,7 @@ class DDC1454Picture extends DDC1454File
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"picture" = "DDC1454Picture"})
+ * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
  */
 class DDC1454File
 {

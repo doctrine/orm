@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Query\Filter;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 
@@ -37,7 +37,7 @@ abstract class SQLFilter
     /**
      * The entity manager.
      *
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -46,14 +46,14 @@ abstract class SQLFilter
      *
      * @var array
      */
-    private $parameters;
+    private $parameters = [];
 
     /**
      * Constructs the SQLFilter object.
      *
-     * @param EntityManager $em The entity manager.
+     * @param EntityManagerInterface $em The entity manager.
      */
-    final public function __construct(EntityManager $em)
+    final public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
@@ -108,6 +108,22 @@ abstract class SQLFilter
     }
 
     /**
+     * Checks if a parameter was set for the filter.
+     *
+     * @param string $name Name of the parameter.
+     *
+     * @return boolean
+     */
+    final public function hasParameter($name)
+    {
+        if (!isset($this->parameters[$name])) {
+            return false;
+        }
+
+        return true;
+    }
+    
+    /**
      * Returns as string representation of the SQLFilter parameters (the state).
      *
      * @return string String representation of the SQLFilter.
@@ -115,6 +131,16 @@ abstract class SQLFilter
     final public function __toString()
     {
         return serialize($this->parameters);
+    }
+
+    /**
+     * Returns the database connection used by the entity manager
+     *
+     * @return \Doctrine\DBAL\Connection
+     */
+    final protected function getConnection()
+    {
+        return $this->em->getConnection();
     }
 
     /**

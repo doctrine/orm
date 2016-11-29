@@ -121,6 +121,14 @@ final class Events
     const loadClassMetadata = 'loadClassMetadata';
 
     /**
+     * The onClassMetadataNotFound event occurs whenever loading metadata for a class
+     * failed.
+     *
+     * @var string
+     */
+    const onClassMetadataNotFound = 'onClassMetadataNotFound';
+
+    /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
      * but before any changes to managed entities have been calculated. This event is
      * always raised right after EntityManager#flush() call.

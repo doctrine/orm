@@ -6,6 +6,9 @@ use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
 {
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     public $entityManager;
 
     public function setUp()
@@ -21,7 +24,7 @@ abstract class PaginationTestCase extends OrmTestCase
 class MyBlogPost
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /**
      * @ManyToOne(targetEntity="Author")
@@ -31,7 +34,7 @@ class MyBlogPost
      * @ManyToOne(targetEntity="Category")
      */
     public $category;
-    /** @column(type="string") */
+    /** @Column(type="string") */
     public $title;
 }
 
@@ -41,7 +44,7 @@ class MyBlogPost
 class MyAuthor
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
 }
@@ -52,7 +55,7 @@ class MyAuthor
 class MyCategory
 {
 
-    /** @id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
 }
@@ -64,7 +67,7 @@ class MyCategory
 class BlogPost
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /**
      * @ManyToOne(targetEntity="Author")
@@ -82,7 +85,7 @@ class BlogPost
 class Author
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="string") */
     public $name;
@@ -95,7 +98,7 @@ class Author
 class Person
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @Column(type="string") */
     public $name;
@@ -110,7 +113,7 @@ class Person
 class Category
 {
 
-    /** @id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
 }
@@ -120,7 +123,7 @@ class Category
 class Group
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /** @ManyToMany(targetEntity="User", mappedBy="groups") */
     public $users;
@@ -130,7 +133,7 @@ class Group
 class User
 {
 
-    /** @Id @column(type="integer") @generatedValue */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
     /**
      * @ManyToMany(targetEntity="Group", inversedBy="users")
@@ -141,4 +144,47 @@ class User
      * )
      */
     public $groups;
+    /**
+     * @OneToOne(targetEntity="Avatar", mappedBy="user")
+     */
+    public $avatar;
+}
+
+/** @Entity */
+class Avatar
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
+    /**
+     * @OneToOne(targetEntity="User", inversedBy="avatar")
+     * @JoinColumn(name="user_id", referencedColumnName="id")
+     */
+    public $user;
+    /** @Column(type="string", length=255) */
+    public $image;
+    /** @Column(type="integer") */
+    public $image_height;
+    /** @Column(type="integer") */
+    public $image_width;
+    /** @Column(type="string", length=255) */
+    public $image_alt_desc;
+}
+
+/** @MappedSuperclass */
+abstract class Identified
+{
+    /** @Id @Column(type="integer") @GeneratedValue */
+    private $id;
+
+    public function getId()
+    {
+        return $this->id;
+    }
+}
+
+/** @Entity */
+class Banner extends Identified
+{
+    /** @Column(type="string") */
+    public $name;
 }

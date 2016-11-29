@@ -1,39 +1,20 @@
 <?php
-/*
- *  $Id$
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\OrmTestCase;
+use Symfony\Component\Yaml\Parser;
 
 /**
  * Test case for ClassMetadataExporter
@@ -45,7 +26,7 @@ require_once __DIR__ . '/../../../TestInit.php';
  * @since       2.0
  * @version     $Revision$
  */
-abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTestCase
+abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 {
     protected $_extension;
 
@@ -54,12 +35,11 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
         $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
@@ -73,25 +53,25 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             'xml'        => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
             'yaml'       => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
         );
-        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
-        $class = $mappingDriver[$type];
 
-        if ($type === 'annotation') {
-            $driver = $this->createAnnotationDriver(array($path));
-        } else {
-            $driver = new $class($path);
-        }
+        $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
+
+        $class  = $mappingDriver[$type];
+        $driver = ($type === 'annotation')
+            ? $this->createAnnotationDriver(array($path))
+            : new $class($path);
+
         return $driver;
     }
 
     protected function _createClassMetadataFactory($em, $type)
     {
-        if ($type === 'annotation') {
-            $factory = new ClassMetadataFactory();
-        } else {
-            $factory = new DisconnectedClassMetadataFactory();
-        }
+        $factory = ($type === 'annotation')
+            ? new ClassMetadataFactory()
+            : new DisconnectedClassMetadataFactory();
+
         $factory->setEntityManager($em);
+
         return $factory;
     }
 
@@ -112,11 +92,14 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $type = $this->_getType();
         $cme = new ClassMetadataExporter();
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
+
         if ($type === 'annotation') {
             $entityGenerator = new EntityGenerator();
+
             $entityGenerator->setAnnotationPrefix("");
             $exporter->setEntityGenerator($entityGenerator);
         }
+
         $this->_extension = $exporter->getExtension();
 
         $exporter->setMetadata($metadata);
@@ -157,6 +140,8 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testTableIsExported($class)
     {
         $this->assertEquals('cms_users', $class->table['name']);
+        $this->assertEquals(array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
+            $class->table['options']);
 
         return $class;
     }
@@ -206,7 +191,30 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertEquals('user_email', $class->fieldMappings['email']['columnName']);
         $this->assertEquals('CHAR(32) NOT NULL', $class->fieldMappings['email']['columnDefinition']);
 
+        $this->assertEquals(true, $class->fieldMappings['age']['options']['unsigned']);
+
         return $class;
+    }
+
+    /**
+     * @depends testExportDirectoryAndFilesAreCreated
+     */
+    public function testFieldsAreProperlySerialized()
+    {
+        $type = $this->_getType();
+
+        if ($type == 'xml') {
+            $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
+
+            $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
+            $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @nullable='true']");
+            $this->assertEquals(1, count($nodes));
+
+            $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @unique='true']");
+            $this->assertEquals(1, count($nodes));
+        } else {
+            $this->markTestSkipped('Test not available for '.$type.' driver');
+        }
     }
 
     /**
@@ -227,6 +235,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertFalse($class->associationMappings['address']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['address']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['address']['orphanRemoval']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_EAGER, $class->associationMappings['address']['fetch']);
 
         return $class;
     }
@@ -258,6 +267,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeMerge']);
         $this->assertFalse($class->associationMappings['phonenumbers']['isCascadeDetach']);
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_LAZY, $class->associationMappings['phonenumbers']['fetch']);
 
         return $class;
     }
@@ -285,6 +295,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
         $this->assertTrue($class->associationMappings['groups']['isCascadeRefresh']);
         $this->assertTrue($class->associationMappings['groups']['isCascadeMerge']);
         $this->assertTrue($class->associationMappings['groups']['isCascadeDetach']);
+        $this->assertEquals(ClassMetadataInfo::FETCH_EXTRA_LAZY, $class->associationMappings['groups']['fetch']);
 
         return $class;
     }
@@ -337,6 +348,7 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
     public function testCascadeAllCollapsed()
     {
         $type = $this->_getType();
+
         if ($type == 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
 
@@ -345,19 +357,18 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             $this->assertEquals(1, count($nodes));
 
             $this->assertEquals('cascade-all', $nodes[0]->getName());
-        } elseif ($type == 'yaml') {
-
-            $yaml = new \Symfony\Component\Yaml\Parser();
+        } else if ($type == 'yaml') {
+            $yaml = new Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
 
             $this->assertTrue(isset($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals(1, count($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
             $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
-
         } else {
-            $this->markTestSkipped('Test available only for '.$type.' driver');
+            $this->markTestSkipped('Test not available for '.$type.' driver');
         }
     }
+
     public function __destruct()
     {
 #        $this->_deleteDirectory(__DIR__ . '/export/'.$this->_getType());
@@ -369,9 +380,13 @@ abstract class AbstractClassMetadataExporterTest extends \Doctrine\Tests\OrmTest
             return unlink($path);
         } else if (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
-            foreach ($files as $file){
-                $this->_deleteDirectory($file);
+
+            if (is_array($files)) {
+                foreach ($files as $file){
+                    $this->_deleteDirectory($file);
+                }
             }
+
             return rmdir($path);
         }
     }

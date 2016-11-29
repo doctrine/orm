@@ -27,7 +27,7 @@ to write a mapping file for it using the above configured
 
     <?php
     namespace Entities;
-    
+
     class User
     {
         private $id;
@@ -42,16 +42,30 @@ named ``Entities.User.php`` inside of the
 
     <?php
     // /path/to/php/mapping/files/Entities.User.php
-    
+
     $metadata->mapField(array(
        'id' => true,
        'fieldName' => 'id',
        'type' => 'integer'
     ));
-    
+
     $metadata->mapField(array(
        'fieldName' => 'username',
-       'type' => 'string'
+       'type' => 'string',
+       'options' => array(
+           'fixed' => true,
+           'comment' => "User's login name"
+       )
+    ));
+
+    $metadata->mapField(array(
+       'fieldName' => 'login_count',
+       'type' => 'integer',
+       'nullable' => false,
+       'options' => array(
+           'unsigned' => true,
+           'default' => 0
+       )
     ));
 
 Now we can easily retrieve the populated ``ClassMetadata`` instance
@@ -87,13 +101,13 @@ Now you just need to define a static function named
 
     <?php
     namespace Entities;
-    
+
     use Doctrine\ORM\Mapping\ClassMetadata;
-    
+
     class User
     {
         // ...
-    
+
         public static function loadMetadata(ClassMetadata $metadata)
         {
             $metadata->mapField(array(
@@ -101,7 +115,7 @@ Now you just need to define a static function named
                'fieldName' => 'id',
                'type' => 'integer'
             ));
-    
+
             $metadata->mapField(array(
                'fieldName' => 'username',
                'type' => 'string'
@@ -227,6 +241,7 @@ General Getters
 
 
 -  ``getTableName()``
+-  ``getSchemaName()``
 -  ``getTemporaryIdTableName()``
 
 Identifier Getters

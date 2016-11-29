@@ -176,7 +176,7 @@ default.
               length: 140
             postedAt:
               type: datetime
-              name: posted_at
+              column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
 assumes the field name is also the column name. This means that:
@@ -199,9 +199,12 @@ list:
 - ``nullable``: (optional, default FALSE) Whether the database
   column is nullable.
 - ``precision``: (optional, default 0) The precision for a decimal
-  (exact numeric) column. (Applies only if a decimal column is used.)
+  (exact numeric) column (applies only for decimal column),
+  which is the maximum number of digits that are stored for the values.
 - ``scale``: (optional, default 0) The scale for a decimal (exact
-  numeric) column. (Applies only if a decimal column is used.)
+  numeric) column (applies only for decimal column), which represents
+  the number of digits to the right of the decimal point and must
+  not be greater than *precision*.
 - ``columnDefinition``: (optional) Allows to define a custom
   DDL snippet that is used to create the column. Warning: This normally
   confuses the SchemaTool to always detect the column as changed.
@@ -340,16 +343,19 @@ Here is the list of possible generation strategies:
 
 -  ``AUTO`` (default): Tells Doctrine to pick the strategy that is
    preferred by the used database platform. The preferred strategies
-   are IDENTITY for MySQL, SQLite and MsSQL and SEQUENCE for Oracle
-   and PostgreSQL. This strategy provides full portability.
+   are IDENTITY for MySQL, SQLite, MsSQL and SQL Anywhere and SEQUENCE
+   for Oracle and PostgreSQL. This strategy provides full portability.
 -  ``SEQUENCE``: Tells Doctrine to use a database sequence for ID
    generation. This strategy does currently not provide full
-   portability. Sequences are supported by Oracle and PostgreSql.
+   portability. Sequences are supported by Oracle, PostgreSql and
+   SQL Anywhere.
 -  ``IDENTITY``: Tells Doctrine to use special identity columns in
    the database that generate a value on insertion of a row. This
    strategy does currently not provide full portability and is
-   supported by the following platforms: MySQL/SQLite
+   supported by the following platforms: MySQL/SQLite/SQL Anywhere
    (AUTO\_INCREMENT), MSSQL (IDENTITY) and PostgreSQL (SERIAL).
+-  ``UUID``: Tells Doctrine to use the built-in Universally Unique Identifier
+   generator. This strategy provides full portability.
 -  ``TABLE``: Tells Doctrine to use a separate table for ID
    generation. This strategy provides full portability.
    ***This strategy is not yet implemented!***
@@ -391,7 +397,7 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
- 
+
     .. code-block:: yaml
 
         Message:
@@ -442,7 +448,7 @@ need to access the sequence once to generate the identifiers for
 Composite Keys
 ~~~~~~~~~~~~~~
 
-with Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
+With Doctrine 2 you can use composite primary keys, using ``@Id`` on more then
 one column. Some restrictions exist opposed to using a single identifier in
 this case: The use of the ``@GeneratedValue`` annotation is not supported,
 which means you can only use composite keys if you generate the primary key
@@ -456,7 +462,7 @@ Quoting Reserved Words
 
 Sometimes it is necessary to quote a column or table name because of reserved
 word conflicts. Doctrine does not quote identifiers automatically, because it
-leads to more problems then it would solve. Quoting tables and column names
+leads to more problems than it would solve. Quoting tables and column names
 needs to be done explicitly using ticks in the definition.
 
 .. code-block:: php

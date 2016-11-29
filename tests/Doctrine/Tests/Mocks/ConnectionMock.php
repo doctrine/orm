@@ -1,11 +1,12 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+use Doctrine\DBAL\Connection;
 
 /**
  * Mock class for Connection.
  */
-class ConnectionMock extends \Doctrine\DBAL\Connection
+class ConnectionMock extends Connection
 {
     /**
      * @var mixed
@@ -83,7 +84,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = array(), $colnum = 0)
+    public function fetchColumn($statement, array $params = array(), $colnum = 0, array $types = array())
     {
         return $this->_fetchOneResult;
     }

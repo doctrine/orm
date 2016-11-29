@@ -4,20 +4,15 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Event\OnClearEventArgs;
 use Doctrine\ORM\Events;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * ClearEventTest
  *
  * @author Michael Ridgway <mcridgway@gmail.com>
  */
-class ClearEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ClearEventTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
-        parent::setUp();
-    }
-
     public function testEventIsCalledOnClear()
     {
         $listener = new OnClearListener;

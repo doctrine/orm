@@ -29,6 +29,11 @@ class Car
      * @OneToMany(targetEntity="PaidRide", mappedBy="car")
      */
     private $carRides;
+    
+    public function getBrand() 
+    {
+        return $this->brand;
+    }
 
     public function setBrand($brand)
     {

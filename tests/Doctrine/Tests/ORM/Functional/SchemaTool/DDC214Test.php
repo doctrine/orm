@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * WARNING: This test should be run as last test! It can affect others very easily!
  */
-class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC214Test extends OrmFunctionalTestCase
 {
     private $classes = array();
     private $schemaTool = null;
@@ -78,7 +80,7 @@ class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fromSchema = $sm->createSchema();
         $toSchema = $this->schemaTool->getSchemaFromMetadata($classMetadata);
 
-        $comparator = new \Doctrine\DBAL\Schema\Comparator();
+        $comparator = new Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
         $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());

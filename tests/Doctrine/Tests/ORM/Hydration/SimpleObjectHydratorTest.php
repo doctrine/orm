@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
     /**
@@ -21,7 +19,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
-        $rsm->addMetaResult('p ', 'discr', 'discr');
+        $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('p', 'discr');
         $resultSet = array(
               array(
@@ -52,6 +50,66 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity = new \Doctrine\Tests\Models\CMS\CmsAddress();
         $expectedEntity->id = 1;
         $expectedEntity->city = 'Cracow';
+
+        $stmt       = new HydratorMockStatement($resultSet);
+        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $result = $hydrator->hydrateAll($stmt, $rsm);
+        $this->assertEquals($result[0], $expectedEntity);
+    }
+
+    /**
+     * @group DDC-3076
+     *
+     * @expectedException \Doctrine\ORM\Internal\Hydration\HydrationException
+     * @expectedExceptionMessage The discriminator value "subworker" is invalid. It must be one of "person", "manager", "employee".
+     */
+    public function testInvalidDiscriminatorValueException()
+    {
+        $rsm = new ResultSetMapping;
+
+        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'p__name', 'name');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $rsm->setDiscriminatorColumn('p', 'discr');
+
+        $resultSet = array(
+              array(
+                  'p__id'   => '1',
+                  'p__name' => 'Fabio B. Silva',
+                  'discr'   => 'subworker'
+              ),
+         );
+
+        $stmt       = new HydratorMockStatement($resultSet);
+        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $hydrator->hydrateAll($stmt, $rsm);
+    }
+
+    /**
+     * @group issue-5989
+     */
+    public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance()
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\Issue5989\Issue5989Person', 'p');
+        $rsm->addFieldResult('p', 'p__id', 'id');
+        $rsm->addFieldResult('p', 'm__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Manager');
+        $rsm->addFieldResult('p', 'e__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Employee');
+        $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
+        $resultSet = array(
+            array(
+                'p__id'   => '1',
+                'm__tags' => 'tag1,tag2',
+                'e__tags' => null,
+                'discr'   => 'manager'
+            ),
+        );
+
+        $expectedEntity = new \Doctrine\Tests\Models\Issue5989\Issue5989Manager();
+        $expectedEntity->id = 1;
+        $expectedEntity->tags = ['tag1', 'tag2'];
 
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);

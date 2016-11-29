@@ -42,6 +42,8 @@ internally but also mean more work during ``flush``.
             $em->clear(); // Detaches all objects from Doctrine!
         }
     }
+    $em->flush(); //Persist objects that did not make up an entire batch
+    $em->clear();
 
 Bulk Updates
 ------------
@@ -76,7 +78,7 @@ with the batching strategy that was already used for bulk inserts:
     $i = 0;
     $q = $em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
-    foreach($iterableResult AS $row) {
+    foreach ($iterableResult as $row) {
         $user = $row[0];
         $user->increaseCredit();
         $user->calculateNewBonuses();
@@ -93,6 +95,12 @@ with the batching strategy that was already used for bulk inserts:
     Iterating results is not possible with queries that
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
+
+.. note::
+
+    Results may be fully buffered by the database client/ connection allocating
+    additional memory not visible to the PHP process. For large sets this
+    may easily kill the process for no apparent reason.
 
 
 Bulk Deletes
@@ -162,7 +170,7 @@ problems using the following approach:
     <?php
     $q = $this->_em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
-    foreach ($iterableResult AS $row) {
+    foreach ($iterableResult as $row) {
         // do stuff with the data in the row, $row[0] is always the object
     
         // detach from Doctrine, so that it can be Garbage-Collected immediately

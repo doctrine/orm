@@ -137,6 +137,11 @@ class ECommerceProduct
         }
     }
 
+    public function setCategories($categories)
+    {
+        $this->categories = $categories;
+    }
+
     public function getCategories()
     {
         return $this->categories;
@@ -166,6 +171,9 @@ class ECommerceProduct
     public function __clone()
     {
         $this->isCloned = true;
+        if ($this->categories) {
+            $this->categories = clone $this->categories;
+        }
     }
 
     /**

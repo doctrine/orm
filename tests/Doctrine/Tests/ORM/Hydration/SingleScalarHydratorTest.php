@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class SingleScalarHydratorTest extends HydrationTestCase
 {
     /** Result set provider for the HYDRATE_SINGLE_SCALAR tests */

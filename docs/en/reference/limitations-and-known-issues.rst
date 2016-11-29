@@ -65,18 +65,6 @@ Where the ``attribute_name`` column contains the key and
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <http://www.doctrine-project.org/jira/browse/DDC-298>`_.
 
-Value Objects
-~~~~~~~~~~~~~
-
-There is currently no native support value objects in Doctrine
-other than for ``DateTime`` instances or if you serialize the
-objects using ``serialize()/deserialize()`` which the DBAL Type
-"object" supports.
-
-The feature request for full value-object support
-`is described in the DDC-93 ticket <http://www.doctrine-project.org/jira/browse/DDC-93>`_.
-
-
 Cascade Merge with Bi-directional Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -95,10 +83,8 @@ Currently there is no way to overwrite the persister implementation
 for a given entity, however there are several use-cases that can
 benefit from custom persister implementations:
 
-
 -  `Add Upsert Support <http://www.doctrine-project.org/jira/browse/DDC-668>`_
 -  `Evaluate possible ways in which stored-procedures can be used <http://www.doctrine-project.org/jira/browse/DDC-445>`_
--  The previous Filter Rules Feature Request
 
 Persist Keys of Collections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -126,10 +112,10 @@ in the core library. We don't think behaviors add more value than
 they cost pain and debugging hell. Please see the many different
 blog posts we have written on this topics:
 
--  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/blog/doctrine2-behaviours-nutshell>`_
--  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/blog/doctrine2-versionable>`_
--  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/blog/your-own-orm-doctrine2>`_
--  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/blog/doctrine2-behavioral-extensions>`_
+-  `Doctrine2 "Behaviors" in a Nutshell <http://www.doctrine-project.org/2010/02/17/doctrine2-behaviours-nutshell.html>`_
+-  `A re-usable Versionable behavior for Doctrine2 <http://www.doctrine-project.org/2010/02/24/doctrine2-versionable.html>`_
+-  `Write your own ORM on top of Doctrine2 <http://www.doctrine-project.org/2010/07/19/your-own-orm-doctrine2.html>`_
+-  `Doctrine 2 Behavioral Extensions <http://www.doctrine-project.org/2010/11/18/doctrine2-behavioral-extensions.html>`_
 -  `Doctrator <https://github.com/pablodip/doctrator`>_
 
 Doctrine 2 has enough hooks and extension points so that **you** can
@@ -187,3 +173,34 @@ Microsoft SQL Server and Doctrine "datetime"
 
 Doctrine assumes that you use ``DateTime2`` data-types. If your legacy database contains DateTime
 datatypes then you have to add your own data-type (see Basic Mapping for an example).
+
+MySQL with MyISAM tables
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
+of the tables involved uses the storage engine MyISAM. You must use InnoDB or
+other storage engines that support transactions if you need integrity.
+
+Entities, Proxies and Reflection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using methods for Reflection on entities can be prone to error, when the entity
+is actually a proxy the following methods will not work correctly:
+
+- ``new ReflectionClass``
+- ``new ReflectionObject``
+- ``get_class()``
+- ``get_parent_class()``
+
+This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
+methods, which resolve the proxy problem beforehand.
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Util\ClassUtils;
+
+    $bookProxy = $entityManager->getReference('Acme\Book');
+
+    $reflection = ClassUtils::newReflectionClass($bookProxy);
+    $class = ClassUtils::getClass($bookProxy)¸

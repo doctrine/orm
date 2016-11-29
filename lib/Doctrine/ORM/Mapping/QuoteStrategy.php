@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**

@@ -1,15 +1,14 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Description of SequenceGeneratorTest
  *
  * @author robo
  */
-class SequenceGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {

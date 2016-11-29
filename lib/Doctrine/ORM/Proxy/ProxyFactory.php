@@ -21,14 +21,14 @@ namespace Doctrine\ORM\Proxy;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\Common\Proxy\ProxyDefinition;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Proxy\Proxy as BaseProxy;
+use Doctrine\Common\Proxy\ProxyDefinition;
 use Doctrine\Common\Proxy\ProxyGenerator;
-use Doctrine\ORM\ORMInvalidArgumentException;
-use Doctrine\ORM\Persisters\BasicEntityPersister;
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * This factory is used to create proxy objects for entities at runtime.
@@ -41,7 +41,7 @@ use Doctrine\ORM\EntityNotFoundException;
 class ProxyFactory extends AbstractProxyFactory
 {
     /**
-     * @var \Doctrine\ORM\EntityManager The EntityManager this factory is bound to.
+     * @var EntityManagerInterface The EntityManager this factory is bound to.
      */
     private $em;
 
@@ -56,25 +56,33 @@ class ProxyFactory extends AbstractProxyFactory
     private $proxyNs;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
      * connected to the given <tt>EntityManager</tt>.
      *
-     * @param \Doctrine\ORM\EntityManager $em           The EntityManager the new factory works for.
-     * @param string                      $proxyDir     The directory to use for the proxy classes. It must exist.
-     * @param string                      $proxyNs      The namespace to use for the proxy classes.
-     * @param boolean                     $autoGenerate Whether to automatically generate proxy classes.
+     * @param EntityManagerInterface $em           The EntityManager the new factory works for.
+     * @param string                 $proxyDir     The directory to use for the proxy classes. It must exist.
+     * @param string                 $proxyNs      The namespace to use for the proxy classes.
+     * @param boolean|int            $autoGenerate The strategy for automatically generating proxy classes. Possible
+     *                                             values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
-    public function __construct(EntityManager $em, $proxyDir, $proxyNs, $autoGenerate = false)
+    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
-        $this->em      = $em;
-        $this->uow     = $em->getUnitOfWork();
-        $this->proxyNs = $proxyNs;
-
+        $this->em                  = $em;
+        $this->uow                 = $em->getUnitOfWork();
+        $this->proxyNs             = $proxyNs;
+        $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
     }
 
     /**
@@ -107,48 +115,17 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of initializing a proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
      *
      * @return \Closure
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
-        if ($classMetadata->getReflectionClass()->hasMethod('__wakeup')) {
-            return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
-                $initializer = $proxy->__getInitializer();
-                $cloner      = $proxy->__getCloner();
+        $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
-                $proxy->__setInitializer(null);
-                $proxy->__setCloner(null);
-
-                if ($proxy->__isInitialized()) {
-                    return;
-                }
-
-                $properties = $proxy->__getLazyProperties();
-
-                foreach ($properties as $propertyName => $property) {
-                    if (!isset($proxy->$propertyName)) {
-                        $proxy->$propertyName = $properties[$propertyName];
-                    }
-                }
-
-                $proxy->__setInitialized(true);
-                $proxy->__wakeup();
-
-                if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
-                    $proxy->__setInitializer($initializer);
-                    $proxy->__setCloner($cloner);
-                    $proxy->__setInitialized(false);
-
-                    throw new EntityNotFoundException();
-                }
-            };
-        }
-
-        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
+        return function (BaseProxy $proxy) use ($entityPersister, $classMetadata, $wakeupProxy) {
             $initializer = $proxy->__getInitializer();
             $cloner      = $proxy->__getCloner();
 
@@ -162,19 +139,28 @@ class ProxyFactory extends AbstractProxyFactory
             $properties = $proxy->__getLazyProperties();
 
             foreach ($properties as $propertyName => $property) {
-                if (!isset($proxy->$propertyName)) {
+                if ( ! isset($proxy->$propertyName)) {
                     $proxy->$propertyName = $properties[$propertyName];
                 }
             }
 
             $proxy->__setInitialized(true);
 
-            if (null === $entityPersister->load($classMetadata->getIdentifierValues($proxy), $proxy)) {
+            if ($wakeupProxy) {
+                $proxy->__wakeup();
+            }
+
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+
+            if (null === $entityPersister->loadById($identifier, $proxy)) {
                 $proxy->__setInitializer($initializer);
                 $proxy->__setCloner($cloner);
                 $proxy->__setInitialized(false);
 
-                throw new EntityNotFoundException();
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                );
             }
         };
     }
@@ -183,13 +169,13 @@ class ProxyFactory extends AbstractProxyFactory
      * Creates a closure capable of finalizing state a cloned proxy
      *
      * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\BasicEntityPersister      $entityPersister
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
      *
      * @return \Closure
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createCloner(ClassMetadata $classMetadata, BasicEntityPersister $entityPersister)
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
     {
         return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {
@@ -198,20 +184,25 @@ class ProxyFactory extends AbstractProxyFactory
 
             $proxy->__setInitialized(true);
             $proxy->__setInitializer(null);
-            $class = $entityPersister->getClassMetadata();
-            $original = $entityPersister->load($classMetadata->getIdentifierValues($proxy));
+
+            $class      = $entityPersister->getClassMetadata();
+            $identifier = $classMetadata->getIdentifierValues($proxy);
+            $original   = $entityPersister->loadById($identifier);
 
             if (null === $original) {
-                throw new EntityNotFoundException();
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $classMetadata->getName(),
+                    $this->identifierFlattener->flattenIdentifier($classMetadata, $identifier)
+                );
             }
 
-            foreach ($class->getReflectionClass()->getProperties() as $reflectionProperty) {
-                $propertyName = $reflectionProperty->getName();
-
-                if ($class->hasField($propertyName) || $class->hasAssociation($propertyName)) {
-                    $reflectionProperty->setAccessible(true);
-                    $reflectionProperty->setValue($proxy, $reflectionProperty->getValue($original));
+            foreach ($class->getReflectionProperties() as $property) {
+                if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
+                    continue;
                 }
+
+                $property->setAccessible(true);
+                $property->setValue($proxy, $property->getValue($original));
             }
         };
     }

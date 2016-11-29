@@ -2,31 +2,57 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
-use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
-use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Mocks\UnitOfWorkMock;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
-
-require_once __DIR__ . '/../TestInit.php';
+use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\GeoNames\City;
+use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\OrmTestCase;
+use stdClass;
 
 /**
  * UnitOfWork tests.
  */
-class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
+class UnitOfWorkTest extends OrmTestCase
 {
-    // SUT
+    /**
+     * SUT
+     *
+     * @var UnitOfWorkMock
+     */
     private $_unitOfWork;
-    // Provides a sequence mock to the UnitOfWork
+
+    /**
+     * Provides a sequence mock to the UnitOfWork
+     *
+     * @var ConnectionMock
+     */
     private $_connectionMock;
-    // The EntityManager mock that provides the mock persisters
+
+    /**
+     * The EntityManager mock that provides the mock persisters
+     *
+     * @var EntityManagerMock
+     */
     private $_emMock;
 
     protected function setUp() {
         parent::setUp();
-        $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
+        $this->_connectionMock = new ConnectionMock(array(), new DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
@@ -51,9 +77,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
-        $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
         $user = new ForumUser();
@@ -91,13 +117,13 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
-        $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
         // ForumAvatar
-        $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumAvatar"));
+        $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumAvatar'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
-        $avatarPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $avatarPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
         $user = new ForumUser();
@@ -122,9 +148,9 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     public function testChangeTrackingNotify()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedEntity'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
+        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedRelatedItem'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
 
         $entity = new NotifyChangedEntity;
@@ -166,7 +192,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity"));
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
 
         $e = new VersionedAssignedIdentifierEntity();
@@ -177,10 +203,10 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
 
     public function testGetEntityStateWithAssignedIdentity()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\CMS\CmsPhonenumber"));
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'));
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
 
-        $ph = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
         $this->assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
@@ -192,20 +218,20 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
         $this->assertFalse($persister->isExistsCalled());
-        $ph2 = new \Doctrine\Tests\Models\CMS\CmsPhonenumber();
+        $ph2 = new CmsPhonenumber();
         $ph2->phonenumber = '12345';
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
         $this->assertFalse($persister->isExistsCalled());
     }
 
     /**
-     * DDC-2086 [GH-484] Prevented "Undefined index" notice when updating.
+     * DDC-2086 [GH-484] Prevented 'Undefined index' notice when updating.
      */
     public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges()
     {
         // Setup fake persister and id generator
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\Models\Forum\ForumUser"));
-        $userPersister->setMockIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_IDENTITY);
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
+        $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
         $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
 
         // Create a test user
@@ -226,15 +252,250 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testLockWithoutEntityThrowsException()
     {
-        $this->setExpectedException('InvalidArgumentException');
+        $this->expectException(\InvalidArgumentException::class);
         $this->_unitOfWork->lock(null, null, null);
+    }
+
+    /**
+     * @group DDC-3490
+     *
+     * @dataProvider invalidAssociationValuesDataProvider
+     *
+     * @param mixed $invalidValue
+     */
+    public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue)
+    {
+        $this->_unitOfWork->setEntityPersister(
+            'Doctrine\Tests\Models\Forum\ForumUser',
+            new EntityPersisterMock(
+                $this->_emMock,
+                $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser')
+            )
+        );
+
+        $user           = new ForumUser();
+        $user->username = 'John';
+        $user->avatar   = $invalidValue;
+
+        $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->persist($user);
+    }
+
+    /**
+     * @group DDC-3490
+     *
+     * @dataProvider invalidAssociationValuesDataProvider
+     *
+     * @param mixed $invalidValue
+     */
+    public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue)
+    {
+        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
+
+        $this->_unitOfWork->setEntityPersister(
+            'Doctrine\Tests\Models\Forum\ForumUser',
+            new EntityPersisterMock($this->_emMock, $metadata)
+        );
+
+        $user = new ForumUser();
+
+        $this->_unitOfWork->persist($user);
+
+        $user->username = 'John';
+        $user->avatar   = $invalidValue;
+
+        $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->computeChangeSet($metadata, $user);
+    }
+
+    /**
+     * @group DDC-3619
+     * @group 1338
+     */
+    public function testRemovedAndRePersistedEntitiesAreInTheIdentityMapAndAreNotGarbageCollected()
+    {
+        $entity     = new ForumUser();
+        $entity->id = 123;
+
+        $this->_unitOfWork->registerManaged($entity, array('id' => 123), array());
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+
+        $this->_unitOfWork->remove($entity);
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+
+        $this->_unitOfWork->persist($entity);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+    }
+
+    /**
+     * @group 5849
+     * @group 5850
+     */
+    public function testPersistedEntityAndClearManager()
+    {
+        $entity1 = new City(123, 'London');
+        $entity2 = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+
+        $this->_unitOfWork->persist($entity2);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+
+        $this->_unitOfWork->clear(Country::class);
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
+        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
+        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+    }
+
+    /**
+     * Data Provider
+     *
+     * @return mixed[][]
+     */
+    public function invalidAssociationValuesDataProvider()
+    {
+        return [
+            ['foo'],
+            [['foo']],
+            [''],
+            [[]],
+            [new stdClass()],
+            [new ArrayCollection()],
+        ];
+    }
+
+    /**
+     * @dataProvider entitiesWithValidIdentifiersProvider
+     *
+     * @param object $entity
+     * @param string $idHash
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
+    {
+        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->addToIdentityMap($entity);
+
+        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
+    }
+
+    public function entitiesWithValidIdentifiersProvider()
+    {
+        $emptyString = new EntityWithStringIdentifier();
+
+        $emptyString->id = '';
+
+        $nonEmptyString = new EntityWithStringIdentifier();
+
+        $nonEmptyString->id = uniqid('id', true);
+
+        $emptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $emptyStrings->id1 = '';
+        $emptyStrings->id2 = '';
+
+        $nonEmptyStrings = new EntityWithCompositeStringIdentifier();
+
+        $nonEmptyStrings->id1 = uniqid('id1', true);
+        $nonEmptyStrings->id2 = uniqid('id2', true);
+
+        $booleanTrue = new EntityWithBooleanIdentifier();
+
+        $booleanTrue->id = true;
+
+        $booleanFalse = new EntityWithBooleanIdentifier();
+
+        $booleanFalse->id = false;
+
+        return [
+            'empty string, single field'     => [$emptyString, ''],
+            'non-empty string, single field' => [$nonEmptyString, $nonEmptyString->id],
+            'empty strings, two fields'      => [$emptyStrings, ' '],
+            'non-empty strings, two fields'  => [$nonEmptyStrings, $nonEmptyStrings->id1 . ' ' . $nonEmptyStrings->id2],
+            'boolean true'                   => [$booleanTrue, '1'],
+            'boolean false'                  => [$booleanFalse, ''],
+        ];
+    }
+
+    public function testRegisteringAManagedInstanceRequiresANonEmptyIdentifier()
+    {
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
+    }
+
+    /**
+     * @dataProvider entitiesWithInvalidIdentifiersProvider
+     *
+     * @param object $entity
+     * @param array  $identifier
+     *
+     * @return void
+     */
+    public function testAddToIdentityMapInvalidIdentifiers($entity, array $identifier)
+    {
+        $this->expectException(ORMInvalidArgumentException::class);
+
+        $this->_unitOfWork->registerManaged($entity, $identifier, []);
+    }
+
+
+    public function entitiesWithInvalidIdentifiersProvider()
+    {
+        $firstNullString  = new EntityWithCompositeStringIdentifier();
+
+        $firstNullString->id2 = uniqid('id2', true);
+
+        $secondNullString = new EntityWithCompositeStringIdentifier();
+
+        $secondNullString->id1 = uniqid('id1', true);
+
+        return [
+            'null string, single field'      => [new EntityWithStringIdentifier(), ['id' => null]],
+            'null strings, two fields'       => [new EntityWithCompositeStringIdentifier(), ['id1' => null, 'id2' => null]],
+            'first null string, two fields'  => [$firstNullString, ['id1' => null, 'id2' => $firstNullString->id2]],
+            'second null string, two fields' => [$secondNullString, ['id1' => $secondNullString->id1, 'id2' => null]],
+        ];
+    }
+
+    /**
+     * @group 5689
+     * @group 1465
+     */
+    public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap()
+    {
+        $user       = new CmsUser();
+        $user->name = 'ocramius';
+        $mergedUser = $this->_unitOfWork->merge($user);
+
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
+
+
+        $user       = null;
+        $mergedUser = null;
+
+        // force garbage collection of $user (frees the used object hashes, which may be recycled)
+        gc_collect_cycles();
+
+        $newUser       = new CmsUser();
+        $newUser->name = 'ocramius';
+
+        $this->_unitOfWork->persist($newUser);
+
+        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
 }
 
 /**
  * @Entity
  */
-class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
+class NotifyChangedEntity implements NotifyPropertyChanged
 {
     private $_listeners = array();
     /**
@@ -254,7 +515,7 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
     private $items;
 
     public function  __construct() {
-        $this->items = new \Doctrine\Common\Collections\ArrayCollection;
+        $this->items = new ArrayCollection;
     }
 
     public function getId() {
@@ -283,7 +544,7 @@ class NotifyChangedEntity implements \Doctrine\Common\NotifyPropertyChanged
         }
     }
 
-    public function addPropertyChangedListener(\Doctrine\Common\PropertyChangedListener $listener)
+    public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
         $this->_listeners[] = $listener;
     }
@@ -334,4 +595,44 @@ class VersionedAssignedIdentifierEntity
      * @Version @Column(type="integer")
      */
     public $version;
+}
+
+/** @Entity */
+class EntityWithStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithBooleanIdentifier
+{
+    /**
+     * @Id @Column(type="boolean")
+     *
+     * @var bool|null
+     */
+    public $id;
+}
+
+/** @Entity */
+class EntityWithCompositeStringIdentifier
+{
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id1;
+
+    /**
+     * @Id @Column(type="string")
+     *
+     * @var string|null
+     */
+    public $id2;
 }

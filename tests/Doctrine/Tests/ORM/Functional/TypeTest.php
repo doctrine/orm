@@ -9,10 +9,9 @@ use Doctrine\Tests\Models\Generic\SerializationModel;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-require_once __DIR__ . '/../../TestInit.php';
-
-class TypeTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class TypeTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

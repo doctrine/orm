@@ -3,15 +3,14 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Schema;
-
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *
  * @author robo
  */
-class CompanySchemaTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CompanySchemaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

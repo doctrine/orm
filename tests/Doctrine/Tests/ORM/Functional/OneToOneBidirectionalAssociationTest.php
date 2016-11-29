@@ -6,13 +6,12 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     private $customer;
     private $cart;
@@ -90,7 +89,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $customer = $result[0];
 
         $this->assertNull($customer->getMentor());
-        $this->assertInstanceOF('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
+        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }

@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Common\Collections\Criteria;
 
 /**

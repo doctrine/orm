@@ -113,7 +113,7 @@ suggested standard way to build queries:
            $qb->expr()->eq('u.id', '?1'),
            $qb->expr()->like('u.nickname', '?2')
        ))
-       ->orderBy('u.surname', 'ASC'));
+       ->orderBy('u.surname', 'ASC');
 
 Here is a complete list of helper methods available in ``QueryBuilder``:
 
@@ -126,6 +126,12 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->select(array('u', 'p'))
         // Example - $qb->select($qb->expr()->select('u', 'p'))
         public function select($select = null);
+        
+        // addSelect does not override previous calls to select
+        //
+        // Example - $qb->select('u');
+        //              ->addSelect('p.area_code');
+        public function addSelect($select = null);
 
         // Example - $qb->delete('User', 'u')
         public function delete($delete = null, $alias = null);
@@ -139,15 +145,23 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         public function set($key, $value);
 
         // Example - $qb->from('Phonenumber', 'p')
-        public function from($from, $alias = null);
+        // Example - $qb->from('Phonenumber', 'p', 'p.id')
+        public function from($from, $alias, $indexBy = null);
+
+        // Example - $qb->join('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+        // Example - $qb->join('u.Group', 'g', 'WITH', 'u.status = ?1')
+        // Example - $qb->join('u.Group', 'g', 'WITH', 'u.status = ?1', 'g.id')
+        public function join($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
         // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
-        public function innerJoin($join, $alias = null, $conditionType = null, $condition = null);
+        // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1', 'g.id')
+        public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // Example - $qb->leftJoin('u.Phonenumbers', 'p', Expr\Join::WITH, $qb->expr()->eq('p.area_code', 55))
         // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55')
-        public function leftJoin($join, $alias = null, $conditionType = null, $condition = null);
+        // Example - $qb->leftJoin('u.Phonenumbers', 'p', 'WITH', 'p.area_code = 55', 'p.id')
+        public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
         // NOTE: ->where() overrides all previously set conditions
         //
@@ -156,6 +170,8 @@ Here is a complete list of helper methods available in ``QueryBuilder``:
         // Example - $qb->where('u.firstName = ?1 AND u.surname = ?2')
         public function where($where);
 
+        // NOTE: ->andWhere() can be used directly, without any ->where() before
+        //
         // Example - $qb->andWhere($qb->expr()->orX($qb->expr()->lte('u.age', 40), 'u.numChild = 0'))
         public function andWhere($where);
 
@@ -206,7 +222,7 @@ allowed. Binding parameters can simply be achieved as follows:
     // $qb instanceof QueryBuilder
 
     $qb->select('u')
-       ->from('User u')
+       ->from('User', 'u')
        ->where('u.id = ?1')
        ->orderBy('u.name', 'ASC')
        ->setParameter(1, 100); // Sets ?1 to 100, and thus we will fetch a user with u.id = 100
@@ -220,7 +236,7 @@ alternative syntax is available:
     // $qb instanceof QueryBuilder
 
     $qb->select('u')
-       ->from('User u')
+       ->from('User', 'u')
        ->where('u.id = :identifier')
        ->orderBy('u.name', 'ASC')
        ->setParameter('identifier', 100); // Sets :identifier to 100, and thus we will fetch a user with u.id = 100
@@ -336,7 +352,8 @@ set of useful methods to help build expressions:
     <?php
     // $qb instanceof QueryBuilder
 
-    // example8: QueryBuilder port of: "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.surname DESC" using Expr class
+    // example8: QueryBuilder port of:
+    // "SELECT u FROM User u WHERE u.id = ? OR u.nickname LIKE ? ORDER BY u.name ASC" using Expr class
     $qb->add('select', new Expr\Select(array('u')))
        ->add('from', new Expr\From('User', 'u'))
        ->add('where', $qb->expr()->orX(
@@ -513,7 +530,9 @@ of DQL. It takes 3 parameters: ``$dqlPartName``, ``$dqlPart`` and
     <?php
     // $qb instanceof QueryBuilder
 
-    // example6: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder string support
+    // example6: how to define:
+    // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
+    // using QueryBuilder string support
     $qb->add('select', 'u')
        ->add('from', 'User u')
        ->add('where', 'u.id = ?1')
@@ -532,7 +551,9 @@ same query of example 6 written using
    <?php
    // $qb instanceof QueryBuilder
 
-   // example7: how to define: "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC" using QueryBuilder using Expr\* instances
+   // example7: how to define:
+   // "SELECT u FROM User u WHERE u.id = ? ORDER BY u.name ASC"
+   // using QueryBuilder using Expr\* instances
    $qb->add('select', new Expr\Select(array('u')))
       ->add('from', new Expr\From('User', 'u'))
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))

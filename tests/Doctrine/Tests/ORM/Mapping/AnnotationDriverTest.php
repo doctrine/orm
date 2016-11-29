@@ -2,10 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Annotations\AnnotationException;
+use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Events;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\MappingException;
 
 class AnnotationDriverTest extends AbstractMappingDriverTest
 {
@@ -15,12 +18,25 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonEntityThrowsException()
     {
         $cm = new ClassMetadata('stdClass');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
-        $reader = new \Doctrine\Common\Annotations\AnnotationReader(new \Doctrine\Common\Cache\ArrayCache());
-        $annotationDriver = new \Doctrine\ORM\Mapping\Driver\AnnotationDriver($reader);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $reader = new AnnotationReader();
+        $annotationDriver = new AnnotationDriver($reader);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException');
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
         $annotationDriver->loadMetadataForClass('stdClass', $cm);
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.
+     */
+    public function testFailingSecondLevelCacheAssociation()
+    {
+        $className = 'Doctrine\Tests\ORM\Mapping\AnnotationSLC';
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
     }
 
     /**
@@ -29,7 +45,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\ColumnWithoutType');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->_loadDriver();
 
         $annotationDriver->loadMetadataForClass('Doctrine\Tests\ORM\Mapping\InvalidColumn', $cm);
@@ -121,7 +137,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor('Doctrine\Tests\Models\DirectoryTree\File');
@@ -140,12 +156,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "It is illegal to put an inverse side one-to-many or many-to-many association on ".
-            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            "It is illegal to put an inverse side one-to-many or many-to-many association on " .
+            "mapped superclass 'Doctrine\Tests\ORM\Mapping\InvalidMappedSuperClass#users'"
+        );
+
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\UsingInvalidMappedSuperClass');
     }
 
@@ -158,12 +177,15 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException',
-            "Its not supported to define inheritance information on a mapped ".
-            "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'.");
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
+            "It is not supported to define inheritance information on a mapped " .
+            "superclass 'Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence'."
+        );
+
         $usingInvalidMsc = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\MappedSuperClassInheritence');
     }
 
@@ -174,10 +196,9 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $annotationDriver = $this->_loadDriver();
 
-        $cm = new ClassMetadata('Doctrine\Tests\ORM\Mapping\AnnotationChild');
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\AnnotationChild');
@@ -196,7 +217,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
         $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\ChildEntity');
@@ -208,20 +229,17 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $this->setExpectedException('Doctrine\Common\Annotations\AnnotationException',
-            '[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
-        $cm = $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Enum Error] Attribute "fetch" of @Doctrine\ORM\Mapping\OneToMany declared on property Doctrine\Tests\ORM\Mapping\InvalidFetchOption::$collection accept only [LAZY, EAGER, EXTRA_LAZY], but got eager.');
+
+        $factory->getMetadataFor('Doctrine\Tests\ORM\Mapping\InvalidFetchOption');
     }
 
     public function testAttributeOverridesMappingWithTrait()
     {
-        if (!version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            $this->markTestSkipped('This test is only for 5.4+.');
-        }
-
         $factory       = $this->createClassMetadataFactory();
 
         $metadataWithoutOverride = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride');
@@ -354,4 +372,27 @@ class InvalidFetchOption
      * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
      */
     private $collection;
+}
+
+/**
+ * @Entity
+ * @Cache
+ */
+class AnnotationSLC
+{
+    /**
+     * @Id
+     * @ManyToOne(targetEntity="AnnotationSLCFoo")
+     */
+    public $foo;
+}
+/**
+ * @Entity
+ */
+class AnnotationSLCFoo
+{
+    /**
+     * @Column(type="string")
+     */
+    public $id;
 }

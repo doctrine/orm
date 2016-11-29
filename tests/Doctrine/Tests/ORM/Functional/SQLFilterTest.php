@@ -3,36 +3,35 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Query\Filter\SQLFilter;
-use Doctrine\ORM\Mapping\ClassMetaData;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Cache\ArrayCache;
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsComment;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests SQLFilter functionality.
  *
  * @author Alexander <iam.asm89@gmail.com>
+ *
+ * @group non-cacheable
  */
-class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SQLFilterTest extends OrmFunctionalTestCase
 {
     private $userId, $userId2, $articleId, $articleId2;
     private $groupId, $groupId2;
@@ -57,7 +56,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testConfigureFilter()
     {
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
 
         $config->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
 
@@ -72,7 +71,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Enable an existing filter
         $filter = $em->getFilters()->enable("locale");
-        $this->assertTrue($filter instanceof \Doctrine\Tests\ORM\Functional\MyLocaleFilter);
+        $this->assertTrue($filter instanceof MyLocaleFilter);
 
         // Enable the filter again
         $filter2 = $em->getFilters()->enable("locale");
@@ -226,7 +225,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
-        $em = $this->getMockEntityManager($conn);
+        $em = $this->getMockEntityManager();
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));
@@ -243,6 +242,28 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("'en'", $filter->getParameter('locale'));
     }
 
+    /**
+     * @group DDC-3161
+     * @group 1054
+     */
+    public function testSQLFilterGetConnection()
+    {
+        // Setup mock connection
+        $conn = $this->getMockConnection();
+
+        $em = $this->getMockEntityManager();
+        $em->expects($this->once())
+            ->method('getConnection')
+            ->will($this->returnValue($conn));
+
+        $filter = new MyLocaleFilter($em);
+
+        $reflMethod = new \ReflectionMethod('Doctrine\ORM\Query\Filter\SQLFilter', 'getConnection');
+        $reflMethod->setAccessible(true);
+
+        $this->assertSame($conn, $reflMethod->invoke($filter));
+    }
+
     public function testSQLFilterSetParameterInfersType()
     {
         // Setup mock connection
@@ -252,7 +273,7 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->with($this->equalTo('en'))
             ->will($this->returnValue("'en'"));
 
-        $em = $this->getMockEntityManager($conn);
+        $em = $this->getMockEntityManager();
         $em->expects($this->once())
             ->method('getConnection')
             ->will($this->returnValue($conn));
@@ -321,18 +342,18 @@ class SQLFilterTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(1, sizeof($cacheDataReflection->getValue($cache)));
 
         $conf = $this->_em->getConfiguration();
         $conf->addFilter("locale", "\Doctrine\Tests\ORM\Functional\MyLocaleFilter");
         $this->_em->getFilters()->enable("locale");
 
         $query->getResult();
-        $this->assertEquals(3, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
 
         // Another time doesn't add another cache entry
         $query->getResult();
-        $this->assertEquals(3, sizeof($cacheDataReflection->getValue($cache)));
+        $this->assertEquals(2, sizeof($cacheDataReflection->getValue($cache)));
     }
 
     public function testQueryGeneration_DependsOnFilters()

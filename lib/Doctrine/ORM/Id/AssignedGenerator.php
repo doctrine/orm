@@ -36,14 +36,9 @@ class AssignedGenerator extends AbstractIdGenerator
     /**
      * Returns the identifier assigned to the given entity.
      *
-     * @param EntityManager $em
-     * @param object        $entity
-     *
-     * @return mixed
+     * {@inheritDoc}
      *
      * @throws \Doctrine\ORM\ORMException
-     *
-     * @override
      */
     public function generate(EntityManager $em, $entity)
     {
@@ -59,12 +54,8 @@ class AssignedGenerator extends AbstractIdGenerator
             }
 
             if (isset($class->associationMappings[$idField])) {
-                if ( ! $em->getUnitOfWork()->isInIdentityMap($value)) {
-                    throw ORMException::entityMissingForeignAssignedId($entity, $value);
-                }
-
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
-                $value = current($em->getUnitOfWork()->getEntityIdentifier($value));
+                $value = $em->getUnitOfWork()->getSingleIdentifierValue($value);
             }
 
             $identifier[$idField] = $value;

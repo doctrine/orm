@@ -162,6 +162,14 @@ class CmsUser
      *      )
      */
     public $groups;
+    /**
+     * @ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"all"})
+     * @JoinTable(name="cms_users_tags",
+     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="tag_id", referencedColumnName="id")}
+     *      )
+     */
+    public $tags;
 
     public $nonPersistedProperty;
 
@@ -171,6 +179,7 @@ class CmsUser
         $this->phonenumbers = new ArrayCollection;
         $this->articles = new ArrayCollection;
         $this->groups = new ArrayCollection;
+        $this->tags = new ArrayCollection;
     }
 
     public function getId() {
@@ -217,6 +226,15 @@ class CmsUser
         return $this->groups;
     }
 
+    public function addTag(CmsTag $tag) {
+        $this->tags[] = $tag;
+        $tag->addUser($this);
+    }
+
+    public function getTags() {
+        return $this->tags;
+    }
+
     public function removePhonenumber($index) {
         if (isset($this->phonenumbers[$index])) {
             $ph = $this->phonenumbers[$index];
@@ -236,6 +254,9 @@ class CmsUser
         }
     }
 
+    /**
+     * @return CmsEmail
+     */
     public function getEmail() { return $this->email; }
 
     public function setEmail(CmsEmail $email = null) {
@@ -387,7 +408,7 @@ class CmsUser
                   )
             )
         ));
-        
+
         $metadata->addSqlResultSetMapping(array(
             'name'      => 'mappingMultipleJoinsEntityResults',
             'entities'  => array(array(

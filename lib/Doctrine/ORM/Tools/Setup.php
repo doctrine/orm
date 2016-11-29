@@ -15,12 +15,13 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\Common\ClassLoader;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -125,7 +126,7 @@ class Setup
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
-            } elseif (extension_loaded('xcache')) {
+            } elseif (ini_get('xcache.cacher')) {
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
             } elseif (extension_loaded('memcache')) {
                 $memcache = new \Memcache();
@@ -144,7 +145,9 @@ class Setup
             $cache = new ArrayCache();
         }
 
-        $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
+        if ($cache instanceof CacheProvider) {
+            $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
+        }
 
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);

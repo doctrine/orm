@@ -5,13 +5,13 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\NamingStrategy;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-559
  */
-class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
+class NamingStrategyTest extends OrmTestCase
 {
     /**
      * @return DefaultNamingStrategy
@@ -164,20 +164,15 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
     {
         return array(
             // DefaultNamingStrategy
-            array(self::defaultNaming(), 'someColumn_id',
-                'someColumn', null,
-            ),
-            array(self::defaultNaming(), 'some_column_id',
-                'some_column', null,
-            ),
+            array(self::defaultNaming(), 'someColumn_id', 'someColumn', null),
+            array(self::defaultNaming(), 'some_column_id', 'some_column', null),
 
             // UnderscoreNamingStrategy
-            array(self::underscoreNamingLower(), 'some_column_id',
-                'someColumn', null,
-            ),
-            array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID',
-                'someColumn', null,
-            ),
+            array(self::underscoreNamingLower(), 'some_column_id', 'someColumn', null),
+            array(self::underscoreNamingUpper(), 'SOME_COLUMN_ID', 'someColumn', null),
+            // JoinColumnClassNamingStrategy
+            array(new JoinColumnClassNamingStrategy(), 'classname_someColumn_id', 'someColumn', 'Some\ClassName'),
+            array(new JoinColumnClassNamingStrategy(), 'classname_some_column_id', 'some_column', 'ClassName'),
         );
     }
 
@@ -188,9 +183,9 @@ class NamingStrategyTest extends \Doctrine\Tests\OrmTestCase
      * @param string $expected
      * @param string $propertyName
      */
-    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName)
+    public function testJoinColumnName(NamingStrategy $strategy, $expected, $propertyName, $className = null)
     {
-        $this->assertEquals($expected, $strategy->joinColumnName($propertyName));
+        $this->assertEquals($expected, $strategy->joinColumnName($propertyName, $className));
     }
 
     /**

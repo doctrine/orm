@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1404
  */
@@ -77,7 +75,7 @@ class DDC1404ParentEntity
     protected $id;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {

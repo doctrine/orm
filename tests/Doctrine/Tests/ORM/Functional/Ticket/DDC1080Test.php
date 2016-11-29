@@ -2,12 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1080
  */
-class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration()
     {
@@ -57,7 +57,7 @@ class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooId());
+        $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooID());
         $fooBars = $foo->getFooBars();
 
         $this->assertEquals(3, count($fooBars), "Should return three foobars.");
@@ -242,7 +242,7 @@ class DDC1080FooBar
      */
     protected $_bar = null;
     /**
-     * @var integer orderNr
+     * @var int orderNr
      * @Column(name="orderNr", type="integer", nullable=false)
      */
     protected $_orderNr = null;
@@ -294,7 +294,7 @@ class DDC1080FooBar
     /**
      * Retrieve the orderNr property
      *
-     * @return integer|null
+     * @return int|null
      */
     public function getOrderNr()
     {

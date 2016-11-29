@@ -1,0 +1,8 @@
+Doctrine\Tests\Models\DDC3711\DDC3711EntityB:
+  type: entity
+  table: ddc3711.entityB
+  id:
+    id1:
+        type: int
+    id2:
+        type: int

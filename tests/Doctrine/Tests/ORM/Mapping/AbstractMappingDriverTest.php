@@ -2,17 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\Tests\Models\Company\CompanyFixContract;
-use Doctrine\Tests\Models\Company\CompanyFlexContract;
-
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
+use Doctrine\Tests\Models\Cache\City;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
+use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\Tests\OrmTestCase;
 
-require_once __DIR__ . '/../../TestInit.php';
-
-abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
+abstract class AbstractMappingDriverTest extends OrmTestCase
 {
     abstract protected function _loadDriver();
 
@@ -21,7 +26,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $mappingDriver = $this->_loadDriver();
 
         $class = new ClassMetadata($entityClassName);
-        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($entityClassName, $class);
 
         return $class;
@@ -31,11 +36,11 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      * @param \Doctrine\ORM\EntityManager $entityClassName
      * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
-    protected function createClassMetadataFactory(\Doctrine\ORM\EntityManager $em = null)
+    protected function createClassMetadataFactory(EntityManager $em = null)
     {
         $driver     = $this->_loadDriver();
         $em         = $em ?: $this->_getTestEntityManager();
-        $factory    = new \Doctrine\ORM\Mapping\ClassMetadataFactory();
+        $factory    = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
 
@@ -75,6 +80,19 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         return $class;
     }
 
+    public function testEntityIndexFlagsAndPartialIndexes()
+    {
+        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Comment');
+
+        $this->assertEquals(array(
+            0 => array(
+                'columns' => array('content'),
+                'flags' => array('fulltext'),
+                'options' => array('where' => 'content IS NOT NULL'),
+            )
+        ), $class->table['indexes']);
+    }
+
     /**
      * @depends testEntityTableNameAndInheritance
      * @param ClassMetadata $class
@@ -85,7 +103,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
             'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
 
         $this->assertEquals(array(
-            "search_idx" => array("columns" => array("name", "user_email"))
+            "search_idx" => array("columns" => array("name", "user_email"), 'options' => array('where' => 'name IS NOT NULL'))
         ), $class->table['uniqueConstraints']);
 
         return $class;
@@ -187,8 +205,31 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue($class->fieldMappings['name']['nullable']);
         $this->assertTrue($class->fieldMappings['name']['unique']);
 
-        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     *
+     * @param ClassMetadata $class
+     *
+     * @return ClassMetadata
+     */
+    public function testFieldOptions(ClassMetadata $class)
+    {
+        $expected = ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false];
         $this->assertEquals($expected, $class->fieldMappings['name']['options']);
+
+        return $class;
+    }
+
+    /**
+     * @depends testEntityTableNameAndInheritance
+     * @param ClassMetadata $class
+     */
+    public function testIdFieldOptions($class)
+    {
+        $this->assertEquals(['foo' => 'bar', 'unsigned' => false], $class->fieldMappings['id']['options']);
 
         return $class;
     }
@@ -202,6 +243,26 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('id'), $class->identifier);
         $this->assertEquals('integer', $class->fieldMappings['id']['type']);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
+
+        return $class;
+    }
+
+    /**
+     * @group #6129
+     *
+     * @depends testLoadMapping
+     *
+     * @param ClassMetadata $class
+     *
+     * @return ClassMetadata
+     */
+    public function testBooleanValuesForOptionIsSetCorrectly(ClassMetadata $class)
+    {
+        $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
+        $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
+
+        $this->assertInternalType('bool', $class->fieldMappings['name']['options']['fixed']);
+        $this->assertFalse($class->fieldMappings['name']['options']['fixed']);
 
         return $class;
     }
@@ -453,13 +514,13 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
 
 
         $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
-        $em->getConfiguration()->setNamingStrategy(new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER));
+        $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy(CASE_UPPER));
         $this->assertInstanceOf('Doctrine\ORM\Mapping\UnderscoreNamingStrategy', $em->getConfiguration()->getNamingStrategy());
 
         $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
 
-        $this->assertEquals('ID', $class->columnNames['id']);
-        $this->assertEquals('NAME', $class->columnNames['name']);
+        $this->assertEquals('ID', $class->getColumnName('id'));
+        $this->assertEquals('NAME', $class->getColumnName('name'));
         $this->assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table['name']);
     }
 
@@ -483,7 +544,8 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testInvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
 
         $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
     }
@@ -495,7 +557,9 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
     {
         $factory = $this->createClassMetadataFactory();
 
-        $this->setExpectedException('Doctrine\ORM\Mapping\MappingException', 'No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.');
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage('No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.');
+
         $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
     }
 
@@ -631,7 +695,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($personMetadata->name,                      $mapping['entities'][0]['entityClass']);
     }
 
-     /*
+    /*
      * @group DDC-964
      */
     public function testAssociationOverridesMapping()
@@ -712,6 +776,23 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(array('adminaddress_id'=>'id'), $adminAddress['sourceToTargetKeyColumns']);
         $this->assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
         $this->assertEquals(array('id'=>'adminaddress_id'), $adminAddress['targetToSourceKeyColumns']);
+    }
+
+    /*
+     * @group DDC-3579
+     */
+    public function testInversedByOverrideMapping()
+    {
+
+        $factory        = $this->createClassMetadataFactory();
+        $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3579\DDC3579Admin');
+
+        // assert groups association mappings
+        $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
+        $adminGroups = $adminMetadata->associationMappings['groups'];
+
+        // assert override
+        $this->assertEquals('admins', $adminGroups['inversedBy']);
     }
 
     /**
@@ -873,6 +954,106 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals(Events::postLoad, $postLoad['method']);
         $this->assertEquals(Events::preFlush, $preFlush['method']);
     }
+
+    /**
+     * @group DDC-2183
+     */
+    public function testSecondLevelCacheMapping()
+    {
+        $em      = $this->_getTestEntityManager();
+        $factory = $this->createClassMetadataFactory($em);
+        $class   = $factory->getMetadataFor(City::CLASSNAME);
+        $this->assertArrayHasKey('usage', $class->cache);
+        $this->assertArrayHasKey('region', $class->cache);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->cache['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
+
+        $this->assertArrayHasKey('state', $class->associationMappings);
+        $this->assertArrayHasKey('cache', $class->associationMappings['state']);
+        $this->assertArrayHasKey('usage', $class->associationMappings['state']['cache']);
+        $this->assertArrayHasKey('region', $class->associationMappings['state']['cache']);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['state']['cache']['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']['region']);
+
+        $this->assertArrayHasKey('attractions', $class->associationMappings);
+        $this->assertArrayHasKey('cache', $class->associationMappings['attractions']);
+        $this->assertArrayHasKey('usage', $class->associationMappings['attractions']['cache']);
+        $this->assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
+        $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
+        $this->assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
+
+        $this->assertSame('explicit_schema', $metadata->getSchemaName());
+        $this->assertSame('explicit_table', $metadata->getTableName());
+    }
+
+    /**
+     * @group DDC-2825
+     * @group 881
+     */
+    public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
+    {
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
+
+        $this->assertSame('implicit_schema', $metadata->getSchemaName());
+        $this->assertSame('implicit_table', $metadata->getTableName());
+    }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultLength()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals(255, $class->discriminatorColumn['length']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals(255, $class->discriminatorColumn['length']);
+    }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultType()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals('string', $class->discriminatorColumn['type']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals('string', $class->discriminatorColumn['type']);
+    }
+
+    /**
+     * @group DDC-514
+     * @group DDC-1015
+     */
+    public function testDiscriminatorColumnDefaultName()
+    {
+        if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
+            $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
+        }
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
+        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $this->assertEquals('dtype', $class->discriminatorColumn['name']);
+    }
+
 }
 
 /**
@@ -880,7 +1061,7 @@ abstract class AbstractMappingDriverTest extends \Doctrine\Tests\OrmTestCase
  * @HasLifecycleCallbacks
  * @Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
+ *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"}, options={"where": "name IS NOT NULL"})},
  *  indexes={@Index(name="name_idx", columns={"name"}), @Index(name="0", columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
@@ -890,14 +1071,14 @@ class User
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="integer", options={"foo": "bar", "unsigned": false})
      * @generatedValue(strategy="AUTO")
      * @SequenceGenerator(sequenceName="tablename_seq", initialValue=1, allocationSize=100)
      **/
     public $id;
 
     /**
-     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}})
+     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
      */
     public $name;
 
@@ -971,6 +1152,7 @@ class User
            'fieldName' => 'id',
            'type' => 'integer',
            'columnName' => 'id',
+           'options' => array('foo' => 'bar', 'unsigned' => false),
           ));
         $metadata->mapField(array(
            'fieldName' => 'name',
@@ -979,7 +1161,7 @@ class User
            'unique' => true,
            'nullable' => true,
            'columnName' => 'name',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
+           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val'), 'fixed' => false),
           ));
         $metadata->mapField(array(
            'fieldName' => 'email',
@@ -1063,7 +1245,7 @@ class User
            'orderBy' => NULL,
           ));
         $metadata->table['uniqueConstraints'] = array(
-            'search_idx' => array('columns' => array('name', 'user_email')),
+            'search_idx' => array('columns' => array('name', 'user_email'), 'options'=> array('where' => 'name IS NOT NULL')),
         );
         $metadata->table['indexes'] = array(
             'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
@@ -1147,7 +1329,7 @@ class DDC1170Entity
     private $value;
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -1212,10 +1394,107 @@ class DDC807Entity
     }
 }
 
-
 class DDC807SubClasse1 {}
 class DDC807SubClasse2 {}
 
 class Address {}
 class Phonenumber {}
 class Group {}
+
+/**
+ * @Entity
+ * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
+ */
+class Comment
+{
+    /**
+     * @Column(type="text")
+     */
+    private $content;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
+        $metadata->setPrimaryTable(array(
+            'indexes' => array(
+                array('columns' => array('content'), 'flags' => array('fulltext'), 'options' => array('where' => 'content IS NOT NULL'))
+            )
+        ));
+
+        $metadata->mapField(array(
+            'fieldName' => 'content',
+            'type' => 'text',
+            'scale' => 0,
+            'length' => NULL,
+            'unique' => false,
+            'nullable' => false,
+            'precision' => 0,
+            'columnName' => 'content',
+        ));
+    }
+}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({
+ *     "ONE" = "SingleTableEntityNoDiscriminatorColumnMappingSub1",
+ *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
+ * })
+ */
+class SingleTableEntityNoDiscriminatorColumnMapping
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
+    public $id;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->mapField(array(
+            'id' => true,
+            'fieldName' => 'id',
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+class SingleTableEntityNoDiscriminatorColumnMappingSub1 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+
+/**
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorMap({
+ *     "ONE" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub1",
+ *     "TWO" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub2"
+ * })
+ * @DiscriminatorColumn(name="dtype")
+ */
+class SingleTableEntityIncompleteDiscriminatorColumnMapping
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     */
+    public $id;
+
+    public static function loadMetadata(ClassMetadataInfo $metadata)
+    {
+        $metadata->mapField(array(
+            'id' => true,
+            'fieldName' => 'id',
+        ));
+
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
+    }
+}
+
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1
+    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}
+class SingleTableEntityIncompleteDiscriminatorColumnMappingSub2
+    extends SingleTableEntityIncompleteDiscriminatorColumnMapping {}

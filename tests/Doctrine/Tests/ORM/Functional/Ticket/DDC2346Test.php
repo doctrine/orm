@@ -18,9 +18,9 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         $this->_schemaTool->createSchema(array(
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Foo'),
@@ -88,7 +88,7 @@ class DDC2346Foo
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"baz" = "DDC2346Baz"})
+ * @DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
  */
 class DDC2346Bar
 {

@@ -108,12 +108,16 @@ class PhpExporter extends AbstractExporter
                 'cascade'     => $cascade,
             );
 
+            if (isset($associationMapping['fetch'])) {
+                $associationMappingArray['fetch'] = $associationMapping['fetch'];
+            }
+
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $method = 'mapOneToOne';
                 $oneToOneMappingArray = array(
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
-                    'joinColumns'   => $associationMapping['joinColumns'],
+                    'joinColumns'   => $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [],
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
                 );
 

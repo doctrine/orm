@@ -19,15 +19,13 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 use Doctrine\DBAL\LockMode;
-
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * A Query object represents a DQL query.
@@ -60,6 +58,16 @@ final class Query extends AbstractQuery
      * @var string
      */
     const HINT_REFRESH = 'doctrine.refresh';
+
+    /**
+     * @var string
+     */
+    const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
+
+    /**
+     * @var string
+     */
+    const HINT_CACHE_EVICT = 'doctrine.cache.evict';
 
     /**
      * Internal hint: is set to the proxy entity that is currently triggered for loading
@@ -123,6 +131,13 @@ final class Query extends AbstractQuery
     private $_state = self::STATE_CLEAN;
 
     /**
+     * A snapshot of the parameter types the query was parsed with.
+     *
+     * @var array
+     */
+    private $_parsedTypes = array();
+
+    /**
      * Cached DQL query.
      *
      * @var string
@@ -179,16 +194,6 @@ final class Query extends AbstractQuery
     private $_useQueryCache = true;
 
     /**
-     * Initializes a new Query instance.
-     *
-     * @param \Doctrine\ORM\EntityManager $entityManager
-     */
-    /*public function __construct(EntityManager $entityManager)
-    {
-        parent::__construct($entityManager);
-    }*/
-
-    /**
      * Gets the SQL query/queries that correspond to this DQL query.
      *
      * @return mixed The built sql query or an array of all sql queries.
@@ -215,6 +220,19 @@ final class Query extends AbstractQuery
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function getResultSetMapping()
+    {
+        // parse query or load from cache
+        if ($this->_resultSetMapping === null) {
+            $this->_resultSetMapping = $this->_parse()->getResultSetMapping();
+        }
+
+        return $this->_resultSetMapping;
+    }
+
+    /**
      * Parses the DQL query, if necessary, and stores the parser result.
      *
      * Note: Populates $this->_parserResult as a side-effect.
@@ -223,12 +241,20 @@ final class Query extends AbstractQuery
      */
     private function _parse()
     {
+        $types = array();
+
+        foreach ($this->parameters as $parameter) {
+            /** @var Query\Parameter $parameter */
+            $types[$parameter->getName()] = $parameter->getType();
+        }
+
         // Return previous parser result if the query and the filter collection are both clean
-        if ($this->_state === self::STATE_CLEAN && $this->_em->isFiltersStateClean()) {
+        if ($this->_state === self::STATE_CLEAN && $this->_parsedTypes === $types && $this->_em->isFiltersStateClean()) {
             return $this->_parserResult;
         }
 
         $this->_state = self::STATE_CLEAN;
+        $this->_parsedTypes = $types;
 
         // Check query cache.
         if ( ! ($this->_useQueryCache && ($queryCache = $this->getQueryCacheDriver()))) {
@@ -268,6 +294,8 @@ final class Query extends AbstractQuery
 
         if ($this->_queryCacheProfile) {
             $executor->setQueryCacheProfile($this->_queryCacheProfile);
+        } else {
+            $executor->removeQueryCacheProfile();
         }
 
         if ($this->_resultSetMapping === null) {
@@ -276,14 +304,43 @@ final class Query extends AbstractQuery
 
         // Prepare parameters
         $paramMappings = $this->_parserResult->getParameterMappings();
+        $paramCount = count($this->parameters);
+        $mappingCount = count($paramMappings);
 
-        if (count($paramMappings) != count($this->parameters)) {
-            throw QueryException::invalidParameterNumber();
+        if ($paramCount > $mappingCount) {
+            throw QueryException::tooManyParameters($mappingCount, $paramCount);
+        }
+
+        if ($paramCount < $mappingCount) {
+            throw QueryException::tooFewParameters($mappingCount, $paramCount);
+        }
+
+        // evict all cache for the entity region
+        if ($this->hasCache && isset($this->_hints[self::HINT_CACHE_EVICT]) && $this->_hints[self::HINT_CACHE_EVICT]) {
+            $this->evictEntityCacheRegion();
         }
 
         list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
 
         return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+    }
+
+    /**
+     * Evict entity cache region
+     */
+    private function evictEntityCacheRegion()
+    {
+        $AST = $this->getAST();
+
+        if ($AST instanceof \Doctrine\ORM\Query\AST\SelectStatement) {
+            throw new QueryException('The hint "HINT_CACHE_EVICT" is not valid for select statements.');
+        }
+
+        $className = ($AST instanceof \Doctrine\ORM\Query\AST\DeleteStatement)
+            ? $AST->deleteClause->abstractSchemaName
+            : $AST->updateClause->abstractSchemaName;
+
+        $this->_em->getCache()->evictEntityRegion($className);
     }
 
     /**
@@ -303,13 +360,14 @@ final class Query extends AbstractQuery
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
             $value  = $parameter->getValue();
+            $rsm    = $this->getResultSetMapping();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            if (isset($this->_resultSetMapping->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
-                $value = $value->getMetadataValue($this->_resultSetMapping->metadataParameterMapping[$key]);
+            if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
+                $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }
 
             $value = $this->processParameterValue($value);
@@ -505,7 +563,7 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-        return stripos($this->getDQL(), $dql) === false ? false : true;
+        return stripos($this->getDQL(), $dql) !== false;
     }
 
     /**
@@ -601,7 +659,7 @@ final class Query extends AbstractQuery
      *
      * @see \Doctrine\DBAL\LockMode
      *
-     * @param  int $lockMode
+     * @param int $lockMode
      *
      * @return Query
      *
@@ -609,7 +667,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if (in_array($lockMode, array(LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE))) {
+        if (in_array($lockMode, array(LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE), true)) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }
@@ -623,14 +681,14 @@ final class Query extends AbstractQuery
     /**
      * Get the current lock mode for this query.
      *
-     * @return int
+     * @return int|null The current lock mode of this query or NULL if no specific lock mode is set.
      */
     public function getLockMode()
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 
-        if ( ! $lockMode) {
-            return LockMode::NONE;
+        if (false === $lockMode) {
+            return null;
         }
 
         return $lockMode;
@@ -639,20 +697,32 @@ final class Query extends AbstractQuery
     /**
      * Generate a cache id for the query cache - reusing the Result-Cache-Id generator.
      *
-     * The query cache
-     *
      * @return string
      */
     protected function _getQueryCacheId()
     {
         ksort($this->_hints);
 
+        $platform = $this->getEntityManager()
+            ->getConnection()
+            ->getDatabasePlatform()
+            ->getName();
+
         return md5(
-            $this->getDql() . var_export($this->_hints, true) .
+            $this->getDql() . serialize($this->_hints) .
+            '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
-            '&hydrationMode='.$this->_hydrationMode.'DOCTRINE_QUERY_CACHE_SALT'
+            '&hydrationMode=' . $this->_hydrationMode . '&types=' . serialize($this->_parsedTypes) . 'DOCTRINE_QUERY_CACHE_SALT'
         );
+    }
+
+     /**
+     * {@inheritdoc}
+     */
+    protected function getHash()
+    {
+        return sha1(parent::getHash(). '-'. $this->_firstResult . '-' . $this->_maxResults);
     }
 
     /**

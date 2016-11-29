@@ -24,7 +24,9 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
@@ -40,8 +42,9 @@ use Doctrine\ORM\Repository\RepositoryFactory;
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
  *
+ * Internal note: When adding a new configuration option just write a getter/setter pair.
+ *
  * @since 2.0
- * @internal When adding a new configuration option just write a getter/setter pair.
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
@@ -74,29 +77,28 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets a boolean flag that indicates whether proxy classes should always be regenerated
-     * during each script execution.
+     * Gets the strategy for automatically generating proxy classes.
      *
-     * @return boolean
+     * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
     public function getAutoGenerateProxyClasses()
     {
         return isset($this->_attributes['autoGenerateProxyClasses'])
             ? $this->_attributes['autoGenerateProxyClasses']
-            : true;
+            : AbstractProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
-     * Sets a boolean flag that indicates whether proxy classes should always be regenerated
-     * during each script execution.
+     * Sets the strategy for automatically generating proxy classes.
      *
-     * @param boolean|int $bool Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory
+     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void
      */
-    public function setAutoGenerateProxyClasses($bool)
+    public function setAutoGenerateProxyClasses($autoGenerate)
     {
-        $this->_attributes['autoGenerateProxyClasses'] = $bool;
+        $this->_attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
     }
 
     /**
@@ -252,7 +254,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setQueryCacheImpl(Cache $cacheImpl)
+    public function setQueryCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['queryCacheImpl'] = $cacheImpl;
     }
@@ -276,7 +278,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setHydrationCacheImpl(Cache $cacheImpl)
+    public function setHydrationCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['hydrationCacheImpl'] = $cacheImpl;
     }
@@ -300,7 +302,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return void
      */
-    public function setMetadataCacheImpl(Cache $cacheImpl)
+    public function setMetadataCacheImpl(CacheDriver $cacheImpl)
     {
         $this->_attributes['metadataCacheImpl'] = $cacheImpl;
     }
@@ -380,12 +382,24 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function ensureProductionSettings()
     {
-        if ( ! $this->getQueryCacheImpl()) {
+        $queryCacheImpl = $this->getQueryCacheImpl();
+
+        if ( ! $queryCacheImpl) {
             throw ORMException::queryCacheNotConfigured();
         }
 
-        if ( ! $this->getMetadataCacheImpl()) {
+        if ($queryCacheImpl instanceof ArrayCache) {
+            throw ORMException::queryCacheUsesNonPersistentCache($queryCacheImpl);
+        }
+
+        $metadataCacheImpl = $this->getMetadataCacheImpl();
+
+        if ( ! $metadataCacheImpl) {
             throw ORMException::metadataCacheNotConfigured();
+        }
+
+        if ($metadataCacheImpl instanceof ArrayCache) {
+            throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
         }
 
         if ($this->getAutoGenerateProxyClasses()) {
@@ -400,8 +414,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
@@ -458,8 +472,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
@@ -516,8 +530,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string $name
-     * @param string $className
+     * @param string          $name      Function name.
+     * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
      *
@@ -650,7 +664,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @param string $name The name of the filter.
      *
-     * @return string The class name of the filter, or null of it is not
+     * @return string The class name of the filter, or null if it is not
      *  defined.
      */
     public function getFilterClassName($name)
@@ -804,5 +818,110 @@ class Configuration extends \Doctrine\DBAL\Configuration
         return isset($this->_attributes['repositoryFactory'])
             ? $this->_attributes['repositoryFactory']
             : new DefaultRepositoryFactory();
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @return boolean
+     */
+    public function isSecondLevelCacheEnabled()
+    {
+        return isset($this->_attributes['isSecondLevelCacheEnabled'])
+            ? $this->_attributes['isSecondLevelCacheEnabled']
+            : false;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @param boolean $flag
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheEnabled($flag = true)
+    {
+        $this->_attributes['isSecondLevelCacheEnabled'] = (boolean) $flag;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @param \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig
+     *
+     * @return void
+     */
+    public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
+    {
+        $this->_attributes['secondLevelCacheConfiguration'] = $cacheConfig;
+    }
+
+    /**
+     * @since 2.5
+     *
+     * @return  \Doctrine\ORM\Cache\CacheConfiguration|null
+     */
+    public function getSecondLevelCacheConfiguration()
+    {
+        if ( ! isset($this->_attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
+            $this->_attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();
+        }
+
+        return isset($this->_attributes['secondLevelCacheConfiguration'])
+            ? $this->_attributes['secondLevelCacheConfiguration']
+            : null;
+    }
+
+    /**
+     * Returns query hints, which will be applied to every query in application
+     *
+     * @since 2.5
+     *
+     * @return array
+     */
+    public function getDefaultQueryHints()
+    {
+        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : array();
+    }
+
+    /**
+     * Sets array of query hints, which will be applied to every query in application
+     *
+     * @since 2.5
+     *
+     * @param array $defaultQueryHints
+     */
+    public function setDefaultQueryHints(array $defaultQueryHints)
+    {
+        $this->_attributes['defaultQueryHints'] = $defaultQueryHints;
+    }
+
+    /**
+     * Gets the value of a default query hint. If the hint name is not recognized, FALSE is returned.
+     *
+     * @since 2.5
+     *
+     * @param string $name The name of the hint.
+     *
+     * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
+     */
+    public function getDefaultQueryHint($name)
+    {
+        return isset($this->_attributes['defaultQueryHints'][$name])
+            ? $this->_attributes['defaultQueryHints'][$name]
+            : false;
+    }
+
+    /**
+     * Sets a default query hint. If the hint name is not recognized, it is silently ignored.
+     *
+     * @since 2.5
+     *
+     * @param string $name  The name of the hint.
+     * @param mixed  $value The value of the hint.
+     */
+    public function setDefaultQueryHint($name, $value)
+    {
+        $this->_attributes['defaultQueryHints'][$name] = $value;
     }
 }

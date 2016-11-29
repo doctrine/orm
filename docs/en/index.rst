@@ -79,6 +79,7 @@ Advanced Topics
 * :doc:`Best Practices <reference/best-practices>`
 * :doc:`Metadata Drivers <reference/metadata-drivers>`
 * :doc:`Batch Processing <reference/batch-processing>`
+* :doc:`Second Level Cache <reference/second-level-cache>`
 
 Tutorials
 ---------
@@ -89,6 +90,12 @@ Tutorials
 * :doc:`Ordered associations <tutorials/ordered-associations>`
 * :doc:`Pagination <tutorials/pagination>`
 * :doc:`Override Field/Association Mappings In Subclasses <tutorials/override-field-association-mappings-in-subclasses>`
+* :doc:`Embeddables <tutorials/embeddables>`
+
+Changelogs
+----------
+
+* :doc:`Migration to 2.5 <changelog/migration_2_5>`
 
 Cookbook
 --------

@@ -1,14 +1,20 @@
 <?php
-/**
- * Doctrine ORM
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to kontakt@beberlei.de so I can send you a copy immediately.
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Tools\Pagination;
@@ -50,31 +56,26 @@ class CountWalker extends TreeWalkerAdapter
             throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         }
 
-        $rootComponents = array();
-        foreach ($this->_getQueryComponents() as $dqlAlias => $qComp) {
-            $isParent = array_key_exists('parent', $qComp)
-                && $qComp['parent'] === null
-                && $qComp['nestingLevel'] == 0
-            ;
-            if ($isParent) {
-                $rootComponents[] = array($dqlAlias => $qComp);
-            }
-        }
-        if (count($rootComponents) > 1) {
+        $queryComponents = $this->_getQueryComponents();
+        // Get the root entity and alias from the AST fromClause
+        $from = $AST->fromClause->identificationVariableDeclarations;
+        
+        if (count($from) > 1) {
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
-        $root                = reset($rootComponents);
-        $parentName          = key($root);
-        $parent              = current($root);
-        $identifierFieldName = $parent['metadata']->getSingleIdentifierFieldName();
+       
+        $fromRoot            = reset($from);
+        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass           = $queryComponents[$rootAlias]['metadata'];
+        $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;
-        if (isset($parent['metadata']->associationMappings[$identifierFieldName])) {
+        if (isset($rootClass->associationMappings[$identifierFieldName])) {
             $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
         }
 
         $pathExpression = new PathExpression(
-            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
+            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias,
             $identifierFieldName
         );
         $pathExpression->type = $pathType;

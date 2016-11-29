@@ -2,16 +2,40 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Connection;
+
 /**
  * Mock class for DriverConnection.
  */
-class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
+class DriverConnectionMock implements Connection
 {
+    /**
+     * @var \Doctrine\DBAL\Driver\Statement
+     */
+    private $statementMock;
+
+    /**
+     * @return \Doctrine\DBAL\Driver\Statement
+     */
+    public function getStatementMock()
+    {
+        return $this->statementMock;
+    }
+
+    /**
+     * @param \Doctrine\DBAL\Driver\Statement $statementMock
+     */
+    public function setStatementMock($statementMock)
+    {
+        $this->statementMock = $statementMock;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function prepare($prepareString)
     {
+        return $this->statementMock ?: new StatementMock();
     }
 
     /**
@@ -19,7 +43,7 @@ class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
      */
     public function query()
     {
-        return new StatementMock;
+        return $this->statementMock ?: new StatementMock();
     }
 
     /**

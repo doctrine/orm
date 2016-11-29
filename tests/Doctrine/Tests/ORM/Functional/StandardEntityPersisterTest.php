@@ -8,14 +8,13 @@ use Doctrine\Tests\Models\ECommerce\ECommerceCart,
     Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests capabilities of the persister.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  */
-class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class StandardEntityPersisterTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -58,7 +57,7 @@ class StandardEntityPersisterTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $p = new ECommerceProduct;
         $p->addFeature($f1);
-        $p->addfeature($f2);
+        $p->addFeature($f2);
         $this->_em->persist($p);
 
         $this->_em->flush();

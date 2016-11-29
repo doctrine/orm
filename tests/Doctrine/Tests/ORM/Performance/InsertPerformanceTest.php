@@ -2,9 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * Description of InsertPerformanceTest
@@ -12,9 +11,10 @@ use Doctrine\Tests\Models\CMS\CmsUser;
  * @author robo
  * @group performance
  */
-class InsertPerformanceTest extends \Doctrine\Tests\OrmPerformanceTestCase
+class InsertPerformanceTest extends OrmPerformanceTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }

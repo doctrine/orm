@@ -5,13 +5,12 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToManySelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
     private $parent;
     private $firstChild;

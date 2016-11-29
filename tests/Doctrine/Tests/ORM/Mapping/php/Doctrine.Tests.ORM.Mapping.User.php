@@ -19,6 +19,7 @@ $metadata->mapField(array(
    'fieldName' => 'id',
    'type' => 'integer',
    'columnName' => 'id',
+   'options' => array('foo' => 'bar', 'unsigned' => false),
   ));
 $metadata->mapField(array(
    'fieldName' => 'name',
@@ -27,7 +28,7 @@ $metadata->mapField(array(
    'unique' => true,
    'nullable' => true,
    'columnName' => 'name',
-   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
+   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val'), 'fixed' => false),
   ));
 $metadata->mapField(array(
    'fieldName' => 'email',
@@ -111,11 +112,11 @@ $metadata->mapManyToMany(array(
    'orderBy' => NULL,
   ));
 $metadata->table['options'] = array(
-    'foo' => 'bar', 
+    'foo' => 'bar',
     'baz' => array('key' => 'val')
 );
 $metadata->table['uniqueConstraints'] = array(
-    'search_idx' => array('columns' => array('name', 'user_email')),
+    'search_idx' => array('columns' => array('name', 'user_email'), 'options' => array('where' => 'name IS NOT NULL')),
 );
 $metadata->table['indexes'] = array(
     'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))

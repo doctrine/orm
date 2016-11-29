@@ -1,0 +1,23 @@
+Doctrine\Tests\Models\DDC3711\DDC3711EntityA:
+  type: entity
+  table: ddc3711.entityA
+  id:
+    id1:
+        type: int
+    id2:
+        type: int
+  manyToMany:
+    entityB:
+      targetEntity: Doctrine\Tests\Models\DDC3711\DDC3711EntityB
+      joinTable:
+        name: link
+        joinColumns:
+          link_a_id1:
+              referencedColumnName: id1
+          link_a_id2:
+              referencedColumnName: id2
+        inverseJoinColumns:
+          link_b_id1:
+              referencedColumnName: id1
+          link_b_id2:
+              referencedColumnName: id2

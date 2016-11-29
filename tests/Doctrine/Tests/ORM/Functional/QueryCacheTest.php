@@ -2,17 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Common\Cache\ArrayCache;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * QueryCacheTest
  *
  * @author robo
  */
-class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class QueryCacheTest extends OrmFunctionalTestCase
 {
     /**
      * @var \ReflectionProperty
@@ -47,12 +49,12 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        $this->assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(3, $this->getCacheSize($cache));
+        $this->assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -107,16 +109,16 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = $this->createMock(Cache::class);
 
         $query->setQueryCacheDriver($cache);
 
-        $users = $query->getResult();
+        $cache
+            ->expects(self::once())
+            ->method('save')
+            ->with(self::isType('string'), self::isInstanceOf('Doctrine\ORM\Query\ParserResult'));
 
-        $data = $this->cacheDataReflection->getValue($cache);
-        $this->assertEquals(2, count($data));
-
-        $this->assertInstanceOf('Doctrine\ORM\Query\ParserResult', array_pop($data));
+        $query->getResult();
     }
 
     public function testQueryCache_HitDoesNotSaveParserResult()
@@ -125,18 +127,25 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
-        $sqlExecMock = $this->getMock('Doctrine\ORM\Query\Exec\AbstractSqlExecutor', array('execute'));
+        $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
+                            ->setMethods(array('execute'))
+                            ->getMock();
+
         $sqlExecMock->expects($this->once())
                     ->method('execute')
                     ->will($this->returnValue( 10 ));
 
-        $parserResultMock = $this->getMock('Doctrine\ORM\Query\ParserResult');
+        $parserResultMock = $this->getMockBuilder(ParserResult::class)
+                                 ->setMethods(array('getSqlExecutor'))
+                                 ->getMock();
         $parserResultMock->expects($this->once())
                          ->method('getSqlExecutor')
                          ->will($this->returnValue($sqlExecMock));
 
-        $cache = $this->getMock('Doctrine\Common\Cache\CacheProvider',
-                array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'));
+        $cache = $this->getMockBuilder(CacheProvider::class)
+                      ->setMethods(array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'))
+                      ->getMock();
+
         $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
         $cache->expects($this->at(1))
               ->method('doFetch')

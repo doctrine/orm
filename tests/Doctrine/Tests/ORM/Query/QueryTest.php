@@ -5,10 +5,15 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\Tests\Mocks\DriverConnectionMock;
+use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\OrmTestCase;
 
-class QueryTest extends \Doctrine\Tests\OrmTestCase
+class QueryTest extends OrmTestCase
 {
+    /** @var EntityManager */
     protected $_em = null;
 
     protected function setUp()
@@ -69,7 +74,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $cloned = clone $query;
 
-        $this->assertEquals($dql, $cloned->getDql());
+        $this->assertEquals($dql, $cloned->getDQL());
         $this->assertEquals(0, count($cloned->getParameters()));
         $this->assertFalse($cloned->getHint('foo'));
     }
@@ -87,7 +92,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
           ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
-          ->setDql('foo')
+          ->setDQL('foo')
           ->setFirstResult(10)
           ->setMaxResults(10);
 
@@ -176,5 +181,65 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsAddress',
             $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
         );
+    }
+
+    public function testDefaultQueryHints()
+    {
+        $config = $this->_em->getConfiguration();
+        $defaultHints = array(
+            'hint_name_1' => 'hint_value_1',
+            'hint_name_2' => 'hint_value_2',
+            'hint_name_3' => 'hint_value_3',
+        );
+
+        $config->setDefaultQueryHints($defaultHints);
+        $query = $this->_em->createQuery();
+        $this->assertSame($config->getDefaultQueryHints(), $query->getHints());
+        $this->_em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
+        $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
+        $q2 = clone $query;
+        $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
+    }
+
+    /**
+     * @group DDC-3714
+     */
+    public function testResultCacheCaching()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->_em->getConnection()->getWrappedConnection();
+        $stmt = new StatementArrayMock([
+            [
+                'id_0' => 1,
+            ]
+        ]);
+        $driverConnectionMock->setStatementMock($stmt);
+        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+            ->useQueryCache(true)
+            ->useResultCache(true, 60)
+            //let it cache
+            ->getResult();
+
+        $this->assertCount(1, $res);
+
+        $driverConnectionMock->setStatementMock(null);
+
+        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+            ->useQueryCache(true)
+            ->useResultCache(false)
+            ->getResult();
+        $this->assertCount(0, $res);
+    }
+
+    /**
+     * @group DDC-3741
+     */
+    public function testSetHydrationCacheProfileNull()
+    {
+        $query = $this->_em->createQuery();
+        $query->setHydrationCacheProfile(null);
+        $this->assertNull($query->getHydrationCacheProfile());
     }
 }

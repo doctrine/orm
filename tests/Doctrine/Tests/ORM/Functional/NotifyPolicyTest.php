@@ -1,20 +1,21 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Collections\ArrayCollection,
-    Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
  *
  * @author robo
  */
-class NotifyPolicyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class NotifyPolicyTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(

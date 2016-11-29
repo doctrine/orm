@@ -15,11 +15,11 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Types\Type;
 
@@ -37,14 +37,14 @@ use Doctrine\DBAL\Types\Type;
 class SchemaValidator
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
@@ -58,7 +58,6 @@ class SchemaValidator
      * 1. Check if a relation with "mappedBy" is actually connected to that specified field.
      * 2. Check if "mappedBy" and "inversedBy" are consistent to each other.
      * 3. Check if "referencedColumnName" attributes are really pointing to primary key columns.
-     * 4. Check if there are public properties that might cause problems with lazy loading.
      *
      * @return array
      */
@@ -98,6 +97,7 @@ class SchemaValidator
         foreach ($class->associationMappings as $fieldName => $assoc) {
             if (!class_exists($assoc['targetEntity']) || $cmf->isTransient($assoc['targetEntity'])) {
                 $ce[] = "The target entity '" . $assoc['targetEntity'] . "' specified on " . $class->name . '#' . $fieldName . ' is unknown or not an entity.';
+
                 return $ce;
             }
 
@@ -124,7 +124,7 @@ class SchemaValidator
                     $ce[] = "The field " . $class->name . "#" . $fieldName . " is on the inverse side of a ".
                             "bi-directional relationship, but the specified mappedBy association on the target-entity ".
                             $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " does not contain the required ".
-                            "'inversedBy=".$fieldName."' attribute.";
+                            "'inversedBy=\"" . $fieldName . "\"' attribute.";
                 } elseif ($targetMetadata->associationMappings[$assoc['mappedBy']]['inversedBy'] != $fieldName) {
                     $ce[] = "The mappings " . $class->name . "#" . $fieldName . " and " .
                             $assoc['targetEntity'] . "#" . $assoc['mappedBy'] . " are ".
@@ -155,13 +155,13 @@ class SchemaValidator
                 // Verify inverse side/owning side match each other
                 if (array_key_exists($assoc['inversedBy'], $targetMetadata->associationMappings)) {
                     $targetAssoc = $targetMetadata->associationMappings[$assoc['inversedBy']];
-                    if ($assoc['type'] == ClassMetadataInfo::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_ONE){
+                    if ($assoc['type'] == ClassMetadataInfo::ONE_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_ONE) {
                         $ce[] = "If association " . $class->name . "#" . $fieldName . " is one-to-one, then the inversed " .
                                 "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-one as well.";
-                    } elseif ($assoc['type'] == ClassMetadataInfo::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_MANY){
+                    } elseif ($assoc['type'] == ClassMetadataInfo::MANY_TO_ONE && $targetAssoc['type'] !== ClassMetadataInfo::ONE_TO_MANY) {
                         $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-one, then the inversed " .
                                 "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be one-to-many.";
-                    } elseif ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadataInfo::MANY_TO_MANY){
+                    } elseif ($assoc['type'] == ClassMetadataInfo::MANY_TO_MANY && $targetAssoc['type'] !== ClassMetadataInfo::MANY_TO_MANY) {
                         $ce[] = "If association " . $class->name . "#" . $fieldName . " is many-to-many, then the inversed " .
                                 "side " . $targetMetadata->name . "#" . $assoc['inversedBy'] . " has to be many-to-many as well.";
                     }
@@ -219,7 +219,7 @@ class SchemaValidator
                         }
 
                         $ce[] = "The join columns of the association '" . $assoc['fieldName'] . "' " .
-                                "have to match to ALL identifier columns of the target entity '". $class->name . "', " .
+                                "have to match to ALL identifier columns of the target entity '". $targetMetadata->name . "', " .
                                 "however '" . implode(", ", array_diff($targetMetadata->getIdentifierColumnNames(), $ids)) .
                                 "' are missing.";
                     }
@@ -228,26 +228,23 @@ class SchemaValidator
 
             if (isset($assoc['orderBy']) && $assoc['orderBy'] !== null) {
                 foreach ($assoc['orderBy'] as $orderField => $orientation) {
-                    if (!$targetMetadata->hasField($orderField)) {
+                    if (!$targetMetadata->hasField($orderField) && !$targetMetadata->hasAssociation($orderField)) {
                         $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a foreign field " .
-                                $orderField . " that is not a field on the target entity " . $targetMetadata->name;
+                                $orderField . " that is not a field on the target entity " . $targetMetadata->name . ".";
+                        continue;
+                    }
+                    if ($targetMetadata->isCollectionValuedAssociation($orderField)) {
+                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a field " .
+                                $orderField . " on " . $targetMetadata->name . " that is a collection-valued association.";
+                        continue;
+                    }
+                    if ($targetMetadata->isAssociationInverseSide($orderField)) {
+                        $ce[] = "The association " . $class->name."#".$fieldName." is ordered by a field " .
+                                $orderField . " on " . $targetMetadata->name . " that is the inverse side of an association.";
+                        continue;
                     }
                 }
             }
-        }
-
-        foreach ($class->reflClass->getProperties(\ReflectionProperty::IS_PUBLIC) as $publicAttr) {
-            if ($publicAttr->isStatic()) {
-                continue;
-            }
-
-            if ( ! isset($class->fieldMappings[$publicAttr->getName()]) &&
-                ! isset($class->associationMappings[$publicAttr->getName()])) {
-                continue;
-            }
-
-            $ce[] = "Field '".$publicAttr->getName()."' in class '".$class->name."' must be private ".
-                    "or protected. Public fields may break lazy-loading.";
         }
 
         foreach ($class->subClasses as $subClass) {

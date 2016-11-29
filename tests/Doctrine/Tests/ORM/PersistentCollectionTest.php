@@ -5,8 +5,10 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -21,15 +23,16 @@ class PersistentCollectionTest extends OrmTestCase
      */
     protected $collection;
 
-    private $_connectionMock;
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     private $_emMock;
 
     protected function setUp()
     {
         parent::setUp();
-        // SUT
-        $this->_connectionMock = new ConnectionMock(array(), new \Doctrine\Tests\Mocks\DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+
+        $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
     }
 
     /**
@@ -79,5 +82,69 @@ class PersistentCollectionTest extends OrmTestCase
         $this->setUpPersistentCollection();
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
+    }
+
+    /**
+     * @group DDC-3382
+     */
+    public function testNonObjects()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->assertEmpty($this->collection);
+
+        $this->collection->add("dummy");
+
+        $this->assertNotEmpty($this->collection);
+
+        $product = new ECommerceProduct();
+
+        $this->collection->set(1, $product);
+        $this->collection->set(2, "dummy");
+        $this->collection->set(3, null);
+
+        $this->assertSame($product, $this->collection->get(1));
+        $this->assertSame("dummy", $this->collection->get(2));
+        $this->assertSame(null, $this->collection->get(3));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testRemovingElementsAlsoRemovesKeys()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
+
+        $this->collection->removeElement('dummy');
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoClearKeys()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->collection->clear();
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoResetKeyPositions()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->collection->removeElement('dummy');
+        $this->collection->clear();
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
     }
 }

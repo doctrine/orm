@@ -1,17 +1,17 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests basic operations on entities with default values.
  *
  * @author robo
  */
-class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
             $this->_schemaTool->createSchema(array(
@@ -23,6 +23,9 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    /**
+     * @group non-cacheable
+     */
     public function testSimpleDetachMerge() {
         $user = new DefaultValueUser;
         $user->name = 'romanb';

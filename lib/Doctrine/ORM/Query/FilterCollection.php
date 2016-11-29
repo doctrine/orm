@@ -19,8 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Collection class for all the query filters.
@@ -58,7 +57,7 @@ class FilterCollection
     /**
      * Instances of enabled filters.
      *
-     * @var array
+     * @var \Doctrine\ORM\Query\Filter\SQLFilter[]
      */
     private $enabledFilters = array();
 
@@ -75,9 +74,9 @@ class FilterCollection
     /**
      * Constructor.
      *
-     * @param EntityManager $em
+     * @param EntityManagerInterface $em
      */
-    public function __construct(EntityManager $em)
+    public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
         $this->config = $em->getConfiguration();
@@ -86,7 +85,7 @@ class FilterCollection
     /**
      * Gets all the enabled filters.
      *
-     * @return array The enabled filters.
+     * @return \Doctrine\ORM\Query\Filter\SQLFilter[] The enabled filters.
      */
     public function getEnabledFilters()
     {

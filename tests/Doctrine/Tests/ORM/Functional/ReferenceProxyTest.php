@@ -2,24 +2,25 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Proxy\ProxyClassGenerator;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\Models\Company\CompanyAuction;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests the generation of a proxy object for lazy loading.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ReferenceProxyTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         $this->useModelSet('ecommerce');
+        $this->useModelSet('company');
         parent::setUp();
         $this->_factory = new ProxyFactory(
                 $this->_em,
@@ -231,9 +232,9 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $entity ECommerceProduct */
         $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
-        $className = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+        $className = ClassUtils::getClass($entity);
 
         $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $entity);
         $this->assertFalse($entity->__isInitialized());

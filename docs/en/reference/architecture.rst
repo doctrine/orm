@@ -12,13 +12,13 @@ As the term ORM already hints at, Doctrine 2 aims to simplify the
 translation between database rows and the PHP object model. The
 primary use case for Doctrine are therefore applications that
 utilize the Object-Oriented Programming Paradigm. For applications
-that not primarily work with objects Doctrine 2 is not suited very
+that do not primarily work with objects Doctrine 2 is not suited very
 well.
 
 Requirements
 ------------
 
-Doctrine 2 requires a minimum of PHP 5.3.0. For greatly improved
+Doctrine 2 requires a minimum of PHP 5.4. For greatly improved
 performance it is also recommended that you use APC with PHP.
 
 Doctrine 2 Packages
@@ -83,7 +83,7 @@ be any regular PHP class observing the following restrictions:
 -  An entity class must not implement ``__wakeup`` or
    :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
    Also consider implementing
-   `Serializable <http://de3.php.net/manual/en/class.serializable.php>`_
+   `Serializable <http://php.net/manual/en/class.serializable.php>`_
    instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped

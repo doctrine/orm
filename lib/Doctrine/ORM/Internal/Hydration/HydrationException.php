@@ -38,7 +38,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
     public static function parentObjectOfRelationNotFound($alias, $parentAlias)
     {
         return new self("The parent object of entity result with alias '$alias' was not found."
-                . " The parent alias is '$parentAlias'.");
+            . " The parent alias is '$parentAlias'.");
     }
 
     /**
@@ -86,6 +86,20 @@ class HydrationException extends \Doctrine\ORM\ORMException
         return new self(sprintf(
             'The meta mapping for the discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
             $discrColumnName, $entityName, $dqlAlias
+        ));
+    }
+
+    /**
+     * @param string $discrValue
+     * @param array  $discrMap
+     *
+     * @return HydrationException
+     */
+    public static function invalidDiscriminatorValue($discrValue, $discrMap)
+    {
+        return new self(sprintf(
+            'The discriminator value "%s" is invalid. It must be one of "%s".',
+            $discrValue, implode('", "', $discrMap)
         ));
     }
 }

@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Cache\Cache as CacheDriver;
 use Exception;
 
 /**
@@ -70,7 +71,7 @@ class ORMException extends Exception
             "Entity of type " . get_class($entity) . " has identity through a foreign entity " . get_class($relatedEntity) . ", " .
             "however this entity has no identity itself. You have to call EntityManager#persist() on the related entity " .
             "and make sure that an identifier was generated before trying to persist '" . get_class($entity) . "'. In case " .
-            "of Post Insert ID Generation (such as MySQL Auto-Increment or PostgreSQL SERIAL) this means you have to call " .
+            "of Post Insert ID Generation (such as MySQL Auto-Increment) this means you have to call " .
             "EntityManager#flush() between both persist operations."
         );
     }
@@ -98,6 +99,20 @@ class ORMException extends Exception
     public static function unrecognizedField($field)
     {
         return new self("Unrecognized field: $field");
+    }
+
+    /**
+     *
+     * @param string $class
+     * @param string $association
+     * @param string $given
+     * @param string $expected
+     *
+     * @return \Doctrine\ORM\ORMInvalidArgumentException
+     */
+    public static function unexpectedAssociationValue($class, $association, $given, $expected)
+    {
+        return new self(sprintf('Found entity of type %s on association %s#%s, but expecting %s', $given, $class, $association, $expected));
     }
 
     /**
@@ -174,6 +189,21 @@ class ORMException extends Exception
 
     /**
      * @param string $entityName
+     * @param string $fieldName
+     * @param string $method
+     *
+     * @return ORMException
+     */
+    public static function invalidMagicCall($entityName, $fieldName, $method)
+    {
+        return new self(
+            "Entity '".$entityName."' has no field '".$fieldName."'. ".
+            "You can therefore not call '".$method."' on the entities' repository"
+        );
+    }
+
+    /**
+     * @param string $entityName
      * @param string $associationFieldName
      *
      * @return ORMException
@@ -219,6 +249,26 @@ class ORMException extends Exception
     }
 
     /**
+     * @param \Doctrine\Common\Cache\Cache $cache
+     *
+     * @return ORMException
+     */
+    public static function queryCacheUsesNonPersistentCache(CacheDriver $cache)
+    {
+        return new self('Query Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
+    }
+
+    /**
+     * @param \Doctrine\Common\Cache\Cache $cache
+     *
+     * @return ORMException
+     */
+    public static function metadataCacheUsesNonPersistentCache(CacheDriver $cache)
+    {
+        return new self('Metadata Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
+    }
+
+    /**
      * @return ORMException
      */
     public static function proxyClassesAlwaysRegenerating()
@@ -260,6 +310,20 @@ class ORMException extends Exception
     }
 
     /**
+     * @param string $className
+     * @param string[] $fieldNames
+     *
+     * @return ORMException
+     */
+    public static function unrecognizedIdentifierFields($className, $fieldNames)
+    {
+        return new self(
+            "Unrecognized identifier fields: '" . implode("', '", $fieldNames) . "' " .
+            "are not present on class '" . $className . "'."
+        );
+    }
+
+    /**
      * @param string $functionName
      *
      * @return ORMException
@@ -267,5 +331,13 @@ class ORMException extends Exception
     public static function overwriteInternalDQLFunctionNotAllowed($functionName)
     {
         return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");
+    }
+
+    /**
+     * @return ORMException
+     */
+    public static function cantUseInOperatorOnCompositeKeys()
+    {
+        return new self("Can't use IN operator on entities that have composite keys.");
     }
 }

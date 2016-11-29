@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 /**
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="cms_users")
+ * @Table(name="cms_users",options={"engine"="MyISAM","foo"={"bar"="baz"}})
  */
 class User
 {
@@ -23,7 +23,12 @@ class User
     public $email;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @Column(type="integer", options={"unsigned"=true})
+     */
+    public $age;
+
+    /**
+     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\Export\Address", inversedBy="user", cascade={"persist"}, orphanRemoval=true, fetch="EAGER")
      * @JoinColumn(name="address_id", onDelete="CASCADE")
      */
     public $address;
@@ -41,14 +46,13 @@ class User
     public $phonenumbers;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group", cascade={"all"})
+     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Group", cascade={"all"}, fetch="EXTRA_LAZY")
      * @JoinTable(name="cms_users_groups",
      *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
      *    inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
      * )
      */
     public $groups;
-
 
     /**
      * @PrePersist

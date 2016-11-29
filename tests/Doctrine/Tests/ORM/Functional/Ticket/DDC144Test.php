@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC144Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
@@ -43,7 +43,7 @@ class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC144FlowElement {
     /**
      * @Id @Column(type="integer") @GeneratedValue
-     * @var integer
+     * @var int
      */
     public $id;
     /** @Column */
@@ -60,5 +60,3 @@ class DDC144Operand extends DDC144Expression {
     public $operandProperty;
     function method() {}
 }
-
-

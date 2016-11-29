@@ -6,10 +6,9 @@ use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-require_once __DIR__ . '/../../TestInit.php';
-
-class TypeValueSqlTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class TypeValueSqlTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {

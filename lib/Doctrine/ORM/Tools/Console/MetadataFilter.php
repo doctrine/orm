@@ -76,7 +76,19 @@ class MetadataFilter extends \FilterIterator implements \Countable
         $metadata = $it->current();
 
         foreach ($this->filter as $filter) {
-            if (strpos($metadata->name, $filter) !== false) {
+            $pregResult = preg_match("/$filter/", $metadata->name);
+
+            if ($pregResult === false) {
+                throw new \RuntimeException(
+                    sprintf("Error while evaluating regex '/%s/'.", $filter)
+                );
+            }
+
+            if ($pregResult === 0) {
+                return false;
+            }
+
+            if ($pregResult) {
                 return true;
             }
         }

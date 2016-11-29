@@ -74,6 +74,8 @@ of several common elements:
       type: entity
       repositoryClass: Doctrine\Tests\ORM\Mapping\UserRepository
       table: cms_users
+      schema: schema_name # The schema the table lies in, for platforms that support schemas (Optional, >= 2.5)
+      readOnly: true
       indexes:
         name_index:
           columns: [ name ]
@@ -86,12 +88,28 @@ of several common elements:
         name:
           type: string
           length: 50
+        email:
+          type: string
+          length: 32
+          column: user_email
+          unique: true
+          options:
+            fixed: true
+            comment: User's email address
+        loginCount:
+          type: integer
+          column: login_count
+          nullable: false
+          options:
+            unsigned: true
+            default: 0
       oneToOne:
         address:
           targetEntity: Address
           joinColumn:
             name: address_id
             referencedColumnName: id
+            onDelete: CASCADE
       oneToMany:
         phonenumbers:
           targetEntity: Phonenumber

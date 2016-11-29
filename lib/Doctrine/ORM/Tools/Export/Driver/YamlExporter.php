@@ -85,6 +85,10 @@ class YamlExporter extends AbstractExporter
             $array['uniqueConstraints'] = $metadata->table['uniqueConstraints'];
         }
 
+        if (isset($metadata->table['options'])) {
+            $array['options'] = $metadata->table['options'];
+        }
+
         $fieldMappings = $metadata->fieldMappings;
 
         $ids = array();
@@ -150,12 +154,16 @@ class YamlExporter extends AbstractExporter
                 'cascade'     => $cascade,
             );
 
+            if (isset($associationMapping['fetch'])) {
+                $associationMappingArray['fetch'] = $this->_getFetchModeString($associationMapping['fetch']);
+            }
+
             if (isset($mapping['id']) && $mapping['id'] === true) {
                 $array['id'][$name]['associationKey'] = true;
             }
 
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
-                $joinColumns = $associationMapping['joinColumns'];
+                $joinColumns = $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [];
                 $newJoinColumns = array();
 
                 foreach ($joinColumns as $joinColumn) {
@@ -206,6 +214,22 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
-        return Yaml::dump(array($metadata->name => $array), 10);
+        return $this->yamlDump(array($metadata->name => $array), 10);
+    }
+
+    /**
+     * Dumps a PHP array to a YAML string.
+     *
+     * The yamlDump method, when supplied with an array, will do its best
+     * to convert the array into friendly YAML.
+     *
+     * @param array   $array  PHP array
+     * @param integer $inline [optional] The level where you switch to inline YAML
+     *
+     * @return string A YAML string representing the original PHP array
+     */
+    protected function yamlDump($array, $inline = 2)
+    {
+        return Yaml::dump($array, $inline);
     }
 }

@@ -3,15 +3,15 @@
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\AssignedGenerator;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\ORM\ORMException;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * AssignedGeneratorTest
  *
  * @author robo
  */
-class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class AssignedGeneratorTest extends OrmTestCase
 {
     private $_em;
     private $_assignedGen;
@@ -28,13 +28,13 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
             $entity = new AssignedSingleIdEntity;
             $this->_assignedGen->generate($this->_em, $entity);
             $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (\Doctrine\ORM\ORMException $expected) {}
+        } catch (ORMException $expected) {}
 
         try {
             $entity = new AssignedCompositeIdEntity;
             $this->_assignedGen->generate($this->_em, $entity);
             $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (\Doctrine\ORM\ORMException $expected) {}
+        } catch (ORMException $expected) {}
     }
 
     public function testCorrectIdGeneration()

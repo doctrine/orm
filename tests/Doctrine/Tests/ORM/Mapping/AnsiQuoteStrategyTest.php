@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmTestCase;
@@ -39,7 +40,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
     private function createClassMetadata($className)
     {
         $class = new ClassMetadata($className);
-        $class->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $class->initializeReflection(new RuntimeReflectionService());
 
         return $class;
     }
@@ -95,7 +96,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testColumnAlias()
     {
-        $this->assertEquals('columnName1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
+        $this->assertEquals('columnName_1', $this->strategy->getColumnAlias('columnName', 1, $this->platform));
     }
 
     public function testJoinColumnName()

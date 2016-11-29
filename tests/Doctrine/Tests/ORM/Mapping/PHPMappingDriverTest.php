@@ -3,10 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver,
-    Doctrine\ORM\Tools\Export\ClassMetadataExporter;
-
-require_once __DIR__ . '/../../TestInit.php';
+    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -34,5 +31,18 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
         $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+    }
+
+    /**
+     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\PHPSLC#foo" not configured as part of the second-level cache.
+     */
+    public function testFailingSecondLevelCacheAssociation()
+    {
+        $className = 'Doctrine\Tests\ORM\Mapping\PHPSLC';
+        $mappingDriver = $this->_loadDriver();
+
+        $class = new ClassMetadata($className);
+        $mappingDriver->loadMetadataForClass($className, $class);
     }
 }

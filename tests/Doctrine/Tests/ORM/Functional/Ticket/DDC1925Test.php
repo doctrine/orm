@@ -4,8 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1925
  * @group DDC-1210
@@ -44,7 +42,7 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1925Product
 {
     /**
-     * @var integer $id
+     * @var int $id
      *
      * @Column(name="id", type="integer")
      * @Id
@@ -78,7 +76,7 @@ class DDC1925Product
     }
 
     /**
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -135,7 +133,7 @@ class DDC1925Product
 class DDC1925User
 {
     /**
-     * @var integer
+     * @var int
      *
      * @Column(name="id", type="integer")
      * @Id
@@ -153,7 +151,7 @@ class DDC1925User
     /**
      * Get id
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {

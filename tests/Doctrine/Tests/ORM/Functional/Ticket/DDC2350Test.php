@@ -6,6 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2350
+ * @group non-cacheable
  */
 class DDC2350Test extends OrmFunctionalTestCase
 {
@@ -37,11 +38,11 @@ class DDC2350Test extends OrmFunctionalTestCase
         $cnt = $this->getCurrentQueryCount();
         $user = $this->_em->find(__NAMESPACE__ . '\DDC2350User', $user->id);
 
-        $this->assertEquals($cnt + 2, $this->getCurrentQueryCount());
+        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
 
         $this->assertEquals(2, count($user->reportedBugs));
 
-        $this->assertEquals($cnt + 2, $this->getCurrentQueryCount());
+        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
     }
 }
 

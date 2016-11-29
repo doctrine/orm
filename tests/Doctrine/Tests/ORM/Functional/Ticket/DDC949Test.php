@@ -2,12 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\Generic\BooleanModel;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
-class DDC949Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC949Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {

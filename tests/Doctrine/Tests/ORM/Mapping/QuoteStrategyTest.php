@@ -2,16 +2,15 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
-use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-1845
  */
-class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
+class QuoteStrategyTest extends OrmTestCase
 {
 
     /**
@@ -39,7 +38,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     private function createClassMetadata($className)
     {
         $cm = new ClassMetadata($className);
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         return $cm;
     }
@@ -75,7 +74,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
 
         $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setPrimaryTable(array('name'=>'cms_user'));
         $this->assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
     }
@@ -134,10 +133,10 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     public function testColumnAlias()
     {
         $i = 0;
-        $this->assertEquals('columnName0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
-        $this->assertEquals('column_name1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
-        $this->assertEquals('COLUMN_NAME2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
-        $this->assertEquals('COLUMNNAME3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
+        $this->assertEquals('columnName_0', $this->strategy->getColumnAlias('columnName', $i++, $this->platform));
+        $this->assertEquals('column_name_1', $this->strategy->getColumnAlias('column_name', $i++, $this->platform));
+        $this->assertEquals('COLUMN_NAME_2', $this->strategy->getColumnAlias('COLUMN_NAME', $i++, $this->platform));
+        $this->assertEquals('COLUMNNAME_3', $this->strategy->getColumnAlias('COLUMN-NAME-', $i++, $this->platform));
     }
 
     public function testQuoteIdentifierJoinColumns()
@@ -191,7 +190,7 @@ class QuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-class MyQuoteStrategy extends \Doctrine\ORM\Mapping\DefaultQuoteStrategy
+class MyQuoteStrategy extends DefaultQuoteStrategy
 {
 
 }

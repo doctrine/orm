@@ -30,85 +30,89 @@ namespace Doctrine\ORM\Query;
 class Lexer extends \Doctrine\Common\Lexer
 {
     // All tokens that are not valid identifiers must be < 100
-    const T_NONE                = 1;
-    const T_INTEGER             = 2;
-    const T_STRING              = 3;
-    const T_INPUT_PARAMETER     = 4;
-    const T_FLOAT               = 5;
-    const T_CLOSE_PARENTHESIS   = 6;
-    const T_OPEN_PARENTHESIS    = 7;
-    const T_COMMA               = 8;
-    const T_DIVIDE              = 9;
-    const T_DOT                 = 10;
-    const T_EQUALS              = 11;
-    const T_GREATER_THAN        = 12;
-    const T_LOWER_THAN          = 13;
-    const T_MINUS               = 14;
-    const T_MULTIPLY            = 15;
-    const T_NEGATE              = 16;
-    const T_PLUS                = 17;
-    const T_OPEN_CURLY_BRACE    = 18;
-    const T_CLOSE_CURLY_BRACE   = 19;
+    const T_NONE                 = 1;
+    const T_INTEGER              = 2;
+    const T_STRING               = 3;
+    const T_INPUT_PARAMETER      = 4;
+    const T_FLOAT                = 5;
+    const T_CLOSE_PARENTHESIS    = 6;
+    const T_OPEN_PARENTHESIS     = 7;
+    const T_COMMA                = 8;
+    const T_DIVIDE               = 9;
+    const T_DOT                  = 10;
+    const T_EQUALS               = 11;
+    const T_GREATER_THAN         = 12;
+    const T_LOWER_THAN           = 13;
+    const T_MINUS                = 14;
+    const T_MULTIPLY             = 15;
+    const T_NEGATE               = 16;
+    const T_PLUS                 = 17;
+    const T_OPEN_CURLY_BRACE     = 18;
+    const T_CLOSE_CURLY_BRACE    = 19;
 
-    // All tokens that are also identifiers should be >= 100
-    const T_IDENTIFIER          = 100;
-    const T_ALL                 = 101;
-    const T_AND                 = 102;
-    const T_ANY                 = 103;
-    const T_AS                  = 104;
-    const T_ASC                 = 105;
-    const T_AVG                 = 106;
-    const T_BETWEEN             = 107;
-    const T_BOTH                = 108;
-    const T_BY                  = 109;
-    const T_CASE                = 110;
-    const T_COALESCE            = 111;
-    const T_COUNT               = 112;
-    const T_DELETE              = 113;
-    const T_DESC                = 114;
-    const T_DISTINCT            = 115;
-    const T_ELSE                = 116;
-    const T_EMPTY               = 117;
-    const T_END                 = 118;
-    const T_ESCAPE              = 119;
-    const T_EXISTS              = 120;
-    const T_FALSE               = 121;
-    const T_FROM                = 122;
-    const T_GROUP               = 123;
-    const T_HAVING              = 124;
-    const T_HIDDEN              = 125;
-    const T_IN                  = 126;
-    const T_INDEX               = 127;
-    const T_INNER               = 128;
-    const T_INSTANCE            = 129;
-    const T_IS                  = 130;
-    const T_JOIN                = 131;
-    const T_LEADING             = 132;
-    const T_LEFT                = 133;
-    const T_LIKE                = 134;
-    const T_MAX                 = 135;
-    const T_MEMBER              = 136;
-    const T_MIN                 = 137;
-    const T_NOT                 = 138;
-    const T_NULL                = 139;
-    const T_NULLIF              = 140;
-    const T_OF                  = 141;
-    const T_OR                  = 142;
-    const T_ORDER               = 143;
-    const T_OUTER               = 144;
-    const T_SELECT              = 145;
-    const T_SET                 = 146;
-    const T_SOME                = 147;
-    const T_SUM                 = 148;
-    const T_THEN                = 149;
-    const T_TRAILING            = 150;
-    const T_TRUE                = 151;
-    const T_UPDATE              = 152;
-    const T_WHEN                = 153;
-    const T_WHERE               = 154;
-    const T_WITH                = 155;
-    const T_PARTIAL             = 156;
-    const T_NEW                 = 157;
+    // All tokens that are identifiers or keywords that could be considered as identifiers should be >= 100
+    const T_ALIASED_NAME         = 100;
+    const T_FULLY_QUALIFIED_NAME = 101;
+    const T_IDENTIFIER           = 102;
+
+    // All keyword tokens should be >= 200
+    const T_ALL                  = 200;
+    const T_AND                  = 201;
+    const T_ANY                  = 202;
+    const T_AS                   = 203;
+    const T_ASC                  = 204;
+    const T_AVG                  = 205;
+    const T_BETWEEN              = 206;
+    const T_BOTH                 = 207;
+    const T_BY                   = 208;
+    const T_CASE                 = 209;
+    const T_COALESCE             = 210;
+    const T_COUNT                = 211;
+    const T_DELETE               = 212;
+    const T_DESC                 = 213;
+    const T_DISTINCT             = 214;
+    const T_ELSE                 = 215;
+    const T_EMPTY                = 216;
+    const T_END                  = 217;
+    const T_ESCAPE               = 218;
+    const T_EXISTS               = 219;
+    const T_FALSE                = 220;
+    const T_FROM                 = 221;
+    const T_GROUP                = 222;
+    const T_HAVING               = 223;
+    const T_HIDDEN               = 224;
+    const T_IN                   = 225;
+    const T_INDEX                = 226;
+    const T_INNER                = 227;
+    const T_INSTANCE             = 228;
+    const T_IS                   = 229;
+    const T_JOIN                 = 230;
+    const T_LEADING              = 231;
+    const T_LEFT                 = 232;
+    const T_LIKE                 = 233;
+    const T_MAX                  = 234;
+    const T_MEMBER               = 235;
+    const T_MIN                  = 236;
+    const T_NEW                  = 237;
+    const T_NOT                  = 238;
+    const T_NULL                 = 239;
+    const T_NULLIF               = 240;
+    const T_OF                   = 241;
+    const T_OR                   = 242;
+    const T_ORDER                = 243;
+    const T_OUTER                = 244;
+    const T_PARTIAL              = 245;
+    const T_SELECT               = 246;
+    const T_SET                  = 247;
+    const T_SOME                 = 248;
+    const T_SUM                  = 249;
+    const T_THEN                 = 250;
+    const T_TRAILING             = 251;
+    const T_TRUE                 = 252;
+    const T_UPDATE               = 253;
+    const T_WHEN                 = 254;
+    const T_WHERE                = 255;
+    const T_WITH                 = 256;
 
     /**
      * Creates a new query scanner object.
@@ -121,20 +125,21 @@ class Lexer extends \Doctrine\Common\Lexer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getCatchablePatterns()
     {
         return array(
-            '[a-z_\\\][a-z0-9_\:\\\]*[a-z0-9_]{1}',
-            '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?',
-            "'(?:[^']|'')*'",
-            '\?[0-9]*|:[a-z_][a-z0-9_]*'
+            '[a-z_][a-z0-9_]*\:[a-z_][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // aliased name
+            '[a-z_\\\][a-z0-9_]*(?:\\\[a-z_][a-z0-9_]*)*', // identifier or qualified name
+            '(?:[0-9]+(?:[\.][0-9]+)*)(?:e[+-]?[0-9]+)?', // numbers
+            "'(?:[^']|'')*'", // quoted strings
+            '\?[0-9]*|:[a-z_][a-z0-9_]*' // parameters
         );
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getNonCatchablePatterns()
     {
@@ -142,7 +147,7 @@ class Lexer extends \Doctrine\Common\Lexer
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     protected function getType(&$value)
     {
@@ -163,8 +168,8 @@ class Lexer extends \Doctrine\Common\Lexer
 
                 return self::T_STRING;
 
-            // Recognize identifiers
-            case (ctype_alpha($value[0]) || $value[0] === '_'):
+            // Recognize identifiers, aliased or qualified names
+            case (ctype_alpha($value[0]) || $value[0] === '_' || $value[0] === '\\'):
                 $name = 'Doctrine\ORM\Query\Lexer::T_' . strtoupper($value);
 
                 if (defined($name)) {
@@ -173,6 +178,14 @@ class Lexer extends \Doctrine\Common\Lexer
                     if ($type > 100) {
                         return $type;
                     }
+                }
+
+                if (strpos($value, ':') !== false) {
+                    return self::T_ALIASED_NAME;
+                }
+
+                if (strpos($value, '\\') !== false) {
+                    return self::T_FULLY_QUALIFIED_NAME;
                 }
 
                 return self::T_IDENTIFIER;

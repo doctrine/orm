@@ -2,17 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\Common\EventManager;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\Tests\TestUtil;
 use Doctrine\DBAL\LockMode;
 use DateTime;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
-class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OptimisticTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -34,8 +29,10 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedChildInsertSetsInitialVersionValue()
     {
         $test = new OptimisticJoinedChild();
+
         $test->name = 'child';
         $test->whatever = 'whatever';
+
         $this->_em->persist($test);
         $this->_em->flush();
 
@@ -50,7 +47,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedChildFailureThrowsException(OptimisticJoinedChild $child)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild t WHERE t.id = :id');
+
         $q->setParameter('id', $child->id);
+
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -60,6 +59,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->whatever = 'ok';
+
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
@@ -70,7 +70,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedParentInsertSetsInitialVersionValue()
     {
         $test = new OptimisticJoinedParent();
+
         $test->name = 'parent';
+
         $this->_em->persist($test);
         $this->_em->flush();
 
@@ -85,7 +87,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinedParentFailureThrowsException(OptimisticJoinedParent $parent)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent t WHERE t.id = :id');
+
         $q->setParameter('id', $parent->id);
+
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -95,6 +99,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
+
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
@@ -108,6 +113,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         for ($i = 0; $i < 5; $i++) {
             $test->name = 'test' . $i;
+
             $this->_em->persist($test);
             $this->_em->flush();
 
@@ -119,7 +125,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testStandardInsertSetsInitialVersionValue()
     {
         $test = new OptimisticStandard();
+
         $test->name = 'test';
+
         $this->_em->persist($test);
         $this->_em->flush();
 
@@ -135,7 +143,9 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testStandardFailureThrowsException(OptimisticStandard $entity)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard t WHERE t.id = :id');
+
         $q->setParameter('id', $entity->id);
+
         $test = $q->getSingleResult();
 
         // Manually update/increment the version so we can try and save the same
@@ -145,6 +155,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
+
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
@@ -152,9 +163,25 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
     }
 
+    public function testLockWorksWithProxy()
+    {
+        $test = new OptimisticStandard();
+
+        $test->name = 'test';
+
+        $this->_em->persist($test);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $proxy = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard', $test->id);
+
+        $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
+    }
+
     public function testOptimisticTimestampSetsDefaultValue()
     {
         $test = new OptimisticTimestamp();
+
         $test->name = 'Testing';
 
         $this->assertNull($test->version, "Pre-Condition");
@@ -173,18 +200,22 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testOptimisticTimestampFailureThrowsException(OptimisticTimestamp $entity)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
+
         $q->setParameter('id', $entity->id);
+
         $test = $q->getSingleResult();
 
         $this->assertInstanceOf('DateTime', $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
+
         $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));
 
         // Try and update the record and it should throw an exception
         $caughtException = null;
         $test->name = 'Testing again';
+
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
@@ -202,15 +233,19 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testOptimisticTimestampLockFailureThrowsException(OptimisticTimestamp $entity)
     {
         $q = $this->_em->createQuery('SELECT t FROM Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp t WHERE t.id = :id');
+
         $q->setParameter('id', $entity->id);
+
         $test = $q->getSingleResult();
 
         $this->assertInstanceOf('DateTime', $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
+
         try {
             $expectedVersionExpired = DateTime::createFromFormat('U', $test->version->getTimestamp()-3600);
+
             $this->_em->lock($test, LockMode::OPTIMISTIC, $expectedVersionExpired);
         } catch (OptimisticLockException $e) {
             $caughtException = $e;
@@ -283,7 +318,10 @@ class OptimisticStandard
      */
     private $version;
 
-    function getVersion() {return $this->version;}
+    public function getVersion()
+    {
+        return $this->version;
+    }
 }
 
 /**

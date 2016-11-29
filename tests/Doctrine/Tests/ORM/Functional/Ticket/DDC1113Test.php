@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
-require_once __DIR__ . '/../../../TestInit.php';
-
 /**
  * @group DDC-1113
  * @group DDC-1306
@@ -52,7 +48,7 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @Entity
  * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"car" = "DDC1113Car", "bus" = "DDC1113Bus"})
+ * @DiscriminatorMap({"vehicle" = "DDC1113Vehicle", "car" = "DDC1113Car", "bus" = "DDC1113Bus"})
  */
 class DDC1113Vehicle
 {

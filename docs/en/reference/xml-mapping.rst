@@ -22,9 +22,9 @@ setup for the latest code in trunk.
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                        https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
-    
+
         ...
-    
+
     </doctrine-mapping>
 
 The XML mapping document of a class is loaded on-demand the first
@@ -44,8 +44,6 @@ In order to work, this requires certain conventions:
    convention and you are not forced to do this. You can change the
    file extension easily enough.
 
--
-
 .. code-block:: php
 
     <?php
@@ -64,6 +62,16 @@ of the constructor, like this:
     $driver = new \Doctrine\ORM\Mapping\Driver\XmlDriver(array('/path/to/files1', '/path/to/files2'));
     $config->setMetadataDriverImpl($driver);
 
+.. warning::
+
+    Note that Doctrine ORM does not modify any settings for ``libxml``,
+    therefore, external XML entities may or may not be enabled or
+    configured correctly.
+    XML mappings are not XXE/XEE attack vectors since they are not
+    related with user input, but it is recommended that you do not
+    use external XML entities in your mapping files to avoid running
+    into unexpected behaviour.
+
 Simplified XML Driver
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -80,8 +88,8 @@ Configuration of this client works a little bit different:
 
     <?php
     $namespaces = array(
-        'MyProject\Entities' => '/path/to/files1',
-        'OtherProject\Entities' => '/path/to/files2'
+        '/path/to/files1' => 'MyProject\Entities',
+        '/path/to/files2' => 'OtherProject\Entities'
     );
     $driver = new \Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver($namespaces);
     $driver->setGlobalBasename('global'); // global.orm.xml
@@ -100,37 +108,37 @@ of several common elements:
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                               http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
-    
+
         <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
             <indexes>
                 <index name="name_idx" columns="name"/>
                 <index columns="user_email"/>
             </indexes>
-    
+
             <unique-constraints>
                 <unique-constraint columns="name,user_email" name="search_idx" />
             </unique-constraints>
-    
+
             <lifecycle-callbacks>
                 <lifecycle-callback type="prePersist" method="doStuffOnPrePersist"/>
                 <lifecycle-callback type="prePersist" method="doOtherStuffOnPrePersistToo"/>
                 <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
             </lifecycle-callbacks>
-    
+
             <id name="id" type="integer" column="id">
                 <generator strategy="AUTO"/>
                 <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
             </id>
-    
+
             <field name="name" column="name" type="string" length="50" nullable="true" unique="true" />
             <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
-    
+
             <one-to-one field="address" target-entity="Address" inversed-by="user">
                 <cascade><cascade-remove /></cascade>
                 <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
             </one-to-one>
-    
+
             <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user">
                 <cascade>
                     <cascade-persist/>
@@ -139,7 +147,7 @@ of several common elements:
                     <order-by-field name="number" direction="ASC" />
                 </order-by>
             </one-to-many>
-    
+
             <many-to-many field="groups" target-entity="Group">
                 <cascade>
                     <cascade-all/>
@@ -153,9 +161,9 @@ of several common elements:
                     </inverse-join-columns>
                 </join-table>
             </many-to-many>
-    
+
         </entity>
-    
+
     </doctrine-mapping>
 
 Be aware that class-names specified in the XML files should be
@@ -179,7 +187,7 @@ specified as the ``<entity />`` element as a direct child of the
 .. code-block:: xml
 
     <doctrine-mapping>
-        <entity name="MyProject\User" table="cms_users" repository-class="MyProject\UserRepository">
+        <entity name="MyProject\User" table="cms_users" schema="schema_name" repository-class="MyProject\UserRepository">
             <!-- definition here -->
         </entity>
     </doctrine-mapping>
@@ -203,6 +211,7 @@ Optional attributes:
 -  **read-only** - (>= 2.1) Specifies that this entity is marked as read only and not
    considered for change-tracking. Entities of this type can be persisted
    and removed though.
+-  **schema** - (>= 2.5) The schema the table lies in, for platforms that support schemas
 
 Defining Fields
 ~~~~~~~~~~~~~~~
@@ -216,12 +225,18 @@ entity. For the ID mapping you have to use the ``<id />`` element.
 .. code-block:: xml
 
     <entity name="MyProject\User">
-    
+
         <field name="name" type="string" length="50" />
         <field name="username" type="string" unique="true" />
         <field name="age" type="integer" nullable="true" />
         <field name="isActive" column="is_active" type="boolean" />
         <field name="weight" type="decimal" scale="5" precision="2" />
+        <field name="login_count" type="integer" nullable="false">
+            <options>
+                <option name="comment">The number of times the user has logged in.</option>
+                <option name="default">0</option>
+            </options>
+        </field>
     </entity>
 
 Required attributes:
@@ -247,11 +262,31 @@ Optional attributes:
    works on fields with type integer or datetime.
 -  scale - Scale of a decimal type.
 -  precision - Precision of a decimal type.
+-  options - Array of additional options:
+
+   -  default - The default value to set for the column if no value
+      is supplied.
+   -  unsigned - Boolean value to determine if the column should
+      be capable of representing only non-negative integers
+      (applies only for integer column and might not be supported by
+      all vendors).
+   -  fixed - Boolean value to determine if the specified length of
+      a string column should be fixed or varying (applies only for
+      string/binary column and might not be supported by all vendors).
+   -  comment - The comment of the column in the schema (might not
+      be supported by all vendors).
+   -  customSchemaOptions - Array of additional schema options
+      which are mostly vendor specific.
 -  column-definition - Optional alternative SQL representation for
    this column. This definition begin after the field-name and has to
    specify the complete column definition. Using this feature will
    turn this field dirty for Schema-Tool update commands at all
    times.
+
+.. note::
+
+    For more detailed information on each attribute, please refer to
+    the DBAL ``Schema-Representation`` documentation.
 
 Defining Identity and Generator Strategies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -286,12 +321,12 @@ Using the simplified definition above Doctrine will use no
 identifier strategy for this entity. That means you have to
 manually set the identifier before calling
 ``EntityManager#persist($entity)``. This is the so called
-``ASSIGNED`` strategy.
+``NONE`` strategy.
 
 If you want to switch the identifier generation strategy you have
 to nest a ``<generator />`` element inside the id-element. This of
 course only works for surrogate keys. For composite keys you always
-have to use the ``ASSIGNED`` strategy.
+have to use the ``NONE`` strategy.
 
 .. code-block:: xml
 
@@ -415,7 +450,7 @@ using the ``<lifecycle-callbacks />`` element:
 .. code-block:: xml
 
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="onPrePersist" />
         </lifecycle-callbacks>
@@ -708,12 +743,12 @@ table you can use the ``<indexes />`` and
 .. code-block:: xml
 
     <entity name="Doctrine\Tests\ORM\Mapping\User" table="cms_users">
-    
+
         <indexes>
             <index name="name_idx" columns="name"/>
             <index columns="user_email"/>
         </indexes>
-    
+
         <unique-constraints>
             <unique-constraint columns="name,user_email" name="search_idx" />
         </unique-constraints>
@@ -742,6 +777,6 @@ entity relationship. You can define this in XML with the "association-key" attri
             <field name="value" type="string" />
 
             <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
-         <entity>
+         </entity>
 
     </doctrine-mapping>

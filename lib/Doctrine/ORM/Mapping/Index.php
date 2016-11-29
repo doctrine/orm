@@ -34,4 +34,14 @@ final class Index implements Annotation
      * @var array<string>
      */
     public $columns;
+
+    /**
+     * @var array<string>
+     */
+    public $flags;
+
+    /**
+     * @var array
+     */
+    public $options;
 }

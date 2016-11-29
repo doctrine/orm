@@ -278,7 +278,7 @@ With Nested Conditions in WHERE Clause:
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT u from ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
+    $query = $em->createQuery('SELECT u FROM ForumUser u WHERE (u.username = :name OR u.username = :name2) AND u.id = :id');
     $query->setParameters(array(
         'name' => 'Bob',
         'name2' => 'Alice',
@@ -301,6 +301,14 @@ With Arithmetic Expression in WHERE clause:
     <?php
     $query = $em->createQuery('SELECT u FROM CmsUser u WHERE ((u.id + 5000) * u.id + 3) < 10000000');
     $users = $query->getResult(); // array of ForumUser objects
+
+Retrieve user entities with Arithmetic Expression in ORDER clause, using the ``HIDDEN`` keyword:
+
+.. code-block:: php
+
+    <?php
+    $query = $em->createQuery('SELECT u, u.posts_count + u.likes_count AS HIDDEN score FROM CmsUser u ORDER BY score');
+    $users = $query->getResult(); // array of User objects
 
 Using a LEFT JOIN to hydrate all user-ids and optionally associated
 article-ids:
@@ -434,7 +442,7 @@ Starting with 2.4, the IDENTITY() DQL function also works for composite primary 
 .. code-block:: php
 
     <?php
-    $query = $em->createQuery('SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1');
+    $query = $em->createQuery("SELECT IDENTITY(c.location, 'latitude') AS latitude, IDENTITY(c.location, 'longitude') AS longitude FROM Checkpoint c WHERE c.user = ?1");
 
 Joins between entities without associations were not possible until version
 2.4, where you can generate an arbitrary join with the following syntax:
@@ -478,9 +486,9 @@ You use the partial syntax when joining as well:
 Using the ``NEW`` operator you can construct Data Transfer Objects (DTOs) directly from DQL queries.
 
 - When using ``SELECT NEW`` you don't need to specify a mapped entity.
-- You can specify any PHP class, it's only require that the constructor of this class matches the ``NEW`` statement.
+- You can specify any PHP class, it only requires that the constructor of this class matches the ``NEW`` statement.
 - This approach involves determining exactly which columns you really need,
-  and instantiating data-transfer object that containing a constructor with those arguments.
+  and instantiating a data-transfer object that contains a constructor with those arguments.
 
 If you want to select data-transfer objects you should create a class:
 
@@ -508,6 +516,8 @@ And then use the ``NEW`` DQL keyword :
     <?php
     $query = $em->createQuery('SELECT NEW CustomerDTO(c.name, e.email, a.city, SUM(o.value)) FROM Customer c JOIN c.email e JOIN c.address a JOIN c.orders o GROUP BY c');
     $users = $query->getResult(); // array of CustomerDTO
+
+Note that you can only pass scalar expressions to the constructor.
 
 Using INDEX BY
 ~~~~~~~~~~~~~~
@@ -709,8 +719,6 @@ classes have to implement the base class :
 
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
-            $lexer = $parser->getLexer();
-
             $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
 
@@ -901,7 +909,7 @@ An instance of the ``Doctrine\ORM\Query`` class represents a DQL
 query. You create a Query instance be calling
 ``EntityManager#createQuery($dql)``, passing the DQL query string.
 Alternatively you can create an empty ``Query`` instance and invoke
-``Query#setDql($dql)`` afterwards. Here are some examples:
+``Query#setDQL($dql)`` afterwards. Here are some examples:
 
 .. code-block:: php
 
@@ -911,9 +919,9 @@ Alternatively you can create an empty ``Query`` instance and invoke
     // example1: passing a DQL string
     $q = $em->createQuery('select u from MyProject\Model\User u');
 
-    // example2: using setDql
+    // example2: using setDQL
     $q = $em->createQuery();
-    $q->setDql('select u from MyProject\Model\User u');
+    $q->setDQL('select u from MyProject\Model\User u');
 
 Query Result Formats
 ~~~~~~~~~~~~~~~~~~~~
@@ -929,8 +937,9 @@ the Query class. Here they are:
    result is either a plain collection of objects (pure) or an array
    where the objects are nested in the result rows (mixed).
 -  ``Query#getSingleResult()``: Retrieves a single object. If the
-   result contains more than one or no object, an exception is thrown. The
-   pure/mixed distinction does not apply.
+   result contains more than one object, an ``NonUniqueResultException``
+   is thrown. If the result contains no objects, an ``NoResultException``
+   is thrown. The pure/mixed distinction does not apply.
 -  ``Query#getOneOrNullResult()``: Retrieve a single object. If no
    object is found null will be returned.
 -  ``Query#getArrayResult()``: Retrieves an array graph (a nested
@@ -1138,7 +1147,7 @@ Scalar Hydration:
 Single Scalar Hydration
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-If you a query which returns just a single scalar value you can use
+If you have a query which returns just a single scalar value you can use
 single scalar hydration:
 
 .. code-block:: php
@@ -1360,7 +1369,7 @@ can mark a many-to-one or one-to-one association as fetched temporarily to batch
 
     <?php
     $query = $em->createQuery("SELECT u FROM MyProject\User u");
-    $query->setFetchMode("MyProject\User", "address", "EAGER");
+    $query->setFetchMode("MyProject\User", "address", \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
     $query->execute();
 
 Given that there are 10 users and corresponding addresses in the database the executed queries will look something like:
@@ -1369,6 +1378,9 @@ Given that there are 10 users and corresponding addresses in the database the ex
 
     SELECT * FROM users;
     SELECT * FROM address WHERE id IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+.. note::
+    Changing the fetch mode during a query is only possible for one-to-one and many-to-one relations.
 
 
 EBNF
@@ -1390,14 +1402,16 @@ Document syntax:
    e.g. zero or one time
 -  curly brackets {...} are used for repetition, e.g. zero or more
    times
--  double quotation marks "..." define a terminal string a vertical
-   bar \| represents an alternative
+-  double quotation marks "..." define a terminal string
+-  a vertical bar \| represents an alternative
 
 Terminals
 ~~~~~~~~~
 
 
--  identifier (name, email, ...)
+-  identifier (name, email, ...) must match ``[a-z_][a-z0-9_]*``
+-  fully_qualified_name (Doctrine\Tests\Models\CMS\CmsUser) matches PHP's fully qualified class names
+-  aliased_name (CMS:CmsUser) uses two identifiers, one for the namespace alias and one for the class inside it
 -  string ('foo', 'bar''s house', '%ninja%', ...)
 -  char ('/', '\\', ' ', ...)
 -  integer (-1, 0, 1, 34, ...)
@@ -1431,8 +1445,14 @@ Identifiers
     /* Alias Identification declaration (the "u" of "FROM User u") */
     AliasIdentificationVariable :: = identifier
 
-    /* identifier that must be a class name (the "User" of "FROM User u") */
-    AbstractSchemaName ::= identifier
+    /* identifier that must be a class name (the "User" of "FROM User u"), possibly as a fully qualified class name or namespace-aliased */
+    AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
+
+    /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
+    AliasResultVariable = identifier
+
+    /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
+    ResultVariable = identifier
 
     /* identifier that must be a field (the "name" of "u.name") */
     /* This is responsible to know if the field exists in Object, no matter if it's a relation or a simple field */
@@ -1444,18 +1464,12 @@ Identifiers
     /* identifier that must be a single-valued association field (to-one) (the "Group" of "u.Group") */
     SingleValuedAssociationField ::= FieldIdentificationVariable
 
-    /* identifier that must be an embedded class state field (for the future) */
+    /* identifier that must be an embedded class state field */
     EmbeddedClassStateField ::= FieldIdentificationVariable
 
     /* identifier that must be a simple state field (name, email, ...) (the "name" of "u.name") */
     /* The difference between this and FieldIdentificationVariable is only semantical, because it points to a single field (not mapping to a relation) */
     SimpleStateField ::= FieldIdentificationVariable
-
-    /* Alias ResultVariable declaration (the "total" of "COUNT(*) AS total") */
-    AliasResultVariable = identifier
-
-    /* ResultVariable identifier usage of mapped field aliases (the "total" of "COUNT(*) AS total") */
-    ResultVariable = identifier
 
 Path Expressions
 ~~~~~~~~~~~~~~~~
@@ -1506,7 +1520,7 @@ Items
 .. code-block:: php
 
     UpdateItem  ::= SingleValuedPathExpression "=" NewValue
-    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable) ["ASC" | "DESC"]
+    OrderByItem ::= (SimpleArithmeticExpression | SingleValuedPathExpression | ScalarExpression | ResultVariable | FunctionDeclaration) ["ASC" | "DESC"]
     GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
     NewValue    ::= SimpleArithmeticExpression | "NULL"
 
@@ -1515,11 +1529,11 @@ From, Join and Index by
 
 .. code-block:: php
 
-    IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {JoinVariableDeclaration}*
-    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
-    JoinVariableDeclaration                    ::= Join [IndexBy]
+    IdentificationVariableDeclaration          ::= RangeVariableDeclaration [IndexBy] {Join}*
+    SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
     RangeVariableDeclaration                   ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
-    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" JoinAssociationPathExpression ["AS"] AliasIdentificationVariable ["WITH" ConditionalExpression]
+    JoinAssociationDeclaration                 ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
+    Join                                       ::= ["LEFT" ["OUTER"] | "INNER"] "JOIN" (JoinAssociationDeclaration | RangeVariableDeclaration) ["WITH" ConditionalExpression]
     IndexBy                                    ::= "INDEX" "BY" StateFieldPathExpression
 
 Select Expressions
@@ -1527,10 +1541,12 @@ Select Expressions
 
 .. code-block:: php
 
-    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
+    SelectExpression        ::= (IdentificationVariable | ScalarExpression | AggregateExpression | FunctionDeclaration | PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression) [["AS"] ["HIDDEN"] AliasResultVariable]
     SimpleSelectExpression  ::= (StateFieldPathExpression | IdentificationVariable | FunctionDeclaration | AggregateExpression | "(" Subselect ")" | ScalarExpression) [["AS"] AliasResultVariable]
     PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
     PartialFieldSet         ::= "{" SimpleStateField {"," SimpleStateField}* "}"
+    NewObjectExpression     ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
+    NewObjectArg            ::= ScalarExpression | "(" Subselect ")"
 
 Conditional Expressions
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -1610,8 +1626,7 @@ Aggregate Expressions
 
 .. code-block:: php
 
-    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM") "(" ["DISTINCT"] StateFieldPathExpression ")" |
-                            "COUNT" "(" ["DISTINCT"] (IdentificationVariable | SingleValuedPathExpression) ")"
+    AggregateExpression ::= ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
 
 Case Expressions
 ~~~~~~~~~~~~~~~~
@@ -1641,7 +1656,7 @@ QUANTIFIED/BETWEEN/COMPARISON/LIKE/NULL/EXISTS
     InstanceOfExpression     ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
     InstanceOfParameter      ::= AbstractSchemaName | InputParameter
     LikeExpression           ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
-    NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
+    NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | AggregateExpression | FunctionDeclaration | IdentificationVariable | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
     ExistsExpression         ::= ["NOT"] "EXISTS" "(" Subselect ")"
     ComparisonOperator       ::= "=" | "<" | "<=" | "<>" | ">" | ">=" | "!="
 
@@ -1676,6 +1691,6 @@ Functions
             "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")" |
             "LOWER" "(" StringPrimary ")" |
             "UPPER" "(" StringPrimary ")" |
-            "IDENTITY" "(" SingleValuedAssociationPathExpression ")"
+            "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
 
 

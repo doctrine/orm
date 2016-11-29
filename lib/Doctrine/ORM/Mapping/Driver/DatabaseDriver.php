@@ -227,7 +227,7 @@ class DatabaseDriver implements MappingDriver
                     $fkCols = $myFk->getForeignColumns();
                     $cols = $myFk->getColumns();
 
-                    for ($i = 0; $i < count($cols); $i++) {
+                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['joinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
@@ -237,7 +237,7 @@ class DatabaseDriver implements MappingDriver
                     $fkCols = $otherFk->getForeignColumns();
                     $cols = $otherFk->getColumns();
 
-                    for ($i = 0; $i < count($cols); $i++) {
+                    for ($i = 0, $colsCount = count($cols); $i < $colsCount; $i++) {
                         $associationMapping['joinTable']['inverseJoinColumns'][] = array(
                             'name' => $cols[$i],
                             'referencedColumnName' => $fkCols[$i],
@@ -248,7 +248,7 @@ class DatabaseDriver implements MappingDriver
                 }
 
                 $metadata->mapManyToMany($associationMapping);
-                
+
                 break;
             }
         }
@@ -319,7 +319,7 @@ class DatabaseDriver implements MappingDriver
         $tableName = $metadata->table['name'];
         $indexes   = $this->tables[$tableName]->getIndexes();
 
-        foreach($indexes as $index){
+        foreach ($indexes as $index) {
             if ($index->isPrimary()) {
                 continue;
             }
@@ -392,7 +392,7 @@ class DatabaseDriver implements MappingDriver
         $fieldMapping = array(
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
             'columnName' => $column->getName(),
-            'type'       => strtolower((string) $column->getType()),
+            'type'       => $column->getType()->getName(),
             'nullable'   => ( ! $column->getNotNull()),
         );
 
@@ -407,7 +407,7 @@ class DatabaseDriver implements MappingDriver
             case Type::STRING:
             case Type::TEXT:
                 $fieldMapping['length'] = $column->getLength();
-                $fieldMapping['fixed']  = $column->getFixed();
+                $fieldMapping['options']['fixed']  = $column->getFixed();
                 break;
 
             case Type::DECIMAL:
@@ -419,18 +419,18 @@ class DatabaseDriver implements MappingDriver
             case Type::INTEGER:
             case Type::BIGINT:
             case Type::SMALLINT:
-                $fieldMapping['unsigned'] = $column->getUnsigned();
+                $fieldMapping['options']['unsigned'] = $column->getUnsigned();
                 break;
         }
 
         // Comment
         if (($comment = $column->getComment()) !== null) {
-            $fieldMapping['comment'] = $comment;
+            $fieldMapping['options']['comment'] = $comment;
         }
 
         // Default
         if (($default = $column->getDefault()) !== null) {
-            $fieldMapping['default'] = $default;
+            $fieldMapping['options']['default'] = $default;
         }
 
         return $fieldMapping;
@@ -465,7 +465,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['id'] = true;
             }
 
-            for ($i = 0; $i < count($fkColumns); $i++) {
+            for ($i = 0, $fkColumnsCount = count($fkColumns); $i < $fkColumnsCount; $i++) {
                 $associationMapping['joinColumns'][] = array(
                     'name'                 => $fkColumns[$i],
                     'referencedColumnName' => $fkForeignColumns[$i],
@@ -506,7 +506,7 @@ class DatabaseDriver implements MappingDriver
     {
         try {
             return $table->getPrimaryKey()->getColumns();
-        } catch(SchemaException $e) {
+        } catch (SchemaException $e) {
             // Do nothing
         }
 
@@ -550,6 +550,7 @@ class DatabaseDriver implements MappingDriver
         if ($fk) {
             $columnName = str_replace('_id', '', $columnName);
         }
+
         return Inflector::camelize($columnName);
     }
 }

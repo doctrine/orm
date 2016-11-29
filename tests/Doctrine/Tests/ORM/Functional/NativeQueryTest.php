@@ -4,31 +4,29 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\Query\Parameter;
-
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * NativeQueryTest
  *
  * @author robo
  */
-class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class NativeQueryTest extends OrmFunctionalTestCase
 {
     private $platform = null;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();
@@ -87,7 +85,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('country'), 'country');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
-        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id');
+        $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, 'integer');
 
         $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
         $query->setParameter(1, $addr->id);
@@ -202,7 +200,7 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm = new ResultSetMapping;
 
         $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
-        $q2 = $q->setSql('foo', $rsm)
+        $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
           ->setHint('foo', 'bar')
@@ -314,6 +312,27 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group rsm-sti
+     */
+    public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
+    }
+
+    /**
+     * @group rsm-sti
+     */
+    public function testAbstractClassInSingleTableInheritanceSchemaWithRSMBuilderThrowsException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
+
+        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\Company\CompanyContract', 'c');
+    }
+
+    /**
      * @expectedException \InvalidArgumentException
      */
     public function testRSMBuilderThrowsExceptionOnColumnConflict()
@@ -335,10 +354,9 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
         $query->setParameter(1, 'romanb');
 
-        $this->setExpectedException(
-            "Doctrine\ORM\Internal\Hydration\HydrationException",
-            "The parent object of entity result with alias 'a' was not found. The parent alias is 'un'."
-        );
+        $this->expectException(HydrationException::class);
+        $this->expectExceptionMessage("The parent object of entity result with alias 'a' was not found. The parent alias is 'un'.");
+
         $users = $query->getResult();
     }
 
@@ -773,5 +791,21 @@ class NativeQueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addRootEntityFromClassMetadata('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $this->assertSQLEquals('u.id AS id0, u.status AS status1, u.username AS username2, u.name AS name3, u.email_id AS email_id4', (string)$rsm);
+    }
+
+    /**
+     * @group DDC-3899
+     */
+    public function testGenerateSelectClauseWithDiscriminatorColumn()
+    {
+        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm->addEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899User', 'u');
+        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\DDC3899\DDC3899FixContract', 'c', 'u', 'contracts');
+        $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
+        $rsm->setDiscriminatorColumn('c', $this->platform->getSQLResultCasing('discr'));
+
+        $selectClause = $rsm->generateSelectClause(array('u' => 'u1', 'c' => 'c1'));
+
+        $this->assertSQLEquals('u1.id as id, c1.discr as discr', $selectClause);
     }
 }

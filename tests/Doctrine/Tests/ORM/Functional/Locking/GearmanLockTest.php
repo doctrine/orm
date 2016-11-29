@@ -2,17 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\Tests\Models\CMS\CmsArticle,
-    Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\DBAL\LockMode,
-    Doctrine\ORM\EntityManager;
-
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\DBAL\LockMode;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group locking_functional
  */
-class GearmanLockTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class GearmanLockTest extends OrmFunctionalTestCase
 {
     private $gearman = null;
     private $maxRunTime = 0;

@@ -12,6 +12,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(array(
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Foo'),
@@ -19,7 +20,6 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Baz'),
             ));
         } catch(\Exception $e) {
-
         }
     }
 

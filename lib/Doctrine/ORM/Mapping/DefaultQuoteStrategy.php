@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
@@ -42,12 +41,24 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
     /**
      * {@inheritdoc}
+     *
+     * @todo Table names should be computed in DBAL depending on the platform
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($class->table['quoted']) 
-            ? $platform->quoteIdentifier($class->table['name'])
-            : $class->table['name'];
+        $tableName = $class->table['name'];
+
+        if ( ! empty($class->table['schema'])) {
+            $tableName = $class->table['schema'] . '.' . $class->table['name'];
+
+            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
+                $tableName = $class->table['schema'] . '__' . $class->table['name'];
+            }
+        }
+
+        return isset($class->table['quoted'])
+            ? $platform->quoteIdentifier($tableName)
+            : $tableName;
     }
 
     /**
@@ -85,9 +96,19 @@ class DefaultQuoteStrategy implements QuoteStrategy
      */
     public function getJoinTableName(array $association, ClassMetadata $class, AbstractPlatform $platform)
     {
-        return isset($association['joinTable']['quoted'])
-            ? $platform->quoteIdentifier($association['joinTable']['name'])
-            : $association['joinTable']['name'];
+        $schema = '';
+
+        if (isset($association['joinTable']['schema'])) {
+            $schema = $association['joinTable']['schema'] . '.';
+        }
+
+        $tableName = $association['joinTable']['name'];
+
+        if (isset($association['joinTable']['quoted'])) {
+            $tableName = $platform->quoteIdentifier($tableName);
+        }
+
+        return $schema . $tableName;
     }
 
     /**
@@ -132,7 +153,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
         //     If the alias is to long, characters are cut off from the beginning.
         // 3 ) Strip non alphanumeric characters
         // 4 ) Prefix with "_" if the result its numeric
-        $columnName = $columnName . $counter;
+        $columnName = $columnName . '_' . $counter;
         $columnName = substr($columnName, -$platform->getMaxIdentifierLength());
         $columnName = preg_replace('/[^A-Za-z0-9_]/', '', $columnName);
         $columnName = is_numeric($columnName) ? '_' . $columnName : $columnName;

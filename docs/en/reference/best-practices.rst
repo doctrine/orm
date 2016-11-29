@@ -6,22 +6,6 @@ design generally refer to best practices when working with Doctrine
 and do not necessarily reflect best practices for database design
 in general.
 
-
-Don't use public properties on entities
----------------------------------------
-
-It is very important that you don't map public properties on
-entities, but only protected or private ones. The reason for this
-is simple, whenever you access a public property of a proxy object
-that hasn't been initialized yet the return value will be null.
-Doctrine cannot hook into this process and magically make the
-entity lazy load.
-
-This can create situations where it is very hard to debug the
-current failure. We therefore urge you to map only private and
-protected properties on entities and use getter methods or magic
-\_\_get() to access them.
-
 Constrain relationships as much as possible
 -------------------------------------------
 
@@ -70,7 +54,7 @@ Don't use special characters
 
 Avoid using any non-ASCII characters in class, field, table or
 column names. Doctrine itself is not unicode-safe in many places
-and will not be until PHP itself is fully unicode-aware (PHP6).
+and will not be until PHP itself is fully unicode-aware.
 
 Don't use identifier quoting
 ----------------------------

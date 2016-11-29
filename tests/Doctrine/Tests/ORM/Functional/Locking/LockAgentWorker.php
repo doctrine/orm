@@ -2,7 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-require_once __DIR__ . "/../../../TestInit.php";
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Logging\EchoSQLLogger;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
 
 class LockAgentWorker
 {
@@ -90,7 +93,7 @@ class LockAgentWorker
 
     protected function createEntityManager($conn)
     {
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../../Proxies');
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
@@ -98,12 +101,12 @@ class LockAgentWorker
         $annotDriver = $config->newDefaultAnnotationDriver(array(__DIR__ . '/../../../Models/'), true);
         $config->setMetadataDriverImpl($annotDriver);
 
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = new ArrayCache();
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
-        $config->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        $config->setSQLLogger(new EchoSQLLogger());
 
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
+        $em = EntityManager::create($conn, $config);
 
         return $em;
     }

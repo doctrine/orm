@@ -2,11 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsGroup,
     Doctrine\Common\Collections\ArrayCollection;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Basic many-to-many association tests.
@@ -14,7 +16,7 @@ require_once __DIR__ . '/../../TestInit.php';
  *
  * @author robo
  */
-class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -53,8 +55,8 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
         $groups = $result[0]->getGroups();
         $this->assertEquals('Developers_0', $groups[0]->getName());
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
 
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups);
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups[0]->getUsers());
@@ -376,5 +378,174 @@ class ManyToManyBasicAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCa
 
         $user = $this->_em->find(get_class($user), $user->id);
         $this->assertEquals(0, count($user->groups));
+    }
+
+    /**
+     * @group DDC-3952
+     */
+    public function testManyToManyOrderByIsNotIgnored()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(1);
+
+        $group1 = new CmsGroup;
+        $group2 = new CmsGroup;
+        $group3 = new CmsGroup;
+
+        $group1->name = 'C';
+        $group2->name = 'A';
+        $group3->name = 'B';
+
+        $user->addGroup($group1);
+        $user->addGroup($group2);
+        $user->addGroup($group3);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create()
+            ->orderBy(['name' => Criteria::ASC]);
+
+        $this->assertEquals(
+            ['A', 'B', 'C', 'Developers_0'],
+            $user
+                ->getGroups()
+                ->matching($criteria)
+                ->map(function (CmsGroup $group) {
+                    return $group->getName();
+                })
+                ->toArray()
+        );
+    }
+
+    /**
+     * @group DDC-3952
+     */
+    public function testManyToManyOrderByHonorsFieldNameColumnNameAliases()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $tag1 = new CmsTag;
+        $tag2 = new CmsTag;
+        $tag3 = new CmsTag;
+
+        $tag1->name = 'C';
+        $tag2->name = 'A';
+        $tag3->name = 'B';
+
+        $user->addTag($tag1);
+        $user->addTag($tag2);
+        $user->addTag($tag3);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create()
+            ->orderBy(['name' => Criteria::ASC]);
+
+        $this->assertEquals(
+            ['A', 'B', 'C'],
+            $user
+                ->getTags()
+                ->matching($criteria)
+                ->map(function (CmsTag $tag) {
+                    return $tag->getName();
+                })
+                ->toArray()
+        );
+    }
+
+    public function testMatchingWithLimit()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+
+        $criteria = Criteria::create()->setMaxResults(1);
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
+    }
+
+    public function testMatchingWithOffset()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+
+        $criteria = Criteria::create()->setFirstResult(1);
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+        $this->assertEquals('Developers_1', $firstGroup->name);
+
+        $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
+    }
+
+    public function testMatchingWithLimitAndOffset()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(5);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+
+        $criteria = Criteria::create()->setFirstResult(1)->setMaxResults(3);
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(3, $result);
+
+        $firstGroup = $result->first();
+        $this->assertEquals('Developers_1', $firstGroup->name);
+
+        $lastGroup = $result->last();
+        $this->assertEquals('Developers_3', $lastGroup->name);
+
+        $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
+    }
+
+    public function testMatching()
+    {
+        $user = $this->addCmsUserGblancoWithGroups(2);
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $groups = $user->groups;
+        $this->assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
+
+        $criteria = Criteria::create()->where(Criteria::expr()->eq('name', (string) 'Developers_0'));
+        $result   = $groups->matching($criteria);
+
+        $this->assertCount(1, $result);
+
+        $firstGroup = $result->first();
+        $this->assertEquals('Developers_0', $firstGroup->name);
+
+        $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
     }
 }

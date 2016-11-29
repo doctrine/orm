@@ -1,21 +1,4 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Query;
 
@@ -47,7 +30,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor();
+        $this->visitor = new QueryExpressionVisitor(array('o','p'));
     }
 
     /**
@@ -71,24 +54,28 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
         $qb = new QueryBuilder();
 
         return array(
-            array($cb->eq('field', 'value'), $qb->eq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->neq('field', 'value'), $qb->neq('field', ':field'), new Parameter('field', 'value')),
-            array($cb->eq('field', null), $qb->isNull('field')),
-            array($cb->neq('field', null), $qb->isNotNull('field')),
-            array($cb->isNull('field'), $qb->isNull('field')),
+            array($cb->eq('field', 'value'), $qb->eq('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->neq('field', 'value'), $qb->neq('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->eq('field', null), $qb->isNull('o.field')),
+            array($cb->neq('field', null), $qb->isNotNull('o.field')),
+            array($cb->isNull('field'), $qb->isNull('o.field')),
 
-            array($cb->gt('field', 'value'), $qb->gt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->gte('field', 'value'), $qb->gte('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lt('field', 'value'), $qb->lt('field', ':field'), new Parameter('field', 'value')),
-            array($cb->lte('field', 'value'), $qb->lte('field', ':field'), new Parameter('field', 'value')),
+            array($cb->gt('field', 'value'), $qb->gt('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->gte('field', 'value'), $qb->gte('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->lt('field', 'value'), $qb->lt('o.field', ':field'), new Parameter('field', 'value')),
+            array($cb->lte('field', 'value'), $qb->lte('o.field', ':field'), new Parameter('field', 'value')),
 
-            array($cb->in('field', array('value')), $qb->in('field', ':field'), new Parameter('field', array('value'))),
-            array($cb->notIn('field', array('value')), $qb->notIn('field', ':field'), new Parameter('field', array('value'))),
+            array($cb->in('field', array('value')), $qb->in('o.field', ':field'), new Parameter('field', array('value'))),
+            array($cb->notIn('field', array('value')), $qb->notIn('o.field', ':field'), new Parameter('field', array('value'))),
 
-            array($cb->contains('field', 'value'), $qb->like('field', ':field'), new Parameter('field', '%value%')),
+            array($cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')),
 
             // Test parameter conversion
-            array($cb->eq('object.field', 'value'), $qb->eq('object.field', ':object_field'), new Parameter('object_field', 'value')),
+            array($cb->eq('object.field', 'value'), $qb->eq('o.object.field', ':object_field'), new Parameter('object_field', 'value')),
+
+            // Test alternative rootAlias
+            array($cb->eq('p.field', 'value'), $qb->eq('p.field', ':p_field'), new Parameter('p_field', 'value')),
+            array($cb->eq('p.object.field', 'value'), $qb->eq('p.object.field', ':p_object_field'), new Parameter('p_object_field', 'value')),
         );
     }
 

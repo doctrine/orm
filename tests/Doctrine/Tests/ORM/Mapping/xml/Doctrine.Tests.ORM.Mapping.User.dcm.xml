@@ -19,7 +19,11 @@
         </indexes>
 
         <unique-constraints>
-            <unique-constraint columns="name,user_email" name="search_idx" />
+            <unique-constraint columns="name,user_email" name="search_idx">
+                <options>
+                    <option name="where">name IS NOT NULL</option>
+                </options>
+            </unique-constraint>
         </unique-constraints>
 
         <lifecycle-callbacks>
@@ -35,6 +39,10 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
             <sequence-generator sequence-name="tablename_seq" allocation-size="100" initial-value="1" />
+            <options>
+                <option name="foo">bar</option>
+                <option name="unsigned">false</option>
+            </options>
         </id>
 
         <field name="name" column="name" type="string" length="50" nullable="true" unique="true">
@@ -43,6 +51,7 @@
                 <option name="baz">
                     <option name="key">val</option>
                 </option>
+                <option name="fixed">false</option>
             </options>
         </field>
         <field name="email" column="user_email" type="string" column-definition="CHAR(32) NOT NULL" />
@@ -51,7 +60,7 @@
 
         <one-to-one field="address" target-entity="Address" inversed-by="user">
             <cascade><cascade-remove /></cascade>
-            <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
+            <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" />
         </one-to-one>
 
         <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" index-by="number" orphan-removal="true">

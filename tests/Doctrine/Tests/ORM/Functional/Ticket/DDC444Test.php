@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
 class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
@@ -73,5 +71,3 @@ class DDC444User
      */
     public $name;
 }
-
-

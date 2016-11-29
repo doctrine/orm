@@ -5,8 +5,6 @@ namespace Doctrine\Tests\ORM\Hydration;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 
-require_once __DIR__ . '/../../TestInit.php';
-
 class ScalarHydratorTest extends HydrationTestCase
 {
     /**
@@ -51,9 +49,9 @@ class ScalarHydratorTest extends HydrationTestCase
     public function testHydrateScalarResults()
     {
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('foo1', 'foo');
-        $rsm->addScalarResult('bar2', 'bar');
-        $rsm->addScalarResult('baz3', 'baz');
+        $rsm->addScalarResult('foo1', 'foo', 'string');
+        $rsm->addScalarResult('bar2', 'bar', 'string');
+        $rsm->addScalarResult('baz3', 'baz', 'string');
 
         $resultSet = array(
             array(
@@ -78,9 +76,9 @@ class ScalarHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
-        $rsm->addScalarResult('foo1', 'foo');
-        $rsm->addScalarResult('bar2', 'bar');
-        $rsm->addScalarResult('baz3', 'baz');
+        $rsm->addScalarResult('foo1', 'foo', 'string');
+        $rsm->addScalarResult('bar2', 'bar', 'string');
+        $rsm->addScalarResult('baz3', 'baz', 'string');
 
         $resultSet = array(
             array(

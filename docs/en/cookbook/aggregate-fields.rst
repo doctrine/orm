@@ -149,7 +149,7 @@ collection, which means we can compute this value at runtime:
         public function getBalance()
         {
             $balance = 0;
-            foreach ($this->entries AS $entry) {
+            foreach ($this->entries as $entry) {
                 $balance += $entry->getAmount();
             }
             return $balance;
@@ -332,7 +332,7 @@ Optimistic locking is as easy as adding a version column:
 .. code-block:: php
 
     <?php
-    class Amount
+    class Account
     {
         /** @Column(type="integer") @Version */
         private $version;

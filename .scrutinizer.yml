@@ -1,0 +1,34 @@
+before_commands:
+    - "composer install --no-dev --prefer-source"
+
+tools:
+    external_code_coverage:
+        timeout: 3600
+    php_code_coverage:
+        enabled: true
+    php_code_sniffer:
+        enabled: false
+    php_cpd:
+        enabled: true
+        excluded_dirs: ["bin", "docs", "tests", "tools", "vendor"]
+    php_cs_fixer:
+        enabled: false
+    php_loc:
+        enabled: true
+        excluded_dirs: ["bin", "docs", "tests", "tools", "vendor"]
+    php_mess_detector:
+        enabled: true
+        filter:
+            paths: ["lib/*"]
+    php_pdepend:
+        enabled: true
+        excluded_dirs: ["docs", "examples", "tests", "vendor"]
+    php_analyzer:
+        enabled: true
+        filter:
+            paths: ["lib/*", "tests/*"]
+    php_hhvm:
+        enabled: true
+        filter:
+            paths: ["lib/*", "tests/*"]
+    sensiolabs_security_checker: true

@@ -42,6 +42,7 @@ information about its type and if it's the owning or inverse side.
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
          * @ManyToMany(targetEntity="Comment", inversedBy="userFavorites")
+         * @JoinTable(name="user_favorite_comments")
          */
         private $favorites;
     
@@ -49,6 +50,7 @@ information about its type and if it's the owning or inverse side.
          * Unidirectional - Many users have marked many comments as read
          *
          * @ManyToMany(targetEntity="Comment")
+         * @JoinTable(name="user_read_comments")
          */
         private $commentsRead;
     
@@ -403,7 +405,7 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Persisting, removing, detaching and merging individual entities can
+Persisting, removing, detaching, refreshing and merging individual entities can
 become pretty cumbersome, especially when a highly interweaved object graph
 is involved. Therefore Doctrine 2 provides a
 mechanism for transitive persistence through cascading of these
@@ -419,7 +421,8 @@ The following cascade options exist:
 -  remove : Cascades remove operations to the associated entities.
 -  merge : Cascades merge operations to the associated entities.
 -  detach : Cascades detach operations to the associated entities.
--  all : Cascades persist, remove, merge and detach operations to
+-  refresh : Cascades refresh operations to the associated entities.
+-  all : Cascades persist, remove, merge, refresh and detach operations to
    associated entities.
 
 .. note::
@@ -467,7 +470,7 @@ removed from the system:
     <?php
     $user = $em->find('User', $deleteUserId);
     
-    foreach ($user->getAuthoredComments() AS $comment) {
+    foreach ($user->getAuthoredComments() as $comment) {
         $em->remove($comment);
     }
     $em->remove($user);
@@ -699,5 +702,11 @@ methods:
 * ``isNull($field)``
 * ``in($field, array $values)``
 * ``notIn($field, array $values)``
+* ``contains($field, $value)``
 
 
+.. note::
+
+    There is a limitation on the compatibility of Criteria comparisons.
+    You have to use scalar values only as the value in a comparison or
+    the behaviour between different backends is not the same.

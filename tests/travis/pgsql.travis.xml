@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit>
+<phpunit bootstrap="../Doctrine/Tests/TestInit.php" colors="true">
     <php>
    <!-- "Real" test database -->
         <var name="db_type" value="pdo_pgsql"/>
@@ -15,20 +15,19 @@
         <var name="tmpdb_host" value="localhost" />
         <var name="tmpdb_username" value="postgres" />
         <var name="tmpdb_password" value="" />
-        <var name="tmpdb_name" value="doctrine_tests_tmp" />
         <var name="tmpdb_port" value="5432"/>
     </php>
-
-    <logging>
-        <log type="coverage-clover" target="../../build/logs/clover.xml"/>
-    </logging>
 
     <testsuites>
         <testsuite name="Doctrine ORM Test Suite">
             <directory>./../Doctrine/Tests/ORM</directory>
         </testsuite>
     </testsuites>
-
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./../../lib/Doctrine</directory>
+        </whitelist>
+    </filter>
     <groups>
         <exclude>
             <group>performance</group>

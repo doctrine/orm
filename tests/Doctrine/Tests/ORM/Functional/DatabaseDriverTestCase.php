@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
@@ -13,7 +14,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     protected function convertToClassMetadata(array $entityTables, array $manyTables = array())
     {
         $sm = $this->_em->getConnection()->getSchemaManager();
-        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($sm);
+        $driver = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
         $metadatas = array();
@@ -36,7 +37,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         $metadatas = array();
 
         $sm = $this->_em->getConnection()->getSchemaManager();
-        $driver = new \Doctrine\ORM\Mapping\Driver\DatabaseDriver($sm);
+        $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
             if (!in_array(strtolower($className), $classNames)) {

@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\DBAL\Driver\Statement;
+
 /**
  * This class is a mock of the Statement interface.
  *
  * @author Alexander <iam.asm89@gmail.com>
  */
-class StatementMock implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
+class StatementMock implements \IteratorAggregate, Statement
 {
     /**
      * {@inheritdoc}

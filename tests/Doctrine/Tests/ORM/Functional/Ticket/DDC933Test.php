@@ -2,13 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-require_once __DIR__ . '/../../../TestInit.php';
-
-class DDC933Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC933Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {

@@ -2,13 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-require_once __DIR__ . '/../../../TestInit.php';
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1041
  */
-class DDC1041Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1041Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -18,7 +18,7 @@ class DDC1041Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testGrabWrongSubtypeReturnsNull()
     {
-        $fix = new \Doctrine\Tests\Models\Company\CompanyFixContract();
+        $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
 
         $this->_em->persist($fix);

@@ -73,6 +73,8 @@ EOT
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
 
+        $repositoryName = $em->getConfiguration()->getDefaultRepositoryClassName();
+
         // Process destination directory
         $destPath = realpath($input->getArgument('dest-path'));
 
@@ -92,6 +94,8 @@ EOT
             $numRepositories = 0;
             $generator = new EntityRepositoryGenerator();
 
+            $generator->setDefaultRepositoryName($repositoryName);
+
             foreach ($metadatas as $metadata) {
                 if ($metadata->customRepositoryClassName) {
                     $output->writeln(
@@ -106,12 +110,12 @@ EOT
 
             if ($numRepositories) {
                 // Outputting information message
-                $output->writeln(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath) );
+                $output->writeln(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath));
             } else {
-                $output->writeln('No Repository classes were found to be processed.' );
+                $output->writeln('No Repository classes were found to be processed.');
             }
         } else {
-            $output->writeln('No Metadata Classes to process.' );
+            $output->writeln('No Metadata Classes to process.');
         }
     }
 }

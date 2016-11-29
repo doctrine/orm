@@ -3,15 +3,14 @@
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\SequenceGenerator;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Description of SequenceGeneratorTest
  *
  * @author robo
  */
-class SequenceGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class SequenceGeneratorTest extends OrmTestCase
 {
     private $_em;
     private $_seqGen;

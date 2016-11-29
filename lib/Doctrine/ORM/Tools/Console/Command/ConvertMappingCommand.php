@@ -64,7 +64,7 @@ class ConvertMappingCommand extends Command
                 'The path to generate your entities classes.'
             ),
             new InputOption(
-                'force', null, InputOption::VALUE_NONE,
+                'force', 'f', InputOption::VALUE_NONE,
                 'Force to overwrite existing mapping files.'
             ),
             new InputOption(
@@ -137,7 +137,7 @@ EOT
 
         // Process destination directory
         if ( ! is_dir($destPath = $input->getArgument('dest-path'))) {
-            mkdir($destPath, 0777, true);
+            mkdir($destPath, 0775, true);
         }
         $destPath = realpath($destPath);
 

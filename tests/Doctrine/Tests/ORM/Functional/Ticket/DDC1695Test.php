@@ -16,7 +16,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = $this->_em->createQuery($dql)->getSQL();
 
         $this->assertEquals(
-            'SELECT d0_."SmallText" AS SmallText0, d0_."PublishDate" AS PublishDate1 FROM "DDC1695News" d0_',
+            'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',
             $sql
         );
     }
@@ -29,7 +29,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC1695News
 {
     /**
-     * @var integer $idNews
+     * @var int
      *
      * @Column(name="`IdNews`", type="integer", nullable=false)
      * @Id
@@ -38,119 +38,119 @@ class DDC1695News
     private $idNews;
 
     /**
-     * @var bigint $iduser
+     * @var int
      *
      * @Column(name="`IdUser`", type="bigint", nullable=false)
      */
     private $idUser;
 
     /**
-     * @var integer $idLanguage
+     * @var int
      *
      * @Column(name="`IdLanguage`", type="integer", nullable=false)
      */
     private $idLanguage;
 
     /**
-     * @var integer $idCondition
+     * @var int
      *
      * @Column(name="`IdCondition`", type="integer", nullable=true)
      */
     private $idCondition;
 
     /**
-     * @var integer $idHealthProvider
+     * @var int
      *
      * @Column(name="`IdHealthProvider`", type="integer", nullable=true)
      */
     private $idHealthProvider;
 
     /**
-     * @var integer $idSpeciality
+     * @var int
      *
      * @Column(name="`IdSpeciality`", type="integer", nullable=true)
      */
     private $idSpeciality;
 
     /**
-     * @var integer $idMedicineType
+     * @var int
      *
      * @Column(name="`IdMedicineType`", type="integer", nullable=true)
      */
     private $idMedicineType;
 
     /**
-     * @var integer $idTreatment
+     * @var int
      *
      * @Column(name="`IdTreatment`", type="integer", nullable=true)
      */
     private $idTreatment;
 
     /**
-     * @var string $title
+     * @var string
      *
      * @Column(name="`Title`", type="string", nullable=true)
      */
     private $title;
 
     /**
-     * @var string $smallText
+     * @var string
      *
      * @Column(name="`SmallText`", type="string", nullable=true)
      */
     private $smallText;
 
     /**
-     * @var string $longText
+     * @var string
      *
      * @Column(name="`LongText`", type="string", nullable=true)
      */
     private $longText;
 
     /**
-     * @var datetimetz $publishDate
+     * @var DateTimeZone
      *
      * @Column(name="`PublishDate`", type="datetimetz", nullable=true)
      */
     private $publishDate;
 
     /**
-     * @var tsvector $idxNews
+     * @var array
      *
-     * @Column(name="`IdxNews`", type="tsvector", nullable=true)
+     * @Column(name="`IdxNews`", type="json_array", nullable=true)
      */
     private $idxNews;
 
     /**
-     * @var boolean $highlight
+     * @var bool
      *
      * @Column(name="`Highlight`", type="boolean", nullable=false)
      */
     private $highlight;
 
     /**
-     * @var integer $order
+     * @var int
      *
      * @Column(name="`Order`", type="integer", nullable=false)
      */
     private $order;
 
     /**
-     * @var boolean $deleted
+     * @var bool
      *
      * @Column(name="`Deleted`", type="boolean", nullable=false)
      */
     private $deleted;
 
     /**
-     * @var boolean $active
+     * @var bool
      *
      * @Column(name="`Active`", type="boolean", nullable=false)
      */
     private $active;
 
     /**
-     * @var boolean $updateToHighlighted
+     * @var bool
      *
      * @Column(name="`UpdateToHighlighted`", type="boolean", nullable=true)
      */

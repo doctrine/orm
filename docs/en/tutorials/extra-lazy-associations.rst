@@ -15,10 +15,12 @@ the first time its accessed. If you mark an association as extra lazy the follow
 can be called without triggering a full load of the collection:
 
 -  ``Collection#contains($entity)``
+-  ``Collection#containsKey($key)`` (available with Doctrine 2.5)
 -  ``Collection#count()``
+-  ``Collection#get($key)``  (available with Doctrine 2.4)
 -  ``Collection#slice($offset, $length = null)``
 
-For each of this three methods the following semantics apply:
+For each of the above methods the following semantics apply:
 
 -  For each call, if the Collection is not yet loaded, issue a straight SELECT statement against the database.
 -  For each call, if the collection is already loaded, fallback to the default functionality for lazy collections. No additional SELECT statements are executed.

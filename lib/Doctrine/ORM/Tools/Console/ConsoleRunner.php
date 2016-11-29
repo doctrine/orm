@@ -22,7 +22,7 @@ namespace Doctrine\ORM\Tools\Console;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Doctrine\ORM\Version;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -35,10 +35,10 @@ class ConsoleRunner
     /**
      * Create a Symfony Console HelperSet
      *
-     * @param EntityManager $entityManager
+     * @param EntityManagerInterface $entityManager
      * @return HelperSet
      */
-    public static function createHelperSet(EntityManager $entityManager)
+    public static function createHelperSet(EntityManagerInterface $entityManager)
     {
         return new HelperSet(array(
             'db' => new ConnectionHelper($entityManager->getConnection()),
@@ -56,12 +56,28 @@ class ConsoleRunner
      */
     static public function run(HelperSet $helperSet, $commands = array())
     {
+        $cli = self::createApplication($helperSet, $commands);
+        $cli->run();
+    }
+
+    /**
+     * Creates a console application with the given helperset and
+     * optional commands.
+     *
+     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
+     * @param array                                       $commands
+     *
+     * @return \Symfony\Component\Console\Application
+     */
+    static public function createApplication(HelperSet $helperSet, $commands = array())
+    {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
         $cli->setCatchExceptions(true);
         $cli->setHelperSet($helperSet);
         self::addCommands($cli);
         $cli->addCommands($commands);
-        $cli->run();
+
+        return $cli;
     }
 
     /**
@@ -91,7 +107,8 @@ class ConsoleRunner
             new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
             new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
             new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\InfoCommand()
+            new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
+            new \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand(),
         ));
     }
 

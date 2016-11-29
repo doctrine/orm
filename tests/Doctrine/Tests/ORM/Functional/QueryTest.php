@@ -4,22 +4,23 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\Models\CMS\CmsUser,
     Doctrine\Tests\Models\CMS\CmsArticle,
     Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
-
-require_once __DIR__ . '/../../TestInit.php';
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional Query tests.
  *
  * @author robo
  */
-class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class QueryTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -119,22 +120,18 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testUsingUnknownQueryParameterShouldThrowException()
     {
-        $this->setExpectedException(
-            "Doctrine\ORM\Query\QueryException",
-            "Invalid parameter: token 2 is not defined in the query."
-        );
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Invalid parameter: token 2 is not defined in the query.');
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
         $q->setParameter(2, 'jwage');
         $user = $q->getSingleResult();
     }
 
-    public function testMismatchingParamExpectedParamCount()
+    public function testTooManyParametersShouldThrowException()
     {
-        $this->setExpectedException(
-            "Doctrine\ORM\Query\QueryException",
-            "Invalid parameter number: number of bound variables does not match number of tokens"
-        );
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Too many parameters: the query defines 1 parameters and you bound 2');
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
         $q->setParameter(1, 'jwage');
@@ -143,9 +140,19 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = $q->getSingleResult();
     }
 
+    public function testTooFewParametersShouldThrowException()
+    {
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Too few parameters: the query defines 1 parameters but you only bound 0');
+
+        $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1');
+
+        $user = $q->getSingleResult();
+    }
+
     public function testInvalidInputParameterThrowsException()
     {
-        $this->setExpectedException("Doctrine\ORM\Query\QueryException");
+        $this->expectException(QueryException::class);
 
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?');
         $q->setParameter(1, 'jwage');
@@ -381,7 +388,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $query = $this->_em->createQuery('UPDATE CMS:CmsUser u SET u.name = ?1');
-            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSql());
+            $this->assertEquals('UPDATE cms_users SET name = ?', $query->getSQL());
             $query->free();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
@@ -494,7 +501,8 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
 
-        $this->setExpectedException('Doctrine\ORM\NonUniqueResultException');
+        $this->expectException(NonUniqueResultException::class);
+        
         $fetchedUser = $query->getOneOrNullResult();
     }
 
@@ -676,6 +684,55 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $q->getResult();
     }
 
+    /**
+     * @group DDC-2319
+     */
+    public function testSetCollectionParameterBindingSingleIdentifierObject()
+    {
+        $u1 = new CmsUser;
+        $u1->name = 'Name1';
+        $u1->username = 'username1';
+        $u1->status = 'developer';
+        $this->_em->persist($u1);
+
+        $u2 = new CmsUser;
+        $u2->name = 'Name2';
+        $u2->username = 'username2';
+        $u2->status = 'tester';
+        $this->_em->persist($u2);
+
+        $u3 = new CmsUser;
+        $u3->name = 'Name3';
+        $u3->username = 'username3';
+        $u3->status = 'tester';
+        $this->_em->persist($u3);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $userCollection = new ArrayCollection();
+
+        $userCollection->add($u1);
+        $userCollection->add($u2);
+        $userCollection->add($u3->getId());
+
+        $q = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (:users) ORDER BY u.id");
+        $q->setParameter('users', $userCollection);
+        $users = $q->execute();
+
+        $this->assertEquals(3, count($users));
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[1]);
+        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
+
+        $resultUser1 = $users[0];
+        $resultUser2 = $users[1];
+        $resultUser3 = $users[2];
+
+        $this->assertEquals($u1->username, $resultUser1->username);
+        $this->assertEquals($u2->username, $resultUser2->username);
+        $this->assertEquals($u3->username, $resultUser3->username);
+    }
 
     /**
      * @group DDC-1822
@@ -695,7 +752,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NoResultException".');
-        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+        } catch (UnexpectedResultException $exc) {
             $this->assertInstanceOf('\Doctrine\ORM\NoResultException', $exc);
         }
 
@@ -708,7 +765,7 @@ class QueryTest extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQuery($dql)->getSingleResult();
             $this->fail('Expected exception "\Doctrine\ORM\NonUniqueResultException".');
-        } catch (\Doctrine\ORM\UnexpectedResultException $exc) {
+        } catch (UnexpectedResultException $exc) {
             $this->assertInstanceOf('\Doctrine\ORM\NonUniqueResultException', $exc);
         }
     }

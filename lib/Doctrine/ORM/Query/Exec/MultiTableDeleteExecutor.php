@@ -20,7 +20,9 @@
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
@@ -51,11 +53,11 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
     /**
      * Initializes a new <tt>MultiTableDeleteExecutor</tt>.
      *
+     * Internal note: Any SQL construction and preparation takes place in the constructor for
+     *                best performance. With a query cache the executor will be cached.
+     *
      * @param \Doctrine\ORM\Query\AST\Node  $AST       The root AST node of the DQL query.
      * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
-     *
-     * @internal Any SQL construction and preparation takes place in the constructor for
-     *           best performance. With a query cache the executor will be cached.
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
@@ -103,7 +105,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
                 'notnull' => true,
-                'type' => \Doctrine\DBAL\Types\Type::getType($rootClass->getTypeOfColumn($idColumnName))
+                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             );
         }
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
@@ -116,8 +118,6 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      */
     public function execute(Connection $conn, array $params, array $types)
     {
-        $numDeleted = 0;
-
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
 

@@ -21,9 +21,9 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
-
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -62,11 +62,11 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     /**
      * Initializes a new <tt>MultiTableUpdateExecutor</tt>.
      *
+     * Internal note: Any SQL construction and preparation takes place in the constructor for
+     *                best performance. With a query cache the executor will be cached.
+     *
      * @param \Doctrine\ORM\Query\AST\Node  $AST The root AST node of the DQL query.
      * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
-     *
-     * @internal Any SQL construction and preparation takes place in the constructor for
-     *           best performance. With a query cache the executor will be cached.
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
@@ -111,8 +111,8 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
             foreach ($updateItems as $updateItem) {
                 $field = $updateItem->pathExpression->field;
 
-                if (isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited']) ||
-                    isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited'])) {
+                if ((isset($class->fieldMappings[$field]) && ! isset($class->fieldMappings[$field]['inherited'])) ||
+                    (isset($class->associationMappings[$field]) && ! isset($class->associationMappings[$field]['inherited']))) {
                     $newValue = $updateItem->newValue;
 
                     if ( ! $affected) {
@@ -148,7 +148,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         foreach ($idColumnNames as $idColumnName) {
             $columnDefinitions[$idColumnName] = array(
                 'notnull' => true,
-                'type' => Type::getType($rootClass->getTypeOfColumn($idColumnName))
+                'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
             );
         }
 
@@ -163,8 +163,6 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      */
     public function execute(Connection $conn, array $params, array $types)
     {
-        $numUpdated = 0;
-
         // Create temporary id table
         $conn->executeUpdate($this->_createTempTableSql);
 
