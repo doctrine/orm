@@ -415,7 +415,7 @@ public function __construct(<params>)
 
         $replacements = array(
             $this->generateEntityNamespace($metadata),
-            $this->generateEntityUse(),
+            $this->generateEntityUse($metadata),
             $this->generateEntityDocBlock($metadata),
             $this->generateEntityClassName($metadata),
             $this->generateEntityBody($metadata)
@@ -608,13 +608,19 @@ public function __construct(<params>)
         }
     }
 
-    protected function generateEntityUse()
+    protected function generateEntityUse(ClassMetadataInfo $metadataInfo)
     {
-        if ($this->generateAnnotations) {
-            return "\n".'use Doctrine\ORM\Mapping as ORM;'."\n";
-        } else {
-            return "";
+        $entityUse = '';
+
+        if (count($metadataInfo->associationMappings)) {
+            $entityUse .= "\n".'use Doctrine\Common\Collections\ArrayCollection;'."\n";
         }
+
+        if ($this->generateAnnotations) {
+            $entityUse .= "\n".'use Doctrine\ORM\Mapping as ORM;'."\n";
+        }
+
+        return $entityUse;
     }
 
     /**
@@ -687,7 +693,7 @@ public function __construct(<params>)
 
         foreach ($metadata->associationMappings as $mapping) {
             if ($mapping['type'] & ClassMetadataInfo::TO_MANY) {
-                $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
+                $collections[] = '$this->'.$mapping['fieldName'].' = new ArrayCollection();';
             }
         }
 
@@ -1216,7 +1222,8 @@ public function __construct(<params>)
                 if ($code = $this->generateEntityStubMethod($metadata, 'remove', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], 'Doctrine\Common\Collections\Collection')) {
+                $getAssociationType = sprintf('%s[]|ArrayCollection', $associationMapping['targetEntity']);
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $getAssociationType)) {
                     $methods[] = $code;
                 }
             }
