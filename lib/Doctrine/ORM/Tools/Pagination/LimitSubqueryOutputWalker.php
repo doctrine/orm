@@ -393,6 +393,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private function rebuildOrderByClauseForOuterScope(OrderByClause $orderByClause)
     {
         $dqlAliasToSqlTableAliasMap
+            = $adjustSuperClassFieldAlias
             = $searchPatterns
             = $replacements
             = $dqlAliasToClassMap
@@ -404,6 +405,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
         foreach(array_keys($this->rsm->aliasMap) as $dqlAlias) {
             $dqlAliasToClassMap[$dqlAlias] = $class = $this->queryComponents[$dqlAlias]['metadata'];
             $dqlAliasToSqlTableAliasMap[$dqlAlias] = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
+
+            if (!$class->isRootEntity()) {
+                // Save table name of final entity to have correctly adjusted superclass field alias.
+                $rootEntityTable = $this->em->getMetadataFactory()->getMetadataFor($class->rootEntityName)->getTableName();
+                $adjustSuperClassFieldAlias[$dqlAlias] = $rootEntityTable;
+            }
         }
 
         // Pattern to find table path expressions in the order by clause
@@ -435,7 +442,14 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 // Field was declared in a parent class, so we need to get the proper SQL table alias
                 // for the joined parent table.
                 $otherClassMetadata = $this->em->getClassMetadata($fieldMapping['declared']);
-                if (!$otherClassMetadata->isMappedSuperclass) {
+
+                if ($otherClassMetadata->isMappedSuperclass && array_key_exists($dqlAliasForFieldAlias, $adjustSuperClassFieldAlias)) {
+                    // We need to adjust superclass alias.
+                    $sqlTableAliasForFieldAlias = $this->getSQLTableAlias(
+                        $adjustSuperClass[$dqlAliasForFieldAlias],
+                        $dqlAliasForFieldAlias
+                    );
+                } elseif (!$otherClassMetadata->isMappedSuperclass){
                     $sqlTableAliasForFieldAlias = $this->getSQLTableAlias($otherClassMetadata->getTableName(), $dqlAliasForFieldAlias);
                 }
             }

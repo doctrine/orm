@@ -370,6 +370,25 @@ ORDER BY b.id DESC'
     }
 
     /**
+     * Tests ordering by property which is declared in parent entity with inheritance type JOINED while having parent
+     * @MappedSuperclass and child @Entity class.
+     */
+    public function testLimitSubqueryOrderByFieldFromMappedSuperclassWithEntityInheritance()
+    {
+        $this->entityManager->getConnection()->setDatabasePlatform(new MySqlPlatform());
+
+        $query = $this->entityManager->createQuery(
+            'SELECT b FROM Doctrine\Tests\Models\Pagination\JoinedInheritance\UserClientEntity b ORDER BY b.email DESC, b.full_name, b.createdAt DESC'
+        );
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\LimitSubqueryOutputWalker');
+
+        $this->assertEquals(
+            'SELECT DISTINCT id_0 FROM (SELECT p0_.id AS id_0, p0_.createdAt AS createdAt_1, p0_.updatedAt AS updatedAt_2, p0_.email AS email_3, p0_.password AS password_4, p1_.full_name AS full_name_5, p0_.type AS type_6 FROM pagination_joined_user_client p1_ INNER JOIN pagination_joined_user_main p0_ ON p1_.id = p0_.id) dctrn_result ORDER BY email_3 DESC, full_name_5 ASC, createdAt_1 DESC',
+            $query->getSQL()
+        );
+    }
+
+    /**
      * Tests order by on a subselect expression (mysql).
      */
     public function testLimitSubqueryOrderBySubSelectOrderByExpression()

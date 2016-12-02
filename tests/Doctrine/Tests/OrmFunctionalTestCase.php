@@ -290,6 +290,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Pagination\Department',
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
+            'Doctrine\Tests\Models\Pagination\JoinedInheritance\UserModel',
+            'Doctrine\Tests\Models\Pagination\JoinedInheritance\UserMainEntity',
+            'Doctrine\Tests\Models\Pagination\JoinedInheritance\UserClientEntity',
         ),
         'versioned_many_to_one' => array(
             'Doctrine\Tests\Models\VersionedManyToOne\Category',
@@ -561,6 +564,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM pagination_department');
             $conn->executeUpdate('DELETE FROM pagination_company');
             $conn->executeUpdate('DELETE FROM pagination_user');
+            $conn->executeUpdate('DELETE FROM pagination_joined_user_main');
+            $conn->executeUpdate('DELETE FROM pagination_joined_user_client');
         }
 
         if (isset($this->_usedModelSets['versioned_many_to_one'])) {
