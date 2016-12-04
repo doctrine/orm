@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -156,6 +157,26 @@ class SchemaToolTest extends OrmTestCase
 
         $this->assertCount(1, $indexes, "there should be only one index");
         $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
+    }
+
+    public function testSetDiscriminatorColumnWithoutLength()
+    {
+        $em         = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(__NAMESPACE__ . '\\FirstEntity');
+
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'string']);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        $this->assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        $this->assertTrue($table->hasColumn('discriminator'));
+        $column = $table->getColumn('discriminator');
+
+        $this->assertEquals(255, $column->getLength());
     }
 }
 
