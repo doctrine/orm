@@ -27,13 +27,13 @@ abstract class DDC3597Root {
     protected $id;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeInterface
      * @Column(name="created_at", type="datetime", nullable=false)
      */
     protected $createdAt = null;
 
     /**
-     * @var \DateTime
+     * @var \DateTimeInterface
      * @Column(name="updated_at", type="datetime", nullable=false)
      */
     protected $updatedAt = null;
@@ -65,14 +65,14 @@ abstract class DDC3597Root {
 
 
     /**
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getCreatedAt() {
         return $this->createdAt;
     }
 
     /**
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getUpdatedAt() {
         return $this->updatedAt;

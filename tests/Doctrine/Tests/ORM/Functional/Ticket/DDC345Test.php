@@ -46,7 +46,7 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(1, $membership->prePersistCallCount);
         $this->assertEquals(0, $membership->preUpdateCallCount);
-        $this->assertInstanceOf('DateTime', $membership->updated);
+        $this->assertInstanceOf('DateTimeInterface', $membership->updated);
     }
 }
 

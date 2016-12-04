@@ -73,8 +73,8 @@ class OptimisticLockException extends ORMException
      */
     public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion)
     {
-        $expectedLockVersion = ($expectedLockVersion instanceof \DateTime) ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
-        $actualLockVersion = ($actualLockVersion instanceof \DateTime) ? $actualLockVersion->getTimestamp() : $actualLockVersion;
+        $expectedLockVersion = ($expectedLockVersion instanceof \DateTimeInterface) ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
+        $actualLockVersion = ($actualLockVersion instanceof \DateTimeInterface) ? $actualLockVersion->getTimestamp() : $actualLockVersion;
 
         return new self("The optimistic lock failed, version " . $expectedLockVersion . " was expected, but is actually ".$actualLockVersion, $entity);
     }

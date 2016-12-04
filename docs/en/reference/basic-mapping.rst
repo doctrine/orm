@@ -234,13 +234,13 @@ built-in mapping types:
 -  ``bigint``: Type that maps a database BIGINT to a PHP string.
 -  ``boolean``: Type that maps a SQL boolean or equivalent (TINYINT) to a PHP boolean.
 -  ``decimal``: Type that maps a SQL DECIMAL to a PHP string.
--  ``date``: Type that maps a SQL DATETIME to a PHP DateTime
+-  ``date``: Type that maps a SQL DATETIME to a PHP DateTimeInterface
    object.
--  ``time``: Type that maps a SQL TIME to a PHP DateTime object.
+-  ``time``: Type that maps a SQL TIME to a PHP DateTimeInterface object.
 -  ``datetime``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object.
+   DateTimeInterface object.
 -  ``datetimetz``: Type that maps a SQL DATETIME/TIMESTAMP to a PHP
-   DateTime object with timezone.
+   DateTimeInterface object with timezone.
 -  ``text``: Type that maps a SQL CLOB to a PHP string.
 -  ``object``: Type that maps a SQL CLOB to a PHP object using
    ``serialize()`` and ``unserialize()``
@@ -263,7 +263,7 @@ A cookbook article shows how to define :doc:`your own custom mapping types
 
 .. note::
 
-    DateTime and Object types are compared by reference, not by value. Doctrine
+    DateTimeInterface and Object types are compared by reference, not by value. Doctrine
     updates this values if the reference changes and therefore behaves as if
     these objects are immutable value objects.
 

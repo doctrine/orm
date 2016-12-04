@@ -177,7 +177,7 @@ class DDC1430Order
         $this->products = new \Doctrine\Common\Collections\ArrayCollection();
     }
     /**
-     * @return \DateTime
+     * @return \DateTimeInterface
      */
     public function getDate()
     {
