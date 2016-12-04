@@ -123,6 +123,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
                     'columnPrefix' => 'nm_',
                     'declaredField' => null,
                     'originalField' => null,
+                    'attributeOverrides' => null,
                 )
             ),
             $class->embeddedClasses
@@ -179,6 +180,56 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
         $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+    }
+
+    public function testEmbeddableAttributeOverride()
+    {
+        $metadata = $this->createClassMetadata('Doctrine\Tests\Models\Overrides\EntityWithEmbeddableOverriddenAttribute');
+
+        $this->assertArrayHasKey('valueObject', $metadata->embeddedClasses);
+        $this->assertArrayHasKey('attributeOverrides', $metadata->embeddedClasses['valueObject']);
+        $this->assertNotNull($metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertArrayHasKey('value', $metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertEquals($metadata->embeddedClasses['valueObject']['attributeOverrides']['value']['columnName'], 'value_override');
+    }
+
+    public function testEmbeddableAttributeRemoval()
+    {
+        $metadata = $this->createClassMetadata('Doctrine\Tests\Models\Overrides\EntityWithEmbeddableRemovedAttribute');
+
+        $this->assertArrayHasKey('valueObject', $metadata->embeddedClasses);
+        $this->assertArrayHasKey('attributeOverrides', $metadata->embeddedClasses['valueObject']);
+        $this->assertNotNull($metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertArrayHasKey('value', $metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertNull($metadata->embeddedClasses['valueObject']['attributeOverrides']['value']);
+    }
+
+    public function testEmbeddableAttributeOverrides()
+    {
+        $metadata = $this->createClassMetadata('Doctrine\Tests\Models\Overrides\EntityWithEmbeddableOverriddenAndRemovedAttributes');
+
+        $this->assertArrayHasKey('valueObject', $metadata->embeddedClasses);
+        $this->assertArrayHasKey('attributeOverrides', $metadata->embeddedClasses['valueObject']);
+        $this->assertNotNull($metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertArrayHasKey('value', $metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertTrue(is_array($metadata->embeddedClasses['valueObject']['attributeOverrides']['value']));
+        $this->assertEquals($metadata->embeddedClasses['valueObject']['attributeOverrides']['value']['columnName'], 'value_override');
+        $this->assertArrayHasKey('count', $metadata->embeddedClasses['valueObject']['attributeOverrides']);
+        $this->assertNull($metadata->embeddedClasses['valueObject']['attributeOverrides']['count']);
+    }
+
+    public function testNestedEmbeddableAttributeOverrides()
+    {
+        $metadata = $this->createClassMetadata('Doctrine\Tests\Models\Overrides\EntityWithNestedEmbeddableOverriddenAndRemovedAttributes');
+
+        $this->assertArrayHasKey('nestedValueObject', $metadata->embeddedClasses);
+        $this->assertArrayHasKey('attributeOverrides', $metadata->embeddedClasses['nestedValueObject']);
+        $this->assertNotNull($metadata->embeddedClasses['nestedValueObject']['attributeOverrides']);
+        $this->assertArrayHasKey('nested.value', $metadata->embeddedClasses['nestedValueObject']['attributeOverrides']);
+        $this->assertTrue(is_array($metadata->embeddedClasses['nestedValueObject']['attributeOverrides']['nested.value']));
+        $this->assertEquals($metadata->embeddedClasses['nestedValueObject']['attributeOverrides']['nested.value']['columnName'], 'value_override');
+        $this->assertArrayHasKey('nested.count', $metadata->embeddedClasses['nestedValueObject']['attributeOverrides']);
+        $this->assertNull($metadata->embeddedClasses['nestedValueObject']['attributeOverrides']['nested.count']);
     }
 }
 

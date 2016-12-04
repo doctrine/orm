@@ -57,6 +57,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'columnPrefix' => null,
                 'declaredField' => null,
                 'originalField' => null,
+                'attributeOverrides' => null,
             )
         ), $this->cm->embeddedClasses);
     }
@@ -77,6 +78,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
                 'originalField' => null,
+                'attributeOverrides' => null,
             )
         ), $this->cm->embeddedClasses);
     }
@@ -94,7 +96,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
                 'columnPrefix' => null,
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
+                'attributeOverrides' => null,
             ),
             $this->cm->embeddedClasses['name']
         );
@@ -113,7 +116,8 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 'class' => 'Doctrine\Tests\Models\ValueObjects\Name',
                 'columnPrefix' => 'nm_',
                 'declaredField' => null,
-                'originalField' => null
+                'originalField' => null,
+                'attributeOverrides' => null,
             ),
             $this->cm->embeddedClasses['name']
         );

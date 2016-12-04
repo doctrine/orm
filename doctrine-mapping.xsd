@@ -301,6 +301,11 @@
   </xs:complexType>
 
   <xs:complexType name="embedded">
+    <xs:sequence>
+      <xs:element name="attribute-overrides" type="orm:attribute-overrides" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="attribute-override" type="orm:attribute-override" minOccurs="0" maxOccurs="1" />
+      <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="class" type="xs:string" use="required" />
     <xs:attribute name="column-prefix" type="xs:string" use="optional" />
@@ -582,7 +587,7 @@
 
   <xs:complexType name="attribute-override">
     <xs:sequence>
-      <xs:element name="field" type="orm:attribute-override-field" minOccurs="1" />
+      <xs:element name="field" type="orm:attribute-override-field" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />

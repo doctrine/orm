@@ -1,0 +1,7 @@
+Doctrine\Tests\Models\ValueObjects\ValueObject:
+  type: embeddable
+  fields:
+    value:
+      type: string
+    count:
+      type: integer

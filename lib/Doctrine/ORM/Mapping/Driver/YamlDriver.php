@@ -336,6 +336,18 @@ class YamlDriver extends FileDriver
                     'class' => $embeddedMapping['class'],
                     'columnPrefix' => isset($embeddedMapping['columnPrefix']) ? $embeddedMapping['columnPrefix'] : null,
                 );
+
+                if (isset($embeddedMapping['attributeOverrides']) && is_array($embeddedMapping['attributeOverrides'])) {
+                    $attributeOverrides = $embeddedMapping['attributeOverrides'];
+                    $mapping['attributeOverrides'] = array_reduce(array_keys($attributeOverrides), function($map, $fieldName) use ($attributeOverrides) {
+                        $attributeOverride = ($attributeOverrides[$fieldName]['column'])
+                            ? $this->columnToArray($fieldName, $attributeOverrides[$fieldName])
+                            : null;
+                        $map[$fieldName] = $attributeOverride;
+                        return $map;
+                    }, []);
+                }
+
                 $metadata->mapEmbedded($mapping);
             }
         }

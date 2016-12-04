@@ -2195,6 +2195,18 @@ class ClassMetadataInfo implements ClassMetadata
             $overrideMapping['id'] = $mapping['id'];
         }
 
+        if (isset($mapping['originalClass'])) {
+            $overrideMapping['originalClass'] = $mapping['originalClass'];
+        }
+
+        if (isset($mapping['declaredField'])) {
+            $overrideMapping['declaredField'] = $mapping['declaredField'];
+        }
+
+        if (isset($mapping['originalField'])) {
+            $overrideMapping['originalField'] = $mapping['originalField'];
+        }
+
         if ( ! isset($overrideMapping['type'])) {
             $overrideMapping['type'] = $mapping['type'];
         }
@@ -2207,13 +2219,32 @@ class ClassMetadataInfo implements ClassMetadata
             throw MappingException::invalidOverrideFieldType($this->name, $fieldName);
         }
 
-        unset($this->fieldMappings[$fieldName]);
-        unset($this->fieldNames[$mapping['columnName']]);
-        unset($this->columnNames[$mapping['fieldName']]);
-
+        $this->removeFieldMapping($fieldName);
         $this->_validateAndCompleteFieldMapping($overrideMapping);
 
         $this->fieldMappings[$fieldName] = $overrideMapping;
+    }
+
+    /**
+     * Remove a mapped field.
+     *
+     * @param string $fieldName
+     *
+     * @return void
+     *
+     * @throws MappingException
+     */
+    public function removeFieldMapping($fieldName)
+    {
+        if ( ! isset($this->fieldMappings[$fieldName])) {
+            throw MappingException::mappingNotFound($this->name, $fieldName);
+        }
+
+        $mapping = $this->fieldMappings[$fieldName];
+
+        unset($this->fieldMappings[$mapping['fieldName']]);
+        unset($this->fieldNames[$mapping['columnName']]);
+        unset($this->columnNames[$mapping['fieldName']]);
     }
 
     /**
@@ -3278,6 +3309,7 @@ class ClassMetadataInfo implements ClassMetadata
             'columnPrefix' => $mapping['columnPrefix'],
             'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
             'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'attributeOverrides' => isset($mapping['attributeOverrides']) ? $mapping['attributeOverrides'] : null,
         );
     }
 
