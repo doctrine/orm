@@ -211,6 +211,9 @@ abstract class AbstractHydrator
         $this->_rsm           = null;
         $this->_cache         = array();
         $this->_metadataCache = array();
+
+        $evm = $this->_em->getEventManager();
+        $evm->removeEventListener(array(Events::onClear), $this);
     }
 
     /**
