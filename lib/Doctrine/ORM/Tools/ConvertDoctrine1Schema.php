@@ -48,7 +48,12 @@ class ConvertDoctrine1Schema
         // TODO: This list may need to be updated
         'clob' => 'text',
         'timestamp' => 'datetime',
-        'enum' => 'string'
+        'enum' => 'string',
+        'double' => 'float',
+        'varchar' => 'string',
+        'longtext' => ['type' => 'text', 'length' => '4294967295'],
+        'tinytext' => ['type' => 'text', 'length' => '255'],
+        'mediumtext' => ['type' => 'text', 'length' => '16777215'],
     );
 
     /**
@@ -193,7 +198,7 @@ class ConvertDoctrine1Schema
             $column['alias'] = $matches[2];
         }
 
-        if (preg_match("/([a-zA-Z]+)\(([0-9]+)\)/", $column['type'], $matches)) {
+        if (preg_match("/([a-zA-Z]+)\(([0-9,]+)\)/", $column['type'], $matches)) {
             $column['type'] = $matches[1];
             $column['length'] = $matches[2];
         }
@@ -202,6 +207,11 @@ class ConvertDoctrine1Schema
         // check if legacy column type (1.x) needs to be mapped to a 2.0 one
         if (isset($this->legacyTypeMap[$column['type']])) {
             $column['type'] = $this->legacyTypeMap[$column['type']];
+            if (is_array($column['type'])) {
+                $column_type = $column['type']['type'];
+                $column['length'] = $column['type']['length'];
+                $column['type'] = $column_type;
+            }
         }
 
         if ( ! Type::hasType($column['type'])) {

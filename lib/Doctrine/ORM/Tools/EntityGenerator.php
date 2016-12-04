@@ -1096,8 +1096,8 @@ public function __construct(<params>)
         $annotations = array();
         foreach ($constraints as $name => $constraint) {
             $columns = array();
-            foreach ($constraint['columns'] as $column) {
-                $columns[] = '"' . $column . '"';
+            foreach ($constraint['columns'] as $key => $column) {
+                $columns[] = '"' . (is_array($column) ? $key : $column) . '"';
             }
             $annotations[] = '@' . $this->annotationsPrefix . $constraintName . '(name="' . $name . '", columns={' . implode(', ', $columns) . '})';
         }
