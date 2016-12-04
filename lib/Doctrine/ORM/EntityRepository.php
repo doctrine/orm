@@ -165,20 +165,13 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Finds entities by a set of criteria.
-     *
-     * @param array      $criteria
-     * @param array|null $orderBy
-     * @param int|null   $limit
-     * @param int|null   $offset
-     *
-     * @return array The objects.
+     * {@inheritdoc}
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null, $indexBy = null)
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return $persister->loadAll($criteria, $orderBy, $limit, $offset);
+        return $persister->loadAll($criteria, $orderBy, $limit, $offset, $indexBy);
     }
 
     /**
