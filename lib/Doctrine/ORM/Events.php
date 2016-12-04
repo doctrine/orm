@@ -158,6 +158,13 @@ final class Events
     const postFlush = 'postFlush';
 
     /**
+     * The afterFlush event occurs when the EntityManager#flush() operation is completely finished
+     *
+     * @var string
+     */
+    const afterFlush = 'afterFlush';
+
+    /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
      * after all references to entities have been removed from the unit of work.
      *
