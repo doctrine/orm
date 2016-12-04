@@ -4,8 +4,13 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 
 /**
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(name="cms_users",options={"engine"="MyISAM","foo"={"bar"="baz"}})
+ * @EntityListeners({
+ *     "Doctrine\Tests\ORM\Tools\Export\UserListener",
+ *     "Doctrine\Tests\ORM\Tools\Export\GroupListener",
+ *     "Doctrine\Tests\ORM\Tools\Export\AddressListener"
+ * })
+ * @HasLifecycleCallbacks
  */
 class User
 {

@@ -1,7 +1,12 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Events;
+use Doctrine\Tests\ORM\Tools\Export\UserListener;
+use Doctrine\Tests\ORM\Tools\Export\GroupListener;
+use Doctrine\Tests\ORM\Tools\Export\AddressListener;
 
+/** @var \Doctrine\ORM\Mapping\ClassMetadata $metadata */
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(array(
    'name' => 'cms_users',
@@ -128,3 +133,7 @@ $metadata->mapManyToMany(array(
    ),
    'orderBy' => NULL,
   ));
+$metadata->addEntityListener(Events::prePersist, UserListener::class, 'customPrePersist');
+$metadata->addEntityListener(Events::postPersist, UserListener::class, 'customPostPersist');
+$metadata->addEntityListener(Events::prePersist, GroupListener::class, 'prePersist');
+$metadata->addEntityListener(Events::postPersist, AddressListener::class, 'customPostPersist');
