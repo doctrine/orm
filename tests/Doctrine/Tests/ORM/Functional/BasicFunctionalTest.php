@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\Models\CMS\CmsEmail;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -1084,8 +1085,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->assertTrue($userA->id > 0, 'user a has an id');
         $this->assertTrue($userB->id > 0, 'user b has an id');
-        $this->assertTrue($userC->id > 0, 'user c has an id');
-        $this->assertEquals('UserC', $userC->name, 'name has not changed because we did not flush it');
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($userC), 'user c is not flushed');
+
+        $this->assertEquals('changed name', $userC->name, 'name changed because we did not flush it, so we can not refresh it');
     }
 
     /**
@@ -1149,7 +1151,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush($user);
 
         $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($otherUser), 'other user is not flushed');
     }
 
     /**
@@ -1175,8 +1177,56 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->flush($user);
 
-        $this->assertTrue($this->_em->contains($address), "Other user is contained in EntityManager");
-        $this->assertTrue($address->id > 0, "other user has an id");
+        $this->assertTrue($this->_em->contains($address), "Address is contained in EntityManager");
+        $this->assertTrue($address->id > 0, "Address has an id");
+    }
+
+    public function testFlushOnSingleEntity()
+    {
+        $user = new CmsUser;
+        $user->name = 'Dominik';
+        $user->username = 'domnikl';
+        $user->status = 'developer';
+
+        $this->_em->persist($user);
+
+        $email = new CmsEmail;
+        $email->email = 'info@test.com';
+
+        $this->_em->persist($email);
+
+        $q = $this->getCurrentQueryCount();
+        $this->_em->flush($email);
+
+        $this->assertEquals($q+3, $this->getCurrentQueryCount());
+
+        $q = $this->getCurrentQueryCount();
+        $this->_em->flush($user);
+
+        $this->assertEquals($q+3, $this->getCurrentQueryCount());
+    }
+
+    public function testFlushOnSingleEntitySameClass()
+    {
+        $domnik = new CmsUser;
+        $domnik->name = 'Dominik';
+        $domnik->username = 'domnikl';
+        $domnik->status = 'developer';
+        $this->_em->persist($domnik);
+
+        $fabian = new CmsUser;
+        $fabian->name = 'Fabian';
+        $fabian->username = 'fabian';
+        $fabian->status = 'tester';
+        $this->_em->persist($fabian);
+
+        $q = $this->getCurrentQueryCount();
+        $this->_em->flush($fabian);
+        $this->assertEquals($q+3, $this->getCurrentQueryCount(), "Only Fabian should be flushed");
+
+        $q = $this->getCurrentQueryCount();
+        $this->_em->flush($domnik);
+        $this->assertEquals($q+3, $this->getCurrentQueryCount(), "Dominik should be flushed");
     }
 
     /**
@@ -1253,7 +1303,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush($user);
 
         $this->assertTrue($this->_em->contains($otherUser), "Other user is contained in EntityManager");
-        $this->assertTrue($otherUser->id > 0, "other user has an id");
+        $this->assertTrue($this->_em->getUnitOfWork()->isScheduledForInsert($otherUser), 'other user is not flushed');
     }
 
     /**

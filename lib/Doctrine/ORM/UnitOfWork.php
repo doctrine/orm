@@ -158,6 +158,21 @@ class UnitOfWork implements PropertyChangedListener
     private $entityInsertions = array();
 
     /**
+     * A list of all pending entity insertions, that can be avoided if we call
+     * a flush() method with a non related entity.
+     * @var array
+     */
+    private $entityShouldBeInserted = array();
+
+    /**
+     * Used to detect if a flush is in progress.
+     * @see UnitOfWork::scheduleForInsert() method.
+     * @var boolean
+     */
+    private $flushing = false;
+
+
+    /**
      * A list of all pending entity updates.
      *
      * @var array
@@ -318,6 +333,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function commit($entity = null)
     {
+        $this->flushing = true;
         // Raise preFlush
         if ($this->evm->hasListeners(Events::preFlush)) {
             $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
@@ -342,7 +358,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->orphanRemovals)) {
             $this->dispatchOnFlushEvent();
             $this->dispatchPostFlushEvent();
-
+            $this->flushing = false;
             return; // Nothing to do.
         }
 
@@ -401,6 +417,7 @@ class UnitOfWork implements PropertyChangedListener
             $conn->rollBack();
 
             $this->afterTransactionRolledBack();
+            $this->flushing = false;
 
             throw $e;
         }
@@ -425,6 +442,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForSynchronization =
         $this->orphanRemovals = array();
+        $this->flushing = false;
     }
 
     /**
@@ -468,8 +486,13 @@ class UnitOfWork implements PropertyChangedListener
         if ($state === self::STATE_MANAGED && $class->isChangeTrackingDeferredImplicit()) {
             $this->persist($entity);
         }
+        $oid = spl_object_hash($entity);
 
         // Compute changes for INSERTed entities first. This must always happen even in this case.
+        if (isset($this->entityShouldBeInserted[$oid])) {
+            $this->entityInsertions[$oid] = $entity;
+            unset($this->entityShouldBeInserted[$oid]);
+        }
         $this->computeScheduleInsertsChangeSets();
 
         if ($class->isReadOnly) {
@@ -482,8 +505,6 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
-        $oid = spl_object_hash($entity);
-
         if ( ! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
             $this->computeChangeSet($class, $entity);
         }
@@ -751,6 +772,9 @@ class UnitOfWork implements PropertyChangedListener
     public function computeChangeSets()
     {
         // Compute changes for INSERTed entities first. This must always happen.
+        $this->entityInsertions = $this->entityInsertions + $this->entityShouldBeInserted;
+        $this->entityShouldBeInserted = array();
+
         $this->computeScheduleInsertsChangeSets();
 
         // Compute changes for other MANAGED entities. Change tracking policies take effect here.
@@ -963,7 +987,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($changeSet) {
             if (isset($this->entityChangeSets[$oid])) {
                 $this->entityChangeSets[$oid] = array_merge($this->entityChangeSets[$oid], $changeSet);
-            } else if ( ! isset($this->entityInsertions[$oid])) {
+            } else if ( ! isset($this->entityInsertions[$oid]) && ! isset($this->entityShouldBeInserted[$oid])) {
                 $this->entityChangeSets[$oid] = $changeSet;
                 $this->entityUpdates[$oid]    = $entity;
             }
@@ -993,7 +1017,7 @@ class UnitOfWork implements PropertyChangedListener
 
             $persister->addInsert($entity);
 
-            unset($this->entityInsertions[$oid]);
+            unset($this->entityInsertions[$oid], $this->entityShouldBeInserted[$oid]);
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                 $entities[] = $entity;
@@ -1200,15 +1224,19 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->entityDeletions[$oid])) {
             throw ORMInvalidArgumentException::scheduleInsertForRemovedEntity($entity);
         }
-        if (isset($this->originalEntityData[$oid]) && ! isset($this->entityInsertions[$oid])) {
+        if (isset($this->originalEntityData[$oid]) && ! isset($this->entityInsertions[$oid]) && !isset($this->entityShouldBeInserted[$oid])) {
             throw ORMInvalidArgumentException::scheduleInsertForManagedEntity($entity);
         }
 
-        if (isset($this->entityInsertions[$oid])) {
+        if (isset($this->entityInsertions[$oid]) || isset($this->entityShouldBeInserted[$oid])) {
             throw ORMInvalidArgumentException::scheduleInsertTwice($entity);
         }
 
-        $this->entityInsertions[$oid] = $entity;
+        if ($this->flushing) {
+            $this->entityInsertions[$oid] = $entity;
+        } else {
+            $this->entityShouldBeInserted[$oid] = $entity;
+        }
 
         if (isset($this->entityIdentifiers[$oid])) {
             $this->addToIdentityMap($entity);
@@ -1228,7 +1256,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function isScheduledForInsert($entity)
     {
-        return isset($this->entityInsertions[spl_object_hash($entity)]);
+        return isset($this->entityInsertions[spl_object_hash($entity)]) || isset($this->entityShouldBeInserted[spl_object_hash($entity)]);
     }
 
     /**
@@ -1252,7 +1280,7 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityIsRemoved($entity, "schedule for update");
         }
 
-        if ( ! isset($this->entityUpdates[$oid]) && ! isset($this->entityInsertions[$oid])) {
+        if ( ! isset($this->entityUpdates[$oid]) && ! isset($this->entityInsertions[$oid]) && ! isset($this->entityShouldBeInserted[$oid])) {
             $this->entityUpdates[$oid] = $entity;
         }
     }
@@ -1325,12 +1353,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->entityInsertions[$oid])) {
+        if (isset($this->entityInsertions[$oid]) || isset($this->entityShouldBeInserted[$oid])) {
             if ($this->isInIdentityMap($entity)) {
                 $this->removeFromIdentityMap($entity);
             }
 
-            unset($this->entityInsertions[$oid], $this->entityStates[$oid]);
+            unset($this->entityInsertions[$oid], $this->entityShouldBeInserted[$oid], $this->entityStates[$oid]);
 
             return; // entity has not been persisted yet, so nothing more to do.
         }
@@ -1375,7 +1403,8 @@ class UnitOfWork implements PropertyChangedListener
 
         return isset($this->entityInsertions[$oid])
             || isset($this->entityUpdates[$oid])
-            || isset($this->entityDeletions[$oid]);
+            || isset($this->entityDeletions[$oid])
+            || isset($this->entityShouldBeInserted[$oid]);
     }
 
     /**
@@ -1978,7 +2007,8 @@ class UnitOfWork implements PropertyChangedListener
                     $this->entityDeletions[$oid],
                     $this->entityIdentifiers[$oid],
                     $this->entityStates[$oid],
-                    $this->originalEntityData[$oid]
+                    $this->originalEntityData[$oid],
+                    $this->entityShouldBeInserted[$oid]
                 );
                 break;
             case self::STATE_NEW:
@@ -2034,12 +2064,15 @@ class UnitOfWork implements PropertyChangedListener
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
-        $this->getEntityPersister($class->name)->refresh(
-            array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
-            $entity
-        );
+        if (isset($this->entityIdentifiers[$oid])) {
+            $this->getEntityPersister($class->name)->refresh(
+                array_combine($class->getIdentifierFieldNames(), $this->entityIdentifiers[$oid]),
+                $entity
+            );
 
-        $this->cascadeRefresh($entity, $visited);
+            $this->cascadeRefresh($entity, $visited);
+        }
+
     }
 
     /**
@@ -2372,6 +2405,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityChangeSets =
             $this->entityStates =
             $this->scheduledForSynchronization =
+            $this->entityShouldBeInserted =
             $this->entityInsertions =
             $this->entityUpdates =
             $this->entityDeletions =
@@ -2960,7 +2994,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function hasPendingInsertions()
     {
-        return ! empty($this->entityInsertions);
+        return ! empty($this->entityInsertions) || !empty($this->entityShouldBeInserted);
     }
 
     /**
