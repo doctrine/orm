@@ -548,4 +548,134 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->assertFalse($user->groups->isInitialized(), "Post-condition: matching does not initialize collection");
     }
+
+    /**
+     * @group DDC-3890
+     * @dataProvider matchingWithComparisonsProvider
+     * @param string $method
+     * @param string $field
+     * @param mixed|mixed[] $value
+     * @param array $expectedTagNames
+     */
+    public function testMatchingWithComparisons($method, $field, $value, array $expectedTagNames)
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $tag1 = new CmsTag;
+        $tag2 = new CmsTag;
+        $tag3 = new CmsTag;
+
+        $tag1->name = 'A';
+        $tag2->name = 'B';
+        $tag3->name = 'C';
+
+        $user->addTag($tag1);
+        $user->addTag($tag2);
+        $user->addTag($tag3);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create();
+
+        $expr = Criteria::expr();
+        $condition = call_user_func([$expr, $method], $field, $value);
+        $criteria->where($condition);
+
+        $this->assertEquals(
+            $expectedTagNames,
+            $user
+                ->getTags()
+                ->matching($criteria)
+                ->map(function (CmsTag $tag) {
+                    return $tag->getName();
+                })
+                ->toArray()
+        );
+    }
+
+    public function matchingWithComparisonsProvider()
+    {
+        return [
+            'lt' => [
+                'lt', 'name', 'B', ['A']
+            ],
+            'lte' => [
+                'lte', 'name', 'B', ['A', 'B']
+            ],
+            'eq' => [
+                'eq', 'name', 'B', ['B']
+            ],
+            'neq' => [
+                'neq', 'name', 'B', ['A', 'C']
+            ],
+            'gt' => [
+                'gt', 'name', 'B', ['C']
+            ],
+            'gte' => [
+                'gte', 'name', 'B', ['B', 'C']
+            ],
+            'in' => [
+                'in', 'name', ['A', 'C'], ['A', 'C']
+            ],
+            'notIn' => [
+                'notIn', 'name', ['A', 'C'], ['B']
+            ],
+            'contains' => [
+                'contains', 'name', 'B', ['B']
+            ],
+        ];
+    }
+
+    /**
+     * @group DDC-3890
+     */
+    public function testMatchingWithIsNull()
+    {
+        $user = new CmsUser;
+        $user->name = 'Guilherme';
+        $user->username = 'gblanco';
+        $user->status = 'developer';
+
+        $tag1 = new CmsTag;
+        $tag2 = new CmsTag;
+        $tag3 = new CmsTag;
+
+        $tag1->name = null;
+        $tag2->name = 'B';
+        $tag3->name = 'C';
+
+        $user->addTag($tag1);
+        $user->addTag($tag2);
+        $user->addTag($tag3);
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->clear();
+
+        $user = $this->_em->find(get_class($user), $user->id);
+
+        $criteria = Criteria::create();
+
+        $criteria->where(Criteria::expr()->isNull('name'));
+
+        $this->assertEquals(
+            [null],
+            $user
+                ->getTags()
+                ->matching($criteria)
+                ->map(function (CmsTag $tag) {
+                    return $tag->getName();
+                })
+                ->toArray()
+        );
+    }
 }
