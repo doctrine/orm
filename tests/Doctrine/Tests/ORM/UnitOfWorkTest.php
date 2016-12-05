@@ -189,6 +189,38 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertEquals(1, count($updates));
         $this->assertTrue($updates[0] === $item);
     }
+    
+    public function testChangeTrackingNotifyIndividualCommit()
+    {
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
+        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
+        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
+
+        $entity = new NotifyChangedEntity;
+        $entity->setData('thedata');
+        $entity2 = new NotifyChangedEntity;
+        $entity2->setData('thedata');
+         
+        $this->_unitOfWork->persist($entity);
+        $this->_unitOfWork->persist($entity2);
+        $this->_unitOfWork->commit($entity);
+        $this->_unitOfWork->commit();
+        $this->assertEquals(2, count($persister->getInserts()));
+        $persister->reset();
+
+        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+
+        $entity->setData('newdata');
+        $entity2->setData('newdata');
+        $this->_unitOfWork->commit($entity);
+
+        $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity2));
+        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity2));
+
+        $this->assertFalse($this->_unitOfWork->isScheduledForDirtyCheck($entity));
+        $this->assertEquals(array(), $this->_unitOfWork->getEntityChangeSet($entity));
+    }
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
