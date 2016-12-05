@@ -256,11 +256,10 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testReusedSplObjectHashDoesNotConfuseUnitOfWork()
     {
         $hash1 = $this->subRoutine($this->_em);
-        // Make sure cycles are collected NOW, because a PersistentCollection references
-        // its owner, hence without forcing gc on cycles now the object will not (yet)
-        // be garbage collected and thus the object hash is not reused.
-        // This is not a memory leak!
-        gc_collect_cycles();
+        if (!defined('HHVM_VERSION')) {
+            // See comment below about PersistentCollection
+            gc_collect_cycles();
+        }
 
         $user1 = new CmsUser;
         $user1->status = 'dev';
@@ -279,6 +278,17 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'Roman B.';
         $em->persist($user);
         $em->flush();
+
+        // The PersistentCollection references its owner, hence without breaking
+        // the cycle the object will not (yet) be garbage collected and thus
+        // the object hash is not reused. This is not a memory leak!
+        if (defined('HHVM_VERSION')) {
+            $ed = $this->_em->getUnitOfWork()->getOriginalEntityData($user);
+            $ed['phonenumbers']->setOwner(null, array('inversedBy' => 1));
+            $ed['articles']->setOwner(null, array('inversedBy' => 1));
+            $ed['groups']->setOwner(null, array('inversedBy' => 1));
+        }
+
         $em->remove($user);
         $em->flush();
 
