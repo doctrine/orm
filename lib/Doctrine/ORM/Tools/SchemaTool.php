@@ -153,6 +153,7 @@ class SchemaTool
 
         $addedFks = array();
         $blacklistedFks = array();
+        $m2mDuplicates = array();
 
         foreach ($classes as $class) {
             /** @var \Doctrine\ORM\Mapping\ClassMetadata $class */
@@ -160,11 +161,24 @@ class SchemaTool
                 continue;
             }
 
+            //Precedence of Entity over auto-created JoinTable on a ManyToMany relationship
+
+            $tableName = $this->quoteStrategy->getTableName($class, $this->platform);
+
+            if (isset($m2mDuplicates[$tableName]) && $schema->hasTable($tableName)) {
+                $m2mDuplicates[$tableName]++;
+
+                if ($m2mDuplicates[$tableName] < 3) {
+                    $schema->dropTable($tableName);
+                }
+            }
+
+
             $table = $schema->createTable($this->quoteStrategy->getTableName($class, $this->platform));
 
             if ($class->isInheritanceTypeSingleTable()) {
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks, $m2mDuplicates);
 
                 // Add the discriminator column
                 $this->addDiscriminatorColumnDefinition($class, $table);
@@ -178,7 +192,7 @@ class SchemaTool
                 foreach ($class->subClasses as $subClassName) {
                     $subClass = $this->em->getClassMetadata($subClassName);
                     $this->gatherColumns($subClass, $table);
-                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks);
+                    $this->gatherRelationsSql($subClass, $table, $schema, $addedFks, $blacklistedFks, $m2mDuplicates);
                     $processedClasses[$subClassName] = true;
                 }
             } elseif ($class->isInheritanceTypeJoined()) {
@@ -199,7 +213,7 @@ class SchemaTool
                     }
                 }
 
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks, $m2mDuplicates);
 
                 // Add the discriminator column only to the root table
                 if ($class->name == $class->rootEntityName) {
@@ -244,7 +258,7 @@ class SchemaTool
                 throw ORMException::notSupported();
             } else {
                 $this->gatherColumns($class, $table);
-                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
+                $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks, $m2mDuplicates);
             }
 
             $pkColumns = array();
@@ -496,12 +510,13 @@ class SchemaTool
      * @param Schema        $schema
      * @param array         $addedFks
      * @param array         $blacklistedFks
+     * @param array        $m2mDuplicates
      *
      * @return void
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
+    private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks, &$m2mDuplicates)
     {
         foreach ($class->associationMappings as $mapping) {
             if (isset($mapping['inherited'])) {
@@ -528,10 +543,19 @@ class SchemaTool
             } elseif ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                 // create join table
                 $joinTable = $mapping['joinTable'];
+                $jointTableName = $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform);
 
-                $theJoinTable = $schema->createTable(
-                    $this->quoteStrategy->getJoinTableName($mapping, $foreignClass, $this->platform)
-                );
+                if ($schema->hasTable($jointTableName)) {
+                    return;
+                }
+
+                $theJoinTable = $schema->createTable($jointTableName);
+
+                if (isset($m2mDuplicates[$jointTableName])) {
+                    $m2mDuplicates[$jointTableName]++;
+                } else {
+                    $m2mDuplicates[$jointTableName] = 1;
+                }
 
                 $primaryKeyColumns = array();
 
@@ -560,6 +584,17 @@ class SchemaTool
                 $theJoinTable->setPrimaryKey($primaryKeyColumns);
             }
         }
+    }
+
+    /**
+     * Check if the schema event is create or update the schema
+     *
+     * @param $schemaAction
+     * @return bool
+     */
+    private function isSchemaActionCreateOrUpdate($schemaAction)
+    {
+        return in_array($schemaAction, array( self::SCHEMA_CREATE, self::SCHEMA_UPDATE));
     }
 
     /**
