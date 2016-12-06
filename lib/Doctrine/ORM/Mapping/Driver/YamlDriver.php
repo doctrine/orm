@@ -750,6 +750,10 @@ class YamlDriver extends FileDriver
             $mapping['nullable'] = $column['nullable'];
         }
 
+        if (isset($column['readOnly'])) {
+            $mapping['readOnly'] = $column['readOnly'];
+        }
+
         if (isset($column['version']) && $column['version']) {
             $mapping['version'] = $column['version'];
         }
