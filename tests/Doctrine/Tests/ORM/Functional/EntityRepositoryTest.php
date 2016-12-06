@@ -259,6 +259,20 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertEquals(4, count($users));
     }
 
+    public function testFindAllOrderBy()
+    {
+        $this->loadFixture();
+
+        $repos = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser');
+        $usersAsc = $repos->findAll(array("username" => "ASC"));
+        $usersDesc = $repos->findAll(array("username" => "DESC"));
+
+        $this->assertEquals(4, count($usersAsc), "Pre-condition: only four users in fixture");
+        $this->assertEquals(4, count($usersDesc), "Pre-condition: only four users in fixture");
+        $this->assertSame($usersAsc[0], $usersDesc[3]);
+        $this->assertSame($usersAsc[3], $usersDesc[0]);
+    }
+
     public function testFindByAlias()
     {
         $user1Id = $this->loadFixture();
