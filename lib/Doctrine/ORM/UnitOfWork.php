@@ -324,7 +324,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes done since last commit.
-        if ($entity === null) {
+        if (null === $entity) {
             $this->computeChangeSets();
         } elseif (is_object($entity)) {
             $this->computeSingleEntityChangeSet($entity);
@@ -414,17 +414,40 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchPostFlushEvent();
 
+        $this->postCommitClear($entity);
+    }
+
+    /**
+     * @param null|object|array $entity
+     */
+    private function postCommitClear($entity = null)
+    {
+
         // Clear up
         $this->entityInsertions =
         $this->entityUpdates =
         $this->entityDeletions =
         $this->extraUpdates =
-        $this->entityChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->scheduledForSynchronization =
         $this->orphanRemovals = array();
+
+        if (null === $entity) {
+            $this->entityChangeSets = $this->scheduledForSynchronization = array();
+            return;
+        }
+
+        if (is_object($entity)) {
+            $entity = [$entity];
+        }
+
+        foreach ($entity as $object) {
+            $oid = spl_object_hash($object);
+            $class = $this->em->getClassMetadata(get_class($object));
+            $this->clearEntityChangeSet($oid);
+            $this->clearScheduledForSynchronization($class, $oid);
+        }
     }
 
     /**
@@ -3088,7 +3111,16 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearEntityChangeSet($oid)
     {
-        $this->entityChangeSets[$oid] = array();
+        unset($this->entityChangeSets[$oid]);
+    }
+
+    /**
+     * @param $class
+     * @param string $oid
+     */
+    public function clearScheduledForSynchronization($class, $oid)
+    {
+        unset($this->scheduledForSynchronization[$class->rootEntityName][$oid]);
     }
 
     /* PropertyChangedListener implementation */
