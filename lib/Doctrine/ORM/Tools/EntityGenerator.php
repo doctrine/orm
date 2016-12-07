@@ -421,7 +421,7 @@ public function __construct(<params>)
             $this->generateEntityBody($metadata)
         );
 
-        $code = str_replace($placeHolders, $replacements, static::$classTemplate) . "\n";
+        $code = str_replace($placeHolders, $replacements, static::$classTemplate);
 
         return str_replace('<spaces>', $this->spaces, $code);
     }
