@@ -19,7 +19,7 @@ $debug = true;
 $config = new \Doctrine\ORM\Configuration();
 
 // Set up Metadata Drivers
-$driverImpl = $config->newDefaultAnnotationDriver(array(__DIR__ . "/Entities"));
+$driverImpl = $config->newDefaultAnnotationDriver([__DIR__ . "/Entities"]);
 $config->setMetadataDriverImpl($driverImpl);
 
 // Set up caches, depending on $debug variable.
@@ -33,10 +33,10 @@ $config->setProxyDir(__DIR__ . '/Proxies');
 $config->setProxyNamespace('Proxies');
 
 // Database connection information
-$connectionOptions = array(
+$connectionOptions = [
     'driver' => 'pdo_sqlite',
     'path'   => 'database.sqlite'
-);
+];
 
 // Enable second-level cache
 $cacheConfig    = new \Doctrine\ORM\Cache\CacheConfiguration();
