@@ -13,9 +13,11 @@ class DDC889SuperClass
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
            'fieldName'  => 'name',
-        ));
+            ]
+        );
 
         $metadata->isMappedSuperclass = true;
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);

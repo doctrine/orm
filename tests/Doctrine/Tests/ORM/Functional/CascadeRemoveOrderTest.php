@@ -14,20 +14,24 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+            ]
+        );
     }
 
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(array(
+        $this->_schemaTool->dropSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+            ]
+        );
     }
 
     public function testSingle()

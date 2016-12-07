@@ -36,12 +36,12 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema(
-                array(
+                [
                     $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity'),
                     $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity'),
                     $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\Flight'),
                     $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\City')
-                )
+                ]
             );
         } catch (ORMException $e) {
         }
@@ -66,7 +66,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $firstEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity')
-            ->findOneBy(array('name' => 'Fred'));
+            ->findOneBy(['name' => 'Fred']);
 
         $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity');
 

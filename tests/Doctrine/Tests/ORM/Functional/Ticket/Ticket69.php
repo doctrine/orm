@@ -14,11 +14,13 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                     $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\Lemma'),
                     $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\Relation'),
                     $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\RelationType')
-            ));
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

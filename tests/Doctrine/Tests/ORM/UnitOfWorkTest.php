@@ -52,7 +52,7 @@ class UnitOfWorkTest extends OrmTestCase
 
     protected function setUp() {
         parent::setUp();
-        $this->_connectionMock = new ConnectionMock(array(), new DriverMock());
+        $this->_connectionMock = new ConnectionMock([], new DriverMock());
         $this->_emMock = EntityManagerMock::create($this->_connectionMock);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
@@ -168,7 +168,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
 
-        $this->assertEquals(array('data' => array('thedata', 'newdata')), $this->_unitOfWork->getEntityChangeSet($entity));
+        $this->assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
@@ -215,7 +215,7 @@ class UnitOfWorkTest extends OrmTestCase
         $persister->reset();
 
         // if the entity is already managed the exists() check should be skipped
-        $this->_unitOfWork->registerManaged($ph, array('phonenumber' => '12345'), array());
+        $this->_unitOfWork->registerManaged($ph, ['phonenumber' => '12345'], []);
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
         $this->assertFalse($persister->isExistsCalled());
         $ph2 = new CmsPhonenumber();
@@ -319,7 +319,7 @@ class UnitOfWorkTest extends OrmTestCase
         $entity     = new ForumUser();
         $entity->id = 123;
 
-        $this->_unitOfWork->registerManaged($entity, array('id' => 123), array());
+        $this->_unitOfWork->registerManaged($entity, ['id' => 123], []);
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
 
         $this->_unitOfWork->remove($entity);
@@ -497,7 +497,7 @@ class UnitOfWorkTest extends OrmTestCase
  */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
-    private $_listeners = array();
+    private $_listeners = [];
     /**
      * @Id
      * @Column(type="integer")

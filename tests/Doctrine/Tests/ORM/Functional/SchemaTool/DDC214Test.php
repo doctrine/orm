@@ -11,7 +11,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC214Test extends OrmFunctionalTestCase
 {
-    private $classes = array();
+    private $classes = [];
     private $schemaTool = null;
 
     public function setUp()
@@ -31,14 +31,14 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCmsAddressModel()
     {
-        $this->classes = array(
+        $this->classes = [
             'Doctrine\Tests\Models\CMS\CmsUser',
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
             'Doctrine\Tests\Models\CMS\CmsAddress',
             'Doctrine\Tests\Models\CMS\CmsGroup',
             'Doctrine\Tests\Models\CMS\CmsArticle',
             'Doctrine\Tests\Models\CMS\CmsEmail',
-        );
+        ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
@@ -48,7 +48,7 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCompanyModel()
     {
-        $this->classes = array(
+        $this->classes = [
             'Doctrine\Tests\Models\Company\CompanyPerson',
             'Doctrine\Tests\Models\Company\CompanyEmployee',
             'Doctrine\Tests\Models\Company\CompanyManager',
@@ -57,14 +57,14 @@ class DDC214Test extends OrmFunctionalTestCase
             'Doctrine\Tests\Models\Company\CompanyAuction',
             'Doctrine\Tests\Models\Company\CompanyRaffle',
             'Doctrine\Tests\Models\Company\CompanyCar'
-        );
+        ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     public function assertCreatedSchemaNeedsNoUpdates($classes)
     {
-        $classMetadata = array();
+        $classMetadata = [];
         foreach ($classes AS $class) {
             $classMetadata[] = $this->_em->getClassMetadata($class);
         }

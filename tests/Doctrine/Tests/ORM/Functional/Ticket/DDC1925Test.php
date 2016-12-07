@@ -12,10 +12,12 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1925User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1925Product'),
-        ));
+            ]
+        );
 
         $user = new DDC1925User();
         $user->setTitle("Test User");

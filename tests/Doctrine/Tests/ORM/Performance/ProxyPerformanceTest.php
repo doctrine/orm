@@ -21,10 +21,10 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
      */
     public function entitiesProvider()
     {
-        return array(
-            array('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            array('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        return [
+            ['Doctrine\Tests\Models\CMS\CmsEmployee'],
+            ['Doctrine\Tests\Models\CMS\CmsUser'],
+        ];
     }
 
     /**
@@ -37,7 +37,7 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
         $start = microtime(true);
 
         for ($i = 0; $i < 100000; $i += 1) {
-            $user = $proxyFactory->getProxy($entityName, array('id' => $i));
+            $user = $proxyFactory->getProxy($entityName, ['id' => $i]);
         }
 
         echo __FUNCTION__ . " - " . (microtime(true) - $start) . " seconds with " . $entityName . PHP_EOL;
@@ -51,7 +51,7 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
         $em              = new MockEntityManager($this->_getEntityManager());
         $proxyFactory    = $em->getProxyFactory();
         /* @var $user \Doctrine\Common\Proxy\Proxy */
-        $user            = $proxyFactory->getProxy($entityName, array('id' => 1));
+        $user            = $proxyFactory->getProxy($entityName, ['id' => 1]);
         $initializer     = $user->__getInitializer();
 
         $this->setMaxRunningTime(5);
@@ -146,7 +146,7 @@ class PersisterMock extends BasicEntityPersister
     }
 
     /** {@inheritDoc} */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = [], $lockMode = 0, $limit = null, array $orderBy = null)
     {
         return $entity;
     }

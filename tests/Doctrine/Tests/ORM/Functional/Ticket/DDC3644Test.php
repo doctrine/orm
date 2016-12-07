@@ -16,12 +16,14 @@ class DDC3644Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
+        $this->setUpEntitySchema(
+            [
             'Doctrine\Tests\ORM\Functional\Ticket\DDC3644User',
             'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Address',
             'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Animal',
             'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Pet',
-        ));
+            ]
+        );
     }
 
     /**
@@ -33,7 +35,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
         $previous  = new DDC3644Address('Rio de Janeiro, RJ, Brazil');
         $initial   = new DDC3644Address('Sao Carlos, SP, Brazil');
-        $addresses = new ArrayCollection(array($current, $previous, $initial));
+        $addresses = new ArrayCollection([$current, $previous, $initial]);
         $user      = new DDC3644User();
 
         $user->name = 'Guilherme Blanco';
@@ -53,7 +55,7 @@ class DDC3644Test extends OrmFunctionalTestCase
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $current   = new DDC3644Address('Toronto, ON, Canada');
-        $addresses = new ArrayCollection(array($current));
+        $addresses = new ArrayCollection([$current]);
         $user      = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
 
         $user->setAddresses($addresses);
@@ -84,7 +86,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');
         $past   = new DDC3644Pet('Nanny');
-        $pets   = new ArrayCollection(array($actual, $past));
+        $pets   = new ArrayCollection([$actual, $past]);
         $user   = new DDC3644User();
 
         $user->name = 'Guilherme Blanco';
@@ -103,7 +105,7 @@ class DDC3644Test extends OrmFunctionalTestCase
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $actual = new DDC3644Pet('Valentina');
-        $pets   = new ArrayCollection(array($actual));
+        $pets   = new ArrayCollection([$actual]);
         $user   = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
 
         $user->setPets($pets);

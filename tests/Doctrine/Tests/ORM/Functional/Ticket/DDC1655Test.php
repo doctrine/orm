@@ -14,11 +14,13 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Foo'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Bar'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Baz'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -26,10 +28,10 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPostLoadOneToManyInheritance()
     {
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Foo');
-        $this->assertEquals(array("postLoad" => array("postLoad")), $cm->lifecycleCallbacks);
+        $this->assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
 
         $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Bar');
-        $this->assertEquals(array("postLoad" => array("postLoad", "postSubLoaded")), $cm->lifecycleCallbacks);
+        $this->assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
 
         $baz = new DDC1655Baz();
         $foo = new DDC1655Foo();
@@ -140,5 +142,5 @@ class DDC1655Baz
     /**
      * @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
      */
-    public $foos = array();
+    public $foos = [];
 }

@@ -92,7 +92,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $countries);
         $this->assertInstanceOf(Country::CLASSNAME, $countries[0]);
         $this->assertInstanceOf(Country::CLASSNAME, $countries[1]);
-        
+
         $country = new Country('foo');
 
         $this->_em->persist($country);
@@ -105,7 +105,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $country = $repository->find($country->getId());
-        
+
         $this->_em->remove($country);
         $this->_em->flush();
         $this->_em->clear();
@@ -125,7 +125,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
 
-        $criteria   = array('name'=>$this->countries[0]->getName());
+        $criteria   = ['name'=>$this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::CLASSNAME);
         $queryCount = $this->getCurrentQueryCount();
 
@@ -155,7 +155,7 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
 
-        $criteria   = array('name'=>$this->countries[0]->getName());
+        $criteria   = ['name'=>$this->countries[0]->getName()];
         $repository = $this->_em->getRepository(Country::CLASSNAME);
         $queryCount = $this->getCurrentQueryCount();
 

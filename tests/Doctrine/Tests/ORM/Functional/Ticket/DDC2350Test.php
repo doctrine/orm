@@ -14,10 +14,12 @@ class DDC2350Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350Bug'),
-        ));
+            ]
+        );
     }
 
     public function testEagerCollectionsAreOnlyRetrievedOnce()

@@ -7,12 +7,14 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityXAbstract'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityX'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityY'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC279EntityZ'),
-        ));
+            ]
+        );
     }
 
     /**

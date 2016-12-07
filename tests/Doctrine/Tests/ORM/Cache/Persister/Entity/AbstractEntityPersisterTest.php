@@ -38,7 +38,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     /**
      * @var array
      */
-    protected $regionMockMethods = array(
+    protected $regionMockMethods = [
         'getName',
         'contains',
         'get',
@@ -46,12 +46,12 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'put',
         'evict',
         'evictAll'
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $entityPersisterMockMethods = array(
+    protected $entityPersisterMockMethods = [
         'getClassMetadata',
         'getResultSetMapping',
         'getInserts',
@@ -79,7 +79,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'lock',
         'getOneToManyCollection',
         'exists'
-    );
+    ];
 
     /**
      * @param \Doctrine\ORM\EntityManager                     $em
@@ -150,9 +150,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('getInserts')
-            ->will($this->returnValue(array($entity)));
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->getInserts());
+        $this->assertEquals([$entity], $persister->getInserts());
     }
 
     public function testInvokeGetSelectSQL()
@@ -161,10 +161,14 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('getSelectSQL')
-            ->with($this->equalTo(array('name'=>'Foo')), $this->equalTo(array(0)), $this->equalTo(1), $this->equalTo(2), $this->equalTo(3), $this->equalTo(array(4)))
+            ->with($this->equalTo(['name'=>'Foo']), $this->equalTo([0]), $this->equalTo(1), $this->equalTo(2), $this->equalTo(3), $this->equalTo(
+                [4]
+            ))
             ->will($this->returnValue('SELECT * FROM foo WERE name = ?'));
 
-        $this->assertEquals('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(array('name'=>'Foo'), array(0), 1, 2, 3, array(4)));
+        $this->assertEquals('SELECT * FROM foo WERE name = ?', $persister->getSelectSQL(
+            ['name'=>'Foo'], [0], 1, 2, 3, [4]
+        ));
     }
 
     public function testInvokeGetInsertSQL()
@@ -184,10 +188,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('expandParameters')
-            ->with($this->equalTo(array('name'=>'Foo')))
-            ->will($this->returnValue(array('name'=>'Foo')));
+            ->with($this->equalTo(['name'=>'Foo']))
+            ->will($this->returnValue(['name'=>'Foo']));
 
-        $this->assertEquals(array('name'=>'Foo'), $persister->expandParameters(array('name'=>'Foo')));
+        $this->assertEquals(['name'=>'Foo'], $persister->expandParameters(['name'=>'Foo']));
     }
 
     public function testInvokeExpandCriteriaParameters()
@@ -198,9 +202,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->entityPersister->expects($this->once())
             ->method('expandCriteriaParameters')
             ->with($this->equalTo($criteria))
-            ->will($this->returnValue(array('name'=>'Foo')));
+            ->will($this->returnValue(['name'=>'Foo']));
 
-        $this->assertEquals(array('name'=>'Foo'), $persister->expandCriteriaParameters($criteria));
+        $this->assertEquals(['name'=>'Foo'], $persister->expandCriteriaParameters($criteria));
     }
 
     public function testInvokeSelectConditionStatementSQL()
@@ -209,10 +213,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('getSelectConditionStatementSQL')
-            ->with($this->equalTo('id'), $this->equalTo(1), $this->equalTo(array()), $this->equalTo('='))
+            ->with($this->equalTo('id'), $this->equalTo(1), $this->equalTo([]), $this->equalTo('='))
             ->will($this->returnValue('name = 1'));
 
-        $this->assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, array(), '='));
+        $this->assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, [], '='));
     }
 
     public function testInvokeExecuteInserts()
@@ -221,9 +225,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('executeInserts')
-            ->will($this->returnValue(array('id' => 1)));
+            ->will($this->returnValue(['id' => 1]));
 
-        $this->assertEquals(array('id' => 1), $persister->executeInserts());
+        $this->assertEquals(['id' => 1], $persister->executeInserts());
     }
 
     public function testInvokeUpdate()
@@ -235,7 +239,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->method('update')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->assertNull($persister->update($entity));
     }
@@ -249,7 +253,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->method('delete')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->assertNull($persister->delete($entity));
     }
@@ -273,10 +277,14 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('load')
-            ->with($this->equalTo(array('id' => 1)), $this->equalTo($entity), $this->equalTo(array(0)), $this->equalTo(array(1)), $this->equalTo(2), $this->equalTo(3), $this->equalTo(array(4)))
+            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity), $this->equalTo([0]), $this->equalTo(
+                [1]
+            ), $this->equalTo(2), $this->equalTo(3), $this->equalTo(
+                [4]
+            ))
             ->will($this->returnValue($entity));
 
-        $this->assertEquals($entity, $persister->load(array('id' => 1), $entity, array(0), array(1), 2, 3, array(4)));
+        $this->assertEquals($entity, $persister->load(['id' => 1], $entity, [0], [1], 2, 3, [4]));
     }
 
     public function testInvokeLoadAll()
@@ -287,18 +295,18 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $rsm->addEntityResult(Country::CLASSNAME, 'c');
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->entityPersister->expects($this->once())
             ->method('loadAll')
-            ->with($this->equalTo(array('id' => 1)), $this->equalTo(array(0)), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue(array($entity)));
+            ->with($this->equalTo(['id' => 1]), $this->equalTo([0]), $this->equalTo(1), $this->equalTo(2))
+            ->will($this->returnValue([$entity]));
 
         $this->entityPersister->expects($this->once())
             ->method('getResultSetMapping')
             ->will($this->returnValue($rsm));
 
-        $this->assertEquals(array($entity), $persister->loadAll(array('id' => 1), array(0), 1, 2));
+        $this->assertEquals([$entity], $persister->loadAll(['id' => 1], [0], 1, 2));
     }
 
     public function testInvokeLoadById()
@@ -308,10 +316,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('loadById')
-            ->with($this->equalTo(array('id' => 1)), $this->equalTo($entity))
+            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity))
             ->will($this->returnValue($entity));
 
-        $this->assertEquals($entity, $persister->loadById(array('id' => 1), $entity));
+        $this->assertEquals($entity, $persister->loadById(['id' => 1], $entity));
     }
 
     public function testInvokeLoadOneToOneEntity()
@@ -321,10 +329,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('loadOneToOneEntity')
-            ->with($this->equalTo(array()), $this->equalTo('foo'), $this->equalTo(array('id' => 11)))
+            ->with($this->equalTo([]), $this->equalTo('foo'), $this->equalTo(['id' => 11]))
             ->will($this->returnValue($entity));
 
-        $this->assertEquals($entity, $persister->loadOneToOneEntity(array(), 'foo', array('id' => 11)));
+        $this->assertEquals($entity, $persister->loadOneToOneEntity([], 'foo', ['id' => 11]));
     }
 
     public function testInvokeRefresh()
@@ -334,10 +342,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('refresh')
-            ->with($this->equalTo(array('id' => 1)), $this->equalTo($entity), $this->equalTo(0))
+            ->with($this->equalTo(['id' => 1]), $this->equalTo($entity), $this->equalTo(0))
             ->will($this->returnValue($entity));
 
-        $this->assertNull($persister->refresh(array('id' => 1), $entity), 0);
+        $this->assertNull($persister->refresh(['id' => 1], $entity), 0);
     }
 
     public function testInvokeLoadCriteria()
@@ -347,7 +355,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $entity    = new Country("Foo");
         $criteria  = new Criteria();
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
         $rsm->addEntityResult(Country::CLASSNAME, 'c');
 
         $this->entityPersister->expects($this->once())
@@ -357,9 +365,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->entityPersister->expects($this->once())
             ->method('loadCriteria')
             ->with($this->equalTo($criteria))
-            ->will($this->returnValue(array($entity)));
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->loadCriteria($criteria));
+        $this->assertEquals([$entity], $persister->loadCriteria($criteria));
     }
 
     public function testInvokeGetManyToManyCollection()
@@ -369,10 +377,10 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('getManyToManyCollection')
-            ->with($this->equalTo(array()), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue(array($entity)));
+            ->with($this->equalTo([]), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->getManyToManyCollection(array(), 'Foo', 1 ,2));
+        $this->assertEquals([$entity], $persister->getManyToManyCollection([], 'Foo', 1 ,2));
     }
 
     public function testInvokeGetOneToManyCollection()
@@ -382,16 +390,16 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('getOneToManyCollection')
-            ->with($this->equalTo(array()), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
-            ->will($this->returnValue(array($entity)));
+            ->with($this->equalTo([]), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->getOneToManyCollection(array(), 'Foo', 1 ,2));
+        $this->assertEquals([$entity], $persister->getOneToManyCollection([], 'Foo', 1 ,2));
     }
 
     public function testInvokeLoadManyToManyCollection()
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
-        $assoc     = array('type' => 1);
+        $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
@@ -399,15 +407,15 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->entityPersister->expects($this->once())
             ->method('loadManyToManyCollection')
             ->with($this->equalTo($assoc), $this->equalTo('Foo'), $coll)
-            ->will($this->returnValue(array($entity)));
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->loadManyToManyCollection($assoc, 'Foo', $coll));
+        $this->assertEquals([$entity], $persister->loadManyToManyCollection($assoc, 'Foo', $coll));
     }
 
     public function testInvokeLoadOneToManyCollection()
     {
         $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
-        $assoc     = array('type' => 1);
+        $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
@@ -415,14 +423,14 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $this->entityPersister->expects($this->once())
             ->method('loadOneToManyCollection')
             ->with($this->equalTo($assoc), $this->equalTo('Foo'), $coll)
-            ->will($this->returnValue(array($entity)));
+            ->will($this->returnValue([$entity]));
 
-        $this->assertEquals(array($entity), $persister->loadOneToManyCollection($assoc, 'Foo', $coll));
+        $this->assertEquals([$entity], $persister->loadOneToManyCollection($assoc, 'Foo', $coll));
     }
 
     public function testInvokeLock()
     {
-        $identifier = array('id' => 1);
+        $identifier = ['id' => 1];
         $persister  = $this->createPersisterDefault();
 
         $this->entityPersister->expects($this->once())

@@ -15,9 +15,11 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         Type::addType('ddc1998', __NAMESPACE__ . '\\DDC1998Type');
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1998Entity'),
-        ));
+            ]
+        );
 
         $entity = new DDC1998Entity();
         $entity->id = new DDC1998Id("foo");

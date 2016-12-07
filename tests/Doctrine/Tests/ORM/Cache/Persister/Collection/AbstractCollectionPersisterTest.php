@@ -35,7 +35,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     /**
      * @var array
      */
-    protected $regionMockMethods = array(
+    protected $regionMockMethods = [
         'getName',
         'contains',
         'get',
@@ -43,12 +43,12 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'put',
         'evict',
         'evictAll'
-    );
+    ];
 
     /**
      * @var array
      */
-    protected $collectionPersisterMockMethods = array(
+    protected $collectionPersisterMockMethods = [
         'delete',
         'update',
         'count',
@@ -60,7 +60,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         'get',
         'getMultiple',
         'loadCriteria'
-    );
+    ];
 
     /**
      * @param \Doctrine\ORM\EntityManager                             $em
@@ -133,7 +133,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('delete')
@@ -150,7 +150,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
         $collection->setDirty(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('update')
@@ -165,7 +165,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('count')
@@ -182,7 +182,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $collection = $this->createCollection($entity);
         $slice      = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('slice')
@@ -199,7 +199,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('contains')
@@ -215,7 +215,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('containsKey')
@@ -232,7 +232,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('removeElement')
@@ -249,7 +249,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $this->collectionPersister->expects($this->once())
             ->method('get')

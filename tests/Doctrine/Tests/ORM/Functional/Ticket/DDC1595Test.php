@@ -15,11 +15,13 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595BaseInheritance'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity1'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity2'),
-        ));
+            ]
+        );
     }
 
     public function testIssue()

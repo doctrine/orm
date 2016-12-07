@@ -9,10 +9,12 @@ class DDC1258Test extends OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\TestEntity'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\TestAdditionalEntity')
-        ));
+            ]
+        );
     }
 
     public function testIssue()

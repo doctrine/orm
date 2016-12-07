@@ -16,12 +16,14 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306Zone'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306Address'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306UserAddress'),
-        ));
+            ]
+        );
     }
 
     /**

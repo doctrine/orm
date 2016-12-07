@@ -15,7 +15,7 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
+        $classes = [
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
@@ -23,12 +23,12 @@ class SchemaToolTest extends OrmTestCase
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $this->assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
-        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
+        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), "username column should be indexed.");
     }
 
     public function testAnnotationOptionsAttribute()
@@ -36,13 +36,13 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
+        $classes = [
             $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithAnnotationOptionsAttribute'),
-        );
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
 
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
@@ -62,7 +62,7 @@ class SchemaToolTest extends OrmTestCase
         $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
         $user = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
 
-        $classes = array($avatar, $user);
+        $classes = [$avatar, $user];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
@@ -81,11 +81,11 @@ class SchemaToolTest extends OrmTestCase
 
         $em = $this->_getTestEntityManager();
         $em->getEventManager()->addEventListener(
-            array(ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema), $listener
+            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener
         );
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
+        $classes = [
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
@@ -93,7 +93,7 @@ class SchemaToolTest extends OrmTestCase
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
             $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
@@ -106,16 +106,16 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
+        $classes = [
             $em->getClassMetadata('Doctrine\Tests\Models\NullDefault\NullDefaultColumn'),
-        );
+        ];
 
         $customSchemaOptions = $schemaTool->getSchemaFromMetadata($classes)
             ->getTable('NullDefaultColumn')
             ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
 
-        $this->assertSame(array(), $customSchemaOptions);
+        $this->assertSame([], $customSchemaOptions);
     }
 
     /**

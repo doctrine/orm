@@ -30,7 +30,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function putTripAroundEurope()
     {
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
 
         $tour = new NavTour("Trip around Europe");
         $tour->addPointOfInterest($poi);
@@ -46,7 +46,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
 
         $this->assertInstanceOf('Doctrine\Tests\Models\Navigation\NavPointOfInterest', $poi);
         $this->assertEquals(100, $poi->getLat());
@@ -61,7 +61,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
         $photo = new NavPhotos($poi, "asdf");
         $this->_em->persist($photo);
         $this->_em->flush();
@@ -79,7 +79,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi    = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi    = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
         $photo  = new NavPhotos($poi, "asdf");
         $this->_em->persist($photo);
         $this->_em->flush();
@@ -140,7 +140,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('key1' => 100));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['key1' => 100]);
     }
 
     public function testUnrecognizedIdentifierFieldsOnGetReference()
@@ -148,7 +148,8 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
 
-        $poi = $this->_em->getReference('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 10, 'long' => 20, 'key1' => 100));
+        $poi = $this->_em->getReference('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 10, 'long' => 20, 'key1' => 100]
+        );
     }
 
     /**
@@ -158,7 +159,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
         $poi->addVisitor(new NavUser("test1"));
         $poi->addVisitor(new NavUser("test2"));
 
@@ -169,7 +170,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', array('lat' => 100, 'long' => 200));
+        $poi = $this->_em->find('Doctrine\Tests\Models\Navigation\NavPointOfInterest', ['lat' => 100, 'long' => 200]);
         $this->assertEquals(0, count($poi->getVisitors()));
     }
 }

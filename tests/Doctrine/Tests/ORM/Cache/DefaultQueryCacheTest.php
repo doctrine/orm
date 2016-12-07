@@ -79,7 +79,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testPutBasicQueryResult()
     {
-        $result   = array();
+        $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
@@ -92,7 +92,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $result[]   = $entity;
 
             $metadata->setFieldValue($entity, 'id', $i);
-            $this->em->getUnitOfWork()->registerManaged($entity, array('id' => $i), array('name' => $name));
+            $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
         }
 
         $this->assertTrue($this->queryCache->put($key, $rsm, $result));
@@ -114,7 +114,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testPutToOneAssociationQueryResult()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -122,7 +122,8 @@ class DefaultQueryCacheTest extends OrmTestCase
         $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(City::CLASSNAME, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', array('id'=>'state_id', 'name'=>'state_name'));
+        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']
+        );
 
         for ($i = 0; $i < 4; $i++) {
             $state    = new State("State $i");
@@ -132,8 +133,8 @@ class DefaultQueryCacheTest extends OrmTestCase
             $cityClass->setFieldValue($city, 'id', $i);
             $stateClass->setFieldValue($state, 'id', $i*2);
 
-            $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $city->getName()));
-            $uow->registerManaged($city, array('id' => $city->getId()), array('name' => $city->getName(), 'state' => $state));
+            $uow->registerManaged($state, ['id' => $state->getId()], ['name' => $city->getName()]);
+            $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => $state]);
         }
 
         $this->assertTrue($this->queryCache->put($key, $rsm, $result));
@@ -153,7 +154,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testPutToOneAssociation2LevelsQueryResult()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -162,8 +163,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $countryClass = $this->em->getClassMetadata(Country::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(City::CLASSNAME, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', array('id'=>'state_id', 'name'=>'state_name'));
-        $rsm->addJoinedEntityFromClassMetadata(Country::CLASSNAME, 'co', 's', 'country', array('id'=>'country_id', 'name'=>'country_name'));
+        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']
+        );
+        $rsm->addJoinedEntityFromClassMetadata(Country::CLASSNAME, 'co', 's', 'country', ['id'=>'country_id', 'name'=>'country_name']
+        );
 
         for ($i = 0; $i < 4; $i++) {
             $country  = new Country("Country $i");
@@ -176,9 +179,10 @@ class DefaultQueryCacheTest extends OrmTestCase
             $stateClass->setFieldValue($state, 'id', $i*2);
             $countryClass->setFieldValue($country, 'id', $i*3);
 
-            $uow->registerManaged($country, array('id' => $country->getId()), array('name' => $country->getName()));
-            $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $state->getName(), 'country' => $country));
-            $uow->registerManaged($city, array('id' => $city->getId()), array('name' => $city->getName(), 'state' => $state));
+            $uow->registerManaged($country, ['id' => $country->getId()], ['name' => $country->getName()]);
+            $uow->registerManaged($state, ['id' => $state->getId()], ['name' => $state->getName(), 'country' => $country]
+            );
+            $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => $state]);
         }
 
         $this->assertTrue($this->queryCache->put($key, $rsm, $result));
@@ -202,14 +206,15 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testPutToOneAssociationNullQueryResult()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
         $cityClass  = $this->em->getClassMetadata(City::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(City::CLASSNAME, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', array('id'=>'state_id', 'name'=>'state_name'));
+        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']
+        );
 
         for ($i = 0; $i < 4; $i++) {
             $city     = new City("City $i", null);
@@ -217,7 +222,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
             $cityClass->setFieldValue($city, 'id', $i);
 
-            $uow->registerManaged($city, array('id' => $city->getId()), array('name' => $city->getName(), 'state' => null));
+            $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => null]);
         }
 
         $this->assertTrue($this->queryCache->put($key, $rsm, $result));
@@ -233,7 +238,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testPutToManyAssociationQueryResult()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -241,7 +246,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(State::CLASSNAME, 's');
-        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', array('id'=>'c_id', 'name'=>'c_name'));
+        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', ['id'=>'c_id', 'name'=>'c_name']);
 
         for ($i = 0; $i < 4; $i++) {
             $state    = new State("State $i");
@@ -256,9 +261,12 @@ class DefaultQueryCacheTest extends OrmTestCase
             $state->addCity($city1);
             $state->addCity($city2);
 
-            $uow->registerManaged($city1, array('id' => $city1->getId()), array('name' => $city1->getName(), 'state' => $state));
-            $uow->registerManaged($city2, array('id' => $city2->getId()), array('name' => $city2->getName(), 'state' => $state));
-            $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $state->getName(), 'cities' => $state->getCities()));
+            $uow->registerManaged($city1, ['id' => $city1->getId()], ['name' => $city1->getName(), 'state' => $state]
+            );
+            $uow->registerManaged($city2, ['id' => $city2->getId()], ['name' => $city2->getName(), 'state' => $state]
+            );
+            $uow->registerManaged($state, ['id' => $state->getId()], ['name' => $state->getName(), 'cities' => $state->getCities()]
+            );
         }
 
         $this->assertTrue($this->queryCache->put($key, $rsm, $result));
@@ -270,15 +278,17 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
-        $entry = new QueryCacheEntry(array(
-            array('identifier' => array('id' => 1)),
-            array('identifier' => array('id' => 2))
-        ));
-
-        $data = array(
-            array('id'=>1, 'name' => 'Foo'),
-            array('id'=>2, 'name' => 'Bar')
+        $entry = new QueryCacheEntry(
+            [
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]]
+            ]
         );
+
+        $data = [
+            ['id'=>1, 'name' => 'Foo'],
+            ['id'=>2, 'name' => 'Bar']
+        ];
 
         $this->region->addReturn('get', $entry);
         $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[0]));
@@ -299,7 +309,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testCancelPutResultIfEntityPutFails()
     {
-        $result   = array();
+        $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
@@ -312,7 +322,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $result[]   = $entity;
 
             $metadata->setFieldValue($entity, 'id', $i);
-            $this->em->getUnitOfWork()->registerManaged($entity, array('id' => $i), array('name' => $name));
+            $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
         }
 
         $this->region->addReturn('put', false);
@@ -324,7 +334,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testCancelPutResultIfAssociationEntityPutFails()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -332,7 +342,8 @@ class DefaultQueryCacheTest extends OrmTestCase
         $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(City::CLASSNAME, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', array('id'=>'state_id', 'name'=>'state_name'));
+        $rsm->addJoinedEntityFromClassMetadata(State::CLASSNAME, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']
+        );
 
         $state    = new State("State 1");
         $city     = new City("City 2", $state);
@@ -341,8 +352,8 @@ class DefaultQueryCacheTest extends OrmTestCase
         $cityClass->setFieldValue($city, 'id', 1);
         $stateClass->setFieldValue($state, 'id', 11);
 
-        $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $city->getName()));
-        $uow->registerManaged($city, array('id' => $city->getId()), array('name' => $city->getName(), 'state' => $state));
+        $uow->registerManaged($state, ['id' => $state->getId()], ['name' => $city->getName()]);
+        $uow->registerManaged($city, ['id' => $city->getId()], ['name' => $city->getName(), 'state' => $state]);
 
         $this->region->addReturn('put', true);  // put root entity
         $this->region->addReturn('put', false); // association fails
@@ -352,7 +363,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testCancelPutToManyAssociationQueryResult()
     {
-        $result     = array();
+        $result     = [];
         $uow        = $this->em->getUnitOfWork();
         $key        = new QueryCacheKey('query.key1', 0);
         $rsm        = new ResultSetMappingBuilder($this->em);
@@ -360,7 +371,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $stateClass = $this->em->getClassMetadata(State::CLASSNAME);
 
         $rsm->addRootEntityFromClassMetadata(State::CLASSNAME, 's');
-        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', array('id'=>'c_id', 'name'=>'c_name'));
+        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', ['id'=>'c_id', 'name'=>'c_name']);
 
         $state    = new State("State");
         $city1    = new City("City 1", $state);
@@ -374,9 +385,10 @@ class DefaultQueryCacheTest extends OrmTestCase
         $state->addCity($city1);
         $state->addCity($city2);
 
-        $uow->registerManaged($city1, array('id' => $city1->getId()), array('name' => $city1->getName(), 'state' => $state));
-        $uow->registerManaged($city2, array('id' => $city2->getId()), array('name' => $city2->getName(), 'state' => $state));
-        $uow->registerManaged($state, array('id' => $state->getId()), array('name' => $state->getName(), 'cities' => $state->getCities()));
+        $uow->registerManaged($city1, ['id' => $city1->getId()], ['name' => $city1->getName(), 'state' => $state]);
+        $uow->registerManaged($city2, ['id' => $city2->getId()], ['name' => $city2->getName(), 'state' => $state]);
+        $uow->registerManaged($state, ['id' => $state->getId()], ['name' => $state->getName(), 'cities' => $state->getCities()]
+        );
 
         $this->region->addReturn('put', true);  // put root entity
         $this->region->addReturn('put', false); // collection association fails
@@ -390,10 +402,12 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0, Cache::MODE_PUT);
-        $entry = new QueryCacheEntry(array(
-            array('identifier' => array('id' => 1)),
-            array('identifier' => array('id' => 2))
-        ));
+        $entry = new QueryCacheEntry(
+            [
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]]
+            ]
+        );
 
         $rsm->addRootEntityFromClassMetadata(Country::CLASSNAME, 'c');
 
@@ -404,7 +418,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
     public function testIgnoreCacheNonPutMode()
     {
-        $result   = array();
+        $result   = [];
         $rsm      = new ResultSetMappingBuilder($this->em);
         $metadata = $this->em->getClassMetadata(Country::CLASSNAME);
         $key      = new QueryCacheKey('query.key1', 0, Cache::MODE_GET);
@@ -417,7 +431,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $result[]   = $entity;
 
             $metadata->setFieldValue($entity, 'id', $i);
-            $this->em->getUnitOfWork()->registerManaged($entity, array('id' => $i), array('name' => $name));
+            $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['name' => $name]);
         }
 
         $this->assertFalse($this->queryCache->put($key, $rsm, $result));
@@ -427,14 +441,16 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 50);
-        $entry = new QueryCacheEntry(array(
-            array('identifier' => array('id' => 1)),
-            array('identifier' => array('id' => 2))
-        ));
-        $entities = array(
-            array('id'=>1, 'name' => 'Foo'),
-            array('id'=>2, 'name' => 'Bar')
+        $entry = new QueryCacheEntry(
+            [
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]]
+            ]
         );
+        $entities = [
+            ['id'=>1, 'name' => 'Foo'],
+            ['id'=>2, 'name' => 'Bar']
+        ];
 
         $entry->time = microtime(true) - 100;
 
@@ -451,15 +467,17 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
-        $entry = new \ArrayObject(array(
-            array('identifier' => array('id' => 1)),
-            array('identifier' => array('id' => 2))
-        ));
-
-        $data = array(
-            array('id'=>1, 'name' => 'Foo'),
-            array('id'=>2, 'name' => 'Bar')
+        $entry = new \ArrayObject(
+            [
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]]
+            ]
         );
+
+        $data = [
+            ['id'=>1, 'name' => 'Foo'],
+            ['id'=>2, 'name' => 'Bar']
+        ];
 
         $this->region->addReturn('get', $entry);
         $this->region->addReturn('get', new EntityCacheEntry(Country::CLASSNAME, $data[0]));
@@ -474,10 +492,12 @@ class DefaultQueryCacheTest extends OrmTestCase
     {
         $rsm   = new ResultSetMappingBuilder($this->em);
         $key   = new QueryCacheKey('query.key1', 0);
-        $entry = new QueryCacheEntry(array(
-            array('identifier' => array('id' => 1)),
-            array('identifier' => array('id' => 2))
-        ));
+        $entry = new QueryCacheEntry(
+            [
+            ['identifier' => ['id' => 1]],
+            ['identifier' => ['id' => 2]]
+            ]
+        );
 
         $this->region->addReturn('get', $entry);
         $this->region->addReturn('get', null);
@@ -508,14 +528,16 @@ class DefaultQueryCacheTest extends OrmTestCase
         $wurzburg->addAttraction(new Restaurant('Fischers Fritz', $wurzburg));
 
         $rsm->addRootEntityFromClassMetadata(State::CLASSNAME, 's');
-        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', array(
+        $rsm->addJoinedEntityFromClassMetadata(City::CLASSNAME, 'c', 's', 'cities', [
             'id'   => 'c_id',
             'name' => 'c_name'
-        ));
-        $rsm->addJoinedEntityFromClassMetadata(Restaurant::CLASSNAME, 'a', 'c', 'attractions', array(
+        ]
+        );
+        $rsm->addJoinedEntityFromClassMetadata(Restaurant::CLASSNAME, 'a', 'c', 'attractions', [
             'id'   => 'a_id',
             'name' => 'a_name'
-        ));
+        ]
+        );
 
         $cities      = $reflection->invoke($this->queryCache, $rsm, 'c', $bavaria);
         $attractions = $reflection->invoke($this->queryCache, $rsm, 'a', $bavaria);
@@ -537,7 +559,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      */
     public function testScalarResultException()
     {
-        $result   = array();
+        $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
 
@@ -552,7 +574,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      */
     public function testSupportMultipleRootEntitiesException()
     {
-        $result   = array();
+        $result   = [];
         $key      = new QueryCacheKey('query.key1', 0);
         $rsm      = new ResultSetMappingBuilder($this->em);
 
@@ -568,7 +590,7 @@ class DefaultQueryCacheTest extends OrmTestCase
      */
     public function testNotCacheableEntityException()
     {
-        $result    = array();
+        $result    = [];
         $key       = new QueryCacheKey('query.key1', 0);
         $rsm       = new ResultSetMappingBuilder($this->em);
         $className = 'Doctrine\Tests\Models\Generic\BooleanModel';
@@ -583,7 +605,7 @@ class DefaultQueryCacheTest extends OrmTestCase
             $entity->booleanField   = $boolean;
             $result[]               = $entity;
 
-            $this->em->getUnitOfWork()->registerManaged($entity, array('id' => $i), array('booleanField' => $boolean));
+            $this->em->getUnitOfWork()->registerManaged($entity, ['id' => $i], ['booleanField' => $boolean]);
         }
 
         $this->assertFalse($this->queryCache->put($key, $rsm, $result));

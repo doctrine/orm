@@ -24,7 +24,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
     public function tearDown()
     {
         if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces(array());
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -75,7 +75,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository('Doctrine\Tests\Models\Tweet\User');
 
-        $user   = $repository->findOneBy(array('name' => 'ngal'));
+        $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());
 
         $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);

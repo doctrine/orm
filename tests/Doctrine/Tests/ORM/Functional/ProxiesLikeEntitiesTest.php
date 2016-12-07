@@ -24,14 +24,16 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            ));
+                ]
+            );
         } catch (\Exception $e) {
         }
         $this->user = new CmsUser();
@@ -48,7 +50,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     public function testPersistUpdate()
     {
         // Considering case (a)
-        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', array('id' => 123));
+        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', ['id' => 123]);
         $proxy->__isInitialized__ = true;
         $proxy->id = null;
         $proxy->username = 'ocra';
@@ -87,7 +89,8 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     public function testProxyAsDqlParameterPersist()
     {
-        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', array('id' => $this->user->getId()));
+        $proxy = $this->_em->getProxyFactory()->getProxy('Doctrine\Tests\Models\CMS\CmsUser', ['id' => $this->user->getId()]
+        );
         $proxy->id = $this->user->getId();
         $result = $this
             ->_em
@@ -117,7 +120,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
         $result = $this
             ->_em
             ->getRepository('Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser')
-            ->findOneBy(array('username' => $this->user->username));
+            ->findOneBy(['username' => $this->user->username]);
         $this->assertSame($this->user->getId(), $result->getId());
         $this->_em->clear();
         $result = $this

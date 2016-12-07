@@ -16,12 +16,14 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -109,7 +111,7 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($e3);
         $this->_em->remove($e2);
         $this->_em->remove($e1);
-        
+
         $this->_em->flush();
         $this->_em->clear();
 

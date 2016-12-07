@@ -9,12 +9,12 @@ class ArrayHydratorTest extends HydrationTestCase
 {
     public function provideDataForUserEntityResult()
     {
-        return array(
-            array(0),
-            array('user'),
-            array('scalars'),
-            array('newObjects'),
-        );
+        return [
+            [0],
+            ['user'],
+            ['scalars'],
+            ['newObjects'],
+        ];
     }
 
     /**
@@ -30,16 +30,16 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -72,18 +72,18 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 's__id' => '1',
                 's__name' => 'romanb',
                 'sclr0' => 'ROMANB',
-            ),
-            array(
+            ],
+            [
                 's__id' => '2',
                 's__name' => 'jwage',
                 'sclr0' => 'JWAGE',
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -122,16 +122,16 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -165,20 +165,20 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
                 'a__topic' => 'Cool things.'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
                 'a__topic' => 'Cool things II.'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -215,20 +215,20 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
                 'a__topic' => 'Cool things.'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
                 'a__topic' => 'Cool things II.'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -269,20 +269,20 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
                 'a__topic' => 'Cool things.'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
                 'a__topic' => 'Cool things II.'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -323,20 +323,20 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'a__id' => '1',
                 'a__topic' => 'Cool things.'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage',
                 'a__id' => '2',
                 'a__topic' => 'Cool things II.'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -379,19 +379,19 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => '2',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => '1',
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -435,27 +435,27 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -508,27 +508,27 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addIndexBy('p', 'phonenumber');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
-            )
-        );
+            ]
+        ];
 
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -593,57 +593,57 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('a', 'a__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '1',
                 'a__topic' => 'Getting things done!'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
                 'a__id' => '2',
                 'a__topic' => 'ZendCon'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '3',
                 'a__topic' => 'LINQ'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91',
                 'a__id' => '4',
                 'a__topic' => 'PHP7'
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -720,9 +720,9 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('c', 'c__topic', 'topic');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
@@ -731,8 +731,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
                 'c__topic' => 'First!'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
@@ -741,8 +741,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'Getting things done!',
                 'c__id' => '1',
                 'c__topic' => 'First!'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
@@ -751,8 +751,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
                 'c__topic' => null
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
@@ -761,8 +761,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'ZendCon',
                 'c__id' => null,
                 'c__topic' => null
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
@@ -771,8 +771,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'LINQ',
                 'c__id' => null,
                 'c__topic' => null
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
@@ -781,8 +781,8 @@ class ArrayHydratorTest extends HydrationTestCase
                 'a__topic' => 'PHP7',
                 'c__id' => null,
                 'c__topic' => null
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -863,40 +863,40 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('b', 'b__position', 'position');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'c__id' => '1',
                 'c__position' => '0',
                 'c__name' => 'First',
                 'b__id' => '1',
                 'b__position' => '0',
                 //'b__category_id' => '1'
-            ),
-            array(
+            ],
+            [
                 'c__id' => '2',
                 'c__position' => '0',
                 'c__name' => 'Second',
                 'b__id' => '2',
                 'b__position' => '0',
                 //'b__category_id' => '2'
-            ),
-            array(
+            ],
+            [
                 'c__id' => '1',
                 'c__position' => '0',
                 'c__name' => 'First',
                 'b__id' => '3',
                 'b__position' => '1',
                 //'b__category_id' => '1'
-            ),
-            array(
+            ],
+            [
                 'c__id' => '1',
                 'c__position' => '0',
                 'c__name' => 'First',
                 'b__id' => '4',
                 'b__position' => '2',
                 //'b__category_id' => '1'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -933,33 +933,33 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('c__topic', 'ctopic', 'string');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'a__id' => '1',
                 'a__topic' => 'The First',
                 'c__id' => '1',
                 'c__topic' => 'First Comment'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'a__id' => '1',
                 'a__topic' => 'The First',
                 'c__id' => '2',
                 'c__topic' => 'Second Comment'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'a__id' => '42',
                 'a__topic' => 'The Answer',
                 'c__id' => null,
                 'c__topic' => null
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -999,16 +999,16 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -1044,16 +1044,16 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb'
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__name' => 'jwage'
-            )
-        );
+            ]
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -1092,13 +1092,13 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'u__id' => '1',
                 'u__name' => 'romanb',
                 'foo' => 'bar', // unknown!
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -1127,29 +1127,29 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
-            ),
-            array(
+            ],
+            [
                 'u__id' => null,
                 'u__status' => null,
                 'sclr0' => 'ROMANB',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-            ),
-            array(
+            ],
+            [
                 'u__id' => null,
                 'u__status' => null,
                 'sclr0' => 'JWAGE',
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);
@@ -1162,9 +1162,9 @@ class ArrayHydratorTest extends HydrationTestCase
         $this->assertEquals('JWAGE', $result[2]['nameUpper']);
         $this->assertEquals('JWAGE', $result[3]['nameUpper']);
 
-        $this->assertEquals(array('id' => 1, 'status' => 'developer'), $result[0][$userEntityKey]);
+        $this->assertEquals(['id' => 1, 'status' => 'developer'], $result[0][$userEntityKey]);
         $this->assertNull($result[1][$userEntityKey]);
-        $this->assertEquals(array('id' => 2, 'status' => 'developer'), $result[2][$userEntityKey]);
+        $this->assertEquals(['id' => 2, 'status' => 'developer'], $result[2][$userEntityKey]);
         $this->assertNull($result[3][$userEntityKey]);
     }
 
@@ -1187,19 +1187,19 @@ class ArrayHydratorTest extends HydrationTestCase
         $rsm->addIndexBy('u', 'id');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'sclr0' => 'ROMANB',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'sclr0' => 'JWAGE',
-            ),
-        );
+            ],
+        ];
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->_em);

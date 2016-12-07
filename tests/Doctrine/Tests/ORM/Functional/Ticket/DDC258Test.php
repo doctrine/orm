@@ -9,12 +9,14 @@ class DDC258Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Super'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class1'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class2'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class3'),
-        ));
+            ]
+        );
     }
 
     /**

@@ -10,10 +10,12 @@ class DDC960Test extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC960Root'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC960Child')
-            ));
+                ]
+            );
         } catch(\Exception $e) {
 
         }

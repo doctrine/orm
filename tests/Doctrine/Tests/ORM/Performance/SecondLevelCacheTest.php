@@ -159,8 +159,8 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     {
         $times        = 50;
         $size         = 30;
-        $states       = array();
-        $cities       = array();
+        $states       = [];
+        $cities       = [];
         $startPersist = microtime(true);
         $country      = new Country("Country");
 
@@ -218,7 +218,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     {
         $times        = 10;
         $size         = 500;
-        $countries    = array();
+        $countries    = [];
         $startPersist = microtime(true);
 
         echo PHP_EOL . $label;

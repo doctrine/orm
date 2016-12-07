@@ -10,10 +10,12 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->setUpEntitySchema(array(
+        $this->setUpEntitySchema(
+            [
             __NAMESPACE__ . '\\DDC1654Post',
             __NAMESPACE__ . '\\DDC1654Comment',
-        ));
+            ]
+        );
     }
 
     public function tearDown()
@@ -142,7 +144,7 @@ class DDC1654Post
      * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
      * cascade={"persist"})
      */
-    public $comments = array();
+    public $comments = [];
 }
 
 /**

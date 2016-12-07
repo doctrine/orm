@@ -285,7 +285,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where('u.id = :uid')
-           ->andWhere($qb->expr()->in('u.id', array(1, 2, 3)));
+           ->andWhere($qb->expr()->in('u.id', [1, 2, 3]));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid AND u.id IN(1, 2, 3)');
     }
@@ -296,7 +296,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where('u.id = :uid')
-           ->orWhere($qb->expr()->in('u.id', array(1, 2, 3)));
+           ->orWhere($qb->expr()->in('u.id', [1, 2, 3]));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid OR u.id IN(1, 2, 3)');
     }
@@ -307,7 +307,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where('u.id = :uid')
-           ->andWhere($qb->expr()->notIn('u.id', array(1, 2, 3)));
+           ->andWhere($qb->expr()->notIn('u.id', [1, 2, 3]));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid AND u.id NOT IN(1, 2, 3)');
     }
@@ -318,7 +318,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
            ->where('u.id = :uid')
-           ->orWhere($qb->expr()->notIn('u.id', array(1, 2, 3)));
+           ->orWhere($qb->expr()->notIn('u.id', [1, 2, 3]));
 
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid OR u.id NOT IN(1, 2, 3)');
     }
@@ -528,7 +528,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
         $criteria = new Criteria();
-        $criteria->orderBy(array('field' => Criteria::DESC));
+        $criteria->orderBy(['field' => Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -547,7 +547,7 @@ class QueryBuilderTest extends OrmTestCase
             ->join('u.article','a');
 
         $criteria = new Criteria();
-        $criteria->orderBy(array('a.field' => Criteria::DESC));
+        $criteria->orderBy(['a.field' => Criteria::DESC]);
 
         $qb->addCriteria($criteria);
 
@@ -692,7 +692,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $orExpr = $qb->expr()->orX();
         $orExpr->add($qb->expr()->eq('u.id', ':uid3'));
-        $orExpr->add($qb->expr()->in('u.id', array(1)));
+        $orExpr->add($qb->expr()->in('u.id', [1]));
 
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
@@ -706,11 +706,11 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-           ->where($qb->expr()->in('u.name', array('one', 'two', 'three')));
+           ->where($qb->expr()->in('u.name', ['one', 'two', 'three']));
 
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
 
-        $qb->where($qb->expr()->in('u.name', array("O'Reilly", "O'Neil", 'Smith')));
+        $qb->where($qb->expr()->in('u.name', ["O'Reilly", "O'Neil", 'Smith']));
 
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
     }
@@ -721,11 +721,11 @@ class QueryBuilderTest extends OrmTestCase
         $expr = $this->_em->getExpressionBuilder();
         $qb->select('u')
            ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-           ->where($expr->in('u.name', array($expr->literal('one'), $expr->literal('two'), $expr->literal('three'))));
+           ->where($expr->in('u.name', [$expr->literal('one'), $expr->literal('two'), $expr->literal('three')]));
 
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('one', 'two', 'three')");
 
-        $qb->where($expr->in('u.name', array($expr->literal("O'Reilly"), $expr->literal("O'Neil"), $expr->literal('Smith'))));
+        $qb->where($expr->in('u.name', [$expr->literal("O'Reilly"), $expr->literal("O'Neil"), $expr->literal('Smith')]));
 
         $this->assertValidQueryBuilder($qb, "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name IN('O''Reilly', 'O''Neil', 'Smith')");
     }
@@ -735,7 +735,7 @@ class QueryBuilderTest extends OrmTestCase
         $expr = $this->_em->getExpressionBuilder();
         $orExpr = $expr->orX();
         $orExpr->add($expr->eq('u.id', ':uid3'));
-        $orExpr->add($expr->not($expr->in('u.id', array(1))));
+        $orExpr->add($expr->not($expr->in('u.id', [1])));
 
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
@@ -839,7 +839,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->where('u.username = ?1')->orderBy('u.username');
 
-        $qb->resetDQLParts(array('where', 'orderBy'));
+        $qb->resetDQLParts(['where', 'orderBy']);
 
         $this->assertEquals(1, count($qb->getDQLPart('select')));
         $this->assertNull($qb->getDQLPart('where'));
@@ -975,7 +975,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
-        $this->assertEquals(array('u'), $qb->getRootAliases());
+        $this->assertEquals(['u'], $qb->getRootAliases());
     }
 
     public function testGetRootEntities()
@@ -984,7 +984,7 @@ class QueryBuilderTest extends OrmTestCase
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u');
 
-        $this->assertEquals(array('Doctrine\Tests\Models\CMS\CmsUser'), $qb->getRootEntities());
+        $this->assertEquals(['Doctrine\Tests\Models\CMS\CmsUser'], $qb->getRootEntities());
     }
 
     public function testGetSeveralRootAliases()
@@ -994,7 +994,7 @@ class QueryBuilderTest extends OrmTestCase
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u2');
 
-        $this->assertEquals(array('u', 'u2'), $qb->getRootAliases());
+        $this->assertEquals(['u', 'u2'], $qb->getRootAliases());
         $this->assertEquals('u', $qb->getRootAlias());
     }
 
@@ -1003,7 +1003,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->_em->createQueryBuilder()
             ->select('u')
             ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
-            ->add('join', array('INNER JOIN u.groups g'), true);
+            ->add('join', ['INNER JOIN u.groups g'], true);
 
         $this->assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.groups g', $qb->getDQL());
     }

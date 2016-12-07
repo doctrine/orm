@@ -25,10 +25,12 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         Type::addType('ddc3192_currency_code', __NAMESPACE__ . '\DDC3192CurrencyCode');
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(DDC3192Currency::CLASSNAME),
             $this->_em->getClassMetadata(DDC3192Transaction::CLASSNAME),
-        ));
+            ]
+        );
     }
 
     public function testIssue()
@@ -130,9 +132,9 @@ class DDC3192Transaction
 
 class DDC3192CurrencyCode extends Type
 {
-    private static $map = array(
+    private static $map = [
         'BYR' => 974,
-    );
+    ];
 
     /**
      * {@inheritdoc}

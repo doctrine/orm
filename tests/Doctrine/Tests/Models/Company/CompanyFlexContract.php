@@ -110,16 +110,20 @@ class CompanyFlexContract extends CompanyContract
 
     static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'type'      => 'integer',
             'name'      => 'hoursWorked',
             'fieldName' => 'hoursWorked',
-        ));
+            ]
+        );
 
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'type'      => 'integer',
             'name'      => 'pricePerHour',
             'fieldName' => 'pricePerHour',
-        ));
+            ]
+        );
     }
 }

@@ -13,10 +13,12 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\PersistentCollectionHolder'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\PersistentCollectionContent'),
-            ));
+                ]
+            );
         } catch (\Exception $e) {
 
         }

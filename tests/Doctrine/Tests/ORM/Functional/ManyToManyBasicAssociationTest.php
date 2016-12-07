@@ -330,7 +330,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $user = $this->_em->find(get_class($user), $user->id);
 
-        $coll = new ArrayCollection(array($group1, $group2));
+        $coll = new ArrayCollection([$group1, $group2]);
         $user->groups = $coll;
         $this->_em->flush();
         $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->groups,

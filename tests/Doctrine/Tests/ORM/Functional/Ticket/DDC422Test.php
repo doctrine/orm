@@ -8,11 +8,13 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Guest'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Customer'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Contact')
-        ));
+            ]
+        );
     }
 
     /**

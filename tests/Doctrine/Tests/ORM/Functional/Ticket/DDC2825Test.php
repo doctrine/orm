@@ -67,7 +67,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPersistenceOfEntityWithSchemaMapping($className)
     {
         try {
-            $this->_schemaTool->createSchema(array($this->_em->getClassMetadata($className)));
+            $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
         } catch (ToolsException $e) {
             // table already exists
         }
@@ -86,11 +86,11 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function getTestedClasses()
     {
-        return array(
-            array(ExplicitSchemaAndTable::CLASSNAME, 'explicit_schema', 'explicit_table'),
-            array(SchemaAndTableInTableName::CLASSNAME, 'implicit_schema', 'implicit_table'),
-            array(DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order'),
-        );
+        return [
+            [ExplicitSchemaAndTable::CLASSNAME, 'explicit_schema', 'explicit_table'],
+            [SchemaAndTableInTableName::CLASSNAME, 'implicit_schema', 'implicit_table'],
+            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order'],
+        ];
     }
 }
 

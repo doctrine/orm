@@ -78,7 +78,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT s FROM Doctrine\Tests\Models\Generic\SerializationModel s";
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(array("foo" => "bar", "bar" => "baz"), $serialize->array);
+        $this->assertEquals(["foo" => "bar", "bar" => "baz"], $serialize->array);
     }
 
     public function testObject()
@@ -125,7 +125,8 @@ class TypeTest extends OrmFunctionalTestCase
         $this->assertInstanceOf('DateTime', $dateTimeDb->datetime);
         $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
-        $articles = $this->_em->getRepository( 'Doctrine\Tests\Models\Generic\DateTimeModel' )->findBy( array( 'datetime' => new \DateTime( "now" ) ) );
+        $articles = $this->_em->getRepository( 'Doctrine\Tests\Models\Generic\DateTimeModel' )->findBy( ['datetime' => new \DateTime( "now" )]
+        );
         $this->assertEquals( 0, count( $articles ) );
     }
 

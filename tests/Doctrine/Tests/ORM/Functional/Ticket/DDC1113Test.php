@@ -13,12 +13,14 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Engine'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Vehicle'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Car'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Bus'),
-            ));
+                ]
+            );
         } catch (\Exception $e) {
 
         }

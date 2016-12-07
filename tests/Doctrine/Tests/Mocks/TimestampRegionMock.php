@@ -14,6 +14,6 @@ class TimestampRegionMock extends CacheRegionMock implements TimestampRegion
 {
     public function update(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
     }
 }

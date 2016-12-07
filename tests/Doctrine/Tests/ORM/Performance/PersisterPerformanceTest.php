@@ -27,7 +27,7 @@ class PersisterPerformanceTest extends OrmFunctionalTestCase
         $author->username = "beberlei";
         $this->_em->persist($author);
 
-        $ids = array();
+        $ids = [];
         for ($i = 0; $i < 100; $i++) {
             $article = new CmsArticle();
             $article->text = "foo";

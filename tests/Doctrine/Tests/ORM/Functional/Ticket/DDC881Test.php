@@ -10,11 +10,13 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881User'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonenumber'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonecall'),
-            ));
+                ]
+            );
         } catch (\Exception $e) {
 
         }

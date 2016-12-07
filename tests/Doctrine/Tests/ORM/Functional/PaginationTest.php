@@ -633,14 +633,15 @@ class PaginationTest extends OrmFunctionalTestCase
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker']
+        );
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
         $this->assertCount(1, $paginator->getIterator());
         $this->assertEquals(1, $paginator->count());
     }
-    
+
     public function testCountQueryStripsParametersInSelect()
     {
         $query = $this->_em->createQuery(
@@ -695,7 +696,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
     public function populate()
     {
-        $groups = array();
+        $groups = [];
         for ($j = 0; $j < 3; $j++) {;
             $group = new CmsGroup();
             $group->name = "group$j";
@@ -762,28 +763,28 @@ class PaginationTest extends OrmFunctionalTestCase
 
     public function useOutputWalkers()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function fetchJoinCollection()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function useOutputWalkersAndFetchJoinCollection()
     {
-        return array(
-            array(true, false),
-            array(true, true),
-            array(false, false),
-            array(false, true),
-        );
+        return [
+            [true, false],
+            [true, true],
+            [false, false],
+            [false, true],
+        ];
     }
 }
 

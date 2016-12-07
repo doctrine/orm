@@ -63,7 +63,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $this->assertInstanceOf(Country::CLASSNAME, $c3);
         $this->assertInstanceOf(Country::CLASSNAME, $c4);
-        
+
         $this->assertEquals($c1->getId(), $c3->getId());
         $this->assertEquals($c1->getName(), $c3->getName());
 
@@ -195,9 +195,13 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
     public function testPostFlushFailure()
     {
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postFlush => function(){
+        $listener = new ListenerSecondLevelCacheTest(
+            [
+                Events::postFlush => function(){
             throw new \RuntimeException('post flush failure');
-        }));
+        }
+            ]
+        );
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postFlush, $listener);
@@ -225,9 +229,13 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesStates();
         $this->_em->clear();
 
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postUpdate => function(){
+        $listener = new ListenerSecondLevelCacheTest(
+            [
+                Events::postUpdate => function(){
             throw new \RuntimeException('post update failure');
-        }));
+        }
+            ]
+        );
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postUpdate, $listener);
@@ -237,7 +245,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $stateId    = $this->states[0]->getId();
         $stateName  = $this->states[0]->getName();
         $state      = $this->_em->find(State::CLASSNAME, $stateId);
-        
+
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $stateId));
         $this->assertInstanceOf(State::CLASSNAME, $state);
         $this->assertEquals($stateName, $state->getName());
@@ -269,9 +277,13 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $listener = new ListenerSecondLevelCacheTest(array(Events::postRemove => function(){
+        $listener = new ListenerSecondLevelCacheTest(
+            [
+                Events::postRemove => function(){
             throw new \RuntimeException('post remove failure');
-        }));
+        }
+            ]
+        );
 
         $this->_em->getEventManager()
             ->addEventListener(Events::postRemove, $listener);
@@ -324,7 +336,7 @@ class ListenerSecondLevelCacheTest
 {
     public $callbacks;
 
-    public function __construct(array $callbacks = array())
+    public function __construct(array $callbacks = [])
     {
         $this->callbacks = $callbacks;
     }

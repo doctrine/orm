@@ -13,10 +13,12 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430Order'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430OrderProduct'),
-            ));
+                ]
+            );
             $this->loadFixtures();
         } catch (\Exception $exc) {
 

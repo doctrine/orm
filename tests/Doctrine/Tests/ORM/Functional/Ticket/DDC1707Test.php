@@ -15,10 +15,12 @@ class DDC1707Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1509File'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1509Picture'),
-            ));
+                ]
+            );
         } catch (\Exception $ignored) {
 
         }

@@ -63,29 +63,29 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @var array
      */
-    protected $_usedModelSets = array();
+    protected $_usedModelSets = [];
 
     /**
      * Whether the database schema has already been created.
      *
      * @var array
      */
-    protected static $_tablesCreated = array();
+    protected static $_tablesCreated = [];
 
     /**
      * Array of entity class name to their tables that were created.
      *
      * @var array
      */
-    protected static $_entityTablesCreated = array();
+    protected static $_entityTablesCreated = [];
 
     /**
      * List of model sets and their classes.
      *
      * @var array
      */
-    protected static $_modelSets = array(
-        'cms' => array(
+    protected static $_modelSets = [
+        'cms' => [
             'Doctrine\Tests\Models\CMS\CmsUser',
             'Doctrine\Tests\Models\CMS\CmsPhonenumber',
             'Doctrine\Tests\Models\CMS\CmsAddress',
@@ -94,9 +94,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\CMS\CmsTag',
             'Doctrine\Tests\Models\CMS\CmsArticle',
             'Doctrine\Tests\Models\CMS\CmsComment',
-        ),
-        'forum' => array(),
-        'company' => array(
+        ],
+        'forum' => [],
+        'company' => [
             'Doctrine\Tests\Models\Company\CompanyPerson',
             'Doctrine\Tests\Models\Company\CompanyEmployee',
             'Doctrine\Tests\Models\Company\CompanyManager',
@@ -106,40 +106,40 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Company\CompanyRaffle',
             'Doctrine\Tests\Models\Company\CompanyCar',
             'Doctrine\Tests\Models\Company\CompanyContract',
-        ),
-        'ecommerce' => array(
+        ],
+        'ecommerce' => [
             'Doctrine\Tests\Models\ECommerce\ECommerceCart',
             'Doctrine\Tests\Models\ECommerce\ECommerceCustomer',
             'Doctrine\Tests\Models\ECommerce\ECommerceProduct',
             'Doctrine\Tests\Models\ECommerce\ECommerceShipping',
             'Doctrine\Tests\Models\ECommerce\ECommerceFeature',
             'Doctrine\Tests\Models\ECommerce\ECommerceCategory'
-        ),
-        'generic' => array(
+        ],
+        'generic' => [
             'Doctrine\Tests\Models\Generic\BooleanModel',
             'Doctrine\Tests\Models\Generic\DateTimeModel',
             'Doctrine\Tests\Models\Generic\DecimalModel',
             'Doctrine\Tests\Models\Generic\SerializationModel',
-        ),
-        'routing' => array(
+        ],
+        'routing' => [
             'Doctrine\Tests\Models\Routing\RoutingLeg',
             'Doctrine\Tests\Models\Routing\RoutingLocation',
             'Doctrine\Tests\Models\Routing\RoutingRoute',
             'Doctrine\Tests\Models\Routing\RoutingRouteBooking',
-        ),
-        'navigation' => array(
+        ],
+        'navigation' => [
             'Doctrine\Tests\Models\Navigation\NavUser',
             'Doctrine\Tests\Models\Navigation\NavCountry',
             'Doctrine\Tests\Models\Navigation\NavPhotos',
             'Doctrine\Tests\Models\Navigation\NavTour',
             'Doctrine\Tests\Models\Navigation\NavPointOfInterest',
-        ),
-        'directorytree' => array(
+        ],
+        'directorytree' => [
             'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem',
             'Doctrine\Tests\Models\DirectoryTree\File',
             'Doctrine\Tests\Models\DirectoryTree\Directory',
-        ),
-        'ddc117' => array(
+        ],
+        'ddc117' => [
             'Doctrine\Tests\Models\DDC117\DDC117Article',
             'Doctrine\Tests\Models\DDC117\DDC117Reference',
             'Doctrine\Tests\Models\DDC117\DDC117Translation',
@@ -147,42 +147,42 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\DDC117\DDC117ApproveChanges',
             'Doctrine\Tests\Models\DDC117\DDC117Editor',
             'Doctrine\Tests\Models\DDC117\DDC117Link',
-        ),
-        'ddc3699' => array(
+        ],
+        'ddc3699' => [
             'Doctrine\Tests\Models\DDC3699\DDC3699Parent',
             'Doctrine\Tests\Models\DDC3699\DDC3699RelationOne',
             'Doctrine\Tests\Models\DDC3699\DDC3699RelationMany',
             'Doctrine\Tests\Models\DDC3699\DDC3699Child',
-        ),
-        'stockexchange' => array(
+        ],
+        'stockexchange' => [
             'Doctrine\Tests\Models\StockExchange\Bond',
             'Doctrine\Tests\Models\StockExchange\Stock',
             'Doctrine\Tests\Models\StockExchange\Market',
-        ),
-        'legacy' => array(
+        ],
+        'legacy' => [
             'Doctrine\Tests\Models\Legacy\LegacyUser',
             'Doctrine\Tests\Models\Legacy\LegacyUserReference',
             'Doctrine\Tests\Models\Legacy\LegacyArticle',
             'Doctrine\Tests\Models\Legacy\LegacyCar',
-        ),
-        'customtype' => array(
+        ],
+        'customtype' => [
             'Doctrine\Tests\Models\CustomType\CustomTypeChild',
             'Doctrine\Tests\Models\CustomType\CustomTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
-        ),
-        'compositekeyinheritance' => array(
+        ],
+        'compositekeyinheritance' => [
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
             'Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass',
-        ),
-        'taxi' => array(
+        ],
+        'taxi' => [
             'Doctrine\Tests\Models\Taxi\PaidRide',
             'Doctrine\Tests\Models\Taxi\Ride',
             'Doctrine\Tests\Models\Taxi\Car',
             'Doctrine\Tests\Models\Taxi\Driver',
-        ),
-        'cache' => array(
+        ],
+        'cache' => [
             'Doctrine\Tests\Models\Cache\Country',
             'Doctrine\Tests\Models\Cache\State',
             'Doctrine\Tests\Models\Cache\City',
@@ -205,102 +205,102 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Cache\AttractionInfo',
             'Doctrine\Tests\Models\Cache\AttractionContactInfo',
             'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
-        ),
-        'tweet' => array(
+        ],
+        'tweet' => [
             'Doctrine\Tests\Models\Tweet\User',
             'Doctrine\Tests\Models\Tweet\Tweet',
             'Doctrine\Tests\Models\Tweet\UserList',
-        ),
-        'ddc2504' => array(
+        ],
+        'ddc2504' => [
             'Doctrine\Tests\Models\DDC2504\DDC2504RootClass',
             'Doctrine\Tests\Models\DDC2504\DDC2504ChildClass',
             'Doctrine\Tests\Models\DDC2504\DDC2504OtherClass',
-        ),
-        'ddc3346' => array(
+        ],
+        'ddc3346' => [
             'Doctrine\Tests\Models\DDC3346\DDC3346Author',
             'Doctrine\Tests\Models\DDC3346\DDC3346Article',
-        ),
-        'quote' => array(
+        ],
+        'quote' => [
             'Doctrine\Tests\Models\Quote\Address',
             'Doctrine\Tests\Models\Quote\Group',
             'Doctrine\Tests\Models\Quote\NumericEntity',
             'Doctrine\Tests\Models\Quote\Phone',
             'Doctrine\Tests\Models\Quote\User'
-        ),
-        'vct_onetoone' => array(
+        ],
+        'vct_onetoone' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity'
-        ),
-        'vct_onetoone_compositeid' => array(
+        ],
+        'vct_onetoone_compositeid' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity'
-        ),
-        'vct_onetoone_compositeid_foreignkey' => array(
+        ],
+        'vct_onetoone_compositeid_foreignkey' => [
             'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity'
-        ),
-        'vct_onetomany' => array(
+        ],
+        'vct_onetomany' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity'
-        ),
-        'vct_onetomany_compositeid' => array(
+        ],
+        'vct_onetomany_compositeid' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdEntity'
-        ),
-        'vct_onetomany_compositeid_foreignkey' => array(
+        ],
+        'vct_onetomany_compositeid_foreignkey' => [
             'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity'
-        ),
-        'vct_onetomany_extralazy' => array(
+        ],
+        'vct_onetomany_extralazy' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity'
-        ),
-        'vct_manytomany' => array(
+        ],
+        'vct_manytomany' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity'
-        ),
-        'vct_manytomany_compositeid' => array(
+        ],
+        'vct_manytomany_compositeid' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdEntity'
-        ),
-        'vct_manytomany_compositeid_foreignkey' => array(
+        ],
+        'vct_manytomany_compositeid_foreignkey' => [
             'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity'
-        ),
-        'vct_manytomany_extralazy' => array(
+        ],
+        'vct_manytomany_extralazy' => [
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
             'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity'
-        ),
-        'geonames' => array(
+        ],
+        'geonames' => [
             'Doctrine\Tests\Models\GeoNames\Country',
             'Doctrine\Tests\Models\GeoNames\Admin1',
             'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
             'Doctrine\Tests\Models\GeoNames\City'
-        ),
-        'custom_id_object_type' => array(
+        ],
+        'custom_id_object_type' => [
             'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',
             'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild',
-        ),
-        'pagination' => array(
+        ],
+        'pagination' => [
             'Doctrine\Tests\Models\Pagination\Company',
             'Doctrine\Tests\Models\Pagination\Logo',
             'Doctrine\Tests\Models\Pagination\Department',
             'Doctrine\Tests\Models\Pagination\User',
             'Doctrine\Tests\Models\Pagination\User1',
-        ),
-        'versioned_many_to_one' => array(
+        ],
+        'versioned_many_to_one' => [
             'Doctrine\Tests\Models\VersionedManyToOne\Category',
             'Doctrine\Tests\Models\VersionedManyToOne\Article',
-        ),
-        'issue5989' => array(
+        ],
+        'issue5989' => [
             'Doctrine\Tests\Models\Issue5989\Issue5989Person',
             'Doctrine\Tests\Models\Issue5989\Issue5989Employee',
             'Doctrine\Tests\Models\Issue5989\Issue5989Manager',
-        ),
-    );
+        ],
+    ];
 
     /**
      * @param string $setName
@@ -590,7 +590,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw new \RuntimeException("EntityManager not set, you have to call parent::setUp() before invoking this method.");
         }
 
-        $classes = array();
+        $classes = [];
         foreach ($classNames as $className) {
             if ( ! isset(static::$_entityTablesCreated[$className])) {
                 static::$_entityTablesCreated[$className] = true;
@@ -624,7 +624,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
-            if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), array("mysql", "postgresql"))) {
+            if (in_array(static::$_sharedConn->getDatabasePlatform()->getName(), ["mysql", "postgresql"])) {
                 static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
             } else if (static::$_sharedConn->getDatabasePlatform()->getName() == "oracle") {
                 static::$_sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
@@ -636,7 +636,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->_schemaTool = new SchemaTool($this->_em);
         }
 
-        $classes = array();
+        $classes = [];
 
         foreach ($this->_usedModelSets as $setName => $bool) {
             if ( ! isset(static::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
@@ -712,10 +712,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->isSecondLevelCacheEnabled = true;
         }
 
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
+            [
             realpath(__DIR__ . '/Models/Cache'),
             realpath(__DIR__ . '/Models/GeoNames')
-        ), true));
+            ], true));
 
         $conn = static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
@@ -724,7 +725,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $evm = $conn->getEventManager();
         foreach ($evm->getListeners() AS $event => $listeners) {
             foreach ($listeners AS $listener) {
-                $evm->removeEventListener(array($event), $listener);
+                $evm->removeEventListener([$event], $listener);
             }
         }
 
@@ -740,7 +741,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['debug_uow_listener'])) {
-            $evm->addEventListener(array('onFlush'), new DebugUnitOfWorkListener());
+            $evm->addEventListener(['onFlush'], new DebugUnitOfWorkListener());
         }
 
         return EntityManager::create($conn, $config);
@@ -763,7 +764,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $queries = "";
             $last25queries = array_slice(array_reverse($this->_sqlLoggerStack->queries, true), 0, 25, true);
             foreach ($last25queries as $i => $query) {
-                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return var_export($p, true); }, $query['params'] ?: array());
+                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return var_export($p, true); }, $query['params'] ?: []
+                );
                 $queries .= $i.". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
             }
 

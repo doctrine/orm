@@ -75,7 +75,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
 
     public function testNewDefaultAnnotationDriver()
     {
-        $paths = array(__DIR__);
+        $paths = [__DIR__];
         $reflectionClass = new ReflectionClass(__NAMESPACE__ . '\ConfigurationTestAnnotationReaderChecker');
 
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false);
@@ -99,7 +99,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
     {
         $this->configuration->addEntityNamespace('TestNamespace', __NAMESPACE__);
         $this->assertSame(__NAMESPACE__, $this->configuration->getEntityNamespace('TestNamespace'));
-        $namespaces = array('OtherNamespace' => __NAMESPACE__);
+        $namespaces = ['OtherNamespace' => __NAMESPACE__];
         $this->configuration->setEntityNamespaces($namespaces);
         $this->assertSame($namespaces, $this->configuration->getEntityNamespaces());
         $this->expectException(\Doctrine\ORM\ORMException::class);
@@ -259,7 +259,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
         $this->assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
-        $this->configuration->setCustomStringFunctions(array('OtherFunctionName' => __CLASS__));
+        $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomStringFunction('concat', __CLASS__);
@@ -270,7 +270,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
         $this->assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
-        $this->configuration->setCustomNumericFunctions(array('OtherFunctionName' => __CLASS__));
+        $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomNumericFunction('abs', __CLASS__);
@@ -281,7 +281,7 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
         $this->assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
-        $this->configuration->setCustomDatetimeFunctions(array('OtherFunctionName' => __CLASS__));
+        $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
         $this->expectException(\Doctrine\ORM\ORMException::class);
         $this->configuration->addCustomDatetimeFunction('date_add', __CLASS__);
@@ -300,9 +300,9 @@ class ConfigurationTest extends PHPUnit_Framework_TestCase
         $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
-            array(
+            [
                 'AnotherHydrationModeName' => __CLASS__
-            )
+            ]
         );
 
         $this->assertNull($this->configuration->getCustomHydrationMode('HydrationModeName'));

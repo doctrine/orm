@@ -17,11 +17,13 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660Product'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660Customer'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660CustomerOrder')
-            ));
+                ]
+            );
         } catch(\Exception $e) {
             return;
         }

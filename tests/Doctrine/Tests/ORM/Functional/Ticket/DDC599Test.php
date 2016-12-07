@@ -9,11 +9,13 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Item'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Subitem'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Child'),
-            ));
+                ]
+            );
         } catch (\Exception $ignored) {}
     }
 

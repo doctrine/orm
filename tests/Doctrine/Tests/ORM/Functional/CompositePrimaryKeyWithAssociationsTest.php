@@ -44,13 +44,13 @@ class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
         $admin1Repo      = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1');
         $admin1NamesRepo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1AlternateName');
 
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        $names = $admin1NamesRepo->findBy(array('admin1' => $admin1Rome));
+        $names = $admin1NamesRepo->findBy(['admin1' => $admin1Rome]);
         $this->assertCount(2, $names);
 
-        $name1 = $admin1NamesRepo->findOneBy(array('admin1' => $admin1Rome, 'id' => 1));
-        $name2 = $admin1NamesRepo->findOneBy(array('admin1' => $admin1Rome, 'id' => 2));
+        $name1 = $admin1NamesRepo->findOneBy(['admin1' => $admin1Rome, 'id' => 1]);
+        $name2 = $admin1NamesRepo->findOneBy(['admin1' => $admin1Rome, 'id' => 2]);
 
         $this->assertEquals(1, $name1->id);
         $this->assertEquals("Roma", $name1->name);

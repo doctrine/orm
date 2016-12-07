@@ -7,11 +7,13 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityX'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityY'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityZ')
-        ));
+            ]
+        );
     }
 
     public function testUninitializedProxyIsInitializedOnFetchJoin()

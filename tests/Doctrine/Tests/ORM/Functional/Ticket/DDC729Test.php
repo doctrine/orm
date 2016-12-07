@@ -10,10 +10,12 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
-            $schemaTool->createSchema(array(
+            $schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC729A'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC729B'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
 
         }

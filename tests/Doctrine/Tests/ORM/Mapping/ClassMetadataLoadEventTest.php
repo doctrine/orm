@@ -26,11 +26,11 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
+        $field = [
             'fieldName' => 'about',
             'type' => 'string',
             'length' => 255
-        );
+        ];
         $classMetadata->mapField($field);
     }
 }

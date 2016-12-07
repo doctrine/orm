@@ -191,10 +191,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $countryName1   = $this->countries[0]->getName();
         $countryName2   = $this->countries[1]->getName();
 
-        $key1           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId1));
-        $key2           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId2));
-        $entry1         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId1, 'name'=>'outdated'));
-        $entry2         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId2, 'name'=>'outdated'));
+        $key1           = new EntityCacheKey(Country::CLASSNAME, ['id'=>$countryId1]);
+        $key2           = new EntityCacheKey(Country::CLASSNAME, ['id'=>$countryId2]);
+        $entry1         = new EntityCacheEntry(Country::CLASSNAME, ['id'=>$countryId1, 'name'=>'outdated']);
+        $entry2         = new EntityCacheEntry(Country::CLASSNAME, ['id'=>$countryId2, 'name'=>'outdated']);
 
         $region->put($key1, $entry1);
         $region->put($key2, $entry2);

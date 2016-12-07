@@ -38,7 +38,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(true);
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
-        
+
         $this->_repositoryGenerator = new EntityRepositoryGenerator();
     }
 
@@ -47,7 +47,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     public function tearDown()
     {
-        $dirs = array();
+        $dirs = [];
 
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir));
         foreach ($ri AS $file) {
@@ -119,9 +119,9 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-        
+
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2.php';
-        
+
         $className = $ns . '\DDC3231User2Tmp';
         $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User2', $className);
 
@@ -131,14 +131,14 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $this->assertFileExists($rpath);
 
         require $rpath;
-        
+
         $repo = new \ReflectionClass($em->getRepository($className));
 
         $this->assertTrue($repo->inNamespace());
         $this->assertSame($className . 'Repository', $repo->getName());
         $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
 
-        
+
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2NoNamespace.php';
 
         $className2 = 'DDC3231User2NoNamespaceTmp';
@@ -188,10 +188,10 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     private function writeRepositoryClass($className, $defaultRepository = null)
     {
         $this->_repositoryGenerator->setDefaultRepositoryName($defaultRepository);
-        
+
         $this->_repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->_tmpDir);
 
         return $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . 'Repository.php';
     }
-    
+
 }

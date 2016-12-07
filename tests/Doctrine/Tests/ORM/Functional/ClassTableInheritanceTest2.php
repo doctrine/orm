@@ -15,12 +15,14 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIParent'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIChild'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated2')
-            ));
+                ]
+            );
         } catch (\Exception $ignored) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

@@ -14,17 +14,17 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * @var array
      */
-    private $inserts = array();
+    private $inserts = [];
 
     /**
      * @var array
      */
-    private $updates = array();
+    private $updates = [];
 
     /**
      * @var array
      */
-    private $deletes = array();
+    private $deletes = [];
 
     /**
      * @var int
@@ -39,7 +39,7 @@ class EntityPersisterMock extends BasicEntityPersister
     /**
      * @var array
      */
-    private $postInsertIds = array();
+    private $postInsertIds = [];
 
     /**
      * @var bool
@@ -57,10 +57,10 @@ class EntityPersisterMock extends BasicEntityPersister
         if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
                 || $this->class->isIdGeneratorIdentity()) {
             $id = $this->identityColumnValueCounter++;
-            $this->postInsertIds[] = array(
+            $this->postInsertIds[] = [
                 'generatedId' => $id,
                 'entity' => $entity,
-            );
+            ];
             return $id;
         }
         return null;
@@ -139,9 +139,9 @@ class EntityPersisterMock extends BasicEntityPersister
     {
         $this->existsCalled = false;
         $this->identityColumnValueCounter = 0;
-        $this->inserts = array();
-        $this->updates = array();
-        $this->deletes = array();
+        $this->inserts = [];
+        $this->updates = [];
+        $this->deletes = [];
     }
 
     /**

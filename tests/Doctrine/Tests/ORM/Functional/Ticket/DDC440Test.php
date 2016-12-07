@@ -9,10 +9,12 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC440Client')
-            ));
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

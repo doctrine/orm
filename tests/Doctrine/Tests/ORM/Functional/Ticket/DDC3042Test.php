@@ -13,10 +13,12 @@ class DDC3042Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3042Foo'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3042Bar'),
-        ));
+            ]
+        );
     }
 
     public function testSQLGenerationDoesNotProvokeAliasCollisions()

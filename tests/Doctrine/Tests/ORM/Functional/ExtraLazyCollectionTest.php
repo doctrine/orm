@@ -1229,7 +1229,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        return array($user->id, $tweet->id);
+        return [$user->id, $tweet->id];
     }
 
     /**
@@ -1250,6 +1250,6 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        return array($user->id, $userList->id);
+        return [$user->id, $userList->id];
     }
 }

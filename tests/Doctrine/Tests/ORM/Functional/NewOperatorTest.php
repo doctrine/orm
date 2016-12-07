@@ -18,7 +18,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
      * @var array
      */
     private $fixtures;
-    
+
     protected function setUp()
     {
         $this->useModelSet('cms');
@@ -26,13 +26,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->loadFixtures();
     }
-    
+
     public function provideDataForHydrationMode()
     {
-        return array(
-            array(Query::HYDRATE_ARRAY),
-            array(Query::HYDRATE_OBJECT),
-        );
+        return [
+            [Query::HYDRATE_ARRAY],
+            [Query::HYDRATE_OBJECT],
+        ];
     }
 
     private function loadFixtures()
@@ -93,7 +93,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->fixtures = array($u1, $u2, $u3);
+        $this->fixtures = [$u1, $u2, $u3];
     }
 
     /**
@@ -223,7 +223,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->_em->getConfiguration()
             ->addEntityNamespace('cms', 'Doctrine\Tests\Models\CMS');
-        
+
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 

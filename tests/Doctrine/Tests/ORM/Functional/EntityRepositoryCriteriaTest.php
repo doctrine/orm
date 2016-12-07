@@ -23,7 +23,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function tearDown()
     {
         if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces(array());
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }

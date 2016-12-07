@@ -17,12 +17,14 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
                 $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -50,7 +52,7 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $id = $user->id;
         $this->assertNotNull($id);
 
-        
+
         $user       = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
         $address    = $user->getAddress();
 
@@ -75,8 +77,8 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNull($user->getAddress());
 
         $this->assertEquals('FabioBatSilva1', $user->name);
-        
-        
+
+
         $this->_em->remove($user);
         $this->_em->flush();
         $this->_em->clear();

@@ -23,9 +23,9 @@ class DBAL483Test extends OrmFunctionalTestCase
     {
         $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\\DBAL483Default');
 
-        $this->schemaTool->createSchema(array($class));
+        $this->schemaTool->createSchema([$class]);
 
-        $updateSql = $this->schemaTool->getUpdateSchemaSql(array($class));
+        $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
         $updateSql = array_filter($updateSql, function ($sql) {
             return strpos($sql, 'DBAL483') !== false;

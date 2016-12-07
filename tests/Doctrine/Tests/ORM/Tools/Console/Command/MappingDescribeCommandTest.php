@@ -38,9 +38,11 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         $this->application = new Application();
         $command = new MappingDescribeCommand();
 
-        $this->application->setHelperSet(new HelperSet(array(
+        $this->application->setHelperSet(new HelperSet(
+            [
             'em' => new EntityManagerHelper($this->_em)
-        )));
+            ]
+        ));
 
         $this->application->add($command);
 
@@ -50,10 +52,12 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
     public function testShowSpecificFuzzySingle()
     {
-        $this->tester->execute(array(
+        $this->tester->execute(
+            [
             'command' => $this->command->getName(),
             'entityName' => 'AttractionInfo',
-        ));
+            ]
+        );
 
         $display = $this->tester->getDisplay();
         $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
@@ -66,10 +70,12 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      */
     public function testShowSpecificFuzzyAmbiguous()
     {
-        $this->tester->execute(array(
+        $this->tester->execute(
+            [
             'command' => $this->command->getName(),
             'entityName' => 'Attraction',
-        ));
+            ]
+        );
     }
 
     /**
@@ -78,10 +84,12 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      */
     public function testShowSpecificNotFound()
     {
-        $this->tester->execute(array(
+        $this->tester->execute(
+            [
             'command' => $this->command->getName(),
             'entityName' => 'AttractionFooBar'
-        ));
+            ]
+        );
     }
 }
 

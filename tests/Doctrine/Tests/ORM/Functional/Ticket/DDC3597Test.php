@@ -13,11 +13,13 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
 
     protected function setUp() {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(DDC3597Root::CLASSNAME),
             $this->_em->getClassMetadata(DDC3597Media::CLASSNAME),
             $this->_em->getClassMetadata(DDC3597Image::CLASSNAME)
-        ));
+            ]
+        );
     }
 
     /**

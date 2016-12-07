@@ -12,11 +12,13 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522Customer'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522Cart'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522ForeignKeyTest')
-            ));
+                ]
+            );
         } catch(\Exception $e) {
 
         }

@@ -16,13 +16,15 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Lemma'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Type')
-            ));
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

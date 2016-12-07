@@ -11,12 +11,14 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163Product'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163SpecialProduct'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163ProxyHolder'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163Tag'),
-        ));
+            ]
+        );
     }
 
     public function testIssue()

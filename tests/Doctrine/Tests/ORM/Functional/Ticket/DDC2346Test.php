@@ -22,11 +22,13 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Foo'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Bar'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Baz'),
-        ));
+            ]
+        );
 
         $this->logger = new DebugStack();
     }

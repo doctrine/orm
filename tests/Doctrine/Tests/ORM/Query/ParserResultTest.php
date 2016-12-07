@@ -26,7 +26,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNull($this->parserResult->getSqlExecutor());
 
-        $executor = $this->getMockBuilder(AbstractSqlExecutor::class)->setMethods(array('execute'))->getMock();
+        $executor = $this->getMockBuilder(AbstractSqlExecutor::class)->setMethods(['execute'])->getMock();
         $this->parserResult->setSqlExecutor($executor);
         $this->assertSame($executor, $this->parserResult->getSqlExecutor());
     }
@@ -35,7 +35,7 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
     {
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals(array(1, 2), $this->parserResult->getSqlParameterPositions(1));
+        $this->assertEquals([1, 2], $this->parserResult->getSqlParameterPositions(1));
     }
 
     public function testGetParameterMappings()
@@ -44,6 +44,6 @@ class ParserResultTest extends \PHPUnit_Framework_TestCase
 
         $this->parserResult->addParameterMapping(1, 1);
         $this->parserResult->addParameterMapping(1, 2);
-        $this->assertEquals(array(1 => array(1, 2)), $this->parserResult->getParameterMappings());
+        $this->assertEquals([1 => [1, 2]], $this->parserResult->getParameterMappings());
     }
 }

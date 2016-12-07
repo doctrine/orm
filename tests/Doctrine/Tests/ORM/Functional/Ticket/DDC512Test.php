@@ -9,11 +9,13 @@ class DDC512Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512Customer'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512OfferItem'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512Item'),
-        ));
+            ]
+        );
     }
 
     public function testIssue()

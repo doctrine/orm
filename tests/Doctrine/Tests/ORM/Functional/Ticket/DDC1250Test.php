@@ -11,9 +11,11 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1250ClientHistory'),
-            ));
+                ]
+            );
         } catch(\PDOException $e) {
 
         }

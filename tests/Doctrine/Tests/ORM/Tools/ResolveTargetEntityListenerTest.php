@@ -43,12 +43,12 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
             'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            array()
+            []
         );
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\TargetInterface',
             'Doctrine\Tests\ORM\Tools\TargetEntity',
-            array()
+            []
         );
         $evm->addEventSubscriber($this->listener);
 
@@ -73,7 +73,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
             'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            array()
+            []
         );
 
         $this->em->getEventManager()->addEventSubscriber($this->listener);
@@ -92,12 +92,12 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
             'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            array()
+            []
         );
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\TargetInterface',
             'Doctrine\Tests\ORM\Tools\TargetEntity',
-            array()
+            []
         );
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
@@ -105,7 +105,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $meta = $cm->associationMappings['manyToMany'];
 
         $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
-        $this->assertEquals(array('resolvetargetentity_id', 'targetinterface_id'), $meta['joinTableColumns']);
+        $this->assertEquals(['resolvetargetentity_id', 'targetinterface_id'], $meta['joinTableColumns']);
     }
 
     /**
@@ -120,7 +120,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $this->listener->addResolveTargetEntity(
             'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
             'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            array()
+            []
         );
 
         $evm->addEventSubscriber($this->listener);

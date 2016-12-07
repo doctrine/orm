@@ -15,12 +15,14 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759Qualification'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759Category'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759QualificationMetadata'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759MetadataCategory'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
             return;
         }

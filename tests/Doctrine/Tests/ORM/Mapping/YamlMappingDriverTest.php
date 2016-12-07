@@ -25,7 +25,7 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
     public function testJoinTablesWithMappedSuperclassForYamlDriver()
     {
         $yamlDriver = $this->_loadDriver();
-        $yamlDriver->getLocator()->addPaths(array(__DIR__ . DIRECTORY_SEPARATOR . 'yaml'));
+        $yamlDriver->getLocator()->addPaths([__DIR__ . DIRECTORY_SEPARATOR . 'yaml']);
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($yamlDriver);

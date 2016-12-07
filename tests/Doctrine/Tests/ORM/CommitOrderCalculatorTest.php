@@ -44,7 +44,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $sorted = $this->_calc->sort();
 
         // There is only 1 valid ordering for this constellation
-        $correctOrder = array($class5, $class1, $class2, $class3, $class4);
+        $correctOrder = [$class5, $class1, $class2, $class3, $class4];
 
         $this->assertSame($correctOrder, $sorted);
     }
@@ -63,7 +63,7 @@ class CommitOrderCalculatorTest extends OrmTestCase
         $sorted = $this->_calc->sort();
 
         // There is only 1 valid ordering for this constellation
-        $correctOrder = array($class2, $class1);
+        $correctOrder = [$class2, $class1];
 
         $this->assertSame($correctOrder, $sorted);
     }

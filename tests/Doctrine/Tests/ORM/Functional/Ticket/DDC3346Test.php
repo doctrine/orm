@@ -23,7 +23,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var DDC3346Author $author */
         $author = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findOneBy(
-            array('username' => 'bwoogy')
+            ['username' => 'bwoogy']
         );
 
         $this->assertCount(2, $author->articles);
@@ -33,7 +33,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => 'bwoogy'),
+            ['username' => 'bwoogy'],
             null,
             1
         );
@@ -46,7 +46,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var DDC3346Author[] $authors */
         $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => 'bwoogy'),
+            ['username' => 'bwoogy'],
             null,
             null,
             0 // using an explicitly defined offset

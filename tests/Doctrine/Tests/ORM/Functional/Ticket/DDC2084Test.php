@@ -12,10 +12,12 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
-            ));
+                ]
+            );
         } catch (\Exception $exc) {
         }
     }

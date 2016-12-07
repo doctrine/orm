@@ -12,10 +12,12 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1228User'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1228Profile'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -40,7 +42,7 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($user->getProfile()->__isInitialized__, "Proxy is not initialized");
 
         $this->assertEquals("Bar", $user->getProfile()->getName());
-        $this->assertEquals(array("id" => 1, "name" => "Foo"), $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
+        $this->assertEquals(["id" => 1, "name" => "Foo"], $this->_em->getUnitOfWork()->getOriginalEntityData($user->getProfile()));
 
         $this->_em->flush();
         $this->_em->clear();

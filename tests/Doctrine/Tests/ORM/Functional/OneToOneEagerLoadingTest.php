@@ -15,13 +15,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         parent::setUp();
         $schemaTool = new SchemaTool($this->_em);
         try {
-            $schemaTool->createSchema(array(
+            $schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Train'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainDriver'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOwner'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Waggon'),
                 $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOrder'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {}
     }
 

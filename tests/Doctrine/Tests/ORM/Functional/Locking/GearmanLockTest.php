@@ -23,11 +23,11 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
         $this->useModelSet('cms');
         parent::setUp();
-        $this->tasks = array();
+        $this->tasks = [];
 
         $this->gearman = new \GearmanClient();
         $this->gearman->addServer();
-        $this->gearman->setCompleteCallback(array($this, "gearmanTaskCompleted"));
+        $this->gearman->setCompleteCallback([$this, "gearmanTaskCompleted"]);
 
         $article = new CmsArticle();
         $article->text = "my article";
@@ -78,7 +78,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     public function testDqlWithLock()
     {
-        $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', array(), LockMode::PESSIMISTIC_WRITE);
+        $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', [], LockMode::PESSIMISTIC_WRITE);
         $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
@@ -140,37 +140,42 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     protected function asyncFindWithLock($entityName, $entityId, $lockMode)
     {
-        $this->startJob('findWithLock', array(
+        $this->startJob('findWithLock', [
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function asyncDqlWithLock($dql, $params, $lockMode)
     {
-        $this->startJob('dqlWithLock', array(
+        $this->startJob('dqlWithLock', [
             'dql' => $dql,
             'dqlParams' => $params,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function asyncLock($entityName, $entityId, $lockMode)
     {
-        $this->startJob('lock', array(
+        $this->startJob('lock', [
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function startJob($fn, $fixture)
     {
-        $this->gearman->addTask($fn, serialize(array(
+        $this->gearman->addTask($fn, serialize(
+            [
             'conn' => $this->_em->getConnection()->getParams(),
             'fixture' => $fixture
-        )));
+            ]
+        ));
 
         $this->assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
     }

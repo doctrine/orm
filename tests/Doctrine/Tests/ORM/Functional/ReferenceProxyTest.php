@@ -57,7 +57,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        $productProxy = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct', array('id' => $id));
+        $productProxy = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct', ['id' => $id]);
         $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 
@@ -189,7 +189,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $this->assertEquals($id, $entity->getId());
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
     }
-    
+
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
     {
         $product = new ECommerceProduct();

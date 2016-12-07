@@ -27,11 +27,11 @@ class DDC2359Test extends \PHPUnit_Framework_TestCase
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
-                                ->setMethods(array('newClassMetadataInstance', 'wakeupReflection'))
+                                ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
                                 ->getMock();
 
         $configuration = $this->getMockBuilder(Configuration::class)
-                              ->setMethods(array('getMetadataDriverImpl'))
+                              ->setMethods(['getMetadataDriverImpl'])
                               ->getMock();
 
         $connection = $this->createMock(Connection::class);

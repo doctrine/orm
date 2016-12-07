@@ -25,10 +25,12 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742User'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742Comment')
-            ));
+                ]
+            );
         } catch(\Exception $e) {
         }
 

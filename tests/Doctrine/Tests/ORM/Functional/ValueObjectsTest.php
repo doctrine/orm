@@ -15,14 +15,16 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Vehicle'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Animal'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog'),
-            ));
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -175,35 +177,35 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->_em->clear();
         $this->assertNull($this->_em->find(__NAMESPACE__.'\\DDC93Person', $person->id));
     }
-    
+
     public function testPartialDqlOnEmbeddedObjectsField()
     {
         $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
         $this->_em->persist($person);
         $this->_em->flush($person);
         $this->_em->clear();
-        
+
         // Prove that the entity was persisted correctly.
         $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-    
+
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertEquals('Foo', $person->address->street);
         $this->assertEquals('12345', $person->address->zip);
         $this->assertEquals('England', $person->address->country->name);
-        
+
         // Clear the EM and prove that the embeddable can be the subject of a partial query.
         $this->_em->clear();
-    
+
         $dql = "SELECT PARTIAL p.{id,address.city} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-        
+
         // Selected field must be equal, all other fields must be null.
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertNull($person->address->street);
@@ -213,13 +215,13 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
         $this->_em->clear();
-    
+
         $dql = "SELECT PARTIAL p.{address.city, id} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-        
+
         // Selected field must be equal, all other fields must be null.
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertNull($person->address->street);
@@ -236,7 +238,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
     }
-    
+
     public function testPartialDqlWithNonExistentEmbeddableField()
     {
         $this->expectException(QueryException::class);
@@ -310,17 +312,19 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             )
         );
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
-        ));
+            ]
+        );
     }
 
     public function getInfiniteEmbeddableNestingData()
     {
-        return array(
-            array('DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'),
-            array('DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'),
-        );
+        return [
+            ['DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'],
+            ['DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'],
+        ];
     }
 }
 

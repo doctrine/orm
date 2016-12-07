@@ -10,10 +10,12 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema(
+                [
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1690Parent'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1690Child')
-            ));
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -75,7 +77,7 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged {
-    public $listeners = array();
+    public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
         if (!in_array($listener, $this->listeners)) {

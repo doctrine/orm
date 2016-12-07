@@ -174,8 +174,8 @@ class QueryTest extends OrmFunctionalTestCase
     public function testSetParametersBackwardsCompatible()
     {
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
-        $q->setParameters(array(1 => 'jwage', 2 => 'active'));
-        
+        $q->setParameters([1 => 'jwage', 2 => 'active']);
+
         $users = $q->getResult();
     }
 
@@ -200,16 +200,17 @@ class QueryTest extends OrmFunctionalTestCase
         $articleId = $article1->id;
 
         $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1");
-        $articles = $query->iterate(new ArrayCollection(array(new Parameter(1, 'Doctrine 2'))), Query::HYDRATE_ARRAY);
+        $articles = $query->iterate(new ArrayCollection([new Parameter(1, 'Doctrine 2')]), Query::HYDRATE_ARRAY);
 
-        $found = array();
+        $found = [];
         foreach ($articles AS $article) {
             $found[] = $article;
         }
         $this->assertEquals(1, count($found));
-        $this->assertEquals(array(
-            array(array('id' => $articleId, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1))
-        ), $found);
+        $this->assertEquals(
+            [
+            [['id' => $articleId, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1]]
+            ], $found);
     }
 
     public function testIterateResult_IterativelyBuildUpUnitOfWork()
@@ -232,7 +233,7 @@ class QueryTest extends OrmFunctionalTestCase
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = array();
+        $topics = [];
         foreach($articles AS $row) {
             $article = $row[0];
             $topics[] = $article->topic;
@@ -244,7 +245,7 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertEquals(2, $iteratedCount);
 
         $this->_em->flush();
@@ -271,7 +272,7 @@ class QueryTest extends OrmFunctionalTestCase
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = array();
+        $topics = [];
         foreach($articles AS $row) {
             $article  = $row[0];
             $topics[] = $article->topic;
@@ -281,7 +282,7 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertEquals(2, $iteratedCount);
 
         $this->_em->flush();
@@ -394,7 +395,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->fail($e->getMessage());
         }
 
-        $this->_em->getConfiguration()->setEntityNamespaces(array());
+        $this->_em->getConfiguration()->setEntityNamespaces([]);
     }
 
     /**
@@ -502,7 +503,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
 
         $this->expectException(NonUniqueResultException::class);
-        
+
         $fetchedUser = $query->getOneOrNullResult();
     }
 
@@ -545,10 +546,12 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
-        $query->setParameters(new ArrayCollection(array(
-            new Parameter('b', array($user1->id, $user2->id, $user3->id)),
+        $query->setParameters(new ArrayCollection(
+            [
+            new Parameter('b', [$user1->id, $user2->id, $user3->id]),
             new Parameter('a', 'developer')
-        )));
+            ]
+        ));
         $result = $query->getResult();
 
         $this->assertEquals(3, count($result));
@@ -578,7 +581,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)");
-        $query->setParameter(0, array('beberlei', 'jwage'));
+        $query->setParameter(0, ['beberlei', 'jwage']);
 
         $users = $query->execute();
 
@@ -623,7 +626,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (?0) OR u.username = ?1");
-        $query->setParameter(0, array($userA, $userC));
+        $query->setParameter(0, [$userA, $userC]);
         $query->setParameter(1, 'beberlei');
 
         $users = $query->execute();

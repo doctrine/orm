@@ -39,7 +39,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
+        $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
@@ -47,18 +47,18 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
     protected function _createMetadataDriver($type, $path)
     {
-        $mappingDriver = array(
+        $mappingDriver = [
             'php'        => 'Doctrine\Common\Persistence\Mapping\Driver\PHPDriver',
             'annotation' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
             'xml'        => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
             'yaml'       => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
-        );
+        ];
 
         $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
 
         $class  = $mappingDriver[$type];
         $driver = ($type === 'annotation')
-            ? $this->createAnnotationDriver(array($path))
+            ? $this->createAnnotationDriver([$path])
             : new $class($path);
 
         return $driver;
@@ -140,7 +140,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testTableIsExported($class)
     {
         $this->assertEquals('cms_users', $class->table['name']);
-        $this->assertEquals(array('engine' => 'MyISAM', 'foo' => array('bar' => 'baz')),
+        $this->assertEquals(
+            ['engine' => 'MyISAM', 'foo' => ['bar' => 'baz']],
             $class->table['options']);
 
         return $class;
@@ -164,7 +165,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testIdentifierIsExported($class)
     {
         $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_IDENTITY, $class->generatorType, "Generator Type wrong");
-        $this->assertEquals(array('id'), $class->identifier);
+        $this->assertEquals(['id'], $class->identifier);
         $this->assertTrue(isset($class->fieldMappings['id']['id']) && $class->fieldMappings['id']['id'] === true);
 
         return $class;
@@ -259,7 +260,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         //$this->assertInstanceOf('Doctrine\ORM\Mapping\OneToManyMapping', $class->associationMappings['phonenumbers']);
         $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Phonenumber', $class->associationMappings['phonenumbers']['targetEntity']);
         $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
-        $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
+        $this->assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
 
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadeRemove']);
         $this->assertTrue($class->associationMappings['phonenumbers']['isCascadePersist']);

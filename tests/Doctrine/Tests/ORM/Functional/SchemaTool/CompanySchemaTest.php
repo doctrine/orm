@@ -59,9 +59,11 @@ class CompanySchemaTest extends OrmFunctionalTestCase
             $this->markTestSkipped("Foreign Key test");
         }
 
-        $sql = $this->_schemaTool->getDropSchemaSQL(array(
+        $sql = $this->_schemaTool->getDropSchemaSQL(
+            [
             $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyManager'),
-        ));
+            ]
+        );
         $this->assertEquals(4, count($sql));
     }
 }

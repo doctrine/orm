@@ -7,11 +7,13 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Customer'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Distributor'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Contact')
-        ));
+            ]
+        );
     }
 
     public function testIssue()

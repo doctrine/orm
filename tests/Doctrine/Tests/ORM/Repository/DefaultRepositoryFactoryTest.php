@@ -52,7 +52,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
             ->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
         $this->assertInstanceOf(
             'Doctrine\\Tests\\Models\\DDC869\\DDC869PaymentRepository',
@@ -66,7 +66,7 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
             ->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
         $this->assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
@@ -100,11 +100,11 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         $em1
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
         $em2
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, __CLASS__);
         $repo2 = $this->repositoryFactory->getRepository($em2, __CLASS__);

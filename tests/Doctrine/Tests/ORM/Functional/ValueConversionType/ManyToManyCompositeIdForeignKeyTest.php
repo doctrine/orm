@@ -81,7 +81,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -106,7 +106,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $owning = $this->_em->find(
@@ -132,7 +132,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => $auxiliary)
+            ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
 
         $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity', $inversed);
@@ -158,7 +158,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
     {
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         $this->assertCount(1, $inversed->associatedEntities);
@@ -176,7 +176,7 @@ class ManyToManyCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
         $inversed = $this->_em->find(
             'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            array('id1' => 'def', 'foreignEntity' => 'abc')
+            ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
         foreach ($inversed->associatedEntities as $owning) {

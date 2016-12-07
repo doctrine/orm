@@ -13,10 +13,12 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2256User'),
             $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2256Group')
-        ));
+            ]
+        );
     }
 
     public function testIssue()
@@ -53,7 +55,8 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Test ResultSetMappingBuilder.
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('MyNamespace:DDC2256User', 'u');
-        $rsm->addJoinedEntityFromClassMetadata('MyNamespace:DDC2256Group', 'g', 'u', 'group', array('id' => 'group_id', 'name' => 'group_name'));
+        $rsm->addJoinedEntityFromClassMetadata('MyNamespace:DDC2256Group', 'g', 'u', 'group', ['id' => 'group_id', 'name' => 'group_name']
+        );
 
         $this->_em->createNativeQuery($sql, $rsm)->getResult();
     }

@@ -41,7 +41,7 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $cart2);
         $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $cart2->getCustomer());
         $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart2->getCustomer());
-        $this->assertEquals(array('name' => 'roman', 'payment' => 'cash'), $result);
+        $this->assertEquals(['name' => 'roman', 'payment' => 'cash'], $result);
     }
 
     /**
@@ -65,7 +65,8 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $dql = "select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c";
         $result = $this->_em->createQuery($dql)
-                            ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\Ticket\DisableFetchJoinTreeWalker'))
+                            ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\Tests\ORM\Functional\Ticket\DisableFetchJoinTreeWalker']
+                            )
                             ->getResult();
 
         /* @var $cart2 Doctrine\Tests\Models\ECommerce\ECommerceCart */

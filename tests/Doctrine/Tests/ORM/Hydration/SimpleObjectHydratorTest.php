@@ -21,12 +21,12 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('p', 'p__name', 'name');
         $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('p', 'discr');
-        $resultSet = array(
-              array(
+        $resultSet = [
+              [
                   'u__id'   => '1',
                   'u__name' => 'Fabio B. Silva'
-              ),
-         );
+              ],
+        ];
 
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
@@ -39,13 +39,13 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsAddress', 'a');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__city', 'city');
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'a__id'   => '1',
                 'a__city' => 'Cracow',
                 'doctrine_rownum' => '1'
-            ),
-        );
+            ],
+        ];
 
         $expectedEntity = new \Doctrine\Tests\Models\CMS\CmsAddress();
         $expectedEntity->id = 1;
@@ -74,13 +74,13 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('p', 'discr');
 
-        $resultSet = array(
-              array(
+        $resultSet = [
+              [
                   'p__id'   => '1',
                   'p__name' => 'Fabio B. Silva',
                   'discr'   => 'subworker'
-              ),
-         );
+              ],
+        ];
 
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
@@ -98,14 +98,14 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('p', 'm__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Manager');
         $rsm->addFieldResult('p', 'e__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Employee');
         $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
-        $resultSet = array(
-            array(
+        $resultSet = [
+            [
                 'p__id'   => '1',
                 'm__tags' => 'tag1,tag2',
                 'e__tags' => null,
                 'discr'   => 'manager'
-            ),
-        );
+            ],
+        ];
 
         $expectedEntity = new \Doctrine\Tests\Models\Issue5989\Issue5989Manager();
         $expectedEntity->id = 1;

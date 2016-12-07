@@ -55,7 +55,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $queries = $this->getCurrentQueryCount();
 
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
         $this->assertEquals("Italy", $admin1Rome->country->name);
         $this->assertEquals(2, count($admin1Rome->names));
@@ -65,7 +65,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
         $queries = $this->getCurrentQueryCount();
 
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
         $this->assertEquals("Italy", $admin1Rome->country->name);
         $this->assertEquals(2, count($admin1Rome->names));
