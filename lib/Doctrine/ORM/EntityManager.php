@@ -386,7 +386,7 @@ use Doctrine\Common\Util\ClassUtils;
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
         foreach ($id as $i => $value) {
@@ -399,7 +399,7 @@ use Doctrine\Common\Util\ClassUtils;
             }
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -458,7 +458,7 @@ use Doctrine\Common\Util\ClassUtils;
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $persister->load($sortedId, null, null, array(), $lockMode);
+                return $persister->load($sortedId, null, null, [], $lockMode);
 
             default:
                 return $persister->loadById($sortedId);
@@ -473,10 +473,10 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -502,7 +502,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, array());
+        $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
         return $entity;
     }
@@ -520,14 +520,14 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+            $identifier = [$class->identifier[0] => $identifier];
         }
 
         $entity = $class->newInstance();
 
         $class->setIdentifierValues($entity, $identifier);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->registerManaged($entity, $identifier, []);
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;

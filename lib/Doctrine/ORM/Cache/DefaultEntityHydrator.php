@@ -55,7 +55,7 @@ class DefaultEntityHydrator implements EntityHydrator
     /**
      * @var array
      */
-    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+    private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
@@ -138,7 +138,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
 
                 $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetId     = array($targetEntity->identifier[0] => $targetId);
+                $targetId     = [$targetEntity->identifier[0] => $targetId];
             }
 
             $data[$name] = new AssociationCacheEntry($assoc['targetEntity'], $targetId);

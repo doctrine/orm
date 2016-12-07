@@ -69,7 +69,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        $selectExpressions = array();
+        $selectExpressions = [];
 
         $this->validate($AST);
 
@@ -80,9 +80,9 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 continue;
             }
         }
-        
+
         $identifier = $rootClass->getSingleIdentifierFieldName();
-        
+
         if (isset($rootClass->associationMappings[$identifier])) {
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
@@ -109,7 +109,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 if ( ! $item->expression instanceof PathExpression) {
                     continue;
                 }
-                
+
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
                     '_dctrn_ord' . $this->_aliasCounter++
@@ -154,24 +154,24 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             }
         }
     }
-    
+
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
-     * 
+     *
      * @param \Doctrine\ORM\Query\AST\PathExpression $pathExpression
-     * 
+     *
      * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
      */
     private function createSelectExpressionItem(PathExpression $pathExpression)
     {
         if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');
-            
+
             $identity->pathExpression = clone $pathExpression;
-            
+
             return $identity;
         }
-        
+
         return clone $pathExpression;
     }
 }

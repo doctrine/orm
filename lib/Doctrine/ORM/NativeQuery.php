@@ -63,8 +63,8 @@ final class NativeQuery extends AbstractQuery
      */
     protected function _doExecute()
     {
-        $parameters = array();
-        $types      = array();
+        $parameters = [];
+        $types      = [];
 
         foreach ($this->getParameters() as $parameter) {
             $name  = $parameter->getName();

@@ -35,7 +35,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * @var array<\Doctrine\ORM\Cache\Logging\CacheLogger>
      */
-    private $loggers = array();
+    private $loggers = [];
 
     /**
      * @param string                                  $name

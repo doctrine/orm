@@ -96,7 +96,7 @@ abstract class AbstractQuery
      *
      * @var array
      */
-    protected $_hints = array();
+    protected $_hints = [];
 
     /**
      * The hydration mode.
@@ -955,7 +955,7 @@ abstract class AbstractQuery
             }
 
             if ( ! $result) {
-                $result = array();
+                $result = [];
             }
 
             $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
@@ -1049,7 +1049,7 @@ abstract class AbstractQuery
      */
     protected function getHydrationCacheId()
     {
-        $parameters = array();
+        $parameters = [];
 
         foreach ($this->getParameters() as $parameter) {
             $parameters[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
@@ -1111,7 +1111,7 @@ abstract class AbstractQuery
     {
         $this->parameters = new ArrayCollection();
 
-        $this->_hints = array();
+        $this->_hints = [];
         $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
     }
 

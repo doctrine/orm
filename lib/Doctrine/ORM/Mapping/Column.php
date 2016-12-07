@@ -67,7 +67,7 @@ final class Column implements Annotation
     /**
      * @var array
      */
-    public $options = array();
+    public $options = [];
 
     /**
      * @var string

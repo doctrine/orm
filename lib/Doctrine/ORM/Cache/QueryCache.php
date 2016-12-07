@@ -44,7 +44,7 @@ interface QueryCache
      *
      * @return boolean
      */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = array());
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = []);
 
     /**
      * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
@@ -53,7 +53,7 @@ interface QueryCache
      *
      * @return array|null
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = array());
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []);
 
     /**
      * @return \Doctrine\ORM\Cache\Region

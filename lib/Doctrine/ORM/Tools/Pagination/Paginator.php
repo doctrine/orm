@@ -225,7 +225,7 @@ class Paginator implements \Countable, \IteratorAggregate
         $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
 
         if ($hints === false) {
-            $hints = array();
+            $hints = [];
         }
 
         $hints[] = $walkerClass;

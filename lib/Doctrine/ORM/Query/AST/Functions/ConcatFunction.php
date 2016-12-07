@@ -38,7 +38,7 @@ class ConcatFunction extends FunctionNode
 
     public $secondStringPrimary;
 
-    public $concatExpressions = array();
+    public $concatExpressions = [];
 
     /**
      * @override
@@ -47,13 +47,13 @@ class ConcatFunction extends FunctionNode
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
 
-        $args = array();
+        $args = [];
 
         foreach ($this->concatExpressions as $expression) {
             $args[] = $sqlWalker->walkStringPrimary($expression);
         }
 
-        return call_user_func_array(array($platform,'getConcatExpression'), $args);
+        return call_user_func_array([$platform,'getConcatExpression'], $args);
     }
 
     /**
