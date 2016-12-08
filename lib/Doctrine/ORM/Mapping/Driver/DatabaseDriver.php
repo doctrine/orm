@@ -496,7 +496,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Retreive schema table definition primary keys.
+     * Retrieve schema table definition primary keys.
      *
      * @param \Doctrine\DBAL\Schema\Table $table
      *

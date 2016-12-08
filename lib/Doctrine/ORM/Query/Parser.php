@@ -19,8 +19,9 @@
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\AST\Functions;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -41,12 +42,12 @@ class Parser
      * @var array
      */
     private static $_STRING_FUNCTIONS = [
-        'concat'    => 'Doctrine\ORM\Query\AST\Functions\ConcatFunction',
-        'substring' => 'Doctrine\ORM\Query\AST\Functions\SubstringFunction',
-        'trim'      => 'Doctrine\ORM\Query\AST\Functions\TrimFunction',
-        'lower'     => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
-        'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction',
-        'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
+        'concat'    => Functions\ConcatFunction::class,
+        'substring' => Functions\SubstringFunction::class,
+        'trim'      => Functions\TrimFunction::class,
+        'lower'     => Functions\LowerFunction::class,
+        'upper'     => Functions\UpperFunction::class,
+        'identity'  => Functions\IdentityFunction::class,
     ];
 
     /**
@@ -55,15 +56,15 @@ class Parser
      * @var array
      */
     private static $_NUMERIC_FUNCTIONS = [
-        'length'    => 'Doctrine\ORM\Query\AST\Functions\LengthFunction',
-        'locate'    => 'Doctrine\ORM\Query\AST\Functions\LocateFunction',
-        'abs'       => 'Doctrine\ORM\Query\AST\Functions\AbsFunction',
-        'sqrt'      => 'Doctrine\ORM\Query\AST\Functions\SqrtFunction',
-        'mod'       => 'Doctrine\ORM\Query\AST\Functions\ModFunction',
-        'size'      => 'Doctrine\ORM\Query\AST\Functions\SizeFunction',
-        'date_diff' => 'Doctrine\ORM\Query\AST\Functions\DateDiffFunction',
-        'bit_and'   => 'Doctrine\ORM\Query\AST\Functions\BitAndFunction',
-        'bit_or'    => 'Doctrine\ORM\Query\AST\Functions\BitOrFunction',
+        'length'    => Functions\LengthFunction::class,
+        'locate'    => Functions\LocateFunction::class,
+        'abs'       => Functions\AbsFunction::class,
+        'sqrt'      => Functions\SqrtFunction::class,
+        'mod'       => Functions\ModFunction::class,
+        'size'      => Functions\SizeFunction::class,
+        'date_diff' => Functions\DateDiffFunction::class,
+        'bit_and'   => Functions\BitAndFunction::class,
+        'bit_or'    => Functions\BitOrFunction::class,
     ];
 
     /**
@@ -72,11 +73,11 @@ class Parser
      * @var array
      */
     private static $_DATETIME_FUNCTIONS = [
-        'current_date'      => 'Doctrine\ORM\Query\AST\Functions\CurrentDateFunction',
-        'current_time'      => 'Doctrine\ORM\Query\AST\Functions\CurrentTimeFunction',
-        'current_timestamp' => 'Doctrine\ORM\Query\AST\Functions\CurrentTimestampFunction',
-        'date_add'          => 'Doctrine\ORM\Query\AST\Functions\DateAddFunction',
-        'date_sub'          => 'Doctrine\ORM\Query\AST\Functions\DateSubFunction',
+        'current_date'      => Functions\CurrentDateFunction::class,
+        'current_time'      => Functions\CurrentTimeFunction::class,
+        'current_timestamp' => Functions\CurrentTimestampFunction::class,
+        'date_add'          => Functions\DateAddFunction::class,
+        'date_sub'          => Functions\DateSubFunction::class,
     ];
 
     /*
@@ -396,7 +397,7 @@ class Parser
             $this->queryComponents = $treeWalkerChain->getQueryComponents();
         }
 
-        $outputWalkerClass = $this->customOutputWalker ?: __NAMESPACE__ . '\SqlWalker';
+        $outputWalkerClass = $this->customOutputWalker ?: SqlWalker::class;
         $outputWalker      = new $outputWalkerClass($this->query, $this->parserResult, $this->queryComponents);
 
         // Assign an SQL executor to the parser result

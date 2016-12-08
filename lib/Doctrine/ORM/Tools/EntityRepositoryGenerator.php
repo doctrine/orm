@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\ORM\EntityRepository;
+
 /**
  * Class to generate entity repository classes
  *
@@ -116,14 +118,14 @@ class <className> extends <repositoryName>
 
     /**
      * @param string $fullClassName
-     * 
+     *
      * @return string $repositoryName
      */
     private function generateEntityRepositoryName($fullClassName)
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
-        $repositoryName = $this->repositoryName ?: 'Doctrine\ORM\EntityRepository';
+        $repositoryName = $this->repositoryName ?: EntityRepository::class;
 
         if ($namespace && $repositoryName[0] !== '\\') {
             $repositoryName = '\\' . $repositoryName;
