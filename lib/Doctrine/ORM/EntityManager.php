@@ -344,7 +344,11 @@ use Doctrine\Common\Util\ClassUtils;
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
+     * Also if you want to keep your changeSets for another entities you should explicitly provide
+     * $leaveUnflushedChanges as true, so you still can flush changed entities afterwards.
+     *
      * @param null|object|array $entity
+     * @param boolean           $leaveUnflushedChanges allows you to keep changes stored with notify policy
      *
      * @return void
      *
@@ -352,11 +356,11 @@ use Doctrine\Common\Util\ClassUtils;
      *         makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null)
+    public function flush($entity = null, $leaveUnflushedChanges = false)
     {
         $this->errorIfClosed();
 
-        $this->unitOfWork->commit($entity);
+        $this->unitOfWork->commit($entity, $leaveUnflushedChanges);
     }
 
     /**
