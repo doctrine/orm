@@ -31,8 +31,6 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinColumnWithSameNameAsAssociationField()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $cust = new DDC522Customer;
         $cust->name = "name";
         $cart = new DDC522Cart;

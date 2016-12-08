@@ -31,8 +31,6 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
     public function testChangeTracking()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $user = new NotifyUser();
         $group = new NotifyGroup();
         $user->setName('roman');

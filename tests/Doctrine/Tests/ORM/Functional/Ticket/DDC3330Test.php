@@ -42,13 +42,6 @@ class DDC3330Test extends OrmFunctionalTestCase
 
         $paginator = new Paginator($query, true);
 
-        /*foreach ($paginator as $building) {
-             echo 'BUILDING ID: '.$building->id."\n";
-             foreach ($building->halls as $hall) {
-                 echo '   - HALL: '.$hall->id.' - '.$hall->name."\n";
-             }
-         }*/
-
         $this->assertEquals(3, count(iterator_to_array($paginator)), 'Count is not correct for pagination');
     }
 

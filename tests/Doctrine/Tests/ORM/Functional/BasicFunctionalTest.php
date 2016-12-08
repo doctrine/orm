@@ -50,7 +50,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->assertTrue($this->_em->contains($ph));
         $this->assertTrue($this->_em->contains($user));
-        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Update name
         $user->name = 'guilherme';
@@ -95,8 +94,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->_em->persist($user);
         $this->_em->flush();
-
-        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Remove the first element from the collection
         unset($user->phonenumbers[0]);
@@ -283,7 +280,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(PersistentCollection::class, $users[0]->phonenumbers);
         $this->assertTrue($users[0]->phonenumbers->isInitialized());
         $this->assertEquals(0, $users[0]->phonenumbers->count());
-        //$this->assertNull($users[0]->articles);
     }
 
     public function testBasicRefresh()
@@ -511,9 +507,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         // Assume we only got the identifier of the address and now want to attach
         // that address to the user without actually loading it, using getReference().
         $addressRef = $this->_em->getReference(CmsAddress::class, $address->getId());
-
-        //$addressRef->getId();
-        //\Doctrine\Common\Util\Debug::dump($addressRef);
 
         $user->setAddress($addressRef); // Ugh! Initializes address 'cause of $address->setUser($user)!
 
@@ -761,7 +754,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException2()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -796,7 +788,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException3()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $art = new CmsArticle();
         $art->topic = 'topic';
         $art->text = 'the text';
@@ -954,7 +945,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testOneToOneMergeSetNull()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";

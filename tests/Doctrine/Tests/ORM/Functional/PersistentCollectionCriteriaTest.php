@@ -95,28 +95,4 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $this->assertCount(1, $tweets);
         $this->assertFalse($tweets->isInitialized());
     }
-
-    /*public function testCanCountWithoutLoadingManyToManyPersistentCollection()
-    {
-        $this->loadQuoteFixture();
-
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Quote\User');
-
-        $user   = $repository->findOneBy(array('name' => 'mgal'));
-        $groups = $user->groups->matching(new Criteria());
-
-        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
-        $this->assertFalse($groups->isInitialized());
-        $this->assertCount(2, $groups);
-        $this->assertFalse($groups->isInitialized());
-
-        // Make sure it works with constraints
-        $criteria = new Criteria(Criteria::expr()->eq('name', 'quote1'));
-        $groups   = $user->groups->matching($criteria);
-
-        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
-        $this->assertFalse($groups->isInitialized());
-        $this->assertCount(1, $groups);
-        $this->assertFalse($groups->isInitialized());
-    }*/
 }

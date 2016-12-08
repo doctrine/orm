@@ -127,7 +127,6 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         $assoc = $cm->associationMappings['groups'];
-        //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $assoc);
         $this->assertEquals(
             [
             'name' => 'cmsuser_cmsgroup',

@@ -137,7 +137,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertEquals(100000, $person->getSalary());
         $this->assertEquals('CTO', $person->getTitle());
         $this->assertTrue(is_numeric($person->getId()));
-        //$this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyCar', $person->getCar());
     }
 
     public function testSelfReferencingOneToOne() {
