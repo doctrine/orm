@@ -58,30 +58,24 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 abstract class DDC3300Person
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
 interface DDC3300BossInterface
 {
-    const INTERFACENAME = __CLASS__;
 }
 
 /** @Entity */
 class DDC3300Boss extends DDC3300Person implements DDC3300BossInterface
 {
-    const CLASSNAME = __CLASS__;
 }
 
 interface DDC3300EmployeeInterface
 {
-    const INTERFACENAME = __CLASS__;
 }
 
 /** @Entity */
 class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
 {
-    const CLASSNAME = __CLASS__;
 }

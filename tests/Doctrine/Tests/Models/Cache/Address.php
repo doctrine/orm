@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Address
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

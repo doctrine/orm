@@ -74,8 +74,6 @@ class DDC3634Test extends OrmFunctionalTestCase {
 /** @Entity */
 class DDC3634Entity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
@@ -90,8 +88,6 @@ class DDC3634Entity
  */
 class DDC3634JTIBaseEntity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
@@ -99,7 +95,6 @@ class DDC3634JTIBaseEntity
 /** @Entity */
 class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 {
-    const CLASSNAME = __CLASS__;
 }
 
 class DDC3634LastInsertIdMockingConnection extends Connection

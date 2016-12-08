@@ -14,8 +14,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 abstract class AttractionInfo
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

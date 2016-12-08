@@ -17,8 +17,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 abstract class Attraction
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

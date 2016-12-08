@@ -9,8 +9,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Flight
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Cache

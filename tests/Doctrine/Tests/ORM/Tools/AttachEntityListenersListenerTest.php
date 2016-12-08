@@ -117,8 +117,6 @@ class AttachEntityListenersListenerTest extends OrmTestCase
  */
 class AttachEntityListenersListenerTestFooEntity
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="integer")
@@ -133,8 +131,6 @@ class AttachEntityListenersListenerTestFooEntity
  */
 class AttachEntityListenersListenerTestBarEntity
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="integer")
@@ -145,8 +141,6 @@ class AttachEntityListenersListenerTestBarEntity
 
 class AttachEntityListenersListenerTestListener
 {
-    const CLASSNAME = __CLASS__;
-
     public $calls;
 
     public function prePersist()
@@ -167,8 +161,6 @@ class AttachEntityListenersListenerTestListener
 
 class AttachEntityListenersListenerTestListener2
 {
-    const CLASSNAME = __CLASS__;
-
     public $calls;
 
     public function prePersist()

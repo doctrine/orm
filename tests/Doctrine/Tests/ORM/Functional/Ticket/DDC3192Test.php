@@ -72,8 +72,6 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC3192Currency
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="ddc3192_currency_code")
@@ -99,8 +97,6 @@ class DDC3192Currency
  */
 class DDC3192Transaction
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

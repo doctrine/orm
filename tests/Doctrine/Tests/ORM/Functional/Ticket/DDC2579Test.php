@@ -67,9 +67,6 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2579Entity
 {
-
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="ddc2579")
@@ -102,8 +99,6 @@ class DDC2579Entity
  */
 class DDC2579EntityAssoc
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @ManyToOne(targetEntity="DDC2579AssocAssoc")
@@ -122,8 +117,6 @@ class DDC2579EntityAssoc
  */
 class DDC2579AssocAssoc
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="ddc2579")
@@ -140,7 +133,6 @@ class DDC2579AssocAssoc
 class DDC2579Type extends StringType
 {
     const NAME = 'ddc2579';
-    const CLASSNAME = __CLASS__;
 
     /**
      * {@inheritdoc}
@@ -166,8 +158,6 @@ class DDC2579Type extends StringType
 
 class DDC2579Id
 {
-    const CLASSNAME = __CLASS__;
-
     private $val;
 
     public function __construct($val)

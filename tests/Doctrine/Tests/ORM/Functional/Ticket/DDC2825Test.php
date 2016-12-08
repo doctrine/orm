@@ -100,8 +100,6 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @GeneratedValue
      * @Column(type="integer")

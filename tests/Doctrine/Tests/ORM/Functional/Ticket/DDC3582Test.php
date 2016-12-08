@@ -23,8 +23,6 @@ class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /** @Entity */
 class DDC3582Entity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Column @Id */
     private $id;
 
@@ -41,8 +39,6 @@ class DDC3582Entity
 /** @Embeddable */
 class DDC3582Embeddable1
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
     public $embeddable2;
 
@@ -52,8 +48,6 @@ class DDC3582Embeddable1
 /** @Embeddable */
 class DDC3582Embeddable2
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
     public $embeddable3;
 
@@ -63,8 +57,6 @@ class DDC3582Embeddable2
 /** @Embeddable */
 class DDC3582Embeddable3
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Column */
     public $embeddedValue = 'foo';
 }

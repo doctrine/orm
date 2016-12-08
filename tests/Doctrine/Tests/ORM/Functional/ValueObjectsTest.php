@@ -336,8 +336,6 @@ class ValueObjectsTest extends OrmFunctionalTestCase
  */
 class DDC93Person
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 
@@ -407,8 +405,6 @@ class DDC93Car extends DDC93Vehicle
  */
 class DDC93Country
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string", nullable=true)
      */
@@ -425,8 +421,6 @@ class DDC93Country
  */
 class DDC93Address
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string")
      */
@@ -464,8 +458,6 @@ class DDC93Customer
 /** @Embeddable */
 class DDC93ContactInfo
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string")
      */
@@ -479,8 +471,6 @@ class DDC93ContactInfo
  */
 class DDC3028PersonWithPrefix
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
     public $id;
 
@@ -499,8 +489,6 @@ class DDC3028PersonWithPrefix
  */
 class DDC3028PersonEmptyPrefix
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "") */
     public $id;
 
@@ -519,8 +507,6 @@ class DDC3028PersonEmptyPrefix
  */
 class DDC3028PersonPrefixFalse
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = false) */
     public $id;
 
@@ -535,8 +521,6 @@ class DDC3028PersonPrefixFalse
  */
 class DDC3028Id
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @Column(type="string")
      */
@@ -553,8 +537,6 @@ class DDC3028Id
  */
 class DDC3028NestedEmbeddable
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "foo_") */
     public $nestedWithPrefix;
 

@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\DDC3346;
  */
 class DDC3346Author
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @Column(type="integer")
      * @GeneratedValue

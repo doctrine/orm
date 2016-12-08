@@ -60,8 +60,6 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 class DDC5684ObjectIdType extends DBALTypes\IntegerType
 {
-    const CLASSNAME = __CLASS__;
-
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
         return new DDC5684ObjectId($value);
@@ -85,8 +83,6 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
 class DDC5684ObjectId
 {
-    const CLASSNAME = __CLASS__;
-
     public $value;
 
     public function __construct($value)
@@ -106,8 +102,6 @@ class DDC5684ObjectId
  */
 class DDC5684Object
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)

@@ -76,8 +76,6 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2494Currency
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="integer", type="ddc2494_tinyint")
@@ -124,8 +122,6 @@ class DDC2494Currency
  */
 class DDC2494Campaign
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

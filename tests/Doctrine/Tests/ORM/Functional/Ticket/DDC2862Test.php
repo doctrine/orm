@@ -119,8 +119,6 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2862Driver
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue
@@ -196,8 +194,6 @@ class DDC2862Driver
  */
 class DDC2862User
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue
