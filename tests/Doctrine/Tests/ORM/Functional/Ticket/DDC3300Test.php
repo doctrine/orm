@@ -14,14 +14,14 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $resolveTargetEntity = new ResolveTargetEntityListener();
 
         $resolveTargetEntity->addResolveTargetEntity(
-            DDC3300BossInterface::INTERFACENAME,
-            DDC3300Boss::CLASSNAME,
+            DDC3300BossInterface::class,
+            DDC3300Boss::class,
             []
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
-            DDC3300EmployeeInterface::INTERFACENAME,
-            DDC3300Employee::CLASSNAME,
+            DDC3300EmployeeInterface::class,
+            DDC3300Employee::class,
             []
         );
 
@@ -29,7 +29,7 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3300Person::CLASSNAME),
+            $this->_em->getClassMetadata(DDC3300Person::class),
             ]
         );
 
@@ -42,8 +42,8 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertEquals($boss, $this->_em->find(DDC3300BossInterface::INTERFACENAME, $boss->id));
-        $this->assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::INTERFACENAME, $employee->id));
+        $this->assertEquals($boss, $this->_em->find(DDC3300BossInterface::class, $boss->id));
+        $this->assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::class, $employee->id));
     }
 }
 

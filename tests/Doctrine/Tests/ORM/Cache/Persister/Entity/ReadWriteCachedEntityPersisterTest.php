@@ -52,7 +52,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -69,7 +69,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -86,7 +86,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -109,7 +109,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -131,8 +131,8 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -162,8 +162,8 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $entity    = new Country("Foo");
         $lock      = Lock::createLockRead();
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -192,8 +192,8 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -216,8 +216,8 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $property  = new \ReflectionProperty(ReadWriteCachedEntityPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
 use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
@@ -26,8 +27,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
         parent::setUp();
 
         $this->_em = $this->_getTestEntityManager();
-
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\GeoNames\Admin1AlternateName'));
+        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
     }
 
     public function testSelectConditionStatementEq()

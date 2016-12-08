@@ -16,9 +16,9 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityA'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityB'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityC'),
+                $this->_em->getClassMetadata(DDC1514EntityA::class),
+                $this->_em->getClassMetadata(DDC1514EntityB::class),
+                $this->_em->getClassMetadata(DDC1514EntityC::class),
                 ]
             );
         } catch (\Exception $ignored) {

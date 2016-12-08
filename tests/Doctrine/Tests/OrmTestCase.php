@@ -10,7 +10,7 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -149,8 +149,8 @@ abstract class OrmTestCase extends DoctrineTestCase
 
         if ($conn === null) {
             $conn = [
-                'driverClass'  => 'Doctrine\Tests\Mocks\DriverMock',
-                'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
+                'driverClass'  => Mocks\DriverMock::class,
+                'wrapperClass' => Mocks\ConnectionMock::class,
                 'user'         => 'john',
                 'password'     => 'wayne'
             ];
@@ -160,7 +160,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)

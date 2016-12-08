@@ -1,5 +1,7 @@
 <?php
 
+use Doctrine\Tests\Models\Company\CompanyPerson;
+
 $metadata->setPrimaryTable(
     [
    'name' => 'company_person',
@@ -10,7 +12,7 @@ $metadata->addNamedNativeQuery(
     [
     'name'              => 'fetchAllWithResultClass',
     'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-    'resultClass'       => 'Doctrine\\Tests\\Models\\Company\\CompanyPerson',
+    'resultClass'       => CompanyPerson::class,
     ]
 );
 
@@ -38,7 +40,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'name',
           ],
         ],
-        'entityClass' => 'Doctrine\Tests\Models\Company\CompanyPerson',
+        'entityClass' => CompanyPerson::class,
         'discriminatorColumn' => 'discriminator',
         ],
     ],

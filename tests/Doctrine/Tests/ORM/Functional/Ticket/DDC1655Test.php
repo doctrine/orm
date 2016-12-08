@@ -16,9 +16,9 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Foo'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Bar'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1655Baz'),
+                $this->_em->getClassMetadata(DDC1655Foo::class),
+                $this->_em->getClassMetadata(DDC1655Bar::class),
+                $this->_em->getClassMetadata(DDC1655Baz::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -27,10 +27,10 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPostLoadOneToManyInheritance()
     {
-        $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Foo');
+        $cm = $this->_em->getClassMetadata(DDC1655Foo::class);
         $this->assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
 
-        $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1655Bar');
+        $cm = $this->_em->getClassMetadata(DDC1655Bar::class);
         $this->assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
 
         $baz = new DDC1655Baz();

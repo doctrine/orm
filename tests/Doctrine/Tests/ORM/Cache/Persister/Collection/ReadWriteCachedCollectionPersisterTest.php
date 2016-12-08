@@ -52,7 +52,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -70,7 +70,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -88,7 +88,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -112,7 +112,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
 
         $this->region->expects($this->once())
             ->method('lock')
@@ -135,8 +135,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -166,8 +166,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -197,8 +197,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -228,8 +228,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $lock       = Lock::createLockRead();
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -258,8 +258,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $entity     = new State("Foo");
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -283,8 +283,8 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $entity     = new State("Foo");
         $persister  = $this->createPersisterDefault();
         $collection = $this->createCollection($entity);
-        $key        = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id'=>1]);
-        $property   = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister', 'queuedCache');
+        $key        = new CollectionCacheKey(State::class, 'cities', ['id'=>1]);
+        $property   = new \ReflectionProperty(ReadWriteCachedCollectionPersister::class, 'queuedCache');
 
         $property->setAccessible(true);
 

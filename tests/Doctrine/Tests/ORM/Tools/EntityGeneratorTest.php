@@ -67,7 +67,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapField(['fieldName' => 'status', 'type' => 'string', 'options' => ['default' => 'published']]);
         $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
         $metadata->mapOneToOne(
-            ['fieldName' => 'author', 'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor', 'mappedBy' => 'book']
+            ['fieldName' => 'author', 'targetEntity' => EntityGeneratorAuthor::class, 'mappedBy' => 'book']
         );
         $joinColumns = [
             ['name' => 'author_id', 'referencedColumnName' => 'id']
@@ -75,7 +75,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapManyToMany(
             [
             'fieldName' => 'comments',
-            'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
+            'targetEntity' => EntityGeneratorComment::class,
             'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
             'joinTable' => [
                 'name' => 'book_comment',
@@ -270,7 +270,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $comment = new EntityGeneratorComment();
         $this->assertInstanceOf($metadata->name, $book->addComment($comment));
-        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $book->getComments());
+        $this->assertInstanceOf(ArrayCollection::class, $book->getComments());
         $this->assertEquals(new ArrayCollection([$comment]), $book->getComments());
         $this->assertInternalType('boolean', $book->removeComment($comment));
         $this->assertEquals(new ArrayCollection([]), $book->getComments());

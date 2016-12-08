@@ -14,8 +14,8 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3033User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3033Product'),
+            $this->_em->getClassMetadata(DDC3033User::class),
+            $this->_em->getClassMetadata(DDC3033Product::class),
             ]
         );
 

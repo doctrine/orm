@@ -87,9 +87,9 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function getTestedClasses()
     {
         return [
-            [ExplicitSchemaAndTable::CLASSNAME, 'explicit_schema', 'explicit_table'],
-            [SchemaAndTableInTableName::CLASSNAME, 'implicit_schema', 'implicit_table'],
-            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::CLASSNAME, 'myschema', 'order'],
+            [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table'],
+            [SchemaAndTableInTableName::class, 'implicit_schema', 'implicit_table'],
+            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order'],
         ];
     }
 }

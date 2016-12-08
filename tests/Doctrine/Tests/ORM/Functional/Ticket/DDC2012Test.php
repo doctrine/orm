@@ -15,14 +15,14 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType(DDC2012TsVectorType::MYTYPE, __NAMESPACE__ . '\DDC2012TsVectorType');
+        Type::addType(DDC2012TsVectorType::MYTYPE, DDC2012TsVectorType::class);
 
         DDC2012TsVectorType::$calls = [];
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2012Item'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2012ItemPerson'),
+            $this->_em->getClassMetadata(DDC2012Item::class),
+            $this->_em->getClassMetadata(DDC2012ItemPerson::class),
             ]
         );
     }
@@ -46,7 +46,7 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
         $this->assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2012Item', $item);
+        $this->assertInstanceOf(DDC2012Item::class, $item);
         $this->assertEquals(['word1', 'word2', 'word3'], $item->tsv);
 
 
@@ -62,7 +62,7 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
         $this->assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2012Item', $item);
+        $this->assertInstanceOf(DDC2012Item::class, $item);
         $this->assertEquals(['word1', 'word2'], $item->tsv);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -55,20 +55,20 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $result = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
+        $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
 
     public function testLazyLoadsObjects() {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
         $product = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceShipping', $product->getShipping());
+        $this->assertInstanceOf(ECommerceShipping::class, $product->getShipping());
         $this->assertEquals(1, $product->getShipping()->getDays());
     }
 

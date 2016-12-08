@@ -15,8 +15,8 @@ class DDC3042Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3042Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3042Bar'),
+            $this->_em->getClassMetadata(DDC3042Foo::class),
+            $this->_em->getClassMetadata(DDC3042Bar::class),
             ]
         );
     }

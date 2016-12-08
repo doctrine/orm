@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
+use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
@@ -51,7 +51,7 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
 
     public function testFindByReturnsCachedEntity()
     {
-        $admin1Repo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1');
+        $admin1Repo = $this->_em->getRepository(Admin1::class);
 
         $queries = $this->getCurrentQueryCount();
 

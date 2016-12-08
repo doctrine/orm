@@ -10,14 +10,14 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC444User'),
+            $this->_em->getClassMetadata(DDC444User::class),
             ]
         );
     }
 
     public function testExplicitPolicy()
     {
-        $classname = __NAMESPACE__ . "\DDC444User";
+        $classname = DDC444User::class;
 
         $u = new $classname;
         $u->name = "Initial value";

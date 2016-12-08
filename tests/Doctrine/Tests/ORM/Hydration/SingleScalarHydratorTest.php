@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\CMS\CmsUser;
 
 class SingleScalarHydratorTest extends HydrationTestCase
 {
@@ -61,7 +62,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
     public function testHydrateSingleScalar($name, $resultSet)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 

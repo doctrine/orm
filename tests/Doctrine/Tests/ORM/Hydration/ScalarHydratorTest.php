@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\CMS\CmsUser;
 
 class ScalarHydratorTest extends HydrationTestCase
 {
@@ -13,7 +14,7 @@ class ScalarHydratorTest extends HydrationTestCase
     public function testNewHydrationSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -73,7 +74,7 @@ class ScalarHydratorTest extends HydrationTestCase
     public function testSkipUnknownColumns()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addScalarResult('foo1', 'foo', 'string');

@@ -9,9 +9,9 @@ class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC513OfferItem'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC513Item'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC513Price'),
+            $this->_em->getClassMetadata(DDC513OfferItem::class),
+            $this->_em->getClassMetadata(DDC513Item::class),
+            $this->_em->getClassMetadata(DDC513Price::class),
             ]
         );
     }

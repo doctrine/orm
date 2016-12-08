@@ -17,9 +17,9 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575Root'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575A'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2575B'),
+            $this->_em->getClassMetadata(DDC2575Root::class),
+            $this->_em->getClassMetadata(DDC2575A::class),
+            $this->_em->getClassMetadata(DDC2575B::class),
             ]
         );
 
@@ -55,7 +55,7 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testHydrationIssue()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC2575Root');
+        $repository = $this->_em->getRepository(DDC2575Root::class);
         $qb = $repository->createQueryBuilder('r')
             ->select('r, a, b')
             ->leftJoin('r.aRelation', 'a')

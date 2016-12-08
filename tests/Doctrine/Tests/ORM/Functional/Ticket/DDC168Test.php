@@ -12,16 +12,16 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('company');
         parent::setUp();
 
-        $this->oldMetadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
+        $this->oldMetadata = $this->_em->getClassMetadata(CompanyEmployee::class);
 
         $metadata = clone $this->oldMetadata;
         ksort($metadata->reflFields);
-        $this->_em->getMetadataFactory()->setMetadataFor('Doctrine\Tests\Models\Company\CompanyEmployee', $metadata);
+        $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
     public function tearDown()
     {
-        $this->_em->getMetadataFactory()->setMetadataFor('Doctrine\Tests\Models\Company\CompanyEmployee', $this->oldMetadata);
+        $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
         parent::tearDown();
     }
 
@@ -56,7 +56,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals("bar", $theEmployee->getDepartment());
         $this->assertEquals("Foo", $theEmployee->getName());
         $this->assertEquals(1000, $theEmployee->getSalary());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $theEmployee);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $theEmployee->getSpouse());
+        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee);
+        $this->assertInstanceOf(CompanyEmployee::class, $theEmployee->getSpouse());
     }
 }

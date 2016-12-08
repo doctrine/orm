@@ -12,9 +12,9 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548E1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548E2'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1548Rel'),
+            $this->_em->getClassMetadata(DDC1548E1::class),
+            $this->_em->getClassMetadata(DDC1548E2::class),
+            $this->_em->getClassMetadata(DDC1548Rel::class),
             ]
         );
     }
@@ -31,7 +31,7 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $obt = $this->_em->find(__NAMESPACE__ . '\DDC1548Rel', $rel->id);
+        $obt = $this->_em->find(DDC1548Rel::class, $rel->id);
 
         $this->assertNull($obt->e2);
     }

@@ -3,12 +3,13 @@
 namespace Doctrine\Tests\ORM\Persisters;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
-use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Tests\Models\CustomType\CustomTypeParent;
+use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
 
 class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
@@ -44,7 +45,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
         $this->_em = $this->_getTestEntityManager();
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata("Doctrine\Tests\Models\CustomType\CustomTypeParent"));
+        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(CustomTypeParent::class));
     }
 
     public function testGetInsertSQLUsesTypeValuesSQL()
@@ -93,7 +94,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
      */
     public function testStripNonAlphanumericCharactersFromSelectColumnListSQL()
     {
-        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity'));
+        $persister  = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(NonAlphaColumnsEntity::class));
         $method     = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
@@ -144,7 +145,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
 
     public function testCountCondition()
     {
-        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity'));
+        $persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(NonAlphaColumnsEntity::class));
 
         // Using a criteria as array
         $statement = $persister->getCountSQL(['value' => 'bar']);

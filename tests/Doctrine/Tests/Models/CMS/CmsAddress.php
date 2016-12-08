@@ -172,7 +172,7 @@ class CmsAddress
             [
             'name'              => 'find-by-id',
             'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-            'resultClass'       => 'Doctrine\\Tests\\Models\\CMS\\CmsAddress',
+            'resultClass'       => CmsAddress::class,
             ]
         );
 
@@ -204,7 +204,7 @@ class CmsAddress
                     'column'    => 'country',
                   ],
                 ],
-                'entityClass' => 'Doctrine\Tests\Models\CMS\CmsAddress',
+                'entityClass' => CmsAddress::class,
                 ],
             ],
             ]
@@ -216,7 +216,7 @@ class CmsAddress
             'columns'   => [],
             'entities'  => [
                 [
-                'entityClass' => 'Doctrine\\Tests\\Models\\CMS\\CmsAddress',
+                'entityClass' => CmsAddress::class,
                 'fields' => []
                 ]
             ]

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\Driver\StaticPHPDriver;
+use Doctrine\Tests\Models\DDC889\DDC889Class;
 
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -19,7 +20,7 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+        $this->createClassMetadata(DDC889Class::class);
     }
 
     /**

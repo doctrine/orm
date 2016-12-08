@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
-use Doctrine\Tests\OrmTestCase;
-
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Persisters\Entity\EntityPersister;
-
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-2183
@@ -119,16 +119,16 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
      */
     protected function createPersisterDefault()
     {
-        return $this->createPersister($this->em, $this->entityPersister, $this->region, $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country'));
+        return $this->createPersister($this->em, $this->entityPersister, $this->region, $this->em->getClassMetadata(Country::class));
     }
 
     public function testImplementsEntityPersister()
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf('Doctrine\ORM\Persisters\Entity\EntityPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister', $persister);
+        $this->assertInstanceOf(EntityPersister::class, $persister);
+        $this->assertInstanceOf(CachedPersister::class, $persister);
+        $this->assertInstanceOf(CachedEntityPersister::class, $persister);
     }
 
     public function testInvokeAddInsert()
@@ -293,7 +293,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $persister = $this->createPersisterDefault();
         $entity    = new Country("Foo");
 
-        $rsm->addEntityResult(Country::CLASSNAME, 'c');
+        $rsm->addEntityResult(Country::class, 'c');
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
@@ -356,7 +356,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         $criteria  = new Criteria();
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
-        $rsm->addEntityResult(Country::CLASSNAME, 'c');
+        $rsm->addEntityResult(Country::class, 'c');
 
         $this->entityPersister->expects($this->once())
             ->method('getResultSetMapping')
@@ -398,7 +398,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
     public function testInvokeLoadManyToManyCollection()
     {
-        $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
+        $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();
@@ -414,7 +414,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
     public function testInvokeLoadOneToManyCollection()
     {
-        $mapping   = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\Country');
+        $mapping   = $this->em->getClassMetadata(Country::class);
         $assoc     = ['type' => 1];
         $coll      = new PersistentCollection($this->em, $mapping, new ArrayCollection());
         $persister = $this->createPersisterDefault();

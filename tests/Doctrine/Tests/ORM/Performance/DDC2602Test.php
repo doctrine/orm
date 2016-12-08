@@ -19,10 +19,10 @@ class DDC2602Test extends OrmPerformanceTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602Biography'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyField'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyFieldChoice'),
+            $this->_em->getClassMetadata(DDC2602User::class),
+            $this->_em->getClassMetadata(DDC2602Biography::class),
+            $this->_em->getClassMetadata(DDC2602BiographyField::class),
+            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
 
@@ -35,10 +35,10 @@ class DDC2602Test extends OrmPerformanceTestCase
 
         $this->_schemaTool->dropSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602Biography'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyField'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2602BiographyFieldChoice'),
+            $this->_em->getClassMetadata(DDC2602User::class),
+            $this->_em->getClassMetadata(DDC2602Biography::class),
+            $this->_em->getClassMetadata(DDC2602BiographyField::class),
+            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
     }

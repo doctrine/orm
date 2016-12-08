@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
@@ -54,14 +55,14 @@ class InheritancePersisterPerformanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $contracts = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyContract')->findAll();
+        $contracts = $this->_em->getRepository(CompanyContract::class)->findAll();
         echo "99 CompanyContract: " . number_format(microtime(true) - $start, 6) . "\n";
         $this->assertEquals(99, count($contracts));
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $contracts = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyContract')->findAll();
+        $contracts = $this->_em->getRepository(CompanyContract::class)->findAll();
         echo "99 CompanyContract: " . number_format(microtime(true) - $start, 6) . "\n";
         $this->assertEquals(99, count($contracts));
     }

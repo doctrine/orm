@@ -17,12 +17,12 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         DDC2494TinyIntType::$calls = [];
 
-        Type::addType('ddc2494_tinyint', __NAMESPACE__ . '\DDC2494TinyIntType');
+        Type::addType('ddc2494_tinyint', DDC2494TinyIntType::class);
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2494Currency::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2494Campaign::CLASSNAME),
+            $this->_em->getClassMetadata(DDC2494Currency::class),
+            $this->_em->getClassMetadata(DDC2494Campaign::class),
             ]
         );
     }
@@ -43,10 +43,10 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
         $this->assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
 
-        $item = $this->_em->find(DDC2494Campaign::CLASSNAME, $campaign->getId());
+        $item = $this->_em->find(DDC2494Campaign::class, $campaign->getId());
 
-        $this->assertInstanceOf(DDC2494Campaign::CLASSNAME, $item);
-        $this->assertInstanceOf(DDC2494Currency::CLASSNAME, $item->getCurrency());
+        $this->assertInstanceOf(DDC2494Campaign::class, $item);
+        $this->assertInstanceOf(DDC2494Currency::class, $item->getCurrency());
 
         $queryCount = $this->getCurrentQueryCount();
 

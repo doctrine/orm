@@ -36,7 +36,7 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->user->getId());
+        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
     }
 
     public function testRemoveContains()

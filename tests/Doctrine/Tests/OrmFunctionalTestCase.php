@@ -7,13 +7,15 @@ use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
-use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
-use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\Tests\Models;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -86,219 +88,219 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      */
     protected static $_modelSets = [
         'cms' => [
-            'Doctrine\Tests\Models\CMS\CmsUser',
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            'Doctrine\Tests\Models\CMS\CmsEmail',
-            'Doctrine\Tests\Models\CMS\CmsGroup',
-            'Doctrine\Tests\Models\CMS\CmsTag',
-            'Doctrine\Tests\Models\CMS\CmsArticle',
-            'Doctrine\Tests\Models\CMS\CmsComment',
+            Models\CMS\CmsUser::class,
+            Models\CMS\CmsPhonenumber::class,
+            Models\CMS\CmsAddress::class,
+            Models\CMS\CmsEmail::class,
+            Models\CMS\CmsGroup::class,
+            Models\CMS\CmsTag::class,
+            Models\CMS\CmsArticle::class,
+            Models\CMS\CmsComment::class,
         ],
         'forum' => [],
         'company' => [
-            'Doctrine\Tests\Models\Company\CompanyPerson',
-            'Doctrine\Tests\Models\Company\CompanyEmployee',
-            'Doctrine\Tests\Models\Company\CompanyManager',
-            'Doctrine\Tests\Models\Company\CompanyOrganization',
-            'Doctrine\Tests\Models\Company\CompanyEvent',
-            'Doctrine\Tests\Models\Company\CompanyAuction',
-            'Doctrine\Tests\Models\Company\CompanyRaffle',
-            'Doctrine\Tests\Models\Company\CompanyCar',
-            'Doctrine\Tests\Models\Company\CompanyContract',
+            Models\Company\CompanyPerson::class,
+            Models\Company\CompanyEmployee::class,
+            Models\Company\CompanyManager::class,
+            Models\Company\CompanyOrganization::class,
+            Models\Company\CompanyEvent::class,
+            Models\Company\CompanyAuction::class,
+            Models\Company\CompanyRaffle::class,
+            Models\Company\CompanyCar::class,
+            Models\Company\CompanyContract::class,
         ],
         'ecommerce' => [
-            'Doctrine\Tests\Models\ECommerce\ECommerceCart',
-            'Doctrine\Tests\Models\ECommerce\ECommerceCustomer',
-            'Doctrine\Tests\Models\ECommerce\ECommerceProduct',
-            'Doctrine\Tests\Models\ECommerce\ECommerceShipping',
-            'Doctrine\Tests\Models\ECommerce\ECommerceFeature',
-            'Doctrine\Tests\Models\ECommerce\ECommerceCategory'
+            Models\ECommerce\ECommerceCart::class,
+            Models\ECommerce\ECommerceCustomer::class,
+            Models\ECommerce\ECommerceProduct::class,
+            Models\ECommerce\ECommerceShipping::class,
+            Models\ECommerce\ECommerceFeature::class,
+            Models\ECommerce\ECommerceCategory::class
         ],
         'generic' => [
-            'Doctrine\Tests\Models\Generic\BooleanModel',
-            'Doctrine\Tests\Models\Generic\DateTimeModel',
-            'Doctrine\Tests\Models\Generic\DecimalModel',
-            'Doctrine\Tests\Models\Generic\SerializationModel',
+            Models\Generic\BooleanModel::class,
+            Models\Generic\DateTimeModel::class,
+            Models\Generic\DecimalModel::class,
+            Models\Generic\SerializationModel::class,
         ],
         'routing' => [
-            'Doctrine\Tests\Models\Routing\RoutingLeg',
-            'Doctrine\Tests\Models\Routing\RoutingLocation',
-            'Doctrine\Tests\Models\Routing\RoutingRoute',
-            'Doctrine\Tests\Models\Routing\RoutingRouteBooking',
+            Models\Routing\RoutingLeg::class,
+            Models\Routing\RoutingLocation::class,
+            Models\Routing\RoutingRoute::class,
+            Models\Routing\RoutingRouteBooking::class,
         ],
         'navigation' => [
-            'Doctrine\Tests\Models\Navigation\NavUser',
-            'Doctrine\Tests\Models\Navigation\NavCountry',
-            'Doctrine\Tests\Models\Navigation\NavPhotos',
-            'Doctrine\Tests\Models\Navigation\NavTour',
-            'Doctrine\Tests\Models\Navigation\NavPointOfInterest',
+            Models\Navigation\NavUser::class,
+            Models\Navigation\NavCountry::class,
+            Models\Navigation\NavPhotos::class,
+            Models\Navigation\NavTour::class,
+            Models\Navigation\NavPointOfInterest::class,
         ],
         'directorytree' => [
-            'Doctrine\Tests\Models\DirectoryTree\AbstractContentItem',
-            'Doctrine\Tests\Models\DirectoryTree\File',
-            'Doctrine\Tests\Models\DirectoryTree\Directory',
+            Models\DirectoryTree\AbstractContentItem::class,
+            Models\DirectoryTree\File::class,
+            Models\DirectoryTree\Directory::class,
         ],
         'ddc117' => [
-            'Doctrine\Tests\Models\DDC117\DDC117Article',
-            'Doctrine\Tests\Models\DDC117\DDC117Reference',
-            'Doctrine\Tests\Models\DDC117\DDC117Translation',
-            'Doctrine\Tests\Models\DDC117\DDC117ArticleDetails',
-            'Doctrine\Tests\Models\DDC117\DDC117ApproveChanges',
-            'Doctrine\Tests\Models\DDC117\DDC117Editor',
-            'Doctrine\Tests\Models\DDC117\DDC117Link',
+            Models\DDC117\DDC117Article::class,
+            Models\DDC117\DDC117Reference::class,
+            Models\DDC117\DDC117Translation::class,
+            Models\DDC117\DDC117ArticleDetails::class,
+            Models\DDC117\DDC117ApproveChanges::class,
+            Models\DDC117\DDC117Editor::class,
+            Models\DDC117\DDC117Link::class,
         ],
         'ddc3699' => [
-            'Doctrine\Tests\Models\DDC3699\DDC3699Parent',
-            'Doctrine\Tests\Models\DDC3699\DDC3699RelationOne',
-            'Doctrine\Tests\Models\DDC3699\DDC3699RelationMany',
-            'Doctrine\Tests\Models\DDC3699\DDC3699Child',
+            Models\DDC3699\DDC3699Parent::class,
+            Models\DDC3699\DDC3699RelationOne::class,
+            Models\DDC3699\DDC3699RelationMany::class,
+            Models\DDC3699\DDC3699Child::class,
         ],
         'stockexchange' => [
-            'Doctrine\Tests\Models\StockExchange\Bond',
-            'Doctrine\Tests\Models\StockExchange\Stock',
-            'Doctrine\Tests\Models\StockExchange\Market',
+            Models\StockExchange\Bond::class,
+            Models\StockExchange\Stock::class,
+            Models\StockExchange\Market::class,
         ],
         'legacy' => [
-            'Doctrine\Tests\Models\Legacy\LegacyUser',
-            'Doctrine\Tests\Models\Legacy\LegacyUserReference',
-            'Doctrine\Tests\Models\Legacy\LegacyArticle',
-            'Doctrine\Tests\Models\Legacy\LegacyCar',
+            Models\Legacy\LegacyUser::class,
+            Models\Legacy\LegacyUserReference::class,
+            Models\Legacy\LegacyArticle::class,
+            Models\Legacy\LegacyCar::class,
         ],
         'customtype' => [
-            'Doctrine\Tests\Models\CustomType\CustomTypeChild',
-            'Doctrine\Tests\Models\CustomType\CustomTypeParent',
-            'Doctrine\Tests\Models\CustomType\CustomTypeUpperCase',
+            Models\CustomType\CustomTypeChild::class,
+            Models\CustomType\CustomTypeParent::class,
+            Models\CustomType\CustomTypeUpperCase::class,
         ],
         'compositekeyinheritance' => [
-            'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
-            'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass',
-            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
-            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass',
+            Models\CompositeKeyInheritance\JoinedRootClass::class,
+            Models\CompositeKeyInheritance\JoinedChildClass::class,
+            Models\CompositeKeyInheritance\SingleRootClass::class,
+            Models\CompositeKeyInheritance\SingleChildClass::class,
         ],
         'taxi' => [
-            'Doctrine\Tests\Models\Taxi\PaidRide',
-            'Doctrine\Tests\Models\Taxi\Ride',
-            'Doctrine\Tests\Models\Taxi\Car',
-            'Doctrine\Tests\Models\Taxi\Driver',
+            Models\Taxi\PaidRide::class,
+            Models\Taxi\Ride::class,
+            Models\Taxi\Car::class,
+            Models\Taxi\Driver::class,
         ],
         'cache' => [
-            'Doctrine\Tests\Models\Cache\Country',
-            'Doctrine\Tests\Models\Cache\State',
-            'Doctrine\Tests\Models\Cache\City',
-            'Doctrine\Tests\Models\Cache\Traveler',
-            'Doctrine\Tests\Models\Cache\TravelerProfileInfo',
-            'Doctrine\Tests\Models\Cache\TravelerProfile',
-            'Doctrine\Tests\Models\Cache\Travel',
-            'Doctrine\Tests\Models\Cache\Attraction',
-            'Doctrine\Tests\Models\Cache\Restaurant',
-            'Doctrine\Tests\Models\Cache\Beach',
-            'Doctrine\Tests\Models\Cache\Bar',
-            'Doctrine\Tests\Models\Cache\Flight',
-            'Doctrine\Tests\Models\Cache\Token',
-            'Doctrine\Tests\Models\Cache\Login',
-            'Doctrine\Tests\Models\Cache\Client',
-            'Doctrine\Tests\Models\Cache\Person',
-            'Doctrine\Tests\Models\Cache\Address',
-            'Doctrine\Tests\Models\Cache\Action',
-            'Doctrine\Tests\Models\Cache\ComplexAction',
-            'Doctrine\Tests\Models\Cache\AttractionInfo',
-            'Doctrine\Tests\Models\Cache\AttractionContactInfo',
-            'Doctrine\Tests\Models\Cache\AttractionLocationInfo'
+            Models\Cache\Country::class,
+            Models\Cache\State::class,
+            Models\Cache\City::class,
+            Models\Cache\Traveler::class,
+            Models\Cache\TravelerProfileInfo::class,
+            Models\Cache\TravelerProfile::class,
+            Models\Cache\Travel::class,
+            Models\Cache\Attraction::class,
+            Models\Cache\Restaurant::class,
+            Models\Cache\Beach::class,
+            Models\Cache\Bar::class,
+            Models\Cache\Flight::class,
+            Models\Cache\Token::class,
+            Models\Cache\Login::class,
+            Models\Cache\Client::class,
+            Models\Cache\Person::class,
+            Models\Cache\Address::class,
+            Models\Cache\Action::class,
+            Models\Cache\ComplexAction::class,
+            Models\Cache\AttractionInfo::class,
+            Models\Cache\AttractionContactInfo::class,
+            Models\Cache\AttractionLocationInfo::class
         ],
         'tweet' => [
-            'Doctrine\Tests\Models\Tweet\User',
-            'Doctrine\Tests\Models\Tweet\Tweet',
-            'Doctrine\Tests\Models\Tweet\UserList',
+            Models\Tweet\User::class,
+            Models\Tweet\Tweet::class,
+            Models\Tweet\UserList::class,
         ],
         'ddc2504' => [
-            'Doctrine\Tests\Models\DDC2504\DDC2504RootClass',
-            'Doctrine\Tests\Models\DDC2504\DDC2504ChildClass',
-            'Doctrine\Tests\Models\DDC2504\DDC2504OtherClass',
+            Models\DDC2504\DDC2504RootClass::class,
+            Models\DDC2504\DDC2504ChildClass::class,
+            Models\DDC2504\DDC2504OtherClass::class,
         ],
         'ddc3346' => [
-            'Doctrine\Tests\Models\DDC3346\DDC3346Author',
-            'Doctrine\Tests\Models\DDC3346\DDC3346Article',
+            Models\DDC3346\DDC3346Author::class,
+            Models\DDC3346\DDC3346Article::class,
         ],
         'quote' => [
-            'Doctrine\Tests\Models\Quote\Address',
-            'Doctrine\Tests\Models\Quote\Group',
-            'Doctrine\Tests\Models\Quote\NumericEntity',
-            'Doctrine\Tests\Models\Quote\Phone',
-            'Doctrine\Tests\Models\Quote\User'
+            Models\Quote\Address::class,
+            Models\Quote\Group::class,
+            Models\Quote\NumericEntity::class,
+            Models\Quote\Phone::class,
+            Models\Quote\User::class
         ],
         'vct_onetoone' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneEntity'
+            Models\ValueConversionType\InversedOneToOneEntity::class,
+            Models\ValueConversionType\OwningOneToOneEntity::class
         ],
         'vct_onetoone_compositeid' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdEntity'
+            Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
+            Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class
         ],
         'vct_onetoone_compositeid_foreignkey' => [
-            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity'
+            Models\ValueConversionType\AuxiliaryEntity::class,
+            Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
+            Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class
         ],
         'vct_onetomany' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneEntity'
+            Models\ValueConversionType\InversedOneToManyEntity::class,
+            Models\ValueConversionType\OwningManyToOneEntity::class
         ],
         'vct_onetomany_compositeid' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdEntity'
+            Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
+            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class
         ],
         'vct_onetomany_compositeid_foreignkey' => [
-            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity'
+            Models\ValueConversionType\AuxiliaryEntity::class,
+            Models\ValueConversionType\InversedOneToManyCompositeIdForeignKeyEntity::class,
+            Models\ValueConversionType\OwningManyToOneCompositeIdForeignKeyEntity::class
         ],
         'vct_onetomany_extralazy' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedOneToManyExtraLazyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToOneExtraLazyEntity'
+            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
+            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class
         ],
         'vct_manytomany' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity'
+            Models\ValueConversionType\InversedManyToManyEntity::class,
+            Models\ValueConversionType\OwningManyToManyEntity::class
         ],
         'vct_manytomany_compositeid' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdEntity'
+            Models\ValueConversionType\InversedManyToManyCompositeIdEntity::class,
+            Models\ValueConversionType\OwningManyToManyCompositeIdEntity::class
         ],
         'vct_manytomany_compositeid_foreignkey' => [
-            'Doctrine\Tests\Models\ValueConversionType\AuxiliaryEntity',
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity'
+            Models\ValueConversionType\AuxiliaryEntity::class,
+            Models\ValueConversionType\InversedManyToManyCompositeIdForeignKeyEntity::class,
+            Models\ValueConversionType\OwningManyToManyCompositeIdForeignKeyEntity::class
         ],
         'vct_manytomany_extralazy' => [
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity'
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class
         ],
         'geonames' => [
-            'Doctrine\Tests\Models\GeoNames\Country',
-            'Doctrine\Tests\Models\GeoNames\Admin1',
-            'Doctrine\Tests\Models\GeoNames\Admin1AlternateName',
-            'Doctrine\Tests\Models\GeoNames\City'
+            Models\GeoNames\Country::class,
+            Models\GeoNames\Admin1::class,
+            Models\GeoNames\Admin1AlternateName::class,
+            Models\GeoNames\City::class
         ],
         'custom_id_object_type' => [
-            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent',
-            'Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild',
+            Models\CustomType\CustomIdObjectTypeParent::class,
+            Models\CustomType\CustomIdObjectTypeChild::class,
         ],
         'pagination' => [
-            'Doctrine\Tests\Models\Pagination\Company',
-            'Doctrine\Tests\Models\Pagination\Logo',
-            'Doctrine\Tests\Models\Pagination\Department',
-            'Doctrine\Tests\Models\Pagination\User',
-            'Doctrine\Tests\Models\Pagination\User1',
+            Models\Pagination\Company::class,
+            Models\Pagination\Logo::class,
+            Models\Pagination\Department::class,
+            Models\Pagination\User::class,
+            Models\Pagination\User1::class,
         ],
         'versioned_many_to_one' => [
-            'Doctrine\Tests\Models\VersionedManyToOne\Category',
-            'Doctrine\Tests\Models\VersionedManyToOne\Article',
+            Models\VersionedManyToOne\Category::class,
+            Models\VersionedManyToOne\Article::class,
         ],
         'issue5989' => [
-            'Doctrine\Tests\Models\Issue5989\Issue5989Person',
-            'Doctrine\Tests\Models\Issue5989\Issue5989Employee',
-            'Doctrine\Tests\Models\Issue5989\Issue5989Manager',
+            Models\Issue5989\Issue5989Person::class,
+            Models\Issue5989\Issue5989Employee::class,
+            Models\Issue5989\Issue5989Manager::class,
         ],
     ];
 
@@ -810,9 +812,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected function setUpDBALTypes()
     {
         if (Type::hasType('rot13')) {
-            Type::overrideType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+            Type::overrideType('rot13', Rot13Type::class);
         } else {
-            Type::addType('rot13', 'Doctrine\Tests\DbalTypes\Rot13Type');
+            Type::addType('rot13', Rot13Type::class);
         }
     }
 }

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\ORM\Proxy\Proxy;
 
 /**
  * @group DDC-2231
@@ -16,7 +17,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2231EntityY'),
+            $this->_em->getClassMetadata(DDC2231EntityY::class),
             ]
         );
     }
@@ -32,7 +33,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $y1ref);
+        $this->assertInstanceOf(Proxy::class, $y1ref);
         $this->assertFalse($y1ref->__isInitialized__);
 
         $id = $y1ref->doSomething();

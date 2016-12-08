@@ -2,12 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsTag;
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsGroup,
-    Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -49,7 +50,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertEquals(2, $this->_em->getUnitOfWork()->size());
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertInstanceOf(CmsUser::class, $result[0]);
         $this->assertEquals('Guilherme', $result[0]->name);
         $this->assertEquals(1, $result[0]->getGroups()->count());
         $groups = $result[0]->getGroups();
@@ -58,8 +59,8 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($result[0]));
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($groups[0]));
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $groups[0]->getUsers());
+        $this->assertInstanceOf(PersistentCollection::class, $groups);
+        $this->assertInstanceOf(PersistentCollection::class, $groups[0]->getUsers());
 
         $groups[0]->getUsers()->clear();
         $groups->clear();
@@ -152,7 +153,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
             $user->groups[] = $group;
         }
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->groups);
+        $this->assertInstanceOf(PersistentCollection::class, $user->groups);
         $this->assertTrue($user->groups->isDirty());
 
         $this->assertEquals($groupCount, count($user->groups), "There should be 10 groups in the collection.");
@@ -187,7 +188,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         /* @var $freshUser CmsUser */
-        $freshUser = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $freshUser = $this->_em->find(CmsUser::class, $user->getId());
         $newGroup = new CmsGroup();
         $newGroup->setName('12Monkeys');
         $freshUser->addGroup($newGroup);
@@ -202,7 +203,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $freshUser = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $freshUser = $this->_em->find(CmsUser::class, $user->getId());
         $this->assertEquals(3, count($freshUser->getGroups()));
     }
 
@@ -333,7 +334,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $coll = new ArrayCollection([$group1, $group2]);
         $user->groups = $coll;
         $this->_em->flush();
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->groups,
+        $this->assertInstanceOf(PersistentCollection::class, $user->groups,
             "UnitOfWork should have replaced ArrayCollection with PersistentCollection.");
         $this->_em->flush();
 

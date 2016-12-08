@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\DBAL\LockMode;
 use DateTime;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class OptimisticTest extends OrmFunctionalTestCase
@@ -16,10 +16,10 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp')
+                $this->_em->getClassMetadata(OptimisticJoinedParent::class),
+                $this->_em->getClassMetadata(OptimisticJoinedChild::class),
+                $this->_em->getClassMetadata(OptimisticStandard::class),
+                $this->_em->getClassMetadata(OptimisticTimestamp::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -175,7 +175,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $proxy = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard', $test->id);
+        $proxy = $this->_em->getReference(OptimisticStandard::class, $test->id);
 
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
     }

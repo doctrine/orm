@@ -12,14 +12,14 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType('ddc3785_asset_id', __NAMESPACE__ . '\\DDC3785_AssetIdType');
+        Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Asset'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_AssetId'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Attribute')
+                $this->_em->getClassMetadata(DDC3785_Asset::class),
+                $this->_em->getClassMetadata(DDC3785_AssetId::class),
+                $this->_em->getClassMetadata(DDC3785_Attribute::class)
                 ]
             );
         } catch(\Exception $e) {

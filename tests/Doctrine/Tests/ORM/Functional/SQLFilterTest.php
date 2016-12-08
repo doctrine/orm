@@ -2,26 +2,27 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\Cache\ArrayCache;
-
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-
-use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-
-use Doctrine\Tests\Models\Company\CompanyPerson;
-use Doctrine\Tests\Models\Company\CompanyManager;
-use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyAuction;
-
+use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyEvent;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -49,7 +50,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class = $this->_em->getClassMetadata(CmsUser::class);
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_LAZY;
     }
@@ -186,7 +187,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     protected function getMockConnection()
     {
         // Setup connection mock
-        $conn = $this->getMockBuilder('Doctrine\DBAL\Connection')
+        $conn = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -196,7 +197,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     protected function getMockEntityManager()
     {
         // Setup connection mock
-        $em = $this->getMockBuilder('Doctrine\ORM\EntityManager')
+        $em = $this->getMockBuilder(EntityManager::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -205,7 +206,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     protected function addMockFilterCollection($em)
     {
-        $filterCollection = $this->getMockBuilder('Doctrine\ORM\Query\FilterCollection')
+        $filterCollection = $this->getMockBuilder(FilterCollection::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -258,7 +259,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $filter = new MyLocaleFilter($em);
 
-        $reflMethod = new \ReflectionMethod('Doctrine\ORM\Query\Filter\SQLFilter', 'getConnection');
+        $reflMethod = new \ReflectionMethod(SQLFilter::class, 'getConnection');
         $reflMethod->setAccessible(true);
 
         $this->assertSame($conn, $reflMethod->invoke($filter));
@@ -293,7 +294,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testSQLFilterAddConstraint()
     {
         // Set up metadata mock
-        $targetEntity = $this->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
+        $targetEntity = $this->getMockBuilder(ClassMetadata::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -333,7 +334,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testQueryCache_DependsOnFilters()
     {
-        $cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $cacheDataReflection->setAccessible(true);
 
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
@@ -373,40 +374,40 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadFixtureData();
 
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId));
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId2));
+        $this->assertNotNull($this->_em->getRepository(CmsGroup::class)->find($this->groupId));
+        $this->assertNotNull($this->_em->getRepository(CmsGroup::class)->find($this->groupId2));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId));
-        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->find($this->groupId2));
+        $this->assertNotNull($this->_em->getRepository(CmsGroup::class)->find($this->groupId));
+        $this->assertNull($this->_em->getRepository(CmsGroup::class)->find($this->groupId2));
     }
 
     public function testRepositoryFindAll()
     {
         $this->loadFixtureData();
 
-        $this->assertCount(2, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll());
+        $this->assertCount(2, $this->_em->getRepository(CmsGroup::class)->findAll());
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll());
+        $this->assertCount(1, $this->_em->getRepository(CmsGroup::class)->findAll());
     }
 
     public function testRepositoryFindBy()
     {
         $this->loadFixtureData();
 
-        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(
+        $this->assertCount(1, $this->_em->getRepository(CmsGroup::class)->findBy(
             ['id' => $this->groupId2]
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findBy(
+        $this->assertCount(0, $this->_em->getRepository(CmsGroup::class)->findBy(
             ['id' => $this->groupId2]
         ));
     }
@@ -415,26 +416,26 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadFixtureData();
 
-        $this->assertCount(1, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findById($this->groupId2));
+        $this->assertCount(1, $this->_em->getRepository(CmsGroup::class)->findById($this->groupId2));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertCount(0, $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findById($this->groupId2));
+        $this->assertCount(0, $this->_em->getRepository(CmsGroup::class)->findById($this->groupId2));
     }
 
     public function testRepositoryFindOneBy()
     {
         $this->loadFixtureData();
 
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(
+        $this->assertNotNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
             ['id' => $this->groupId2]
         ));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneBy(
+        $this->assertNull($this->_em->getRepository(CmsGroup::class)->findOneBy(
             ['id' => $this->groupId2]
         ));
     }
@@ -443,12 +444,12 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadFixtureData();
 
-        $this->assertNotNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneById($this->groupId2));
+        $this->assertNotNull($this->_em->getRepository(CmsGroup::class)->findOneById($this->groupId2));
 
         $this->useCMSGroupPrefixFilter();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findOneById($this->groupId2));
+        $this->assertNull($this->_em->getRepository(CmsGroup::class)->findOneById($this->groupId2));
     }
 
     public function testToOneFilter()
@@ -521,7 +522,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     private function loadLazyFixtureData()
     {
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class = $this->_em->getClassMetadata(CmsUser::class);
         $class->associationMappings['articles']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
         $class->associationMappings['groups']['fetch'] = ClassMetadataInfo::FETCH_EXTRA_LAZY;
         $this->loadFixtureData();
@@ -537,7 +538,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testOneToMany_ExtraLazyCountWithFilter()
     {
         $this->loadLazyFixtureData();
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find(CmsUser::class, $this->userId);
 
         $this->assertFalse($user->articles->isInitialized());
         $this->assertEquals(2, count($user->articles));
@@ -550,8 +551,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testOneToMany_ExtraLazyContainsWithFilter()
     {
         $this->loadLazyFixtureData();
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
-        $filteredArticle = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId2);
+        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $filteredArticle = $this->_em->find(CmsArticle::class, $this->articleId2);
 
         $this->assertFalse($user->articles->isInitialized());
         $this->assertTrue($user->articles->contains($filteredArticle));
@@ -564,7 +565,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testOneToMany_ExtraLazySliceWithFilter()
     {
         $this->loadLazyFixtureData();
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId);
+        $user = $this->_em->find(CmsUser::class, $this->userId);
 
         $this->assertFalse($user->articles->isInitialized());
         $this->assertEquals(2, count($user->articles->slice(0,10)));
@@ -585,7 +586,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadLazyFixtureData();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
+        $user = $this->_em->find(CmsUser::class, $this->userId2);
 
         $this->assertFalse($user->groups->isInitialized());
         $this->assertEquals(2, count($user->groups));
@@ -598,8 +599,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testManyToMany_ExtraLazyContainsWithFilter()
     {
         $this->loadLazyFixtureData();
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
-        $filteredArticle = $this->_em->find('Doctrine\Tests\Models\CMS\CmsGroup', $this->groupId2);
+        $user = $this->_em->find(CmsUser::class, $this->userId2);
+        $filteredArticle = $this->_em->find(CmsGroup::class, $this->groupId2);
 
         $this->assertFalse($user->groups->isInitialized());
         $this->assertTrue($user->groups->contains($filteredArticle));
@@ -612,7 +613,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testManyToMany_ExtraLazySliceWithFilter()
     {
         $this->loadLazyFixtureData();
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $this->userId2);
+        $user = $this->_em->find(CmsUser::class, $this->userId2);
 
         $this->assertFalse($user->groups->isInitialized());
         $this->assertEquals(2, count($user->groups->slice(0,10)));
@@ -690,14 +691,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanyJoinedSubclassFixtureData();
         // Persister
-        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll()));
+        $this->assertEquals(2, count($this->_em->getRepository(CompanyManager::class)->findAll()));
         // SQLWalker
         $this->assertEquals(2, count($this->_em->createQuery("SELECT cm FROM Doctrine\Tests\Models\Company\CompanyManager cm")->getResult()));
 
         // Enable the filter
         $this->usePersonNameFilter('Guilh%');
 
-        $managers = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyManager')->findAll();
+        $managers = $this->_em->getRepository(CompanyManager::class)->findAll();
         $this->assertEquals(1, count($managers));
         $this->assertEquals("Guilherme", $managers[0]->getName());
 
@@ -707,13 +708,13 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testJoinSubclassPersister_FilterOnlyOnRootTableWhenFetchingRootEntity()
     {
         $this->loadCompanyJoinedSubclassFixtureData();
-        $this->assertEquals(3, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll()));
+        $this->assertEquals(3, count($this->_em->getRepository(CompanyPerson::class)->findAll()));
         $this->assertEquals(3, count($this->_em->createQuery("SELECT cp FROM Doctrine\Tests\Models\Company\CompanyPerson cp")->getResult()));
 
         // Enable the filter
         $this->usePersonNameFilter('Guilh%');
 
-        $persons = $this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyPerson')->findAll();
+        $persons = $this->_em->getRepository(CompanyPerson::class)->findAll();
         $this->assertEquals(1, count($persons));
         $this->assertEquals("Guilherme", $persons[0]->getName());
 
@@ -748,7 +749,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
         // Persister
-        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+        $this->assertEquals(2, count($this->_em->getRepository(CompanyFlexUltraContract::class)->findAll()));
         // SQLWalker
         $this->assertEquals(2, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc")->getResult()));
 
@@ -759,14 +760,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
             ->enable("completed_contract")
             ->setParameter("completed", true, DBALType::BOOLEAN);
 
-        $this->assertEquals(1, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexUltraContract')->findAll()));
+        $this->assertEquals(1, count($this->_em->getRepository(CompanyFlexUltraContract::class)->findAll()));
         $this->assertEquals(1, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract cfc")->getResult()));
     }
 
     public function testSingleTableInheritance_FilterOnlyOnRootTableWhenFetchingRootEntity()
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
-        $this->assertEquals(4, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        $this->assertEquals(4, count($this->_em->getRepository(CompanyFlexContract::class)->findAll()));
         $this->assertEquals(4, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc")->getResult()));
 
         // Enable the filter
@@ -776,7 +777,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
             ->enable("completed_contract")
             ->setParameter("completed", true, DBALType::BOOLEAN);
 
-        $this->assertEquals(2, count($this->_em->getRepository('Doctrine\Tests\Models\Company\CompanyFlexContract')->findAll()));
+        $this->assertEquals(2, count($this->_em->getRepository(CompanyFlexContract::class)->findAll()));
         $this->assertEquals(2, count($this->_em->createQuery("SELECT cfc FROM Doctrine\Tests\Models\Company\CompanyFlexContract cfc")->getResult()));
     }
 
@@ -840,7 +841,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
 
         $this->assertFalse($manager->managedContracts->isInitialized());
         $this->assertEquals(4, count($manager->managedContracts));
@@ -856,9 +857,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
-        $contract1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId1);
-        $contract2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId2);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
+        $contract1 = $this->_em->find(CompanyContract::class, $this->contractId1);
+        $contract2 = $this->_em->find(CompanyContract::class, $this->contractId2);
 
         $this->assertFalse($manager->managedContracts->isInitialized());
         $this->assertTrue($manager->managedContracts->contains($contract1));
@@ -876,7 +877,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
 
         $this->assertFalse($manager->managedContracts->isInitialized());
         $this->assertEquals(4, count($manager->managedContracts->slice(0, 10)));
@@ -902,7 +903,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
+        $contract = $this->_em->find(CompanyFlexUltraContract::class, $this->contractId1);
 
         $this->assertFalse($contract->managers->isInitialized());
         $this->assertEquals(2, count($contract->managers));
@@ -918,9 +919,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
-        $manager1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
-        $manager2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId2);
+        $contract = $this->_em->find(CompanyFlexUltraContract::class, $this->contractId1);
+        $manager1 = $this->_em->find(CompanyManager::class, $this->managerId);
+        $manager2 = $this->_em->find(CompanyManager::class, $this->managerId2);
 
         $this->assertFalse($contract->managers->isInitialized());
         $this->assertTrue($contract->managers->contains($manager1));
@@ -938,7 +939,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $contract = $this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexUltraContract', $this->contractId1);
+        $contract = $this->_em->find(CompanyFlexUltraContract::class, $this->contractId1);
 
         $this->assertFalse($contract->managers->isInitialized());
         $this->assertEquals(2, count($contract->managers->slice(0, 10)));
@@ -954,7 +955,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
 
         $this->assertFalse($manager->soldContracts->isInitialized());
         $this->assertEquals(2, count($manager->soldContracts));
@@ -970,9 +971,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
-        $contract1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId1);
-        $contract2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyContract', $this->contractId2);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
+        $contract1 = $this->_em->find(CompanyContract::class, $this->contractId1);
+        $contract2 = $this->_em->find(CompanyContract::class, $this->contractId2);
 
         $this->assertFalse($manager->soldContracts->isInitialized());
         $this->assertTrue($manager->soldContracts->contains($contract1));
@@ -991,7 +992,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         $this->loadCompanySingleTableInheritanceFixtureData();
 
-        $manager = $this->_em->find('Doctrine\Tests\Models\Company\CompanyManager', $this->managerId);
+        $manager = $this->_em->find(CompanyManager::class, $this->managerId);
 
         $this->assertFalse($manager->soldContracts->isInitialized());
         $this->assertEquals(2, count($manager->soldContracts->slice(0, 10)));
@@ -1028,7 +1029,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         // Enable the filter
         $conf = $this->_em->getConfiguration();
-        $conf->addFilter("event_id", "\Doctrine\Tests\ORM\Functional\CompanyEventFilter");
+        $conf->addFilter("event_id", CompanyEventFilter::class);
         $this->_em->getFilters()
             ->enable("event_id")
             ->setParameter("id", $this->eventId2);
@@ -1039,7 +1040,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
 
-        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+        $organization = $this->_em->find(CompanyOrganization::class, $this->organizationId);
 
         $this->assertFalse($organization->events->isInitialized());
         $this->assertEquals(2, count($organization->events));
@@ -1055,10 +1056,10 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
 
-        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+        $organization = $this->_em->find(CompanyOrganization::class, $this->organizationId);
 
-        $event1 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyEvent', $this->eventId1);
-        $event2 = $this->_em->find('Doctrine\Tests\Models\Company\CompanyEvent', $this->eventId2);
+        $event1 = $this->_em->find(CompanyEvent::class, $this->eventId1);
+        $event2 = $this->_em->find(CompanyEvent::class, $this->eventId2);
 
         $this->assertFalse($organization->events->isInitialized());
         $this->assertTrue($organization->events->contains($event1));
@@ -1076,7 +1077,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->loadCompanyOrganizationEventJoinedSubclassFixtureData();
 
-        $organization = $this->_em->find('Doctrine\Tests\Models\Company\CompanyOrganization', $this->organizationId);
+        $organization = $this->_em->find(CompanyOrganization::class, $this->organizationId);
 
         $this->assertFalse($organization->events->isInitialized());
         $this->assertEquals(2, count($organization->events->slice(0, 10)));
@@ -1117,7 +1118,7 @@ class CMSCountryFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsAddress") {
+        if ($targetEntity->name != CmsAddress::class) {
             return "";
         }
 
@@ -1129,7 +1130,7 @@ class CMSGroupPrefixFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsGroup") {
+        if ($targetEntity->name != CmsGroup::class) {
             return "";
         }
 
@@ -1141,7 +1142,7 @@ class CMSArticleTopicFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\CMS\CmsArticle") {
+        if ($targetEntity->name != CmsArticle::class) {
             return "";
         }
 
@@ -1153,7 +1154,7 @@ class CompanyPersonNameFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyPerson") {
+        if ($targetEntity->name != CompanyPerson::class) {
             return "";
         }
 
@@ -1165,7 +1166,7 @@ class CompletedContractFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyContract") {
+        if ($targetEntity->name != CompanyContract::class) {
             return "";
         }
 
@@ -1177,7 +1178,7 @@ class CompanyEventFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != "Doctrine\Tests\Models\Company\CompanyEvent") {
+        if ($targetEntity->name != CompanyEvent::class) {
             return "";
         }
 

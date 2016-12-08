@@ -2,11 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
-use Doctrine\Tests\OrmPerformanceTestCase;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Models\CMS\CmsEmployee;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * Performance test used to measure performance of proxy instantiation
@@ -22,8 +24,8 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
     public function entitiesProvider()
     {
         return [
-            ['Doctrine\Tests\Models\CMS\CmsEmployee'],
-            ['Doctrine\Tests\Models\CMS\CmsUser'],
+            [CmsEmployee::class],
+            [CmsUser::class],
         ];
     }
 

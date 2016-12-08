@@ -5,9 +5,12 @@ namespace Doctrine\Tests\ORM\Performance;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
-use Doctrine\Tests\Mocks\HydratorMockStatement,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Query;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
@@ -31,7 +34,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryScalarHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
@@ -89,7 +92,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
@@ -147,9 +150,9 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+                CmsPhonenumber::class,
                 'p',
                 'u',
                 'phonenumbers'
@@ -219,7 +222,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryPartialObjectHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
@@ -275,13 +278,13 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryFullObjectHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsAddress',
+                CmsAddress::class,
                 'a',
                 'u',
                 'address'
@@ -331,9 +334,9 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinPartialObjectHydrationPerformance2000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+                CmsPhonenumber::class,
                 'p',
                 'u',
                 'phonenumbers'
@@ -403,25 +406,15 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinFullObjectHydrationPerformance2000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-                'p',
-                'u',
-                'phonenumbers'
-        );
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addScalarResult('sclr0', 'nameUpper');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
-        $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsAddress',
-                'a',
-                'u',
-                'address'
-        );
+        $rsm->addJoinedEntityResult(CmsAddress::class, 'a', 'u', 'address');
         $rsm->addFieldResult('a', 'a__id', 'id');
 
         // Faked result set

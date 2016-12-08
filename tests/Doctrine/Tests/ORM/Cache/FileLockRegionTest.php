@@ -2,15 +2,15 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\CacheKey;
+use Doctrine\ORM\Cache\ConcurrentRegion;
+use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
-use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Doctrine\ORM\Cache\CacheKey;
-
-use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * @group DDC-2183
@@ -77,7 +77,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $lock = $this->region->lock($key);
 
         $this->assertFileExists($file);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock);
+        $this->assertInstanceOf(Lock::class, $lock);
         $this->assertEquals($lock->value, file_get_contents($file));
 
         // should be not available after lock
@@ -121,7 +121,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->put($key, $entry));
         $this->assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
+        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
         $this->assertEquals($lock->value, file_get_contents($file));
         $this->assertFileExists($file);
 
@@ -173,7 +173,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->put($key, $entry));
         $this->assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
+        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
         $this->assertEquals($lock->value, file_get_contents($file));
         $this->assertFileExists($file);
 
@@ -201,8 +201,8 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->put($key2, $entry2));
         $this->assertTrue($this->region->contains($key2));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock1 = $this->region->lock($key1));
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock2 = $this->region->lock($key2));
+        $this->assertInstanceOf(Lock::class, $lock1 = $this->region->lock($key1));
+        $this->assertInstanceOf(Lock::class, $lock2 = $this->region->lock($key2));
 
         $this->assertEquals($lock2->value, file_get_contents($file2));
         $this->assertEquals($lock1->value, file_get_contents($file1));
@@ -233,7 +233,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->put($key, $entry));
         $this->assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
+        $this->assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
         $this->assertEquals($lock->value, file_get_contents($file));
         $this->assertFileExists($file);
 

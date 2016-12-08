@@ -18,9 +18,9 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Pet'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Cat'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Dog'),
+                $this->_em->getClassMetadata(OJTIC_Pet::class),
+                $this->_em->getClassMetadata(OJTIC_Cat::class),
+                $this->_em->getClassMetadata(OJTIC_Dog::class),
                 ]
             );
         } catch (\Exception $e) {

@@ -10,7 +10,7 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC719Group'),
+            $this->_em->getClassMetadata(DDC719Group::class),
             ]
         );
     }

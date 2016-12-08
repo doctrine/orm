@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Tests\Models\Cache\AttractionInfo;
+use Doctrine\Tests\Models\Cache\City;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Application;
@@ -33,11 +35,9 @@ class InfoCommandTest extends OrmFunctionalTestCase
         $this->application = new Application();
         $command           = new InfoCommand();
 
-        $this->application->setHelperSet(new HelperSet(
-            [
-            'em' => new EntityManagerHelper($this->_em)
-            ]
-        ));
+        $this->application->setHelperSet(
+            new HelperSet(['em' => new EntityManagerHelper($this->_em)])
+        );
 
         $this->application->add($command);
 
@@ -47,13 +47,9 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
     public function testListAllClasses()
     {
-        $this->tester->execute(
-            [
-            'command' => $this->command->getName(),
-            ]
-        );
+        $this->tester->execute(['command' => $this->command->getName()]);
 
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $this->tester->getDisplay());
-        $this->assertContains('Doctrine\Tests\Models\Cache\City', $this->tester->getDisplay());
+        $this->assertContains(AttractionInfo::class, $this->tester->getDisplay());
+        $this->assertContains(City::class, $this->tester->getDisplay());
     }
 }

@@ -48,7 +48,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
     public function testEntityCacheChain()
     {
         $name = 'my_entity_region';
-        $key  = new EntityCacheKey(State::CLASSNAME, ['id' => 1]);
+        $key  = new EntityCacheKey(State::class, ['id' => 1]);
 
         $this->logger->setLogger('mock', $this->mock);
 
@@ -72,7 +72,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
     public function testCollectionCacheChain()
     {
         $name = 'my_collection_region';
-        $key  = new CollectionCacheKey(State::CLASSNAME, 'cities', ['id' => 1]);
+        $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->logger->setLogger('mock', $this->mock);
 

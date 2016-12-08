@@ -40,27 +40,19 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testResolveTargetEntityListenerCanResolveTargetEntity()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
-            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            []
-        );
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\TargetInterface',
-            'Doctrine\Tests\ORM\Tools\TargetEntity',
-            []
-        );
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
         $evm->addEventSubscriber($this->listener);
 
-        $cm   = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity');
+        $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings;
 
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['manyToMany']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['manyToOne']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\ResolveTargetEntity', $meta['oneToMany']['targetEntity']);
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['oneToOne']['targetEntity']);
+        $this->assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
+        $this->assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
+        $this->assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
+        $this->assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
 
-        $this->assertSame($cm, $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface'));
+        $this->assertSame($cm, $this->factory->getMetadataFor(ResolveTargetInterface::class));
     }
 
     /**
@@ -70,17 +62,13 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      */
     public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName()
     {
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
-            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            []
-        );
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
 
         $this->em->getEventManager()->addEventSubscriber($this->listener);
 
-        $cm = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetInterface');
+        $cm = $this->factory->getMetadataFor(ResolveTargetInterface::class);
 
-        $this->assertSame($this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity'), $cm);
+        $this->assertSame($this->factory->getMetadataFor(ResolveTargetEntity::class), $cm);
     }
 
     /**
@@ -89,22 +77,14 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testAssertTableColumnsAreNotAddedInManyToMany()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
-            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            []
-        );
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\TargetInterface',
-            'Doctrine\Tests\ORM\Tools\TargetEntity',
-            []
-        );
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
-        $cm = $this->factory->getMetadataFor('Doctrine\Tests\ORM\Tools\ResolveTargetEntity');
+        $cm = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings['manyToMany'];
 
-        $this->assertSame('Doctrine\Tests\ORM\Tools\TargetEntity', $meta['targetEntity']);
+        $this->assertSame(TargetEntity::class, $meta['targetEntity']);
         $this->assertEquals(['resolvetargetentity_id', 'targetinterface_id'], $meta['joinTableColumns']);
     }
 
@@ -117,11 +97,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(
-            'Doctrine\Tests\ORM\Tools\ResolveTargetInterface',
-            'Doctrine\Tests\ORM\Tools\ResolveTargetEntity',
-            []
-        );
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
 
         $evm->addEventSubscriber($this->listener);
 

@@ -3,8 +3,13 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
+use Doctrine\ORM\Mapping\QuoteStrategy;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\DDC117\DDC117Article;
+use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -48,18 +53,18 @@ class QuoteStrategyTest extends OrmTestCase
         $em     = $this->_getTestEntityManager();
         $config = $em->getConfiguration();
 
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultQuoteStrategy', $config->getQuoteStrategy());
+        $this->assertInstanceOf(QuoteStrategy::class, $config->getQuoteStrategy());
+        $this->assertInstanceOf(DefaultQuoteStrategy::class, $config->getQuoteStrategy());
 
         $config->setQuoteStrategy(new MyQuoteStrategy());
 
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\QuoteStrategy', $config->getQuoteStrategy());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Mapping\MyQuoteStrategy', $config->getQuoteStrategy());
+        $this->assertInstanceOf(QuoteStrategy::class, $config->getQuoteStrategy());
+        $this->assertInstanceOf(MyQuoteStrategy::class, $config->getQuoteStrategy());
     }
 
     public function testGetColumnName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = $this->createClassMetadata(CmsUser::class);
         $cm->mapField(['fieldName' => 'name', 'columnName' => '`name`']);
         $cm->mapField(['fieldName' => 'id', 'columnName' => 'id']);
 
@@ -69,20 +74,20 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testGetTableName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = $this->createClassMetadata(CmsUser::class);
         $cm->setPrimaryTable(['name'=>'`cms_user`']);
-        $this->assertEquals('"cms_user"' ,$this->strategy->getTableName($cm, $this->platform));
+        $this->assertEquals('"cms_user"', $this->strategy->getTableName($cm, $this->platform));
 
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setPrimaryTable(['name'=>'cms_user']);
-        $this->assertEquals('cms_user' ,$this->strategy->getTableName($cm, $this->platform));
+        $this->assertEquals('cms_user', $this->strategy->getTableName($cm, $this->platform));
     }
 
     public function testJoinTableName()
     {
-        $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm1 = $this->createClassMetadata(CmsAddress::class);
+        $cm2 = $this->createClassMetadata(CmsAddress::class);
 
         $cm1->mapManyToMany(
             [
@@ -113,8 +118,8 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testIdentifierColumnNames()
     {
-        $cm1 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
-        $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $cm1 = $this->createClassMetadata(CmsAddress::class);
+        $cm2 = $this->createClassMetadata(CmsAddress::class);
 
         $cm1->mapField(
             [
@@ -148,13 +153,13 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testQuoteIdentifierJoinColumns()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
             'id'            => true,
             'fieldName'     => 'article',
-            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'targetEntity'  => DDC117Article::class,
             'joinColumns'    => [
                 [
                 'name'  => '`article`'
@@ -168,13 +173,13 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testJoinColumnName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
             'id'            => true,
             'fieldName'     => 'article',
-            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'targetEntity'  => DDC117Article::class,
             'joinColumns'    => [
                 [
                 'name'  => '`article`'
@@ -189,13 +194,13 @@ class QuoteStrategyTest extends OrmTestCase
 
     public function testReferencedJoinColumnName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
             'id'            => true,
             'fieldName'     => 'article',
-            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'targetEntity'  => DDC117Article::class,
             'joinColumns'    => [
                 [
                 'name'  => '`article`'

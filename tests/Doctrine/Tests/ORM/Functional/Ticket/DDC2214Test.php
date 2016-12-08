@@ -19,8 +19,8 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Bar'),
+            $this->_em->getClassMetadata(DDC2214Foo::class),
+            $this->_em->getClassMetadata(DDC2214Bar::class),
             ]
         );
     }
@@ -38,7 +38,7 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         /* @var $foo \Doctrine\Tests\ORM\Functional\Ticket\DDC2214Foo */
-        $foo = $this->_em->find(__NAMESPACE__ . '\\DDC2214Foo', $foo->id);
+        $foo = $this->_em->find(DDC2214Foo::class, $foo->id);
         $bar = $foo->bar;
 
         $logger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();

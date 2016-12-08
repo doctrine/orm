@@ -12,8 +12,8 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1787Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1787Bar'),
+            $this->_em->getClassMetadata(DDC1787Foo::class),
+            $this->_em->getClassMetadata(DDC1787Bar::class),
             ]
         );
     }

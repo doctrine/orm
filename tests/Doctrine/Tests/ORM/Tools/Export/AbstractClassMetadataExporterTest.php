@@ -2,17 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
+use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
-use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
-use Doctrine\Common\EventManager;
-use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\OrmTestCase;
 use Symfony\Component\Yaml\Parser;
 
@@ -48,10 +51,10 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     protected function _createMetadataDriver($type, $path)
     {
         $mappingDriver = [
-            'php'        => 'Doctrine\Common\Persistence\Mapping\Driver\PHPDriver',
-            'annotation' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-            'xml'        => 'Doctrine\ORM\Mapping\Driver\XmlDriver',
-            'yaml'       => 'Doctrine\ORM\Mapping\Driver\YamlDriver',
+            'php'        => PHPDriver::class,
+            'annotation' => AnnotationDriver::class,
+            'xml'        => XmlDriver::class,
+            'yaml'       => YamlDriver::class,
         ];
 
         $this->assertArrayHasKey($type, $mappingDriver, "There is no metadata driver for the type '" . $type . "'.");
@@ -85,9 +88,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $cmf = $this->_createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
-        $metadata[0]->name = 'Doctrine\Tests\ORM\Tools\Export\ExportedUser';
+        $metadata[0]->name = ExportedUser::class;
 
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $metadata[0]->name);
+        $this->assertEquals(ExportedUser::class, $metadata[0]->name);
 
         $type = $this->_getType();
         $cme = new ClassMetadataExporter();
@@ -106,7 +109,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $exporter->export();
 
         if ($type == 'annotation') {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', 'Doctrine\Tests\ORM\Tools\Export\ExportedUser').$this->_extension));
+            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', ExportedUser::class).$this->_extension));
         } else {
             $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser'.$this->_extension));
         }
@@ -128,7 +131,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         $class = current($metadata);
 
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\ExportedUser', $class->name);
+        $this->assertEquals(ExportedUser::class, $class->name);
 
         return $class;
     }
@@ -225,7 +228,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testOneToOneAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['address']));
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $class->associationMappings['address']['targetEntity']);
+        $this->assertEquals(Address::class, $class->associationMappings['address']['targetEntity']);
         $this->assertEquals('address_id', $class->associationMappings['address']['joinColumns'][0]['name']);
         $this->assertEquals('id', $class->associationMappings['address']['joinColumns'][0]['referencedColumnName']);
         $this->assertEquals('CASCADE', $class->associationMappings['address']['joinColumns'][0]['onDelete']);
@@ -247,7 +250,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testManyToOneAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['mainGroup']));
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Group', $class->associationMappings['mainGroup']['targetEntity']);
+        $this->assertEquals(Group::class, $class->associationMappings['mainGroup']['targetEntity']);
     }
 
     /**
@@ -257,8 +260,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testOneToManyAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['phonenumbers']));
-        //$this->assertInstanceOf('Doctrine\ORM\Mapping\OneToManyMapping', $class->associationMappings['phonenumbers']);
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Phonenumber', $class->associationMappings['phonenumbers']['targetEntity']);
+        $this->assertEquals(Phonenumber::class, $class->associationMappings['phonenumbers']['targetEntity']);
         $this->assertEquals('user', $class->associationMappings['phonenumbers']['mappedBy']);
         $this->assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
 
@@ -280,8 +282,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     public function testManyToManyAssociationsAreExported($class)
     {
         $this->assertTrue(isset($class->associationMappings['groups']));
-        //$this->assertInstanceOf('Doctrine\ORM\Mapping\ManyToManyMapping', $class->associationMappings['groups']);
-        $this->assertEquals('Doctrine\Tests\ORM\Tools\Export\Group', $class->associationMappings['groups']['targetEntity']);
+        $this->assertEquals(Group::class, $class->associationMappings['groups']['targetEntity']);
         $this->assertEquals('cms_users_groups', $class->associationMappings['groups']['joinTable']['name']);
 
         $this->assertEquals('user_id', $class->associationMappings['groups']['joinTable']['joinColumns'][0]['name']);
@@ -362,9 +363,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             $yaml = new Parser();
             $value = $yaml->parse(file_get_contents(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.yml'));
 
-            $this->assertTrue(isset($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
-            $this->assertEquals(1, count($value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade']));
-            $this->assertEquals('all', $value['Doctrine\Tests\ORM\Tools\Export\ExportedUser']['oneToMany']['interests']['cascade'][0]);
+            $this->assertTrue(isset($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
+            $this->assertEquals(1, count($value[ExportedUser::class]['oneToMany']['interests']['cascade']));
+            $this->assertEquals('all', $value[ExportedUser::class]['oneToMany']['interests']['cascade'][0]);
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }

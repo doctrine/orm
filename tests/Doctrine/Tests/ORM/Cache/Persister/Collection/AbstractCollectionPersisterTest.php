@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmTestCase;
 
@@ -101,7 +103,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     protected function createCollection($owner, $assoc = null, $class = null, $elements = null)
     {
         $em    = $this->em;
-        $class = $class ?: $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\State');
+        $class = $class ?: $this->em->getClassMetadata(State::class);
         $assoc = $assoc ?: $class->associationMappings['cities'];
         $coll  = new PersistentCollection($em, $class, $elements ?: new ArrayCollection);
 
@@ -113,7 +115,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
     protected function createPersisterDefault()
     {
-        $assoc = $this->em->getClassMetadata('Doctrine\Tests\Models\Cache\State')->associationMappings['cities'];
+        $assoc = $this->em->getClassMetadata(State::class)->associationMappings['cities'];
 
         return $this->createPersister($this->em, $this->collectionPersister, $this->region, $assoc);
     }
@@ -122,9 +124,9 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     {
         $persister = $this->createPersisterDefault();
 
-        $this->assertInstanceOf('Doctrine\ORM\Persisters\Collection\CollectionPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\CachedPersister', $persister);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister', $persister);
+        $this->assertInstanceOf(CollectionPersister::class, $persister);
+        $this->assertInstanceOf(CachedPersister::class, $persister);
+        $this->assertInstanceOf(CachedCollectionPersister::class, $persister);
     }
 
     public function testInvokeDelete()

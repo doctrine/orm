@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmTestCase;
 
 class QueryTest extends OrmTestCase
@@ -178,8 +179,8 @@ class QueryTest extends OrmTestCase
     {
         $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
         $this->assertEquals(
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+            CmsAddress::class,
+            $query->processParameterValue($this->_em->getClassMetadata(CmsAddress::class))
         );
     }
 

@@ -89,8 +89,8 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidManyToManyJoinColumnSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity1');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity2');
+        $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
+        $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
 
         $ce = $this->validator->validateClass($class1);
 
@@ -108,8 +108,8 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidToOneJoinColumnSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity1');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity2');
+        $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
+        $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
 
         $ce = $this->validator->validateClass($class2);
 
@@ -127,8 +127,8 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testValidOneToOneAsIdentifierSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity2');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity1');
+        $class1 = $this->em->getClassMetadata(DDC1587ValidEntity2::class);
+        $class2 = $this->em->getClassMetadata(DDC1587ValidEntity1::class);
 
         $ce = $this->validator->validateClass($class1);
 
@@ -140,7 +140,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidTripleAssociationAsKeyMapping()
     {
-        $classThree = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1649Three');
+        $classThree = $this->em->getClassMetadata(DDC1649Three::class);
         $ce = $this->validator->validateClass($classThree);
 
         $this->assertEquals(
@@ -155,7 +155,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3274One');
+        $class = $this->em->getClassMetadata(DDC3274One::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
@@ -173,7 +173,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByInvalidField()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322One');
+        $class = $this->em->getClassMetadata(DDC3322One::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
@@ -190,7 +190,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByCollectionValuedAssociation()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Two');
+        $class = $this->em->getClassMetadata(DDC3322Two::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
@@ -207,7 +207,7 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByAssociationInverseSide()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Three');
+        $class = $this->em->getClassMetadata(DDC3322Three::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(

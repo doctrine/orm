@@ -9,7 +9,7 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC588Site'),
+            $this->_em->getClassMetadata(DDC588Site::class),
             ]
         );
     }

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query,
     Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\Mocks\MockTreeWalker;
 use Doctrine\Tests\OrmTestCase;
 
 class LanguageRecognitionTest extends OrmTestCase
@@ -59,7 +60,7 @@ class LanguageRecognitionTest extends OrmTestCase
         $parser = new Query\Parser($query);
 
         // We do NOT test SQL output here. That only unnecessarily slows down the tests!
-        $parser->setCustomOutputTreeWalker('Doctrine\Tests\Mocks\MockTreeWalker');
+        $parser->setCustomOutputTreeWalker(MockTreeWalker::class);
 
         return $parser->parse();
     }
@@ -572,7 +573,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     public function testCustomFunctionsReturningStringInStringPrimary()
     {
-        $this->_em->getConfiguration()->addCustomStringFunction('CC', 'Doctrine\ORM\Query\AST\Functions\ConcatFunction');
+        $this->_em->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
 
         $this->assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
     }

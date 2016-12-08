@@ -4,10 +4,11 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Application;
+use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group DDC-2183
@@ -62,7 +63,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'owner-class'   => 'Doctrine\Tests\Models\Cache\State',
+            'owner-class'   => State::class,
             'association'   => 'cities',
             ], ['decorated' => false]
         );
@@ -77,7 +78,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'owner-class'   => 'Doctrine\Tests\Models\Cache\State',
+            'owner-class'   => State::class,
             'association'   => 'cities',
             'owner-id'      => 1,
             ], ['decorated' => false]
@@ -93,7 +94,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'owner-class'   => 'Doctrine\Tests\Models\Cache\State',
+            'owner-class'   => State::class,
             'association'   => 'cities',
             '--flush'       => true,
             ], ['decorated' => false]

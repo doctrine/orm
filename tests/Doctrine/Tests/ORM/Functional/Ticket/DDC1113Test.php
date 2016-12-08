@@ -15,10 +15,10 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Engine'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Vehicle'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Car'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1113Bus'),
+                $this->_em->getClassMetadata(DDC1113Engine::class),
+                $this->_em->getClassMetadata(DDC1113Vehicle::class),
+                $this->_em->getClassMetadata(DDC1113Car::class),
+                $this->_em->getClassMetadata(DDC1113Bus::class),
                 ]
             );
         } catch (\Exception $e) {

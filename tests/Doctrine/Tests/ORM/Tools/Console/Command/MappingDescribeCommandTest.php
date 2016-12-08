@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -60,7 +61,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
 
         $display = $this->tester->getDisplay();
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
+        $this->assertContains(AttractionInfo::class, $display);
         $this->assertContains('Root entity name', $display);
     }
 

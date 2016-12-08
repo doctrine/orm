@@ -9,9 +9,9 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Customer'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Distributor'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC493Contact')
+            $this->_em->getClassMetadata(DDC493Customer::class),
+            $this->_em->getClassMetadata(DDC493Distributor::class),
+            $this->_em->getClassMetadata(DDC493Contact::class)
             ]
         );
     }

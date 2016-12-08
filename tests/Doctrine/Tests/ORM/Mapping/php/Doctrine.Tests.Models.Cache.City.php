@@ -1,6 +1,9 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\Cache\Attraction;
+use Doctrine\Tests\Models\Cache\State;
+use Doctrine\Tests\Models\Cache\Travel;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(['name' => 'cache_city']);
@@ -32,7 +35,7 @@ $metadata->mapField(
 $metadata->mapOneToOne(
     [
    'fieldName'      => 'state',
-   'targetEntity'   => 'Doctrine\\Tests\\Models\\Cache\\State',
+   'targetEntity'   => State::class,
    'inversedBy'     => 'cities',
    'joinColumns'    =>
    [
@@ -51,7 +54,7 @@ $metadata->enableAssociationCache('state', [
 $metadata->mapManyToMany(
     [
    'fieldName' => 'travels',
-   'targetEntity' => 'Doctrine\\Tests\\Models\\Cache\\Travel',
+   'targetEntity' => Travel::class,
    'mappedBy' => 'visitedCities',
     ]
 );
@@ -59,7 +62,7 @@ $metadata->mapManyToMany(
 $metadata->mapOneToMany(
     [
    'fieldName' => 'attractions',
-   'targetEntity' => 'Doctrine\\Tests\\Models\\Cache\\Attraction',
+   'targetEntity' => Attraction::class,
    'mappedBy' => 'city',
    'orderBy' => ['name' => 'ASC',],
     ]

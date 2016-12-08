@@ -17,7 +17,7 @@ class DDC1360Test extends OrmFunctionalTestCase
 
         $sql = $this->_schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1360DoubleQuote')
+            $this->_em->getClassMetadata(DDC1360DoubleQuote::class)
             ]
         );
 

@@ -16,7 +16,7 @@ class DDC3634Test extends OrmFunctionalTestCase {
     protected function setUp() {
         parent::setUp();
 
-        $metadata = $this->_em->getClassMetadata(DDC3634Entity::CLASSNAME);
+        $metadata = $this->_em->getClassMetadata(DDC3634Entity::class);
 
         if ( ! $metadata->idGenerator->isPostInsertGenerator()) {
             $this->markTestSkipped('Need a post-insert ID generator in order to make this test work correctly');
@@ -25,8 +25,8 @@ class DDC3634Test extends OrmFunctionalTestCase {
         try {
             $this->_schemaTool->createSchema([
                 $metadata,
-                $this->_em->getClassMetadata(DDC3634JTIBaseEntity::CLASSNAME),
-                $this->_em->getClassMetadata(DDC3634JTIChildEntity::CLASSNAME),
+                $this->_em->getClassMetadata(DDC3634JTIBaseEntity::class),
+                $this->_em->getClassMetadata(DDC3634JTIChildEntity::class),
             ]);
         } catch (ToolsException $e) {
             // schema already in place

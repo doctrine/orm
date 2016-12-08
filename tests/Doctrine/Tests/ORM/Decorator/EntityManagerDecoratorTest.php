@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Decorator;
 
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
@@ -13,7 +15,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
-        $this->decorator = $this->getMockBuilder('Doctrine\ORM\Decorator\EntityManagerDecorator')
+        $this->decorator = $this->getMockBuilder(EntityManagerDecorator::class)
             ->setConstructorArgs([$this->wrapped])
             ->setMethods(null)
             ->getMock();
@@ -21,7 +23,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
 
     public function getMethodParameters()
     {
-        $class = new \ReflectionClass('Doctrine\ORM\EntityManager');
+        $class = new \ReflectionClass(EntityManager::class);
 
         $methods = [];
         foreach ($class->getMethods() as $method) {

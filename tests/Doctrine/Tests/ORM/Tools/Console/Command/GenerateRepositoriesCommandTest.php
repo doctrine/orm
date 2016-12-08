@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Application;
@@ -98,13 +100,13 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $repo1  = new \ReflectionClass($cname);
         $repo2  = new \ReflectionClass('DDC3231User1NoNamespaceRepository');
 
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo1->getParentClass()->getName());
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(EntityRepository::class, $repo1->getParentClass()->getName());
+        $this->assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     public function testGenerateRepositoriesCustomDefaultRepository()
     {
-        $this->generateRepositories('DDC3231User2', 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        $this->generateRepositories('DDC3231User2', DDC3231EntityRepository::class);
 
         $cname = 'Doctrine\Tests\Models\DDC3231\DDC3231User2Repository';
         $fname = str_replace('\\', DIRECTORY_SEPARATOR, $cname) . '.php';
@@ -121,8 +123,8 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $repo1  = new \ReflectionClass($cname);
         $repo2  = new \ReflectionClass('DDC3231User2NoNamespaceRepository');
 
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo1->getParentClass()->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo1->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**

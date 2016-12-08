@@ -14,7 +14,7 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2106Entity'),
+            $this->_em->getClassMetadata(DDC2106Entity::class),
             ]
         );
     }
@@ -26,7 +26,7 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
         $this->_em->detach($entity);
-        $entity = $this->_em->getRepository(__NAMESPACE__ . '\DDC2106Entity')->findOneBy([]);
+        $entity = $this->_em->getRepository(DDC2106Entity::class)->findOneBy([]);
 
         // ... and a managed entity without id
         $entityWithoutId = new DDC2106Entity();

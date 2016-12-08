@@ -202,7 +202,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
             foreach ($states as $state) {
 
-                $state = $em->find(State::CLASSNAME, $state->getId());
+                $state = $em->find(State::class, $state->getId());
 
                 foreach ($state->getCities() as $city) {
                     $city->getName();
@@ -240,7 +240,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         for ($i = 0; $i <= $times; $i++) {
             foreach ($countries as $country) {
-                $em->find(Country::CLASSNAME, $country->getId());
+                $em->find(Country::class, $country->getId());
                 $em->clear();
             }
         }
@@ -254,7 +254,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $times        = 100;
         $size         = 50;
         $startPersist = microtime(true);
-        $rep          = $em->getRepository(Country::CLASSNAME);
+        $rep          = $em->getRepository(Country::class);
 
         echo PHP_EOL . $label;
 

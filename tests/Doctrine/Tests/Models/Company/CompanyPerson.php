@@ -130,7 +130,7 @@ class CompanyPerson
             [
             'name'              => 'fetchAllWithResultClass',
             'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-            'resultClass'       => 'Doctrine\\Tests\\Models\\Company\\CompanyPerson',
+            'resultClass'       => CompanyPerson::class,
             ]
         );
 
@@ -158,7 +158,7 @@ class CompanyPerson
                     'column'    => 'name',
                   ],
                 ],
-                'entityClass' => 'Doctrine\Tests\Models\Company\CompanyPerson',
+                'entityClass' => CompanyPerson::class,
                 'discriminatorColumn' => 'discriminator',
                 ],
             ],

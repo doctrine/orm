@@ -3,11 +3,11 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
@@ -595,7 +595,7 @@ class PaginationTest extends OrmFunctionalTestCase
 
         // If the Paginator detects the custom output walker it should fall back to using the
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
         $paginator = new Paginator($query);
 
         $this->expectException(\RuntimeException::class);
@@ -633,8 +633,7 @@ class PaginationTest extends OrmFunctionalTestCase
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, ['Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker']
-        );
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomPaginationTestTreeWalker::class]);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
@@ -662,7 +661,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         $this->assertCount(9, $paginator);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
 
         $paginator = new Paginator($query);
 

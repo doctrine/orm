@@ -24,9 +24,9 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Bar'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2346Baz'),
+            $this->_em->getClassMetadata(DDC2346Foo::class),
+            $this->_em->getClassMetadata(DDC2346Bar::class),
+            $this->_em->getClassMetadata(DDC2346Baz::class),
             ]
         );
 
@@ -60,7 +60,7 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
 
-        $fetchedBazs = $this->_em->getRepository(__NAMESPACE__ . '\\DDC2346Baz')->findAll();
+        $fetchedBazs = $this->_em->getRepository(DDC2346Baz::class)->findAll();
 
         $this->assertCount(2, $fetchedBazs);
         $this->assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');

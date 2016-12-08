@@ -14,9 +14,9 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400Article'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400UserState'),
+                $this->_em->getClassMetadata(DDC1400Article::class),
+                $this->_em->getClassMetadata(DDC1400User::class),
+                $this->_em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -52,7 +52,7 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user1 = $this->_em->getReference(__NAMESPACE__.'\DDC1400User', $user1->id);
+        $user1 = $this->_em->getReference(DDC1400User::class, $user1->id);
 
         $q = $this->_em->createQuery("SELECT a, s FROM ".__NAMESPACE__."\DDC1400Article a JOIN a.userStates s WITH s.user = :activeUser");
         $q->setParameter('activeUser', $user1);

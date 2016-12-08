@@ -13,8 +13,8 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1225_TestEntity1'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1225_TestEntity2'),
+                $this->_em->getClassMetadata(DDC1225_TestEntity1::class),
+                $this->_em->getClassMetadata(DDC1225_TestEntity2::class),
                 ]
             );
         } catch(\PDOException $e) {
@@ -25,7 +25,7 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $qb = $this->_em->createQueryBuilder();
-        $qb->from('Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity1', 'te1')
+        $qb->from(DDC1225_TestEntity1::class, 'te1')
            ->select('te1')
            ->where('te1.testEntity2 = ?1')
            ->setParameter(1, 0);

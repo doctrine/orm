@@ -1,6 +1,9 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\ORM\Mapping\Address;
+use Doctrine\Tests\ORM\Mapping\Group;
+use Doctrine\Tests\ORM\Mapping\Phonenumber;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
@@ -53,7 +56,7 @@ $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapOneToOne(
     [
    'fieldName' => 'address',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
+   'targetEntity' => Address::class,
    'cascade' =>
    [
    0 => 'remove',
@@ -75,7 +78,7 @@ $metadata->mapOneToOne(
 $metadata->mapOneToMany(
     [
    'fieldName' => 'phonenumbers',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Phonenumber',
+   'targetEntity' => Phonenumber::class,
    'cascade' =>
    [
    1 => 'persist',
@@ -91,7 +94,7 @@ $metadata->mapOneToMany(
 $metadata->mapManyToMany(
     [
    'fieldName' => 'groups',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Group',
+   'targetEntity' => Group::class,
    'cascade' =>
    [
    0 => 'remove',

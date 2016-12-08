@@ -46,7 +46,7 @@ class DDC501Test extends OrmFunctionalTestCase
 
         // freeze and unfreeze
         $userClone = unserialize(serialize($userReloaded));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $userClone);
+        $this->assertInstanceOf(CmsUser::class, $userClone);
 
         // detached user can't know about his phonenumbers
         $this->assertEquals(0, count($userClone->getPhonenumbers()));

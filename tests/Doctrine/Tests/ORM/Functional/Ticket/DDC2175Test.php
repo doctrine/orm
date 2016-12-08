@@ -12,7 +12,7 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2175Entity'),
+            $this->_em->getClassMetadata(DDC2175Entity::class),
             ]
         );
     }

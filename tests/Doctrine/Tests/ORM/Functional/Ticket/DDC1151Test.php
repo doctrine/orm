@@ -15,8 +15,8 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $sql = $this->_schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1151User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1151Group'),
+            $this->_em->getClassMetadata(DDC1151User::class),
+            $this->_em->getClassMetadata(DDC1151Group::class),
             ]
         );
 

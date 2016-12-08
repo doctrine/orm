@@ -6,6 +6,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 
 class ParserTest extends OrmTestCase
@@ -17,9 +18,9 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsFQCN()
     {
-        $parser = $this->createParser('Doctrine\Tests\Models\CMS\CmsUser');
+        $parser = $this->createParser(CmsUser::class);
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -28,9 +29,9 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash()
     {
-        $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
+        $parser = $this->createParser('\\' . CmsUser::class);
 
-        $this->assertEquals('\Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        $this->assertEquals('\\' . CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -39,9 +40,9 @@ class ParserTest extends OrmTestCase
      */
     public function testAbstractSchemaNameSupportsIdentifier()
     {
-        $parser = $this->createParser('stdClass');
+        $parser = $this->createParser(\stdClass::class);
 
-        $this->assertEquals('stdClass', $parser->AbstractSchemaName());
+        $this->assertEquals(\stdClass::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -54,7 +55,7 @@ class ParserTest extends OrmTestCase
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -67,7 +68,7 @@ class ParserTest extends OrmTestCase
 
         $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        $this->assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**

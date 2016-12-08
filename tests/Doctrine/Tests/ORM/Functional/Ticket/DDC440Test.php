@@ -11,8 +11,8 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\DDC440Client')
+                $this->_em->getClassMetadata(DDC440Phone::class),
+                $this->_em->getClassMetadata(DDC440Client::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -58,7 +58,7 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $uw = $this->_em->getUnitOfWork();
-        $client = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC440Client', $id);
+        $client = $this->_em->find(DDC440Client::class, $id);
         $clientPhones = $client->getPhones();
 
         $p1 = $clientPhones[1];
@@ -67,13 +67,13 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Test the first phone.  The assertion actually failed because original entity data is not set properly.
         // This was because it is also set as MainPhone and that one is created as a proxy, not the
         // original object when the find on Client is called. However loading proxies did not work correctly.
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p1);
+        $this->assertInstanceOf(DDC440Phone::class, $p1);
         $originalData = $uw->getOriginalEntityData($p1);
         $this->assertEquals($phone->getNumber(), $originalData['number']);
 
 
         //If you comment out previous test, this one should pass
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC440Phone', $p2);
+        $this->assertInstanceOf(DDC440Phone::class, $p2);
         $originalData = $uw->getOriginalEntityData($p2);
         $this->assertEquals($phone2->getNumber(), $originalData['number']);
     }

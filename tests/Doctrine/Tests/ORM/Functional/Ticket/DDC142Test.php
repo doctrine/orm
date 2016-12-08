@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\Models\Quote\Group;
+use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\Models\Quote\Address;
 
@@ -11,7 +13,6 @@ use Doctrine\Tests\Models\Quote\Address;
  */
 class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
@@ -19,10 +20,10 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
+                $this->_em->getClassMetadata(User::class),
+                $this->_em->getClassMetadata(Group::class),
+                $this->_em->getClassMetadata(Phone::class),
+                $this->_em->getClassMetadata(Address::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -42,7 +43,7 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $addressRef = $this->_em->getReference('Doctrine\Tests\Models\Quote\Address', $address->getId());
+        $addressRef = $this->_em->getReference(Address::class, $address->getId());
 
         $user->setAddress($addressRef);
 
@@ -53,11 +54,11 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotNull($id);
 
 
-        $user       = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
+        $user       = $this->_em->find(User::class, $id);
         $address    = $user->getAddress();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Address', $user->getAddress());
+        $this->assertInstanceOf(User::class, $user);
+        $this->assertInstanceOf(Address::class, $user->getAddress());
 
         $this->assertEquals('FabioBatSilva', $user->name);
         $this->assertEquals('12345', $address->zip);
@@ -72,8 +73,8 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
 
-        $user = $this->_em->find('Doctrine\Tests\Models\Quote\User', $id);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\User', $user);
+        $user = $this->_em->find(User::class, $id);
+        $this->assertInstanceOf(User::class, $user);
         $this->assertNull($user->getAddress());
 
         $this->assertEquals('FabioBatSilva1', $user->name);
@@ -83,7 +84,7 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Quote\User', $id));
+        $this->assertNull($this->_em->find(User::class, $id));
     }
 
 }

@@ -10,7 +10,7 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC656Entity')
+                $this->_em->getClassMetadata(DDC656Entity::class)
                 ]
             );
         } catch(\Exception $e) {

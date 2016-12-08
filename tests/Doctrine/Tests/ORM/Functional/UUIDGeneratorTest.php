@@ -17,7 +17,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\UUIDEntity')
+            $this->_em->getClassMetadata(UUIDEntity::class)
             ]
         );
     }

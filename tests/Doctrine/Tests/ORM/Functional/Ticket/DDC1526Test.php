@@ -12,7 +12,7 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1526Menu'),
+            $this->_em->getClassMetadata(DDC1526Menu::class),
             ]
         );
     }

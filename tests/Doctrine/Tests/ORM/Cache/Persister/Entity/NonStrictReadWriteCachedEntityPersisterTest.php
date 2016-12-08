@@ -48,8 +48,8 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $entry     = new EntityCacheEntry(Country::CLASSNAME, ['id'=>1, 'name'=>'Foo']);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
@@ -85,8 +85,8 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
-        $entry     = new EntityCacheEntry(Country::CLASSNAME, ['id'=>1, 'name'=>'Foo']);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
@@ -114,7 +114,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, ['id'=>1]);
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
         $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);

@@ -15,9 +15,9 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Role'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Parent'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Child'),
+                $this->_em->getClassMetadata(DDC992Role::class),
+                $this->_em->getClassMetadata(DDC992Parent::class),
+                $this->_em->getClassMetadata(DDC992Child::class),
                 ]
             );
         } catch(\Exception $e) {

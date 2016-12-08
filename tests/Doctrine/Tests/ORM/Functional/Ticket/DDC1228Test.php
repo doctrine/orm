@@ -14,8 +14,8 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1228User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1228Profile'),
+                $this->_em->getClassMetadata(DDC1228User::class),
+                $this->_em->getClassMetadata(DDC1228Profile::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -35,7 +35,7 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
+        $user = $this->_em->find(DDC1228User::class, $user->id);
 
         $this->assertFalse($user->getProfile()->__isInitialized__, "Proxy is not initialized");
         $user->getProfile()->setName("Bar");
@@ -47,7 +47,7 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
+        $user = $this->_em->find(DDC1228User::class, $user->id);
         $this->assertEquals("Bar", $user->getProfile()->getName());
     }
 
@@ -63,14 +63,14 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1228User', $user->id);
+        $user = $this->_em->getReference(DDC1228User::class, $user->id);
 
         $this->_em->refresh($user);
         $user->name = "Baz";
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(__NAMESPACE__ . '\\DDC1228User', $user->id);
+        $user = $this->_em->find(DDC1228User::class, $user->id);
         $this->assertEquals("Baz", $user->name);
     }
 }

@@ -14,7 +14,7 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1436Page'),
+                $this->_em->getClassMetadata(DDC1436Page::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -42,13 +42,13 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter('id', $id)
                 ->getOneOrNullResult();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC1436Page', $page);
+        $this->assertInstanceOf(DDC1436Page::class, $page);
 
         // step 2
-        $page = $this->_em->find(__NAMESPACE__ . '\DDC1436Page', $id);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC1436Page', $page);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC1436Page', $page->getParent());
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC1436Page', $page->getParent()->getParent());
+        $page = $this->_em->find(DDC1436Page::class, $id);
+        $this->assertInstanceOf(DDC1436Page::class, $page);
+        $this->assertInstanceOf(DDC1436Page::class, $page->getParent());
+        $this->assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());
     }
 }
 

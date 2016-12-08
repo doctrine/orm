@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\Models;
 
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
@@ -17,12 +18,12 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsTag'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmail'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+            $this->_em->getClassMetadata(Models\CMS\CmsGroup::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsTag::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsEmail::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -50,7 +51,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql2()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
+            $this->_em->getClassMetadata(Models\Generic\DecimalModel::class)
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -63,7 +64,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql3()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
+            $this->_em->getClassMetadata(Models\Generic\BooleanModel::class)
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -79,7 +80,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql4()
     {
         $classes = [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\MysqlSchemaNamespacedEntity')
+            $this->_em->getClassMetadata(MysqlSchemaNamespacedEntity::class)
         ];
 
         $tool = new SchemaTool($this->_em);

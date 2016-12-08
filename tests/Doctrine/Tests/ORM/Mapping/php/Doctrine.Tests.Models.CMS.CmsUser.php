@@ -1,5 +1,8 @@
 <?php
 
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
+
 $metadata->setPrimaryTable(
     [
    'name' => 'cms_users',
@@ -10,7 +13,7 @@ $metadata->addNamedNativeQuery(
     [
     'name'              => 'fetchIdAndUsernameWithResultClass',
     'query'             => 'SELECT id, username FROM cms_users WHERE username = ?',
-    'resultClass'       => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+    'resultClass'       => CmsUser::class,
     ]
 );
 
@@ -18,7 +21,7 @@ $metadata->addNamedNativeQuery(
     [
     'name'              => 'fetchAllColumns',
     'query'             => 'SELECT * FROM cms_users WHERE username = ?',
-    'resultClass'       => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+    'resultClass'       => CmsUser::class,
     ]
 );
 
@@ -90,7 +93,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'a_id',
           ],
         ],
-        'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+        'entityClass'           => CmsUser::class,
         'discriminatorColumn'   => null
         ],
     ],
@@ -121,7 +124,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'number',
           ],
         ],
-        'entityClass'   => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+        'entityClass'   => CmsUser::class,
         'discriminatorColumn'   => null
         ],
     ],
@@ -148,7 +151,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'status',
           ]
         ],
-        'entityClass'   => 'Doctrine\Tests\Models\CMS\CmsUser',
+        'entityClass'   => CmsUser::class,
         'discriminatorColumn'   => null
       ]
     ],
@@ -179,7 +182,7 @@ $metadata->addSqlResultSetMapping(
                     'column'    => 'u_status',
                 ]
             ],
-            'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+            'entityClass'           => CmsUser::class,
             'discriminatorColumn'   => null,
         ],
         [
@@ -197,7 +200,7 @@ $metadata->addSqlResultSetMapping(
                     'column'    => 'a_country',
                 ],
             ],
-            'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsAddress',
+            'entityClass'           => CmsAddress::class,
             'discriminatorColumn'   => null,
         ],
     ],

@@ -13,8 +13,8 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1335User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1335Phone'),
+                $this->_em->getClassMetadata(DDC1335User::class),
+                $this->_em->getClassMetadata(DDC1335Phone::class),
                 ]
             );
             $this->loadFixture();
@@ -67,7 +67,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testTicket()
     {
         $builder = $this->_em->createQueryBuilder();
-        $builder->select('u')->from(__NAMESPACE__ . '\DDC1335User', 'u', 'u.id');
+        $builder->select('u')->from(DDC1335User::class, 'u', 'u.id');
 
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
@@ -82,7 +82,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIndexByUnique()
     {
         $builder = $this->_em->createQueryBuilder();
-        $builder->select('u')->from(__NAMESPACE__ . '\DDC1335User', 'u', 'u.email');
+        $builder->select('u')->from(DDC1335User::class, 'u', 'u.email');
 
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
@@ -98,7 +98,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $builder = $this->_em->createQueryBuilder();
         $builder->select('u','p')
-                ->from(__NAMESPACE__ . '\DDC1335User', 'u', 'u.email')
+                ->from(DDC1335User::class, 'u', 'u.email')
                 ->join('u.phones', 'p', null, null, 'p.id');
 
         $dql    = $builder->getQuery()->getDQL();

@@ -3,10 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsAddressDTO;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUserDTO;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -122,9 +124,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
@@ -165,9 +167,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
@@ -201,9 +203,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
     }
 
     public function testShouldSupportFromEntityNamespaceAlias()
@@ -229,9 +231,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
     }
 
     public function testShouldSupportValueObjectNamespaceAlias()
@@ -257,9 +259,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
     }
 
     public function testShouldSupportLiteralExpression()
@@ -290,9 +292,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
@@ -338,9 +340,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
@@ -380,9 +382,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
@@ -440,9 +442,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
@@ -500,9 +502,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]->name);
@@ -558,13 +560,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
@@ -610,13 +612,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
@@ -662,13 +664,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
@@ -715,13 +717,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
@@ -772,13 +774,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
@@ -829,13 +831,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
@@ -887,13 +889,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2][0]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][1]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][1]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0][0]->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1][0]->name);
@@ -949,13 +951,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1]['cmsAddress']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1]['cmsAddress']);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2]['cmsAddress']);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);
@@ -1011,13 +1013,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
 
         $this->assertCount(3, $result);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[0]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[1]['cmsUser']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUserDTO', $result[2]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[0]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[1]['cmsUser']);
+        $this->assertInstanceOf(CmsUserDTO::class, $result[2]['cmsUser']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[0][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[1][0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddressDTO', $result[2][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[0][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[1][0]);
+        $this->assertInstanceOf(CmsAddressDTO::class, $result[2][0]);
 
         $this->assertEquals($this->fixtures[0]->name, $result[0]['cmsUser']->name);
         $this->assertEquals($this->fixtures[1]->name, $result[1]['cmsUser']->name);

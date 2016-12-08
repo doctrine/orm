@@ -17,10 +17,10 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             [
-            'Doctrine\Tests\ORM\Functional\Ticket\Journalist',
-            'Doctrine\Tests\ORM\Functional\Ticket\Participant',
-            'Doctrine\Tests\ORM\Functional\Ticket\Status',
-            'Doctrine\Tests\ORM\Functional\Ticket\ProfileStatus',
+            Journalist::class,
+            Participant::class,
+            Status::class,
+            ProfileStatus::class,
             ]
         );
     }
@@ -37,7 +37,7 @@ class DDC3223Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $participant = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\Participant', $participant->id);
+        $participant = $this->_em->find(Participant::class, $participant->id);
 
         $profileStatus = clone $participant->profileStatus;
 

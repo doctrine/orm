@@ -21,7 +21,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\SequenceEntity'),
+                $this->_em->getClassMetadata(SequenceEntity::class),
                 ]
             );
         } catch(\Exception $e) {

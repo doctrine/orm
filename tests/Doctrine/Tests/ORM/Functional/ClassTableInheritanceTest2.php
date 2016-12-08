@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -17,10 +18,10 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIParent'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated2')
+                $this->_em->getClassMetadata(CTIParent::class),
+                $this->_em->getClassMetadata(CTIChild::class),
+                $this->_em->getClassMetadata(CTIRelated::class),
+                $this->_em->getClassMetadata(CTIRelated2::class)
                 ]
             );
         } catch (\Exception $ignored) {
@@ -44,11 +45,11 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
         $relatedId = $related->getId();
 
-        $related2 = $this->_em->find('Doctrine\Tests\ORM\Functional\CTIRelated', $relatedId);
+        $related2 = $this->_em->find(CTIRelated::class, $relatedId);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIRelated', $related2);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $related2->getCTIParent());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $related2->getCTIParent());
+        $this->assertInstanceOf(CTIRelated::class, $related2);
+        $this->assertInstanceOf(CTIChild::class, $related2->getCTIParent());
+        $this->assertNotInstanceOf(Proxy::class, $related2->getCTIParent());
         $this->assertEquals('hello', $related2->getCTIParent()->getData());
 
         $this->assertSame($related2, $related2->getCTIParent()->getRelated());
@@ -72,7 +73,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         $this->assertFalse($mmrel2->getCTIChildren()->isInitialized());
         $this->assertEquals(1, count($mmrel2->getCTIChildren()));
         $this->assertTrue($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $mmrel2->getCTIChildren()->get(0));
+        $this->assertInstanceOf(CTIChild::class, $mmrel2->getCTIChildren()->get(0));
     }
 }
 

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
@@ -18,7 +19,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testPostgresMetadataSequenceIncrementedBy10()
     {
-        $address = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $address = $this->_em->getClassMetadata(Models\CMS\CmsAddress::class);
 
         $this->assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
@@ -26,9 +27,9 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -65,7 +66,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql2()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
+            $this->_em->getClassMetadata(Models\Generic\DecimalModel::class)
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -80,7 +81,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql3()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
+            $this->_em->getClassMetadata(Models\Generic\BooleanModel::class)
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -94,9 +95,9 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetDropSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
+            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
         $tool = new SchemaTool($this->_em);
@@ -120,8 +121,8 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testUpdateSchemaWithPostgreSQLSchema()
     {
         $classes = [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Screen'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Avatar'),
+            $this->_em->getClassMetadata(DDC1657Screen::class),
+            $this->_em->getClassMetadata(DDC1657Avatar::class),
         ];
 
         $tool = new SchemaTool($this->_em);

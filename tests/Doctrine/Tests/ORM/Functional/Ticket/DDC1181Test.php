@@ -11,9 +11,9 @@ class DDC1181Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Hotel'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Booking'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Room'),
+            $this->_em->getClassMetadata(DDC1181Hotel::class),
+            $this->_em->getClassMetadata(DDC1181Booking::class),
+            $this->_em->getClassMetadata(DDC1181Room::class),
             ]
         );
     }

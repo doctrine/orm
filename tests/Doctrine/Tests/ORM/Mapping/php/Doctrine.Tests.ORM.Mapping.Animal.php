@@ -1,6 +1,8 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\ORM\Mapping\Cat;
+use Doctrine\Tests\ORM\Mapping\Dog;
 
 /* @var $metadata ClassMetadataInfo */
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_SINGLE_TABLE);
@@ -14,8 +16,8 @@ $metadata->setDiscriminatorColumn(
 );
 $metadata->setDiscriminatorMap(
     [
-   'cat' => 'Doctrine\\Tests\\ORM\\Mapping\\Cat',
-   'dog' => 'Doctrine\\Tests\\ORM\\Mapping\\Dog',
+   'cat' => Cat::class,
+   'dog' => Dog::class,
     ]
 );
 $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);

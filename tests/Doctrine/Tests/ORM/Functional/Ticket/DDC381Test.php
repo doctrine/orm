@@ -11,7 +11,7 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC381Entity'),
+                $this->_em->getClassMetadata(DDC381Entity::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -28,7 +28,7 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
         $persistedId = $entity->getId();
 
-        $entity = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Ticket\DDC381Entity', $persistedId);
+        $entity = $this->_em->getReference(DDC381Entity::class, $persistedId);
 
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();

@@ -15,7 +15,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2895'),
+                $this->_em->getClassMetadata(DDC2895::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -25,7 +25,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPostLoadOneToManyInheritance()
     {
-        $cm = $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2895');
+        $cm = $this->_em->getClassMetadata(DDC2895::class);
 
         $this->assertEquals(
             [

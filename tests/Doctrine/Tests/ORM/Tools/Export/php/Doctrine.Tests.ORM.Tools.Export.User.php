@@ -1,6 +1,7 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\ORM\Tools\Export;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
@@ -50,13 +51,13 @@ $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
 $metadata->mapManyToOne(
     [
     'fieldName' => 'mainGroup',
-    'targetEntity' => 'Doctrine\\Tests\\ORM\Tools\\Export\\Group',
+    'targetEntity' => Export\Group::class,
     ]
 );
 $metadata->mapOneToOne(
     [
    'fieldName' => 'address',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Address',
+   'targetEntity' => Export\Address::class,
    'inversedBy' => 'user',
    'cascade' =>
    [
@@ -79,7 +80,7 @@ $metadata->mapOneToOne(
 $metadata->mapOneToOne(
     [
     'fieldName' => 'cart',
-    'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Cart',
+    'targetEntity' => Export\Cart::class,
     'mappedBy' => 'user',
     'cascade' =>
         [
@@ -93,7 +94,7 @@ $metadata->mapOneToOne(
 $metadata->mapOneToMany(
     [
    'fieldName' => 'phonenumbers',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Phonenumber',
+   'targetEntity' => Export\Phonenumber::class,
    'cascade' =>
    [
    1 => 'persist',
@@ -111,7 +112,7 @@ $metadata->mapOneToMany(
 $metadata->mapManyToMany(
     [
    'fieldName' => 'groups',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Tools\\Export\\Group',
+   'targetEntity' => Export\Group::class,
    'fetch' => ClassMetadataInfo::FETCH_EXTRA_LAZY,
    'cascade' =>
    [

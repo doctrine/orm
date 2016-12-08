@@ -19,10 +19,10 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntityJoined'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductJoined'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntitySingleTable'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductSingleTable'),
+                $this->_em->getClassMetadata(DDC3170AbstractEntityJoined::class),
+                $this->_em->getClassMetadata(DDC3170ProductJoined::class),
+                $this->_em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
+                $this->_em->getClassMetadata(DDC3170ProductSingleTable::class),
             ]
         );
     }
@@ -50,7 +50,7 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQueryBuilder()
                 ->select('p')
-                ->from(__NAMESPACE__ . '\\DDC3170ProductJoined', 'p')
+                ->from(DDC3170ProductJoined::class, 'p')
                 ->getQuery()
                 ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
         } catch (HydrationException $e) // Thrown by SimpleObjectHydrator
@@ -61,7 +61,7 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->createQueryBuilder()
                 ->select('p')
-                ->from(__NAMESPACE__ . '\\DDC3170ProductSingleTable', 'p')
+                ->from(DDC3170ProductSingleTable::class, 'p')
                 ->getQuery()
                 ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
         } catch (HydrationException $e) // Thrown by SimpleObjectHydrator

@@ -14,8 +14,8 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1925User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1925Product'),
+            $this->_em->getClassMetadata(DDC1925User::class),
+            $this->_em->getClassMetadata(DDC1925Product::class),
             ]
         );
 

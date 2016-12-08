@@ -2,8 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Issue5989\Issue5989Employee;
+use Doctrine\Tests\Models\Issue5989\Issue5989Manager;
+use Doctrine\Tests\Models\Issue5989\Issue5989Person;
 
 class SimpleObjectHydratorTest extends HydrationTestCase
 {
@@ -16,7 +21,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     public function testMissingDiscriminatorColumnException()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+        $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
         $rsm->addMetaResult('p ', 'discr', 'discr', false, 'string');
@@ -36,7 +41,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     public function testExtraFieldInResultSetShouldBeIgnore()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsAddress', 'a');
+        $rsm->addEntityResult(CmsAddress::class, 'a');
         $rsm->addFieldResult('a', 'a__id', 'id');
         $rsm->addFieldResult('a', 'a__city', 'city');
         $resultSet = [
@@ -67,7 +72,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+        $rsm->addEntityResult(CompanyPerson::class, 'p');
 
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
@@ -93,10 +98,10 @@ class SimpleObjectHydratorTest extends HydrationTestCase
     public function testNullValueShouldNotOverwriteFieldWithSameNameInJoinedInheritance()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\Issue5989\Issue5989Person', 'p');
+        $rsm->addEntityResult(Issue5989Person::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
-        $rsm->addFieldResult('p', 'm__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Manager');
-        $rsm->addFieldResult('p', 'e__tags', 'tags', 'Doctrine\Tests\Models\Issue5989\Issue5989Employee');
+        $rsm->addFieldResult('p', 'm__tags', 'tags', Issue5989Manager::class);
+        $rsm->addFieldResult('p', 'e__tags', 'tags', Issue5989Employee::class);
         $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
         $resultSet = [
             [
@@ -107,7 +112,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
             ],
         ];
 
-        $expectedEntity = new \Doctrine\Tests\Models\Issue5989\Issue5989Manager();
+        $expectedEntity = new Issue5989Manager();
         $expectedEntity->id = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
 

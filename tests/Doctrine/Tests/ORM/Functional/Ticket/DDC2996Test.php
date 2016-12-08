@@ -11,8 +11,8 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996UserPreference'),
+            $this->_em->getClassMetadata(DDC2996User::class),
+            $this->_em->getClassMetadata(DDC2996UserPreference::class),
             ]
         );
 
@@ -31,7 +31,7 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $pref = $this->_em->find(__NAMESPACE__ . '\\DDC2996UserPreference', $pref->id);
+        $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
         $this->assertEquals(1, $pref->user->counter);
     }
 }

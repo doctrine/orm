@@ -40,20 +40,20 @@ class PersisterPerformanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->findAll();
+        $articles = $this->_em->getRepository(CmsArticle::class)->findAll();
         echo "100 CmsArticle findAll(): " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->findAll();
+        $articles = $this->_em->getRepository(CmsArticle::class)->findAll();
         echo "100 CmsArticle findAll(): " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
         for ($i = 0; $i < 100; $i++) {
-            $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->find($ids[$i]->id);
+            $articles = $this->_em->getRepository(CmsArticle::class)->find($ids[$i]->id);
         }
         echo "100 CmsArticle find(): " . number_format(microtime(true) - $start, 6) . "\n";
 
@@ -61,7 +61,7 @@ class PersisterPerformanceTest extends OrmFunctionalTestCase
 
         $start = microtime(true);
         for ($i = 0; $i < 100; $i++) {
-            $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->find($ids[$i]->id);
+            $articles = $this->_em->getRepository(CmsArticle::class)->find($ids[$i]->id);
         }
         echo "100 CmsArticle find(): " . number_format(microtime(true) - $start, 6) . "\n";
     }
@@ -77,13 +77,13 @@ class PersisterPerformanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $articles = $this->_em->getRepository(CmsGroup::class)->findAll();
         echo "100 CmsGroup: " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $articles = $this->_em->getRepository(CmsGroup::class)->findAll();
         echo "100 CmsGroup: " . number_format(microtime(true) - $start, 6) . "\n";
     }
 
@@ -101,13 +101,13 @@ class PersisterPerformanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $articles = $this->_em->getRepository(CmsUser::class)->findAll();
         echo "100 CmsUser: " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $articles = $this->_em->getRepository(CmsUser::class)->findAll();
         echo "100 CmsUser: " . number_format(microtime(true) - $start, 6) . "\n";
     }
 }

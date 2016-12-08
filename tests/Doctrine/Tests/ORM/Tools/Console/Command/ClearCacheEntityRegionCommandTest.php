@@ -4,10 +4,11 @@ namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Application;
+use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * @group DDC-2183
@@ -62,7 +63,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'entity-class'  => 'Doctrine\Tests\Models\Cache\Country',
+            'entity-class'  => Country::class,
             ], ['decorated' => false]
         );
 
@@ -76,7 +77,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'entity-class'  => 'Doctrine\Tests\Models\Cache\Country',
+            'entity-class'  => Country::class,
             'entity-id'     => 1,
             ], ['decorated' => false]
         );
@@ -91,7 +92,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $tester->execute(
             [
             'command'       => $command->getName(),
-            'entity-class'  => 'Doctrine\Tests\Models\Cache\Country',
+            'entity-class'  => Country::class,
             '--flush'       => true,
             ], ['decorated' => false]
         );

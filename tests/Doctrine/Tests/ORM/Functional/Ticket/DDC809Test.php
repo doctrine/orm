@@ -9,8 +9,8 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC809Variant'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC809SpecificationValue')
+            $this->_em->getClassMetadata(DDC809Variant::class),
+            $this->_em->getClassMetadata(DDC809SpecificationValue::class)
             ]
         );
 
@@ -43,7 +43,7 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $result = $this->_em->createQueryBuilder()
                         ->select('Variant, SpecificationValue')
-                        ->from('Doctrine\Tests\ORM\Functional\Ticket\DDC809Variant', 'Variant')
+                        ->from(DDC809Variant::class, 'Variant')
                         ->leftJoin('Variant.SpecificationValues', 'SpecificationValue')
                         ->getQuery()
                         ->getResult();

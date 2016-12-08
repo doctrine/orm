@@ -27,16 +27,16 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742Comment')
+                $this->_em->getClassMetadata(DDC742User::class),
+                $this->_em->getClassMetadata(DDC742Comment::class)
                 ]
             );
         } catch(\Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
-        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742User', null);
-        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742Comment', null);
+        $this->_em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
+        $this->_em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
     public function testIssue()

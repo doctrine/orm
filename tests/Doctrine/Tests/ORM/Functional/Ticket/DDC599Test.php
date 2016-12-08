@@ -11,9 +11,9 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Item'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Subitem'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Child'),
+                $this->_em->getClassMetadata(DDC599Item::class),
+                $this->_em->getClassMetadata(DDC599Subitem::class),
+                $this->_em->getClassMetadata(DDC599Child::class),
                 ]
             );
         } catch (\Exception $ignored) {}
@@ -31,7 +31,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item = $this->_em->find(__NAMESPACE__ . '\DDC599Item', $item->id);
+        $item = $this->_em->find(DDC599Item::class, $item->id);
 
         $this->_em->remove($item);
         $this->_em->flush(); // Should not fail
@@ -64,7 +64,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCascadeRemoveOnChildren()
     {
-        $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC599Subitem');
+        $class = $this->_em->getClassMetadata(DDC599Subitem::class);
 
         $this->assertArrayHasKey('children', $class->associationMappings);
         $this->assertTrue($class->associationMappings['children']['isCascadeRemove']);

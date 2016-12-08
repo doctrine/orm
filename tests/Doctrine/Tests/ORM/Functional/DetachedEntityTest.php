@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -90,8 +91,8 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         // Merge back in
         $user = $this->_em->merge($user); // merge cascaded to phonenumbers
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $user->phonenumbers[0]->user);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $user->phonenumbers[1]->user);
+        $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[0]->user);
+        $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[1]->user);
         $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
 
@@ -100,10 +101,10 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
         $this->assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $phonenumbers[1]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[1]);
         $this->assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $phonenumbers[0]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
         $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
         $this->assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
     }
@@ -145,14 +146,14 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $address2 = $this->_em->find(get_class($address), $address->id);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $address2->user);
+        $this->assertInstanceOf(Proxy::class, $address2->user);
         $this->assertFalse($address2->user->__isInitialized__);
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $detachedAddress2->user);
+        $this->assertInstanceOf(Proxy::class, $detachedAddress2->user);
         $this->assertFalse($detachedAddress2->user->__isInitialized__);
 
         $managedAddress2 = $this->_em->merge($detachedAddress2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $managedAddress2->user);
+        $this->assertInstanceOf(Proxy::class, $managedAddress2->user);
         $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
         $this->assertFalse($managedAddress2->user->__isInitialized__);
     }
@@ -178,7 +179,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $newUser = $query->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $newUser);
+        $this->assertInstanceOf(CmsUser::class, $newUser);
         $this->assertEquals('gblanco', $newUser->username);
     }
 

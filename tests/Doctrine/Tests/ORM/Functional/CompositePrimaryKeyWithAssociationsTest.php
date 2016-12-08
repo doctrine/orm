@@ -41,8 +41,8 @@ class CompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 
     public function testFindByAbleToGetCompositeEntitiesWithMixedTypeIdentifiers()
     {
-        $admin1Repo      = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1');
-        $admin1NamesRepo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1AlternateName');
+        $admin1Repo      = $this->_em->getRepository(Admin1::class);
+        $admin1NamesRepo = $this->_em->getRepository(Admin1AlternateName::class);
 
         $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 

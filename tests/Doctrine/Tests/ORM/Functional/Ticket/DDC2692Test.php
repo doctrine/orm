@@ -20,7 +20,7 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2692Foo'),
+                $this->_em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
         } catch(\Exception $e) {

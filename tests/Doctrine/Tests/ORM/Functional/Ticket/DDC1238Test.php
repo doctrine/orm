@@ -13,7 +13,7 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1238User'),
+                $this->_em->getClassMetadata(DDC1238User::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -33,7 +33,7 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $user->getId();
         $this->_em->clear();
 
-        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        $user = $this->_em->getReference(DDC1238User::class, $userId);
         $this->_em->clear();
 
         $userId2 = $user->getId();
@@ -54,10 +54,10 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $user->getId();
         $this->_em->clear();
 
-        $user = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        $user = $this->_em->getReference(DDC1238User::class, $userId);
         $this->_em->clear();
 
-        $user2 = $this->_em->getReference(__NAMESPACE__ . '\\DDC1238User', $userId);
+        $user2 = $this->_em->getReference(DDC1238User::class, $userId);
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();

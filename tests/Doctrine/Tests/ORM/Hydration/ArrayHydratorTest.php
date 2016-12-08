@@ -2,8 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Forum\ForumBoard;
+use Doctrine\Tests\Models\Forum\ForumCategory;
 
 class ArrayHydratorTest extends HydrationTestCase
 {
@@ -25,7 +31,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -66,7 +72,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $alias = $userEntityKey ?: 'u';
         $rsm   = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', $alias);
+        $rsm->addEntityResult(CmsUser::class, $alias);
         $rsm->addFieldResult($alias, 's__id', 'id');
         $rsm->addFieldResult($alias, 's__name', 'name');
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
@@ -117,7 +123,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -157,8 +163,8 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -207,8 +213,8 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
+        $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -261,8 +267,8 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -315,8 +321,8 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
+        $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -373,7 +379,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
@@ -422,9 +428,9 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
@@ -493,9 +499,9 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
@@ -572,15 +578,15 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
@@ -691,21 +697,21 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsComment',
+            CmsComment::class,
             'c',
             'a',
             'comments'
@@ -848,9 +854,9 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\Forum\ForumCategory', 'c');
+        $rsm->addEntityResult(ForumCategory::class, 'c');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\Forum\ForumBoard',
+            ForumBoard::class,
             'b',
             'c',
             'boards'
@@ -924,7 +930,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $entityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $entityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('a__id', 'id', 'integer');
@@ -994,7 +1000,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -1039,7 +1045,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -1087,7 +1093,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -1121,7 +1127,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
@@ -1180,7 +1186,7 @@ class ArrayHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');

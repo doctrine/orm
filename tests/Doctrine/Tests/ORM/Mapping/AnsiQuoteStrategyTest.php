@@ -5,6 +5,10 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\AnsiQuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\DDC117\DDC117Article;
+use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -47,7 +51,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testGetColumnName()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class = $this->createClassMetadata(CmsUser::class);
         $class->mapField(['fieldName' => 'name', 'columnName' => 'name']);
         $class->mapField(['fieldName' => 'id', 'columnName' => 'id', 'id' => true]);
 
@@ -57,7 +61,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testGetTableName()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class = $this->createClassMetadata(CmsUser::class);
 
         $class->setPrimaryTable(['name'=>'cms_user']);
         $this->assertEquals('cms_user' ,$this->strategy->getTableName($class, $this->platform));
@@ -65,7 +69,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testJoinTableName()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $class = $this->createClassMetadata(CmsAddress::class);
 
         $class->mapManyToMany(
             [
@@ -84,7 +88,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testIdentifierColumnNames()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $class = $this->createClassMetadata(CmsAddress::class);
 
         $class->mapField(
             [
@@ -105,13 +109,13 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testJoinColumnName()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $class = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $class->mapOneToOne(
             [
             'id'            => true,
             'fieldName'     => 'article',
-            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'targetEntity'  => DDC117Article::class,
             'joinColumns'    => [
                 [
                 'name'  => 'article'
@@ -126,13 +130,13 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testReferencedJoinColumnName()
     {
-        $cm = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
+        $cm = $this->createClassMetadata(DDC117ArticleDetails::class);
 
         $cm->mapOneToOne(
             [
             'id'            => true,
             'fieldName'     => 'article',
-            'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
+            'targetEntity'  => DDC117Article::class,
             'joinColumns'    => [
                 [
                 'name'  => 'article'
@@ -147,7 +151,7 @@ class AnsiQuoteStrategyTest extends OrmTestCase
 
     public function testGetSequenceName()
     {
-        $class      = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $class      = $this->createClassMetadata(CmsUser::class);
         $definition = [
             'sequenceName'      => 'user_id_seq',
             'allocationSize'    => 1,

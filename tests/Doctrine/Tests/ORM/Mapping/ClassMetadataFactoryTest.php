@@ -20,7 +20,15 @@ use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\DDC4006\DDC4006User;
+use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
+use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
+use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
+use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
+use DoctrineGlobal_Article;
 
 class ClassMetadataFactoryTest extends OrmTestCase
 {
@@ -63,18 +71,14 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cm1 = $this->_createValidClassMetadata();
         $cm1->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_CUSTOM);
-        $cm1->customGeneratorDefinition = [
-            "class" => "Doctrine\Tests\ORM\Mapping\CustomIdGenerator"
-        ];
+        $cm1->customGeneratorDefinition = ['class' => CustomIdGenerator::class];
         $cmf = $this->_createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
         $actual = $cmf->getMetadataFor($cm1->name);
 
-        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
-            $actual->generatorType);
-        $this->assertInstanceOf("Doctrine\Tests\ORM\Mapping\CustomIdGenerator",
-            $actual->idGenerator);
+        $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM, $actual->generatorType);
+        $this->assertInstanceOf(CustomIdGenerator::class, $actual->idGenerator);
     }
 
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
@@ -109,10 +113,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager = $this->_createEntityManager($metadataDriver);
 
         $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor("DoctrineGlobal_Article");
-        $h1 = $mf->hasMetadataFor("DoctrineGlobal_Article");
-        $h2 = $mf->hasMetadataFor("\DoctrineGlobal_Article");
-        $m2 = $mf->getMetadataFor("\DoctrineGlobal_Article");
+        $m1 = $mf->getMetadataFor(DoctrineGlobal_Article::class);
+        $h1 = $mf->hasMetadataFor(DoctrineGlobal_Article::class);
+        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class);
+        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class);
 
         $this->assertNotSame($m1, $m2);
         $this->assertFalse($h2);
@@ -128,17 +132,17 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $driver = $this->createMock(MappingDriver::class);
         $driver->expects($this->at(0))
                ->method('isTransient')
-               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))
+               ->with($this->equalTo(CmsUser::class))
                ->will($this->returnValue(true));
         $driver->expects($this->at(1))
                ->method('isTransient')
-               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
+               ->with($this->equalTo(CmsArticle::class))
                ->will($this->returnValue(false));
 
         $em = $this->_createEntityManager($driver);
 
-        $this->assertTrue($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsUser'));
-        $this->assertFalse($em->getMetadataFactory()->isTransient('Doctrine\Tests\Models\CMS\CmsArticle'));
+        $this->assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
+        $this->assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
     /**
@@ -150,11 +154,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $driver = $this->createMock(MappingDriver::class);
         $driver->expects($this->at(0))
                ->method('isTransient')
-               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsUser'))
+               ->with($this->equalTo(CmsUser::class))
                ->will($this->returnValue(true));
         $driver->expects($this->at(1))
                ->method('isTransient')
-               ->with($this->equalTo('Doctrine\Tests\Models\CMS\CmsArticle'))
+               ->with($this->equalTo(CmsArticle::class))
                ->will($this->returnValue(false));
 
         $em = $this->_createEntityManager($driver);
@@ -171,16 +175,16 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em = $this->_createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $rootMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
-        $childMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\ChildClass');
-        $anotherChildMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass');
+        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
+        $childMetadata = $cmf->getMetadataFor(ChildClass::class);
+        $anotherChildMetadata = $cmf->getMetadataFor(AnotherChildClass::class);
         $rootDiscriminatorMap = $rootMetadata->discriminatorMap;
         $childDiscriminatorMap = $childMetadata->discriminatorMap;
         $anotherChildDiscriminatorMap = $anotherChildMetadata->discriminatorMap;
 
-        $rootClass = 'Doctrine\Tests\Models\JoinedInheritanceType\RootClass';
-        $childClass = 'Doctrine\Tests\Models\JoinedInheritanceType\ChildClass';
-        $anotherChildClass = 'Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass';
+        $rootClass = RootClass::class;
+        $childClass = ChildClass::class;
+        $anotherChildClass = AnotherChildClass::class;
 
         $rootClassKey = array_search($rootClass, $rootDiscriminatorMap);
         $childClassKey = array_search($childClass, $rootDiscriminatorMap);
@@ -200,7 +204,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->expects($this->never())
             ->method('addDefaultDiscriminatorMap');
 
-        $rootMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\JoinedInheritanceType\RootClass');
+        $rootMetadata = $cmf->getMetadataFor(RootClass::class);
     }
 
     public function testGetAllMetadataWorksWithBadConnection()
@@ -257,7 +261,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     protected function _createValidClassMetadata()
     {
         // Self-made metadata
-        $cm1 = new ClassMetadata('Doctrine\Tests\ORM\Mapping\TestEntity1');
+        $cm1 = new ClassMetadata(TestEntity1::class);
         $cm1->initializeReflection(new RuntimeReflectionService());
         $cm1->setPrimaryTable(['name' => '`group`']);
         // Add a mapped field
@@ -289,10 +293,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->setEntityManager($em);
 
 
-        $userMetadata       = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\User');
-        $phoneMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Phone');
-        $groupMetadata      = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Group');
-        $addressMetadata    = $cmf->getMetadataFor('Doctrine\Tests\Models\Quote\Address');
+        $userMetadata       = $cmf->getMetadataFor(Quote\User::class);
+        $phoneMetadata      = $cmf->getMetadataFor(Quote\Phone::class);
+        $groupMetadata      = $cmf->getMetadataFor(Quote\Group::class);
+        $addressMetadata    = $cmf->getMetadataFor(Quote\Address::class);
 
 
         // Phone Class Metadata
@@ -443,7 +447,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $em = $this->_createEntityManager($driver);
         $cmf->setEntityManager($em);
 
-        $userMetadata = $cmf->getMetadataFor('Doctrine\Tests\Models\DDC4006\DDC4006User');
+        $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
         $this->assertTrue($userMetadata->isIdGeneratorIdentity());
     }

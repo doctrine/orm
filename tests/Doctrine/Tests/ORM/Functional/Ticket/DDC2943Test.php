@@ -33,7 +33,7 @@ class DDC2943Test extends OrmFunctionalTestCase
     {
         $this->loadFixtures();
 
-        $region = $this->_em->getCache()->getEntityCacheRegion(Country::CLASSNAME);
+        $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $query  = $this->_em->createQuery($dql)
             ->setCacheable(true)
@@ -52,7 +52,7 @@ class DDC2943Test extends OrmFunctionalTestCase
     {
         $this->loadFixtures();
 
-        $region = $this->_em->getCache()->getEntityCacheRegion(Country::CLASSNAME);
+        $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $query  = $this->_em->createQuery($dql)
             ->setCacheable(true)

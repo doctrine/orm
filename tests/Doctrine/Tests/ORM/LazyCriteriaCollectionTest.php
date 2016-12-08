@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -97,7 +98,7 @@ class LazyCriteriaCollectionTest extends \PHPUnit_Framework_TestCase
 
         $filtered = $this->lazyCriteriaCollection->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
+        $this->assertInstanceOf(Collection::class, $filtered);
         $this->assertEquals([$foo], $filtered->toArray());
 
         $this->assertEquals([$foo], $this->lazyCriteriaCollection->matching($criteria)->toArray());

@@ -2,10 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
-use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
-use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsEmployee;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Forum\ForumAvatar;
+use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 
 class SchemaToolTest extends OrmTestCase
@@ -16,13 +26,13 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool = new SchemaTool($em);
 
         $classes = [
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $em->getClassMetadata(CmsAddress::class),
+            $em->getClassMetadata(CmsArticle::class),
+            $em->getClassMetadata(CmsComment::class),
+            $em->getClassMetadata(CmsEmployee::class),
+            $em->getClassMetadata(CmsGroup::class),
+            $em->getClassMetadata(CmsPhonenumber::class),
+            $em->getClassMetadata(CmsUser::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -37,7 +47,7 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool = new SchemaTool($em);
 
         $classes = [
-            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithAnnotationOptionsAttribute'),
+            $em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -58,9 +68,9 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumAvatar');
+        $avatar = $em->getClassMetadata(ForumAvatar::class);
         $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
+        $user = $em->getClassMetadata(ForumUser::class);
 
         $classes = [$avatar, $user];
 
@@ -86,13 +96,13 @@ class SchemaToolTest extends OrmTestCase
         $schemaTool = new SchemaTool($em);
 
         $classes = [
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
+            $em->getClassMetadata(CmsAddress::class),
+            $em->getClassMetadata(CmsArticle::class),
+            $em->getClassMetadata(CmsComment::class),
+            $em->getClassMetadata(CmsEmployee::class),
+            $em->getClassMetadata(CmsGroup::class),
+            $em->getClassMetadata(CmsPhonenumber::class),
+            $em->getClassMetadata(CmsUser::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -106,11 +116,7 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = [
-            $em->getClassMetadata('Doctrine\Tests\Models\NullDefault\NullDefaultColumn'),
-        ];
-
-        $customSchemaOptions = $schemaTool->getSchemaFromMetadata($classes)
+        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
             ->getTable('NullDefaultColumn')
             ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
@@ -126,7 +132,7 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(__NAMESPACE__ . '\\UniqueConstraintAnnotationModel'),
+            $em->getClassMetadata(UniqueConstraintAnnotationModel::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -144,8 +150,8 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(__NAMESPACE__ . '\\FirstEntity'),
-            $em->getClassMetadata(__NAMESPACE__ . '\\SecondEntity')
+            $em->getClassMetadata(FirstEntity::class),
+            $em->getClassMetadata(SecondEntity::class)
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);

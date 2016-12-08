@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -32,12 +33,12 @@ class DDC214Test extends OrmFunctionalTestCase
     public function testCmsAddressModel()
     {
         $this->classes = [
-            'Doctrine\Tests\Models\CMS\CmsUser',
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            'Doctrine\Tests\Models\CMS\CmsGroup',
-            'Doctrine\Tests\Models\CMS\CmsArticle',
-            'Doctrine\Tests\Models\CMS\CmsEmail',
+            Models\CMS\CmsUser::class,
+            Models\CMS\CmsPhonenumber::class,
+            Models\CMS\CmsAddress::class,
+            Models\CMS\CmsGroup::class,
+            Models\CMS\CmsArticle::class,
+            Models\CMS\CmsEmail::class,
         ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
@@ -49,14 +50,14 @@ class DDC214Test extends OrmFunctionalTestCase
     public function testCompanyModel()
     {
         $this->classes = [
-            'Doctrine\Tests\Models\Company\CompanyPerson',
-            'Doctrine\Tests\Models\Company\CompanyEmployee',
-            'Doctrine\Tests\Models\Company\CompanyManager',
-            'Doctrine\Tests\Models\Company\CompanyOrganization',
-            'Doctrine\Tests\Models\Company\CompanyEvent',
-            'Doctrine\Tests\Models\Company\CompanyAuction',
-            'Doctrine\Tests\Models\Company\CompanyRaffle',
-            'Doctrine\Tests\Models\Company\CompanyCar'
+            Models\Company\CompanyPerson::class,
+            Models\Company\CompanyEmployee::class,
+            Models\Company\CompanyManager::class,
+            Models\Company\CompanyOrganization::class,
+            Models\Company\CompanyEvent::class,
+            Models\Company\CompanyAuction::class,
+            Models\Company\CompanyRaffle::class,
+            Models\Company\CompanyCar::class
         ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);

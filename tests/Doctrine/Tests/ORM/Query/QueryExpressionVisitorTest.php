@@ -3,13 +3,10 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\Comparison as CriteriaComparison;
-use Doctrine\ORM\Query\Expr\Comparison as QueryComparison;
+use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
-
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 
@@ -35,7 +32,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param CriteriaComparison     $criteriaExpr
-     * @param QueryComparison|string $queryExpr
+     * @param QueryBuilder\Comparison|string $queryExpr
      * @param Parameter              $parameter
      *
      * @dataProvider comparisonData
@@ -89,7 +86,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\Query\Expr\Andx', $expr);
+        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
         $this->assertCount(2, $expr->getParts());
     }
 
@@ -103,7 +100,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\Query\Expr\Orx', $expr);
+        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
         $this->assertCount(2, $expr->getParts());
     }
 

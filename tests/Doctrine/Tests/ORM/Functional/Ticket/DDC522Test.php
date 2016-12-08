@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
+
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
  * fields they're used on without causing issues.
@@ -14,9 +16,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522Customer'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522Cart'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC522ForeignKeyTest')
+                $this->_em->getClassMetadata(DDC522Customer::class),
+                $this->_em->getClassMetadata(DDC522Cart::class),
+                $this->_em->getClassMetadata(DDC522ForeignKeyTest::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -46,9 +48,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $r = $this->_em->createQuery("select ca,c from ".get_class($cart)." ca join ca.customer c")
                 ->getResult();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Cart', $r[0]);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC522Customer', $r[0]->customer);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $r[0]->customer);
+        $this->assertInstanceOf(DDC522Cart::class, $r[0]);
+        $this->assertInstanceOf(DDC522Customer::class, $r[0]->customer);
+        $this->assertNotInstanceOf(Proxy::class, $r[0]->customer);
         $this->assertEquals('name', $r[0]->customer->name);
 
         $fkt = new DDC522ForeignKeyTest();
@@ -60,7 +62,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
         $this->assertEquals($fkt->cart->id, $fkt2->cartId);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $fkt2->cart);
+        $this->assertInstanceOf(Proxy::class, $fkt2->cart);
         $this->assertFalse($fkt2->cart->__isInitialized__);
     }
 

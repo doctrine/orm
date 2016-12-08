@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Expr;
-use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -265,7 +265,7 @@ class ExprTest extends OrmTestCase
     }
 
     public function testIsInstanceOfExpr() {
-        $this->assertEquals('u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee', (string) $this->_expr->isInstanceOf('u', 'Doctrine\Tests\Models\Company\CompanyEmployee'));
+        $this->assertEquals('u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee', (string) $this->_expr->isInstanceOf('u', CompanyEmployee::class));
     }
 
     public function testIsMemberOfExpr() {

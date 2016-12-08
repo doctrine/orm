@@ -12,7 +12,7 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         parent::setUp();
 
         $this->loadFixturesCountries();
-        $this->_em->getCache()->evictEntityRegion(Country::CLASSNAME);
+        $this->_em->getCache()->evictEntityRegion(Country::class);
         $this->_em->clear();
     }
 
@@ -22,12 +22,12 @@ class DDC3967Test extends SecondLevelCacheAbstractTest
         $id = $country->getId();
 
         // First time, loaded from database
-        $this->_em->find(Country::CLASSNAME, "$id");
+        $this->_em->find(Country::class, "$id");
         $this->_em->clear();
 
         // Second time, loaded from cache
         /** @var Country $country */
-        $country = $this->_em->find(Country::CLASSNAME, "$id");
+        $country = $this->_em->find(Country::class, "$id");
 
         // Identifier type should be integer
         $this->assertSame($country->getId(), $id);

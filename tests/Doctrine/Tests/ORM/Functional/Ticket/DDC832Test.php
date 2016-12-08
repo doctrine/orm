@@ -16,9 +16,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedIndex'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedTreeIndex'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832Like'),
+                $this->_em->getClassMetadata(DDC832JoinedIndex::class),
+                $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
+                $this->_em->getClassMetadata(DDC832Like::class),
                 ]
             );
         } catch(\Exception $e) {

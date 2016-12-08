@@ -15,8 +15,8 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430Order'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430OrderProduct'),
+                $this->_em->getClassMetadata(DDC1430Order::class),
+                $this->_em->getClassMetadata(DDC1430OrderProduct::class),
                 ]
             );
             $this->loadFixtures();
@@ -27,7 +27,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOrderByFields()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->_em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o.id, o.date, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -58,7 +58,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOrderByAllObjectFields()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->_em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -87,7 +87,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->_em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')

@@ -4,12 +4,10 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -77,8 +75,8 @@ class UnitOfWorkTest extends OrmTestCase
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
         $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
@@ -117,12 +115,12 @@ class UnitOfWorkTest extends OrmTestCase
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
         $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
         // ForumAvatar
-        $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumAvatar'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumAvatar', $avatarPersister);
+        $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumAvatar::class));
+        $this->_unitOfWork->setEntityPersister(ForumAvatar::class, $avatarPersister);
         $avatarPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
 
         // Test
@@ -148,10 +146,10 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testChangeTrackingNotify()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedEntity'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\NotifyChangedRelatedItem'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedRelatedItem', $itemPersister);
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedEntity::class));
+        $this->_unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
+        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedRelatedItem::class));
+        $this->_unitOfWork->setEntityPersister(NotifyChangedRelatedItem::class, $itemPersister);
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
@@ -192,8 +190,8 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\ORM\VersionedAssignedIdentifierEntity', $persister);
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
+        $this->_unitOfWork->setEntityPersister(VersionedAssignedIdentifierEntity::class, $persister);
 
         $e = new VersionedAssignedIdentifierEntity();
         $e->id = 42;
@@ -203,8 +201,8 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testGetEntityStateWithAssignedIdentity()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'));
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\CMS\CmsPhonenumber', $persister);
+        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CmsPhonenumber::class));
+        $this->_unitOfWork->setEntityPersister(CmsPhonenumber::class, $persister);
 
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
@@ -230,9 +228,9 @@ class UnitOfWorkTest extends OrmTestCase
     public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges()
     {
         // Setup fake persister and id generator
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser'));
+        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
         $userPersister->setMockIdGeneratorType(ClassMetadata::GENERATOR_TYPE_IDENTITY);
-        $this->_unitOfWork->setEntityPersister('Doctrine\Tests\Models\Forum\ForumUser', $userPersister);
+        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
 
         // Create a test user
         $user = new ForumUser();
@@ -266,10 +264,10 @@ class UnitOfWorkTest extends OrmTestCase
     public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue)
     {
         $this->_unitOfWork->setEntityPersister(
-            'Doctrine\Tests\Models\Forum\ForumUser',
+            ForumUser::class,
             new EntityPersisterMock(
                 $this->_emMock,
-                $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser')
+                $this->_emMock->getClassMetadata(ForumUser::class)
             )
         );
 
@@ -291,10 +289,10 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue)
     {
-        $metadata = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
+        $metadata = $this->_emMock->getClassMetadata(ForumUser::class);
 
         $this->_unitOfWork->setEntityPersister(
-            'Doctrine\Tests\Models\Forum\ForumUser',
+            ForumUser::class,
             new EntityPersisterMock($this->_emMock, $metadata)
         );
 

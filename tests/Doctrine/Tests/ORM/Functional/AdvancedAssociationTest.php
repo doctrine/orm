@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -18,11 +18,11 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Phrase'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PhraseType'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Definition'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Lemma'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Type')
+                $this->_em->getClassMetadata(Phrase::class),
+                $this->_em->getClassMetadata(PhraseType::class),
+                $this->_em->getClassMetadata(Definition::class),
+                $this->_em->getClassMetadata(Lemma::class),
+                $this->_em->getClassMetadata(Type::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -57,7 +57,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         //end setup
 
         // test1 - lazy-loading many-to-one after find()
-        $phrase2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Phrase', $phrase->getId());
+        $phrase2 = $this->_em->find(Phrase::class, $phrase->getId());
         $this->assertTrue(is_numeric($phrase2->getType()->getId()));
 
         $this->_em->clear();
@@ -66,8 +66,8 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
         $res = $query->getResult();
         $this->assertEquals(1, count($res));
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\PhraseType', $res[0]->getType());
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $res[0]->getType()->getPhrases());
+        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
+        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         $this->assertFalse($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
@@ -76,17 +76,17 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
         $this->assertEquals(1, count($res));
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\PhraseType', $res[0]->getType());
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $res[0]->getType()->getPhrases());
+        $this->assertInstanceOf(PhraseType::class, $res[0]->getType());
+        $this->assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         $this->assertTrue($res[0]->getType()->getPhrases()->isInitialized());
 
         $this->_em->clear();
 
         // test3 - lazy-loading one-to-many after find()
-        $phrase3 = $this->_em->find('Doctrine\Tests\ORM\Functional\Phrase', $phrase->getId());
+        $phrase3 = $this->_em->find(Phrase::class, $phrase->getId());
         $definitions = $phrase3->getDefinitions();
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $definitions);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Definition', $definitions[0]);
+        $this->assertInstanceOf(PersistentCollection::class, $definitions);
+        $this->assertInstanceOf(Definition::class, $definitions[0]);
 
         $this->_em->clear();
 
@@ -97,7 +97,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $this->assertEquals(1, count($res));
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Definition', $definitions[0]);
+        $this->assertInstanceOf(Definition::class, $definitions[0]);
         $this->assertEquals(2, $definitions->count());
     }
 
@@ -121,7 +121,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res = $query->getResult();
         $types = $res[0]->getTypes();
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Type', $types[0]);
+        $this->assertInstanceOf(Type::class, $types[0]);
     }
 }
 

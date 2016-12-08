@@ -17,11 +17,11 @@ class DDC2138Test extends OrmFunctionalTestCase
         $schemaTool = new SchemaTool($em);
 
         $classes = [
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138User'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138Structure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedObject'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedStructure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedUser')
+            $em->getClassMetadata(DDC2138User::class),
+            $em->getClassMetadata(DDC2138Structure::class),
+            $em->getClassMetadata(DDC2138UserFollowedObject::class),
+            $em->getClassMetadata(DDC2138UserFollowedStructure::class),
+            $em->getClassMetadata(DDC2138UserFollowedUser::class)
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);

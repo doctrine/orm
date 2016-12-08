@@ -281,7 +281,7 @@ class CmsUser
             [
             'name'              => 'fetchIdAndUsernameWithResultClass',
             'query'             => 'SELECT id, username FROM cms_users WHERE username = ?',
-            'resultClass'       => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+            'resultClass'       => CmsUser::class,
             ]
         );
 
@@ -289,7 +289,7 @@ class CmsUser
             [
             'name'              => 'fetchAllColumns',
             'query'             => 'SELECT * FROM cms_users WHERE username = ?',
-            'resultClass'       => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+            'resultClass'       => CmsUser::class,
             ]
         );
 
@@ -361,7 +361,7 @@ class CmsUser
                     'column'    => 'a_id',
                   ],
                 ],
-                'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'entityClass'           => CmsUser::class,
                 'discriminatorColumn'   => null
                 ],
             ],
@@ -392,7 +392,7 @@ class CmsUser
                     'column'    => 'number',
                   ],
                 ],
-                'entityClass'   => 'Doctrine\\Tests\\Models\\CMS\\CmsUser',
+                'entityClass'   => CmsUser::class,
                 'discriminatorColumn'   => null
                 ],
             ],
@@ -419,7 +419,7 @@ class CmsUser
                     'column'    => 'status',
                   ]
                 ],
-                'entityClass'   => 'Doctrine\Tests\Models\CMS\CmsUser',
+                'entityClass'   => CmsUser::class,
                 'discriminatorColumn'   => null
               ]
             ],
@@ -450,7 +450,7 @@ class CmsUser
                             'column'    => 'u_status',
                         ]
                     ],
-                    'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsUser',
+                    'entityClass'           => CmsUser::class,
                     'discriminatorColumn'   => null,
                 ],
                 [
@@ -468,7 +468,7 @@ class CmsUser
                             'column'    => 'a_country',
                         ],
                     ],
-                    'entityClass'           => 'Doctrine\Tests\Models\CMS\CmsAddress',
+                    'entityClass'           => CmsAddress::class,
                     'discriminatorColumn'   => null,
                 ],
             ],

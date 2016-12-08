@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -61,7 +62,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
 
         $sql = $this->_schemaTool->getDropSchemaSQL(
             [
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyManager'),
+            $this->_em->getClassMetadata(CompanyManager::class),
             ]
         );
         $this->assertEquals(4, count($sql));

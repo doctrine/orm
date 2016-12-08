@@ -12,8 +12,8 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->setUpEntitySchema(
             [
-            __NAMESPACE__ . '\\DDC1654Post',
-            __NAMESPACE__ . '\\DDC1654Comment',
+            DDC1654Post::class,
+            DDC1654Comment::class,
             ]
         );
     }
@@ -41,7 +41,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(0, count($comments));
     }
 
@@ -60,7 +60,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(0, count($comments));
     }
 
@@ -83,7 +83,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(2, count($comments));
     }
 
@@ -101,7 +101,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(0, count($comments));
 
     }
@@ -125,7 +125,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
+        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
         $this->assertEquals(1, count($comments));
     }
 }

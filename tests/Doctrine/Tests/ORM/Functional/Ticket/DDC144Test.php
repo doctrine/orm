@@ -12,9 +12,9 @@ class DDC144Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144FlowElement'),
+            $this->_em->getClassMetadata(DDC144FlowElement::class),
         //    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Expression'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Operand'),
+            $this->_em->getClassMetadata(DDC144Operand::class),
             ]
         );
 

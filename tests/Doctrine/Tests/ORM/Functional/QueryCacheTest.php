@@ -23,7 +23,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     protected function setUp()
     {
-        $this->cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -116,7 +116,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $cache
             ->expects(self::once())
             ->method('save')
-            ->with(self::isType('string'), self::isInstanceOf('Doctrine\ORM\Query\ParserResult'));
+            ->with(self::isType('string'), self::isInstanceOf(ParserResult::class));
 
         $query->getResult();
     }
@@ -151,6 +151,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
               ->method('doFetch')
               ->with($this->isType('string'))
               ->will($this->returnValue($parserResultMock));
+
         $cache->expects($this->never())
               ->method('doSave');
 

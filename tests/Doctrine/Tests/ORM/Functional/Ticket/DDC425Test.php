@@ -10,7 +10,7 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC425Entity'),
+            $this->_em->getClassMetadata(DDC425Entity::class),
             //$this->_em->getClassMetadata(__NAMESPACE__ . '\DDC425Other')
             ]
         );

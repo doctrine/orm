@@ -14,8 +14,8 @@ class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1383AbstractEntity'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1383Entity'),
+                $this->_em->getClassMetadata(DDC1383AbstractEntity::class),
+                $this->_em->getClassMetadata(DDC1383Entity::class),
                 ]
             );
         } catch(\Exception $ignored) {}

@@ -23,8 +23,8 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
+                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
+                    $this->_em->getClassMetadata(SecondRelatedEntity::class)
                 ]
             );
         } catch (ORMException $e) {
@@ -50,10 +50,10 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         $this->_em->persist($firstRelatedEntity);
         $this->_em->flush();
 
-        $firstEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity')
+        $firstEntity = $this->_em->getRepository(FirstRelatedEntity::class)
             ->findOneBy(['name' => 'Fred']);
 
-        $secondEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
+        $secondEntity = $this->_em->getRepository(SecondRelatedEntity::class)
             ->findOneBy(['name' => 'Bob']);
 
         $this->assertSame($firstRelatedEntity, $firstEntity);

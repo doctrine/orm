@@ -19,9 +19,9 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660Product'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660Customer'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2660CustomerOrder')
+                $this->_em->getClassMetadata(DDC2660Product::class),
+                $this->_em->getClassMetadata(DDC2660Customer::class),
+                $this->_em->getClassMetadata(DDC2660CustomerOrder::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -49,7 +49,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = "SELECT o.product_id, o.customer_id, o.name FROM ddc_2660_customer_order o";
 
         $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(__NAMESPACE__ . '\DDC2660CustomerOrder', 'c');
+        $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
@@ -58,7 +58,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         foreach ($result as $order) {
             $this->assertNotNull($order);
-            $this->assertInstanceOf(__NAMESPACE__ . '\\DDC2660CustomerOrder', $order);
+            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 
@@ -67,7 +67,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $sql = "SELECT o.product_id, o.customer_id FROM ddc_2660_customer_order o";
 
         $rsm = new ResultSetMappingBuilder($this->_getEntityManager());
-        $rsm->addRootEntityFromClassMetadata(__NAMESPACE__ . '\DDC2660CustomerOrder', 'c');
+        $rsm->addRootEntityFromClassMetadata(DDC2660CustomerOrder::class, 'c');
 
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
@@ -76,7 +76,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         foreach ($result as $order) {
             $this->assertNotNull($order);
-            $this->assertInstanceOf(__NAMESPACE__ . '\\DDC2660CustomerOrder', $order);
+            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 }

@@ -18,18 +18,18 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (DBALTypes\Type::hasType(DDC5684ObjectIdType::CLASSNAME)) {
-            DBALTypes\Type::overrideType(DDC5684ObjectIdType::CLASSNAME, DDC5684ObjectIdType::CLASSNAME);
+        if (DBALTypes\Type::hasType(DDC5684ObjectIdType::class)) {
+            DBALTypes\Type::overrideType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         } else {
-            DBALTypes\Type::addType(DDC5684ObjectIdType::CLASSNAME, DDC5684ObjectIdType::CLASSNAME);
+            DBALTypes\Type::addType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         }
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::CLASSNAME)]);
+        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
     }
 
     protected function tearDown()
     {
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::CLASSNAME)]);
+        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
 
         parent::tearDown();
     }
@@ -40,7 +40,7 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($object);
         $this->_em->flush();
 
-        $this->assertInstanceOf(DDC5684ObjectId::CLASSNAME, $object->id);
+        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
     public function testFetchObjectWithAutoIncrementedCustomType()
@@ -51,9 +51,9 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $rawId = $object->id->value;
-        $object = $this->_em->find(DDC5684Object::CLASSNAME, new DDC5684ObjectId($rawId));
+        $object = $this->_em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
-        $this->assertInstanceOf(DDC5684ObjectId::CLASSNAME, $object->id);
+        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
         $this->assertEquals($rawId, $object->id->value);
     }
 }
@@ -74,7 +74,7 @@ class DDC5684ObjectIdType extends DBALTypes\IntegerType
 
     public function getName()
     {
-        return self::CLASSNAME;
+        return self::class;
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform)

@@ -2,9 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
+use Doctrine\Tests\Models\DDC3231\DDC3231User1;
+use Doctrine\Tests\Models\DDC3231\DDC3231User2;
 use Doctrine\Tests\OrmTestCase;
 
 class EntityRepositoryGeneratorTest extends OrmTestCase
@@ -74,11 +78,8 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-
-        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1.php';
-
         $className = $ns . '\DDC3231User1Tmp';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User1', $className);
+        $this->writeEntityClass(DDC3231User1::class, $className);
 
         $rpath = $this->writeRepositoryClass($className);
 
@@ -90,13 +91,12 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $this->assertTrue($repo->inNamespace());
         $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo->getParentClass()->getName());
-
+        $this->assertSame(EntityRepository::class, $repo->getParentClass()->getName());
 
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1NoNamespace.php';
 
         $className2 = 'DDC3231User1NoNamespaceTmp';
-        $this->writeEntityClass('DDC3231User1NoNamespace', $className2);
+        $this->writeEntityClass(\DDC3231User1NoNamespace::class, $className2);
 
         $rpath2 = $this->writeRepositoryClass($className2);
 
@@ -108,7 +108,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $this->assertFalse($repo2->inNamespace());
         $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
@@ -119,13 +119,10 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-
-        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2.php';
-
         $className = $ns . '\DDC3231User2Tmp';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User2', $className);
+        $this->writeEntityClass(DDC3231User2::class, $className);
 
-        $rpath = $this->writeRepositoryClass($className, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        $rpath = $this->writeRepositoryClass($className, DDC3231EntityRepository::class);
 
         $this->assertNotNull($rpath);
         $this->assertFileExists($rpath);
@@ -136,7 +133,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $this->assertTrue($repo->inNamespace());
         $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo->getParentClass()->getName());
 
 
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2NoNamespace.php';
@@ -144,7 +141,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
         $className2 = 'DDC3231User2NoNamespaceTmp';
         $this->writeEntityClass('DDC3231User2NoNamespace', $className2);
 
-        $rpath2 = $this->writeRepositoryClass($className2, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        $rpath2 = $this->writeRepositoryClass($className2, DDC3231EntityRepository::class);
 
         $this->assertNotNull($rpath2);
         $this->assertFileExists($rpath2);
@@ -155,13 +152,12 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $this->assertFalse($repo2->inNamespace());
         $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
      * @param string $className
      * @param string $newClassName
-     * @return string
      */
     private function writeEntityClass($className, $newClassName)
     {

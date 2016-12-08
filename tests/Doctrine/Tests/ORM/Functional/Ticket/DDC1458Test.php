@@ -11,8 +11,8 @@ class DDC1258Test extends OrmFunctionalTestCase
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\TestEntity'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\TestAdditionalEntity')
+            $this->_em->getClassMetadata(TestEntity::class),
+            $this->_em->getClassMetadata(TestAdditionalEntity::class)
             ]
         );
     }
@@ -29,7 +29,7 @@ class DDC1258Test extends OrmFunctionalTestCase
         // So here the value is 3
         $this->assertEquals(3, $testEntity->getValue());
 
-        $test = $this->_em->getRepository(__NAMESPACE__ . '\TestEntity')->find(1);
+        $test = $this->_em->getRepository(TestEntity::class)->find(1);
 
         // New value is set
         $test->setValue(5);

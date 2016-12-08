@@ -15,8 +15,10 @@ use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 
@@ -531,7 +533,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertInvalidSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\CMS\CmsUser",
-            "Doctrine\\ORM\\Query\\QueryException"
+            QueryException::class
         );
     }
 
@@ -556,7 +558,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1",
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN (?)",
-            [], [1 => $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee')]
+            [], [1 => $this->_em->getClassMetadata(CompanyEmployee::class)]
         );
     }
 
@@ -609,7 +611,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // We do not support SingleValuedAssociationPathExpression on inverse side
         $this->assertInvalidSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IN (?1, ?2)",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -1132,7 +1134,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportToCustomDQLFunctions()
     {
         $config = $this->_em->getConfiguration();
-        $config->addCustomNumericFunction('MYABS', 'Doctrine\Tests\ORM\Query\MyAbsFunction');
+        $config->addCustomNumericFunction('MYABS', MyAbsFunction::class);
 
         $this->assertSqlGeneration(
             'SELECT MYABS(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p',
@@ -1378,7 +1380,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertInvalidSqlGeneration(
             "SELECT IDENTITY(p.poi, 'invalid') AS invalid FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -1431,7 +1433,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertInvalidSqlGeneration(
             "SELECT IDENTITY(u.name) as name FROM Doctrine\Tests\Models\CMS\CmsUser u",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -1838,9 +1840,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1852,9 +1854,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlIgnoresIdentifierColumn()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1866,9 +1868,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlForAllFields()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1880,9 +1882,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlForPartialObject()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(

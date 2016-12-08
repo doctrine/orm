@@ -3,9 +3,11 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\User as QuoteUser;
 use Doctrine\Tests\Models\Tweet\Tweet;
+use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\User as TweetUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -73,12 +75,12 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
     {
         $this->loadTweetFixture();
 
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Tweet\User');
+        $repository = $this->_em->getRepository(User::class);
 
         $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
         $this->assertCount(2, $tweets);
         $this->assertFalse($tweets->isInitialized());
@@ -88,7 +90,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->eq('content', 'Foo')
         ));
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
         $this->assertCount(1, $tweets);
         $this->assertFalse($tweets->isInitialized());

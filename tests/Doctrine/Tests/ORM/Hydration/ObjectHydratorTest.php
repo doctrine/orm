@@ -2,11 +2,25 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
+use Doctrine\Tests\Models\Forum\ForumBoard;
+use Doctrine\Tests\Models\Forum\ForumCategory;
 use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 
@@ -45,7 +59,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -67,8 +81,8 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[0]);
+        $this->assertInstanceOf(CmsUser::class, $result[1]);
 
         $this->assertEquals(1, $result[0]->id);
         $this->assertEquals('romanb', $result[0]->name);
@@ -84,7 +98,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -107,10 +121,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(2, count($result));
 
         $this->assertArrayHasKey('user', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
 
         $this->assertArrayHasKey('user', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
 
         $this->assertEquals(1, $result[0]['user']->id);
         $this->assertEquals('romanb', $result[0]['user']->name);
@@ -126,8 +140,8 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQuery()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -155,10 +169,10 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(4, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]);
+        $this->assertInstanceOf(CmsUser::class, $result[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[2]);
+        $this->assertInstanceOf(CmsArticle::class, $result[3]);
 
         $this->assertEquals(1, $result[0]->id);
         $this->assertEquals('romanb', $result[0]->name);
@@ -180,8 +194,8 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
+        $rsm->addEntityResult(CmsArticle::class, 'a');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -211,25 +225,25 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertArrayHasKey('user', $result[0]);
         $this->assertArrayNotHasKey(0, $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
         $this->assertEquals(1, $result[0]['user']->id);
         $this->assertEquals('romanb', $result[0]['user']->name);
 
         $this->assertArrayHasKey(0, $result[1]);
         $this->assertArrayNotHasKey('user', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1][0]);
         $this->assertEquals(1, $result[1][0]->id);
         $this->assertEquals('Cool things.', $result[1][0]->topic);
 
         $this->assertArrayHasKey('user', $result[2]);
         $this->assertArrayNotHasKey(0, $result[2]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[2]['user']);
         $this->assertEquals(2, $result[2]['user']->id);
         $this->assertEquals('jwage', $result[2]['user']->name);
 
         $this->assertArrayHasKey(0, $result[3]);
         $this->assertArrayNotHasKey('user', $result[3]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3][0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[3][0]);
         $this->assertEquals(2, $result[3][0]->id);
         $this->assertEquals('Cool things II.', $result[3][0]->topic);
     }
@@ -241,8 +255,8 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedArticleEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -272,25 +286,25 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertArrayHasKey(0, $result[0]);
         $this->assertArrayNotHasKey('article', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][0]);
         $this->assertEquals(1, $result[0][0]->id);
         $this->assertEquals('romanb', $result[0][0]->name);
 
         $this->assertArrayHasKey('article', $result[1]);
         $this->assertArrayNotHasKey(0, $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]['article']);
+        $this->assertInstanceOf(CmsArticle::class, $result[1]['article']);
         $this->assertEquals(1, $result[1]['article']->id);
         $this->assertEquals('Cool things.', $result[1]['article']->topic);
 
         $this->assertArrayHasKey(0, $result[2]);
         $this->assertArrayNotHasKey('article', $result[2]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][0]);
+        $this->assertInstanceOf(CmsUser::class, $result[2][0]);
         $this->assertEquals(2, $result[2][0]->id);
         $this->assertEquals('jwage', $result[2][0]->name);
 
         $this->assertArrayHasKey('article', $result[3]);
         $this->assertArrayNotHasKey(0, $result[3]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]['article']);
+        $this->assertInstanceOf(CmsArticle::class, $result[3]['article']);
         $this->assertEquals(2, $result[3]['article']->id);
         $this->assertEquals('Cool things II.', $result[3]['article']->topic);
     }
@@ -302,8 +316,8 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSimpleMultipleRootEntityQueryWithAliasedEntities()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsArticle', 'a', 'article');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
+        $rsm->addEntityResult(CmsArticle::class, 'a', 'article');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addFieldResult('a', 'a__id', 'id');
@@ -333,25 +347,25 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertArrayHasKey('user', $result[0]);
         $this->assertArrayNotHasKey('article', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
         $this->assertEquals(1, $result[0]['user']->id);
         $this->assertEquals('romanb', $result[0]['user']->name);
 
         $this->assertArrayHasKey('article', $result[1]);
         $this->assertArrayNotHasKey('user', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1]['article']);
+        $this->assertInstanceOf(CmsArticle::class, $result[1]['article']);
         $this->assertEquals(1, $result[1]['article']->id);
         $this->assertEquals('Cool things.', $result[1]['article']->topic);
 
         $this->assertArrayHasKey('user', $result[2]);
         $this->assertArrayNotHasKey('article', $result[2]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[2]['user']);
         $this->assertEquals(2, $result[2]['user']->id);
         $this->assertEquals('jwage', $result[2]['user']->name);
 
         $this->assertArrayHasKey('article', $result[3]);
         $this->assertArrayNotHasKey('user', $result[3]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[3]['article']);
+        $this->assertInstanceOf(CmsArticle::class, $result[3]['article']);
         $this->assertEquals(2, $result[3]['article']->id);
         $this->assertEquals('Cool things II.', $result[3]['article']->topic);
     }
@@ -367,7 +381,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMixedQueryNormalJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'numPhones', 'integer');
@@ -399,11 +413,11 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // first user => 2 phonenumbers
         $this->assertEquals(2, $result[0]['numPhones']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
 
         // second user => 1 phonenumber
         $this->assertEquals(1, $result[1]['numPhones']);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
     }
 
     /**
@@ -416,9 +430,9 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMixedQueryFetchJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
@@ -461,13 +475,13 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertInternalType('array', $result[0]);
         $this->assertInternalType('array', $result[1]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[0]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
 
         // first user => 2 phonenumbers
         $this->assertEquals(2, count($result[0][$userEntityKey]->phonenumbers));
@@ -494,9 +508,9 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMixedQueryFetchJoinCustomIndex($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
@@ -546,9 +560,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals('ROMANB', $result[1]['nameUpper']);
         $this->assertEquals('JWAGE', $result[2]['nameUpper']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
 
         // first user => 2 phonenumbers. notice the custom indexing by user id
         $this->assertEquals(2, count($result[1][$userEntityKey]->phonenumbers));
@@ -573,15 +587,15 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMixedQueryMultipleFetchJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
@@ -656,19 +670,19 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[1]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->articles);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][$userEntityKey]->articles[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
+        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[1][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][$userEntityKey]->articles[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
     }
 
     /**
@@ -683,21 +697,21 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMixedQueryMultipleDeepMixedFetchJoin($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsComment',
+            CmsComment::class,
             'c',
             'a',
             'comments'
@@ -786,36 +800,36 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertTrue(is_array($result[0]));
         $this->assertTrue(is_array($result[1]));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[1][$userEntityKey]);
 
         // phonenumbers
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[0][$userEntityKey]->phonenumbers[1]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[0]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[0][$userEntityKey]->phonenumbers[1]);
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->phonenumbers);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $result[1][$userEntityKey]->phonenumbers[0]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->phonenumbers);
+        $this->assertInstanceOf(CmsPhonenumber::class, $result[1][$userEntityKey]->phonenumbers[0]);
 
         // articles
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->articles);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0][$userEntityKey]->articles[1]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles);
+        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[0][$userEntityKey]->articles[1]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][$userEntityKey]->articles[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[1][$userEntityKey]->articles[1]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[1][$userEntityKey]->articles[1]);
 
         // article comments
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->articles[0]->comments);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsComment', $result[0][$userEntityKey]->articles[0]->comments[0]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[0]->comments);
+        $this->assertInstanceOf(CmsComment::class, $result[0][$userEntityKey]->articles[0]->comments[0]);
 
         // empty comment collections
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0][$userEntityKey]->articles[1]->comments);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0][$userEntityKey]->articles[1]->comments);
         $this->assertEquals(0, count($result[0][$userEntityKey]->articles[1]->comments));
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->articles[0]->comments);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[0]->comments);
         $this->assertEquals(0, count($result[1][$userEntityKey]->articles[0]->comments));
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[1][$userEntityKey]->articles[1]->comments);
+        $this->assertInstanceOf(PersistentCollection::class, $result[1][$userEntityKey]->articles[1]->comments);
         $this->assertEquals(0, count($result[1][$userEntityKey]->articles[1]->comments));
     }
 
@@ -840,9 +854,9 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testEntityQueryCustomResultSetOrder()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\Forum\ForumCategory', 'c');
+        $rsm->addEntityResult(ForumCategory::class, 'c');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\Forum\ForumBoard',
+            ForumBoard::class,
             'b',
             'c',
             'boards'
@@ -895,8 +909,8 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Forum\ForumCategory', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Forum\ForumCategory', $result[1]);
+        $this->assertInstanceOf(ForumCategory::class, $result[0]);
+        $this->assertInstanceOf(ForumCategory::class, $result[1]);
 
         $this->assertTrue($result[0] !== $result[1]);
 
@@ -919,7 +933,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testSkipUnknownColumns()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -937,7 +951,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
+        $this->assertInstanceOf(CmsUser::class, $result[0]);
     }
 
     /**
@@ -949,7 +963,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testScalarQueryWithoutResultVariables($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addScalarResult('sclr0', 'id', 'integer');
         $rsm->addScalarResult('sclr1', 'name', 'string');
 
@@ -988,7 +1002,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testCreatesProxyForLazyLoadingWithForeignKeys()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p');
+        $rsm->addEntityResult(ECommerceProduct::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
         $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, 'integer');
@@ -1012,13 +1026,13 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
-                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), ['id' => 42])
+                     ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
                      ->will($this->returnValue($proxyInstance));
 
         $this->_em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1027,7 +1041,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(1, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $result[0]);
     }
 
     /**
@@ -1037,7 +1051,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testCreatesProxyForLazyLoadingWithForeignKeysWithAliasedProductEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\ECommerce\ECommerceProduct', 'p', 'product');
+        $rsm->addEntityResult(ECommerceProduct::class, 'p', 'product');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
         $rsm->addMetaResult('p', 'p__shipping_id', 'shipping_id', false, 'integer');
@@ -1061,13 +1075,13 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $proxyFactory->expects($this->once())
                      ->method('getProxy')
-                     ->with($this->equalTo('Doctrine\Tests\Models\ECommerce\ECommerceShipping'), ['id' => 42])
+                     ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
                      ->will($this->returnValue($proxyInstance));
 
         $this->_em->setProxyFactory($proxyFactory);
 
         // configuring lazy loading
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $stmt     = new HydratorMockStatement($resultSet);
@@ -1077,7 +1091,7 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(1, count($result));
 
         $this->assertInternalType('array', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $result[0]['product']);
+        $this->assertInstanceOf(ECommerceProduct::class, $result[0]['product']);
     }
 
     /**
@@ -1089,15 +1103,15 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testChainedJoinWithEmptyCollections()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsComment',
+            CmsComment::class,
             'c',
             'a',
             'comments'
@@ -1136,8 +1150,8 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]);
+        $this->assertInstanceOf(CmsUser::class, $result[0]);
+        $this->assertInstanceOf(CmsUser::class, $result[1]);
 
         $this->assertEquals(0, $result[0]->articles->count());
         $this->assertEquals(0, $result[1]->articles->count());
@@ -1152,15 +1166,15 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testChainedJoinWithEmptyCollectionsWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsArticle',
+            CmsArticle::class,
             'a',
             'u',
             'articles'
         );
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsComment',
+            CmsComment::class,
             'c',
             'a',
             'comments'
@@ -1200,10 +1214,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(2, count($result));
 
         $this->assertInternalType('array', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
 
         $this->assertInternalType('array', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
 
         $this->assertEquals(0, $result[0]['user']->articles->count());
         $this->assertEquals(0, $result[1]['user']->articles->count());
@@ -1280,7 +1294,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testResultIteration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -1303,7 +1317,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         while (($row = $iterableResult->next()) !== false) {
             $this->assertEquals(1, count($row));
-            $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $row[0]);
+            $this->assertInstanceOf(CmsUser::class, $row[0]);
 
             if ($rowNum == 0) {
                 $this->assertEquals(1, $row[0]->id);
@@ -1324,7 +1338,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testResultIterationWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
@@ -1349,7 +1363,7 @@ class ObjectHydratorTest extends HydrationTestCase
             $this->assertEquals(1, count($row));
             $this->assertArrayHasKey(0, $row);
             $this->assertArrayHasKey('user', $row[0]);
-            $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $row[0]['user']);
+            $this->assertInstanceOf(CmsUser::class, $row[0]['user']);
 
             if ($rowNum == 0) {
                 $this->assertEquals(1, $row[0]['user']->id);
@@ -1374,13 +1388,13 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testManyToManyHydration()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsGroup', 'g', 'u', 'groups');
+        $rsm->addJoinedEntityResult(CmsGroup::class, 'g', 'u', 'groups');
         $rsm->addFieldResult('g', 'g__id', 'id');
         $rsm->addFieldResult('g', 'g__name', 'name');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -1477,7 +1491,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertContainsOnly('Doctrine\Tests\Models\CMS\CmsUser', $result);
+        $this->assertContainsOnly(CmsUser::class, $result);
 
         $this->assertEquals(2, count($result[0]->groups));
         $this->assertEquals(2, count($result[0]->phonenumbers));
@@ -1497,13 +1511,13 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testManyToManyHydrationWithAliasedUserEntity()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', 'user');
+        $rsm->addEntityResult(CmsUser::class, 'u', 'user');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsGroup', 'g', 'u', 'groups');
+        $rsm->addJoinedEntityResult(CmsGroup::class, 'g', 'u', 'groups');
         $rsm->addFieldResult('g', 'g__id', 'id');
         $rsm->addFieldResult('g', 'g__name', 'name');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber', 'p', 'u', 'phonenumbers');
+        $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
@@ -1601,9 +1615,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals(2, count($result));
 
         $this->assertInternalType('array', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[0]['user']);
         $this->assertInternalType('array', $result[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[1]['user']);
+        $this->assertInstanceOf(CmsUser::class, $result[1]['user']);
 
         $this->assertEquals(2, count($result[0]['user']->groups));
         $this->assertEquals(2, count($result[0]['user']->phonenumbers));
@@ -1622,7 +1636,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMissingIdForRootEntity($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
@@ -1663,10 +1677,10 @@ class ObjectHydratorTest extends HydrationTestCase
         $this->assertEquals('JWAGE', $result[2]['nameUpper']);
         $this->assertEquals('JWAGE', $result[3]['nameUpper']);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][$userEntityKey]);
         $this->assertNull($result[1][$userEntityKey]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[2][$userEntityKey]);
+        $this->assertInstanceOf(CmsUser::class, $result[2][$userEntityKey]);
         $this->assertNull($result[3][$userEntityKey]);
     }
 
@@ -1681,9 +1695,9 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMissingIdForCollectionValuedChildEntity($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+            CmsPhonenumber::class,
             'p',
             'u',
             'phonenumbers'
@@ -1743,9 +1757,9 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testMissingIdForSingleValuedChildEntity($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addJoinedEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsAddress',
+            CmsAddress::class,
             'a',
             'u',
             'address'
@@ -1782,7 +1796,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         $this->assertEquals(2, count($result));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $result[0][$userEntityKey]->address);
+        $this->assertInstanceOf(CmsAddress::class, $result[0][$userEntityKey]->address);
         $this->assertNull($result[1][$userEntityKey]->address);
     }
 
@@ -1797,7 +1811,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testIndexByAndMixedResult($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
@@ -1841,7 +1855,7 @@ class ObjectHydratorTest extends HydrationTestCase
     public function testIndexByScalarsOnly($userEntityKey)
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addEntityResult(CmsUser::class, 'u', $userEntityKey ?: null);
         $rsm->addScalarResult('sclr0', 'nameUpper', 'string');
         $rsm->addIndexByScalar('sclr0');
 
@@ -1880,8 +1894,8 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\Company\CompanyEmployee', 'e', 'c', 'salesPerson');
+        $rsm->addEntityResult(CompanyFixContract::class, 'c');
+        $rsm->addJoinedEntityResult(CompanyEmployee::class, 'e', 'c', 'salesPerson');
         $rsm->addFieldResult('c', 'c__id', 'id');
         $rsm->setDiscriminatorColumn('c', 'c_discr');
 
@@ -1907,8 +1921,8 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyFixContract', 'c');
-        $rsm->addJoinedEntityResult('Doctrine\Tests\Models\Company\CompanyEmployee', 'e', 'c', 'salesPerson');
+        $rsm->addEntityResult(CompanyFixContract::class, 'c');
+        $rsm->addJoinedEntityResult(CompanyEmployee::class, 'e', 'c', 'salesPerson');
         $rsm->addFieldResult('c', 'c__id', 'id');
         $rsm->addMetaResult('c', 'c_discr', 'discr', false, 'string');
         $rsm->setDiscriminatorColumn('c', 'c_discr');
@@ -1941,7 +1955,7 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult('Doctrine\Tests\Models\Company\CompanyPerson', 'p');
+        $rsm->addEntityResult(CompanyPerson::class, 'p');
         $rsm->addFieldResult('p', 'p__id', 'id');
         $rsm->addFieldResult('p', 'p__name', 'name');
         $rsm->addMetaResult('p', 'discr', 'discr', false, 'string');
@@ -1964,8 +1978,8 @@ class ObjectHydratorTest extends HydrationTestCase
     {
         $rsm = new ResultSetMapping;
 
-        $rsm->addEntityResult(EntityWithArrayDefaultArrayValueM2M::CLASSNAME, 'e1', null);
-        $rsm->addJoinedEntityResult(SimpleEntity::CLASSNAME, 'e2', 'e1', 'collection');
+        $rsm->addEntityResult(EntityWithArrayDefaultArrayValueM2M::class, 'e1', null);
+        $rsm->addJoinedEntityResult(SimpleEntity::class, 'e2', 'e1', 'collection');
         $rsm->addFieldResult('e1', 'a1__id', 'id');
         $rsm->addFieldResult('e2', 'e2__id', 'id');
 
@@ -1981,9 +1995,9 @@ class ObjectHydratorTest extends HydrationTestCase
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         $this->assertCount(1, $result);
-        $this->assertInstanceOf(EntityWithArrayDefaultArrayValueM2M::CLASSNAME, $result[0]);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $result[0]->collection);
+        $this->assertInstanceOf(EntityWithArrayDefaultArrayValueM2M::class, $result[0]);
+        $this->assertInstanceOf(PersistentCollection::class, $result[0]->collection);
         $this->assertCount(1, $result[0]->collection);
-        $this->assertInstanceOf(SimpleEntity::CLASSNAME, $result[0]->collection[0]);
+        $this->assertInstanceOf(SimpleEntity::class, $result[0]->collection[0]);
     }
 }

@@ -67,12 +67,12 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             $this->tester->execute(
                 [
                 'command' => $this->command->getName(),
-                'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
+                'dql'     => 'SELECT e FROM ' . DateTimeModel::class . ' e',
                 ]
             )
         );
 
-        $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
+        $this->assertContains(DateTimeModel::class, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery()
@@ -85,7 +85,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
             $this->tester->execute(
                 [
                 'command'    => $this->command->getName(),
-                'dql'        => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
+                'dql'        => 'SELECT e FROM ' . DateTimeModel::class . ' e',
                 '--show-sql' => 'true'
                 ]
             )

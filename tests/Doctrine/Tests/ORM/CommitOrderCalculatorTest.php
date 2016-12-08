@@ -24,11 +24,11 @@ class CommitOrderCalculatorTest extends OrmTestCase
 
     public function testCommitOrdering1()
     {
-        $class1 = new ClassMetadata(__NAMESPACE__ . '\NodeClass1');
-        $class2 = new ClassMetadata(__NAMESPACE__ . '\NodeClass2');
-        $class3 = new ClassMetadata(__NAMESPACE__ . '\NodeClass3');
-        $class4 = new ClassMetadata(__NAMESPACE__ . '\NodeClass4');
-        $class5 = new ClassMetadata(__NAMESPACE__ . '\NodeClass5');
+        $class1 = new ClassMetadata(NodeClass1::class);
+        $class2 = new ClassMetadata(NodeClass2::class);
+        $class3 = new ClassMetadata(NodeClass3::class);
+        $class4 = new ClassMetadata(NodeClass4::class);
+        $class5 = new ClassMetadata(NodeClass5::class);
 
         $this->_calc->addNode($class1->name, $class1);
         $this->_calc->addNode($class2->name, $class2);
@@ -51,8 +51,8 @@ class CommitOrderCalculatorTest extends OrmTestCase
 
     public function testCommitOrdering2()
     {
-        $class1 = new ClassMetadata(__NAMESPACE__ . '\NodeClass1');
-        $class2 = new ClassMetadata(__NAMESPACE__ . '\NodeClass2');
+        $class1 = new ClassMetadata(NodeClass1::class);
+        $class2 = new ClassMetadata(NodeClass2::class);
 
         $this->_calc->addNode($class1->name, $class1);
         $this->_calc->addNode($class2->name, $class2);

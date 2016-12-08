@@ -15,13 +15,13 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType(DDC2579Type::NAME, DDC2579Type::CLASSNAME);
+        Type::addType(DDC2579Type::NAME, DDC2579Type::class);
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2579Entity::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::CLASSNAME),
+            $this->_em->getClassMetadata(DDC2579Entity::class),
+            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
+            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }
@@ -32,7 +32,7 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
-        $repository = $this->_em->getRepository(DDC2579Entity::CLASSNAME);
+        $repository = $this->_em->getRepository(DDC2579Entity::class);
 
         $this->_em->persist($assoc);
         $this->_em->persist($assocAssoc);
@@ -50,7 +50,7 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::CLASSNAME, $entity);
+        $this->assertInstanceOf(DDC2579Entity::class, $entity);
         $this->assertEquals($value, $entity->value);
 
         $this->_em->remove($entity);

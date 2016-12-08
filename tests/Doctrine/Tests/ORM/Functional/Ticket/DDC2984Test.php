@@ -19,14 +19,14 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         if ( ! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
                 'ddc2984_domain_user_id',
-                __NAMESPACE__ . '\DDC2984UserIdCustomDbalType'
+                DDC2984UserIdCustomDbalType::class
             );
         }
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2984User'),
+                $this->_em->getClassMetadata(DDC2984User::class),
                 ]
             );
         } catch (\Exception $e) {
