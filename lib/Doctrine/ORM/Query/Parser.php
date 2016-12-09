@@ -47,6 +47,7 @@ class Parser
         'lower'     => 'Doctrine\ORM\Query\AST\Functions\LowerFunction',
         'upper'     => 'Doctrine\ORM\Query\AST\Functions\UpperFunction',
         'identity'  => 'Doctrine\ORM\Query\AST\Functions\IdentityFunction',
+	'to_char'   => 'Doctrine\ORM\Query\AST\Functions\ToCharFunction',
     );
 
     /**
