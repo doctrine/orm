@@ -192,12 +192,13 @@ interface EntityPersister
      *                              for loading the entity.
      * @param int|null    $limit    Limit number of results.
      * @param array|null  $orderBy  Criteria to order by.
+     * @param boolean     $toArray  To get Array Result
      *
-     * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
+     * @return object|array|null The loaded and managed entity instance or entity instance array result or NULL if the entity can not be found.
      *
      * @todo Check identity map? loadById method? Try to guess whether $criteria is the id?
      */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null);
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = null, $limit = null, array $orderBy = null, $toArray = false);
 
     /**
      * Loads an entity by identifier.
@@ -257,10 +258,11 @@ interface EntityPersister
      * @param array|null $orderBy
      * @param int|null   $limit
      * @param int|null   $offset
+     * @param boolean    $toArray
      *
      * @return array
      */
-    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $criteria = array(), array $orderBy = null, $limit = null, $offset = null, $toArray = false);
 
     /**
      * Gets (sliced or full) elements of the given collection.
