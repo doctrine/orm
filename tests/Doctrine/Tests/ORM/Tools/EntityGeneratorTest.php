@@ -1111,6 +1111,18 @@ class
         $this->assertEquals(1, preg_match('/@param\s+([^\s]+)/', $method->getDocComment(), $matches));
         $this->assertEquals($type, $matches[1]);
     }
+
+    public function testWriteEntityClassWithoutNamespacePrefix()
+    {
+        $metadata = $this->generateBookEntityFixture();
+        $metadata->mapField(array('fieldName' => 'test', 'type' => 'string'));
+
+        $this->_generator->setSkipStartingNamespaceInPath($this->_namespace);
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $this->assertFileExists($this->_tmpDir . "/EntityGeneratorBook.php");
+    }
+
 }
 
 class EntityGeneratorAuthor {}
