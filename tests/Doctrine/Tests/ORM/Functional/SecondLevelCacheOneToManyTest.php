@@ -14,18 +14,18 @@ use Doctrine\Tests\Models\Cache\Traveler;
  */
 class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 {
-    public function testShouldNotPutCollectionInverseSideOnPersist()
+    public function testShouldPutCollectionInverseSideOnPersist()
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
+
         $this->_em->clear();
 
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[0]->getId()));
         $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $this->states[1]->getId()));
-
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[1]->getId()));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, 'cities', $this->states[1]->getId()));
     }
 
     public function testPutAndLoadOneToManyRelation()
@@ -187,6 +187,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
+
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
@@ -247,8 +248,8 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->_em->remove($city0);
         $this->_em->persist($state);
         $this->_em->flush();
-
         $this->_em->clear();
+
         $this->secondLevelCacheLogger->clearStats();
 
         $queryCount = $this->getCurrentQueryCount();
@@ -261,19 +262,19 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertInstanceOf(City::CLASSNAME, $city1);
         $this->assertEquals($entity->getCities()->get(1)->getName(), $city1->getName());
 
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
 
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         $state->getCities()->remove(0);
 
         $this->_em->remove($city1);
         $this->_em->persist($state);
         $this->_em->flush();
-
         $this->_em->clear();
+
         $this->secondLevelCacheLogger->clearStats();
 
         $queryCount = $this->getCurrentQueryCount();
@@ -281,9 +282,9 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         $this->assertCount(0, $state->getCities());
 
-        $this->assertEquals(1, $this->secondLevelCacheLogger->getHitCount());
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(State::CLASSNAME)));
-        $this->assertEquals(0, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
+        $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getCollectionRegion(State::CLASSNAME, 'cities')));
     }
 
     public function testOneToManyWithEmptyRelation()
@@ -346,11 +347,12 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
     public function testCacheInitializeCollectionWithNewObjects()
     {
         $this->_em->clear();
+
         $this->evictRegions();
 
         $traveler = new Traveler("Doctrine Bot");
 
-        for ($i=0; $i<3; ++$i) {
+        for ($i = 0; $i < 3; ++$i) {
             $traveler->getTravels()->add(new Travel($traveler));
         }
 
@@ -373,7 +375,7 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
         $this->assertFalse($entity->getTravels()->isInitialized());
         $this->assertCount(4, $entity->getTravels());
         $this->assertTrue($entity->getTravels()->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
 
         $this->_em->flush();
         $this->_em->clear();
