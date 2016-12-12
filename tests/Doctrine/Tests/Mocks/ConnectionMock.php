@@ -15,6 +15,11 @@ class ConnectionMock extends Connection
     private $_fetchOneResult;
 
     /**
+     * @var \Exception
+     */
+    private $_fetchOneException;
+
+    /**
      * @var Statement
      */
     private $_queryResult;
@@ -92,6 +97,10 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = array(), $colnum = 0, array $types = array())
     {
+        if ($this->_fetchOneException != null) {
+            throw $this->_fetchOneException;
+        }
+
         return $this->_fetchOneResult;
     }
 
@@ -124,6 +133,16 @@ class ConnectionMock extends Connection
     public function setFetchOneResult($fetchOneResult)
     {
         $this->_fetchOneResult = $fetchOneResult;
+    }
+
+    /**
+     * @param \Exception $exception
+     *
+     * @return void
+     */
+    public function setFetchOneException(\Exception $exception = null)
+    {
+        $this->_fetchOneException = $exception;
     }
 
     /**
