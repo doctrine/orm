@@ -15,12 +15,14 @@ class DDC2775Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
-            'Doctrine\Tests\ORM\Functional\Ticket\User',
-            'Doctrine\Tests\ORM\Functional\Ticket\Role',
-            'Doctrine\Tests\ORM\Functional\Ticket\AdminRole',
-            'Doctrine\Tests\ORM\Functional\Ticket\Authorization',
-        ));
+        $this->setUpEntitySchema(
+            [
+            User::class,
+            Role::class,
+            AdminRole::class,
+            Authorization::class,
+            ]
+        );
     }
 
     /**
@@ -43,7 +45,7 @@ class DDC2775Test extends OrmFunctionalTestCase
         // Need to clear so that associations are lazy-loaded
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\User', $user->id);
+        $user = $this->_em->find(User::class, $user->id);
 
         $this->_em->remove($user);
         $this->_em->flush();

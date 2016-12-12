@@ -15,18 +15,20 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        
+
         if ( ! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
-                'ddc2984_domain_user_id', 
-                __NAMESPACE__ . '\DDC2984UserIdCustomDbalType'
+                'ddc2984_domain_user_id',
+                DDC2984UserIdCustomDbalType::class
             );
         }
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2984User'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC2984User::class),
+                ]
+            );
         } catch (\Exception $e) {
             // no action needed - schema seems to be already in place
         }
@@ -36,10 +38,10 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
-        
+
         $this->_em->persist($user);
         $this->_em->flush($user);
-        
+
         $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
@@ -154,7 +156,7 @@ class DDC2984DomainUserId
     {
         return $this->toString() === $other->toString();
     }
-} 
+}
 
 /**
  * Class DDC2984UserIdCustomDbalType
@@ -196,4 +198,4 @@ class DDC2984UserIdCustomDbalType extends StringType
 
         return $value->toString();
     }
-} 
+}

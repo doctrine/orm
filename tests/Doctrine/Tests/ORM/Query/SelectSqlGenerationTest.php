@@ -15,8 +15,10 @@ use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\OrmTestCase;
 
@@ -37,7 +39,8 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = array(), array $queryParams = array())
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = []
+    )
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
@@ -75,7 +78,8 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = array(), array $queryParams = array())
+    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = []
+    )
     {
         $this->expectException($expectedException);
 
@@ -107,7 +111,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ INNER JOIN company_persons c1_ WHERE c0_.spouse_id = c1_.id AND c1_.id = 42',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -124,7 +128,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c.id FROM Doctrine\Tests\Models\Company\CompanyPerson c JOIN Doctrine\Tests\Models\Company\CompanyPerson r WHERE c.spouse = r AND r.id = 42',
             'SELECT c0_.id AS id_0 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id WHERE c0_.spouse_id = c3_.id AND c3_.id = 42',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -529,7 +533,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertInvalidSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\CMS\CmsUser",
-            "Doctrine\\ORM\\Query\\QueryException"
+            QueryException::class
         );
     }
 
@@ -554,7 +558,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1",
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN (?)",
-            array(), array(1 => $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee'))
+            [], [1 => $this->_em->getClassMetadata(CompanyEmployee::class)]
         );
     }
 
@@ -607,7 +611,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // We do not support SingleValuedAssociationPathExpression on inverse side
         $this->assertInvalidSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.address IN (?1, ?2)",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -699,7 +703,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $group->id = 101;
         $group2 = new CmsGroup();
         $group2->id = 105;
-        $q->setParameter('param', array($group, $group2));
+        $q->setParameter('param', [$group, $group2]);
 
         $this->assertEquals(
             'SELECT c0_.id AS id_0 FROM cms_users c0_ WHERE EXISTS (SELECT 1 FROM cms_users_groups c1_ INNER JOIN cms_groups c2_ ON c1_.group_id = c2_.id WHERE c1_.user_id = c0_.id AND c2_.id IN (?))',
@@ -713,7 +717,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // Tough one: Many-many self-referencing ("friends") with class table inheritance
         $q = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p WHERE :param MEMBER OF p.friends');
         $person = new CompanyPerson();
-        $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, array('id' => 101));
+        $this->_em->getClassMetadata(get_class($person))->setIdentifierValues($person, ['id' => 101]);
         $q->setParameter('param', $person);
         $this->assertEquals(
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id WHERE EXISTS (SELECT 1 FROM company_persons_friends c3_ INNER JOIN company_persons c4_ ON c3_.friend_id = c4_.id WHERE c3_.person_id = c0_.id AND c4_.id IN (?))',
@@ -1047,7 +1051,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_WRITE)
+            [ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_WRITE]
         );
     }
 
@@ -1063,7 +1067,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR SHARE",
-            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
+            [ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ]
         );
     }
 
@@ -1077,7 +1081,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco'",
-            array(ORMQuery::HINT_LOCK_MODE => LockMode::NONE)
+            [ORMQuery::HINT_LOCK_MODE => LockMode::NONE]
         );
     }
 
@@ -1104,7 +1108,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' LOCK IN SHARE MODE",
-            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
+            [ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ]
         );
     }
 
@@ -1120,7 +1124,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'",
             "SELECT c0_.id AS ID_0, c0_.status AS STATUS_1, c0_.username AS USERNAME_2, c0_.name AS NAME_3 ".
             "FROM cms_users c0_ WHERE c0_.username = 'gblanco' FOR UPDATE",
-            array(ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ)
+            [ORMQuery::HINT_LOCK_MODE => LockMode::PESSIMISTIC_READ]
         );
     }
 
@@ -1130,14 +1134,14 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testSupportToCustomDQLFunctions()
     {
         $config = $this->_em->getConfiguration();
-        $config->addCustomNumericFunction('MYABS', 'Doctrine\Tests\ORM\Query\MyAbsFunction');
+        $config->addCustomNumericFunction('MYABS', MyAbsFunction::class);
 
         $this->assertSqlGeneration(
             'SELECT MYABS(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p',
             'SELECT ABS(c0_.phonenumber) AS sclr_0 FROM cms_phonenumbers c0_'
         );
 
-        $config->setCustomNumericFunctions(array());
+        $config->setCustomNumericFunctions([]);
     }
 
     /**
@@ -1376,7 +1380,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertInvalidSqlGeneration(
             "SELECT IDENTITY(p.poi, 'invalid') AS invalid FROM Doctrine\Tests\Models\Navigation\NavPhotos p",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -1429,7 +1433,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertInvalidSqlGeneration(
             "SELECT IDENTITY(u.name) as name FROM Doctrine\Tests\Models\CMS\CmsUser u",
-            "Doctrine\ORM\Query\QueryException"
+            QueryException::class
         );
     }
 
@@ -1441,7 +1445,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c1_.car_id AS car_id_8 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1453,7 +1457,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1465,7 +1469,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ ON c1_.id = c2_.id',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1477,7 +1481,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1489,7 +1493,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6, c0_.spouse_id AS spouse_id_7, c2_.car_id AS car_id_8 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1501,7 +1505,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m',
             'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c2_.title AS title_5, c0_.discr AS discr_6 FROM company_managers c2_ INNER JOIN company_employees c1_ ON c2_.id = c1_.id INNER JOIN company_persons c0_ ON c2_.id = c0_.id',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1513,7 +1517,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6, c0_.salesPerson_id AS salesPerson_id_7 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1525,7 +1529,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ WHERE c0_.discr IN ('fix', 'flexible', 'flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1537,7 +1541,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1549,7 +1553,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fc FROM Doctrine\Tests\Models\Company\CompanyFlexContract fc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexible', 'flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1561,7 +1565,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5, c0_.salesPerson_id AS salesPerson_id_6 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1573,7 +1577,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT fuc FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract fuc',
             "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.hoursWorked AS hoursWorked_2, c0_.pricePerHour AS pricePerHour_3, c0_.maxPrice AS maxPrice_4, c0_.discr AS discr_5 FROM company_contracts c0_ WHERE c0_.discr IN ('flexultra')",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => true)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => true]
         );
     }
 
@@ -1585,7 +1589,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT p, pp FROM Doctrine\Tests\Models\Company\CompanyPerson p JOIN p.spouse pp',
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.title AS title_2, c2_.salary AS salary_3, c2_.department AS department_4, c2_.startDate AS startDate_5, c3_.id AS id_6, c3_.name AS name_7, c4_.title AS title_8, c5_.salary AS salary_9, c5_.department AS department_10, c5_.startDate AS startDate_11, c0_.discr AS discr_12, c0_.spouse_id AS spouse_id_13, c1_.car_id AS car_id_14, c3_.discr AS discr_15, c3_.spouse_id AS spouse_id_16, c4_.car_id AS car_id_17 FROM company_persons c0_ LEFT JOIN company_managers c1_ ON c0_.id = c1_.id LEFT JOIN company_employees c2_ ON c0_.id = c2_.id INNER JOIN company_persons c3_ ON c0_.spouse_id = c3_.id LEFT JOIN company_managers c4_ ON c3_.id = c4_.id LEFT JOIN company_employees c5_ ON c3_.id = c5_.id",
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -1836,9 +1840,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSql()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1850,9 +1854,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlIgnoresIdentifierColumn()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1864,9 +1868,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlForAllFields()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -1878,9 +1882,9 @@ class SelectSqlGenerationTest extends OrmTestCase
     public function testCustomTypeValueSqlForPartialObject()
     {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->assertSqlGeneration(
@@ -2145,7 +2149,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING u.username IS NULL',
             'SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING c0_.username IS NULL'
         );
-        
+
         $this->assertSqlGeneration(
             'SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u HAVING MAX(u.name) IS NULL',
             'SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING MAX(c0_.name) IS NULL'
@@ -2160,7 +2164,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e.id FROM Doctrine\Tests\Models\Company\CompanyOrganization o JOIN o.events e WITH e.id = ?1',
             'SELECT c0_.id AS id_0 FROM company_organizations c1_ INNER JOIN (company_events c0_ LEFT JOIN company_auctions c2_ ON c0_.id = c2_.id LEFT JOIN company_raffles c3_ ON c0_.id = c3_.id) ON c1_.id = c0_.org_id AND (c0_.id = ?)',
-            array(ORMQuery::HINT_FORCE_PARTIAL_LOAD => false)
+            [ORMQuery::HINT_FORCE_PARTIAL_LOAD => false]
         );
     }
 
@@ -2238,8 +2242,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         $this->assertSqlGeneration(
             'SELECT e, COUNT(c) FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN e.contracts c WHERE e.department = :department',
             "SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, COUNT(c2_.id) AS sclr_5, c0_.discr AS discr_6 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_contract_employees c3_ ON c1_.id = c3_.employee_id INNER JOIN company_contracts c2_ ON c2_.id = c3_.contract_id AND c2_.discr IN ('fix', 'flexible', 'flexultra') WHERE c1_.department = ?",
-            array(),
-            array('department' => 'foobar')
+            [],
+            ['department' => 'foobar']
         );
     }
 
@@ -2264,7 +2268,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             "SELECT c0_.name AS name_0 FROM cms_users c0_ HAVING name_0 LIKE '3'"
         );
     }
-    
+
     /**
      * @group DDC-3085
      */

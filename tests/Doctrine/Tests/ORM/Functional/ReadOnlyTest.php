@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -15,9 +16,11 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\ReadOnlyEntity'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(ReadOnlyEntity::class),
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -34,7 +37,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dbReadOnly = $this->_em->find('Doctrine\Tests\ORM\Functional\ReadOnlyEntity', $readOnly->id);
+        $dbReadOnly = $this->_em->find(ReadOnlyEntity::class, $readOnly->id);
         $this->assertEquals("Test1", $dbReadOnly->name);
         $this->assertEquals(1234, $dbReadOnly->numericValue);
     }

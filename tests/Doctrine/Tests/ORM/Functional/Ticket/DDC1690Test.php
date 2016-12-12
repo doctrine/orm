@@ -2,18 +2,21 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\NotifyPropertyChanged,
-    Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Proxy\Proxy;
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1690Parent'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1690Child')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1690Parent::class),
+                $this->_em->getClassMetadata(DDC1690Child::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -45,28 +48,24 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $childId = $child->getId();
         unset($parent, $child);
 
-        $parent = $this->_em->find(__NAMESPACE__.'\DDC1690Parent', $parentId);
-        $child = $this->_em->find(__NAMESPACE__.'\DDC1690Child', $childId);
+        $parent = $this->_em->find(DDC1690Parent::class, $parentId);
+        $child = $this->_em->find(DDC1690Child::class, $childId);
 
         $this->assertEquals(1, count($parent->listeners));
-        $this->assertInstanceOf(
-            'Doctrine\\ORM\\Proxy\\Proxy',
-            $child,
-            'Verifying that $child is a proxy before using proxy API'
-        );
+        $this->assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
         $this->assertCount(0, $child->listeners);
         $child->__load();
         $this->assertCount(1, $child->listeners);
         unset($parent, $child);
 
-        $parent = $this->_em->find(__NAMESPACE__.'\DDC1690Parent', $parentId);
+        $parent = $this->_em->find(DDC1690Parent::class, $parentId);
         $child = $parent->getChild();
 
         $this->assertEquals(1, count($parent->listeners));
         $this->assertEquals(1, count($child->listeners));
         unset($parent, $child);
 
-        $child = $this->_em->find(__NAMESPACE__.'\DDC1690Child', $childId);
+        $child = $this->_em->find(DDC1690Child::class, $childId);
         $parent = $child->getParent();
 
         $this->assertEquals(1, count($parent->listeners));
@@ -75,7 +74,7 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged {
-    public $listeners = array();
+    public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
         if (!in_array($listener, $this->listeners)) {

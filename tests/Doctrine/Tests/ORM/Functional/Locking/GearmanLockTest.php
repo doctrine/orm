@@ -23,11 +23,11 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
         $this->useModelSet('cms');
         parent::setUp();
-        $this->tasks = array();
+        $this->tasks = [];
 
         $this->gearman = new \GearmanClient();
         $this->gearman->addServer();
-        $this->gearman->setCompleteCallback(array($this, "gearmanTaskCompleted"));
+        $this->gearman->setCompleteCallback([$this, "gearmanTaskCompleted"]);
 
         $article = new CmsArticle();
         $article->text = "my article";
@@ -46,72 +46,72 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     public function testFindWithLock()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
     }
 
     public function testFindWithWriteThenReadLock()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_READ);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
 
         $this->assertLockWorked();
     }
 
     public function testFindWithReadThenWriteLock()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_READ);
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
     }
 
     public function testFindWithOneLock()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::NONE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
 
         $this->assertLockDoesNotBlock();
     }
 
     public function testDqlWithLock()
     {
-        $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', array(), LockMode::PESSIMISTIC_WRITE);
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncDqlWithLock('SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a', [], LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
     }
 
     public function testLock()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        $this->asyncLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
     }
 
     public function testLock2()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
-        $this->asyncLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_READ);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
 
         $this->assertLockWorked();
     }
 
     public function testLock3()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_READ);
-        $this->asyncLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_READ);
+        $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockWorked();
     }
 
     public function testLock4()
     {
-        $this->asyncFindWithLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::NONE);
-        $this->asyncLock('Doctrine\Tests\Models\CMS\CmsArticle', $this->articleId, LockMode::PESSIMISTIC_WRITE);
+        $this->asyncFindWithLock(CmsArticle::class, $this->articleId, LockMode::NONE);
+        $this->asyncLock(CmsArticle::class, $this->articleId, LockMode::PESSIMISTIC_WRITE);
 
         $this->assertLockDoesNotBlock();
     }
@@ -140,37 +140,42 @@ class GearmanLockTest extends OrmFunctionalTestCase
 
     protected function asyncFindWithLock($entityName, $entityId, $lockMode)
     {
-        $this->startJob('findWithLock', array(
+        $this->startJob('findWithLock', [
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function asyncDqlWithLock($dql, $params, $lockMode)
     {
-        $this->startJob('dqlWithLock', array(
+        $this->startJob('dqlWithLock', [
             'dql' => $dql,
             'dqlParams' => $params,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function asyncLock($entityName, $entityId, $lockMode)
     {
-        $this->startJob('lock', array(
+        $this->startJob('lock', [
             'entityName' => $entityName,
             'entityId' => $entityId,
             'lockMode' => $lockMode,
-        ));
+        ]
+        );
     }
 
     protected function startJob($fn, $fixture)
     {
-        $this->gearman->addTask($fn, serialize(array(
+        $this->gearman->addTask($fn, serialize(
+            [
             'conn' => $this->_em->getConnection()->getParams(),
             'fixture' => $fixture
-        )));
+            ]
+        ));
 
         $this->assertEquals(GEARMAN_SUCCESS, $this->gearman->returnCode());
     }

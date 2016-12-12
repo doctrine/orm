@@ -15,11 +15,13 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595BaseInheritance'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity2'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1595BaseInheritance::class),
+            $this->_em->getClassMetadata(DDC1595InheritedEntity1::class),
+            $this->_em->getClassMetadata(DDC1595InheritedEntity2::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -31,7 +33,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1595InheritedEntity1');
+        $repository = $this->_em->getRepository(DDC1595InheritedEntity1::class);
 
         $entity1  = $repository->find($e1->id);
 

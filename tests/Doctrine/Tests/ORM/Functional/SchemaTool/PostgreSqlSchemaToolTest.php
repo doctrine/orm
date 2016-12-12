@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
@@ -18,18 +19,18 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testPostgresMetadataSequenceIncrementedBy10()
     {
-        $address = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $address = $this->_em->getClassMetadata(Models\CMS\CmsAddress::class);
 
         $this->assertEquals(1, $address->sequenceGeneratorDefinition['allocationSize']);
     }
 
     public function testGetCreateSchemaSql()
     {
-        $classes = array(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-        );
+        $classes = [
+            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -58,15 +59,15 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
         $this->assertEquals("ALTER TABLE cms_users_tags ADD CONSTRAINT FK_93F5A1ADBAD26311 FOREIGN KEY (tag_id) REFERENCES cms_tags (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
         $this->assertEquals("ALTER TABLE cms_phonenumbers ADD CONSTRAINT FK_F21F790FA76ED395 FOREIGN KEY (user_id) REFERENCES cms_users (id) NOT DEFERRABLE INITIALLY IMMEDIATE", array_shift($sql));
 
-        $this->assertEquals(array(), $sql, "SQL Array should be empty now.");
+        $this->assertEquals([], $sql, "SQL Array should be empty now.");
         $this->assertEquals(22, $sqlCount, "Total of 22 queries should be executed");
     }
 
     public function testGetCreateSchemaSql2()
     {
-        $classes = array(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\DecimalModel')
-        );
+        $classes = [
+            $this->_em->getClassMetadata(Models\Generic\DecimalModel::class)
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -79,9 +80,9 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testGetCreateSchemaSql3()
     {
-        $classes = array(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\Generic\BooleanModel')
-        );
+        $classes = [
+            $this->_em->getClassMetadata(Models\Generic\BooleanModel::class)
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getCreateSchemaSql($classes);
@@ -93,11 +94,11 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
     public function testGetDropSchemaSql()
     {
-        $classes = array(
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-            $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-        );
+        $classes = [
+            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+        ];
 
         $tool = new SchemaTool($this->_em);
         $sql = $tool->getDropSchemaSQL($classes);
@@ -119,10 +120,10 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
      */
     public function testUpdateSchemaWithPostgreSQLSchema()
     {
-        $classes = array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Screen'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1657Avatar'),
-        );
+        $classes = [
+            $this->_em->getClassMetadata(DDC1657Screen::class),
+            $this->_em->getClassMetadata(DDC1657Avatar::class),
+        ];
 
         $tool = new SchemaTool($this->_em);
         $tool->createSchema($classes);

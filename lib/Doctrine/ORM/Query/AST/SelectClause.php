@@ -38,7 +38,7 @@ class SelectClause extends Node
     /**
      * @var array
      */
-    public $selectExpressions = array();
+    public $selectExpressions = [];
 
     /**
      * @param array $selectExpressions

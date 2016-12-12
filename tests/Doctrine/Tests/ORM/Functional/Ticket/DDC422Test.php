@@ -2,17 +2,21 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\PersistentCollection;
+
 class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Guest'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Customer'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC422Contact')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC422Guest::class),
+            $this->_em->getClassMetadata(DDC422Customer::class),
+            $this->_em->getClassMetadata(DDC422Contact::class)
+            ]
+        );
     }
 
     /**
@@ -27,7 +31,7 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $customer = $this->_em->find(get_class($customer), $customer->id);
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $customer->contacts);
+        $this->assertInstanceOf(PersistentCollection::class, $customer->contacts);
         $this->assertFalse($customer->contacts->isInitialized());
         $contact = new DDC422Contact;
         $customer->contacts->add($contact);

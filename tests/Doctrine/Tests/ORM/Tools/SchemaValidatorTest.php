@@ -26,49 +26,61 @@ class SchemaValidatorTest extends OrmTestCase
 
     public function testCmsModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/CMS"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
     public function testCompanyModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/Company"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
     public function testECommerceModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/ECommerce"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
     public function testForumModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/Forum"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
     public function testNavigationModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/Navigation"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
     public function testRoutingModelSet()
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(array(
+        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
+            [
             __DIR__ . "/../../Models/Routing"
-        ));
+            ]
+        );
         $this->validator->validateMapping();
     }
 
@@ -77,16 +89,16 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidManyToManyJoinColumnSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity1');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity2');
+        $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
+        $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
 
         $ce = $this->validator->validateClass($class1);
 
         $this->assertEquals(
-            array(
+            [
                 "The inverse join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key4' are missing.",
                 "The join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key2' are missing."
-            ),
+            ],
             $ce
         );
     }
@@ -96,16 +108,16 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidToOneJoinColumnSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity1');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\InvalidEntity2');
+        $class1 = $this->em->getClassMetadata(InvalidEntity1::class);
+        $class2 = $this->em->getClassMetadata(InvalidEntity2::class);
 
         $ce = $this->validator->validateClass($class2);
 
         $this->assertEquals(
-            array(
+            [
                 "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
                 "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
-            ),
+            ],
             $ce
         );
     }
@@ -115,12 +127,12 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testValidOneToOneAsIdentifierSchema()
     {
-        $class1 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity2');
-        $class2 = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1587ValidEntity1');
+        $class1 = $this->em->getClassMetadata(DDC1587ValidEntity2::class);
+        $class2 = $this->em->getClassMetadata(DDC1587ValidEntity1::class);
 
         $ce = $this->validator->validateClass($class1);
 
-        $this->assertEquals(array(), $ce);
+        $this->assertEquals([], $ce);
     }
 
     /**
@@ -128,13 +140,14 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidTripleAssociationAsKeyMapping()
     {
-        $classThree = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC1649Three');
+        $classThree = $this->em->getClassMetadata(DDC1649Three::class);
         $ce = $this->validator->validateClass($classThree);
 
-        $this->assertEquals(Array(
+        $this->assertEquals(
+            [
             "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
             "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
-        ), $ce);
+            ], $ce);
     }
 
     /**
@@ -142,15 +155,15 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidBiDirectionalRelationMappingMissingInversedByAttribute()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3274One');
+        $class = $this->em->getClassMetadata(DDC3274One::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
-            array(
+            [
                 "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
                 "relationship, but the specified mappedBy association on the target-entity " .
                 "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute."
-            ),
+            ],
             $ce
         );
     }
@@ -160,14 +173,14 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByInvalidField()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322One');
+        $class = $this->em->getClassMetadata(DDC3322One::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
-            array(
+            [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field " .
                 "invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1."
-            ),
+            ],
             $ce
         );
     }
@@ -177,14 +190,14 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByCollectionValuedAssociation()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Two');
+        $class = $this->em->getClassMetadata(DDC3322Two::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
-            array(
+            [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
-            ),
+            ],
             $ce
         );
     }
@@ -194,14 +207,14 @@ class SchemaValidatorTest extends OrmTestCase
      */
     public function testInvalidOrderByAssociationInverseSide()
     {
-        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\DDC3322Three');
+        $class = $this->em->getClassMetadata(DDC3322Three::class);
         $ce = $this->validator->validateClass($class);
 
         $this->assertEquals(
-            array(
+            [
                 "The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse " .
                 "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association."
-            ),
+            ],
             $ce
         );
     }

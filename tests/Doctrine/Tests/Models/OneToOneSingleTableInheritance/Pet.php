@@ -10,8 +10,6 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
  */
 abstract class Pet
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 }

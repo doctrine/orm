@@ -81,14 +81,14 @@ EOT
     {
         $table = new Table($output);
 
-        $table->setHeaders(array('Field', 'Value'));
+        $table->setHeaders(['Field', 'Value']);
 
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
         array_map(
-            array($table, 'addRow'),
+            [$table, 'addRow'],
             array_merge(
-                array(
+                [
                     $this->formatField('Name', $metadata->name),
                     $this->formatField('Root entity name', $metadata->rootEntityName),
                     $this->formatField('Custom generator definition', $metadata->customGeneratorDefinition),
@@ -118,10 +118,10 @@ EOT
                     $this->formatField('Read only?', $metadata->isReadOnly),
 
                     $this->formatEntityListeners($metadata->entityListeners),
-                ),
-                array($this->formatField('Association mappings:', '')),
+                ],
+                [$this->formatField('Association mappings:', '')],
                 $this->formatMappings($metadata->associationMappings),
-                array($this->formatField('Field mappings:', '')),
+                [$this->formatField('Field mappings:', '')],
                 $this->formatMappings($metadata->fieldMappings)
             )
         );
@@ -251,7 +251,7 @@ EOT
             $value = '<comment>None</comment>';
         }
 
-        return array(sprintf('<info>%s</info>', $label), $this->formatValue($value));
+        return [sprintf('<info>%s</info>', $label), $this->formatValue($value)];
     }
 
     /**
@@ -263,7 +263,7 @@ EOT
      */
     private function formatMappings(array $propertyMappings)
     {
-        $output = array();
+        $output = [];
 
         foreach ($propertyMappings as $propertyName => $mapping) {
             $output[] = $this->formatField(sprintf('  %s', $propertyName), '');

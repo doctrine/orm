@@ -2,8 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Legacy\LegacyUser;
+use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 
 /**
  * Description of ResultSetMappingTest
@@ -34,7 +39,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testBasicResultSetMapping()
     {
         $this->_rsm->addEntityResult(
-            'Doctrine\Tests\Models\CMS\CmsUser',
+            CmsUser::class,
             'u'
         );
         $this->_rsm->addFieldResult('u', 'id', 'id');
@@ -47,9 +52,9 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertFalse($this->_rsm->isScalarResult('username'));
         $this->assertFalse($this->_rsm->isScalarResult('name'));
 
-        $this->assertTrue($this->_rsm->getClassName('u') == 'Doctrine\Tests\Models\CMS\CmsUser');
+        $this->assertTrue($this->_rsm->getClassName('u') == CmsUser::class);
         $class = $this->_rsm->getDeclaringClass('id');
-        $this->assertTrue($class == 'Doctrine\Tests\Models\CMS\CmsUser');
+        $this->assertTrue($class == CmsUser::class);
 
         $this->assertEquals('u', $this->_rsm->getEntityAlias('id'));
         $this->assertEquals('u', $this->_rsm->getEntityAlias('status'));
@@ -71,8 +76,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $rms = $this->_rsm;
 
-        $this->_rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser','u');
-        $this->_rsm->addJoinedEntityResult('Doctrine\Tests\Models\CMS\CmsPhonenumber','p','u','phonenumbers');
+        $this->_rsm->addEntityResult(CmsUser::class,'u');
+        $this->_rsm->addJoinedEntityResult(CmsPhonenumber::class,'p','u','phonenumbers');
         $this->_rsm->addFieldResult('u', 'id', 'id');
         $this->_rsm->addFieldResult('u', 'name', 'name');
         $this->_rsm->setDiscriminatorColumn('name', 'name');
@@ -96,64 +101,71 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultSetMapping()
     {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->mapOneToOne(array(
+        $cm->mapOneToOne(
+            [
             'fieldName'     => 'email',
-            'targetEntity'  => 'Doctrine\Tests\Models\CMS\CmsEmail',
-            'cascade'       => array('persist'),
+            'targetEntity'  => CmsEmail::class,
+            'cascade'       => ['persist'],
             'inversedBy'    => 'user',
             'orphanRemoval' => false,
-            'joinColumns'   => array(array(
+            'joinColumns'   => [
+                [
                     'nullable' => true,
                     'referencedColumnName' => 'id',
-                )
-            )
-        ));
+                ]
+            ]
+            ]
+        );
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery(
+            [
             'name'              => 'find-all',
             'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             'resultSetMapping'  => 'find-all',
-        ));
+            ]
+        );
 
-        $cm->addSqlResultSetMapping(array(
+        $cm->addSqlResultSetMapping(
+            [
             'name'      => 'find-all',
-            'entities'  => array(
-                array(
+            'entities'  => [
+                [
                     'entityClass'   => '__CLASS__',
-                    'fields'        => array(
-                        array(
+                    'fields'        => [
+                        [
                             'name'  => 'id',
                             'column'=> 'user_id'
-                        ),
-                        array(
+                        ],
+                        [
                             'name'  => 'name',
                             'column'=> 'name'
-                        )
-                    )
-                ),
-                array(
+                        ]
+                    ]
+                ],
+                [
                     'entityClass'   => 'CmsEmail',
-                    'fields'        => array(
-                        array(
+                    'fields'        => [
+                        [
                             'name'  => 'id',
                             'column'=> 'email_id'
-                        ),
-                        array(
+                        ],
+                        [
                             'name'  => 'email',
                             'column'=> 'email'
-                        )
-                    )
-                )
-            ),
-            'columns'   => array(
-                array(
+                        ]
+                    ]
+                ]
+            ],
+            'columns'   => [
+                [
                     'name' => 'scalarColumn'
-                )
-            )
-        ));
+                ]
+            ]
+            ]
+        );
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
 
@@ -164,16 +176,16 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('c0', $rsm->getEntityAlias('user_id'));
         $this->assertEquals('c0', $rsm->getEntityAlias('name'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getClassName('c0'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('name'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('user_id'));
+        $this->assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('user_id'));
 
 
         $this->assertEquals('c1', $rsm->getEntityAlias('email_id'));
         $this->assertEquals('c1', $rsm->getEntityAlias('email'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getClassName('c1'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getDeclaringClass('email'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsEmail', $rsm->getDeclaringClass('email_id'));
+        $this->assertEquals(CmsEmail::class, $rsm->getClassName('c1'));
+        $this->assertEquals(CmsEmail::class, $rsm->getDeclaringClass('email'));
+        $this->assertEquals(CmsEmail::class, $rsm->getDeclaringClass('email_id'));
     }
 
         /**
@@ -181,28 +193,32 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery(
+            [
             'name'              => 'find-all',
             'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             'resultSetMapping'  => 'find-all',
-        ));
+            ]
+        );
 
-        $cm->addSqlResultSetMapping(array(
+        $cm->addSqlResultSetMapping(
+            [
             'name'      => 'find-all',
-            'entities'  => array(
-                array(
+            'entities'  => [
+                [
                     'entityClass'   => '__CLASS__',
-                )
-            ),
-            'columns'   => array(
-                array(
+                ]
+            ],
+            'columns'   => [
+                [
                     'name' => 'scalarColumn'
-                )
-            )
-        ));
+                ]
+            ]
+            ]
+        );
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
         $rsm          = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
@@ -214,11 +230,11 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('c0', $rsm->getEntityAlias('name'));
         $this->assertEquals('c0', $rsm->getEntityAlias('status'));
         $this->assertEquals('c0', $rsm->getEntityAlias('username'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getClassName('c0'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('id'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('name'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('status'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('username'));
+        $this->assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('id'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
 
     /**
@@ -226,15 +242,17 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultClass()
     {
-        $cm = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
+        $cm = new ClassMetadata(CmsUser::class);
 
         $cm->initializeReflection(new \Doctrine\Common\Persistence\Mapping\RuntimeReflectionService);
 
-        $cm->addNamedNativeQuery(array(
+        $cm->addNamedNativeQuery(
+            [
             'name'              => 'find-all',
             'resultClass'       => '__CLASS__',
             'query'             => 'SELECT * FROM cms_users',
-        ));
+            ]
+        );
 
         $queryMapping = $cm->getNamedNativeQuery('find-all');
         $rsm          = new \Doctrine\ORM\Query\ResultSetMappingBuilder($this->_em);
@@ -245,19 +263,19 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals('c0', $rsm->getEntityAlias('name'));
         $this->assertEquals('c0', $rsm->getEntityAlias('status'));
         $this->assertEquals('c0', $rsm->getEntityAlias('username'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getClassName('c0'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('id'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('name'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('status'));
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $rsm->getDeclaringClass('username'));
+        $this->assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('id'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
+        $this->assertEquals(CmsUser::class, $rsm->getDeclaringClass('username'));
     }
     /**
      * @group DDC-117
      */
     public function testIndexByMetadataColumn()
     {
-        $this->_rsm->addEntityResult('Doctrine\Tests\Models\Legacy\LegacyUser', 'u');
-        $this->_rsm->addJoinedEntityResult('Doctrine\Tests\Models\LegacyUserReference', 'lu', 'u', '_references');
+        $this->_rsm->addEntityResult(LegacyUser::class, 'u');
+        $this->_rsm->addJoinedEntityResult(LegacyUserReference::class, 'lu', 'u', '_references');
         $this->_rsm->addMetaResult('lu', '_source',  '_source', true, 'integer');
         $this->_rsm->addMetaResult('lu', '_target',  '_target', true, 'integer');
         $this->_rsm->addIndexBy('lu', '_source');

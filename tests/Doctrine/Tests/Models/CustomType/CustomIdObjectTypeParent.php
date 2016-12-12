@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class CustomIdObjectTypeParent
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @Column(type="CustomIdObject")
      *

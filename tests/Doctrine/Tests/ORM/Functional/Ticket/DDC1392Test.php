@@ -14,10 +14,12 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1392File'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1392Picture'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1392File::class),
+                $this->_em->getClassMetadata(DDC1392Picture::class),
+                ]
+            );
         } catch (\Exception $ignored) {
         }
     }
@@ -39,7 +41,7 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertTrue($fileId > 0);
 
-        $picture = $em->find(__NAMESPACE__ . '\DDC1392Picture', $pictureId);
+        $picture = $em->find(DDC1392Picture::class, $pictureId);
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), "Lazy Proxy should be marked MANAGED.");
 
         $file = $picture->getFile();

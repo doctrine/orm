@@ -8,10 +8,11 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC425Entity'),
-            //$this->_em->getClassMetadata(__NAMESPACE__ . '\DDC425Other')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC425Entity::class),
+            ]
+        );
     }
 
     /**

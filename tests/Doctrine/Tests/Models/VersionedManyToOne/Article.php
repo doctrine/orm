@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\VersionedManyToOne;
  */
 class Article
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(name="id", type="integer")

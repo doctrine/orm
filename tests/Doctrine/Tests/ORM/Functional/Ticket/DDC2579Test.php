@@ -15,13 +15,15 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType(DDC2579Type::NAME, DDC2579Type::CLASSNAME);
+        Type::addType(DDC2579Type::NAME, DDC2579Type::class);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(DDC2579Entity::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::CLASSNAME),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::CLASSNAME),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2579Entity::class),
+            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
+            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -30,13 +32,13 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
-        $repository = $this->_em->getRepository(DDC2579Entity::CLASSNAME);
+        $repository = $this->_em->getRepository(DDC2579Entity::class);
 
         $this->_em->persist($assoc);
         $this->_em->persist($assocAssoc);
         $this->_em->persist($entity);
         $this->_em->flush();
-        
+
         $entity->value++;
 
         $this->_em->persist($entity);
@@ -45,10 +47,10 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $id       = $entity->id;
         $value    = $entity->value;
-        $criteria = array('assoc' => $assoc, 'id' => $id);
+        $criteria = ['assoc' => $assoc, 'id' => $id];
         $entity   = $repository->findOneBy($criteria);
 
-        $this->assertInstanceOf(DDC2579Entity::CLASSNAME, $entity);
+        $this->assertInstanceOf(DDC2579Entity::class, $entity);
         $this->assertEquals($value, $entity->value);
 
         $this->_em->remove($entity);
@@ -65,9 +67,6 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC2579Entity
 {
-
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="ddc2579")
@@ -100,8 +99,6 @@ class DDC2579Entity
  */
 class DDC2579EntityAssoc
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @ManyToOne(targetEntity="DDC2579AssocAssoc")
@@ -120,8 +117,6 @@ class DDC2579EntityAssoc
  */
 class DDC2579AssocAssoc
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="ddc2579")
@@ -138,7 +133,6 @@ class DDC2579AssocAssoc
 class DDC2579Type extends StringType
 {
     const NAME = 'ddc2579';
-    const CLASSNAME = __CLASS__;
 
     /**
      * {@inheritdoc}
@@ -164,8 +158,6 @@ class DDC2579Type extends StringType
 
 class DDC2579Id
 {
-    const CLASSNAME = __CLASS__;
-
     private $val;
 
     public function __construct($val)
