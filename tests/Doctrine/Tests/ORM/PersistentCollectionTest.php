@@ -40,7 +40,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function setUpPersistentCollection()
     {
-        $classMetaData = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $classMetaData = $this->_emMock->getClassMetadata(ECommerceCart::class);
         $this->collection = new PersistentCollection($this->_emMock, $classMetaData, new ArrayCollection);
         $this->collection->setInitialized(false);
         $this->collection->setOwner(new ECommerceCart(), $classMetaData->getAssociationMapping('products'));
@@ -48,7 +48,7 @@ class PersistentCollectionTest extends OrmTestCase
 
     public function testCanBePutInLazyLoadingMode()
     {
-        $class = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $class = $this->_emMock->getClassMetadata(ECommerceProduct::class);
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
         $collection->setInitialized(false);
         $this->assertFalse($collection->isInitialized());

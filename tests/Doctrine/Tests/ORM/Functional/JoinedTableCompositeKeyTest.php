@@ -1,6 +1,7 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 
@@ -57,8 +58,8 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     private function findEntity()
     {
         return $this->_em->find(
-            'Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass',
-            array('keyPart1' => 'part-1', 'keyPart2' => 'part-2')
+            JoinedRootClass::class,
+            ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
         );
     }
 }

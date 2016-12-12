@@ -15,8 +15,6 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
  */
 abstract class DDC3597Root {
 
-    const CLASSNAME = __CLASS__;
-
     /**
      * @var int
      *

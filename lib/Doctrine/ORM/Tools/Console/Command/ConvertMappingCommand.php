@@ -49,40 +49,42 @@ class ConvertMappingCommand extends Command
     {
         $this
         ->setName('orm:convert-mapping')
-        ->setAliases(array('orm:convert:mapping'))
+        ->setAliases(['orm:convert:mapping'])
         ->setDescription('Convert mapping information between supported formats.')
-        ->setDefinition(array(
-            new InputOption(
-                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'A string pattern used to match entities that should be processed.'
-            ),
-            new InputArgument(
-                'to-type', InputArgument::REQUIRED, 'The mapping type to be converted.'
-            ),
-            new InputArgument(
-                'dest-path', InputArgument::REQUIRED,
-                'The path to generate your entities classes.'
-            ),
-            new InputOption(
-                'force', 'f', InputOption::VALUE_NONE,
-                'Force to overwrite existing mapping files.'
-            ),
-            new InputOption(
-                'from-database', null, null, 'Whether or not to convert mapping information from existing database.'
-            ),
-            new InputOption(
-                'extend', null, InputOption::VALUE_OPTIONAL,
-                'Defines a base class to be extended by generated entity classes.'
-            ),
-            new InputOption(
-                'num-spaces', null, InputOption::VALUE_OPTIONAL,
-                'Defines the number of indentation spaces', 4
-            ),
-            new InputOption(
-                'namespace', null, InputOption::VALUE_OPTIONAL,
-                'Defines a namespace for the generated entity classes, if converted from database.'
-            ),
-        ))
+        ->setDefinition(
+            [
+                new InputOption(
+                    'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                    'A string pattern used to match entities that should be processed.'
+                ),
+                new InputArgument(
+                    'to-type', InputArgument::REQUIRED, 'The mapping type to be converted.'
+                ),
+                new InputArgument(
+                    'dest-path', InputArgument::REQUIRED,
+                    'The path to generate your entities classes.'
+                ),
+                new InputOption(
+                    'force', 'f', InputOption::VALUE_NONE,
+                    'Force to overwrite existing mapping files.'
+                ),
+                new InputOption(
+                    'from-database', null, null, 'Whether or not to convert mapping information from existing database.'
+                ),
+                new InputOption(
+                    'extend', null, InputOption::VALUE_OPTIONAL,
+                    'Defines a base class to be extended by generated entity classes.'
+                ),
+                new InputOption(
+                    'num-spaces', null, InputOption::VALUE_OPTIONAL,
+                    'Defines the number of indentation spaces', 4
+                ),
+                new InputOption(
+                    'namespace', null, InputOption::VALUE_OPTIONAL,
+                    'Defines a namespace for the generated entity classes, if converted from database.'
+                ),
+            ]
+        )
         ->setHelp(<<<EOT
 Convert mapping information between supported formats.
 

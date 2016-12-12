@@ -37,12 +37,12 @@ class ConnectionMock extends Connection
     /**
      * @var array
      */
-    private $_inserts = array();
+    private $_inserts = [];
 
     /**
      * @var array
      */
-    private $_executeUpdates = array();
+    private $_executeUpdates = [];
 
     /**
      * @param array                              $params
@@ -71,7 +71,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function insert($tableName, array $data, array $types = array())
+    public function insert($tableName, array $data, array $types = [])
     {
         $this->_inserts[$tableName][] = $data;
     }
@@ -79,9 +79,9 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = array(), array $types = array())
+    public function executeUpdate($query, array $params = [], array $types = [])
     {
-        $this->_executeUpdates[] = array('query' => $query, 'params' => $params, 'types' => $types);
+        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
     }
 
     /**
@@ -95,7 +95,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = array(), $colnum = 0, array $types = array())
+    public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
         if ($this->_fetchOneException != null) {
             throw $this->_fetchOneException;
@@ -194,7 +194,7 @@ class ConnectionMock extends Connection
      */
     public function reset()
     {
-        $this->_inserts = array();
+        $this->_inserts = [];
         $this->_lastInsertId = 0;
     }
 }

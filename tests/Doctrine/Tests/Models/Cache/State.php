@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class State
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

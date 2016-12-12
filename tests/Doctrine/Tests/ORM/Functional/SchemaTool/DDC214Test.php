@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,7 +12,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC214Test extends OrmFunctionalTestCase
 {
-    private $classes = array();
+    private $classes = [];
     private $schemaTool = null;
 
     public function setUp()
@@ -31,14 +32,14 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCmsAddressModel()
     {
-        $this->classes = array(
-            'Doctrine\Tests\Models\CMS\CmsUser',
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            'Doctrine\Tests\Models\CMS\CmsGroup',
-            'Doctrine\Tests\Models\CMS\CmsArticle',
-            'Doctrine\Tests\Models\CMS\CmsEmail',
-        );
+        $this->classes = [
+            Models\CMS\CmsUser::class,
+            Models\CMS\CmsPhonenumber::class,
+            Models\CMS\CmsAddress::class,
+            Models\CMS\CmsGroup::class,
+            Models\CMS\CmsArticle::class,
+            Models\CMS\CmsEmail::class,
+        ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
@@ -48,23 +49,23 @@ class DDC214Test extends OrmFunctionalTestCase
      */
     public function testCompanyModel()
     {
-        $this->classes = array(
-            'Doctrine\Tests\Models\Company\CompanyPerson',
-            'Doctrine\Tests\Models\Company\CompanyEmployee',
-            'Doctrine\Tests\Models\Company\CompanyManager',
-            'Doctrine\Tests\Models\Company\CompanyOrganization',
-            'Doctrine\Tests\Models\Company\CompanyEvent',
-            'Doctrine\Tests\Models\Company\CompanyAuction',
-            'Doctrine\Tests\Models\Company\CompanyRaffle',
-            'Doctrine\Tests\Models\Company\CompanyCar'
-        );
+        $this->classes = [
+            Models\Company\CompanyPerson::class,
+            Models\Company\CompanyEmployee::class,
+            Models\Company\CompanyManager::class,
+            Models\Company\CompanyOrganization::class,
+            Models\Company\CompanyEvent::class,
+            Models\Company\CompanyAuction::class,
+            Models\Company\CompanyRaffle::class,
+            Models\Company\CompanyCar::class
+        ];
 
         $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     public function assertCreatedSchemaNeedsNoUpdates($classes)
     {
-        $classMetadata = array();
+        $classMetadata = [];
         foreach ($classes AS $class) {
             $classMetadata[] = $this->_em->getClassMetadata($class);
         }

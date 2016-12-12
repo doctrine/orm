@@ -66,7 +66,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * @var array
      */
-    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+    private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em     The entity manager.
@@ -86,7 +86,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = array())
+    public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = [])
     {
         if ( ! ($key->cacheMode & Cache::MODE_GET)) {
             return null;
@@ -104,7 +104,7 @@ class DefaultQueryCache implements QueryCache
             return null;
         }
 
-        $result      = array();
+        $result      = [];
         $entityName  = reset($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
         $persister   = $this->uow->getEntityPersister($entityName);
@@ -209,7 +209,7 @@ class DefaultQueryCache implements QueryCache
     /**
      * {@inheritdoc}
      */
-    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = array())
+    public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = [])
     {
         if ($rsm->scalarMappings) {
             throw new CacheException("Second level cache does not support scalar results.");
@@ -231,7 +231,7 @@ class DefaultQueryCache implements QueryCache
             return false;
         }
 
-        $data        = array();
+        $data        = [];
         $entityName  = reset($rsm->aliasMap);
         $rootAlias   = key($rsm->aliasMap);
         $hasRelation = ( ! empty($rsm->relationMap));
@@ -247,7 +247,7 @@ class DefaultQueryCache implements QueryCache
             $identifier                     = $this->uow->getEntityIdentifier($entity);
             $entityKey                      = new EntityCacheKey($entityName, $identifier);
             $data[$index]['identifier']     = $identifier;
-            $data[$index]['associations']   = array();
+            $data[$index]['associations']   = [];
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $region->contains($entityKey)) {
                 // Cancel put result if entity put fail
@@ -332,15 +332,15 @@ class DefaultQueryCache implements QueryCache
                 }
             }
 
-            return array(
+            return [
                 'targetEntity'  => $assocMetadata->rootEntityName,
                 'identifier'    => $assocIdentifier,
                 'type'          => $assoc['type']
-            );
+            ];
         }
 
         // Handle *-to-many associations
-        $list = array();
+        $list = [];
 
         foreach ($assocValue as $assocItemIndex => $assocItem) {
             $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
@@ -356,11 +356,11 @@ class DefaultQueryCache implements QueryCache
             $list[$assocItemIndex] = $assocIdentifier;
         }
 
-        return array(
+        return [
             'targetEntity'  => $assocMetadata->rootEntityName,
             'type'          => $assoc['type'],
             'list'          => $list,
-        );
+        ];
     }
 
     /**
@@ -372,7 +372,7 @@ class DefaultQueryCache implements QueryCache
      */
     private function getAssociationValue(ResultSetMapping $rsm, $assocAlias, $entity)
     {
-        $path  = array();
+        $path  = [];
         $alias = $assocAlias;
 
         while (isset($rsm->parentAliasMap[$alias])) {
@@ -380,10 +380,11 @@ class DefaultQueryCache implements QueryCache
             $field  = $rsm->relationMap[$alias];
             $class  = $rsm->aliasMap[$parent];
 
-            array_unshift($path, array(
+            array_unshift($path, [
                 'field'  => $field,
                 'class'  => $class
-            ));
+            ]
+            );
 
             $alias = $parent;
         }
@@ -417,7 +418,7 @@ class DefaultQueryCache implements QueryCache
             return $this->getAssociationPathValue($value, $path);
         }
 
-        $values = array();
+        $values = [];
 
         foreach ($value as $item) {
             $values[] = $this->getAssociationPathValue($item, $path);

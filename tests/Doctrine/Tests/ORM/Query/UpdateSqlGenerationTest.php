@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -25,9 +26,9 @@ class UpdateSqlGenerationTest extends OrmTestCase
 
     protected function setUp() {
         if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::overrideType('negative_to_positive', NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', 'Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
         $this->_em = $this->_getTestEntityManager();

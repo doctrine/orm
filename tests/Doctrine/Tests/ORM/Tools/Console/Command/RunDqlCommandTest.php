@@ -41,9 +41,11 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->application = new Application();
         $this->command     = new RunDqlCommand();
 
-        $this->application->setHelperSet(new HelperSet(array(
+        $this->application->setHelperSet(new HelperSet(
+            [
             'em' => new EntityManagerHelper($this->_em)
-        )));
+            ]
+        ));
 
         $this->application->add($this->command);
 
@@ -62,13 +64,15 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         $this->assertSame(
             0,
-            $this->tester->execute(array(
+            $this->tester->execute(
+                [
                 'command' => $this->command->getName(),
-                'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
-            ))
+                'dql'     => 'SELECT e FROM ' . DateTimeModel::class . ' e',
+                ]
+            )
         );
 
-        $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
+        $this->assertContains(DateTimeModel::class, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery()
@@ -78,11 +82,13 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         $this->assertSame(
             0,
-            $this->tester->execute(array(
+            $this->tester->execute(
+                [
                 'command'    => $this->command->getName(),
-                'dql'        => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
+                'dql'        => 'SELECT e FROM ' . DateTimeModel::class . ' e',
                 '--show-sql' => 'true'
-            ))
+                ]
+            )
         );
 
         $this->assertStringMatchesFormat('%Astring%sSELECT %a', $this->tester->getDisplay());

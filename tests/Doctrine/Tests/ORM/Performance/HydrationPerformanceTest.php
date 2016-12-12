@@ -5,9 +5,12 @@ namespace Doctrine\Tests\ORM\Performance;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
-use Doctrine\Tests\Mocks\HydratorMockStatement,
-    Doctrine\ORM\Query\ResultSetMapping,
-    Doctrine\ORM\Query;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
@@ -31,42 +34,42 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryScalarHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            )
-        );
+            ]
+        ];
 
         for ($i = 4; $i < 10000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -89,42 +92,42 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            )
-        );
+            ]
+        ];
 
         for ($i = 4; $i < 10000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -147,9 +150,9 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinArrayHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+                CmsPhonenumber::class,
                 'p',
                 'u',
                 'phonenumbers'
@@ -162,43 +165,43 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
-            )
-        );
+            ]
+        ];
 
         for ($i = 4; $i < 10000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
                 'sclr0' => 'JWAGE' . $i,
                 'p__phonenumber' => '91'
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -219,42 +222,42 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryPartialObjectHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
-            )
-        );
+            ]
+        ];
 
         for ($i = 4; $i < 10000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -262,7 +265,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
 
         $this->setMaxRunningTime(3);
         $s = microtime(true);
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
@@ -275,13 +278,13 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testSimpleQueryFullObjectHydrationPerformance10000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsAddress',
+                CmsAddress::class,
                 'a',
                 'u',
                 'address'
@@ -292,25 +295,25 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
         //$rsm->addFieldResult('a', 'a__city', 'city');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'a__id' => '1'
-            )
-        );
+            ]
+        ];
 
         for ($i = 2; $i < 10000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
                 'a__id' => $i
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -331,9 +334,9 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinPartialObjectHydrationPerformance2000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
+        $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
+                CmsPhonenumber::class,
                 'p',
                 'u',
                 'phonenumbers'
@@ -346,43 +349,43 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '43',
-            ),
-            array(
+            ],
+            [
                 'u__id' => '2',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
                 'u__name' => 'Roman',
                 'sclr0' => 'JWAGE',
                 'p__phonenumber' => '91'
-            )
-        );
+            ]
+        ];
 
         for ($i = 4; $i < 2000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
                 'u__name' => 'Jonathan',
                 'sclr0' => 'JWAGE' . $i,
                 'p__phonenumber' => '91'
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);
@@ -390,7 +393,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
 
         $this->setMaxRunningTime(1);
         $s = microtime(true);
-        $result = $hydrator->hydrateAll($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+        $result = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }
@@ -403,31 +406,21 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
     public function testMixedQueryFetchJoinFullObjectHydrationPerformance2000Rows()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u');
-        $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-                'p',
-                'u',
-                'phonenumbers'
-        );
+        $rsm->addEntityResult(CmsUser::class, 'u');
+        $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__status', 'status');
         $rsm->addFieldResult('u', 'u__username', 'username');
         $rsm->addFieldResult('u', 'u__name', 'name');
         $rsm->addScalarResult('sclr0', 'nameUpper');
         $rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
-        $rsm->addJoinedEntityResult(
-                'Doctrine\Tests\Models\CMS\CmsAddress',
-                'a',
-                'u',
-                'address'
-        );
+        $rsm->addJoinedEntityResult(CmsAddress::class, 'a', 'u', 'address');
         $rsm->addFieldResult('a', 'a__id', 'id');
 
         // Faked result set
-        $resultSet = array(
+        $resultSet = [
             //row1
-            array(
+            [
                 'u__id' => '1',
                 'u__status' => 'developer',
                 'u__username' => 'romanb',
@@ -435,11 +428,11 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
                 'sclr0' => 'ROMANB',
                 'p__phonenumber' => '42',
                 'a__id' => '1'
-            )
-        );
+            ]
+        ];
 
         for ($i = 2; $i < 2000; ++$i) {
-            $resultSet[] = array(
+            $resultSet[] = [
                 'u__id' => $i,
                 'u__status' => 'developer',
                 'u__username' => 'jwage',
@@ -447,7 +440,7 @@ class HydrationPerformanceTest extends OrmPerformanceTestCase
                 'sclr0' => 'JWAGE' . $i,
                 'p__phonenumber' => '91',
                 'a__id' => $i
-            );
+            ];
         }
 
         $stmt = new HydratorMockStatement($resultSet);

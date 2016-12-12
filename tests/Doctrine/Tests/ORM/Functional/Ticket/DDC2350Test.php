@@ -14,10 +14,12 @@ class DDC2350Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350Bug'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2350User::class),
+            $this->_em->getClassMetadata(DDC2350Bug::class),
+            ]
+        );
     }
 
     public function testEagerCollectionsAreOnlyRetrievedOnce()
@@ -36,7 +38,7 @@ class DDC2350Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $cnt = $this->getCurrentQueryCount();
-        $user = $this->_em->find(__NAMESPACE__ . '\DDC2350User', $user->id);
+        $user = $this->_em->find(DDC2350User::class, $user->id);
 
         $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
 

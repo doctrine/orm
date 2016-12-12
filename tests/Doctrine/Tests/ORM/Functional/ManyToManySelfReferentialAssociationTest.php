@@ -72,7 +72,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->_createLoadingFixture();
 
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['related']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
@@ -93,10 +93,10 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->assertEquals(2, count($firstRelatedBy));
         $this->assertEquals(2, count($secondRelatedBy));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstRelatedBy[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstRelatedBy[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondRelatedBy[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondRelatedBy[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $secondRelatedBy[1]);
 
         $this->assertCollectionEquals($firstRelatedBy, $secondRelatedBy);
     }

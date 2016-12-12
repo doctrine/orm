@@ -15,12 +15,14 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759Qualification'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759Category'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759QualificationMetadata'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2759MetadataCategory'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC2759Qualification::class),
+                $this->_em->getClassMetadata(DDC2759Category::class),
+                $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
+                $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
+                ]
+            );
         } catch(\Exception $e) {
             return;
         }
@@ -49,7 +51,7 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCorrectNumberOfAssociationsIsReturned()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC2759Qualification');
+        $repository = $this->_em->getRepository(DDC2759Qualification::class);
 
         $builder = $repository->createQueryBuilder('q')
             ->select('q, qm, qmc')

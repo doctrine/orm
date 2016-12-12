@@ -6,25 +6,23 @@ class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     function testNestedEmbeddablesAreHydratedWithProperClass()
     {
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3582Entity::CLASSNAME)]);
+        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3582Entity::class)]);
         $this->_em->persist(new DDC3582Entity('foo'));
         $this->_em->flush();
         $this->_em->clear();
 
         /** @var DDC3582Entity $entity */
-        $entity = $this->_em->find(DDC3582Entity::CLASSNAME, 'foo');
+        $entity = $this->_em->find(DDC3582Entity::class, 'foo');
 
-        $this->assertInstanceOf(DDC3582Embeddable1::CLASSNAME, $entity->embeddable1);
-        $this->assertInstanceOf(DDC3582Embeddable2::CLASSNAME, $entity->embeddable1->embeddable2);
-        $this->assertInstanceOf(DDC3582Embeddable3::CLASSNAME, $entity->embeddable1->embeddable2->embeddable3);
+        $this->assertInstanceOf(DDC3582Embeddable1::class, $entity->embeddable1);
+        $this->assertInstanceOf(DDC3582Embeddable2::class, $entity->embeddable1->embeddable2);
+        $this->assertInstanceOf(DDC3582Embeddable3::class, $entity->embeddable1->embeddable2->embeddable3);
     }
 }
 
 /** @Entity */
 class DDC3582Entity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Column @Id */
     private $id;
 
@@ -41,8 +39,6 @@ class DDC3582Entity
 /** @Embeddable */
 class DDC3582Embeddable1
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
     public $embeddable2;
 
@@ -52,8 +48,6 @@ class DDC3582Embeddable1
 /** @Embeddable */
 class DDC3582Embeddable2
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
     public $embeddable3;
 
@@ -63,8 +57,6 @@ class DDC3582Embeddable2
 /** @Embeddable */
 class DDC3582Embeddable3
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Column */
     public $embeddedValue = 'foo';
 }

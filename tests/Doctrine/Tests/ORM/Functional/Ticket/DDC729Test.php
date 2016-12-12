@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
+
 class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
@@ -10,10 +13,12 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
-            $schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC729A'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC729B'),
-            ));
+            $schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC729A::class),
+                $this->_em->getClassMetadata(DDC729B::class),
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -34,11 +39,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $a = new DDC729A();
         $a->id = $aId;
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\ArrayCollection', $a->related);
+        $this->assertInstanceOf(ArrayCollection::class, $a->related);
 
         $a = $this->_em->merge($a);
 
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $a->related);
+        $this->assertInstanceOf(PersistentCollection::class, $a->related);
 
         $this->assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
         $this->assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");
@@ -46,7 +51,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
+        $a = $this->_em->find(DDC729A::class, $aId);
         $this->assertEquals(1, count($a->related));
     }
 
@@ -76,7 +81,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
+        $a = $this->_em->find(DDC729A::class, $aId);
         $this->assertEquals(2, count($a->related));
     }
 
@@ -108,7 +113,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
+        $a = $this->_em->find(DDC729A::class, $aId);
         $this->assertEquals(2, count($a->related));
     }
 
@@ -140,7 +145,7 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $a = $this->_em->find(__NAMESPACE__ . '\DDC729A', $aId);
+        $a = $this->_em->find(DDC729A::class, $aId);
         $this->assertEquals(2, count($a->related));
     }
 }

@@ -32,7 +32,7 @@ class DDC1050Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $s = microtime(true);
-        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $users = $this->_em->getRepository(CmsUser::class)->findAll();
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }

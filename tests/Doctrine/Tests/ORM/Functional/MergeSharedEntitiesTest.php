@@ -15,10 +15,12 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEFile'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\MSEPicture'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(MSEFile::class),
+                $this->_em->getClassMetadata(MSEPicture::class),
+                ]
+            );
         } catch (ToolsException $ignored) {
         }
     }

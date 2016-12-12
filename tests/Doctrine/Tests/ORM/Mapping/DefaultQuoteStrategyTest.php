@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\Tests\Models\NonPublicSchemaJoins\User as NonPublicSchemaUser;
 use Doctrine\Tests\OrmTestCase;
@@ -20,10 +21,10 @@ class DefaultQuoteStrategyTest extends OrmTestCase
     public function testGetJoinTableName()
     {
         $em       = $this->_getTestEntityManager();
-        $metadata = $em->getClassMetadata(NonPublicSchemaUser::CLASSNAME);
-        /* @var $platform \Doctrine\DBAL\Platforms\AbstractPlatform */
+        $metadata = $em->getClassMetadata(NonPublicSchemaUser::class);
         $strategy = new DefaultQuoteStrategy();
-        $platform = $this->getMockForAbstractClass('Doctrine\DBAL\Platforms\AbstractPlatform');
+        /* @var $platform AbstractPlatform */
+        $platform = $this->getMockForAbstractClass(AbstractPlatform::class);
 
         $this->assertSame(
             'readers.author_reader',

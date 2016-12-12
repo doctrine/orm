@@ -22,7 +22,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     private $cacheDataReflection;
 
     protected function setUp() {
-        $this->cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);
         $this->useModelSet('cms');
         parent::setUp();

@@ -5,16 +5,36 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\Models\Cache\City;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsAddressListener;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
+use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models\Company\CompanyFlexContract;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\Tests\Models\DDC3579\DDC3579Admin;
+use Doctrine\Tests\Models\DDC869\DDC869ChequePayment;
+use Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment;
+use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
+use Doctrine\Tests\Models\DDC889\DDC889Class;
+use Doctrine\Tests\Models\DDC889\DDC889Entity;
+use Doctrine\Tests\Models\DDC964\DDC964Admin;
+use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\OrmTestCase;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
@@ -49,8 +69,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testLoadMapping()
     {
-        $entityClassName = 'Doctrine\Tests\ORM\Mapping\User';
-        return $this->createClassMetadata($entityClassName);
+        return $this->createClassMetadata(User::class);
     }
 
     /**
@@ -72,25 +91,27 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testEntityIndexes($class)
     {
         $this->assertArrayHasKey('indexes', $class->table, 'ClassMetadata should have indexes key in table property.');
-        $this->assertEquals(array(
-            'name_idx' => array('columns' => array('name')),
-            0 => array('columns' => array('user_email'))
-        ), $class->table['indexes']);
+        $this->assertEquals(
+            [
+            'name_idx' => ['columns' => ['name']],
+            0 => ['columns' => ['user_email']]
+            ], $class->table['indexes']);
 
         return $class;
     }
 
     public function testEntityIndexFlagsAndPartialIndexes()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Comment');
+        $class = $this->createClassMetadata(Comment::class);
 
-        $this->assertEquals(array(
-            0 => array(
-                'columns' => array('content'),
-                'flags' => array('fulltext'),
-                'options' => array('where' => 'content IS NOT NULL'),
-            )
-        ), $class->table['indexes']);
+        $this->assertEquals(
+            [
+            0 => [
+                'columns' => ['content'],
+                'flags' => ['fulltext'],
+                'options' => ['where' => 'content IS NOT NULL'],
+            ]
+            ], $class->table['indexes']);
     }
 
     /**
@@ -102,9 +123,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertArrayHasKey('uniqueConstraints', $class->table,
             'ClassMetadata should have uniqueConstraints key in table property when Unique Constraints are set.');
 
-        $this->assertEquals(array(
-            "search_idx" => array("columns" => array("name", "user_email"), 'options' => array('where' => 'name IS NOT NULL'))
-        ), $class->table['uniqueConstraints']);
+        $this->assertEquals(
+            [
+            "search_idx" => ["columns" => ["name", "user_email"], 'options' => ['where' => 'name IS NOT NULL']]
+            ], $class->table['uniqueConstraints']);
 
         return $class;
     }
@@ -117,9 +139,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $this->assertArrayHasKey('options', $class->table, 'ClassMetadata should have options key in table property.');
 
-        $this->assertEquals(array(
-            'foo' => 'bar', 'baz' => array('key' => 'val')
-        ), $class->table['options']);
+        $this->assertEquals(
+            [
+            'foo' => 'bar', 'baz' => ['key' => 'val']
+            ], $class->table['options']);
 
         return $class;
     }
@@ -132,23 +155,23 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $this->assertInternalType('array', $class->sequenceGeneratorDefinition, 'No Sequence Definition set on this driver.');
         $this->assertEquals(
-            array(
+            [
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
-            ),
+            ],
             $class->sequenceGeneratorDefinition
         );
     }
 
     public function testEntityCustomGenerator()
     {
-        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
+        $class = $this->createClassMetadata(Animal::class);
 
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_CUSTOM,
             $class->generatorType, "Generator Type");
         $this->assertEquals(
-            array("class" => "stdClass"),
+            ["class" => "stdClass"],
             $class->customGeneratorDefinition,
             "Custom Generator Definition");
     }
@@ -240,7 +263,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testIdentifier($class)
     {
-        $this->assertEquals(array('id'), $class->identifier);
+        $this->assertEquals(['id'], $class->identifier);
         $this->assertEquals('integer', $class->fieldMappings['id']['type']);
         $this->assertEquals(ClassMetadata::GENERATOR_TYPE_AUTO, $class->generatorType, "ID-Generator is not ClassMetadata::GENERATOR_TYPE_AUTO");
 
@@ -313,7 +336,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
 
         // Test Order By
-        $this->assertEquals(array('number' => 'ASC'), $class->associationMappings['phonenumbers']['orderBy']);
+        $this->assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
 
         return $class;
     }
@@ -408,10 +431,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
 
-        $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\Animal');
+        $class = $this->createClassMetadata(Animal::class);
 
         $this->assertEquals(
-            array('name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null),
+            ['name' => 'discr', 'type' => 'string', 'length' => '32', 'fieldName' => 'discr', 'columnDefinition' => null],
             $class->discriminatorColumn
         );
     }
@@ -425,27 +448,25 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory    = $this->createClassMetadataFactory($em);
 
 
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment');
+        $class = $factory->getMetadataFor(DDC869CreditCardPayment::class);
 
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['value']));
         $this->assertTrue(isset($class->fieldMappings['creditCardNumber']));
-        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
-             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869CreditCardPayment"));
-        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        $this->assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869CreditCardPayment::class));
+        $this->assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
 
 
 
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC869\DDC869ChequePayment');
+        $class = $factory->getMetadataFor(DDC869ChequePayment::class);
 
         $this->assertTrue(isset($class->fieldMappings['id']));
         $this->assertTrue(isset($class->fieldMappings['value']));
         $this->assertTrue(isset($class->fieldMappings['serialNumber']));
-        $this->assertEquals($class->customRepositoryClassName, "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository");
-        $this->assertInstanceOf("Doctrine\Tests\Models\DDC869\DDC869PaymentRepository",
-             $em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment"));
-        $this->assertTrue($em->getRepository("Doctrine\Tests\Models\DDC869\DDC869ChequePayment")->isTrue());
+        $this->assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        $this->assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869ChequePayment::class));
+        $this->assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
     }
 
     /**
@@ -454,7 +475,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testDefaultFieldType()
     {
         $factory    = $this->createClassMetadataFactory();
-        $class      = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
+        $class      = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
 
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
@@ -491,7 +512,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testIdentifierColumnDefinition()
     {
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC1170Entity');
+        $class = $this->createClassMetadata(DDC1170Entity::class);
 
 
         $this->assertArrayHasKey('id', $class->fieldMappings);
@@ -513,11 +534,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory    = $this->createClassMetadataFactory($em);
 
 
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\DefaultNamingStrategy', $em->getConfiguration()->getNamingStrategy());
+        $this->assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy(CASE_UPPER));
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\UnderscoreNamingStrategy', $em->getConfiguration()->getNamingStrategy());
+        $this->assertInstanceOf(UnderscoreNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
 
-        $class = $factory->getMetadataFor('Doctrine\Tests\Models\DDC1476\DDC1476EntityWithDefaultFieldType');
+        $class = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
 
         $this->assertEquals('ID', $class->getColumnName('id'));
         $this->assertEquals('NAME', $class->getColumnName('name'));
@@ -530,7 +551,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testDiscriminatorColumnDefinition()
     {
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\DDC807Entity');
+        $class = $this->createClassMetadata(DDC807Entity::class);
 
         $this->assertArrayHasKey('columnDefinition', $class->discriminatorColumn);
         $this->assertArrayHasKey('name', $class->discriminatorColumn);
@@ -547,7 +568,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Class "Doctrine\Tests\Models\DDC889\DDC889Class" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass" is not a valid entity or mapped super class.');
 
-        $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+        $this->createClassMetadata(DDC889Class::class);
     }
 
     /**
@@ -560,13 +581,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No identifier/primary key specified for Entity "Doctrine\Tests\Models\DDC889\DDC889Entity" sub class of "Doctrine\Tests\Models\DDC889\DDC889SuperClass". Every Entity must have an identifier/primary key.');
 
-        $factory->getMetadataFor('Doctrine\Tests\Models\DDC889\DDC889Entity');
+        $factory->getMetadataFor(DDC889Entity::class);
     }
 
     public function testNamedQuery()
     {
         $driver = $this->_loadDriver();
-        $class = $this->createClassMetadata(__NAMESPACE__.'\User');
+        $class = $this->createClassMetadata(User::class);
 
         $this->assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));
     }
@@ -577,7 +598,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testNamedNativeQuery()
     {
 
-        $class = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $class = $this->createClassMetadata(CmsAddress::class);
 
         //named native query
         $this->assertCount(3, $class->namedNativeQueries);
@@ -592,7 +613,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
         $this->assertEquals('find-by-id', $findByIdQuery['name']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress',$findByIdQuery['resultClass']);
+        $this->assertEquals(CmsAddress::class,$findByIdQuery['resultClass']);
         $this->assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
 
         $countQuery = $class->getNamedNativeQuery('count');
@@ -608,19 +629,19 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
         $this->assertEquals('mapping-find-all', $findAllMapping['name']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $findAllMapping['entities'][0]['entityClass']);
-        $this->assertEquals(array('name'=>'id','column'=>'id'), $findAllMapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'city','column'=>'city'), $findAllMapping['entities'][0]['fields'][1]);
-        $this->assertEquals(array('name'=>'country','column'=>'country'), $findAllMapping['entities'][0]['fields'][2]);
+        $this->assertEquals(CmsAddress::class, $findAllMapping['entities'][0]['entityClass']);
+        $this->assertEquals(['name'=>'id','column'=>'id'], $findAllMapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'city','column'=>'city'], $findAllMapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'country','column'=>'country'], $findAllMapping['entities'][0]['fields'][2]);
 
         $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
         $this->assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress', $withoutFieldsMapping['entities'][0]['entityClass']);
-        $this->assertEquals(array(), $withoutFieldsMapping['entities'][0]['fields']);
+        $this->assertEquals(CmsAddress::class, $withoutFieldsMapping['entities'][0]['entityClass']);
+        $this->assertEquals([], $withoutFieldsMapping['entities'][0]['fields']);
 
         $countMapping = $class->getSqlResultSetMapping('mapping-count');
         $this->assertEquals('mapping-count', $countMapping['name']);
-        $this->assertEquals(array('name'=>'count'), $countMapping['columns'][0]);
+        $this->assertEquals(['name'=>'count'], $countMapping['columns'][0]);
 
     }
 
@@ -630,68 +651,68 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testSqlResultSetMapping()
     {
 
-        $userMetadata   = $this->createClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $personMetadata = $this->createClassMetadata('Doctrine\Tests\Models\Company\CompanyPerson');
+        $userMetadata   = $this->createClassMetadata(CmsUser::class);
+        $personMetadata = $this->createClassMetadata(CompanyPerson::class);
 
         // user asserts
         $this->assertCount(4, $userMetadata->getSqlResultSetMappings());
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
-        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals([],$mapping['columns']);
         $this->assertEquals('mappingJoinedAddress', $mapping['name']);
         $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'id'),                     $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'name','column'=>'name'),                 $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(array('name'=>'status','column'=>'status'),             $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals(array('name'=>'address.zip','column'=>'zip'),           $mapping['entities'][0]['fields'][3]);
-        $this->assertEquals(array('name'=>'address.city','column'=>'city'),         $mapping['entities'][0]['fields'][4]);
-        $this->assertEquals(array('name'=>'address.country','column'=>'country'),   $mapping['entities'][0]['fields'][5]);
-        $this->assertEquals(array('name'=>'address.id','column'=>'a_id'),           $mapping['entities'][0]['fields'][6]);
+        $this->assertEquals(['name'=>'id','column'=>'id'],                     $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'name','column'=>'name'],                 $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'status','column'=>'status'],             $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(['name'=>'address.zip','column'=>'zip'],           $mapping['entities'][0]['fields'][3]);
+        $this->assertEquals(['name'=>'address.city','column'=>'city'],         $mapping['entities'][0]['fields'][4]);
+        $this->assertEquals(['name'=>'address.country','column'=>'country'],   $mapping['entities'][0]['fields'][5]);
+        $this->assertEquals(['name'=>'address.id','column'=>'a_id'],           $mapping['entities'][0]['fields'][6]);
         $this->assertEquals($userMetadata->name,                                    $mapping['entities'][0]['entityClass']);
 
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
-        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals([],$mapping['columns']);
         $this->assertEquals('mappingJoinedPhonenumber', $mapping['name']);
         $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'id'),                             $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'name','column'=>'name'),                         $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(array('name'=>'status','column'=>'status'),                     $mapping['entities'][0]['fields'][2]);
-        $this->assertEquals(array('name'=>'phonenumbers.phonenumber','column'=>'number'),   $mapping['entities'][0]['fields'][3]);
+        $this->assertEquals(['name'=>'id','column'=>'id'],                             $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'name','column'=>'name'],                         $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'status','column'=>'status'],                     $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(['name'=>'phonenumbers.phonenumber','column'=>'number'],   $mapping['entities'][0]['fields'][3]);
         $this->assertEquals($userMetadata->name,                                            $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
-        $this->assertEquals(array('name'=>'numphones'),$mapping['columns'][0]);
+        $this->assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
         $this->assertEquals('mappingUserPhonenumberCount', $mapping['name']);
         $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'id'),         $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'name','column'=>'name'),     $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(array('name'=>'status','column'=>'status'), $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'status','column'=>'status'], $mapping['entities'][0]['fields'][2]);
         $this->assertEquals($userMetadata->name,                        $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
-        $this->assertEquals(array('name'=>'numphones'),$mapping['columns'][0]);
+        $this->assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
         $this->assertEquals('mappingMultipleJoinsEntityResults', $mapping['name']);
         $this->assertNull($mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'u_id'),           $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'name','column'=>'u_name'),       $mapping['entities'][0]['fields'][1]);
-        $this->assertEquals(array('name'=>'status','column'=>'u_status'),   $mapping['entities'][0]['fields'][2]);
+        $this->assertEquals(['name'=>'id','column'=>'u_id'],           $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'name','column'=>'u_name'],       $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'status','column'=>'u_status'],   $mapping['entities'][0]['fields'][2]);
         $this->assertEquals($userMetadata->name,                            $mapping['entities'][0]['entityClass']);
         $this->assertNull($mapping['entities'][1]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'a_id'),           $mapping['entities'][1]['fields'][0]);
-        $this->assertEquals(array('name'=>'zip','column'=>'a_zip'),         $mapping['entities'][1]['fields'][1]);
-        $this->assertEquals(array('name'=>'country','column'=>'a_country'), $mapping['entities'][1]['fields'][2]);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddress',         $mapping['entities'][1]['entityClass']);
+        $this->assertEquals(['name'=>'id','column'=>'a_id'],           $mapping['entities'][1]['fields'][0]);
+        $this->assertEquals(['name'=>'zip','column'=>'a_zip'],         $mapping['entities'][1]['fields'][1]);
+        $this->assertEquals(['name'=>'country','column'=>'a_country'], $mapping['entities'][1]['fields'][2]);
+        $this->assertEquals(CmsAddress::class,         $mapping['entities'][1]['entityClass']);
 
         //person asserts
         $this->assertCount(1, $personMetadata->getSqlResultSetMappings());
 
         $mapping = $personMetadata->getSqlResultSetMapping('mappingFetchAll');
-        $this->assertEquals(array(),$mapping['columns']);
+        $this->assertEquals([],$mapping['columns']);
         $this->assertEquals('mappingFetchAll', $mapping['name']);
         $this->assertEquals('discriminator',                            $mapping['entities'][0]['discriminatorColumn']);
-        $this->assertEquals(array('name'=>'id','column'=>'id'),         $mapping['entities'][0]['fields'][0]);
-        $this->assertEquals(array('name'=>'name','column'=>'name'),     $mapping['entities'][0]['fields'][1]);
+        $this->assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
+        $this->assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
         $this->assertEquals($personMetadata->name,                      $mapping['entities'][0]['entityClass']);
     }
 
@@ -702,8 +723,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
 
         $factory        = $this->createClassMetadataFactory();
-        $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
-        $guestMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
+        $adminMetadata  = $factory->getMetadataFor(DDC964Admin::class);
+        $guestMetadata  = $factory->getMetadataFor(DDC964Guest::class);
 
 
         // assert groups association mappings
@@ -731,18 +752,18 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals('user_id', $guestGroups['joinTable']['joinColumns'][0]['name']);
         $this->assertEquals('group_id', $guestGroups['joinTable']['inverseJoinColumns'][0]['name']);
 
-        $this->assertEquals(array('user_id'=>'id'), $guestGroups['relationToSourceKeyColumns']);
-        $this->assertEquals(array('group_id'=>'id'), $guestGroups['relationToTargetKeyColumns']);
-        $this->assertEquals(array('user_id','group_id'), $guestGroups['joinTableColumns']);
+        $this->assertEquals(['user_id'=>'id'], $guestGroups['relationToSourceKeyColumns']);
+        $this->assertEquals(['group_id'=>'id'], $guestGroups['relationToTargetKeyColumns']);
+        $this->assertEquals(['user_id','group_id'], $guestGroups['joinTableColumns']);
 
 
         $this->assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']['name']);
         $this->assertEquals('adminuser_id', $adminGroups['joinTable']['joinColumns'][0]['name']);
         $this->assertEquals('admingroup_id', $adminGroups['joinTable']['inverseJoinColumns'][0]['name']);
 
-        $this->assertEquals(array('adminuser_id'=>'id'), $adminGroups['relationToSourceKeyColumns']);
-        $this->assertEquals(array('admingroup_id'=>'id'), $adminGroups['relationToTargetKeyColumns']);
-        $this->assertEquals(array('adminuser_id','admingroup_id'), $adminGroups['joinTableColumns']);
+        $this->assertEquals(['adminuser_id'=>'id'], $adminGroups['relationToSourceKeyColumns']);
+        $this->assertEquals(['admingroup_id'=>'id'], $adminGroups['relationToTargetKeyColumns']);
+        $this->assertEquals(['adminuser_id','admingroup_id'], $adminGroups['joinTableColumns']);
 
 
         // assert address association mappings
@@ -767,15 +788,15 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         // assert override
         $this->assertEquals('address_id', $guestAddress['joinColumns'][0]['name']);
-        $this->assertEquals(array('address_id'=>'id'), $guestAddress['sourceToTargetKeyColumns']);
-        $this->assertEquals(array('address_id'=>'address_id'), $guestAddress['joinColumnFieldNames']);
-        $this->assertEquals(array('id'=>'address_id'), $guestAddress['targetToSourceKeyColumns']);
+        $this->assertEquals(['address_id'=>'id'], $guestAddress['sourceToTargetKeyColumns']);
+        $this->assertEquals(['address_id'=>'address_id'], $guestAddress['joinColumnFieldNames']);
+        $this->assertEquals(['id'=>'address_id'], $guestAddress['targetToSourceKeyColumns']);
 
 
         $this->assertEquals('adminaddress_id', $adminAddress['joinColumns'][0]['name']);
-        $this->assertEquals(array('adminaddress_id'=>'id'), $adminAddress['sourceToTargetKeyColumns']);
-        $this->assertEquals(array('adminaddress_id'=>'adminaddress_id'), $adminAddress['joinColumnFieldNames']);
-        $this->assertEquals(array('id'=>'adminaddress_id'), $adminAddress['targetToSourceKeyColumns']);
+        $this->assertEquals(['adminaddress_id'=>'id'], $adminAddress['sourceToTargetKeyColumns']);
+        $this->assertEquals(['adminaddress_id'=>'adminaddress_id'], $adminAddress['joinColumnFieldNames']);
+        $this->assertEquals(['id'=>'adminaddress_id'], $adminAddress['targetToSourceKeyColumns']);
     }
 
     /*
@@ -785,7 +806,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
 
         $factory        = $this->createClassMetadataFactory();
-        $adminMetadata  = $factory->getMetadataFor('Doctrine\Tests\Models\DDC3579\DDC3579Admin');
+        $adminMetadata  = $factory->getMetadataFor(DDC3579Admin::class);
 
         // assert groups association mappings
         $this->assertArrayHasKey('groups', $adminMetadata->associationMappings);
@@ -802,14 +823,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
 
         $factory       = $this->createClassMetadataFactory();
-        $guestMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Guest');
-        $adminMetadata = $factory->getMetadataFor('Doctrine\Tests\Models\DDC964\DDC964Admin');
+        $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
+        $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
 
         $this->assertTrue($adminMetadata->fieldMappings['id']['id']);
         $this->assertEquals('id', $adminMetadata->fieldMappings['id']['fieldName']);
         $this->assertEquals('user_id', $adminMetadata->fieldMappings['id']['columnName']);
-        $this->assertEquals(array('user_id'=>'id','user_name'=>'name'), $adminMetadata->fieldNames);
-        $this->assertEquals(array('id'=>'user_id','name'=>'user_name'), $adminMetadata->columnNames);
+        $this->assertEquals(['user_id'=>'id','user_name'=>'name'], $adminMetadata->fieldNames);
+        $this->assertEquals(['id'=>'user_id','name'=>'user_name'], $adminMetadata->columnNames);
         $this->assertEquals(150, $adminMetadata->fieldMappings['id']['length']);
 
 
@@ -823,8 +844,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertTrue($guestMetadata->fieldMappings['id']['id']);
         $this->assertEquals('guest_id', $guestMetadata->fieldMappings['id']['columnName']);
         $this->assertEquals('id', $guestMetadata->fieldMappings['id']['fieldName']);
-        $this->assertEquals(array('guest_id'=>'id','guest_name'=>'name'), $guestMetadata->fieldNames);
-        $this->assertEquals(array('id'=>'guest_id','name'=>'guest_name'), $guestMetadata->columnNames);
+        $this->assertEquals(['guest_id'=>'id','guest_name'=>'name'], $guestMetadata->fieldNames);
+        $this->assertEquals(['id'=>'guest_id','name'=>'guest_name'], $guestMetadata->columnNames);
         $this->assertEquals(140, $guestMetadata->fieldMappings['id']['length']);
 
         $this->assertEquals('name', $guestMetadata->fieldMappings['name']['fieldName']);
@@ -841,10 +862,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
-        $superClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyContract');
-        $flexClass  = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFixContract');
-        $fixClass   = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexContract');
-        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
+        $superClass = $factory->getMetadataFor(CompanyContract::class);
+        $flexClass  = $factory->getMetadataFor(CompanyFixContract::class);
+        $fixClass   = $factory->getMetadataFor(CompanyFlexContract::class);
+        $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
         $this->assertArrayHasKey(Events::prePersist, $superClass->entityListeners);
         $this->assertArrayHasKey(Events::postPersist, $superClass->entityListeners);
@@ -855,8 +876,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $postPersist = $superClass->entityListeners[Events::postPersist][0];
         $prePersist  = $superClass->entityListeners[Events::prePersist][0];
 
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $postPersist['class']);
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $prePersist['class']);
+        $this->assertEquals(CompanyContractListener::class, $postPersist['class']);
+        $this->assertEquals(CompanyContractListener::class, $prePersist['class']);
         $this->assertEquals('postPersistHandler', $postPersist['method']);
         $this->assertEquals('prePersistHandler', $prePersist['method']);
 
@@ -872,7 +893,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
-        $ultraClass = $factory->getMetadataFor('Doctrine\Tests\Models\Company\CompanyFlexUltraContract');
+        $ultraClass = $factory->getMetadataFor(CompanyFlexUltraContract::class);
 
         //overridden listeners
         $this->assertArrayHasKey(Events::postPersist, $ultraClass->entityListeners);
@@ -884,17 +905,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $postPersist = $ultraClass->entityListeners[Events::postPersist][0];
         $prePersist  = $ultraClass->entityListeners[Events::prePersist][0];
 
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $postPersist['class']);
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyContractListener', $prePersist['class']);
+        $this->assertEquals(CompanyContractListener::class, $postPersist['class']);
+        $this->assertEquals(CompanyContractListener::class, $prePersist['class']);
         $this->assertEquals('postPersistHandler', $postPersist['method']);
         $this->assertEquals('prePersistHandler', $prePersist['method']);
 
         $prePersist = $ultraClass->entityListeners[Events::prePersist][1];
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
+        $this->assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
         $this->assertEquals('prePersistHandler1', $prePersist['method']);
 
         $prePersist = $ultraClass->entityListeners[Events::prePersist][2];
-        $this->assertEquals('Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener', $prePersist['class']);
+        $this->assertEquals(CompanyFlexUltraContractListener::class, $prePersist['class']);
         $this->assertEquals('prePersistHandler2', $prePersist['method']);
     }
 
@@ -906,7 +927,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $em         = $this->_getTestEntityManager();
         $factory    = $this->createClassMetadataFactory($em);
-        $metadata   = $factory->getMetadataFor('Doctrine\Tests\Models\CMS\CmsAddress');
+        $metadata   = $factory->getMetadataFor(CmsAddress::class);
 
         $this->assertArrayHasKey(Events::postPersist, $metadata->entityListeners);
         $this->assertArrayHasKey(Events::prePersist, $metadata->entityListeners);
@@ -936,14 +957,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $preFlush    = $metadata->entityListeners[Events::preFlush][0];
 
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postPersist['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $prePersist['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postUpdate['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preUpdate['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postRemove['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preRemove['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $postLoad['class']);
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsAddressListener', $preFlush['class']);
+        $this->assertEquals(CmsAddressListener::class, $postPersist['class']);
+        $this->assertEquals(CmsAddressListener::class, $prePersist['class']);
+        $this->assertEquals(CmsAddressListener::class, $postUpdate['class']);
+        $this->assertEquals(CmsAddressListener::class, $preUpdate['class']);
+        $this->assertEquals(CmsAddressListener::class, $postRemove['class']);
+        $this->assertEquals(CmsAddressListener::class, $preRemove['class']);
+        $this->assertEquals(CmsAddressListener::class, $postLoad['class']);
+        $this->assertEquals(CmsAddressListener::class, $preFlush['class']);
 
         $this->assertEquals(Events::postPersist, $postPersist['method']);
         $this->assertEquals(Events::prePersist, $prePersist['method']);
@@ -962,7 +983,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $em      = $this->_getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
-        $class   = $factory->getMetadataFor(City::CLASSNAME);
+        $class   = $factory->getMetadataFor(City::class);
         $this->assertArrayHasKey('usage', $class->cache);
         $this->assertArrayHasKey('region', $class->cache);
         $this->assertEquals(ClassMetadata::CACHE_USAGE_READ_ONLY, $class->cache['usage']);
@@ -990,7 +1011,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testSchemaDefinitionViaExplicitTableSchemaAnnotationProperty()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::CLASSNAME);
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(ExplicitSchemaAndTable::class);
 
         $this->assertSame('explicit_schema', $metadata->getSchemaName());
         $this->assertSame('explicit_table', $metadata->getTableName());
@@ -1003,7 +1024,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testSchemaDefinitionViaSchemaDefinedInTableNameInTableAnnotationProperty()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::CLASSNAME);
+        $metadata = $this->createClassMetadataFactory()->getMetadataFor(SchemaAndTableInTableName::class);
 
         $this->assertSame('implicit_schema', $metadata->getSchemaName());
         $this->assertSame('implicit_table', $metadata->getTableName());
@@ -1018,9 +1039,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
         $this->assertEquals(255, $class->discriminatorColumn['length']);
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals(255, $class->discriminatorColumn['length']);
     }
 
@@ -1033,9 +1054,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
         $this->assertEquals('string', $class->discriminatorColumn['type']);
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals('string', $class->discriminatorColumn['type']);
     }
 
@@ -1048,9 +1069,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         if (strpos(get_class($this), 'PHPMappingDriver') !== false) {
             $this->markTestSkipped('PHP Mapping Drivers have no defaults.');
         }
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityNoDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityNoDiscriminatorColumnMapping::class);
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
-        $class = $this->createClassMetadata(__NAMESPACE__ . '\SingleTableEntityIncompleteDiscriminatorColumnMapping');
+        $class = $this->createClassMetadata(SingleTableEntityIncompleteDiscriminatorColumnMapping::class);
         $this->assertEquals('dtype', $class->discriminatorColumn['name']);
     }
 
@@ -1139,126 +1160,144 @@ class User
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-        $metadata->setPrimaryTable(array(
+        $metadata->setPrimaryTable(
+            [
            'name' => 'cms_users',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
-          ));
+           'options' => ['foo' => 'bar', 'baz' => ['key' => 'val']],
+            ]
+        );
         $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
         $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
            'id' => true,
            'fieldName' => 'id',
            'type' => 'integer',
            'columnName' => 'id',
-           'options' => array('foo' => 'bar', 'unsigned' => false),
-          ));
-        $metadata->mapField(array(
+           'options' => ['foo' => 'bar', 'unsigned' => false],
+            ]
+        );
+        $metadata->mapField(
+            [
            'fieldName' => 'name',
            'type' => 'string',
            'length' => 50,
            'unique' => true,
            'nullable' => true,
            'columnName' => 'name',
-           'options' => array('foo' => 'bar', 'baz' => array('key' => 'val'), 'fixed' => false),
-          ));
-        $metadata->mapField(array(
+           'options' => ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false],
+            ]
+        );
+        $metadata->mapField(
+            [
            'fieldName' => 'email',
            'type' => 'string',
            'columnName' => 'user_email',
            'columnDefinition' => 'CHAR(32) NOT NULL',
-          ));
-        $mapping = array('fieldName' => 'version', 'type' => 'integer');
+            ]
+        );
+        $mapping = ['fieldName' => 'version', 'type' => 'integer'];
         $metadata->setVersionMapping($mapping);
         $metadata->mapField($mapping);
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-        $metadata->mapOneToOne(array(
+        $metadata->mapOneToOne(
+            [
            'fieldName' => 'address',
-           'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
+           'targetEntity' => Address::class,
            'cascade' =>
-           array(
+           [
            0 => 'remove',
-           ),
+           ],
            'mappedBy' => NULL,
            'inversedBy' => 'user',
            'joinColumns' =>
-           array(
+           [
            0 =>
-           array(
+           [
             'name' => 'address_id',
             'referencedColumnName' => 'id',
             'onDelete' => 'CASCADE',
-           ),
-           ),
+           ],
+           ],
            'orphanRemoval' => false,
-          ));
-        $metadata->mapOneToMany(array(
+            ]
+        );
+        $metadata->mapOneToMany(
+            [
            'fieldName' => 'phonenumbers',
-           'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Phonenumber',
+           'targetEntity' => Phonenumber::class,
            'cascade' =>
-           array(
+           [
            1 => 'persist',
-           ),
+           ],
            'mappedBy' => 'user',
            'orphanRemoval' => true,
            'orderBy' =>
-           array(
+           [
            'number' => 'ASC',
-           ),
-          ));
-        $metadata->mapManyToMany(array(
+           ],
+            ]
+        );
+        $metadata->mapManyToMany(
+            [
            'fieldName' => 'groups',
-           'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Group',
+           'targetEntity' => Group::class,
            'cascade' =>
-           array(
+           [
            0 => 'remove',
            1 => 'persist',
            2 => 'refresh',
            3 => 'merge',
            4 => 'detach',
-           ),
+           ],
            'mappedBy' => NULL,
            'joinTable' =>
-           array(
+           [
            'name' => 'cms_users_groups',
            'joinColumns' =>
-           array(
+           [
             0 =>
-            array(
+            [
             'name' => 'user_id',
             'referencedColumnName' => 'id',
             'unique' => false,
             'nullable' => false,
-            ),
-           ),
+            ],
+           ],
            'inverseJoinColumns' =>
-           array(
+           [
             0 =>
-            array(
+            [
             'name' => 'group_id',
             'referencedColumnName' => 'id',
             'columnDefinition' => 'INT NULL',
-            ),
-           ),
-           ),
+            ],
+           ],
+           ],
            'orderBy' => NULL,
-          ));
-        $metadata->table['uniqueConstraints'] = array(
-            'search_idx' => array('columns' => array('name', 'user_email'), 'options'=> array('where' => 'name IS NOT NULL')),
+            ]
         );
-        $metadata->table['indexes'] = array(
-            'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
-        );
-        $metadata->setSequenceGeneratorDefinition(array(
+        $metadata->table['uniqueConstraints'] = [
+            'search_idx' => ['columns' => ['name', 'user_email'], 'options'=> ['where' => 'name IS NOT NULL']],
+        ];
+        $metadata->table['indexes'] = [
+            'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
+        ];
+        $metadata->setSequenceGeneratorDefinition(
+            [
                 'sequenceName' => 'tablename_seq',
                 'allocationSize' => 100,
                 'initialValue' => 1,
-            ));
-        $metadata->addNamedQuery(array(
+            ]
+        );
+        $metadata->addNamedQuery(
+            [
                 'name' => 'all',
                 'query' => 'SELECT u FROM __CLASS__ u'
-            ));
+            ]
+        );
     }
 }
 
@@ -1279,7 +1318,7 @@ abstract class Animal
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(array("class" => "stdClass"));
+        $metadata->setCustomGeneratorDefinition(["class" => "stdClass"]);
     }
 }
 
@@ -1346,16 +1385,20 @@ class DDC1170Entity
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
            'id'                 => true,
            'fieldName'          => 'id',
            'columnDefinition'   => 'INT unsigned NOT NULL',
-        ));
+            ]
+        );
 
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'fieldName'         => 'value',
             'columnDefinition'  => 'VARCHAR(255) NOT NULL'
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
@@ -1379,16 +1422,20 @@ class DDC807Entity
 
    public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-         $metadata->mapField(array(
+         $metadata->mapField(
+             [
            'id'                 => true,
            'fieldName'          => 'id',
-        ));
+             ]
+         );
 
-        $metadata->setDiscriminatorColumn(array(
+        $metadata->setDiscriminatorColumn(
+            [
             'name'              => "dtype",
             'type'              => "string",
             'columnDefinition'  => "ENUM('ONE','TWO')"
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
@@ -1415,13 +1462,16 @@ class Comment
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
         $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-        $metadata->setPrimaryTable(array(
-            'indexes' => array(
-                array('columns' => array('content'), 'flags' => array('fulltext'), 'options' => array('where' => 'content IS NOT NULL'))
-            )
-        ));
+        $metadata->setPrimaryTable(
+            [
+            'indexes' => [
+                ['columns' => ['content'], 'flags' => ['fulltext'], 'options' => ['where' => 'content IS NOT NULL']]
+            ]
+            ]
+        );
 
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'fieldName' => 'content',
             'type' => 'text',
             'scale' => 0,
@@ -1430,7 +1480,8 @@ class Comment
             'nullable' => false,
             'precision' => 0,
             'columnName' => 'content',
-        ));
+            ]
+        );
     }
 }
 
@@ -1453,10 +1504,12 @@ class SingleTableEntityNoDiscriminatorColumnMapping
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'id' => true,
             'fieldName' => 'id',
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }
@@ -1485,10 +1538,12 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'id' => true,
             'fieldName' => 'id',
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }

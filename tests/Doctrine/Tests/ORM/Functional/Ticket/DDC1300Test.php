@@ -10,10 +10,12 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1300Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1300FooLocale'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1300Foo::class),
+            $this->_em->getClassMetadata(DDC1300FooLocale::class),
+            ]
+        );
     }
 
     public function testIssue()

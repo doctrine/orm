@@ -7,8 +7,6 @@ namespace Doctrine\Tests\Models\DirectoryTree;
  */
 abstract class AbstractContentItem
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @Column(type="integer") @GeneratedValue
      */

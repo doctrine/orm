@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(unique=true)
      */

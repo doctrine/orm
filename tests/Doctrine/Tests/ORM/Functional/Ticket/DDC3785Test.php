@@ -12,14 +12,16 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType('ddc3785_asset_id', __NAMESPACE__ . '\\DDC3785_AssetIdType');
+        Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Asset'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_AssetId'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Attribute')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC3785_Asset::class),
+                $this->_em->getClassMetadata(DDC3785_AssetId::class),
+                $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -30,10 +32,10 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
     {
     	$id = new DDC3785_AssetId("919609ba-57d9-4a13-be1d-d202521e858a");
-    	$attributes = array(
-    		$attribute1 = new DDC3785_Attribute("foo1", "bar1"), 
+    	$attributes = [
+    		$attribute1 = new DDC3785_Attribute("foo1", "bar1"),
     		$attribute2 = new DDC3785_Attribute("foo2", "bar2")
-    	);
+        ];
         $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
         $this->_em->flush();
 
@@ -64,7 +66,7 @@ class DDC3785_Asset
      **/
     private $attributes;
 
-    public function __construct(DDC3785_AssetId $id, $attributes = array())
+    public function __construct(DDC3785_AssetId $id, $attributes = [])
     {
     	$this->id = $id;
     	$this->attributes = new ArrayCollection();

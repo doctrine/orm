@@ -158,7 +158,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), array($entity1, $entity2), true)
+                    return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -189,13 +189,13 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
 
     public function testGetValidListenerInvocationFlags()
     {
-        return array(
-            array(ListenersInvoker::INVOKE_LISTENERS),
-            array(ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER),
-        );
+        return [
+            [ListenersInvoker::INVOKE_LISTENERS],
+            [ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER],
+        ];
     }
 }

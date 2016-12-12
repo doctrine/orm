@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\Proxy;
+
 class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
@@ -10,11 +13,13 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonenumber'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC881Phonecall'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC881User::class),
+                $this->_em->getClassMetadata(DDC881Phonenumber::class),
+                $this->_em->getClassMetadata(DDC881Phonecall::class),
+                ]
+            );
         } catch (\Exception $e) {
 
         }
@@ -75,18 +80,18 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         // fetch-join that foreign-key/primary-key entity association
-        $dql = "SELECT c, p FROM " . __NAMESPACE__ . "\DDC881PhoneCall c JOIN c.phonenumber p";
+        $dql = "SELECT c, p FROM " . DDC881PhoneCall::class . " c JOIN c.phonenumber p";
         $calls = $this->_em->createQuery($dql)->getResult();
 
         $this->assertEquals(2, count($calls));
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[0]->getPhoneNumber());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $calls[1]->getPhoneNumber());
+        $this->assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
+        $this->assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
 
-        $dql = "SELECT p, c FROM " . __NAMESPACE__ . "\DDC881PhoneNumber p JOIN p.calls c";
+        $dql = "SELECT p, c FROM " . DDC881PhoneNumber::class . " p JOIN p.calls c";
         $numbers = $this->_em->createQuery($dql)->getResult();
 
         $this->assertEquals(2, count($numbers));
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $numbers[0]->getCalls());
+        $this->assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
         $this->assertTrue($numbers[0]->getCalls()->isInitialized());
     }
 
