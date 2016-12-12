@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\Mocks;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Mock class for Connection.
@@ -12,6 +13,11 @@ class ConnectionMock extends Connection
      * @var mixed
      */
     private $_fetchOneResult;
+
+    /**
+     * @var Statement
+     */
+    private $_queryResult;
 
     /**
      * @var DatabasePlatformMock
@@ -92,6 +98,14 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
+    public function query()
+    {
+        return $this->_queryResult;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function quote($input, $type = null)
     {
         if (is_string($input)) {
@@ -130,6 +144,14 @@ class ConnectionMock extends Connection
     public function setLastInsertId($id)
     {
         $this->_lastInsertId = $id;
+    }
+
+    /**
+     * @param Statement $result
+     */
+    public function setQueryResult($result)
+    {
+        $this->_queryResult = $result;
     }
 
     /**

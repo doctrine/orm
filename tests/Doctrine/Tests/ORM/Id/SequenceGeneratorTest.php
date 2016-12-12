@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -25,15 +26,14 @@ class SequenceGeneratorTest extends OrmTestCase
     {
         for ($i=0; $i < 42; ++$i) {
             if ($i % 10 == 0) {
-                $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
+                $nextId = array(array((int)($i / 10) * 10));
+                $this->_em->getConnection()->setQueryResult(new StatementArrayMock($nextId));
             }
             $id = $this->_seqGen->generate($this->_em, null);
             $this->assertEquals($i, $id);
             $this->assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
             $this->assertEquals($i + 1, $this->_seqGen->getNextValue());
         }
-
-
     }
 }
 
