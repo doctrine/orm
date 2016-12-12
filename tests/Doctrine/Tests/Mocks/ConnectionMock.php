@@ -97,7 +97,7 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if ($this->_fetchOneException != null) {
+        if (null !== $this->_fetchOneException) {
             throw $this->_fetchOneException;
         }
 
@@ -136,7 +136,7 @@ class ConnectionMock extends Connection
     }
 
     /**
-     * @param \Exception $exception
+     * @param \Exception|null $exception
      *
      * @return void
      */
@@ -168,7 +168,7 @@ class ConnectionMock extends Connection
     /**
      * @param Statement $result
      */
-    public function setQueryResult($result)
+    public function setQueryResult(Statement $result)
     {
         $this->_queryResult = $result;
     }
