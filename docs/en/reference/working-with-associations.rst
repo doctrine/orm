@@ -453,11 +453,11 @@ following code:
     $user->addComment($myFirstComment);
     
     $em->persist($user);
-    $em->persist($myFirstComment);
+    $em->persist($myFirstComment); // mandatory if `persist` isn't set
     $em->flush();
 
 Even if you *persist* a new User that contains our new Comment this
-code would fail if you removed the call to
+code requires the explicit call to
 ``EntityManager#persist($myFirstComment)``. Doctrine 2 does not
 cascade the persist operation to all nested entities that are new
 as well.
@@ -499,6 +499,18 @@ and the "remove" operation.
         private $commentsAuthored;
         //...
     }
+
+Now you can persist the `User` entity like that:
+
+.. code-block:: php
+
+    <?php
+    $user = new User();
+    $myFirstComment = new Comment();
+    $user->addComment($myFirstComment);
+    
+    $em->persist($user);
+    $em->flush();
 
 Even though automatic cascading is convenient it should be used
 with care. Do not blindly apply cascade=all to all associations as
