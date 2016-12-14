@@ -453,7 +453,7 @@ following code:
     $user->addComment($myFirstComment);
     
     $em->persist($user);
-    $em->persist($myFirstComment); // mandatory if `persist` isn't set
+    $em->persist($myFirstComment); // mandatory if `cascade: persist` isn't set
     $em->flush();
 
 Even if you *persist* a new User that contains our new Comment this
