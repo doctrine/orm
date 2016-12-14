@@ -457,7 +457,7 @@ following code:
     $em->flush();
 
 Even if you *persist* a new User that contains our new Comment this
-code requires the explicit call to
+code requires an explicit call to
 ``EntityManager#persist($myFirstComment)``. Doctrine 2 does not
 cascade the persist operation to all nested entities that are new
 as well.
