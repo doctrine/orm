@@ -1886,7 +1886,37 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->cascadeMerge($entity, $managedCopy, $visited);
 
+        // Restore previous state (where the given entity was previously managed)
+        if ($managedCopy !== $entity) {
+            $this->forgetEntity($entity);
+        }
+
         return $managedCopy;
+    }
+
+    /**
+     * Remove UOW reference to this entity.
+     *
+     * WARNING: could cause some issue, created to fix MergeSplHashConflict
+     *
+     * @param object $entity
+     */
+    private function forgetEntity($entity)
+    {
+        $oid = spl_object_hash($entity);
+
+        if ($this->isInIdentityMap($entity)) {
+            $this->removeFromIdentityMap($entity);
+        }
+
+        unset(
+            $this->entityInsertions[$oid],
+            $this->entityUpdates[$oid],
+            $this->entityDeletions[$oid],
+            $this->entityIdentifiers[$oid],
+            $this->entityStates[$oid],
+            $this->originalEntityData[$oid]
+        );
     }
 
     /**
