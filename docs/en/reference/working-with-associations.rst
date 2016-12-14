@@ -500,7 +500,8 @@ and the "remove" operation.
         //...
     }
 
-Now you can persist the `User` entity like that:
+Since ``cascade: persist`` is configured for the ``User#commentsAuthored``
+association, you can now create a user and persist his comment as follows:
 
 .. code-block:: php
 
