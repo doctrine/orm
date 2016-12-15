@@ -4,19 +4,23 @@ namespace Doctrine\Tests\Models\Company;
 
 class CompanyContractListener
 {
+    const PRE_PERSIST = 0;
+
     public $postPersistCalls;
     public $prePersistCalls;
-    
+
     public $postUpdateCalls;
     public $preUpdateCalls;
-    
+
     public $postRemoveCalls;
     public $preRemoveCalls;
 
     public $preFlushCalls;
-    
+
     public $postLoadCalls;
-    
+
+    public $snapshots = [];
+
     /**
      * @PostPersist
      */
@@ -30,6 +34,7 @@ class CompanyContractListener
      */
     public function prePersistHandler(CompanyContract $contract)
     {
+        $this->snapshots[self::PRE_PERSIST][] = $this->takeSnapshot($contract);
         $this->prePersistCalls[] = func_get_args();
     }
 
@@ -79,6 +84,22 @@ class CompanyContractListener
     public function postLoadHandler(CompanyContract $contract)
     {
         $this->postLoadCalls[] = func_get_args();
+    }
+
+    public function takeSnapshot(CompanyContract $contract)
+    {
+        $snapshot = [];
+        $reflexion = new \ReflectionClass($contract);
+        foreach ($reflexion->getProperties() as $property) {
+            $property->setAccessible(true);
+            $value = $property->getValue($contract);
+            if (is_object($value) || is_array($value)) {
+                continue;
+            }
+            $snapshot[$property->getName()] = $property->getValue($contract);
+        }
+
+        return $snapshot;
     }
 
 }
