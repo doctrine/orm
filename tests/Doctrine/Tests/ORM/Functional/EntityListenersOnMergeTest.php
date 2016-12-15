@@ -63,7 +63,7 @@ class EntityListenersOnMergeTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotNull($imageEntity->getUpdatedAt());
     }
 
-    public function testPrePersistListeners()
+    public function testPrePersistListenersShouldBeFiredWithCorrectEntityData()
     {
         $fix = new CompanyFixContract();
         $fix->setFixPrice(2000);
