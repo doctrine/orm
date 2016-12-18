@@ -1865,7 +1865,7 @@ class UnitOfWork implements PropertyChangedListener
 
                     $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                     $this->persistNew($class, $managedCopy);
-                }else{
+                } else {
                     $this->ensureVersionMatch($class, $entity, $managedCopy);
                     $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 }
