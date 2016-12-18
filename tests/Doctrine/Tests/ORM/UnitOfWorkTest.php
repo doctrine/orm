@@ -504,7 +504,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData()
     {
-        $entity = new EntityWithListenerPopulatedField();
+        $entity = new EntityWithRandomlyGeneratedField();
 
         $generatedFieldValue = $entity->generatedField;
 
@@ -522,10 +522,10 @@ class UnitOfWorkTest extends OrmTestCase
             ->with(
                 self::anything(),
                 self::callback(function (LifecycleEventArgs $args) use ($entity, $generatedFieldValue) {
-                    /* @var $object EntityWithListenerPopulatedField */
+                    /* @var $object EntityWithRandomlyGeneratedField */
                     $object = $args->getObject();
 
-                    self::assertInstanceOf(EntityWithListenerPopulatedField::class, $object);
+                    self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
                     self::assertNotSame($entity, $object);
                     self::assertSame($generatedFieldValue, $object->generatedField);
 
@@ -533,11 +533,11 @@ class UnitOfWorkTest extends OrmTestCase
                 })
             );
 
-        /* @var $object EntityWithListenerPopulatedField */
+        /* @var $object EntityWithRandomlyGeneratedField */
         $object = $this->_unitOfWork->merge($entity);
 
         self::assertNotSame($object, $entity);
-        self::assertInstanceOf(EntityWithListenerPopulatedField::class, $object);
+        self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
         self::assertSame($object->generatedField, $entity->generatedField);
     }
 
@@ -548,8 +548,8 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners()
     {
-        $persistedEntity = new EntityWithListenerPopulatedField();
-        $mergedEntity    = new EntityWithListenerPopulatedField();
+        $persistedEntity = new EntityWithRandomlyGeneratedField();
+        $mergedEntity    = new EntityWithRandomlyGeneratedField();
 
         $mergedEntity->id = $persistedEntity->id;
         $mergedEntity->generatedField = mt_rand(
@@ -572,7 +572,7 @@ class UnitOfWorkTest extends OrmTestCase
             ['generatedField' => $persistedEntity->generatedField]
         );
 
-        /* @var $merged EntityWithListenerPopulatedField */
+        /* @var $merged EntityWithRandomlyGeneratedField */
         $merged = $this->_unitOfWork->merge($mergedEntity);
 
         self::assertSame($merged, $persistedEntity);
@@ -726,10 +726,8 @@ class EntityWithCompositeStringIdentifier
 }
 
 /** @Entity */
-class EntityWithListenerPopulatedField
+class EntityWithRandomlyGeneratedField
 {
-    const MAX_GENERATED_FIELD_VALUE = 10000;
-
     /** @Id @Column(type="string") */
     public $id;
 
@@ -741,6 +739,6 @@ class EntityWithListenerPopulatedField
     public function __construct()
     {
         $this->id             = uniqid('id', true);
-        $this->generatedField = mt_rand(0, self::MAX_GENERATED_FIELD_VALUE);
+        $this->generatedField = mt_rand(0, 100000);
     }
 }
