@@ -3,8 +3,12 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\EventManager;
+use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\NotifyPropertyChanged;
+use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
@@ -48,16 +52,20 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $_emMock;
 
-    protected function setUp() {
+    /**
+     * @var EventManager|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $eventManager;
+
+    protected function setUp()
+    {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock([], new DriverMock());
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock);
+        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->_emMock = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
         $this->_emMock->setUnitOfWork($this->_unitOfWork);
-    }
-
-    protected function tearDown() {
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
@@ -488,6 +496,45 @@ class UnitOfWorkTest extends OrmTestCase
 
         self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
+
+    public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData()
+    {
+        $entity = new EntityWithListenerPopulatedField();
+
+        $generatedFieldValue = $entity->generatedField;
+
+        $this
+            ->eventManager
+            ->expects(self::any())
+            ->method('hasListeners')
+            ->willReturnCallback(function ($eventName) {
+                return $eventName === Events::prePersist;
+            });
+        $this
+            ->eventManager
+            ->expects(self::once())
+            ->method('dispatchEvent')
+            ->with(
+                self::anything(),
+                self::callback(function (LifecycleEventArgs $args) use ($entity, $generatedFieldValue) {
+                    /* @var $object EntityWithListenerPopulatedField */
+                    $object = $args->getObject();
+
+                    self::assertInstanceOf(EntityWithListenerPopulatedField::class, $object);
+                    self::assertNotSame($entity, $object);
+                    self::assertSame($generatedFieldValue, $object->generatedField);
+
+                    return true;
+                })
+            );
+
+        /* @var $object EntityWithListenerPopulatedField */
+        $object = $this->_unitOfWork->merge($entity);
+
+        self::assertNotSame($object, $entity);
+        self::assertInstanceOf(EntityWithListenerPopulatedField::class, $object);
+        self::assertSame($object->generatedField, $entity->generatedField);
+    }
 }
 
 /**
@@ -633,4 +680,24 @@ class EntityWithCompositeStringIdentifier
      * @var string|null
      */
     public $id2;
+}
+
+/** @Entity */
+class EntityWithListenerPopulatedField
+{
+    const MAX_GENERATED_FIELD_VALUE = 10000;
+
+    /** @Id @Column(type="string") */
+    public $id;
+
+    /**
+     * @Column(type="integer")
+     */
+    public $generatedField;
+
+    public function __construct()
+    {
+        $this->id             = uniqid('id', true);
+        $this->generatedField = mt_rand(0, self::MAX_GENERATED_FIELD_VALUE);
+    }
 }
