@@ -513,8 +513,14 @@ association, you can now create a user and persist his comment as follows:
     $em->persist($user);
     $em->flush();
 
-Even though automatic cascading is convenient it should be used
-with care. Do not blindly apply cascade=all to all associations as
+.. note::
+
+    This code does not associate the newly created comment with the user.
+    To achieve this, you *always* have to call ``$myFirstComment->setUser($user);`` –
+    no matter if ``cascade: persist`` is set or not.
+
+Even though automatic cascading is convenient, it should be used
+with care. Do not blindly apply ``cascade=all`` to all associations as
 it will unnecessarily degrade the performance of your application.
 For each cascade operation that gets activated Doctrine also
 applies that operation to the association, be it single or
