@@ -1784,7 +1784,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws OptimisticLockException If the entity uses optimistic locking through a version
      *         attribute and the version check against the managed copy fails.
      * @throws ORMInvalidArgumentException If the entity instance is NEW.
-     * @throws EntityNotFoundException
+     * @throws EntityNotFoundException if an assigned identifier is used in the entity, but none is provided
      */
     private function doMerge($entity, array &$visited, $prevManagedCopy = null, array $assoc = [])
     {
@@ -1876,6 +1876,15 @@ class UnitOfWork implements PropertyChangedListener
         return $managedCopy;
     }
 
+    /**
+     * @param ClassMetadata $class
+     * @param object        $entity
+     * @param object        $managedCopy
+     *
+     * @return void
+     *
+     * @throws OptimisticLockException
+     */
     private function ensureVersionMatch(ClassMetadata $class, $entity, $managedCopy)
     {
         if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
