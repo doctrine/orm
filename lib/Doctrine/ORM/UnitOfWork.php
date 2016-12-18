@@ -1891,7 +1891,8 @@ class UnitOfWork implements PropertyChangedListener
         return $managedCopy;
     }
 
-    private function ensureVersionMatch(ClassMetadata $class, $entity, $managedCopy) {
+    private function ensureVersionMatch(ClassMetadata $class, $entity, $managedCopy)
+    {
         if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
             $reflField          = $class->reflFields[$class->versionField];
             $managedCopyVersion = $reflField->getValue($managedCopy);
