@@ -535,6 +535,39 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertInstanceOf(EntityWithListenerPopulatedField::class, $object);
         self::assertSame($object->generatedField, $entity->generatedField);
     }
+
+    public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners()
+    {
+        $persistedEntity = new EntityWithListenerPopulatedField();
+        $mergedEntity    = new EntityWithListenerPopulatedField();
+
+        $mergedEntity->id = $persistedEntity->id;
+        $mergedEntity->generatedField = mt_rand(
+            $persistedEntity->generatedField + 1,
+            $persistedEntity->generatedField + 1000
+        );
+
+        $this
+            ->eventManager
+            ->expects(self::any())
+            ->method('hasListeners')
+            ->willReturnCallback(function ($eventName) {
+                return $eventName === Events::prePersist;
+            });
+        $this->eventManager->expects(self::never())->method('dispatchEvent');
+
+        $this->_unitOfWork->registerManaged(
+            $persistedEntity,
+            ['id' => $persistedEntity->id],
+            ['generatedField' => $persistedEntity->generatedField]
+        );
+
+        /* @var $merged EntityWithListenerPopulatedField */
+        $merged = $this->_unitOfWork->merge($mergedEntity);
+
+        self::assertSame($merged, $persistedEntity);
+        self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
+    }
 }
 
 /**
