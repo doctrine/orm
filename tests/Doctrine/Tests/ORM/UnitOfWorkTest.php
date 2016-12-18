@@ -497,6 +497,11 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
 
+    /**
+     * @group DDC-1955
+     * @group 5570
+     * @group 6174
+     */
     public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData()
     {
         $entity = new EntityWithListenerPopulatedField();
@@ -536,6 +541,11 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($object->generatedField, $entity->generatedField);
     }
 
+    /**
+     * @group DDC-1955
+     * @group 5570
+     * @group 6174
+     */
     public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners()
     {
         $persistedEntity = new EntityWithListenerPopulatedField();
