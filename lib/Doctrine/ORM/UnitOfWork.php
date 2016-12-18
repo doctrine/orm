@@ -1872,7 +1872,6 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $visited[$oid] = $managedCopy; // mark visited
-            // $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
 
             if ($class->isChangeTrackingDeferredExplicit()) {
                 $this->scheduleForDirtyCheck($entity);
