@@ -89,17 +89,19 @@ class CompanyContractListener
     public function takeSnapshot(CompanyContract $contract)
     {
         $snapshot = [];
-        $reflexion = new \ReflectionClass($contract);
-        foreach ($reflexion->getProperties() as $property) {
+
+        foreach ((new \ReflectionClass($contract))->getProperties() as $property) {
             $property->setAccessible(true);
+
             $value = $property->getValue($contract);
+
             if (is_object($value) || is_array($value)) {
                 continue;
             }
+
             $snapshot[$property->getName()] = $property->getValue($contract);
         }
 
         return $snapshot;
     }
-
 }
