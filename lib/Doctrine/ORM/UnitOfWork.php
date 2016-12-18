@@ -1887,16 +1887,20 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function ensureVersionMatch(ClassMetadata $class, $entity, $managedCopy)
     {
-        if ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity)) {
-            $reflField          = $class->reflFields[$class->versionField];
-            $managedCopyVersion = $reflField->getValue($managedCopy);
-            $entityVersion      = $reflField->getValue($entity);
-
-            // Throw exception if versions don't match.
-            if ($managedCopyVersion != $entityVersion) {
-                throw OptimisticLockException::lockFailedVersionMismatch($entity, $entityVersion, $managedCopyVersion);
-            }
+        if (! ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity))) {
+            return;
         }
+
+        $reflField          = $class->reflFields[$class->versionField];
+        $managedCopyVersion = $reflField->getValue($managedCopy);
+        $entityVersion      = $reflField->getValue($entity);
+
+        // Throw exception if versions don't match.
+        if ($managedCopyVersion == $entityVersion) {
+            return;
+        }
+
+        throw OptimisticLockException::lockFailedVersionMismatch($entity, $entityVersion, $managedCopyVersion);
     }
 
     /**
