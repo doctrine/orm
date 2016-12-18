@@ -10,6 +10,8 @@ use Doctrine\Tests\Models\DDC3597\DDC3597Root;
 
 /**
  * @group DDC-1955
+ * @group 5570
+ * @group 6174
  */
 class EntityListenersOnMergeTest extends \Doctrine\Tests\OrmFunctionalTestCase
 {
