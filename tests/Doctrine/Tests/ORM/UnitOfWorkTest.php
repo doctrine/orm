@@ -59,7 +59,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
     {
         parent::setUp();
         $this->_connectionMock = new ConnectionMock([], new DriverMock());
-        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->eventManager = $this->getMockBuilder('Doctrine\Common\EventManager')->getMock();
         $this->_emMock = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
         // SUT
         $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
@@ -428,7 +428,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
                     /* @var $object EntityWithRandomlyGeneratedField */
                     $object = $args->getObject();
 
-                    self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
+                    self::assertInstanceOf('Doctrine\Tests\ORM\EntityWithRandomlyGeneratedField', $object);
                     self::assertNotSame($entity, $object);
                     self::assertSame($generatedFieldValue, $object->generatedField);
 
@@ -440,7 +440,7 @@ class UnitOfWorkTest extends \Doctrine\Tests\OrmTestCase
         $object = $this->_unitOfWork->merge($entity);
 
         self::assertNotSame($object, $entity);
-        self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
+        self::assertInstanceOf('Doctrine\Tests\ORM\EntityWithRandomlyGeneratedField', $object);
         self::assertSame($object->generatedField, $entity->generatedField);
     }
 
