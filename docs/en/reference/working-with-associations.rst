@@ -442,7 +442,7 @@ The following cascade options exist:
 
 The following example is an extension to the User-Comment example
 of this chapter. Suppose in our application a user is created
-whenever he writes his first comment. In this case we would use the
+whenever they write their first comment. In this case we would use the
 following code:
 
 .. code-block:: php
@@ -462,7 +462,7 @@ code requires an explicit call to
 cascade the persist operation to all nested entities that are new
 as well.
 
-More complicated is the deletion of all of a user's comments when he is
+More complicated is the deletion of all user's comments when the user is
 removed from the system:
 
 .. code-block:: php
@@ -501,7 +501,7 @@ and the "remove" operation.
     }
 
 Since ``cascade: persist`` is configured for the ``User#commentsAuthored``
-association, you can now create a user and persist his comment as follows:
+association, you can now create a user and persist their comments as follows:
 
 .. code-block:: php
 
