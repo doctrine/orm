@@ -105,7 +105,7 @@ class EntityRepository implements ObjectRepository, Selectable
      *
      * @param string $queryName
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function createNamedQuery($queryName)
     {

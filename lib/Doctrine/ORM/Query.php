@@ -35,7 +35,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-final class Query extends AbstractQuery
+final class Query extends AbstractQuery implements QueryInterface
 {
     /**
      * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
@@ -411,7 +411,7 @@ final class Query extends AbstractQuery
      *
      * @param \Doctrine\Common\Cache\Cache|null $queryCache Cache driver.
      *
-     * @return Query This query instance.
+     * @return QueryInterface This query instance.
      */
     public function setQueryCacheDriver($queryCache)
     {
@@ -425,7 +425,7 @@ final class Query extends AbstractQuery
      *
      * @param boolean $bool
      *
-     * @return Query This query instance.
+     * @return QueryInterface This query instance.
      */
     public function useQueryCache($bool)
     {
@@ -454,7 +454,7 @@ final class Query extends AbstractQuery
      *
      * @param integer $timeToLive How long the cache entry is valid.
      *
-     * @return Query This query instance.
+     * @return QueryInterface This query instance.
      */
     public function setQueryCacheLifetime($timeToLive)
     {
@@ -482,7 +482,7 @@ final class Query extends AbstractQuery
      *
      * @param boolean $expire Whether or not to force query cache expiration.
      *
-     * @return Query This query instance.
+     * @return QueryInterface This query instance.
      */
     public function expireQueryCache($expire = true)
     {
@@ -571,7 +571,7 @@ final class Query extends AbstractQuery
      *
      * @param integer $firstResult The first result to return.
      *
-     * @return Query This query object.
+     * @return QueryInterface This query object.
      */
     public function setFirstResult($firstResult)
     {
@@ -597,7 +597,7 @@ final class Query extends AbstractQuery
      *
      * @param integer $maxResults
      *
-     * @return Query This query object.
+     * @return QueryInterface This query object.
      */
     public function setMaxResults($maxResults)
     {
@@ -661,7 +661,7 @@ final class Query extends AbstractQuery
      *
      * @param int $lockMode
      *
-     * @return Query
+     * @return QueryInterface
      *
      * @throws TransactionRequiredException
      */

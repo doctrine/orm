@@ -104,7 +104,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $dql The DQL string.
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function createQuery($dql = '');
 
@@ -113,7 +113,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param string $name
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function createNamedQuery($name);
 
