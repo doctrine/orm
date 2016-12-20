@@ -87,6 +87,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @var array
      */
     protected static $_modelSets = [
+        'AivusTest' => [
+            Models\AivusTest\Category::class,
+            Models\AivusTest\Product::class,
+        ],
         'cms' => [
             Models\CMS\CmsUser::class,
             Models\CMS\CmsPhonenumber::class,
