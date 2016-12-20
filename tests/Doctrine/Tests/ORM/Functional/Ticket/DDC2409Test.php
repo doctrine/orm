@@ -21,7 +21,7 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $em     = $this->_em;
         $uow    = $em->getUnitOfWork();
-        
+
         $originalArticle  = new CmsArticle();
         $originalUser     = new CmsUser();
 
@@ -39,7 +39,7 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $em->flush();
         $em->clear();
 
-        $article  = $em->find('Doctrine\Tests\Models\CMS\CmsArticle', $originalArticle->id);
+        $article  = $em->find(CmsArticle::class, $originalArticle->id);
         $user     = new CmsUser();
 
         $user->name     = 'Doctrine Bot 2.0';

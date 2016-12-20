@@ -17,12 +17,12 @@ use Doctrine\ORM\Cache\Lock;
  */
 class ConcurrentRegionMock implements ConcurrentRegion
 {
-    public $calls       = array();
-    public $exceptions  = array();
-    public $locks       = array();
+    public $calls       = [];
+    public $exceptions  = [];
+    public $locks       = [];
 
     /**
-     * @var \Doctrine\ORM\Cache\Region 
+     * @var \Doctrine\ORM\Cache\Region
      */
     private $region;
 
@@ -80,7 +80,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function contains(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         if (isset($this->locks[$key->hash])) {
             return false;
@@ -96,7 +96,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function evict(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         $this->throwException(__FUNCTION__);
 
@@ -108,7 +108,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function evictAll()
     {
-        $this->calls[__FUNCTION__][] = array();
+        $this->calls[__FUNCTION__][] = [];
 
         $this->throwException(__FUNCTION__);
 
@@ -120,7 +120,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function get(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         $this->throwException(__FUNCTION__);
 
@@ -136,7 +136,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $this->calls[__FUNCTION__][] = array('collection' => $collection);
+        $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
         $this->throwException(__FUNCTION__);
 
@@ -148,7 +148,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function getName()
     {
-        $this->calls[__FUNCTION__][] = array();
+        $this->calls[__FUNCTION__][] = [];
 
         $this->throwException(__FUNCTION__);
 
@@ -160,7 +160,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key, 'entry' => $entry);
+        $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 
         $this->throwException(__FUNCTION__);
 
@@ -181,7 +181,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function lock(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         $this->throwException(__FUNCTION__);
 
@@ -197,7 +197,7 @@ class ConcurrentRegionMock implements ConcurrentRegion
      */
     public function unlock(CacheKey $key, Lock $lock)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key, 'lock' => $lock);
+        $this->calls[__FUNCTION__][] = ['key' => $key, 'lock' => $lock];
 
         $this->throwException(__FUNCTION__);
 

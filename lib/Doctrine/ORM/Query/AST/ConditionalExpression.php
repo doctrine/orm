@@ -33,7 +33,7 @@ class ConditionalExpression extends Node
     /**
      * @var array
      */
-    public $conditionalTerms = array();
+    public $conditionalTerms = [];
 
     /**
      * @param array $conditionalTerms

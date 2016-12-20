@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Cache\DefaultCache;
 use Doctrine\Tests\Models\Cache\State;
@@ -25,8 +27,6 @@ class DefaultCacheTest extends OrmTestCase
      * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
-
-    const NON_CACHEABLE_ENTITY = 'Doctrine\Tests\Models\CMS\CmsUser';
 
     protected function setUp()
     {
@@ -70,157 +70,157 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testImplementsCache()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache', $this->cache);
+        $this->assertInstanceOf(Cache::class, $this->cache);
     }
-    
+
     public function testGetEntityCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getEntityCacheRegion(State::CLASSNAME));
-        $this->assertNull($this->cache->getEntityCacheRegion(self::NON_CACHEABLE_ENTITY));
+        $this->assertInstanceOf(Cache\Region::class, $this->cache->getEntityCacheRegion(State::class));
+        $this->assertNull($this->cache->getEntityCacheRegion(CmsUser::class));
     }
 
     public function testGetCollectionCacheRegionAccess()
     {
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Region', $this->cache->getCollectionCacheRegion(State::CLASSNAME, 'cities'));
-        $this->assertNull($this->cache->getCollectionCacheRegion(self::NON_CACHEABLE_ENTITY, 'phonenumbers'));
+        $this->assertInstanceOf(Cache\Region::class, $this->cache->getCollectionCacheRegion(State::class, 'cities'));
+        $this->assertNull($this->cache->getCollectionCacheRegion(CmsUser::class, 'phonenumbers'));
     }
 
     public function testContainsEntity()
     {
-        $identifier = array('id'=>1);
-        $className  = Country::CLASSNAME;
-        $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
+        $identifier = ['id'=>1];
+        $className  = Country::class;
+        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
 
         $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
-        $this->assertFalse($this->cache->containsEntity(self::NON_CACHEABLE_ENTITY, 1));
+        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
+        $this->assertFalse($this->cache->containsEntity(CmsUser::class, 1));
     }
 
     public function testEvictEntity()
     {
-        $identifier = array('id'=>1);
-        $className  = Country::CLASSNAME;
-        $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
+        $identifier = ['id'=>1];
+        $className  = Country::class;
+        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
 
-        $this->cache->evictEntity(Country::CLASSNAME, 1);
-        $this->cache->evictEntity(self::NON_CACHEABLE_ENTITY, 1);
+        $this->cache->evictEntity(Country::class, 1);
+        $this->cache->evictEntity(CmsUser::class, 1);
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testEvictEntityRegion()
     {
-        $identifier = array('id'=>1);
-        $className  = Country::CLASSNAME;
-        $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
+        $identifier = ['id'=>1];
+        $className  = Country::class;
+        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
 
-        $this->cache->evictEntityRegion(Country::CLASSNAME);
-        $this->cache->evictEntityRegion(self::NON_CACHEABLE_ENTITY);
+        $this->cache->evictEntityRegion(Country::class);
+        $this->cache->evictEntityRegion(CmsUser::class);
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testEvictEntityRegions()
     {
-        $identifier = array('id'=>1);
-        $className  = Country::CLASSNAME;
-        $cacheEntry = array_merge($identifier, array('name' => 'Brazil'));
+        $identifier = ['id'=>1];
+        $className  = Country::class;
+        $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
         $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
 
         $this->cache->evictEntityRegions();
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, 1));
+        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testContainsCollection()
     {
-        $ownerId        = array('id'=>1);
-        $className      = State::CLASSNAME;
+        $ownerId        = ['id'=>1];
+        $className      = State::class;
         $association    = 'cities';
-        $cacheEntry     = array(
-            array('id' => 11),
-            array('id' => 12),
-        );
+        $cacheEntry     = [
+            ['id' => 11],
+            ['id' => 12],
+        ];
 
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
 
         $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
-        $this->assertFalse($this->cache->containsCollection(self::NON_CACHEABLE_ENTITY, 'phonenumbers', 1));
+        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(CmsUser::class, 'phonenumbers', 1));
     }
 
     public function testEvictCollection()
     {
-        $ownerId        = array('id'=>1);
-        $className      = State::CLASSNAME;
+        $ownerId        = ['id'=>1];
+        $className      = State::class;
         $association    = 'cities';
-        $cacheEntry     = array(
-            array('id' => 11),
-            array('id' => 12),
-        );
+        $cacheEntry     = [
+            ['id' => 11],
+            ['id' => 12],
+        ];
 
         $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
         $this->cache->evictCollection($className, $association, $ownerId);
-        $this->cache->evictCollection(self::NON_CACHEABLE_ENTITY, 'phonenumbers', 1);
+        $this->cache->evictCollection(CmsUser::class, 'phonenumbers', 1);
 
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testEvictCollectionRegion()
     {
-        $ownerId        = array('id'=>1);
-        $className      = State::CLASSNAME;
+        $ownerId        = ['id'=>1];
+        $className      = State::class;
         $association    = 'cities';
-        $cacheEntry     = array(
-            array('id' => 11),
-            array('id' => 12),
-        );
+        $cacheEntry     = [
+            ['id' => 11],
+            ['id' => 12],
+        ];
 
         $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
         $this->cache->evictCollectionRegion($className, $association);
-        $this->cache->evictCollectionRegion(self::NON_CACHEABLE_ENTITY, 'phonenumbers');
+        $this->cache->evictCollectionRegion(CmsUser::class, 'phonenumbers');
 
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testEvictCollectionRegions()
     {
-        $ownerId        = array('id'=>1);
-        $className      = State::CLASSNAME;
+        $ownerId        = ['id'=>1];
+        $className      = State::class;
         $association    = 'cities';
-        $cacheEntry     = array(
-            array('id' => 11),
-            array('id' => 12),
-        );
+        $cacheEntry     = [
+            ['id' => 11],
+            ['id' => 12],
+        ];
 
         $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
         $this->cache->evictCollectionRegions();
 
-        $this->assertFalse($this->cache->containsCollection(State::CLASSNAME, $association, 1));
+        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testQueryCache()
@@ -230,8 +230,8 @@ class DefaultCacheTest extends OrmTestCase
         $defaultQueryCache = $this->cache->getQueryCache();
         $fooQueryCache     = $this->cache->getQueryCache('foo');
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCache', $defaultQueryCache);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCache', $fooQueryCache);
+        $this->assertInstanceOf(Cache\QueryCache::class, $defaultQueryCache);
+        $this->assertInstanceOf(Cache\QueryCache::class, $fooQueryCache);
         $this->assertSame($defaultQueryCache, $this->cache->getQueryCache());
         $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
 
@@ -249,7 +249,7 @@ class DefaultCacheTest extends OrmTestCase
     {
         $identifier = 123;
         $entity     = new Country('Foo');
-        $metadata   = $this->em->getClassMetadata(Country::CLASSNAME);
+        $metadata   = $this->em->getClassMetadata(Country::class);
         $method     = new \ReflectionMethod($this->cache, 'toIdentifierArray');
         $property   = new \ReflectionProperty($entity, 'id');
 
@@ -257,7 +257,7 @@ class DefaultCacheTest extends OrmTestCase
         $method->setAccessible(true);
         $property->setValue($entity, $identifier);
 
-        $this->assertEquals(array('id'=>$identifier), $method->invoke($this->cache, $metadata, $identifier));
+        $this->assertEquals(['id'=>$identifier], $method->invoke($this->cache, $metadata, $identifier));
     }
 
 }

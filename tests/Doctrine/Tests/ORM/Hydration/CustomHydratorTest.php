@@ -2,7 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
-use PDO, Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use PDO;
 
 class CustomHydratorTest extends HydrationTestCase
 {
@@ -10,10 +11,10 @@ class CustomHydratorTest extends HydrationTestCase
     {
         $em = $this->_getTestEntityManager();
         $config = $em->getConfiguration();
-        $config->addCustomHydrationMode('CustomHydrator', 'Doctrine\Tests\ORM\Hydration\CustomHydrator');
+        $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
 
         $hydrator = $em->newHydrator('CustomHydrator');
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Hydration\CustomHydrator', $hydrator);
+        $this->assertInstanceOf(CustomHydrator::class, $hydrator);
         $this->assertNull($config->getCustomHydrationMode('does not exist'));
     }
 }

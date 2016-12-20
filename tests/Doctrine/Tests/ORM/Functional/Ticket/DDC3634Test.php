@@ -16,7 +16,7 @@ class DDC3634Test extends OrmFunctionalTestCase {
     protected function setUp() {
         parent::setUp();
 
-        $metadata = $this->_em->getClassMetadata(DDC3634Entity::CLASSNAME);
+        $metadata = $this->_em->getClassMetadata(DDC3634Entity::class);
 
         if ( ! $metadata->idGenerator->isPostInsertGenerator()) {
             $this->markTestSkipped('Need a post-insert ID generator in order to make this test work correctly');
@@ -25,8 +25,8 @@ class DDC3634Test extends OrmFunctionalTestCase {
         try {
             $this->_schemaTool->createSchema([
                 $metadata,
-                $this->_em->getClassMetadata(DDC3634JTIBaseEntity::CLASSNAME),
-                $this->_em->getClassMetadata(DDC3634JTIChildEntity::CLASSNAME),
+                $this->_em->getClassMetadata(DDC3634JTIBaseEntity::class),
+                $this->_em->getClassMetadata(DDC3634JTIChildEntity::class),
             ]);
         } catch (ToolsException $e) {
             // schema already in place
@@ -74,8 +74,6 @@ class DDC3634Test extends OrmFunctionalTestCase {
 /** @Entity */
 class DDC3634Entity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
@@ -90,8 +88,6 @@ class DDC3634Entity
  */
 class DDC3634JTIBaseEntity
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
     public $id;
 }
@@ -99,7 +95,6 @@ class DDC3634JTIBaseEntity
 /** @Entity */
 class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 {
-    const CLASSNAME = __CLASS__;
 }
 
 class DDC3634LastInsertIdMockingConnection extends Connection

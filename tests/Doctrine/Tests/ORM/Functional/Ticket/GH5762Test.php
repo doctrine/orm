@@ -15,11 +15,13 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(GH5762Driver::class),
             $this->_em->getClassMetadata(GH5762DriverRide::class),
             $this->_em->getClassMetadata(GH5762Car::class),
-        ));
+            ]
+        );
     }
 
     public function testIssue()
@@ -31,7 +33,7 @@ class GH5762Test extends OrmFunctionalTestCase
         self::assertInstanceOf(GH5762DriverRide::class, $result->driverRides->get(0));
         self::assertInstanceOf(GH5762Car::class, $result->driverRides->get(0)->car);
 
-        $cars = array();
+        $cars = [];
         foreach ($result->driverRides as $ride) {
             $cars[] = $ride->car->brand;
         }

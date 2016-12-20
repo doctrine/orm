@@ -7,5 +7,4 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Beach extends Attraction
 {
-    const CLASSNAME = __CLASS__;
 }

@@ -2,16 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
+
 class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityX'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityY'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC237EntityZ')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC237EntityX::class),
+            $this->_em->getClassMetadata(DDC237EntityY::class),
+            $this->_em->getClassMetadata(DDC237EntityZ::class)
+            ]
+        );
     }
 
     public function testUninitializedProxyIsInitializedOnFetchJoin()
@@ -35,7 +39,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $x2->y);
+        $this->assertInstanceOf(Proxy::class, $x2->y);
         $this->assertFalse($x2->y->__isInitialized__);
 
         // proxy for Y is in identity map
@@ -43,7 +47,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
+        $this->assertInstanceOf(Proxy::class, $z2->y);
         $this->assertTrue($z2->y->__isInitialized__);
         $this->assertEquals('Y', $z2->y->data);
         $this->assertEquals($y->id, $z2->y->id);
@@ -54,7 +58,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertNotSame($x, $x2);
         $this->assertNotSame($z, $z2);
         $this->assertSame($z2->y, $x2->y);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $z2->y);
+        $this->assertInstanceOf(Proxy::class, $z2->y);
 
     }
 }

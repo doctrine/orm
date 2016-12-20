@@ -161,7 +161,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function findAll()
     {
-        return $this->findBy(array());
+        return $this->findBy([]);
     }
 
     /**
@@ -193,7 +193,7 @@ class EntityRepository implements ObjectRepository, Selectable
     {
         $persister = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName);
 
-        return $persister->load($criteria, null, null, array(), null, 1, $orderBy);
+        return $persister->load($criteria, null, null, [], null, 1, $orderBy);
     }
 
     /**

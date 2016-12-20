@@ -15,7 +15,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Tools;
 
@@ -126,7 +126,7 @@ class Setup
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
-            } elseif (extension_loaded('xcache')) {
+            } elseif (ini_get('xcache.cacher')) {
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
             } elseif (extension_loaded('memcache')) {
                 $memcache = new \Memcache();

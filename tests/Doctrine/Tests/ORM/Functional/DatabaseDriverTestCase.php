@@ -11,13 +11,13 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  */
 abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
-    protected function convertToClassMetadata(array $entityTables, array $manyTables = array())
+    protected function convertToClassMetadata(array $entityTables, array $manyTables = [])
     {
         $sm = $this->_em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
-        $metadatas = array();
+        $metadatas = [];
         foreach ($driver->getAllClassNames() AS $className) {
             $class = new ClassMetadataInfo($className);
             $driver->loadMetadataForClass($className, $class);
@@ -34,7 +34,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     protected function extractClassMetadata(array $classNames)
     {
         $classNames = array_map('strtolower', $classNames);
-        $metadatas = array();
+        $metadatas = [];
 
         $sm = $this->_em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);

@@ -16,10 +16,12 @@ class DDC3330Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Building',
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Hall',
-        ));
+        $this->setUpEntitySchema(
+            [
+            DDC3330_Building::class,
+            DDC3330_Hall::class,
+            ]
+        );
     }
 
     public function testIssueCollectionOrderWithPaginator()
@@ -29,7 +31,7 @@ class DDC3330Test extends OrmFunctionalTestCase
         $this->createBuildingAndHalls();
 
         $this->_em->clear();
-        
+
         $query = $this->_em->createQuery(
             'SELECT b, h'.
             ' FROM Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Building b'.
@@ -37,32 +39,25 @@ class DDC3330Test extends OrmFunctionalTestCase
             ' ORDER BY b.id ASC, h.name DESC'
         )
         ->setMaxResults(3);
-        
+
         $paginator = new Paginator($query, true);
-        
-        /*foreach ($paginator as $building) {
-             echo 'BUILDING ID: '.$building->id."\n";
-             foreach ($building->halls as $hall) {
-                 echo '   - HALL: '.$hall->id.' - '.$hall->name."\n";
-             }
-         }*/
-        
+
         $this->assertEquals(3, count(iterator_to_array($paginator)), 'Count is not correct for pagination');
     }
-    
+
     /**
      * Create a building and 10 halls
      */
     private function createBuildingAndHalls()
     {
         $building = new DDC3330_Building();
-    
+
         for ($i = 0; $i < 10; $i++) {
             $hall = new DDC3330_Hall();
             $hall->name = 'HALL-'.$i;
             $building->addHall($hall);
         }
-    
+
         $this->_em->persist($building);
         $this->_em->flush();
     }
@@ -78,7 +73,7 @@ class DDC3330_Building
      * @GeneratedValue
      */
     public $id;
-    
+
     /**
      * @OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
      */

@@ -1,19 +1,20 @@
 <?php
-
-/**
- * Doctrine ORM
+/*
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE. This license can also be viewed
- * at http://hobodave.com/license.txt
- *
- * @category    DoctrineExtensions
- * @package     DoctrineExtensions\Paginate
- * @author      David Abdemoulaie <dave@hobodave.com>
- * @copyright   Copyright (c) 2010 David Abdemoulaie (http://hobodave.com/)
- * @license     http://hobodave.com/license.txt New BSD License
+ * This software consists of voluntary contributions made by many individuals
+ * and is licensed under the MIT license. For more information, see
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Tools\Pagination;
@@ -68,7 +69,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        $selectExpressions = array();
+        $selectExpressions = [];
 
         $this->validate($AST);
 
@@ -79,9 +80,9 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 continue;
             }
         }
-        
+
         $identifier = $rootClass->getSingleIdentifierFieldName();
-        
+
         if (isset($rootClass->associationMappings[$identifier])) {
             throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
         }
@@ -108,7 +109,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
                 if ( ! $item->expression instanceof PathExpression) {
                     continue;
                 }
-                
+
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
                     '_dctrn_ord' . $this->_aliasCounter++
@@ -153,24 +154,24 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             }
         }
     }
-    
+
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
-     * 
+     *
      * @param \Doctrine\ORM\Query\AST\PathExpression $pathExpression
-     * 
+     *
      * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
      */
     private function createSelectExpressionItem(PathExpression $pathExpression)
     {
         if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');
-            
+
             $identity->pathExpression = clone $pathExpression;
-            
+
             return $identity;
         }
-        
+
         return clone $pathExpression;
     }
 }

@@ -1,21 +1,4 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
-*/
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
 use Doctrine\Common\Persistence\Mapping\MappingException;
@@ -27,10 +10,12 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindMappingFile()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
@@ -38,9 +23,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileInSubnamespace()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
@@ -51,9 +38,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
     }
@@ -63,9 +52,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
@@ -92,5 +83,5 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     }
 
     abstract protected function getFileExtension();
-    abstract protected function getDriver(array $paths = array());
+    abstract protected function getDriver(array $paths = []);
 }

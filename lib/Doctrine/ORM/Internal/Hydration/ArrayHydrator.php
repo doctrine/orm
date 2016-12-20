@@ -35,7 +35,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * @var array
      */
-    private $_rootAliases = array();
+    private $_rootAliases = [];
 
     /**
      * @var bool
@@ -45,17 +45,17 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * @var array
      */
-    private $_identifierMap = array();
+    private $_identifierMap = [];
 
     /**
      * @var array
      */
-    private $_resultPointers = array();
+    private $_resultPointers = [];
 
     /**
      * @var array
      */
-    private $_idTemplate = array();
+    private $_idTemplate = [];
 
     /**
      * @var int
@@ -70,8 +70,8 @@ class ArrayHydrator extends AbstractHydrator
         $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
 
         foreach ($this->_rsm->aliasMap as $dqlAlias => $className) {
-            $this->_identifierMap[$dqlAlias]  = array();
-            $this->_resultPointers[$dqlAlias] = array();
+            $this->_identifierMap[$dqlAlias]  = [];
+            $this->_resultPointers[$dqlAlias] = [];
             $this->_idTemplate[$dqlAlias]     = '';
         }
     }
@@ -81,7 +81,7 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function hydrateAllData()
     {
-        $result = array();
+        $result = [];
 
         while ($data = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($data, $result);
@@ -97,7 +97,7 @@ class ArrayHydrator extends AbstractHydrator
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
-        $nonemptyComponents = array();
+        $nonemptyComponents = [];
         $rowData = $this->gatherRowData($row, $id, $nonemptyComponents);
 
         // 2) Now hydrate the data found in the current row.
@@ -138,7 +138,7 @@ class ArrayHydrator extends AbstractHydrator
                     $oneToOne = false;
 
                     if ( ! isset($baseElement[$relationAlias])) {
-                        $baseElement[$relationAlias] = array();
+                        $baseElement[$relationAlias] = [];
                     }
 
                     if (isset($nonemptyComponents[$dqlAlias])) {
@@ -187,7 +187,7 @@ class ArrayHydrator extends AbstractHydrator
                 // if this row has a NULL value for the root result id then make it a null result.
                 if ( ! isset($nonemptyComponents[$dqlAlias]) ) {
                     $result[] = $this->_rsm->isMixed
-                        ? array($entityKey => null)
+                        ? [$entityKey => null]
                         : null;
 
                     $resultKey = $this->_resultCounter;
@@ -199,7 +199,7 @@ class ArrayHydrator extends AbstractHydrator
                 // Check for an existing element
                 if ($this->_isSimpleQuery || ! isset($this->_identifierMap[$dqlAlias][$id[$dqlAlias]])) {
                     $element = $this->_rsm->isMixed
-                        ? array($entityKey => $data)
+                        ? [$entityKey => $data]
                         : $data;
 
                     if (isset($this->_rsm->indexByMap[$dqlAlias])) {

@@ -43,9 +43,7 @@ class Select extends Base
     /**
      * @var array
      */
-    protected $allowedClasses = array(
-        'Doctrine\ORM\Query\Expr\Func'
-    );
+    protected $allowedClasses = [Func::class];
 
     /**
      * @return array

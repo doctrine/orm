@@ -17,7 +17,7 @@ class CacheMetadataListener
      *
      * @var array
      */
-    protected $enabledItems = array();
+    protected $enabledItems = [];
 
     /**
      * @param \Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs $event
@@ -63,9 +63,9 @@ class CacheMetadataListener
             return; // Already handled in the past
         }
 
-        $cache = array(
+        $cache = [
             'usage' => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
-        );
+        ];
 
         if ($metadata->isVersioned) {
             return;

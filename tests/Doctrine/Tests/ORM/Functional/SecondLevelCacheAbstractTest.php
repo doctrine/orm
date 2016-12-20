@@ -27,16 +27,16 @@ use Doctrine\Tests\Models\Cache\AttractionLocationInfo;
  */
 abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 {
-    protected $people               = array();
-    protected $addresses            = array();
-    protected $countries            = array();
-    protected $states               = array();
-    protected $cities               = array();
-    protected $travels              = array();
-    protected $travelers            = array();
-    protected $attractions          = array();
-    protected $attractionsInfo      = array();
-    protected $travelersWithProfile = array();
+    protected $people               = [];
+    protected $addresses            = [];
+    protected $countries            = [];
+    protected $states               = [];
+    protected $cities               = [];
+    protected $travels              = [];
+    protected $travelers            = [];
+    protected $attractions          = [];
+    protected $attractionsInfo      = [];
+    protected $travelersWithProfile = [];
 
     /**
      * @var \Doctrine\ORM\Cache

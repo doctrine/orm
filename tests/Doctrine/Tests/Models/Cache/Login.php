@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Login
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

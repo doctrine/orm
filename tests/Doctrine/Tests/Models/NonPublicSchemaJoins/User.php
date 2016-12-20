@@ -10,8 +10,6 @@ namespace Doctrine\Tests\Models\NonPublicSchemaJoins;
  */
 class User
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="integer")
      * @Id

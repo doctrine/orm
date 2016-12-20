@@ -19,7 +19,7 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLastPageCorrect()
     {
-        $groups = array();
+        $groups = [];
         for ($i = 0; $i < 3; $i++) {
             $group = new CmsGroup();
             $group->name = "test";

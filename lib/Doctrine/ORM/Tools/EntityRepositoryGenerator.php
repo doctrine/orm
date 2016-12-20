@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\ORM\EntityRepository;
+
 /**
  * Class to generate entity repository classes
  *
@@ -57,11 +59,11 @@ class <className> extends <repositoryName>
      */
     public function generateEntityRepositoryClass($fullClassName)
     {
-        $variables = array(
+        $variables = [
             '<namespace>'       => $this->generateEntityRepositoryNamespace($fullClassName),
             '<repositoryName>'  => $this->generateEntityRepositoryName($fullClassName),
             '<className>'       => $this->generateClassName($fullClassName)
-        );
+        ];
 
         return str_replace(array_keys($variables), array_values($variables), self::$_template);
     }
@@ -70,7 +72,7 @@ class <className> extends <repositoryName>
      * Generates the namespace, if class do not have namespace, return empty string instead.
      *
      * @param string $fullClassName
-     * 
+     *
      * @return string $namespace
      */
     private function getClassNamespace($fullClassName)
@@ -82,9 +84,9 @@ class <className> extends <repositoryName>
 
     /**
      * Generates the class name
-     * 
+     *
      * @param string $fullClassName
-     * 
+     *
      * @return string
      */
     private function generateClassName($fullClassName)
@@ -102,7 +104,7 @@ class <className> extends <repositoryName>
 
     /**
      * Generates the namespace statement, if class do not have namespace, return empty string instead.
-     * 
+     *
      * @param string $fullClassName The full repository class name.
      *
      * @return string $namespace
@@ -116,14 +118,14 @@ class <className> extends <repositoryName>
 
     /**
      * @param string $fullClassName
-     * 
+     *
      * @return string $repositoryName
      */
     private function generateEntityRepositoryName($fullClassName)
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
-        $repositoryName = $this->repositoryName ?: 'Doctrine\ORM\EntityRepository';
+        $repositoryName = $this->repositoryName ?: EntityRepository::class;
 
         if ($namespace && $repositoryName[0] !== '\\') {
             $repositoryName = '\\' . $repositoryName;
@@ -158,7 +160,7 @@ class <className> extends <repositoryName>
 
     /**
      * @param string $repositoryName
-     * 
+     *
      * @return \Doctrine\ORM\Tools\EntityRepositoryGenerator
      */
     public function setDefaultRepositoryName($repositoryName)

@@ -11,8 +11,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class City
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

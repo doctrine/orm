@@ -2,12 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceCart,
-    Doctrine\Tests\Models\ECommerce\ECommerceFeature,
-    Doctrine\Tests\Models\ECommerce\ECommerceCustomer,
-    Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-
-use Doctrine\ORM\Mapping\AssociationMapping;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -35,12 +34,12 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $cardId = $cart->getId();
         unset($cart);
 
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $class = $this->_em->getClassMetadata(ECommerceCart::class);
 
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $persister = $this->_em->getUnitOfWork()->getEntityPersister(ECommerceCart::class);
         $newCart = new ECommerceCart();
-        $this->_em->getUnitOfWork()->registerManaged($newCart, array('id' => $cardId), array());
-        $persister->load(array('customer_id' => $customer->getId()), $newCart, $class->associationMappings['customer']);
+        $this->_em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
+        $persister->load(['customer_id' => $customer->getId()], $newCart, $class->associationMappings['customer']);
         $this->assertEquals('Credit card', $newCart->getPayment());
     }
 
@@ -63,7 +62,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
+        $this->assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         $q = $this->_em->createQuery(
             'SELECT p, f
@@ -74,7 +73,7 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $res = $q->getResult();
 
         $this->assertEquals(2, count($p->getFeatures()));
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $p->getFeatures());
+        $this->assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
         // Check that the features are the same instances still
         foreach ($p->getFeatures() as $feature) {

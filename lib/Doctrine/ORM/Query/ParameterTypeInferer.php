@@ -45,7 +45,7 @@ class ParameterTypeInferer
      */
     public static function inferType($value)
     {
-        if (is_integer($value)) {
+        if (is_int($value)) {
             return Type::INTEGER;
         }
 
@@ -58,7 +58,7 @@ class ParameterTypeInferer
         }
 
         if (is_array($value)) {
-            return is_integer(current($value))
+            return is_int(current($value))
                 ? Connection::PARAM_INT_ARRAY
                 : Connection::PARAM_STR_ARRAY;
         }

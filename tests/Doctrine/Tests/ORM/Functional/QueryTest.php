@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnexpectedResultException;
 use Doctrine\Tests\Models\CMS\CmsUser,
@@ -43,7 +44,7 @@ class QueryTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $result[0][0]);
+        $this->assertInstanceOf(CmsUser::class, $result[0][0]);
         $this->assertEquals('Guilherme', $result[0][0]->name);
         $this->assertEquals('gblanco', $result[0][0]->username);
         $this->assertEquals('developer', $result[0][0]->status);
@@ -95,7 +96,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a ORDER BY a.topic");
         $users = $query->getResult();
         $this->assertEquals(1, count($users));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf(CmsUser::class, $users[0]);
         $this->assertEquals(2, count($users[0]->articles));
         $this->assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
         $this->assertEquals('Symfony 2', $users[0]->articles[1]->topic);
@@ -174,8 +175,8 @@ class QueryTest extends OrmFunctionalTestCase
     public function testSetParametersBackwardsCompatible()
     {
         $q = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = ?1 AND u.status = ?2');
-        $q->setParameters(array(1 => 'jwage', 2 => 'active'));
-        
+        $q->setParameters([1 => 'jwage', 2 => 'active']);
+
         $users = $q->getResult();
     }
 
@@ -200,16 +201,17 @@ class QueryTest extends OrmFunctionalTestCase
         $articleId = $article1->id;
 
         $query = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.topic = ?1");
-        $articles = $query->iterate(new ArrayCollection(array(new Parameter(1, 'Doctrine 2'))), Query::HYDRATE_ARRAY);
+        $articles = $query->iterate(new ArrayCollection([new Parameter(1, 'Doctrine 2')]), Query::HYDRATE_ARRAY);
 
-        $found = array();
+        $found = [];
         foreach ($articles AS $article) {
             $found[] = $article;
         }
         $this->assertEquals(1, count($found));
-        $this->assertEquals(array(
-            array(array('id' => $articleId, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1))
-        ), $found);
+        $this->assertEquals(
+            [
+            [['id' => $articleId, 'topic' => 'Doctrine 2', 'text' => 'This is an introduction to Doctrine 2.', 'version' => 1]]
+            ], $found);
     }
 
     public function testIterateResult_IterativelyBuildUpUnitOfWork()
@@ -232,19 +234,19 @@ class QueryTest extends OrmFunctionalTestCase
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = array();
+        $topics = [];
         foreach($articles AS $row) {
             $article = $row[0];
             $topics[] = $article->topic;
 
             $identityMap = $this->_em->getUnitOfWork()->getIdentityMap();
-            $identityMapCount = count($identityMap['Doctrine\Tests\Models\CMS\CmsArticle']);
+            $identityMapCount = count($identityMap[CmsArticle::class]);
             $this->assertTrue($identityMapCount>$iteratedCount);
 
             $iteratedCount++;
         }
 
-        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertEquals(2, $iteratedCount);
 
         $this->_em->flush();
@@ -271,7 +273,7 @@ class QueryTest extends OrmFunctionalTestCase
         $articles = $query->iterate();
 
         $iteratedCount = 0;
-        $topics = array();
+        $topics = [];
         foreach($articles AS $row) {
             $article  = $row[0];
             $topics[] = $article->topic;
@@ -281,7 +283,7 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertEquals(array("Doctrine 2", "Symfony 2"), $topics);
+        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
         $this->assertEquals(2, $iteratedCount);
 
         $this->_em->flush();
@@ -394,7 +396,7 @@ class QueryTest extends OrmFunctionalTestCase
             $this->fail($e->getMessage());
         }
 
-        $this->_em->getConfiguration()->setEntityNamespaces(array());
+        $this->_em->getConfiguration()->setEntityNamespaces([]);
     }
 
     /**
@@ -416,14 +418,14 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
-                ->setParameter("user", $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $author->id))
+                ->setParameter("user", $this->_em->getReference(CmsUser::class, $author->id))
                 ->setParameter("topic", "dr. dolittle");
 
         $result = $q->getResult();
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsArticle', $result[0]);
+        $this->assertInstanceOf(CmsArticle::class, $result[0]);
         $this->assertEquals("dr. dolittle", $result[0]->topic);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->user);
+        $this->assertInstanceOf(Proxy::class, $result[0]->user);
         $this->assertFalse($result[0]->user->__isInitialized__);
     }
 
@@ -448,12 +450,12 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $articles = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a')
-                         ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', ClassMetadata::FETCH_EAGER)
+                         ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
                          ->getResult();
 
         $this->assertEquals(10, count($articles));
         foreach ($articles AS $article) {
-            $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $article);
+            $this->assertNotInstanceOf(Proxy::class, $article);
         }
     }
 
@@ -473,7 +475,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
 
         $fetchedUser = $query->getOneOrNullResult();
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $fetchedUser);
+        $this->assertInstanceOf(CmsUser::class, $fetchedUser);
         $this->assertEquals('gblanco', $fetchedUser->username);
 
         $query = $this->_em->createQuery("select u.username from Doctrine\Tests\Models\CMS\CmsUser u where u.username = 'gblanco'");
@@ -502,7 +504,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u");
 
         $this->expectException(NonUniqueResultException::class);
-        
+
         $fetchedUser = $query->getOneOrNullResult();
     }
 
@@ -545,10 +547,12 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.status = :a AND u.id IN (:b)");
-        $query->setParameters(new ArrayCollection(array(
-            new Parameter('b', array($user1->id, $user2->id, $user3->id)),
+        $query->setParameters(new ArrayCollection(
+            [
+            new Parameter('b', [$user1->id, $user2->id, $user3->id]),
             new Parameter('a', 'developer')
-        )));
+            ]
+        ));
         $result = $query->getResult();
 
         $this->assertEquals(3, count($result));
@@ -578,7 +582,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username IN (?0)");
-        $query->setParameter(0, array('beberlei', 'jwage'));
+        $query->setParameter(0, ['beberlei', 'jwage']);
 
         $users = $query->execute();
 
@@ -589,7 +593,7 @@ class QueryTest extends OrmFunctionalTestCase
     {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('u')
-           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->from(CmsUser::class, 'u')
            ->innerJoin('u.articles', 'a')
            ->where('(u.id = 0) OR (u.id IS NULL)');
 
@@ -623,7 +627,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u IN (?0) OR u.username = ?1");
-        $query->setParameter(0, array($userA, $userC));
+        $query->setParameter(0, [$userA, $userC]);
         $query->setParameter(1, 'beberlei');
 
         $users = $query->execute();
@@ -658,7 +662,7 @@ class QueryTest extends OrmFunctionalTestCase
         $users = $query->execute();
 
         $this->assertEquals(3, count($users));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
+        $this->assertInstanceOf(CmsUser::class, $users[0]);
     }
 
     /**
@@ -721,9 +725,9 @@ class QueryTest extends OrmFunctionalTestCase
         $users = $q->execute();
 
         $this->assertEquals(3, count($users));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
+        $this->assertInstanceOf(CmsUser::class, $users[0]);
+        $this->assertInstanceOf(CmsUser::class, $users[1]);
+        $this->assertInstanceOf(CmsUser::class, $users[2]);
 
         $resultUser1 = $users[0];
         $resultUser2 = $users[1];
@@ -799,8 +803,8 @@ class QueryTest extends OrmFunctionalTestCase
         $users = $query->execute();
 
         $this->assertEquals(2, count($users));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $users[1]);
+        $this->assertInstanceOf(CmsUser::class, $users[0]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $users[1]);
     }
 
     public function testMultipleJoinComponentsUsingLeftJoin()
@@ -832,9 +836,9 @@ class QueryTest extends OrmFunctionalTestCase
         $users = $query->execute();
 
         $this->assertEquals(4, count($users));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsPhonenumber', $users[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $users[2]);
+        $this->assertInstanceOf(CmsUser::class, $users[0]);
+        $this->assertInstanceOf(CmsPhonenumber::class, $users[1]);
+        $this->assertInstanceOf(CmsUser::class, $users[2]);
         $this->assertNull($users[3]);
     }
 }

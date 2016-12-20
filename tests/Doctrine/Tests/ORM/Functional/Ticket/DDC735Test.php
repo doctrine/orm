@@ -10,10 +10,12 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC735Product'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC735Review')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC735Product::class),
+                $this->_em->getClassMetadata(DDC735Review::class)
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -47,7 +49,7 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
 
         // Review should also not be available anymore
-        $this->assertNull($this->_em->find(__NAMESPACE__.'\DDC735Review', $reviewId));
+        $this->assertNull($this->_em->find(DDC735Review::class, $reviewId));
     }
 }
 

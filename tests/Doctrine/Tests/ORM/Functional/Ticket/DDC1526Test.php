@@ -10,14 +10,16 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1526Menu'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1526Menu::class),
+            ]
+        );
     }
 
     public function testIssue()
     {
-        $parents = array();
+        $parents = [];
         for ($i = 0; $i < 9; $i++) {
             $entity = new DDC1526Menu;
 

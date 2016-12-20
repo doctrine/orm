@@ -135,7 +135,7 @@ final class Query extends AbstractQuery
      *
      * @var array
      */
-    private $_parsedTypes = array();
+    private $_parsedTypes = [];
 
     /**
      * Cached DQL query.
@@ -241,7 +241,7 @@ final class Query extends AbstractQuery
      */
     private function _parse()
     {
-        $types = array();
+        $types = [];
 
         foreach ($this->parameters as $parameter) {
             /** @var Query\Parameter $parameter */
@@ -309,7 +309,9 @@ final class Query extends AbstractQuery
 
         if ($paramCount > $mappingCount) {
             throw QueryException::tooManyParameters($mappingCount, $paramCount);
-        } elseif ($paramCount < $mappingCount) {
+        }
+
+        if ($paramCount < $mappingCount) {
             throw QueryException::tooFewParameters($mappingCount, $paramCount);
         }
 
@@ -352,8 +354,8 @@ final class Query extends AbstractQuery
      */
     private function processParameterMappings($paramMappings)
     {
-        $sqlParams = array();
-        $types     = array();
+        $sqlParams = [];
+        $types     = [];
 
         foreach ($this->parameters as $parameter) {
             $key    = $parameter->getName();
@@ -381,7 +383,7 @@ final class Query extends AbstractQuery
 
             // optimized multi value sql positions away for now,
             // they are not allowed in DQL anyways.
-            $value = array($value);
+            $value = [$value];
             $countValue = count($value);
 
             for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
@@ -401,7 +403,7 @@ final class Query extends AbstractQuery
             $types = array_values($types);
         }
 
-        return array($sqlParams, $types);
+        return [$sqlParams, $types];
     }
 
     /**
@@ -561,7 +563,7 @@ final class Query extends AbstractQuery
      */
     public function contains($dql)
     {
-        return stripos($this->getDQL(), $dql) === false ? false : true;
+        return stripos($this->getDQL(), $dql) !== false;
     }
 
     /**
@@ -665,7 +667,7 @@ final class Query extends AbstractQuery
      */
     public function setLockMode($lockMode)
     {
-        if (in_array($lockMode, array(LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE), true)) {
+        if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
                 throw TransactionRequiredException::transactionRequired();
             }

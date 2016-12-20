@@ -17,7 +17,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $metadataFactory = $em->getMetadataFactory();
         $evm = $em->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
-        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\ORM\Mapping\LoadEventTestEntity');
+        $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         $this->assertTrue($classMetadata->hasField('about'));
         $this->assertArrayHasKey('about', $classMetadata->reflFields);
         $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
@@ -26,11 +26,11 @@ class ClassMetadataLoadEventTest extends OrmTestCase
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
+        $field = [
             'fieldName' => 'about',
             'type' => 'string',
             'length' => 255
-        );
+        ];
         $classMetadata->mapField($field);
     }
 }

@@ -34,12 +34,12 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * @var array
      */
-    private $values = array();
+    private $values = [];
 
     /**
      * @var array
      */
-    private $types  = array();
+    private $types  = [];
 
     /**
      * Converts a comparison expression into the target query language output.
@@ -61,7 +61,7 @@ class SqlValueVisitor extends ExpressionVisitor
         }
 
         $this->values[] = $value;
-        $this->types[]  = array($field, $value);
+        $this->types[]  = [$field, $value];
     }
 
     /**
@@ -97,7 +97,7 @@ class SqlValueVisitor extends ExpressionVisitor
      */
     public function getParamsAndTypes()
     {
-        return array($this->values, $this->types);
+        return [$this->values, $this->types];
     }
 
     /**

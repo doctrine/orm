@@ -1,29 +1,14 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Performance;
 
-use Doctrine\Tests\OrmPerformanceTestCase;
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\Models\CMS\CmsEmployee;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmPerformanceTestCase;
 
 /**
  * Performance test used to measure performance of proxy instantiation
@@ -38,10 +23,10 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
      */
     public function entitiesProvider()
     {
-        return array(
-            array('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            array('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        return [
+            [CmsEmployee::class],
+            [CmsUser::class],
+        ];
     }
 
     /**
@@ -54,7 +39,7 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
         $start = microtime(true);
 
         for ($i = 0; $i < 100000; $i += 1) {
-            $user = $proxyFactory->getProxy($entityName, array('id' => $i));
+            $user = $proxyFactory->getProxy($entityName, ['id' => $i]);
         }
 
         echo __FUNCTION__ . " - " . (microtime(true) - $start) . " seconds with " . $entityName . PHP_EOL;
@@ -68,7 +53,7 @@ class ProxyPerformanceTest extends OrmPerformanceTestCase
         $em              = new MockEntityManager($this->_getEntityManager());
         $proxyFactory    = $em->getProxyFactory();
         /* @var $user \Doctrine\Common\Proxy\Proxy */
-        $user            = $proxyFactory->getProxy($entityName, array('id' => 1));
+        $user            = $proxyFactory->getProxy($entityName, ['id' => 1]);
         $initializer     = $user->__getInitializer();
 
         $this->setMaxRunningTime(5);
@@ -163,7 +148,7 @@ class PersisterMock extends BasicEntityPersister
     }
 
     /** {@inheritDoc} */
-    public function load(array $criteria, $entity = null, $assoc = null, array $hints = array(), $lockMode = 0, $limit = null, array $orderBy = null)
+    public function load(array $criteria, $entity = null, $assoc = null, array $hints = [], $lockMode = 0, $limit = null, array $orderBy = null)
     {
         return $entity;
     }

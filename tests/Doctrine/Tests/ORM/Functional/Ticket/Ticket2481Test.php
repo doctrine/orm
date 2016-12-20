@@ -9,9 +9,11 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\Ticket2481Product')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(Ticket2481Product::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

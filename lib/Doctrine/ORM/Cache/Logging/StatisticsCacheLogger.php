@@ -35,17 +35,17 @@ class StatisticsCacheLogger implements CacheLogger
     /**
      * @var array
      */
-    private $cacheMissCountMap = array();
+    private $cacheMissCountMap = [];
 
     /**
      * @var array
      */
-    private $cacheHitCountMap = array();
+    private $cacheHitCountMap = [];
 
     /**
      * @var array
      */
-    private $cachePutCountMap = array();
+    private $cachePutCountMap = [];
 
     /**
      * {@inheritdoc}
@@ -214,9 +214,9 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function clearStats()
     {
-        $this->cachePutCountMap  = array();
-        $this->cacheHitCountMap  = array();
-        $this->cacheMissCountMap = array();
+        $this->cachePutCountMap  = [];
+        $this->cacheHitCountMap  = [];
+        $this->cacheMissCountMap = [];
     }
 
     /**

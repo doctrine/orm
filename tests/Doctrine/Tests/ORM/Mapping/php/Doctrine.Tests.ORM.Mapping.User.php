@@ -1,128 +1,149 @@
 <?php
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\Tests\ORM\Mapping\Address;
+use Doctrine\Tests\ORM\Mapping\Group;
+use Doctrine\Tests\ORM\Mapping\Phonenumber;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
-$metadata->setPrimaryTable(array(
+$metadata->setPrimaryTable(
+    [
    'name' => 'cms_users',
-  ));
+    ]
+);
 $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
 $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-$metadata->addNamedQuery(array(
+$metadata->addNamedQuery(
+    [
     'name'  => 'all',
     'query' => 'SELECT u FROM __CLASS__ u'
-));
-$metadata->mapField(array(
+    ]
+);
+$metadata->mapField(
+    [
    'id' => true,
    'fieldName' => 'id',
    'type' => 'integer',
    'columnName' => 'id',
-   'options' => array('foo' => 'bar'),
-  ));
-$metadata->mapField(array(
+   'options' => ['foo' => 'bar', 'unsigned' => false],
+    ]
+);
+$metadata->mapField(
+    [
    'fieldName' => 'name',
    'type' => 'string',
    'length' => 50,
    'unique' => true,
    'nullable' => true,
    'columnName' => 'name',
-   'options' => array('foo' => 'bar', 'baz' => array('key' => 'val')),
-  ));
-$metadata->mapField(array(
+   'options' => ['foo' => 'bar', 'baz' => ['key' => 'val'], 'fixed' => false],
+    ]
+);
+$metadata->mapField(
+    [
    'fieldName' => 'email',
    'type' => 'string',
    'columnName' => 'user_email',
    'columnDefinition' => 'CHAR(32) NOT NULL',
-  ));
-$mapping = array('fieldName' => 'version', 'type' => 'integer');
+    ]
+);
+$mapping = ['fieldName' => 'version', 'type' => 'integer'];
 $metadata->setVersionMapping($mapping);
 $metadata->mapField($mapping);
 $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
-$metadata->mapOneToOne(array(
+$metadata->mapOneToOne(
+    [
    'fieldName' => 'address',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Address',
+   'targetEntity' => Address::class,
    'cascade' =>
-   array(
+   [
    0 => 'remove',
-   ),
+   ],
    'mappedBy' => NULL,
    'inversedBy' => 'user',
    'joinColumns' =>
-   array(
+   [
    0 =>
-   array(
+   [
     'name' => 'address_id',
     'referencedColumnName' => 'id',
     'onDelete' => 'CASCADE',
-   ),
-   ),
+   ],
+   ],
    'orphanRemoval' => false,
-  ));
-$metadata->mapOneToMany(array(
+    ]
+);
+$metadata->mapOneToMany(
+    [
    'fieldName' => 'phonenumbers',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Phonenumber',
+   'targetEntity' => Phonenumber::class,
    'cascade' =>
-   array(
+   [
    1 => 'persist',
-   ),
+   ],
    'mappedBy' => 'user',
    'orphanRemoval' => true,
    'orderBy' =>
-   array(
+   [
    'number' => 'ASC',
-   ),
-  ));
-$metadata->mapManyToMany(array(
+   ],
+    ]
+);
+$metadata->mapManyToMany(
+    [
    'fieldName' => 'groups',
-   'targetEntity' => 'Doctrine\\Tests\\ORM\\Mapping\\Group',
+   'targetEntity' => Group::class,
    'cascade' =>
-   array(
+   [
    0 => 'remove',
    1 => 'persist',
    2 => 'refresh',
    3 => 'merge',
    4 => 'detach',
-   ),
+   ],
    'mappedBy' => NULL,
    'joinTable' =>
-   array(
+   [
    'name' => 'cms_users_groups',
    'joinColumns' =>
-   array(
+   [
     0 =>
-    array(
+    [
     'name' => 'user_id',
     'referencedColumnName' => 'id',
     'unique' => false,
     'nullable' => false,
-    ),
-   ),
+    ],
+   ],
    'inverseJoinColumns' =>
-   array(
+   [
     0 =>
-    array(
+    [
     'name' => 'group_id',
     'referencedColumnName' => 'id',
     'columnDefinition' => 'INT NULL',
-    ),
-   ),
-   ),
+    ],
+   ],
+   ],
    'orderBy' => NULL,
-  ));
-$metadata->table['options'] = array(
+    ]
+);
+$metadata->table['options'] = [
     'foo' => 'bar',
-    'baz' => array('key' => 'val')
-);
-$metadata->table['uniqueConstraints'] = array(
-    'search_idx' => array('columns' => array('name', 'user_email'), 'options' => array('where' => 'name IS NOT NULL')),
-);
-$metadata->table['indexes'] = array(
-    'name_idx' => array('columns' => array('name')), 0 => array('columns' => array('user_email'))
-);
-$metadata->setSequenceGeneratorDefinition(array(
+    'baz' => ['key' => 'val']
+];
+$metadata->table['uniqueConstraints'] = [
+    'search_idx' => ['columns' => ['name', 'user_email'], 'options' => ['where' => 'name IS NOT NULL']],
+];
+$metadata->table['indexes'] = [
+    'name_idx' => ['columns' => ['name']], 0 => ['columns' => ['user_email']]
+];
+$metadata->setSequenceGeneratorDefinition(
+    [
         'sequenceName' => 'tablename_seq',
         'allocationSize' => 100,
         'initialValue' => 1,
-    ));
+    ]
+);

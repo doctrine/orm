@@ -16,21 +16,21 @@ class DDC2138Test extends OrmFunctionalTestCase
         $em = $this->_em;
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138User'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138Structure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedObject'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedStructure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedUser')
-        );
+        $classes = [
+            $em->getClassMetadata(DDC2138User::class),
+            $em->getClassMetadata(DDC2138Structure::class),
+            $em->getClassMetadata(DDC2138UserFollowedObject::class),
+            $em->getClassMetadata(DDC2138UserFollowedStructure::class),
+            $em->getClassMetadata(DDC2138UserFollowedUser::class)
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
         $this->assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
 
         /* @var $table \Doctrine\DBAL\Schema\Table */
         $table = ($schema->getTable('users_followed_objects'));
-        $this->assertTrue($table->columnsAreIndexed(array('object_id')));
-        $this->assertTrue($table->columnsAreIndexed(array('user_id')));
+        $this->assertTrue($table->columnsAreIndexed(['object_id']));
+        $this->assertTrue($table->columnsAreIndexed(['user_id']));
         $foreignKeys = $table->getForeignKeys();
         $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 

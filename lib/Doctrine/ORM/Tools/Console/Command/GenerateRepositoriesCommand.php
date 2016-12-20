@@ -46,17 +46,19 @@ class GenerateRepositoriesCommand extends Command
     {
         $this
         ->setName('orm:generate-repositories')
-        ->setAliases(array('orm:generate:repositories'))
+        ->setAliases(['orm:generate:repositories'])
         ->setDescription('Generate repository classes from your mapping information.')
-        ->setDefinition(array(
-            new InputOption(
-                'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                'A string pattern used to match entities that should be processed.'
-            ),
-            new InputArgument(
-                'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
-            )
-        ))
+        ->setDefinition(
+            [
+                new InputOption(
+                    'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                    'A string pattern used to match entities that should be processed.'
+                ),
+                new InputArgument(
+                    'dest-path', InputArgument::REQUIRED, 'The path to generate your repository classes.'
+                )
+            ]
+        )
         ->setHelp(<<<EOT
 Generate repository classes from your mapping information.
 EOT

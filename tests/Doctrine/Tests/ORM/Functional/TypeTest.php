@@ -2,13 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\Models\Generic\DecimalModel;
 use Doctrine\Tests\Models\Generic\SerializationModel;
-
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeTest extends OrmFunctionalTestCase
@@ -78,7 +77,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = "SELECT s FROM Doctrine\Tests\Models\Generic\SerializationModel s";
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(array("foo" => "bar", "bar" => "baz"), $serialize->array);
+        $this->assertEquals(["foo" => "bar", "bar" => "baz"], $serialize->array);
     }
 
     public function testObject()
@@ -105,7 +104,7 @@ class TypeTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+        $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf('DateTime', $dateTimeDb->date);
         $this->assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
@@ -120,12 +119,13 @@ class TypeTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+        $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf('DateTime', $dateTimeDb->datetime);
         $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
-        $articles = $this->_em->getRepository( 'Doctrine\Tests\Models\Generic\DateTimeModel' )->findBy( array( 'datetime' => new \DateTime( "now" ) ) );
+        $articles = $this->_em->getRepository( DateTimeModel::class )->findBy( ['datetime' => new \DateTime( "now" )]
+        );
         $this->assertEquals( 0, count( $articles ) );
     }
 
@@ -158,7 +158,7 @@ class TypeTest extends OrmFunctionalTestCase
 
         $dateTimeDb = $this->_em->createQueryBuilder()
                                  ->select('d')
-                                 ->from('Doctrine\Tests\Models\Generic\DateTimeModel', 'd')
+                                 ->from(DateTimeModel::class, 'd')
                                  ->where('d.datetime = ?1')
                                  ->setParameter(1, $date, DBALType::DATETIME)
                                  ->getQuery()->getSingleResult();
@@ -173,7 +173,7 @@ class TypeTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dateTimeDb = $this->_em->find('Doctrine\Tests\Models\Generic\DateTimeModel', $dateTime->id);
+        $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf('DateTime', $dateTime->time);
         $this->assertEquals('19:27:20', $dateTime->time->format('H:i:s'));

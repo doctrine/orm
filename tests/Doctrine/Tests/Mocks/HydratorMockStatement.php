@@ -108,7 +108,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * {@inheritdoc}
      */
-    public function execute($params = array())
+    public function execute($params = [])
     {
     }
 

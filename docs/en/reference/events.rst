@@ -179,7 +179,7 @@ the life-time of their registered entities.
    allows providing fallback metadata even when no actual metadata exists
    or could be found. This event is not a lifecycle callback.
 -  preFlush - The preFlush event occurs at the very beginning of a flush
-   operation. This event is not a lifecycle callback.
+   operation.
 -  onFlush - The onFlush event occurs after the change-sets of all
    managed entities are computed. This event is not a lifecycle
    callback.
@@ -406,8 +406,8 @@ behaviors across different entity classes.
 
 Note that they require much more detailed knowledge about the inner
 workings of the EntityManager and UnitOfWork. Please read the
-*Implementing Event Listeners* section carefully if you are trying
-to write your own listener.
+:ref:`reference-events-implementing-listeners` section carefully if you
+are trying to write your own listener.
 
 For event subscribers, there are no surprises. They declare the
 lifecycle events in their ``getSubscribedEvents`` method and provide
@@ -434,7 +434,7 @@ A lifecycle event listener looks like the following:
         }
     }
 
-A lifecycle event subscriber may looks like this:
+A lifecycle event subscriber may look like this:
 
 .. code-block:: php
 

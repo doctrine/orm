@@ -11,10 +11,12 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1515Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1515Bar'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1515Foo::class),
+            $this->_em->getClassMetadata(DDC1515Bar::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -29,8 +31,8 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $bar = $this->_em->find(__NAMESPACE__ . '\DDC1515Bar', $bar->id);
-        $this->assertInstanceOf(__NAMESPACE__.'\DDC1515Foo', $bar->foo);
+        $bar = $this->_em->find(DDC1515Bar::class, $bar->id);
+        $this->assertInstanceOf(DDC1515Foo::class, $bar->foo);
     }
 }
 

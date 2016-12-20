@@ -8,7 +8,7 @@ use Doctrine\Tests\Models\Taxi\Ride;
 
 /**
  * @group DDC-3068
- * 
+ *
  * @author Giorgio Premi <giosh94mhz@gmail.com>
  */
 class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -40,19 +40,21 @@ class DDC3068Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testFindUsingAnArrayOfObjectAsPrimaryKey()
     {
-        $ride1 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', array(
+        $ride1 = $this->_em->find(Ride::class, [
             'driver' => $this->foo->getId(),
-            'car'    => $this->merc->getBrand())
+            'car'    => $this->merc->getBrand()
+            ]
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride1);
+        $this->assertInstanceOf(Ride::class, $ride1);
 
-        $ride2 = $this->_em->find('Doctrine\Tests\Models\Taxi\Ride', array(
+        $ride2 = $this->_em->find(Ride::class, [
             'driver' => $this->foo,
             'car'    => $this->merc
-        ));
+        ]
+        );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Taxi\Ride', $ride2);
+        $this->assertInstanceOf(Ride::class, $ride2);
         $this->assertSame($ride1, $ride2);
     }
 }

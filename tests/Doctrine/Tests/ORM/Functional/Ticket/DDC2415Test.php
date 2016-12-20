@@ -16,22 +16,24 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver(array()));
+        $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver([]));
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ParentEntity'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ChildEntity'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2415ParentEntity::class),
+            $this->_em->getClassMetadata(DDC2415ChildEntity::class),
+            ]
+        );
     }
 
     public function testTicket()
     {
-        $parentMetadata  = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ParentEntity');
-        $childMetadata   = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2415ChildEntity');
+        $parentMetadata  = $this->_em->getClassMetadata(DDC2415ParentEntity::class);
+        $childMetadata   = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
 
         $this->assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
         $this->assertEquals($parentMetadata->customGeneratorDefinition, $childMetadata->customGeneratorDefinition);
-        $this->assertEquals('Doctrine\Tests\ORM\Functional\Ticket\DDC2415Generator', $parentMetadata->customGeneratorDefinition['class']);
+        $this->assertEquals(DDC2415Generator::class, $parentMetadata->customGeneratorDefinition['class']);
 
         $e1 = new DDC2415ChildEntity("ChildEntity 1");
         $e2 = new DDC2415ChildEntity("ChildEntity 2");
@@ -57,16 +59,16 @@ class DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array (
+        $metadata->mapField(
+            [
             'id'        => true,
             'fieldName' => 'id',
             'type'      => 'string',
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_CUSTOM);
-        $metadata->setCustomGeneratorDefinition(array(
-            'class' => 'Doctrine\Tests\ORM\Functional\Ticket\DDC2415Generator'
-        ));
+        $metadata->setCustomGeneratorDefinition(['class' => DDC2415Generator::class]);
 
         $metadata->isMappedSuperclass = true;
     }
@@ -88,10 +90,12 @@ class DDC2415ChildEntity extends DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array (
+        $metadata->mapField(
+            [
             'fieldName' => 'name',
             'type'      => 'string',
-        ));
+            ]
+        );
     }
 }
 

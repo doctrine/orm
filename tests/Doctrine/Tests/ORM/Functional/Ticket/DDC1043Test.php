@@ -30,7 +30,7 @@ class DDC1043Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find("Doctrine\Tests\Models\CMS\CmsUser", $user->id);
+        $user = $this->_em->find(CmsUser::class, $user->id);
         $this->assertSame("44", $user->status);
     }
 }

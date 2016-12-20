@@ -13,11 +13,13 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier()
     {
-        Type::addType('ddc1998', __NAMESPACE__ . '\\DDC1998Type');
+        Type::addType('ddc1998', DDC1998Type::class);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1998Entity'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1998Entity::class),
+            ]
+        );
 
         $entity = new DDC1998Entity();
         $entity->id = new DDC1998Id("foo");
@@ -34,13 +36,13 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
 
-        $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', $entity->id);
+        $found = $this->_em->find(DDC1998Entity::class, $entity->id);
         $this->assertNull($found);
 
-        $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', "foo");
+        $found = $this->_em->find(DDC1998Entity::class, "foo");
         $this->assertNull($found);
 
-        $this->assertEquals(0, count($this->_em->getRepository(__NAMESPACE__ . '\\DDC1998Entity')->findAll()));
+        $this->assertEquals(0, count($this->_em->getRepository(DDC1998Entity::class)->findAll()));
     }
 }
 

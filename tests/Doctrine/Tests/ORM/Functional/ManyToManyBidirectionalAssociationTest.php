@@ -115,8 +115,8 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         //$query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $result = $query->getResult();
         $this->assertEquals(2, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $result[1]);
+        $this->assertInstanceOf(ECommerceCategory::class, $result[0]);
+        $this->assertInstanceOf(ECommerceCategory::class, $result[1]);
         $prods1 = $result[0]->getProducts();
         $prods2 = $result[1]->getProducts();
         $this->assertTrue($prods1->isInitialized());
@@ -155,10 +155,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertEquals(2, count($secondCategoryProducts)); // lazy-load
         $this->assertTrue($secondCategoryProducts->isInitialized());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstCategoryProducts[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $firstCategoryProducts[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondCategoryProducts[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $secondCategoryProducts[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $firstCategoryProducts[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $secondCategoryProducts[1]);
 
         $this->assertCollectionEquals($firstCategoryProducts, $secondCategoryProducts);
     }
@@ -190,10 +190,10 @@ class ManyToManyBidirectionalAssociationTest extends AbstractManyToManyAssociati
         $this->assertEquals(2, count($secondProductCategories)); // lazy-load
         $this->assertTrue($secondProductCategories->isInitialized());
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $firstProductCategories[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $firstProductCategories[1]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $secondProductCategories[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCategory', $secondProductCategories[1]);
+        $this->assertInstanceOf(ECommerceCategory::class, $firstProductCategories[0]);
+        $this->assertInstanceOf(ECommerceCategory::class, $firstProductCategories[1]);
+        $this->assertInstanceOf(ECommerceCategory::class, $secondProductCategories[0]);
+        $this->assertInstanceOf(ECommerceCategory::class, $secondProductCategories[1]);
 
         $this->assertCollectionEquals($firstProductCategories, $secondProductCategories);
     }

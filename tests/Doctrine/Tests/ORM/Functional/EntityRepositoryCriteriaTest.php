@@ -1,24 +1,8 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Tweet\Tweet;
@@ -40,7 +24,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function tearDown()
     {
         if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces(array());
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -81,7 +65,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     {
         $this->loadFixture();
 
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
@@ -112,7 +96,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testIsNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->isNull('time')
@@ -124,7 +108,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->eq('time', null)
@@ -136,7 +120,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testNotEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->neq('time', null)
@@ -148,7 +132,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testCanCountWithoutLoadingCollection()
     {
         $this->loadFixture();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria());
 
@@ -188,10 +172,10 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $criteria = new Criteria();
         $criteria->andWhere($criteria->expr()->contains('content', 'Criteria'));
 
-        $user   = $this->_em->find('Doctrine\Tests\Models\Tweet\User', $user->id);
+        $user   = $this->_em->find(User::class, $user->id);
         $tweets = $user->tweets->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
 
         $tweets->contains($tweet);
