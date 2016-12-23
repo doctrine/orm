@@ -61,28 +61,13 @@ abstract class Issue6189Product
     const CLASSNAME = __CLASS__;
 
     /**
-     * @var string
+     * @var int
      *
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
      * @Id
      */
     public $id;
-
-    /**
-     * @var string|null
-     *
-     * @Column(type="string", length=255, nullable=true)
-     */
-    public $name;
-
-    /**
-     * Product constructor.
-     */
-    public function __construct()
-    {
-        $this->id = uniqid('someId', true);
-    }
 }
 
 /**
