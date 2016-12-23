@@ -222,7 +222,7 @@ final class Query extends AbstractQuery
     /**
      * {@inheritdoc}
      */
-    protected function getResultSetMapping()
+    public function getResultSetMapping()
     {
         // parse query or load from cache
         if ($this->_resultSetMapping === null) {
