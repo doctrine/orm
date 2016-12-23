@@ -10,14 +10,17 @@ class Issue6190Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('issue5989');
         parent::setUp();
+
+        $this->_schemaTool->createSchema(array(
+            $this->_em->getClassMetadata(Issue6190User::CLASSNAME),
+            $this->_em->getClassMetadata(Issue6190Group::CLASSNAME),
+        ));
     }
 
     public function testManyToManyCollectionItemsArePreserved()
     {
-        $user = new Issue6190User();
-
+        $user  = new Issue6190User();
         $group = new Issue6190Group();
 
         $this->_em->persist($user);
@@ -38,7 +41,7 @@ class Issue6190Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity
+ * @Entity
  */
 class Issue6190User
 {
@@ -47,14 +50,14 @@ class Issue6190User
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Column(name="id", type="integer")
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Issue6190Group::CLASSNAME, inversedBy="users")
+     * @ManyToMany(targetEntity="Issue6190Group", inversedBy="users")
      */
     private $groups;
 
@@ -65,8 +68,8 @@ class Issue6190User
 }
 
 /**
- * @ORM\Table
- * @ORM\Entity
+ * @Table
+ * @Entity
  */
 class Issue6190Group
 {
@@ -75,14 +78,14 @@ class Issue6190Group
     /**
      * @var integer
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @Column(name="id", type="integer")
+     * @Id
+     * @GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Issue6190User::CLASSNAME, mappedBy="groups")
+     * @ManyToMany(targetEntity="Issue6190User", mappedBy="groups")
      */
     public $users;
 
