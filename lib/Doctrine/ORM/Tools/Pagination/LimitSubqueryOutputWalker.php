@@ -563,7 +563,11 @@ class LimitSubqueryOutputWalker extends SqlWalker
     public function walkPathExpression($pathExpr)
     {
         if (!$this->inSubSelect && !$this->platformSupportsRowNumber() && !in_array($pathExpr, $this->orderByPathExpressions)) {
-            $this->orderByPathExpressions[] = $pathExpr;
+            $queryComp = $this->queryComponents[$pathExpr->identificationVariable];
+
+            if ($queryComp['nestingLevel'] == 0) {
+                $this->orderByPathExpressions[] = $pathExpr;
+            }
         }
 
         return parent::walkPathExpression($pathExpr);
