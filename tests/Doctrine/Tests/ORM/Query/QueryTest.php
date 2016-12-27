@@ -278,4 +278,24 @@ class QueryTest extends OrmTestCase
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
+
+    /**
+     * @expectedException        Doctrine\ORM\Query\QueryException
+     * @exptectedExcepionMessage Subquery
+     */
+    public function testSelectJoinSubquery()
+    {
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+        $query->getResult();
+    }
+
+    /**
+     * @expectedException        Doctrine\ORM\Query\QueryException
+     * @exptectedExcepionMessage Subquery
+     */
+    public function testSelectFromSubquery()
+    {
+        $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+        $query->getResult();
+    }
 }
