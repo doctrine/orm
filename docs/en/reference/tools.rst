@@ -385,7 +385,7 @@ First you need to retrieve the metadata instances with the
         )
     );
     
-    $cmf = new DisconnectedClassMetadataFactory();
+    $cmf = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
     $cmf->setEntityManager($em);
     $metadata = $cmf->getAllMetadata();
 
@@ -395,7 +395,7 @@ to yml:
 .. code-block:: php
 
     <?php
-    $cme = new ClassMetadataExporter();
+    $cme = new \Doctrine\ORM\Tools\Export\ClassMetadataExporter();
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
     $exporter->setMetadata($metadata);
     $exporter->export();
