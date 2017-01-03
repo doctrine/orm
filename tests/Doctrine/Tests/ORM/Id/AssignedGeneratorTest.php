@@ -114,10 +114,6 @@ class AssignedGeneratorTest extends OrmTestCase
      */
     public function provideTestDataForExceptionIfIdNotAssigned()
     {
-        if (is_null($this->_em)) {
-            $this->setUp();
-        }
-
         return [
             [
                 false,
@@ -143,10 +139,6 @@ class AssignedGeneratorTest extends OrmTestCase
      */
     public function provideTestDataForCorrectIdGeneration()
     {
-        if (is_null($this->_em)) {
-            $this->setUp();
-        }
-
         return [
             [
                 false,
