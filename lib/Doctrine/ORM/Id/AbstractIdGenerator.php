@@ -37,13 +37,7 @@ abstract class AbstractIdGenerator implements IdGeneratorInterface
 
     public final function generateId(EntityManagerInterface $em, $entity)
     {
-        /* @var $id mixed */
-        $id = null;
-
-        if ($em instanceof EntityManager) {
-            $id = $this->generate($em, $entity);
-
-        } else {
+        if (!$em instanceof EntityManager) {
             throw new ORMException(sprintf(
                 "Tried to use non-doctrine entity-manager %s with old id-generator %s which is not supported! ".
                 "This id-generator must be upgraded to use the %s to make it work with different entity-managers!",
@@ -53,7 +47,7 @@ abstract class AbstractIdGenerator implements IdGeneratorInterface
             ));
         }
 
-        return $id;
+        return $this->generate($em, $entity);
     }
 
     /**
