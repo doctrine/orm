@@ -410,7 +410,10 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+        if (is_object($value) && (
+            $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))
+            || ! $this->_em->getMetadataFactory()->isTransient(ClassUtils::getClass($value))
+        )) {
             $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {
