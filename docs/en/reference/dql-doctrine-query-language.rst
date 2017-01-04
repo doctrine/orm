@@ -1004,7 +1004,7 @@ structure:
 
 .. code-block:: php
 
-    $dql = "SELECT u, 'some scalar string', count(u.groups) AS num FROM User u JOIN u.groups g GROUP BY u.id";
+    $dql = "SELECT u, 'some scalar string', count(g.id) AS num FROM User u JOIN u.groups g GROUP BY u.id";
 
     array
         [0]
