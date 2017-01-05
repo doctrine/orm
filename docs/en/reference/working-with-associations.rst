@@ -402,6 +402,8 @@ There are two approaches to handle this problem in your code:
    association management methods. Reads of the Collections directly
    after changes are consistent then.
 
+.. _transitive-persistence:
+
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
