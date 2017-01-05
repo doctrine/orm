@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Mapping;
 
 use BadMethodCallException;
 use Doctrine\Instantiator\Instantiator;
+use Doctrine\ORM\Cache\AssociationCacheEntry;
 use InvalidArgumentException;
 use RuntimeException;
 use Doctrine\DBAL\Types\Type;
@@ -728,7 +729,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $id = $this->identifier[0];
-        $value = $this->reflFields[$id]->getValue($entity);
+        if ($entity instanceof AssociationCacheEntry) {
+            $value = $entity->identifier[$id];
+        } else {
+            $value = $this->reflFields[$id]->getValue($entity);
+        }
 
         if (null === $value) {
             return array();
