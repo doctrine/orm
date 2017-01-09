@@ -407,31 +407,14 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-When working with many associated entities, you sometimes don't want to "expose" all entities to your PHP application.
-Therefore Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
+Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
 ``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
 
-.. note::
-
-    Cascade operations are performed in memory. That means collections and related entities
-    are fetched into memory, even if they are still marked as lazy when
-    the cascade operation is about to be performed. However this approach allows
-    entity lifecycle events to be performed for each of these operations.
-
-    However, pulling objects graph into memory on cascade can cause considerable performance
-    overhead, especially when cascading collections are large. Makes sure
-    to weigh the benefits and downsides of each cascade operation that you define.
-
-    To rely on the database level cascade operations for the delete operation instead, you can
-    configure each join column with the **onDelete** option. See the respective
-    mapping driver chapters for more information.
-
-The following example is an extension to the User-Comment example
-of this chapter. Suppose in our application a user is created
-whenever they write their first comment. In this case we would use the
-following code:
+The main use case for ``cascade: persist`` is to avoid "exposing" associated entities to your PHP application.
+Continuing with the User-Comment example of this chapter, this is how the creation of a new user and a new
+comment might look like in your controller (without ``cascade: persist``):
 
 .. code-block:: php
 
@@ -444,34 +427,34 @@ following code:
     $em->persist($myFirstComment); // required, if `cascade: persist` isn't set
     $em->flush();
 
-Even if you *persist* a new User that contains our new Comment this
-code requires an explicit call to
-``EntityManager#persist($myFirstComment)``. Doctrine 2 does not
-cascade the persist operation to all nested entities that are new
-as well.
-
-More complicated is the deletion of all user's comments when the user is
-removed from the system:
+Note that the Comment entity is instantiated right here in the controller.
+To avoid this, ``cascade: persist`` allows you to "hide" the Comment entity from the controller,
+only accessing it through the User entity:
 
 .. code-block:: php
 
     <?php
-    $user = $em->find('User', $deleteUserId);
-    
-    foreach ($user->getAuthoredComments() as $comment) {
-        $em->remove($comment);
+    // User entity
+    class User
+    {
+        private $id;
+        private $comments;
+
+        public function __construct()
+        {
+            $this->id = User::new();
+            $this->comments = new ArrayCollection();
+        }
+
+        public function comment(string $text, DateTimeInterface $time) : void
+        {
+            $this->comments->add(Comment::create($text, $time));
+        }
+
+        // ...
     }
-    $em->remove($user);
-    $em->flush();
 
-Without the loop over all the authored comments Doctrine would use
-an UPDATE statement only to set the foreign key to NULL and only
-the User would be deleted from the database during the
-flush()-Operation.
-
-To have Doctrine handle both cases automatically we can change the
-``User#commentsAuthored`` property to cascade both the "persist"
-and the "remove" operation.
+If you then set up the cascading to the ``User#commentsAuthored`` property...
 
 .. code-block:: php
 
@@ -488,30 +471,52 @@ and the "remove" operation.
         //...
     }
 
-Since ``cascade: persist`` is configured for the ``User#commentsAuthored``
-association, you can now create a user and persist their comments as follows:
+...you can now create a user and an associated comment like this:
 
 .. code-block:: php
 
     <?php
     $user = new User();
-    $myFirstComment = new Comment();
-    $user->addComment($myFirstComment);
-    $myFirstComment->setUser($user);
+    $user->comment('Lorem ipsum', new DateTime());
     
     $em->persist($user);
     $em->flush();
 
+Thanks to ``cascade: remove``, you can easily delete a user too (without having to loop through all associated comments):
+
+.. code-block:: php
+
+    <?php
+    $user = $em->find('User', $deleteUserId);
+
+    $em->remove($user);
+    $em->flush();
+
 .. note::
 
-    This code does not associate the newly created comment with the user.
-    To achieve this, you *always* have to call ``$myFirstComment->setUser($user);`` –
-    no matter if ``cascade: persist`` is set or not.
+    The idea of ``cascade: persist`` is not to save you any lines of code in the controller.
+    If you instantiate the comment object in the controller (i.e. don't set up the user entity as shown above),
+    even with ``cascade: persist`` you still have to call ``$myFirstComment->setUser($user);``.
+
+.. note::
+
+    Cascade operations are performed in memory. That means collections and related entities
+    are fetched into memory (even if they are marked as lazy) when
+    the cascade operation is about to be performed. However this approach allows
+    entity lifecycle events to be performed for each of these operations.
+
+    However, pulling objects graph into memory on cascade can cause considerable performance
+    overhead, especially when the cascaded collections are large. Make sure
+    to weigh the benefits and downsides of each cascade operation that you define.
+
+    To rely on the database level cascade operations for the delete operation instead, you can
+    configure each join column with the **onDelete** option. See the respective
+    mapping driver chapters for more information.
 
 Even though automatic cascading is convenient, it should be used
 with care. Do not blindly apply ``cascade=all`` to all associations as
 it will unnecessarily degrade the performance of your application.
-For each cascade operation that gets activated Doctrine also
+For each cascade operation that gets activated, Doctrine also
 applies that operation to the association, be it single or
 collection valued.
 
