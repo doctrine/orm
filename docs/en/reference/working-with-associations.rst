@@ -407,25 +407,11 @@ There are two approaches to handle this problem in your code:
 Transitive persistence / Cascade Operations
 -------------------------------------------
 
-Persisting, removing, detaching, refreshing and merging individual entities can
-become pretty cumbersome, especially when a highly interweaved object graph
-is involved. Therefore Doctrine 2 provides a
-mechanism for transitive persistence through cascading of these
-operations. Each association to another entity or a collection of
-entities can be configured to automatically cascade certain
-operations. By default, no operations are cascaded.
-
-The following cascade options exist:
-
-
--  persist : Cascades persist operations to the associated
-   entities.
--  remove : Cascades remove operations to the associated entities.
--  merge : Cascades merge operations to the associated entities.
--  detach : Cascades detach operations to the associated entities.
--  refresh : Cascades refresh operations to the associated entities.
--  all : Cascades persist, remove, merge, refresh and detach operations to
-   associated entities.
+When working with many associated entities, you sometimes don't want to "expose" all entities to your PHP application.
+Therefore Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
+Each association to another entity or a collection of
+entities can be configured to automatically cascade the following operations to the associated entities:
+``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
 
 .. note::
 
@@ -444,7 +430,7 @@ The following cascade options exist:
 
 The following example is an extension to the User-Comment example
 of this chapter. Suppose in our application a user is created
-whenever he writes his first comment. In this case we would use the
+whenever they write their first comment. In this case we would use the
 following code:
 
 .. code-block:: php
@@ -455,16 +441,16 @@ following code:
     $user->addComment($myFirstComment);
     
     $em->persist($user);
-    $em->persist($myFirstComment);
+    $em->persist($myFirstComment); // required, if `cascade: persist` isn't set
     $em->flush();
 
 Even if you *persist* a new User that contains our new Comment this
-code would fail if you removed the call to
+code requires an explicit call to
 ``EntityManager#persist($myFirstComment)``. Doctrine 2 does not
 cascade the persist operation to all nested entities that are new
 as well.
 
-More complicated is the deletion of all of a user's comments when he is
+More complicated is the deletion of all user's comments when the user is
 removed from the system:
 
 .. code-block:: php
@@ -502,8 +488,28 @@ and the "remove" operation.
         //...
     }
 
-Even though automatic cascading is convenient it should be used
-with care. Do not blindly apply cascade=all to all associations as
+Since ``cascade: persist`` is configured for the ``User#commentsAuthored``
+association, you can now create a user and persist their comments as follows:
+
+.. code-block:: php
+
+    <?php
+    $user = new User();
+    $myFirstComment = new Comment();
+    $user->addComment($myFirstComment);
+    $myFirstComment->setUser($user);
+    
+    $em->persist($user);
+    $em->flush();
+
+.. note::
+
+    This code does not associate the newly created comment with the user.
+    To achieve this, you *always* have to call ``$myFirstComment->setUser($user);`` –
+    no matter if ``cascade: persist`` is set or not.
+
+Even though automatic cascading is convenient, it should be used
+with care. Do not blindly apply ``cascade=all`` to all associations as
 it will unnecessarily degrade the performance of your application.
 For each cascade operation that gets activated Doctrine also
 applies that operation to the association, be it single or
