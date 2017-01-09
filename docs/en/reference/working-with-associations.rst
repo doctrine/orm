@@ -495,6 +495,7 @@ association, you can now create a user and persist their comments as follows:
     $user = new User();
     $myFirstComment = new Comment();
     $user->addComment($myFirstComment);
+    $myFirstComment->setUser($user);
     
     $em->persist($user);
     $em->flush();
