@@ -211,18 +211,6 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * Used when a given entityName hasn't the good type
-     *
-     * @param mixed $entityName The given entity (which shouldn't be a string)
-     *
-     * @return self
-     */
-    public static function invalidEntityName($entityName)
-    {
-        return new self(sprintf('Entity name must be a string, %s given', gettype($entityName)));
-    }
-
-    /**
      * Helper method to show an object as string.
      *
      * @param object $obj

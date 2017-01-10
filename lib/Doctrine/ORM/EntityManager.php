@@ -575,25 +575,16 @@ use Doctrine\Common\Util\ClassUtils;
      * Clears the EntityManager. All entities that are currently managed
      * by this EntityManager become detached.
      *
-     * @param string|null $entityName if given, only entities of this type will get detached
+     * @param null $entityName Unused. @todo Remove from ObjectManager.
      *
      * @return void
      *
-     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
      *                                                               found in the mappings
      */
     public function clear($entityName = null)
     {
-        if (null !== $entityName && ! is_string($entityName)) {
-            throw ORMInvalidArgumentException::invalidEntityName($entityName);
-        }
-
-        $this->unitOfWork->clear(
-            null === $entityName
-                ? null
-                : $this->metadataFactory->getMetadataFor($entityName)->getName()
-        );
+        $this->unitOfWork->clear(null);
     }
 
     /**
