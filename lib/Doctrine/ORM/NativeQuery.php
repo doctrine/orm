@@ -30,7 +30,7 @@ final class NativeQuery extends AbstractQuery
     /**
      * @var string
      */
-    private $_sql;
+    private $sql;
 
     /**
      * Sets the SQL of the query.
@@ -41,7 +41,7 @@ final class NativeQuery extends AbstractQuery
      */
     public function setSQL($sql)
     {
-        $this->_sql = $sql;
+        $this->sql = $sql;
 
         return $this;
     }
@@ -55,13 +55,13 @@ final class NativeQuery extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->_sql;
+        return $this->sql;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function doExecute()
     {
         $parameters = [];
         $types      = [];
@@ -85,8 +85,8 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->_em->getConnection()->executeQuery(
-            $this->_sql, $parameters, $types, $this->_queryCacheProfile
+        return $this->em->getConnection()->executeQuery(
+            $this->sql, $parameters, $types, $this->queryCacheProfile
         );
     }
 }

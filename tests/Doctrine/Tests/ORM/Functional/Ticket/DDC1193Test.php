@@ -9,12 +9,12 @@ class DDC1193Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1193Company::class),
-            $this->_em->getClassMetadata(DDC1193Person::class),
-            $this->_em->getClassMetadata(DDC1193Account::class)
+            $this->em->getClassMetadata(DDC1193Company::class),
+            $this->em->getClassMetadata(DDC1193Person::class),
+            $this->em->getClassMetadata(DDC1193Account::class)
             ]
         );
     }
@@ -33,24 +33,24 @@ class DDC1193Test extends OrmFunctionalTestCase
 
         $company->member = $person;
 
-        $this->_em->persist($company);
+        $this->em->persist($company);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $companyId = $company->id;
         $accountId = $account->id;
-        $this->_em->clear();
+        $this->em->clear();
 
-        $company = $this->_em->find(get_class($company), $companyId);
+        $company = $this->em->find(get_class($company), $companyId);
 
-        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
+        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
         self::assertFalse($company->member->__isInitialized__, "Pre-Condition");
-        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
+        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
 
-        $this->_em->remove($company);
-        $this->_em->flush();
+        $this->em->remove($company);
+        $this->em->flush();
 
-        self::assertEquals(count($this->_em->getRepository(get_class($account))->findAll()), 0);
+        self::assertEquals(count($this->em->getRepository(get_class($account))->findAll()), 0);
     }
 }
 

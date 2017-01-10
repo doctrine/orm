@@ -14,15 +14,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $schemaTool = new SchemaTool($this->_em);
+        $schemaTool = new SchemaTool($this->em);
         try {
             $schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(Train::class),
-                $this->_em->getClassMetadata(TrainDriver::class),
-                $this->_em->getClassMetadata(TrainOwner::class),
-                $this->_em->getClassMetadata(Waggon::class),
-                $this->_em->getClassMetadata(TrainOrder::class),
+                $this->em->getClassMetadata(Train::class),
+                $this->em->getClassMetadata(TrainDriver::class),
+                $this->em->getClassMetadata(TrainOwner::class),
+                $this->em->getClassMetadata(Waggon::class),
+                $this->em->getClassMetadata(TrainOrder::class),
                 ]
             );
         } catch(\Exception $e) {}
@@ -40,17 +40,17 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $train->setDriver($driver);
         $train->addWaggon($waggon);
 
-        $this->_em->persist($train); // cascades
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train); // cascades
+        $this->em->flush();
+        $this->em->clear();
 
-        $sqlCount = count($this->_sqlLoggerStack->queries);
+        $sqlCount = count($this->sqlLoggerStack->queries);
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $train = $this->em->find(get_class($train), $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertEquals("Benjamin", $train->driver->name);
 
-        self::assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
     }
 
     /**
@@ -60,17 +60,17 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     {
         $train = new Train(new TrainOwner("Alexander"));
 
-        $this->_em->persist($train); // cascades
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train); // cascades
+        $this->em->flush();
+        $this->em->clear();
 
-        $sqlCount = count($this->_sqlLoggerStack->queries);
+        $sqlCount = count($this->sqlLoggerStack->queries);
 
-        $train = $this->_em->find(get_class($train), $train->id);
+        $train = $this->em->find(get_class($train), $train->id);
         self::assertNotInstanceOf(Proxy::class, $train->driver);
         self::assertNull($train->driver);
 
-        self::assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
     }
 
     /**
@@ -81,17 +81,17 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $owner = new TrainOwner("Alexander");
         $train = new Train($owner);
 
-        $this->_em->persist($train); // cascades
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train); // cascades
+        $this->em->flush();
+        $this->em->clear();
 
-        $sqlCount = count($this->_sqlLoggerStack->queries);
+        $sqlCount = count($this->sqlLoggerStack->queries);
 
-        $driver = $this->_em->find(get_class($owner), $owner->id);
+        $driver = $this->em->find(get_class($owner), $owner->id);
         self::assertNotInstanceOf(Proxy::class, $owner->train);
         self::assertNotNull($owner->train);
 
-        self::assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
     }
 
     /**
@@ -101,19 +101,19 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
     {
         $driver = new TrainDriver("Dagny Taggert");
 
-        $this->_em->persist($driver);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($driver);
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertNull($driver->train);
 
-        $sqlCount = count($this->_sqlLoggerStack->queries);
+        $sqlCount = count($this->sqlLoggerStack->queries);
 
-        $driver = $this->_em->find(get_class($driver), $driver->id);
+        $driver = $this->em->find(get_class($driver), $driver->id);
         self::assertNotInstanceOf(Proxy::class, $driver->train);
         self::assertNull($driver->train);
 
-        self::assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
+        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
     }
 
     public function testEagerLoadManyToOne()
@@ -122,11 +122,11 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $waggon = new Waggon();
         $train->addWaggon($waggon);
 
-        $this->_em->persist($train); // cascades
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train); // cascades
+        $this->em->flush();
+        $this->em->clear();
 
-        $waggon = $this->_em->find(get_class($waggon), $waggon->id);
+        $waggon = $this->em->find(get_class($waggon), $waggon->id);
         self::assertNotInstanceOf(Proxy::class, $waggon->train);
         self::assertNotNull($waggon->train);
     }
@@ -140,24 +140,24 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $driver = new TrainDriver("Benjamin");
         $train->setDriver($driver);
 
-        $this->_em->persist($train);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->find(get_class($train), $train->id);
+        $this->em->find(get_class($train), $train->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS id_1, t0."driver_id" AS driver_id_2, t4."id" AS id_3, t4."name" AS name_5, t0."owner_id" AS owner_id_6, t8."id" AS id_7, t8."name" AS name_9 FROM "Train" t0 LEFT JOIN "TrainDriver" t4 ON t0."driver_id" = t4."id" INNER JOIN "TrainOwner" t8 ON t0."owner_id" = t8."id" WHERE t0."id" = ?',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['sql']
         );
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $this->_em->find(get_class($driver), $driver->id);
+        $this->em->find(get_class($driver), $driver->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" IN (?)',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['sql']
         );
     }
 
@@ -172,22 +172,22 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $train = new Train(new TrainOwner("Alexander"));
         $train->addWaggon($waggon);
 
-        $this->_em->persist($train);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->find(get_class($waggon), $waggon->id);
+        $this->em->find(get_class($waggon), $waggon->id);
 
         // The last query is the eager loading of the owner of the train
         self::assertSQLEquals(
             'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" IN (?)',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['sql']
         );
 
         // The one before is the fetching of the waggon and train
         self::assertSQLEquals(
             'SELECT t0."id" AS id_1, t0."train_id" AS train_id_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "Waggon" t0 INNER JOIN "Train" t4 ON t0."train_id" = t4."id" WHERE t0."id" = ?',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery - 1]['sql']
+            $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery - 1]['sql']
         );
     }
 
@@ -199,15 +199,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $owner = new TrainOwner('Alexander');
         $train = new Train($owner);
 
-        $this->_em->persist($train);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($train);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->find(get_class($owner), $owner->id);
+        $this->em->find(get_class($owner), $owner->id);
 
         self::assertSQLEquals(
             'SELECT t0."id" AS id_1, t0."name" AS name_2, t4."id" AS id_3, t4."driver_id" AS driver_id_5, t4."owner_id" AS owner_id_6 FROM "TrainOwner" t0 LEFT JOIN "Train" t4 ON t4."owner_id" = t0."id" WHERE t0."id" = ?',
-            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['sql']
+            $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['sql']
         );
     }
 
@@ -219,15 +219,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $train = new Train(new TrainOwner('Johannes'));
         $order = new TrainOrder($train);
 
-        $this->_em->persist($train);
-        $this->_em->persist($order);
-        $this->_em->flush();
+        $this->em->persist($train);
+        $this->em->persist($order);
+        $this->em->flush();
 
-        $this->_em->getConnection()->exec("UPDATE TrainOrder SET train_id = NULL");
+        $this->em->getConnection()->exec("UPDATE TrainOrder SET train_id = NULL");
 
         self::assertSame($train, $order->train);
 
-        $this->_em->refresh($order);
+        $this->em->refresh($order);
 
         self::assertTrue($order->train === null, "Train reference was not refreshed to NULL.");
     }

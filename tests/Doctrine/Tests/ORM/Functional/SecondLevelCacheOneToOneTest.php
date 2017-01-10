@@ -23,7 +23,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCities();
         $this->loadFixturesTravelersWithProfile();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity1 = $this->travelersWithProfile[0];
         $entity2 = $this->travelersWithProfile[1];
@@ -42,7 +42,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTravelersWithProfile();
         $this->loadFixturesTravelersProfileInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity1 = $this->travelersWithProfile[0];
         $entity2 = $this->travelersWithProfile[1];
@@ -63,7 +63,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTravelersWithProfile();
         $this->loadFixturesTravelersProfileInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(Traveler::class);
         $this->cache->evictEntityRegion(TravelerProfile::class);
@@ -76,8 +76,8 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(TravelerProfile::class, $entity1->getProfile()->getId()));
         self::assertFalse($this->cache->containsEntity(TravelerProfile::class, $entity2->getProfile()->getId()));
 
-        $t1 = $this->_em->find(Traveler::class, $entity1->getId());
-        $t2 = $this->_em->find(Traveler::class, $entity2->getId());
+        $t1 = $this->em->find(Traveler::class, $entity1->getId());
+        $t2 = $this->em->find(Traveler::class, $entity2->getId());
 
         self::assertTrue($this->cache->containsEntity(Traveler::class, $entity1->getId()));
         self::assertTrue($this->cache->containsEntity(Traveler::class, $entity2->getId()));
@@ -106,12 +106,12 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(TravelerProfile::class, $entity1->getProfile()->getId()));
         self::assertTrue($this->cache->containsEntity(TravelerProfile::class, $entity1->getProfile()->getId()));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         // load from cache
-        $t3 = $this->_em->find(Traveler::class, $entity1->getId());
-        $t4 = $this->_em->find(Traveler::class, $entity2->getId());
+        $t3 = $this->em->find(Traveler::class, $entity1->getId());
+        $t4 = $this->em->find(Traveler::class, $entity2->getId());
 
         self::assertInstanceOf(Traveler::class, $t3);
         self::assertInstanceOf(Traveler::class, $t4);
@@ -135,7 +135,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTravelersWithProfile();
         $this->loadFixturesTravelersProfileInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(Traveler::class);
         $this->cache->evictEntityRegion(TravelerProfile::class);
@@ -149,8 +149,8 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(TravelerProfileInfo::class, $entity1->getInfo()->getId()));
         self::assertFalse($this->cache->containsEntity(TravelerProfileInfo::class, $entity2->getInfo()->getId()));
 
-        $p1 = $this->_em->find(TravelerProfile::class, $entity1->getId());
-        $p2 = $this->_em->find(TravelerProfile::class, $entity2->getId());
+        $p1 = $this->em->find(TravelerProfile::class, $entity1->getId());
+        $p2 = $this->em->find(TravelerProfile::class, $entity2->getId());
 
         self::assertEquals($entity1->getId(), $p1->getId());
         self::assertEquals($entity1->getName(), $p1->getName());
@@ -167,12 +167,12 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::class, $entity1->getInfo()->getId()));
         self::assertTrue($this->cache->containsEntity(TravelerProfileInfo::class, $entity2->getInfo()->getId()));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $p3 = $this->_em->find(TravelerProfile::class, $entity1->getId());
-        $p4 = $this->_em->find(TravelerProfile::class, $entity2->getId());
+        $p3 = $this->em->find(TravelerProfile::class, $entity1->getId());
+        $p4 = $this->em->find(TravelerProfile::class, $entity2->getId());
 
         self::assertInstanceOf(TravelerProfile::class, $p3);
         self::assertInstanceOf(TravelerProfile::class, $p4);
@@ -196,7 +196,7 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesPersonWithAddress();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(Person::class);
         $this->cache->evictEntityRegion(Address::class);
@@ -209,8 +209,8 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Address::class, $entity1->address->id));
         self::assertFalse($this->cache->containsEntity(Address::class, $entity2->address->id));
 
-        $p1 = $this->_em->find(Person::class, $entity1->id);
-        $p2 = $this->_em->find(Person::class, $entity2->id);
+        $p1 = $this->em->find(Person::class, $entity1->id);
+        $p2 = $this->em->find(Person::class, $entity2->id);
 
         self::assertEquals($entity1->id, $p1->id);
         self::assertEquals($entity1->name, $p1->name);
@@ -228,12 +228,12 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Address::class, $entity1->address->id));
         self::assertFalse($this->cache->containsEntity(Address::class, $entity2->address->id));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $p3 = $this->_em->find(Person::class, $entity1->id);
-        $p4 = $this->_em->find(Person::class, $entity2->id);
+        $p3 = $this->em->find(Person::class, $entity1->id);
+        $p4 = $this->em->find(Person::class, $entity2->id);
 
         self::assertInstanceOf(Person::class, $p3);
         self::assertInstanceOf(Person::class, $p4);
@@ -261,17 +261,17 @@ class SecondLevelCacheOneToOneTest extends SecondLevelCacheAbstractTest
         $client = new Client('FabioBatSilva');
         $token  = new Token('token-hash', $client);
 
-        $this->_em->persist($client);
-        $this->_em->persist($token);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($client);
+        $this->em->persist($token);
+        $this->em->flush();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertTrue($this->cache->containsEntity(Token::class, $token->token));
         self::assertFalse($this->cache->containsEntity(Client::class, $client->id));
 
-        $entity = $this->_em->find(Token::class, $token->token);
+        $entity = $this->em->find(Token::class, $token->token);
 
         self::assertInstanceOf(Token::class, $entity);
         self::assertInstanceOf(Client::class, $entity->getClient());

@@ -19,7 +19,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testEntitySingleResult()
     {
-        $query      = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
+        $query      = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d');
         $datetime   = $query->setMaxResults(1)->getSingleResult();
 
         self::assertInstanceOf(DateTimeModel::class, $datetime);
@@ -31,7 +31,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testScalarResult()
     {
-        $query      = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getScalarResult();
 
         self::assertCount(2,$result);
@@ -47,7 +47,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testaTicketEntityArrayResult()
     {
-        $query      = $this->_em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $query      = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getArrayResult();
 
         self::assertCount(2,$result);
@@ -63,7 +63,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicketSingleResult()
     {
-        $query      = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $datetime   = $query->setMaxResults(1)->getSingleResult();
 
         self::assertTrue(is_array($datetime));
@@ -75,7 +75,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicketResult()
     {
-        $query      = $this->_em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
+        $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getResult();
 
         self::assertCount(2,$result);
@@ -108,9 +108,9 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dateTime2->time    = new \DateTime('2010-02-02 12:12:12', $timezone);
         $dateTime2->datetime= new \DateTime('2010-02-02 12:12:12', $timezone);
 
-        $this->_em->persist($dateTime1);
-        $this->_em->persist($dateTime2);
+        $this->em->persist($dateTime1);
+        $this->em->persist($dateTime2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }

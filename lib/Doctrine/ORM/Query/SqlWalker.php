@@ -340,7 +340,7 @@ class SqlWalker implements TreeWalker
      *
      * @return string The SQL.
      */
-    private function _generateClassTableInheritanceJoins($class, $dqlAlias)
+    private function generateClassTableInheritanceJoins($class, $dqlAlias)
     {
         $sql = '';
 
@@ -398,7 +398,7 @@ class SqlWalker implements TreeWalker
     /**
      * @return string
      */
-    private function _generateOrderedCollectionOrderByItems()
+    private function generateOrderedCollectionOrderByItems()
     {
         $orderedColumns = [];
 
@@ -436,7 +436,7 @@ class SqlWalker implements TreeWalker
      *
      * @return string
      */
-    private function _generateDiscriminatorColumnConditionSQL(array $dqlAliases)
+    private function generateDiscriminatorColumnConditionSQL(array $dqlAliases)
     {
         $sqlParts = [];
 
@@ -549,7 +549,7 @@ class SqlWalker implements TreeWalker
             $sql .= $this->walkOrderByClause($AST->orderByClause);
         }
 
-        if ( ! $AST->orderByClause && ($orderBySql = $this->_generateOrderedCollectionOrderByItems())) {
+        if ( ! $AST->orderByClause && ($orderBySql = $this->generateOrderedCollectionOrderByItems())) {
             $sql .= ' ORDER BY ' . $orderBySql;
         }
 
@@ -943,9 +943,9 @@ class SqlWalker implements TreeWalker
 
         if ($class->inheritanceType === InheritanceType::JOINED) {
             if ($buildNestedJoins) {
-                $sql = '(' . $sql . $this->_generateClassTableInheritanceJoins($class, $dqlAlias) . ')';
+                $sql = '(' . $sql . $this->generateClassTableInheritanceJoins($class, $dqlAlias) . ')';
             } else {
-                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+                $sql .= $this->generateClassTableInheritanceJoins($class, $dqlAlias);
             }
         }
 
@@ -1011,7 +1011,7 @@ class SqlWalker implements TreeWalker
                 }
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1080,7 +1080,7 @@ class SqlWalker implements TreeWalker
                 }
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$joinedDqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1107,7 +1107,7 @@ class SqlWalker implements TreeWalker
         $withCondition = (null === $condExpr) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
         if ($targetClass->inheritanceType === InheritanceType::JOINED) {
-            $ctiJoins = $this->_generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
+            $ctiJoins = $this->generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
 
             // If we have WITH condition, we need to build nested joins for target class table and cti joins
             if ($withCondition) {
@@ -1149,7 +1149,7 @@ class SqlWalker implements TreeWalker
     {
         $orderByItems = array_map([$this, 'walkOrderByItem'], $orderByClause->orderByItems);
 
-        if (($collectionOrderByItems = $this->_generateOrderedCollectionOrderByItems()) !== '') {
+        if (($collectionOrderByItems = $this->generateOrderedCollectionOrderByItems()) !== '') {
             $orderByItems = array_merge($orderByItems, (array) $collectionOrderByItems);
         }
 
@@ -1215,7 +1215,7 @@ class SqlWalker implements TreeWalker
                 $sql .= $this->generateRangeVariableDeclarationSQL($joinDeclaration, !$isUnconditionalJoin);
 
                 // Apply remaining inheritance restrictions
-                $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$dqlAlias]);
+                $discrSql = $this->generateDiscriminatorColumnConditionSQL([$dqlAlias]);
 
                 if ($discrSql) {
                     $conditions[] = $discrSql;
@@ -1821,7 +1821,7 @@ class SqlWalker implements TreeWalker
     public function walkWhereClause($whereClause)
     {
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
-        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($this->rootAliases);
+        $discrSql = $this->generateDiscriminatorColumnConditionSql($this->rootAliases);
 
         if ($this->em->hasFilters()) {
             $filterClauses = [];

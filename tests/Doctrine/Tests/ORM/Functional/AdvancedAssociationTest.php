@@ -17,13 +17,13 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(Phrase::class),
-                    $this->_em->getClassMetadata(PhraseType::class),
-                    $this->_em->getClassMetadata(Definition::class),
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Type::class)
+                    $this->em->getClassMetadata(Phrase::class),
+                    $this->em->getClassMetadata(PhraseType::class),
+                    $this->em->getClassMetadata(Definition::class),
+                    $this->em->getClassMetadata(Lemma::class),
+                    $this->em->getClassMetadata(Type::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -37,13 +37,13 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         try {
-            $this->_schemaTool->dropSchema(
+            $this->schemaTool->dropSchema(
                 [
-                    $this->_em->getClassMetadata(Phrase::class),
-                    $this->_em->getClassMetadata(PhraseType::class),
-                    $this->_em->getClassMetadata(Definition::class),
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Type::class)
+                    $this->em->getClassMetadata(Phrase::class),
+                    $this->em->getClassMetadata(PhraseType::class),
+                    $this->em->getClassMetadata(Definition::class),
+                    $this->em->getClassMetadata(Lemma::class),
+                    $this->em->getClassMetadata(Type::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -71,49 +71,49 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $phrase->addDefinition($def1);
         $phrase->addDefinition($def2);
 
-        $this->_em->persist($phrase);
-        $this->_em->persist($type);
+        $this->em->persist($phrase);
+        $this->em->persist($type);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
         //end setup
 
         // test1 - lazy-loading many-to-one after find()
-        $phrase2 = $this->_em->find(Phrase::class, $phrase->getId());
+        $phrase2 = $this->em->find(Phrase::class, $phrase->getId());
         self::assertTrue(is_numeric($phrase2->getType()->getId()));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // test2 - eager load in DQL query
-        $query = $this->_em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
+        $query = $this->em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
         $res = $query->getResult();
         self::assertEquals(1, count($res));
         self::assertInstanceOf(PhraseType::class, $res[0]->getType());
         self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         self::assertFalse($res[0]->getType()->getPhrases()->isInitialized());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // test2 - eager load in DQL query with double-join back and forth
-        $query = $this->_em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
+        $query = $this->em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
         self::assertEquals(1, count($res));
         self::assertInstanceOf(PhraseType::class, $res[0]->getType());
         self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         self::assertTrue($res[0]->getType()->getPhrases()->isInitialized());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // test3 - lazy-loading one-to-many after find()
-        $phrase3 = $this->_em->find(Phrase::class, $phrase->getId());
+        $phrase3 = $this->em->find(Phrase::class, $phrase->getId());
         $definitions = $phrase3->getDefinitions();
         self::assertInstanceOf(PersistentCollection::class, $definitions);
         self::assertInstanceOf(Definition::class, $definitions[0]);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // test4 - lazy-loading after DQL query
-        $query = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\Phrase p");
+        $query = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\Phrase p");
         $res = $query->getResult();
         $definitions = $res[0]->getDefinitions();
 
@@ -134,12 +134,12 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 
         $lemma->addType($type);
 
-        $this->_em->persist($lemma);
-        $this->_em->persist($type);
-        $this->_em->flush();
+        $this->em->persist($lemma);
+        $this->em->persist($type);
+        $this->em->flush();
 
         // test5 ManyToMany
-        $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Lemma l");
+        $query = $this->em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Lemma l");
         $res = $query->getResult();
         $types = $res[0]->getTypes();
 
@@ -151,63 +151,67 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
  * @Entity
  * @Table(name="lemma")
  */
-class Lemma {
+class Lemma 
+{
+    const CLASS_NAME = __CLASS__;
 
-	const CLASS_NAME = __CLASS__;
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer", name="lemma_id")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 * @var int
-	 * @Id
-	 * @Column(type="integer", name="lemma_id")
-	 * @GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     *
+     * @var string
+     * @Column(type="string", name="lemma_name", unique=true, length=255)
+     */
+    private $lemma;
 
-	/**
-	 *
-	 * @var string
-	 * @Column(type="string", name="lemma_name", unique=true, length=255)
-	 */
-	private $lemma;
+    /**
+     * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
+     */
+    private $types;
 
-	/**
-	 * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
-	 */
-	private $types;
+    public function __construct()
+    {
+        $this->types = new ArrayCollection();
+    }
 
-	public function __construct() {
-		$this->types = new ArrayCollection();
-	}
+    /**
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 *
-	 * @return int
-	 */
-	public function getId(){
-		return $this->id;
-	}
-
-	/**
-	 *
-	 * @param string $lemma
-	 * @return void
-	 */
-	public function setLemma($lemma){
-		$this->lemma = $lemma;
-	}
-
-	/**
-	 *
-	 * @return string
-	 */
-	public function getLemma(){
-		return $this->lemma;
-	}
-
-	/**
+    /**
+     *
+     * @param string $lemma
      * @return void
      */
-	public function addType(Type $type){
+    public function setLemma($lemma)
+    {
+        $this->lemma = $lemma;
+    }
+
+    /**
+     *
+     * @return string
+     */
+    public function getLemma(){
+        return $this->lemma;
+    }
+
+    /**
+     * @return void
+     */
+    public function addType(Type $type)
+    {
         if (!$this->types->contains($type)) {
             $this->types[] = $type;
             $type->addLemma($this);
@@ -239,133 +243,138 @@ class Lemma {
  * @Entity
  * @Table(name="type")
  */
-class Type {
+class Type 
+{
+    const CLASS_NAME = __CLASS__;
 
-	const CLASS_NAME = __CLASS__;
+    /**
+     *
+     * @var int
+     * @Id
+     * @Column(type="integer", name="type_id")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    private $id;
 
-	/**
-	 *
-	 * @var int
-	 * @Id
-	 * @Column(type="integer", name="type_id")
-	 * @GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
+    /**
+     *
+     * @var string
+     * @Column(type="string", name="type_name", unique=true)
+     */
+    private $type;
 
-	/**
-	 *
-	 * @var string
-	 * @Column(type="string", name="type_name", unique=true)
-	 */
-	private $type;
+    /**
+     *
+     * @var string
+     * @Column(type="string", name="type_abbreviation", unique=true)
+     */
+    private $abbreviation;
 
-	/**
-	 *
-	 * @var string
-	 * @Column(type="string", name="type_abbreviation", unique=true)
-	 */
-	private $abbreviation;
+    /**
+     * @var kateglo\application\helpers\collections\ArrayCollection
+     * @ManyToMany(targetEntity="Lemma")
+     * @JoinTable(name="lemma_type",
+     *     joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
+     * 	   inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
+     * )
+     */
+    private $lemmas;
 
-	/**
-	 * @var kateglo\application\helpers\collections\ArrayCollection
-	 * @ManyToMany(targetEntity="Lemma")
-	 * @JoinTable(name="lemma_type",
-	 * 		joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
-	 * 		inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
-	 * )
-	 */
-	private $lemmas;
+    public function __construct()
+    {
+        $this->lemmas = new ArrayCollection();
+    }
 
-	public function __construct(){
-		$this->lemmas = new ArrayCollection();
-	}
+    /**
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 *
-	 * @return int
-	 */
-	public function getId(){
-		return $this->id;
-	}
+    /**
+     *
+     * @param string $type
+     * @return void
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
 
-	/**
-	 *
-	 * @param string $type
-	 * @return void
-	 */
-	public function setType($type){
-		$this->type = $type;
-	}
+    /**
+     *
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getType(){
-		return $this->type;
-	}
+    /**
+     *
+     * @param string $abbreviation
+     * @return void
+     */
+    public function setAbbreviation($abbreviation)
+    {
+        $this->abbreviation = $abbreviation;
+    }
 
-	/**
-	 *
-	 * @param string $abbreviation
-	 * @return void
-	 */
-	public function setAbbreviation($abbreviation){
-		$this->abbreviation = $abbreviation;
-	}
+    /**
+     *
+     * @return string
+     */
+    public function getAbbreviation()
+    {
+        return $this->abbreviation;
+    }
 
-	/**
-	 *
-	 * @return string
-	 */
-	public function getAbbreviation(){
-		return $this->abbreviation;
-	}
+    /**
+     *
+     * @param kateglo\application\models\Lemma $lemma
+     * @return void
+     */
+    public function addLemma(Lemma $lemma)
+    {
+        if (!$this->lemmas->contains($lemma)) {
+            $this->lemmas[] = $lemma;
+            $lemma->addType($this);
+        }
+    }
 
-	/**
-	 *
-	 * @param kateglo\application\models\Lemma $lemma
-	 * @return void
-	 */
-	public function addLemma(Lemma $lemma)
-	{
-		if (!$this->lemmas->contains($lemma)) {
-			$this->lemmas[] = $lemma;
-			$lemma->addType($this);
-		}
-	}
+    /**
+     *
+     * @param kateglo\application\models\Lemma $lemma
+     * @return void
+     */
+    public function removeLEmma(Lemma $lemma)
+    {
+        $removed = $this->lemmas->removeElement($lemma);
+        
+        if ($removed !== null) {
+            $removed->removeType($this);
+        }
+    }
 
-	/**
-	 *
-	 * @param kateglo\application\models\Lemma $lemma
-	 * @return void
-	 */
-	public function removeLEmma(Lemma $lemma)
-	{
-		$removed = $this->lemmas->removeElement($lemma);
-		if ($removed !== null) {
-			$removed->removeType($this);
-		}
-	}
-
-	/**
-	 *
-	 * @return kateglo\application\helpers\collections\ArrayCollection
-	 */
-	public function getCategories()
-	{
-		return $this->categories;
-	}
-
+    /**
+     *
+     * @return kateglo\application\helpers\collections\ArrayCollection
+     */
+    public function getCategories()
+    {
+        return $this->categories;
+    }
 }
-
 
 /**
  * @Entity
  * @Table(name="phrase")
  */
-class Phrase {
-
+class Phrase 
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -391,7 +400,8 @@ class Phrase {
      */
     private $definitions;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->definitions = new ArrayCollection;
     }
 
@@ -400,7 +410,8 @@ class Phrase {
      * @param Definition $definition
      * @return void
      */
-    public function addDefinition(Definition $definition){
+    public function addDefinition(Definition $definition)
+    {
         $this->definitions[] = $definition;
         $definition->setPhrase($this);
     }
@@ -408,7 +419,8 @@ class Phrase {
     /**
      * @return int
      */
-    public function getId(){
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -416,14 +428,16 @@ class Phrase {
      * @param string $phrase
      * @return void
      */
-    public function setPhrase($phrase){
+    public function setPhrase($phrase)
+    {
         $this->phrase = $phrase;
     }
 
     /**
      * @return string
      */
-    public function getPhrase(){
+    public function getPhrase()
+    {
         return $this->phrase;
     }
 
@@ -432,7 +446,8 @@ class Phrase {
      * @param PhraseType $type
      * @return void
      */
-    public function setType(PhraseType $type){
+    public function setType(PhraseType $type)
+    {
         $this->type = $type;
     }
 
@@ -440,7 +455,8 @@ class Phrase {
      *
      * @return PhraseType
      */
-    public function getType(){
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -448,7 +464,8 @@ class Phrase {
      *
      * @return ArrayCollection
      */
-    public function getDefinitions(){
+    public function getDefinitions()
+    {
         return $this->definitions;
     }
 }
@@ -457,8 +474,8 @@ class Phrase {
  * @Entity
  * @Table(name="phrase_type")
  */
-class PhraseType {
-
+class PhraseType 
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -483,14 +500,16 @@ class PhraseType {
      */
     private $phrases;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->phrases = new ArrayCollection;
     }
 
     /**
      * @return int
      */
-    public function getId(){
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -498,14 +517,16 @@ class PhraseType {
      * @param string $type
      * @return void
      */
-    public function setType($type){
+    public function setType($type)
+    {
         $this->type = $type;
     }
 
     /**
      * @return string
      */
-    public function getType(){
+    public function getType()
+    {
         return $this->type;
     }
 
@@ -513,14 +534,16 @@ class PhraseType {
      * @param string $abbreviation
      * @return void
      */
-    public function setAbbreviation($abbreviation){
+    public function setAbbreviation($abbreviation)
+    {
         $this->abbreviation = $abbreviation;
     }
 
     /**
      * @return string
      */
-    public function getAbbreviation(){
+    public function getAbbreviation()
+    {
         return $this->abbreviation;
     }
 
@@ -528,7 +551,8 @@ class PhraseType {
      * @param ArrayCollection $phrases
      * @return void
      */
-    public function setPhrases($phrases){
+    public function setPhrases($phrases)
+    {
         $this->phrases = $phrases;
     }
 
@@ -536,7 +560,8 @@ class PhraseType {
      *
      * @return ArrayCollection
      */
-    public function getPhrases(){
+    public function getPhrases()
+    {
         return $this->phrases;
     }
 
@@ -546,8 +571,8 @@ class PhraseType {
  * @Entity
  * @Table(name="definition")
  */
-class Definition {
-
+class Definition
+{
     const CLASS_NAME = __CLASS__;
 
     /**
@@ -571,7 +596,8 @@ class Definition {
     /**
      * @return int
      */
-    public function getId(){
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -579,18 +605,21 @@ class Definition {
      * @param Phrase $phrase
      * @return void
      */
-    public function setPhrase(Phrase $phrase){
+    public function setPhrase(Phrase $phrase)
+    {
         $this->phrase = $phrase;
     }
 
     /**
      * @return Phrase
      */
-    public function getPhrase(){
+    public function getPhrase()
+    {
         return $this->phrase;
     }
 
-    public function removePhrase() {
+    public function removePhrase() 
+    {
         if ($this->phrase !== null) {
             /*@var $phrase kateglo\application\models\Phrase */
             $phrase = $this->phrase;
@@ -603,14 +632,16 @@ class Definition {
      * @param string $definition
      * @return void
      */
-    public function setDefinition($definition){
+    public function setDefinition($definition)
+    {
         $this->definition = $definition;
     }
 
     /**
      * @return string
      */
-    public function getDefinition(){
+    public function getDefinition()
+    {
         return $this->definition;
     }
 }

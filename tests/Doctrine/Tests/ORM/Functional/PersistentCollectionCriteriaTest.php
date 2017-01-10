@@ -27,8 +27,8 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 
     public function tearDown()
     {
-        if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces([]);
+        if ($this->em) {
+            $this->em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -37,7 +37,7 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
     {
         $author = new TweetUser();
         $author->name = 'ngal';
-        $this->_em->persist($author);
+        $this->em->persist($author);
 
         $tweet1 = new Tweet();
         $tweet1->content = 'Foo';
@@ -47,20 +47,20 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $tweet2->content = 'Bar';
         $author->addTweet($tweet2);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         unset($author);
         unset($tweet1);
         unset($tweet2);
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function loadQuoteFixture()
     {
         $user = new QuoteUser();
         $user->name = 'mgal';
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         $quote1 = new Group('quote1');
         $user->groups->add($quote1);
@@ -68,16 +68,16 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         $quote2 = new Group('quote2');
         $user->groups->add($quote2);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testCanCountWithoutLoadingPersistentCollection()
     {
         $this->loadTweetFixture();
 
-        $repository = $this->_em->getRepository(User::class);
+        $repository = $this->em->getRepository(User::class);
 
         $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());

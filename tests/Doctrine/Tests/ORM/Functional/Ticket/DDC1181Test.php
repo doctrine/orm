@@ -9,11 +9,11 @@ class DDC1181Test extends OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC1181Hotel::class),
-                $this->_em->getClassMetadata(DDC1181Booking::class),
-                $this->_em->getClassMetadata(DDC1181Room::class),
+                $this->em->getClassMetadata(DDC1181Hotel::class),
+                $this->em->getClassMetadata(DDC1181Booking::class),
+                $this->em->getClassMetadata(DDC1181Room::class),
             ]
         );
     }
@@ -27,10 +27,10 @@ class DDC1181Test extends OrmFunctionalTestCase
         $room1 = new DDC1181Room();
         $room2 = new DDC1181Room();
 
-        $this->_em->persist($hotel);
-        $this->_em->persist($room1);
-        $this->_em->persist($room2);
-        $this->_em->flush();
+        $this->em->persist($hotel);
+        $this->em->persist($room1);
+        $this->em->persist($room2);
+        $this->em->flush();
 
         $booking1 = new DDC1181Booking;
         $booking1->hotel = $hotel;
@@ -41,14 +41,14 @@ class DDC1181Test extends OrmFunctionalTestCase
         $hotel->bookings[] = $booking1;
         $hotel->bookings[] = $booking2;
 
-        $this->_em->persist($booking1);
-        $this->_em->persist($booking2);
-        $this->_em->flush();
+        $this->em->persist($booking1);
+        $this->em->persist($booking2);
+        $this->em->flush();
 
-        $this->_em->remove($hotel);
-        $this->_em->flush();
+        $this->em->remove($hotel);
+        $this->em->flush();
 
-        self::assertEmpty($this->_em->getRepository(DDC1181Booking::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1181Booking::class)->findAll());
     }
 }
 

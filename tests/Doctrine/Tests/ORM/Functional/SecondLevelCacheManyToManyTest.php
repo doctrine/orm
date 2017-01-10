@@ -21,7 +21,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCities();
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Travel::class, $this->travels[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Travel::class, $this->travels[1]->getId()));
@@ -45,7 +45,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->cache->evictEntityRegion(City::class);
         $this->cache->evictEntityRegion(Travel::class);
         $this->cache->evictCollectionRegion(Travel::class, 'visitedCities');
@@ -63,8 +63,8 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(City::class, $this->cities[2]->getId()));
         self::assertFalse($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
 
-        $t1 = $this->_em->find(Travel::class, $this->travels[0]->getId());
-        $t2 = $this->_em->find(Travel::class, $this->travels[1]->getId());
+        $t1 = $this->em->find(Travel::class, $this->travels[0]->getId());
+        $t2 = $this->em->find(Travel::class, $this->travels[1]->getId());
 
         self::assertEquals(2, $this->secondLevelCacheLogger->getPutCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getMissCount());
@@ -98,13 +98,13 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[2]->getId()));
         self::assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $t3 = $this->_em->find(Travel::class, $this->travels[0]->getId());
-        $t4 = $this->_em->find(Travel::class, $this->travels[1]->getId());
+        $t3 = $this->em->find(Travel::class, $this->travels[0]->getId());
+        $t4 = $this->em->find(Travel::class, $this->travels[1]->getId());
 
         //trigger lazy load from cache
         self::assertCount(3, $t3->getVisitedCities());
@@ -166,10 +166,10 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $travel->addVisitedCity($this->cities[1]);
         $travel->addVisitedCity($this->cities[3]);
 
-        $this->_em->persist($traveler);
-        $this->_em->persist($travel);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($traveler);
+        $this->em->persist($travel);
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Travel::class, $travel->getId()));
         self::assertTrue($this->cache->containsEntity(Traveler::class, $traveler->getId()));
@@ -179,7 +179,7 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $travel->getId()));
 
         $queryCount1 = $this->getCurrentQueryCount();
-        $t1          = $this->_em->find(Travel::class, $travel->getId());
+        $t1          = $this->em->find(Travel::class, $travel->getId());
 
         self::assertInstanceOf(Travel::class, $t1);
         self::assertCount(3, $t1->getVisitedCities());
@@ -200,19 +200,19 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Travel::class, $this->travels[0]->getId()));
         self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $this->travels[0]->getId()));
 
-        $travel = $this->_em->find(Travel::class, $this->travels[0]->getId());
+        $travel = $this->em->find(Travel::class, $this->travels[0]->getId());
 
         self::assertCount(3, $travel->getVisitedCities());
 
         $travel->getVisitedCities()->remove(0);
 
-        $this->_em->persist($travel);
-        $this->_em->flush();
+        $this->em->persist($travel);
+        $this->em->flush();
     }
 
     public function testManyToManyWithEmptyRelation()
@@ -222,21 +222,21 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCities();
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->evictRegions();
 
         $queryCount = $this->getCurrentQueryCount();
 
         $entitiId   = $this->travels[2]->getId(); //empty travel
-        $entity     = $this->_em->find(Travel::class, $entitiId);
+        $entity     = $this->em->find(Travel::class, $entitiId);
 
         self::assertEquals(0, $entity->getVisitedCities()->count());
         self::assertEquals($queryCount+2, $this->getCurrentQueryCount());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity     = $this->_em->find(Travel::class, $entitiId);
+        $entity     = $this->em->find(Travel::class, $entitiId);
 
         $queryCount = $this->getCurrentQueryCount();
         self::assertEquals(0, $entity->getVisitedCities()->count());

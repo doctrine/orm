@@ -15,11 +15,11 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(GH5762Driver::class),
-            $this->_em->getClassMetadata(GH5762DriverRide::class),
-            $this->_em->getClassMetadata(GH5762Car::class),
+            $this->em->getClassMetadata(GH5762Driver::class),
+            $this->em->getClassMetadata(GH5762DriverRide::class),
+            $this->em->getClassMetadata(GH5762Car::class),
             ]
         );
     }
@@ -51,7 +51,7 @@ class GH5762Test extends OrmFunctionalTestCase
     {
         $this->createData();
 
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('d, dr, c')
             ->from(GH5762Driver::class, 'd')
             ->leftJoin('d.driverRides', 'dr')
@@ -77,22 +77,22 @@ class GH5762Test extends OrmFunctionalTestCase
         $ride4 = new GH5762DriverRide($driver, $car4);
         $ride5 = new GH5762DriverRide($driver, $car5);
 
-        $this->_em->persist($car1);
-        $this->_em->persist($car2);
-        $this->_em->persist($car3);
-        $this->_em->persist($car4);
-        $this->_em->persist($car5);
+        $this->em->persist($car1);
+        $this->em->persist($car2);
+        $this->em->persist($car3);
+        $this->em->persist($car4);
+        $this->em->persist($car5);
 
-        $this->_em->persist($driver);
+        $this->em->persist($driver);
 
-        $this->_em->persist($ride1);
-        $this->_em->persist($ride2);
-        $this->_em->persist($ride3);
-        $this->_em->persist($ride4);
-        $this->_em->persist($ride5);
+        $this->em->persist($ride1);
+        $this->em->persist($ride2);
+        $this->em->persist($ride3);
+        $this->em->persist($ride4);
+        $this->em->persist($ride5);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 

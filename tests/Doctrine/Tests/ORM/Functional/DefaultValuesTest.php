@@ -15,10 +15,10 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DefaultValueUser::class),
-                $this->_em->getClassMetadata(DefaultValueAddress::class)
+                $this->em->getClassMetadata(DefaultValueUser::class),
+                $this->em->getClassMetadata(DefaultValueAddress::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -32,14 +32,14 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     public function testSimpleDetachMerge() {
         $user = new DefaultValueUser;
         $user->name = 'romanb';
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2 = $this->_em->getReference(get_class($user), $userId);
+        $user2 = $this->em->getReference(get_class($user), $userId);
 
-        $this->_em->flush();
+        $this->em->flush();
         self::assertFalse($user2->__isInitialized__);
 
         $a = new DefaultValueAddress;
@@ -49,13 +49,13 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $a->street = 'Sesamestreet';
 
         $a->user = $user2;
-        $this->_em->persist($a);
-        $this->_em->flush();
+        $this->em->persist($a);
+        $this->em->flush();
 
         self::assertFalse($user2->__isInitialized__);
-        $this->_em->clear();
+        $this->em->clear();
 
-        $a2 = $this->_em->find(get_class($a), $a->id);
+        $a2 = $this->em->find(get_class($a), $a->id);
         self::assertInstanceOf(DefaultValueUser::class, $a2->getUser());
         self::assertEquals($userId, $a2->getUser()->getId());
         self::assertEquals('Poweruser', $a2->getUser()->type);
@@ -70,17 +70,17 @@ class DefaultValuesTest extends OrmFunctionalTestCase
         $user->name = 'romanb';
         $user->type = 'Normaluser';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->getPartialReference(DefaultValueUser::class, $user->id);
-        self::assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        $user = $this->em->getPartialReference(DefaultValueUser::class, $user->id);
+        self::assertTrue($this->em->getUnitOfWork()->isReadOnly($user));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DefaultValueUser::class, $user->id);
+        $user = $this->em->find(DefaultValueUser::class, $user->id);
 
         self::assertEquals('Normaluser', $user->type);
     }

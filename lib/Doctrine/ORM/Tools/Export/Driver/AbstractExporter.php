@@ -35,29 +35,29 @@ abstract class AbstractExporter
     /**
      * @var array
      */
-    protected $_metadata = [];
+    protected $metadata = [];
 
     /**
      * @var string|null
      */
-    protected $_outputDir;
+    protected $outputDir;
 
     /**
      * @var string|null
      */
-    protected $_extension;
+    protected $extension;
 
     /**
      * @var bool
      */
-    protected $_overwriteExistingFiles = false;
+    protected $overwriteExistingFiles = false;
 
     /**
      * @param string|null $dir
      */
     public function __construct($dir = null)
     {
-        $this->_outputDir = $dir;
+        $this->outputDir = $dir;
     }
 
     /**
@@ -67,7 +67,7 @@ abstract class AbstractExporter
      */
     public function setOverwriteExistingFiles($overwrite)
     {
-        $this->_overwriteExistingFiles = $overwrite;
+        $this->overwriteExistingFiles = $overwrite;
     }
 
     /**
@@ -89,7 +89,7 @@ abstract class AbstractExporter
      */
     public function setMetadata(array $metadata)
     {
-        $this->_metadata = $metadata;
+        $this->metadata = $metadata;
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class AbstractExporter
      */
     public function getExtension()
     {
-        return $this->_extension;
+        return $this->extension;
     }
 
     /**
@@ -116,7 +116,7 @@ abstract class AbstractExporter
      */
     public function setOutputDir($dir)
     {
-        $this->_outputDir = $dir;
+        $this->outputDir = $dir;
     }
 
     /**
@@ -129,19 +129,19 @@ abstract class AbstractExporter
      */
     public function export()
     {
-        if ( ! is_dir($this->_outputDir)) {
-            mkdir($this->_outputDir, 0775, true);
+        if ( ! is_dir($this->outputDir)) {
+            mkdir($this->outputDir, 0775, true);
         }
 
-        foreach ($this->_metadata as $metadata) {
+        foreach ($this->metadata as $metadata) {
             // In case output is returned, write it to a file, skip otherwise
             if ($output = $this->exportClassMetadata($metadata)) {
-                $path = $this->_generateOutputPath($metadata);
+                $path = $this->generateOutputPath($metadata);
                 $dir = dirname($path);
                 if ( ! is_dir($dir)) {
                     mkdir($dir, 0775, true);
                 }
-                if (file_exists($path) && !$this->_overwriteExistingFiles) {
+                if (file_exists($path) && !$this->overwriteExistingFiles) {
                     throw ExportException::attemptOverwriteExistingFile($path);
                 }
                 file_put_contents($path, $output);
@@ -157,9 +157,9 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _generateOutputPath(ClassMetadata $metadata)
+    protected function generateOutputPath(ClassMetadata $metadata)
     {
-        return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
+        return $this->outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->extension;
     }
 
     /**
@@ -176,6 +176,6 @@ abstract class AbstractExporter
      */
     public function setExtension($extension)
     {
-        $this->_extension = $extension;
+        $this->extension = $extension;
     }
 }

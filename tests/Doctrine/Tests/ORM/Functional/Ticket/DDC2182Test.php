@@ -6,14 +6,14 @@ class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns()
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != 'mysql') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() != 'mysql') {
             $this->markTestSkipped("This test is useful for all databases, but designed only for mysql.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSql(
+        $sql = $this->schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(DDC2182OptionParent::class),
-            $this->_em->getClassMetadata(DDC2182OptionChild::class),
+            $this->em->getClassMetadata(DDC2182OptionParent::class),
+            $this->em->getClassMetadata(DDC2182OptionChild::class),
             ]
         );
 

@@ -31,13 +31,13 @@ class DefaultEntityHydratorTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->em        = $this->_getTestEntityManager();
+        $this->em        = $this->getTestEntityManager();
         $this->structure = new DefaultEntityHydrator($this->em);
     }
 
     public function testImplementsEntityEntryStructure()
     {
-        self::assertInstanceOf('\Doctrine\ORM\Cache\EntityHydrator', $this->structure);
+        self::assertInstanceOf('Doctrine\ORM\Cache\EntityHydrator', $this->structure);
     }
 
     public function testCreateEntity()

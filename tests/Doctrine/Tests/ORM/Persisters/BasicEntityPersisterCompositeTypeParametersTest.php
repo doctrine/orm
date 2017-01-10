@@ -15,12 +15,12 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     /**
      * @var BasicEntityPersister
      */
-    protected $_persister;
+    protected $persister;
 
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    protected $_em;
+    protected $em;
 
     /**
      * {@inheritDoc}
@@ -29,13 +29,13 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
 
-        $this->_em->getClassMetadata(Country::class);
-        $this->_em->getClassMetadata(Admin1::class);
-        $this->_em->getClassMetadata(Admin1AlternateName::class);
+        $this->em->getClassMetadata(Country::class);
+        $this->em->getClassMetadata(Admin1::class);
+        $this->em->getClassMetadata(Admin1AlternateName::class);
 
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
+        $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
 
     }
 
@@ -44,7 +44,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $country = new Country("IT", "Italy");
         $admin1  = new Admin1(10, "Rome", $country);
 
-        list ($values, $types) = $this->_persister->expandParameters(['admin1' => $admin1]);
+        list ($values, $types) = $this->persister->expandParameters(['admin1' => $admin1]);
 
         self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
         self::assertEquals([10, 'IT'], $values);
@@ -58,7 +58,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $criteria = Criteria::create();
         $criteria->andWhere(Criteria::expr()->eq("admin1", $admin1));
 
-        list ($values, $types) = $this->_persister->expandCriteriaParameters($criteria);
+        list ($values, $types) = $this->persister->expandCriteriaParameters($criteria);
 
         self::assertEquals([Type::getType('integer'), Type::getType('string')], $types);
         self::assertEquals([10, 'IT'], $values);

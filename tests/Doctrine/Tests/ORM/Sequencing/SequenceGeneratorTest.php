@@ -29,11 +29,9 @@ class SequenceGeneratorTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->entityManager     = $this->_getTestEntityManager();
+        $this->entityManager     = $this->getTestEntityManager();
         $this->sequenceGenerator = new SequenceGenerator('seq', 10);
         $this->connection        = $this->entityManager->getConnection();
-
-        self::assertInstanceOf(ConnectionMock::class, $this->connection);
     }
 
     public function testGeneration() : void
@@ -44,7 +42,7 @@ class SequenceGeneratorTest extends OrmTestCase
         ));
 
         for ($i = 0; $i < 42; ++$i) {
-            if ($i % 10 == 0) {
+            if ($i % 10 === 0) {
                 $this->connection->setQueryResult(new StatementArrayMock([[(int)($i / 10) * 10]]));
             }
 

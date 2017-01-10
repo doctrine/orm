@@ -19,7 +19,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Country::class, $this->states[0]->getCountry()->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->states[1]->getCountry()->getId()));
@@ -31,7 +31,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(State::class);
         $this->cache->evictEntityRegion(Country::class);
@@ -41,8 +41,8 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $this->states[0]->getCountry()->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->states[1]->getCountry()->getId()));
 
-        $c1 = $this->_em->find(State::class, $this->states[0]->getId());
-        $c2 = $this->_em->find(State::class, $this->states[1]->getId());
+        $c1 = $this->em->find(State::class, $this->states[0]->getId());
+        $c2 = $this->em->find(State::class, $this->states[1]->getId());
 
         //trigger lazy load
         self::assertNotNull($c1->getCountry()->getName());
@@ -68,12 +68,12 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertEquals($this->states[1]->getCountry()->getId(), $c2->getCountry()->getId());
         self::assertEquals($this->states[1]->getCountry()->getName(), $c2->getCountry()->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $c3 = $this->_em->find(State::class, $this->states[0]->getId());
-        $c4 = $this->_em->find(State::class, $this->states[1]->getId());
+        $c3 = $this->em->find(State::class, $this->states[0]->getId());
+        $c4 = $this->em->find(State::class, $this->states[1]->getId());
 
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
@@ -104,25 +104,25 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(State::class);
         $this->cache->evictEntityRegion(Country::class);
 
         //evict collection on add
-        $c3    = $this->_em->find(State::class, $this->states[0]->getId());
+        $c3    = $this->em->find(State::class, $this->states[0]->getId());
         $prev  = $c3->getCities();
         $count = $prev->count();
         $city  = new City("Buenos Aires", $c3);
 
         $c3->addCity($city);
 
-        $this->_em->persist($city);
-        $this->_em->persist($c3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($city);
+        $this->em->persist($c3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $state      = $this->_em->find(State::class, $c3->getId());
+        $state      = $this->em->find(State::class, $c3->getId());
         $queryCount = $this->getCurrentQueryCount();
 
         // Association was cleared from EM
@@ -137,7 +137,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
     {
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
-        $this->_em->clear();
+        $this->em->clear();
 
         $stateId1 = $this->states[0]->getId();
         $stateId2 = $this->states[3]->getId();
@@ -155,12 +155,12 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId1));
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId2));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $state1 = $this->_em->find(State::class, $stateId1);
-        $state2 = $this->_em->find(State::class, $stateId2);
+        $state1 = $this->em->find(State::class, $stateId1);
+        $state2 = $this->em->find(State::class, $stateId2);
 
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
@@ -188,16 +188,16 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         $action = new Action('exec');
         $action->addToken($token);
 
-        $this->_em->persist($token);
+        $this->em->persist($token);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Token::class, $token->token));
         self::assertFalse($this->cache->containsEntity(Token::class, $action->name));
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity = $this->_em->find(Token::class, $token->token);
+        $entity = $this->em->find(Token::class, $token->token);
 
         self::assertInstanceOf(Token::class, $entity);
         self::assertEquals('token-hash', $entity->token);
@@ -226,10 +226,10 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         $token->action = $action2;
 
-        $this->_em->persist($token);
+        $this->em->persist($token);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Token::class, $token->token));
         self::assertFalse($this->cache->containsEntity(Action::class, $action1->name));
@@ -240,7 +240,7 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
         /**
          * @var $entity Token
          */
-        $entity = $this->_em->find(Token::class, $token->token);
+        $entity = $this->em->find(Token::class, $token->token);
 
         self::assertInstanceOf(Token::class, $entity);
         self::assertEquals('token-hash', $entity->token);

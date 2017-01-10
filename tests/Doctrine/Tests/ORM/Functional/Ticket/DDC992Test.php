@@ -13,11 +13,11 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC992Role::class),
-                $this->_em->getClassMetadata(DDC992Parent::class),
-                $this->_em->getClassMetadata(DDC992Child::class),
+                $this->em->getClassMetadata(DDC992Role::class),
+                $this->em->getClassMetadata(DDC992Parent::class),
+                $this->em->getClassMetadata(DDC992Child::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -35,12 +35,12 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $role->extendedBy[] = $child;
         $child->extends[] = $role;
 
-        $this->_em->persist($role);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($role);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
-        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
+        $child = $this->em->getRepository(get_class($role))->find($child->roleID);
         $parents = count($child->extends);
         self::assertEquals(1, $parents);
         foreach ($child->extends AS $parent) {
@@ -55,13 +55,13 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child->parent = $parent;
         $parent->childs[] = $child;
 
-        $this->_em->persist($parent);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
-        $parentRepository = $this->_em->getRepository(get_class($parent));
-        $childRepository = $this->_em->getRepository(get_class($child));
+        $parentRepository = $this->em->getRepository(get_class($parent));
+        $childRepository = $this->em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
         self::assertEquals(1, count($parent->childs));
@@ -70,12 +70,12 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child = $parentRepository->findOneBy(["id" => $child->id]);
         self::assertSame($parent->childs[0], $child);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $child = $parentRepository->find($child->id);
         self::assertEquals(0, count($child->childs));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $child = $childRepository->find($child->id);
         self::assertEquals(0, count($child->childs));

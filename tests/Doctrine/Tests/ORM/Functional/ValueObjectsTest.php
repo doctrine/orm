@@ -18,14 +18,14 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC93Person::class),
-                $this->_em->getClassMetadata(DDC93Address::class),
-                $this->_em->getClassMetadata(DDC93Vehicle::class),
-                $this->_em->getClassMetadata(DDC93Car::class),
-                $this->_em->getClassMetadata(DDC3027Animal::class),
-                $this->_em->getClassMetadata(DDC3027Dog::class),
+                $this->em->getClassMetadata(DDC93Person::class),
+                $this->em->getClassMetadata(DDC93Address::class),
+                $this->em->getClassMetadata(DDC93Vehicle::class),
+                $this->em->getClassMetadata(DDC93Car::class),
+                $this->em->getClassMetadata(DDC3027Animal::class),
+                $this->em->getClassMetadata(DDC3027Dog::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -34,7 +34,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
     public function testMetadataHasReflectionEmbeddablesAccessible()
     {
-        $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
+        $classMetadata = $this->em->getClassMetadata(DDC93Person::class);
 
         self::assertInstanceOf(RuntimePublicReflectionProperty::class, $classMetadata->getReflectionProperty('address'));
         self::assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
@@ -51,13 +51,13 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $person->address->country = new DDC93Country('Germany');
 
         // 1. check saving value objects works
-        $this->_em->persist($person);
-        $this->_em->flush();
+        $this->em->persist($person);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // 2. check loading value objects works
-        $person = $this->_em->find(DDC93Person::class, $person->id);
+        $person = $this->em->find(DDC93Person::class, $person->id);
 
         self::assertInstanceOf(DDC93Address::class, $person->address);
         self::assertEquals('United States of Tara Street', $person->address->street);
@@ -71,11 +71,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $person->address->zip = "54321";
         $person->address->city = "another town";
         $person->address->country->name = "United States of America";
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $person = $this->_em->find(DDC93Person::class, $person->id);
+        $person = $this->em->find(DDC93Person::class, $person->id);
 
         self::assertEquals('Street', $person->address->street);
         self::assertEquals('54321', $person->address->zip);
@@ -84,10 +84,10 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         // 4. check deleting works
         $personId = $person->id;;
-        $this->_em->remove($person);
-        $this->_em->flush();
+        $this->em->remove($person);
+        $this->em->flush();
 
-        self::assertNull($this->_em->find(DDC93Person::class, $personId));
+        self::assertNull($this->em->find(DDC93Person::class, $personId));
     }
 
     public function testLoadDql()
@@ -101,14 +101,14 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             $person->address->city = "funkytown";
             $person->address->country = new DDC93Country('United States of America');
 
-            $this->_em->persist($person);
+            $this->em->persist($person);
         }
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT p FROM " . __NAMESPACE__ . "\DDC93Person p";
-        $persons = $this->_em->createQuery($dql)->getResult();
+        $persons = $this->em->createQuery($dql)->getResult();
 
         self::assertCount(3, $persons);
         foreach ($persons as $person) {
@@ -121,7 +121,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
 
         $dql = "SELECT p FROM " . __NAMESPACE__ . "\DDC93Person p";
-        $persons = $this->_em->createQuery($dql)->getArrayResult();
+        $persons = $this->em->createQuery($dql)->getArrayResult();
 
         foreach ($persons as $person) {
             self::assertEquals('Tree', $person['address.street']);
@@ -141,19 +141,19 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         }
 
         $person = new DDC93Person('Johannes', new DDC93Address('Moo', '12345', 'Karlsruhe', new DDC93Country('Germany')));
-        $this->_em->persist($person);
-        $this->_em->flush($person);
+        $this->em->persist($person);
+        $this->em->flush($person);
 
         // SELECT
         $selectDql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.address.city = :city AND p.address.country.name = :country";
-        $loadedPerson = $this->_em->createQuery($selectDql)
+        $loadedPerson = $this->em->createQuery($selectDql)
             ->setParameter('city', 'Karlsruhe')
             ->setParameter('country', 'Germany')
             ->getSingleResult();
         self::assertEquals($person, $loadedPerson);
 
         self::assertNull(
-            $this->_em->createQuery($selectDql)
+            $this->em->createQuery($selectDql)
                 ->setParameter('city', 'asdf')
                 ->setParameter('country', 'Germany')
                 ->getOneOrNullResult()
@@ -161,37 +161,37 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
         // UPDATE
         $updateDql = "UPDATE " . __NAMESPACE__ . "\\DDC93Person p SET p.address.street = :street, p.address.country.name = :country WHERE p.address.city = :city";
-        $this->_em->createQuery($updateDql)
+        $this->em->createQuery($updateDql)
             ->setParameter('street', 'Boo')
             ->setParameter('country', 'DE')
             ->setParameter('city', 'Karlsruhe')
             ->execute();
 
-        $this->_em->refresh($person);
+        $this->em->refresh($person);
         self::assertEquals('Boo', $person->address->street);
         self::assertEquals('DE', $person->address->country->name);
 
         // DELETE
-        $this->_em->createQuery("DELETE " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.city = :city AND p.address.country.name = :country")
+        $this->em->createQuery("DELETE " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.city = :city AND p.address.country.name = :country")
             ->setParameter('city', 'Karlsruhe')
             ->setParameter('country', 'DE')
             ->execute();
 
-        $this->_em->clear();
-        self::assertNull($this->_em->find(DDC93Person::class, $person->id));
+        $this->em->clear();
+        self::assertNull($this->em->find(DDC93Person::class, $person->id));
     }
 
     public function testPartialDqlOnEmbeddedObjectsField()
     {
         $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
-        $this->_em->persist($person);
-        $this->_em->flush($person);
-        $this->_em->clear();
+        $this->em->persist($person);
+        $this->em->flush($person);
+        $this->em->clear();
 
         // Prove that the entity was persisted correctly.
         $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
 
-        $person = $this->_em->createQuery($dql)
+        $person = $this->em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
@@ -201,11 +201,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertEquals('England', $person->address->country->name);
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query.
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = "SELECT PARTIAL p.{id,address.city} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
 
-        $person = $this->_em->createQuery($dql)
+        $person = $this->em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
@@ -217,11 +217,11 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertNull($person->name);
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = "SELECT PARTIAL p.{address.city, id} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
 
-        $person = $this->_em->createQuery($dql)
+        $person = $this->em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
 
@@ -238,7 +238,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('no field or association named address.asdfasdf');
 
-        $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
+        $this->em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
     }
 
@@ -247,23 +247,23 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
 
-        $this->_em->createQuery("SELECT PARTIAL p.{id,address.asdfasdf} FROM " . __NAMESPACE__ . "\\DDC93Person p")
+        $this->em->createQuery("SELECT PARTIAL p.{id,address.asdfasdf} FROM " . __NAMESPACE__ . "\\DDC93Person p")
             ->execute();
     }
 
     public function testEmbeddableWithInheritance()
     {
         $car = new DDC93Car(new DDC93Address('Foo', '12345', 'Asdf'));
-        $this->_em->persist($car);
-        $this->_em->flush($car);
+        $this->em->persist($car);
+        $this->em->flush($car);
 
-        $reloadedCar = $this->_em->find(DDC93Car::class, $car->id);
+        $reloadedCar = $this->em->find(DDC93Car::class, $car->id);
         self::assertEquals($car, $reloadedCar);
     }
 
     public function testInlineEmbeddableWithPrefix()
     {
-        $metadata = $this->_em->getClassMetadata(DDC3028PersonWithPrefix::class);
+        $metadata = $this->em->getClassMetadata(DDC3028PersonWithPrefix::class);
 
         self::assertEquals('foobar_id', $metadata->getColumnName('id.id'));
         self::assertEquals('bloo_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
@@ -273,7 +273,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
     public function testInlineEmbeddableEmptyPrefix()
     {
-        $metadata = $this->_em->getClassMetadata(DDC3028PersonEmptyPrefix::class);
+        $metadata = $this->em->getClassMetadata(DDC3028PersonEmptyPrefix::class);
 
         self::assertEquals('id_id', $metadata->getColumnName('id.id'));
         self::assertEquals('nested_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
@@ -285,7 +285,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
     {
         $expectedColumnName = 'id';
 
-        $actualColumnName = $this->_em
+        $actualColumnName = $this->em
             ->getClassMetadata(DDC3028PersonPrefixFalse::class)
             ->getColumnName('id.id');
 
@@ -294,7 +294,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
     public function testInlineEmbeddableInMappedSuperClass()
     {
-        $isFieldMapped = $this->_em
+        $isFieldMapped = $this->em
             ->getClassMetadata(DDC3027Dog::class)
             ->hasField('address.street');
 
@@ -315,9 +315,9 @@ class ValueObjectsTest extends OrmFunctionalTestCase
             )
         );
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
+            $this->em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
             ]
         );
     }

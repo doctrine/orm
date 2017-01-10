@@ -15,10 +15,10 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(MSEFile::class),
-                $this->_em->getClassMetadata(MSEPicture::class),
+                $this->em->getClassMetadata(MSEFile::class),
+                $this->em->getClassMetadata(MSEPicture::class),
                 ]
             );
         } catch (ToolsException $ignored) {
@@ -33,7 +33,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $picture->file      = $file;
         $picture->otherFile = $file;
 
-        $picture = $this->_em->merge($picture);
+        $picture = $this->em->merge($picture);
 
         self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
@@ -46,12 +46,12 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $picture->file      = $file;
         $picture->otherFile = $file;
 
-        $this->_em->persist($file);
-        $this->_em->persist($picture);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($file);
+        $this->em->persist($picture);
+        $this->em->flush();
+        $this->em->clear();
 
-        $picture = $this->_em->merge($picture);
+        $picture = $this->em->merge($picture);
 
         self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
@@ -66,12 +66,12 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
         $serializedPicture = serialize($picture);
 
-        $this->_em->persist($file);
-        $this->_em->persist($picture);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($file);
+        $this->em->persist($picture);
+        $this->em->flush();
+        $this->em->clear();
 
-        $picture = $this->_em->merge(unserialize($serializedPicture));
+        $picture = $this->em->merge(unserialize($serializedPicture));
 
         self::assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
@@ -87,11 +87,11 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $admin1->id = 123;
         $admin2->id = 123;
 
-        $this->_em->persist($admin1);
+        $this->em->persist($admin1);
 
         $admin2->setSession('zeh current session data');
 
-        self::assertSame($admin1, $this->_em->merge($admin2));
+        self::assertSame($admin1, $this->em->merge($admin2));
         self::assertSame('zeh current session data', $admin1->getSession());
     }
 }

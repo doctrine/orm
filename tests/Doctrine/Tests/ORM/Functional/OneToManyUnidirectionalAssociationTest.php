@@ -24,10 +24,10 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         foreach ($locations AS $locationName) {
             $location = new RoutingLocation();
             $location->name = $locationName;
-            $this->_em->persist($location);
+            $this->em->persist($location);
             $this->locations[$locationName] = $location;
         }
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function testPersistOwning_InverseCascade()
@@ -41,11 +41,11 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $route = new RoutingRoute();
         $route->legs[] = $leg;
 
-        $this->_em->persist($route);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($route);
+        $this->em->flush();
+        $this->em->clear();
 
-        $routes = $this->_em->createQuery(
+        $routes = $this->em->createQuery(
             "SELECT r, l, f, t FROM Doctrine\Tests\Models\Routing\RoutingRoute r ".
             "JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t"
         )->getSingleResult();
@@ -69,13 +69,13 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $routeB = new RoutingRoute();
         $routeB->legs[] = $leg;
 
-        $this->_em->persist($routeA);
-        $this->_em->persist($routeB);
+        $this->em->persist($routeA);
+        $this->em->persist($routeB);
 
         $exceptionThrown = false;
         try {
             // exception depending on the underlying Database Driver
-            $this->_em->flush();
+            $this->em->flush();
         } catch(\Exception $e) {
             $exceptionThrown = true;
         }

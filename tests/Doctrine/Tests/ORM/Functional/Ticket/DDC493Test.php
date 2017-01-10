@@ -7,18 +7,18 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC493Customer::class),
-            $this->_em->getClassMetadata(DDC493Distributor::class),
-            $this->_em->getClassMetadata(DDC493Contact::class)
+            $this->em->getClassMetadata(DDC493Customer::class),
+            $this->em->getClassMetadata(DDC493Distributor::class),
+            $this->em->getClassMetadata(DDC493Contact::class)
             ]
         );
     }
 
     public function testIssue()
     {
-        $q = $this->_em->createQuery("select u, c.data from ".__NAMESPACE__."\\DDC493Distributor u JOIN u.contact c");
+        $q = $this->em->createQuery("select u, c.data from ".__NAMESPACE__."\\DDC493Distributor u JOIN u.contact c");
 
         self::assertSQLEquals(
             'SELECT d0_."id" AS id_0, d1_."data" AS data_1, d0_."discr" AS discr_2, d0_."contact" AS contact_3 FROM "DDC493Distributor" d2_ INNER JOIN "DDC493Customer" d0_ ON d2_."id" = d0_."id" INNER JOIN "DDC493Contact" d1_ ON d0_."contact" = d1_."id"',

@@ -15,34 +15,34 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         Type::addType('ddc1998', DDC1998Type::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1998Entity::class),
+            $this->em->getClassMetadata(DDC1998Entity::class),
             ]
         );
 
         $entity = new DDC1998Entity();
         $entity->id = new DDC1998Id("foo");
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $entity->num++;
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->remove($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($entity);
+        $this->em->flush();
+        $this->em->clear();
 
 
-        $found = $this->_em->find(DDC1998Entity::class, $entity->id);
+        $found = $this->em->find(DDC1998Entity::class, $entity->id);
         self::assertNull($found);
 
-        $found = $this->_em->find(DDC1998Entity::class, "foo");
+        $found = $this->em->find(DDC1998Entity::class, "foo");
         self::assertNull($found);
 
-        self::assertEquals(0, count($this->_em->getRepository(DDC1998Entity::class)->findAll()));
+        self::assertEquals(0, count($this->em->getRepository(DDC1998Entity::class)->findAll()));
     }
 }
 

@@ -49,7 +49,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @var int
      */
-    private $_aliasCounter = 0;
+    private $aliasCounter = 0;
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
@@ -63,7 +63,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
+        $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from      = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
@@ -90,7 +90,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             );
         }
 
-        $this->_getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->getProperty($identifier)->getType());
+        $this->getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->getProperty($identifier)->getType());
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
@@ -112,7 +112,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
                     $this->createSelectExpressionItem($item->expression),
-                    '_dctrn_ord' . $this->_aliasCounter++
+                    '_dctrn_ord' . $this->aliasCounter++
                 );
             }
         }
@@ -131,7 +131,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         // a limit, a fetched to-many join, and an order by condition that
         // references a column from the fetch joined table.
         $queryComponents = $this->getQueryComponents();
-        $query           = $this->_getQuery();
+        $query           = $this->getQuery();
         $from            = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot        = reset($from);
 

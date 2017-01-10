@@ -25,17 +25,17 @@ class DDC3160Test extends OrmFunctionalTestCase
     public function testNoUpdateOnInsert()
     {
         $listener = new DDC3160OnFlushListener();
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);
 
         $user = new CmsUser;
         $user->username = 'romanb';
         $user->name = 'Roman';
         $user->status = 'Dev';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->_em->refresh($user);
+        $this->em->refresh($user);
 
         self::assertEquals('romanc', $user->username);
         self::assertEquals(1, $listener->inserts);

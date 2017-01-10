@@ -7,12 +7,12 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC345User::class),
-            $this->_em->getClassMetadata(DDC345Group::class),
-            $this->_em->getClassMetadata(DDC345Membership::class),
+            $this->em->getClassMetadata(DDC345User::class),
+            $this->em->getClassMetadata(DDC345Group::class),
+            $this->em->getClassMetadata(DDC345Membership::class),
             ]
         );
     }
@@ -22,19 +22,19 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Create User
         $user = new DDC345User;
         $user->name = 'Test User';
-        $this->_em->persist($user); // $em->flush() does not change much here
+        $this->em->persist($user); // $em->flush() does not change much here
 
         // Create Group
         $group = new DDC345Group;
         $group->name = 'Test Group';
-        $this->_em->persist($group); // $em->flush() does not change much here
+        $this->em->persist($group); // $em->flush() does not change much here
 
         $membership = new DDC345Membership;
         $membership->group = $group;
         $membership->user = $user;
         $membership->state = 'active';
 
-        //$this->_em->persist($membership); // COMMENT OUT TO SEE BUG
+        //$this->em->persist($membership); // COMMENT OUT TO SEE BUG
         /*
         This should be not necessary, but without, its PrePersist is called twice,
         $membership seems to be persisted twice, but all properties but the
@@ -44,7 +44,7 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->Memberships->add($membership);
         $group->Memberships->add($membership);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(1, $membership->prePersistCallCount);
         self::assertEquals(0, $membership->preUpdateCallCount);

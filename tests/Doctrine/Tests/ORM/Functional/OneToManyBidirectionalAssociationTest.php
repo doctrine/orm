@@ -33,8 +33,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->persist($this->product);
-        $this->_em->flush();
+        $this->em->persist($this->product);
+        $this->em->flush();
 
         self::assertFeatureForeignKeyIs($this->product->getId(), $this->firstFeature);
         self::assertFeatureForeignKeyIs($this->product->getId(), $this->secondFeature);
@@ -42,16 +42,16 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testSavesAnEmptyCollection()
     {
-        $this->_em->persist($this->product);
-        $this->_em->flush();
+        $this->em->persist($this->product);
+        $this->em->flush();
 
         self::assertEquals(0, count($this->product->getFeatures()));
     }
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->product->brokenAddFeature($this->firstFeature);
-        $this->_em->persist($this->product);
-        $this->_em->flush();
+        $this->em->persist($this->product);
+        $this->em->flush();
 
         self::assertFeatureForeignKeyIs(null, $this->firstFeature);
     }
@@ -60,10 +60,10 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->persist($this->product);
+        $this->em->persist($this->product);
 
         $this->product->removeFeature($this->firstFeature);
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertFeatureForeignKeyIs(null, $this->firstFeature);
         self::assertFeatureForeignKeyIs($this->product->getId(), $this->secondFeature);
@@ -71,8 +71,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoadsOneToManyAssociation()
     {
-        $this->_createFixture();
-        $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
+        $this->createFixture();
+        $query = $this->em->createQuery('select p, f from Doctrine\Tests\Models\ECommerce\ECommerceProduct p join p.features f');
         $result = $query->getResult();
         $product = $result[0];
 
@@ -90,9 +90,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjectsOnTheOwningSide()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
         $product = $result[0];
         $features = $product->getFeatures();
@@ -109,9 +109,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjectsOnTheInverseSide()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
+        $query = $this->em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
@@ -124,10 +124,10 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsObjectsOnTheInverseSide2()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_createFixture();
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $query = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
@@ -142,12 +142,12 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         //self::assertTrue($product->getFeatures()->contains($features[0]));
         //self::assertTrue($product->getFeatures()->contains($features[1]));
 
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(null);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(null);
     }
 
     public function testJoinFromOwningSide()
     {
-        $query = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
+        $query = $this->em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
         self::assertEquals(0, count($features));
     }
@@ -157,9 +157,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
      */
     public function testMatching()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
+        $product  = $this->em->find(ECommerceProduct::class, $this->product->getId());
         $features = $product->getFeatures();
 
         $results = $features->matching(new Criteria(
@@ -180,9 +180,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
      */
     public function testMatchingOnDirtyCollection()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
+        $product  = $this->em->find(ECommerceProduct::class, $this->product->getId());
 
         $thirdFeature = new ECommerceFeature();
         $thirdFeature->setDescription('Model writing tutorial');
@@ -199,9 +199,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testMatchingBis()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
+        $product  = $this->em->find(ECommerceProduct::class, $this->product->getId());
         $features = $product->getFeatures();
 
         $thirdFeature = new ECommerceFeature();
@@ -221,18 +221,18 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(3, $results);
     }
 
-    private function _createFixture()
+    private function createFixture()
     {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
-        $this->_em->persist($this->product);
+        $this->em->persist($this->product);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature) {
-        $foreignKey = $this->_em->getConnection()->executeQuery(
+        $foreignKey = $this->em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
             [$feature->getId()]
         )->fetchColumn();

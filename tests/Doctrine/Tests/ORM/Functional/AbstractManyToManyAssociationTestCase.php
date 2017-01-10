@@ -10,27 +10,27 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 {
-    protected $_firstField;
-    protected $_secondField;
-    protected $_table;
+    protected $firstField;
+    protected $secondField;
+    protected $table;
 
     public function assertForeignKeysContain($firstId, $secondId)
     {
-        self::assertEquals(1, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(1, $this->countForeignKeys($firstId, $secondId));
     }
 
     public function assertForeignKeysNotContain($firstId, $secondId)
     {
-        self::assertEquals(0, $this->_countForeignKeys($firstId, $secondId));
+        self::assertEquals(0, $this->countForeignKeys($firstId, $secondId));
     }
 
-    protected function _countForeignKeys($firstId, $secondId)
+    protected function countForeignKeys($firstId, $secondId)
     {
-        return count($this->_em->getConnection()->executeQuery("
-            SELECT {$this->_firstField}
-              FROM {$this->_table}
-             WHERE {$this->_firstField} = ?
-               AND {$this->_secondField} = ?
+        return count($this->em->getConnection()->executeQuery("
+            SELECT {$this->firstField}
+              FROM {$this->table}
+             WHERE {$this->firstField} = ?
+               AND {$this->secondField} = ?
         ", [$firstId, $secondId]
         )->fetchAll());
     }

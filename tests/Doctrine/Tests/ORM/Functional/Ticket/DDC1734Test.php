@@ -26,19 +26,19 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group = new CmsGroup();
 
         $group->setName('Foo');
-        $this->_em->persist($group);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group);
+        $this->em->flush();
+        $this->em->clear();
 
         $proxy = $this->getProxy($group);
 
         self::assertInstanceOf(Proxy::class, $proxy);
         self::assertFalse($proxy->__isInitialized());
 
-        $this->_em->detach($proxy);
-        $this->_em->clear();
+        $this->em->detach($proxy);
+        $this->em->clear();
 
-        $proxy = $this->_em->merge($proxy);
+        $proxy = $this->em->merge($proxy);
 
         self::assertEquals('Foo', $proxy->getName(), 'The entity is broken');
     }
@@ -56,20 +56,20 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group = new CmsGroup();
 
         $group->setName('Foo');
-        $this->_em->persist($group);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group);
+        $this->em->flush();
+        $this->em->clear();
 
         $proxy = $this->getProxy($group);
 
         self::assertInstanceOf(Proxy::class, $proxy);
         self::assertFalse($proxy->__isInitialized());
 
-        $this->_em->detach($proxy);
+        $this->em->detach($proxy);
         $serializedProxy = serialize($proxy);
-        $this->_em->clear();
+        $this->em->clear();
 
-        $unserializedProxy = $this->_em->merge(unserialize($serializedProxy));
+        $unserializedProxy = $this->em->merge(unserialize($serializedProxy));
         self::assertEquals('Foo', $unserializedProxy->getName(), 'The entity is broken');
     }
 
@@ -80,11 +80,11 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private function getProxy($object)
     {
-        $metadataFactory = $this->_em->getMetadataFactory();
+        $metadataFactory = $this->em->getMetadataFactory();
         $className       = get_class($object);
         $identifier      = $metadataFactory->getMetadataFor($className)->getIdentifierValues($object);
 
-        return $this->_em->getProxyFactory()->getProxy($className, $identifier);
+        return $this->em->getProxyFactory()->getProxy($className, $identifier);
     }
 
 }

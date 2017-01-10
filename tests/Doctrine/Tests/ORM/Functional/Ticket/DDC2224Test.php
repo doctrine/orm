@@ -20,7 +20,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $dql = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setQueryCacheDriver(new ArrayCache());
 
         $query->setParameter('field', 'test', 'DDC2224Type');

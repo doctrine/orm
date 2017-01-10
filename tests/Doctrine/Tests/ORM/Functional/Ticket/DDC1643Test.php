@@ -32,15 +32,15 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->name = "Roman";
         $user2->status = "active";
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user1 = $this->_em->find(get_class($user1), $user1->id);
-        $this->user2 = $this->_em->find(get_class($user1), $user2->id);
+        $this->user1 = $this->em->find(get_class($user1), $user1->id);
+        $this->user2 = $this->em->find(get_class($user1), $user2->id);
     }
 
     public function testClonePersistentCollectionAndReuse()
@@ -49,10 +49,10 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user1->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
 
         self::assertEquals(2, count($user1->groups));
     }
@@ -64,11 +64,11 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user2->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
         self::assertEquals(2, count($user1->groups));
         self::assertEquals(2, count($user2->groups));
@@ -84,12 +84,12 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->groups = clone $user1->groups;
         $user2->groups->add($group3);
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
         self::assertEquals(3, count($user2->groups));
         self::assertEquals(2, count($user1->groups));
@@ -107,12 +107,12 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertCount(1, $user1->groups->getInsertDiff());
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
         self::assertEquals(3, count($user2->groups));
         self::assertEquals(3, count($user1->groups));

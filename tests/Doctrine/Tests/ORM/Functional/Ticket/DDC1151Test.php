@@ -9,14 +9,14 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testQuoteForeignKey()
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != 'postgresql') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() != 'postgresql') {
             $this->markTestSkipped("This test is useful for all databases, but designed only for postgresql.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSql(
+        $sql = $this->schemaTool->getCreateSchemaSql(
             [
-            $this->_em->getClassMetadata(DDC1151User::class),
-            $this->_em->getClassMetadata(DDC1151Group::class),
+            $this->em->getClassMetadata(DDC1151User::class),
+            $this->em->getClassMetadata(DDC1151Group::class),
             ]
         );
 

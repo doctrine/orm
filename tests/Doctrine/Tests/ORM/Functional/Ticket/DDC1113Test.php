@@ -13,12 +13,12 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC1113Engine::class),
-                    $this->_em->getClassMetadata(DDC1113Vehicle::class),
-                    $this->_em->getClassMetadata(DDC1113Car::class),
-                    $this->_em->getClassMetadata(DDC1113Bus::class),
+                    $this->em->getClassMetadata(DDC1113Engine::class),
+                    $this->em->getClassMetadata(DDC1113Vehicle::class),
+                    $this->em->getClassMetadata(DDC1113Car::class),
+                    $this->em->getClassMetadata(DDC1113Bus::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -33,19 +33,19 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $bus = new DDC1113Bus();
         $bus->engine = new DDC1113Engine();
 
-        $this->_em->persist($car);
-        $this->_em->flush();
+        $this->em->persist($car);
+        $this->em->flush();
 
-        $this->_em->persist($bus);
-        $this->_em->flush();
+        $this->em->persist($bus);
+        $this->em->flush();
 
-        $this->_em->remove($bus);
-        $this->_em->remove($car);
-        $this->_em->flush();
+        $this->em->remove($bus);
+        $this->em->remove($car);
+        $this->em->flush();
 
-        self::assertEmpty($this->_em->getRepository(DDC1113Car::class)->findAll());
-        self::assertEmpty($this->_em->getRepository(DDC1113Bus::class)->findAll());
-        self::assertEmpty($this->_em->getRepository(DDC1113Engine::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Car::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Bus::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Engine::class)->findAll());
     }
 }
 

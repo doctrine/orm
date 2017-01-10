@@ -10,10 +10,10 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC735Product::class),
-                $this->_em->getClassMetadata(DDC735Review::class)
+                $this->em->getClassMetadata(DDC735Product::class),
+                $this->em->getClassMetadata(DDC735Review::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -28,8 +28,8 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $review  = new DDC735Review($product);
 
         // Persist and flush
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         // Now you see it
         self::assertEquals(1, count($product->getReviews()));
@@ -37,19 +37,19 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // Remove the review
         $reviewId = $review->getId();
         $product->removeReview($review);
-        $this->_em->flush();
+        $this->em->flush();
 
         // Now you don't
         self::assertEquals(0, count($product->getReviews()), 'count($reviews) should be 0 after removing its only Review');
 
         // Refresh
-        $this->_em->refresh($product);
+        $this->em->refresh($product);
 
         // It should still be 0
         self::assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
 
         // Review should also not be available anymore
-        self::assertNull($this->_em->find(DDC735Review::class, $reviewId));
+        self::assertNull($this->em->find(DDC735Review::class, $reviewId));
     }
 }
 

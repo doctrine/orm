@@ -445,7 +445,7 @@ class Expr
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -466,7 +466,7 @@ class Expr
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -601,7 +601,7 @@ class Expr
      */
     public function literal($literal)
     {
-        return new Expr\Literal($this->_quoteLiteral($literal));
+        return new Expr\Literal($this->quoteLiteral($literal));
     }
 
     /**
@@ -611,7 +611,7 @@ class Expr
      *
      * @return string
      */
-    private function _quoteLiteral($literal)
+    private function quoteLiteral($literal)
     {
         if (is_numeric($literal) && !is_string($literal)) {
             return (string) $literal;

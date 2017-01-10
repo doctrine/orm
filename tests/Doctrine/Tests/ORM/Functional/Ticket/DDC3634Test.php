@@ -17,17 +17,17 @@ class DDC3634Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $metadata = $this->_em->getClassMetadata(DDC3634Entity::class);
+        $metadata = $this->em->getClassMetadata(DDC3634Entity::class);
 
         if ( ! $metadata->idGenerator->isPostInsertGenerator()) {
             $this->markTestSkipped('Need a post-insert ID generator in order to make this test work correctly');
         }
 
         try {
-            $this->_schemaTool->createSchema([
+            $this->schemaTool->createSchema([
                 $metadata,
-                $this->_em->getClassMetadata(DDC3634JTIBaseEntity::class),
-                $this->_em->getClassMetadata(DDC3634JTIChildEntity::class),
+                $this->em->getClassMetadata(DDC3634JTIBaseEntity::class),
+                $this->em->getClassMetadata(DDC3634JTIChildEntity::class),
             ]);
         } catch (ToolsException $e) {
             // schema already in place
@@ -39,8 +39,8 @@ class DDC3634Test extends OrmFunctionalTestCase
         $veryLargeId = PHP_INT_MAX . PHP_INT_MAX;
 
         $entityManager = EntityManager::create(
-            new DDC3634LastInsertIdMockingConnection($veryLargeId, $this->_em->getConnection()),
-            $this->_em->getConfiguration()
+            new DDC3634LastInsertIdMockingConnection($veryLargeId, $this->em->getConnection()),
+            $this->em->getConfiguration()
         );
 
         $entity = new DDC3634Entity();
@@ -55,8 +55,8 @@ class DDC3634Test extends OrmFunctionalTestCase
     {
         $entity = new DDC3634Entity();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         self::assertInternalType('string', $entity->id);
     }
@@ -65,8 +65,8 @@ class DDC3634Test extends OrmFunctionalTestCase
     {
         $entity = new DDC3634JTIChildEntity();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         self::assertInternalType('string', $entity->id);
     }
@@ -342,7 +342,7 @@ class DDC3634LastInsertIdMockingConnection extends Connection
         return $this->forwardCall();
     }
 
-    protected function _getNestedTransactionSavePointName()
+    protected function getNestedTransactionSavePointName()
     {
         return $this->forwardCall();
     }

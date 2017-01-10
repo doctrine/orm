@@ -16,7 +16,7 @@ use Doctrine\Tests\OrmTestCase;
  */
 class UpdateSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    private $em;
 
     protected function setUp() {
         if (DBALType::hasType('negative_to_positive')) {
@@ -25,13 +25,13 @@ class UpdateSqlGenerationTest extends OrmTestCase
             DBALType::addType('negative_to_positive', NegativeToPositiveType::class);
         }
 
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $query        = $this->_em->createQuery($dqlToBeTested);
+            $query        = $this->em->createQuery($dqlToBeTested);
             $sqlGenerated = $query->getSql();
 
             $query->free();

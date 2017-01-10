@@ -30,16 +30,16 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->customer->setCart($this->cart);
-        $this->_em->persist($this->customer);
-        $this->_em->flush();
+        $this->em->persist($this->customer);
+        $this->em->flush();
 
         self::assertCartForeignKeyIs($this->customer->getId());
     }
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->customer->brokenSetCart($this->cart);
-        $this->_em->persist($this->customer);
-        $this->_em->flush();
+        $this->em->persist($this->customer);
+        $this->em->flush();
 
         self::assertCartForeignKeyIs(null);
     }
@@ -47,19 +47,19 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testRemovesOneToOneAssociation()
     {
         $this->customer->setCart($this->cart);
-        $this->_em->persist($this->customer);
+        $this->em->persist($this->customer);
         $this->customer->removeCart();
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertCartForeignKeyIs(null);
     }
 
     public function testEagerLoad()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
+        $query = $this->em->createQuery('select c, ca from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c join c.cart ca');
         $result = $query->getResult();
         $customer = $result[0];
 
@@ -68,11 +68,11 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     }
 
     public function testLazyLoadsObjectsOnTheOwningSide() {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceCart::class);
+        $this->createFixture();
+        $metadata = $this->em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['customer']['fetchMode'] = FetchMode::LAZY;
 
-        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
+        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();
         $cart = $result[0];
 
@@ -82,11 +82,11 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testInverseSideIsNeverLazy()
     {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
+        $this->createFixture();
+        $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = FetchMode::EAGER;
 
-        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
+        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
         $result = $query->getResult();
         $customer = $result[0];
 
@@ -104,25 +104,25 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $cart->setPayment('CARD');
         $cust->setCart($cart);
 
-        $this->_em->persist($cust);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($cust);
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertInstanceOf(ECommerceCart::class, $cust->getCart());
         self::assertEquals('Roman', $cust->getName());
         self::assertSame($cust, $cart->getCustomer());
 
-        $query = $this->_em->createQuery('select ca from Doctrine\Tests\Models\ECommerce\ECommerceCart ca where ca.id =?1');
+        $query = $this->em->createQuery('select ca from Doctrine\Tests\Models\ECommerce\ECommerceCart ca where ca.id =?1');
         $query->setParameter(1, $cart->getId());
 
         $cart2 = $query->getSingleResult();
 
         $cart2->setPayment('CHEQUE');
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $query2 = $this->_em->createQuery('select ca, c from Doctrine\Tests\Models\ECommerce\ECommerceCart ca left join ca.customer c where ca.id =?1');
+        $query2 = $this->em->createQuery('select ca, c from Doctrine\Tests\Models\ECommerce\ECommerceCart ca left join ca.customer c where ca.id =?1');
         $query2->setParameter(1, $cart->getId());
 
         $cart3 = $query2->getSingleResult();
@@ -131,7 +131,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Roman', $cart3->getCustomer()->getName());
     }
 
-    protected function _createFixture()
+    protected function createFixture()
     {
         $customer = new ECommerceCustomer;
         $customer->setName('Giorgio');
@@ -139,14 +139,14 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $cart->setPayment('paypal');
         $customer->setCart($cart);
 
-        $this->_em->persist($customer);
+        $this->em->persist($customer);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function assertCartForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', [$this->cart->getId()])->fetchColumn();
+        $foreignKey = $this->em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', [$this->cart->getId()])->fetchColumn();
         self::assertEquals($value, $foreignKey);
     }
 }

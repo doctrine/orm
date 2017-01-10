@@ -41,38 +41,38 @@ class DDC3644Test extends OrmFunctionalTestCase
         $user->name = 'Guilherme Blanco';
         $user->setAddresses($addresses);
 
-        $this->_em->persist($user);
-        $this->_em->persist($current);
-        $this->_em->persist($previous);
-        $this->_em->persist($initial);
+        $this->em->persist($user);
+        $this->em->persist($current);
+        $this->em->persist($previous);
+        $this->em->persist($initial);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $userId = $user->id;
         unset($current, $previous, $initial, $addresses, $user);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $current   = new DDC3644Address('Toronto, ON, Canada');
         $addresses = new ArrayCollection([$current]);
-        $user      = $this->_em->find(DDC3644User::class, $userId);
+        $user      = $this->em->find(DDC3644User::class, $userId);
 
         $user->setAddresses($addresses);
 
-        $this->_em->persist($user);
-        $this->_em->persist($current);
+        $this->em->persist($user);
+        $this->em->persist($current);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         // We should only have 1 item in the collection list now
-        $user = $this->_em->find(DDC3644User::class, $userId);
+        $user = $this->em->find(DDC3644User::class, $userId);
 
         self::assertCount(1, $user->addresses);
 
         // We should only have 1 item in the addresses table too
-        $repository = $this->_em->getRepository(DDC3644Address::class);
+        $repository = $this->em->getRepository(DDC3644Address::class);
         $addresses  = $repository->findAll();
 
         self::assertCount(1, $addresses);
@@ -92,37 +92,37 @@ class DDC3644Test extends OrmFunctionalTestCase
         $user->name = 'Guilherme Blanco';
         $user->setPets($pets);
 
-        $this->_em->persist($user);
-        $this->_em->persist($actual);
-        $this->_em->persist($past);
+        $this->em->persist($user);
+        $this->em->persist($actual);
+        $this->em->persist($past);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $userId = $user->id;
         unset($actual, $past, $pets, $user);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $actual = new DDC3644Pet('Valentina');
         $pets   = new ArrayCollection([$actual]);
-        $user   = $this->_em->find(DDC3644User::class, $userId);
+        $user   = $this->em->find(DDC3644User::class, $userId);
 
         $user->setPets($pets);
 
-        $this->_em->persist($user);
-        $this->_em->persist($actual);
+        $this->em->persist($user);
+        $this->em->persist($actual);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         // We should only have 1 item in the collection list now
-        $user = $this->_em->find(DDC3644User::class, $userId);
+        $user = $this->em->find(DDC3644User::class, $userId);
 
         self::assertCount(1, $user->pets);
 
         // We should only have 1 item in the pets table too
-        $repository = $this->_em->getRepository(DDC3644Pet::class);
+        $repository = $this->em->getRepository(DDC3644Pet::class);
         $pets       = $repository->findAll();
 
         self::assertCount(1, $pets);

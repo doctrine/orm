@@ -7,13 +7,13 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC599Item::class),
-                $this->_em->getClassMetadata(DDC599Subitem::class),
-                $this->_em->getClassMetadata(DDC599Child::class),
+                $this->em->getClassMetadata(DDC599Item::class),
+                $this->em->getClassMetadata(DDC599Subitem::class),
+                $this->em->getClassMetadata(DDC599Child::class),
                 ]
             );
         } catch (\Exception $ignored) {}
@@ -26,45 +26,45 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child = new DDC599Child;
         $child->parent = $item;
         $item->getChildren()->add($child);
-        $this->_em->persist($item);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item = $this->_em->find(DDC599Item::class, $item->id);
+        $item = $this->em->find(DDC599Item::class, $item->id);
 
-        $this->_em->remove($item);
-        $this->_em->flush(); // Should not fail
+        $this->em->remove($item);
+        $this->em->flush(); // Should not fail
 
-        self::assertFalse($this->_em->contains($item));
+        self::assertFalse($this->em->contains($item));
         $children = $item->getChildren();
-        self::assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->em->contains($children[0]));
 
-        $this->_em->clear();
+        $this->em->clear();
 
 
         $item2 = new DDC599Subitem;
         $item2->elem = "bar";
-        $this->_em->persist($item2);
-        $this->_em->flush();
+        $this->em->persist($item2);
+        $this->em->flush();
 
         $child2 = new DDC599Child;
         $child2->parent = $item2;
         $item2->getChildren()->add($child2);
-        $this->_em->persist($child2);
-        $this->_em->flush();
+        $this->em->persist($child2);
+        $this->em->flush();
 
-        $this->_em->remove($item2);
-        $this->_em->flush(); // should not fail
+        $this->em->remove($item2);
+        $this->em->flush(); // should not fail
 
-        self::assertFalse($this->_em->contains($item));
+        self::assertFalse($this->em->contains($item));
         $children = $item->getChildren();
-        self::assertFalse($this->_em->contains($children[0]));
+        self::assertFalse($this->em->contains($children[0]));
     }
 
     public function testCascadeRemoveOnChildren()
     {
-        $class = $this->_em->getClassMetadata(DDC599Subitem::class);
+        $class = $this->em->getClassMetadata(DDC599Subitem::class);
 
         self::assertArrayHasKey('children', $class->associationMappings);
         self::assertContains('remove', $class->associationMappings['children']['cascade']);

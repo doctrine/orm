@@ -9,10 +9,10 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC531Item::class),
-            $this->_em->getClassMetadata(DDC531SubItem::class),
+            $this->em->getClassMetadata(DDC531Item::class),
+            $this->em->getClassMetadata(DDC531SubItem::class),
             ]
         );
     }
@@ -23,17 +23,17 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $item2 = new DDC531Item;
         $item2->parent = $item1;
         $item1->getChildren()->add($item2);
-        $this->_em->persist($item1);
-        $this->_em->persist($item2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item1);
+        $this->em->persist($item2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item3 = $this->_em->find(DDC531Item::class, $item2->id); // Load child item first (id 2)
+        $item3 = $this->em->find(DDC531Item::class, $item2->id); // Load child item first (id 2)
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.
         self::assertInstanceOf(DDC531Item::class, $item3->parent);
         self::assertNotInstanceOf(Proxy::class, $item3->parent);
-        $item4 = $this->_em->find(DDC531Item::class, $item1->id); // Load parent item (id 1)
+        $item4 = $this->em->find(DDC531Item::class, $item1->id); // Load parent item (id 1)
         self::assertNull($item4->parent);
         self::assertNotNull($item4->getChildren());
         self::assertTrue($item4->getChildren()->contains($item3)); // lazy-loads children

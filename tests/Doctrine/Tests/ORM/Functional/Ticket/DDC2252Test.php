@@ -18,12 +18,12 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2252User::class),
-            $this->_em->getClassMetadata(DDC2252Privilege::class),
-            $this->_em->getClassMetadata(DDC2252Membership::class),
-            $this->_em->getClassMetadata(DDC2252MerchantAccount::class),
+            $this->em->getClassMetadata(DDC2252User::class),
+            $this->em->getClassMetadata(DDC2252Privilege::class),
+            $this->em->getClassMetadata(DDC2252Membership::class),
+            $this->em->getClassMetadata(DDC2252MerchantAccount::class),
             ]
         );
 
@@ -44,16 +44,16 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->membership->addPrivilege($this->privileges[1]);
         $this->membership->addPrivilege($this->privileges[2]);
 
-        $this->_em->persist($this->user);
-        $this->_em->persist($this->merchant);
-        $this->_em->persist($this->privileges[0]);
-        $this->_em->persist($this->privileges[1]);
-        $this->_em->persist($this->privileges[2]);
-        $this->_em->flush();
+        $this->em->persist($this->user);
+        $this->em->persist($this->merchant);
+        $this->em->persist($this->privileges[0]);
+        $this->em->persist($this->privileges[1]);
+        $this->em->persist($this->privileges[2]);
+        $this->em->flush();
 
-        $this->_em->persist($this->membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($this->membership);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testIssue()
@@ -63,38 +63,38 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
             'userAccount'     => $this->user->getUid(),
         ];
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
         self::assertInstanceOf(DDC2252Membership::class, $membership);
         self::assertCount(3, $membership->getPrivileges());
 
         $membership->getPrivileges()->remove(2);
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
         self::assertInstanceOf(DDC2252Membership::class, $membership);
         self::assertCount(2, $membership->getPrivileges());
 
         $membership->getPrivileges()->clear();
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
         self::assertInstanceOf(DDC2252Membership::class, $membership);
         self::assertCount(0, $membership->getPrivileges());
 
         $membership->addPrivilege($privilege3 = new DDC2252Privilege);
-        $this->_em->persist($privilege3);
-        $this->_em->persist($membership);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($privilege3);
+        $this->em->persist($membership);
+        $this->em->flush();
+        $this->em->clear();
 
-        $membership = $this->_em->find(DDC2252Membership::class, $identifier);
+        $membership = $this->em->find(DDC2252Membership::class, $identifier);
 
         self::assertInstanceOf(DDC2252Membership::class, $membership);
         self::assertCount(1, $membership->getPrivileges());

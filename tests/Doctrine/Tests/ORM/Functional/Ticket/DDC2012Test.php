@@ -19,10 +19,10 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         DDC2012TsVectorType::$calls = [];
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2012Item::class),
-            $this->_em->getClassMetadata(DDC2012ItemPerson::class),
+            $this->em->getClassMetadata(DDC2012Item::class),
+            $this->em->getClassMetadata(DDC2012ItemPerson::class),
             ]
         );
     }
@@ -32,11 +32,11 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $item       = new DDC2012ItemPerson();
         $item->tsv  = ['word1', 'word2', 'word3'];
 
-        $this->_em->persist($item);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->em->find(get_class($item), $item->id);
 
         self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
         self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
@@ -52,11 +52,11 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $item->tsv = ['word1', 'word2'];
 
-        $this->_em->persist($item);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($item);
+        $this->em->flush();
+        $this->em->clear();
 
-        $item = $this->_em->find(get_class($item), $item->id);
+        $item = $this->em->find(get_class($item), $item->id);
 
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
         self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);

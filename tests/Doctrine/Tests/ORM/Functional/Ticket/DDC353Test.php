@@ -10,10 +10,10 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC353File::class),
-                $this->_em->getClassMetadata(DDC353Picture::class),
+                $this->em->getClassMetadata(DDC353File::class),
+                $this->em->getClassMetadata(DDC353Picture::class),
                 ]
             );
         } catch(\Exception $ignored) {}
@@ -26,7 +26,7 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $picture = new DDC353Picture;
         $picture->setFile($file);
 
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();
@@ -51,7 +51,7 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $picture = new DDC353Picture;
         $picture->setFile($file);
 
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();

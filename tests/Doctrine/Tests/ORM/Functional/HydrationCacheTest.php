@@ -23,9 +23,9 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         $user->username = "beberlei";
         $user->status = 'active';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testHydrationCache()
@@ -33,36 +33,36 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         $cache = new ArrayCache();
         $dql = "SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u";
 
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getResult();
 
         $c = $this->getCurrentQueryCount();
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getResult();
 
         self::assertEquals($c, $this->getCurrentQueryCount(), "Should not execute query. Its cached!");
 
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getArrayResult();
 
         self::assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration is part of cache key.");
 
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getArrayResult();
 
         self::assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration now cached");
 
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
                       ->getArrayResult();
 
         self::assertTrue($cache->contains('cachekey'), 'Explicit cache key');
 
-        $users = $this->_em->createQuery($dql)
+        $users = $this->em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
                       ->getArrayResult();
         self::assertEquals($c + 2, $this->getCurrentQueryCount(), "Hydration now cached");
@@ -73,7 +73,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
         $cache = new ArrayCache();
 
         $dql   = "SELECT u FROM Doctrine\Tests\Models\Cms\CmsUser u WHERE u.id = ?1";
-        $query = $this->_em->createQuery($dql)
+        $query = $this->em->createQuery($dql)
             ->setParameter(1, $userId = 1)
             ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache));
 

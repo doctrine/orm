@@ -22,11 +22,11 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2346Foo::class),
-            $this->_em->getClassMetadata(DDC2346Bar::class),
-            $this->_em->getClassMetadata(DDC2346Baz::class),
+            $this->em->getClassMetadata(DDC2346Foo::class),
+            $this->em->getClassMetadata(DDC2346Bar::class),
+            $this->em->getClassMetadata(DDC2346Baz::class),
             ]
         );
 
@@ -50,17 +50,17 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foo1->bars[] = $baz1;
         $foo1->bars[] = $baz2;
 
-        $this->_em->persist($foo1);
-        $this->_em->persist($foo2);
-        $this->_em->persist($baz1);
-        $this->_em->persist($baz2);
+        $this->em->persist($foo1);
+        $this->em->persist($foo2);
+        $this->em->persist($baz1);
+        $this->em->persist($baz2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
 
-        $fetchedBazs = $this->_em->getRepository(DDC2346Baz::class)->findAll();
+        $fetchedBazs = $this->em->getRepository(DDC2346Baz::class)->findAll();
 
         self::assertCount(2, $fetchedBazs);
         self::assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');

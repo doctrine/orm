@@ -14,10 +14,10 @@ class DDC2350Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2350User::class),
-            $this->_em->getClassMetadata(DDC2350Bug::class),
+            $this->em->getClassMetadata(DDC2350User::class),
+            $this->em->getClassMetadata(DDC2350Bug::class),
             ]
         );
     }
@@ -30,15 +30,15 @@ class DDC2350Test extends OrmFunctionalTestCase
         $bug2 = new DDC2350Bug();
         $bug2->user = $user;
 
-        $this->_em->persist($user);
-        $this->_em->persist($bug1);
-        $this->_em->persist($bug2);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($bug1);
+        $this->em->persist($bug2);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $cnt = $this->getCurrentQueryCount();
-        $user = $this->_em->find(DDC2350User::class, $user->id);
+        $user = $this->em->find(DDC2350User::class, $user->id);
 
         self::assertEquals($cnt + 1, $this->getCurrentQueryCount());
 

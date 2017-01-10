@@ -23,22 +23,22 @@ class FlushEventTest extends OrmFunctionalTestCase
 
     public function testPersistNewEntitiesOnPreFlush()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, new OnFlushListener);
 
         $user = new CmsUser;
         $user->username = 'romanb';
         $user->name = 'Roman';
         $user->status = 'Dev';
 
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         self::assertEquals(0, $user->phonenumbers->count());
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(1, $user->phonenumbers->count());
-        self::assertTrue($this->_em->contains($user->phonenumbers->get(0)));
+        self::assertTrue($this->em->contains($user->phonenumbers->get(0)));
         self::assertTrue($user->phonenumbers->get(0)->getUser() === $user);
 
         self::assertFalse($user->phonenumbers->isDirty());
@@ -46,7 +46,7 @@ class FlushEventTest extends OrmFunctionalTestCase
         // Can be used together with SQL Logging to check that a subsequent flush has
         // nothing to do. This proofs the correctness of the changes that happened in onFlush.
         //echo "SECOND FLUSH";
-        //$this->_em->flush();
+        //$this->em->flush();
     }
 
     /**
@@ -55,16 +55,16 @@ class FlushEventTest extends OrmFunctionalTestCase
     public function testPreAndOnFlushCalledAlways()
     {
         $listener = new OnFlushCalledListener();
-        $this->_em->getEventManager()->addEventListener(Events::onFlush, $listener);
-        $this->_em->getEventManager()->addEventListener(Events::preFlush, $listener);
-        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::onFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::preFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::postFlush, $listener);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(1, $listener->preFlush);
         self::assertEquals(1, $listener->onFlush);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(2, $listener->preFlush);
         self::assertEquals(2, $listener->onFlush);

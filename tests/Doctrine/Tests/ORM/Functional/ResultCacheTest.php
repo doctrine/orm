@@ -48,10 +48,10 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $user->username = 'romanb';
         $user->status = 'dev';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $cache = new ArrayCache();
 
         $query->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
@@ -64,9 +64,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertEquals(1, count($users));
         self::assertEquals('Roman', $users[0]->name);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $query2 = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query2 = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
         $query2->setResultCacheDriver($cache)->setResultCacheId('my_cache_id');
 
         $users = $query2->getResult();
@@ -79,7 +79,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     public function testSetResultCacheId()
     {
         $cache = new ArrayCache;
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $query->setResultCacheDriver($cache);
         $query->setResultCacheId('testing_result_cache_id');
@@ -94,7 +94,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
     public function testUseResultCache()
     {
         $cache = new ArrayCache();
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $query->useResultCache(true);
         $query->setResultCacheDriver($cache);
@@ -104,7 +104,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         self::assertTrue($cache->contains('testing_result_cache_id'));
 
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
     }
 
     /**
@@ -113,8 +113,8 @@ class ResultCacheTest extends OrmFunctionalTestCase
     public function testUseResultCacheParams()
     {
         $cache    = new ArrayCache();
-        $sqlCount = count($this->_sqlLoggerStack->queries);
-        $query    = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
+        $sqlCount = count($this->sqlLoggerStack->queries);
+        $query    = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux WHERE ux.id = ?1');
 
         $query->setParameter(1, 1);
         $query->setResultCacheDriver($cache);
@@ -124,7 +124,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "Two non-cached queries.");
+        self::assertEquals($sqlCount + 2, count($this->sqlLoggerStack->queries), "Two non-cached queries.");
 
         $query->setParameter(1, 1);
         $query->useResultCache(true);
@@ -133,7 +133,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertEquals($sqlCount + 2, count($this->_sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
+        self::assertEquals($sqlCount + 2, count($this->sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
     }
 
     /**
@@ -148,7 +148,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $rsm->addScalarResult('id', 'u', DBALType::getType('integer'));
 
-        $query = $this->_em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
+        $query = $this->em->createNativeQuery('select u.id FROM cms_users u WHERE u.id = ?', $rsm);
 
         $query->setParameter(1, 10);
         $query->setResultCacheDriver($cache)->useResultCache(true);
@@ -227,12 +227,12 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $article->topic = "baz";
         $article->user = $user1;
 
-        $this->_em->persist($article);
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query->setParameter(1, $user1);
 
         $cache = new ArrayCache();
@@ -244,9 +244,9 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertEquals(1, count($articles));
         self::assertEquals('baz', $articles[0]->topic);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $query2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query2 = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query2->setParameter(1, $user1);
 
         $query2->setResultCacheDriver($cache)->useResultCache(true);
@@ -256,7 +256,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         self::assertEquals(1, count($articles));
         self::assertEquals('baz', $articles[0]->topic);
 
-        $query3 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
+        $query3 = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
         $query3->setParameter(1, $user2);
 
         $query3->setResultCacheDriver($cache)->useResultCache(true);

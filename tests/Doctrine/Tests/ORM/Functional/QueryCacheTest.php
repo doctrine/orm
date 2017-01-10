@@ -43,7 +43,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCache_DependsOnHints()
     {
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayCache();
         $query->setQueryCacheDriver($cache);
@@ -105,9 +105,9 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCache_NoHitSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = $this->createMock(Cache::class);
 
@@ -123,9 +123,9 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCache_HitDoesNotSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
                             ->setMethods(['execute'])

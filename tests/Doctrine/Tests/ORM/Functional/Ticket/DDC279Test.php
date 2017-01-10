@@ -7,12 +7,12 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC279EntityXAbstract::class),
-            $this->_em->getClassMetadata(DDC279EntityX::class),
-            $this->_em->getClassMetadata(DDC279EntityY::class),
-            $this->_em->getClassMetadata(DDC279EntityZ::class),
+            $this->em->getClassMetadata(DDC279EntityXAbstract::class),
+            $this->em->getClassMetadata(DDC279EntityX::class),
+            $this->em->getClassMetadata(DDC279EntityY::class),
+            $this->em->getClassMetadata(DDC279EntityZ::class),
             ]
         );
     }
@@ -33,14 +33,14 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $x->y = $y;
         $y->z = $z;
 
-        $this->_em->persist($x);
-        $this->_em->persist($y);
-        $this->_em->persist($z);
+        $this->em->persist($x);
+        $this->em->persist($y);
+        $this->em->persist($z);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $query = $this->_em->createQuery(
+        $query = $this->em->createQuery(
             'SELECT x, y, z FROM Doctrine\Tests\ORM\Functional\Ticket\DDC279EntityX x '.
             'INNER JOIN x.y y INNER JOIN y.z z WHERE x.id = ?1'
         )->setParameter(1, $x->id);

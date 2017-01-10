@@ -13,18 +13,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 class DDC214Test extends OrmFunctionalTestCase
 {
     private $classes = [];
-    private $schemaTool = null;
 
     public function setUp()
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         if (strpos($conn->getDriver()->getName(), "sqlite") !== false) {
             $this->markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
 
     /**
@@ -67,7 +65,7 @@ class DDC214Test extends OrmFunctionalTestCase
     {
         $classMetadata = [];
         foreach ($classes AS $class) {
-            $classMetadata[] = $this->_em->getClassMetadata($class);
+            $classMetadata[] = $this->em->getClassMetadata($class);
         }
 
         try {
@@ -76,7 +74,7 @@ class DDC214Test extends OrmFunctionalTestCase
             // was already created
         }
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->em->getConnection()->getSchemaManager();
 
         $fromSchema = $sm->createSchema();
         $toSchema = $this->schemaTool->getSchemaFromMetadata($classMetadata);
@@ -84,7 +82,7 @@ class DDC214Test extends OrmFunctionalTestCase
         $comparator = new Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
-        $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
+        $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
 
         self::assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));

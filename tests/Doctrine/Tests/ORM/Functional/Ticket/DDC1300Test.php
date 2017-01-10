@@ -10,10 +10,11 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1300Foo::class),
-            $this->_em->getClassMetadata(DDC1300FooLocale::class),
+                $this->em->getClassMetadata(DDC1300Foo::class),
+                $this->em->getClassMetadata(DDC1300FooLocale::class),
             ]
         );
     }
@@ -21,20 +22,20 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $foo = new DDC1300Foo();
-        $foo->_fooReference = "foo";
+        $foo->fooReference = "foo";
 
-        $this->_em->persist($foo);
-        $this->_em->flush();
+        $this->em->persist($foo);
+        $this->em->flush();
 
         $locale = new DDC1300FooLocale();
-        $locale->_foo = $foo;
-        $locale->_locale = "en";
-        $locale->_title = "blub";
+        $locale->foo = $foo;
+        $locale->locale = "en";
+        $locale->title = "blub";
 
-        $this->_em->persist($locale);
-        $this->_em->flush();
+        $this->em->persist($locale);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f._fooLocaleRefFoo fl');
+        $query = $this->em->createQuery('SELECT f, fl FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1300Foo f JOIN f.fooLocaleRefFoo fl');
         $result =  $query->getResult();
 
         self::assertEquals(1, count($result));
@@ -52,19 +53,19 @@ class DDC1300Foo
      * @GeneratedValue(strategy="AUTO")
      * @Id
      */
-    public $_fooID = null;
+    public $fooID = null;
 
     /**
      * @var string fooReference
      * @Column(name="fooReference", type="string", nullable=true, length=45)
      */
-    public $_fooReference = null;
+    public $fooReference = null;
 
     /**
-     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="_foo",
+     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
      * cascade={"persist"})
      */
-    public $_fooLocaleRefFoo = null;
+    public $fooLocaleRefFoo = null;
 
     /**
      * Constructor
@@ -74,7 +75,7 @@ class DDC1300Foo
      */
     public function __construct($options = null)
     {
-        $this->_fooLocaleRefFoo = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooLocaleRefFoo = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
 }
@@ -90,19 +91,19 @@ class DDC1300FooLocale
      * @JoinColumn(name="fooID", referencedColumnName="fooID")
      * @Id
      */
-    public $_foo = null;
+    public $foo = null;
 
     /**
      * @var string locale
      * @Column(name="locale", type="string", nullable=false, length=5)
      * @Id
      */
-    public $_locale = null;
+    public $locale = null;
 
     /**
      * @var string title
      * @Column(name="title", type="string", nullable=true, length=150)
      */
-    public $_title = null;
+    public $title = null;
 
 }

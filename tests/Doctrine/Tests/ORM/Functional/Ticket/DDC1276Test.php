@@ -22,26 +22,26 @@ class DDC1276Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = "Benjamin";
         $user->username = "beberlei";
         $user->status = "active";
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         for ($i = 0; $i < 2; $i++) {
             $group = new CmsGroup();
             $group->name = "group".$i;
             $user->groups[] = $group;
-            $this->_em->persist($group);
+            $this->em->persist($group);
         }
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(CmsUser::class, $user->id);
+        $user = $this->em->find(CmsUser::class, $user->id);
         $cloned = clone $user;
 
         self::assertSame($user->groups, $cloned->groups);
         self::assertEquals(2, count($user->groups));
-        $this->_em->merge($cloned);
+        $this->em->merge($cloned);
 
         self::assertEquals(2, count($user->groups));
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
