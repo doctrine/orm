@@ -41,7 +41,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
         $this->command = new RunDqlCommand();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add($this->command);
 
         $this->tester = new CommandTester($this->command);
@@ -54,8 +54,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testWillRunQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
         self::assertSame(
             0,
@@ -72,8 +72,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testWillShowQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
         self::assertSame(
             0,

@@ -29,8 +29,8 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $targetPersister = $this->_em->getUnitOfWork()->getEntityPersister(City::class);
-        $this->structure = new DefaultCollectionHydrator($this->_em, $targetPersister);
+        $targetPersister = $this->em->getUnitOfWork()->getEntityPersister(City::class);
+        $this->structure = new DefaultCollectionHydrator($this->em, $targetPersister);
     }
 
     public function testImplementsCollectionEntryStructure()
@@ -40,7 +40,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 
     public function testLoadCacheCollection()
     {
-        $targetRegion   = $this->_em->getCache()->getEntityCacheRegion(City::class);
+        $targetRegion   = $this->em->getCache()->getEntityCacheRegion(City::class);
         $entry          = new CollectionCacheEntry(
             [
             new EntityCacheKey(City::class, ['id'=>31]),
@@ -53,10 +53,10 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         $targetRegion->put(new EntityCacheKey(City::class, ['id'=>32]), new EntityCacheEntry(City::class, ['id'=>32, 'name'=>'Bar']
         ));
 
-        $sourceClass    = $this->_em->getClassMetadata(State::class);
-        $targetClass    = $this->_em->getClassMetadata(City::class);
+        $sourceClass    = $this->em->getClassMetadata(State::class);
+        $targetClass    = $this->em->getClassMetadata(City::class);
         $key            = new CollectionCacheKey($sourceClass->name, 'cities', ['id'=>21]);
-        $collection     = new PersistentCollection($this->_em, $targetClass, new ArrayCollection());
+        $collection     = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
         $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 
         self::assertNotNull($list);
@@ -75,8 +75,8 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         self::assertEquals(32, $list[1]->getId());
         self::assertEquals($list[0]->getId(), $collection[0]->getId());
         self::assertEquals($list[1]->getId(), $collection[1]->getId());
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[0]));
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($collection[1]));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($collection[0]));
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($collection[1]));
     }
 
 }

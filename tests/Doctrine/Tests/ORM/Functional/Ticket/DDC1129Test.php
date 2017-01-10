@@ -21,20 +21,20 @@ class DDC1129Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article->text = "I don't know.";
         $article->topic = "Who is John Galt?";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         self::assertEquals(1, $article->version);
 
-        $class = $this->_em->getClassMetadata(CmsArticle::class);
-        $uow = $this->_em->getUnitOfWork();
+        $class = $this->em->getClassMetadata(CmsArticle::class);
+        $uow = $this->em->getUnitOfWork();
 
         $uow->computeChangeSet($class, $article);
         $changeSet = $uow->getEntityChangeSet($article);
         self::assertEquals(0, count($changeSet), "No changesets should be computed.");
 
         $article->text = "This is John Galt speaking.";
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(2, $article->version);
 

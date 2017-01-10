@@ -12,16 +12,16 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('company');
         parent::setUp();
 
-        $this->oldMetadata = $this->_em->getClassMetadata(CompanyEmployee::class);
+        $this->oldMetadata = $this->em->getClassMetadata(CompanyEmployee::class);
 
         $metadata = clone $this->oldMetadata;
         ksort($metadata->reflFields);
-        $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
+        $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 
     public function tearDown()
     {
-        $this->_em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
+        $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
         parent::tearDown();
     }
 
@@ -30,7 +30,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testJoinedSubclassPersisterRequiresSpecificOrderOfMetadataReflFieldsArray()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $spouse = new CompanyEmployee;
         $spouse->setName("Blub");
@@ -43,13 +43,13 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $employee->setSalary(1000);
         $employee->setSpouse($spouse);
 
-        $this->_em->persist($spouse);
-        $this->_em->persist($employee);
+        $this->em->persist($spouse);
+        $this->em->persist($employee);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $q = $this->_em->createQuery("SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.name = ?1");
+        $q = $this->em->createQuery("SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e WHERE e.name = ?1");
         $q->setParameter(1, "Foo");
         $theEmployee = $q->getSingleResult();
 

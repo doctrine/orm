@@ -14,9 +14,9 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6217AssociatedEntity::class),
-            $this->_em->getClassMetadata(GH6217FetchedEntity::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(GH6217AssociatedEntity::class),
+            $this->em->getClassMetadata(GH6217FetchedEntity::class),
         ]);
     }
 
@@ -26,13 +26,13 @@ final class GH6217Test extends OrmFunctionalTestCase
         $eager = new GH6217AssociatedEntity();
         $fetched = new GH6217FetchedEntity($lazy, $eager);
 
-        $this->_em->persist($eager);
-        $this->_em->persist($lazy);
-        $this->_em->persist($fetched);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($eager);
+        $this->em->persist($lazy);
+        $this->em->persist($fetched);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(GH6217FetchedEntity::class);
+        $repository = $this->em->getRepository(GH6217FetchedEntity::class);
         $filters    = ['eager' => $eager->id];
 
         self::assertCount(1, $repository->findBy($filters));

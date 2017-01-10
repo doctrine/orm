@@ -33,7 +33,7 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testInlineEmbeddable()
     {
-        $isFieldMapped = $this->_em
+        $isFieldMapped = $this->em
             ->getClassMetadata(DDC6460Entity::class)
             ->hasField('embedded');
 
@@ -49,17 +49,17 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity->id = 1;
         $entity->embedded = new DDC6460Embeddable();
         $entity->embedded->field = 'test';
-        $this->_em->persist($entity);
+        $this->em->persist($entity);
 
         $second = new DDC6460ParentEntity();
         $second->id = 1;
         $second->lazyLoaded = $entity;
-        $this->_em->persist($second);
-        $this->_em->flush();
+        $this->em->persist($second);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $secondEntityWithLazyParameter = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
+        $secondEntityWithLazyParameter = $this->em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
         self::assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
         self::assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);

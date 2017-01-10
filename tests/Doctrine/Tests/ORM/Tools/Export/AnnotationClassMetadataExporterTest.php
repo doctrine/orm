@@ -14,7 +14,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
  */
 class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
-    protected function _getType()
+    protected function getType()
     {
         return 'annotation';
     }

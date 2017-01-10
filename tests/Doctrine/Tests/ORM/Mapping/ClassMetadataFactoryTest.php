@@ -37,14 +37,14 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataForSingleClass()
     {
         $mockDriver = new MetadataDriverMock();
-        $entityManager = $this->_createEntityManager($mockDriver);
+        $entityManager = $this->createEntityManager($mockDriver);
 
         $conn = $entityManager->getConnection();
         $mockPlatform = $conn->getDatabasePlatform();
         $mockPlatform->setPrefersSequences(true);
         $mockPlatform->setPrefersIdentityColumns(false);
 
-        $cm1 = $this->_createValidClassMetadata();
+        $cm1 = $this->createValidClassMetadata();
 
         // SUT
         $cmf = new ClassMetadataFactory();
@@ -70,7 +70,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
     public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
     {
-        $cm1 = $this->_createValidClassMetadata();
+        $cm1 = $this->createValidClassMetadata();
 
         $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
 
@@ -79,7 +79,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
             'arguments' => [],
         ];
 
-        $cmf = $this->_createTestFactory();
+        $cmf = $this->createTestFactory();
 
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
@@ -91,7 +91,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
     {
-        $cm1 = $this->_createValidClassMetadata();
+        $cm1 = $this->createValidClassMetadata();
 
         $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
 
@@ -100,7 +100,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
             'arguments' => [],
         ];
 
-        $cmf = $this->_createTestFactory();
+        $cmf = $this->createTestFactory();
 
         $cmf->setMetadataForClass($cm1->name, $cm1);
 
@@ -111,9 +111,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
     {
-        $cm1 = $this->_createValidClassMetadata();
+        $cm1 = $this->createValidClassMetadata();
         $cm1->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
-        $cmf = $this->_createTestFactory();
+        $cmf = $this->createTestFactory();
         $cmf->setMetadataForClass($cm1->name, $cm1);
         $this->expectException(ORMException::class);
 
@@ -126,7 +126,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $metadataDriver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Global/']);
 
-        $entityManager = $this->_createEntityManager($metadataDriver);
+        $entityManager = $this->createEntityManager($metadataDriver);
 
         $mf = $entityManager->getMetadataFactory();
         $m1 = $mf->getMetadataFor(DoctrineGlobal_Article::class);
@@ -155,7 +155,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
                ->with($this->equalTo(CmsArticle::class))
                ->will($this->returnValue(false));
 
-        $em = $this->_createEntityManager($driver);
+        $em = $this->createEntityManager($driver);
 
         self::assertTrue($em->getMetadataFactory()->isTransient(CmsUser::class));
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
@@ -177,7 +177,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
                ->with($this->equalTo(CmsArticle::class))
                ->will($this->returnValue(false));
 
-        $em = $this->_createEntityManager($driver);
+        $em = $this->createEntityManager($driver);
         $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
 
         self::assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
@@ -188,7 +188,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cmf = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/JoinedInheritanceType/']);
-        $em = $this->_createEntityManager($driver);
+        $em = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
         $rootMetadata = $cmf->getMetadataFor(RootClass::class);
@@ -228,7 +228,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // DDC-3551
         $conn = $this->createMock(Connection::class);
         $mockDriver    = new MetadataDriverMock();
-        $em = $this->_createEntityManager($mockDriver, $conn);
+        $em = $this->createEntityManager($mockDriver, $conn);
 
         $conn->expects($this->any())
             ->method('getDatabasePlatform')
@@ -243,7 +243,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals([], $metadata);
     }
 
-    protected function _createEntityManager($metadataDriver, $conn = null)
+    protected function createEntityManager($metadataDriver, $conn = null)
     {
         $driverMock = new DriverMock();
         $config = new Configuration();
@@ -261,10 +261,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
     /**
      * @return ClassMetadataFactoryTestSubject
      */
-    protected function _createTestFactory()
+    protected function createTestFactory()
     {
         $mockDriver = new MetadataDriverMock();
-        $entityManager = $this->_createEntityManager($mockDriver);
+        $entityManager = $this->createEntityManager($mockDriver);
         $cmf = new ClassMetadataFactoryTestSubject();
         $cmf->setEntityManager($entityManager);
         return $cmf;
@@ -274,7 +274,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      * @param string $class
      * @return ClassMetadata
      */
-    protected function _createValidClassMetadata()
+    protected function createValidClassMetadata()
     {
         // Self-made metadata
         $cm1 = new ClassMetadata(TestEntity1::class);
@@ -334,7 +334,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cmf    = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/Quote/']);
-        $em     = $this->_createEntityManager($driver);
+        $em     = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
         $userMetadata       = $cmf->getMetadataFor(Quote\User::class);
@@ -407,7 +407,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $metadata      = $this->createMock(ClassMetadata::class);
         $cmf           = new ClassMetadataFactory();
         $mockDriver    = new MetadataDriverMock();
-        $em = $this->_createEntityManager($mockDriver);
+        $em = $this->createEntityManager($mockDriver);
         $listener      = $this->getMockBuilder(\stdClass::class)->setMethods(['onClassMetadataNotFound'])->getMock();
         $eventManager  = $em->getEventManager();
 
@@ -451,7 +451,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
      */
     public function testRejectsEmbeddableWithoutValidClassName()
     {
-        $metadata = $this->_createValidClassMetadata();
+        $metadata = $this->createValidClassMetadata();
 
         $metadata->mapEmbedded(
             [
@@ -461,7 +461,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
             ]
         );
 
-        $cmf = $this->_createTestFactory();
+        $cmf = $this->createTestFactory();
 
         $cmf->setMetadataForClass($metadata->name, $metadata);
 
@@ -479,7 +479,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cmf = new ClassMetadataFactory();
         $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/DDC4006/']);
-        $em = $this->_createEntityManager($driver);
+        $em = $this->createEntityManager($driver);
         $cmf->setEntityManager($em);
 
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);

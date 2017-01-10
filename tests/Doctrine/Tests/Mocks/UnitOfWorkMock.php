@@ -12,20 +12,20 @@ class UnitOfWorkMock extends UnitOfWork
     /**
      * @var array
      */
-    private $_mockDataChangeSets = [];
+    private $mockDataChangeSets = [];
 
     /**
      * @var array|null
      */
-    private $_persisterMock;
+    private $persisterMock;
 
     /**
      * {@inheritdoc}
      */
     public function getEntityPersister($entityName)
     {
-        return isset($this->_persisterMock[$entityName])
-            ? $this->_persisterMock[$entityName]
+        return isset($this->persisterMock[$entityName])
+            ? $this->persisterMock[$entityName]
             : parent::getEntityPersister($entityName);
     }
 
@@ -36,8 +36,8 @@ class UnitOfWorkMock extends UnitOfWork
     {
         $oid = spl_object_hash($entity);
 
-        if (isset($this->_mockDataChangeSets[$oid])) {
-            return $this->_mockDataChangeSets[$oid];
+        if (isset($this->mockDataChangeSets[$oid])) {
+            return $this->mockDataChangeSets[$oid];
         }
 
         $data = parent::getEntityChangeSet($entity);
@@ -58,7 +58,7 @@ class UnitOfWorkMock extends UnitOfWork
      */
     public function setEntityPersister($entityName, $persister)
     {
-        $this->_persisterMock[$entityName] = $persister;
+        $this->persisterMock[$entityName] = $persister;
     }
 
     /**
@@ -66,6 +66,6 @@ class UnitOfWorkMock extends UnitOfWork
      */
     public function setOriginalEntityData($entity, array $originalData)
     {
-        $this->_originalEntityData[spl_object_hash($entity)] = $originalData;
+        $this->originalEntityData[spl_object_hash($entity)] = $originalData;
     }
 }

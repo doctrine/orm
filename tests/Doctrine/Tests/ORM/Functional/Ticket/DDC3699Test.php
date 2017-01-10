@@ -35,25 +35,25 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $relation->child    = $child ;
         $child->oneRelation = $relation;
 
-        $this->_em->persist($relation);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($relation);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
         // fixtures loaded
         /* @var $unManagedChild DDC3699Child */
-        $unManagedChild = $this->_em->find(DDC3699Child::class, $id);
+        $unManagedChild = $this->em->find(DDC3699Child::class, $id);
 
-        $this->_em->detach($unManagedChild);
+        $this->em->detach($unManagedChild);
 
         // make it managed again
-        $this->_em->find(DDC3699Child::class, $id);
+        $this->em->find(DDC3699Child::class, $id);
 
         $unManagedChild->childField  = 'modifiedChildValue';
         $unManagedChild->parentField = 'modifiedParentValue';
 
         /* @var $mergedChild DDC3699Child */
-        $mergedChild = $this->_em->merge($unManagedChild);
+        $mergedChild = $this->em->merge($unManagedChild);
 
         self::assertSame($mergedChild->childField, 'modifiedChildValue');
         self::assertSame($mergedChild->parentField, 'modifiedParentValue');
@@ -78,23 +78,23 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $relation->child    = $child ;
         $child->relations[] = $relation;
 
-        $this->_em->persist($relation);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($relation);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $unmanagedChild DDC3699Child */
-        $unmanagedChild = $this->_em->find(DDC3699Child::class, $id);
-        $this->_em->detach($unmanagedChild);
+        $unmanagedChild = $this->em->find(DDC3699Child::class, $id);
+        $this->em->detach($unmanagedChild);
 
         // make it managed again
-        $this->_em->find(DDC3699Child::class, $id);
+        $this->em->find(DDC3699Child::class, $id);
 
         $unmanagedChild->childField  = 'modifiedChildValue';
         $unmanagedChild->parentField = 'modifiedParentValue';
 
         /* @var $mergedChild DDC3699Child */
-        $mergedChild = $this->_em->merge($unmanagedChild);
+        $mergedChild = $this->em->merge($unmanagedChild);
 
         self::assertSame($mergedChild->childField, 'modifiedChildValue');
         self::assertSame($mergedChild->parentField, 'modifiedParentValue');

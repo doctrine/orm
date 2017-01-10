@@ -16,10 +16,10 @@ class DDC6303Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(DDC6303BaseClass::class),
-                $this->_em->getClassMetadata(DDC6303ChildA::class),
-                $this->_em->getClassMetadata(DDC6303ChildB::class),
+            $this->schemaTool->createSchema([
+                $this->em->getClassMetadata(DDC6303BaseClass::class),
+                $this->em->getClassMetadata(DDC6303ChildA::class),
+                $this->em->getClassMetadata(DDC6303ChildB::class),
             ]);
         } catch (ToolsException $ignored) {
         }
@@ -55,13 +55,13 @@ class DDC6303Test extends OrmFunctionalTestCase
      */
     private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
     {
-        array_walk($persistedEntities, [$this->_em, 'persist']);
-        $this->_em->flush();
-        $this->_em->clear();
+        array_walk($persistedEntities, [$this->em, 'persist']);
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $entities DDC6303BaseClass[] */
         $entities = $this
-            ->_em
+            ->em
             ->getRepository(DDC6303BaseClass::class)
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')

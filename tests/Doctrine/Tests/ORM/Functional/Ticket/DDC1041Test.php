@@ -21,13 +21,13 @@ class DDC1041Test extends OrmFunctionalTestCase
         $fix = new Models\Company\CompanyFixContract();
         $fix->setFixPrice(2000);
 
-        $this->_em->persist($fix);
-        $this->_em->flush();
+        $this->em->persist($fix);
+        $this->em->flush();
 
         $id = $fix->getId();
 
-        self::assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
-        self::assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->find(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->getReference(Models\Company\CompanyFlexContract::class, $id));
+        self::assertNull($this->em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
     }
 }

@@ -38,7 +38,7 @@ class InfoCommandTest extends OrmFunctionalTestCase
 
         $this->application = new Application();
 
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add(new InfoCommand());
 
         $this->command = $this->application->find('orm:info');

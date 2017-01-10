@@ -21,10 +21,10 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testInsertWithCompositeKey()
     {
         $childEntity = new SingleChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
         self::assertEquals($childEntity, $entity);
@@ -36,17 +36,17 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testUpdateWithCompositeKey()
     {
         $childEntity = new SingleChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
         $entity->extension = 'ext-new';
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $persistedEntity = $this->findEntity();
         self::assertEquals($entity, $persistedEntity);
@@ -57,6 +57,6 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
      */
     private function findEntity()
     {
-        return $this->_em->find(SingleRootClass::class, ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']);
+        return $this->em->find(SingleRootClass::class, ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']);
     }
 }

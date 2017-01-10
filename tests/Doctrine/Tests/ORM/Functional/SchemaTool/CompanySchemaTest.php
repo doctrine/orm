@@ -25,7 +25,7 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testGeneratedSchema()
     {
-        $schema = $this->_em->getConnection()->getSchemaManager()->createSchema();
+        $schema = $this->em->getConnection()->getSchemaManager()->createSchema();
 
         self::assertTrue($schema->hasTable('company_contracts'));
 
@@ -56,13 +56,13 @@ class CompanySchemaTest extends OrmFunctionalTestCase
      */
     public function testDropPartSchemaWithForeignKeys()
     {
-        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+        if (!$this->em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped("Foreign Key test");
         }
 
-        $sql = $this->_schemaTool->getDropSchemaSQL(
+        $sql = $this->schemaTool->getDropSchemaSQL(
             [
-            $this->_em->getClassMetadata(CompanyManager::class),
+            $this->em->getClassMetadata(CompanyManager::class),
             ]
         );
         self::assertEquals(4, count($sql));

@@ -33,7 +33,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Bar::class, $this->attractions[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Bar::class, $this->attractions[1]->getId()));
@@ -46,7 +46,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         foreach ($this->attractions as $attraction) {
             self::assertTrue($this->cache->containsEntity(Attraction::class, $attraction->getId()));
@@ -61,7 +61,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(Attraction::class);
 
@@ -73,8 +73,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertFalse($this->cache->containsEntity(Bar::class, $entityId1));
         self::assertFalse($this->cache->containsEntity(Bar::class, $entityId2));
 
-        $entity1 = $this->_em->find(Attraction::class, $entityId1);
-        $entity2 = $this->_em->find(Attraction::class, $entityId2);
+        $entity1 = $this->em->find(Attraction::class, $entityId1);
+        $entity2 = $this->em->find(Attraction::class, $entityId2);
 
         self::assertTrue($this->cache->containsEntity(Attraction::class, $entityId1));
         self::assertTrue($this->cache->containsEntity(Attraction::class, $entityId2));
@@ -92,12 +92,12 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertEquals($this->attractions[1]->getId(), $entity2->getId());
         self::assertEquals($this->attractions[1]->getName(), $entity2->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $entity3 = $this->_em->find(Attraction::class, $entityId1);
-        $entity4 = $this->_em->find(Attraction::class, $entityId2);
+        $entity3 = $this->em->find(Attraction::class, $entityId1);
+        $entity4 = $this->em->find(Attraction::class, $entityId2);
 
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
@@ -122,20 +122,20 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT a FROM Doctrine\Tests\Models\Cache\Attraction a';
-        $result1    = $this->_em->createQuery($dql)
+        $result1    = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
         self::assertCount(count($this->attractions), $result1);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $result2 = $this->_em->createQuery($dql)
+        $result2 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -154,7 +154,7 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         foreach ($this->cities as $city) {
             self::assertTrue($this->cache->containsEntity(City::class, $city->getId()));
@@ -177,9 +177,9 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->cache->evictEntityRegion(Attraction::class);
         $this->cache->evictCollectionRegion(City::class, 'attractions');
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity = $this->_em->find(City::class, $this->cities[0]->getId());
+        $entity = $this->em->find(City::class, $this->cities[0]->getId());
 
         self::assertInstanceOf(City::class, $entity);
         self::assertInstanceOf(PersistentCollection::class, $entity->getAttractions());
@@ -196,9 +196,9 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         self::assertEquals($this->attractions[0]->getName(), $entity->getAttractions()->get(0)->getName());
         self::assertEquals($this->attractions[1]->getName(), $entity->getAttractions()->get(1)->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity = $this->_em->find(City::class, $ownerId);
+        $entity = $this->em->find(City::class, $ownerId);
 
         self::assertInstanceOf(City::class, $entity);
         self::assertInstanceOf(PersistentCollection::class, $entity->getAttractions());
@@ -218,12 +218,12 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
         $this->loadFixturesStates();
         $this->loadFixturesCities();
         $this->loadFixturesAttractions();
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT attraction FROM Doctrine\Tests\Models\Cache\Attraction attraction';
 
-        $result1    = $this->_em->createQuery($dql)
+        $result1    = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
@@ -232,16 +232,16 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
 
         $contact = new Beach(
             'Botafogo',
-            $this->_em->find(City::class, $this->cities[1]->getId())
+            $this->em->find(City::class, $this->cities[1]->getId())
         );
 
-        $this->_em->persist($contact);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($contact);
+        $this->em->flush();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $result2 = $this->_em->createQuery($dql)
+        $result2 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 

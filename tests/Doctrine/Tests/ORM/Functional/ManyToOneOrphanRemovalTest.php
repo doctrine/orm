@@ -43,31 +43,31 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $phone1->person = $person;
         $phone2->person = $person;
 
-        $this->_em->persist($phone1);
-        $this->_em->persist($phone2);
-        $this->_em->persist($person);
-        $this->_em->flush();
+        $this->em->persist($phone1);
+        $this->em->persist($phone2);
+        $this->em->persist($person);
+        $this->em->flush();
 
         $this->personId = $person->id;
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testOrphanRemovalIsPurelyOrnemental()
     {
-        $person = $this->_em->getReference(Person::class, $this->personId);
+        $person = $this->em->getReference(Person::class, $this->personId);
 
-        $this->_em->remove($person);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($person);
+        $this->em->flush();
+        $this->em->clear();
 
-        $query  = $this->_em->createQuery(
+        $query  = $this->em->createQuery(
             'SELECT u FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\Person u'
         );
         $result = $query->getResult();
 
         self::assertEquals(0, count($result), 'Person should be removed by EntityManager');
 
-        $query  = $this->_em->createQuery(
+        $query  = $this->em->createQuery(
             'SELECT p FROM Doctrine\Tests\Models\OrnementalOrphanRemoval\PhoneNumber p'
         );
         $result = $query->getResult();

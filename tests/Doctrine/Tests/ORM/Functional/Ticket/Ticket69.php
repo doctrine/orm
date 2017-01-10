@@ -12,11 +12,11 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(Lemma::class),
-                    $this->_em->getClassMetadata(Relation::class),
-                    $this->_em->getClassMetadata(RelationType::class)
+                    $this->em->getClassMetadata(Lemma::class),
+                    $this->em->getClassMetadata(Relation::class),
+                    $this->em->getClassMetadata(RelationType::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -66,19 +66,19 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $lemma1->addRelation($relation2);
         $lemma1->addRelation($relation3);
 
-        $this->_em->persist($type1);
-        $this->_em->persist($type2);
-        $this->_em->persist($lemma1);
-        $this->_em->persist($lemma2);
-        $this->_em->persist($lemma3);
-        $this->_em->persist($lemma4);
+        $this->em->persist($type1);
+        $this->em->persist($type2);
+        $this->em->persist($lemma1);
+        $this->em->persist($lemma2);
+        $this->em->persist($lemma3);
+        $this->em->persist($lemma4);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
         //end setup
 
         // test One To Many
-        $query = $this->_em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
+        $query = $this->em->createQuery("SELECT l FROM Doctrine\Tests\ORM\Functional\Ticket\Lemma l Where l.lemma = 'foo'");
         $res = $query->getResult();
         $lemma = $res[0];
 
@@ -91,7 +91,7 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
             self::assertTrue($relation->getType()->getType() != '');
         }
 
-        $this->_em->clear();
+        $this->em->clear();
 
     }
 }

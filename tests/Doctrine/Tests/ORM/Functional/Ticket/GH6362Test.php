@@ -13,12 +13,12 @@ final class GH6362Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6362Start::class),
-                $this->_em->getClassMetadata(GH6362Base::class),
-                $this->_em->getClassMetadata(GH6362Child::class),
-                $this->_em->getClassMetadata(GH6362Join::class),
+                $this->em->getClassMetadata(GH6362Start::class),
+                $this->em->getClassMetadata(GH6362Base::class),
+                $this->em->getClassMetadata(GH6362Child::class),
+                $this->em->getClassMetadata(GH6362Join::class),
             ]
         );
     }
@@ -67,7 +67,7 @@ final class GH6362Test extends OrmFunctionalTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
         self::assertInstanceOf(GH6362Start::class, $result[0]['base']);

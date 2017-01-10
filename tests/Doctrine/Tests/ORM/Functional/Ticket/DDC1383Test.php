@@ -12,10 +12,10 @@ class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1383AbstractEntity::class),
-                $this->_em->getClassMetadata(DDC1383Entity::class),
+                $this->em->getClassMetadata(DDC1383AbstractEntity::class),
+                $this->em->getClassMetadata(DDC1383Entity::class),
                 ]
             );
         } catch(\Exception $ignored) {}
@@ -28,16 +28,16 @@ class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 		$child->setReference($parent);
 
-		$this->_em->persist($parent);
-		$this->_em->persist($child);
+		$this->em->persist($parent);
+		$this->em->persist($child);
 
 		$id = $child->getId();
 
-		$this->_em->flush();
-		$this->_em->clear();
+		$this->em->flush();
+		$this->em->clear();
 
 		// Try merging the parent entity
-		$child = $this->_em->merge($child);
+		$child = $this->em->merge($child);
 		$parent = $child->getReference();
 
 		// Parent is not instance of the abstract class

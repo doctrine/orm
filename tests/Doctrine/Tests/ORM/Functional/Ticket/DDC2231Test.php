@@ -15,9 +15,9 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2231EntityY::class),
+            $this->em->getClassMetadata(DDC2231EntityY::class),
             ]
         );
     }
@@ -26,12 +26,12 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $y1 = new DDC2231EntityY;
 
-        $this->_em->persist($y1);
+        $this->em->persist($y1);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
+        $y1ref = $this->em->getReference(get_class($y1), $y1->id);
 
         self::assertInstanceOf(Proxy::class, $y1ref);
         self::assertFalse($y1ref->__isInitialized__);
@@ -39,7 +39,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $id = $y1ref->doSomething();
 
         self::assertTrue($y1ref->__isInitialized__);
-        self::assertEquals($this->_em, $y1ref->om);
+        self::assertEquals($this->em, $y1ref->om);
     }
 }
 

@@ -11,7 +11,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() != "sqlite") {
             $this->markTestSkipped("Only with sqlite");
         }
     }
@@ -19,7 +19,7 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $dql = "SELECT n.smallText, n.publishDate FROM " . __NAMESPACE__ . "\\DDC1695News n";
-        $sql = $this->_em->createQuery($dql)->getSQL();
+        $sql = $this->em->createQuery($dql)->getSQL();
 
         self::assertEquals(
             'SELECT d0_."SmallText" AS SmallText_0, d0_."PublishDate" AS PublishDate_1 FROM "DDC1695News" d0_',

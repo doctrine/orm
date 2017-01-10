@@ -14,11 +14,11 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1655Foo::class),
-                $this->_em->getClassMetadata(DDC1655Bar::class),
-                $this->_em->getClassMetadata(DDC1655Baz::class),
+                $this->em->getClassMetadata(DDC1655Foo::class),
+                $this->em->getClassMetadata(DDC1655Bar::class),
+                $this->em->getClassMetadata(DDC1655Baz::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -28,7 +28,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function tearDown()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         // In case test is skipped, tearDown is called, but no setup may have run
         if (!$conn) {
@@ -37,7 +37,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $platform = $conn->getDatabasePlatform();
 
-        $this->_sqlLoggerStack->enabled = false;
+        $this->sqlLoggerStack->enabled = false;
 
         $conn->executeUpdate('DROP TABLE DDC1655Foo');
         $conn->executeUpdate('DROP TABLE DDC1655Baz');
@@ -48,15 +48,15 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $conn->executeUpdate('DROP SEQUENCE DDC1655Baz_id_seq');
         }
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testPostLoadOneToManyInheritance()
     {
-        $cm = $this->_em->getClassMetadata(DDC1655Foo::class);
+        $cm = $this->em->getClassMetadata(DDC1655Foo::class);
         self::assertEquals(["postLoad" => ["postLoad"]], $cm->lifecycleCallbacks);
 
-        $cm = $this->_em->getClassMetadata(DDC1655Bar::class);
+        $cm = $this->em->getClassMetadata(DDC1655Bar::class);
         self::assertEquals(["postLoad" => ["postLoad", "postSubLoaded"]], $cm->lifecycleCallbacks);
 
         $baz = new DDC1655Baz();
@@ -65,13 +65,13 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $bar = new DDC1655Bar();
         $bar->baz = $baz;
 
-        $this->_em->persist($foo);
-        $this->_em->persist($bar);
-        $this->_em->persist($baz);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foo);
+        $this->em->persist($bar);
+        $this->em->persist($baz);
+        $this->em->flush();
+        $this->em->clear();
 
-        $baz = $this->_em->find(get_class($baz), $baz->id);
+        $baz = $this->em->find(get_class($baz), $baz->id);
         foreach ($baz->foos as $foo) {
             self::assertEquals(1, $foo->loaded, "should have loaded callback counter incremented for " . get_class($foo));
         }
@@ -85,25 +85,25 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $bar = new DDC1655Bar();
 
-        $this->_em->persist($bar);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($bar);
+        $this->em->flush();
+        $this->em->clear();
 
-        $bar = $this->_em->find(get_class($bar), $bar->id);
+        $bar = $this->em->find(get_class($bar), $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
-        $bar = $this->_em->find(get_class($bar), $bar->id);
+        $bar = $this->em->find(get_class($bar), $bar->id);
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
         $dql = "SELECT b FROM " . __NAMESPACE__ . "\DDC1655Bar b WHERE b.id = ?1";
-        $bar = $this->_em->createQuery($dql)->setParameter(1, $bar->id)->getSingleResult();
+        $bar = $this->em->createQuery($dql)->setParameter(1, $bar->id)->getSingleResult();
 
         self::assertEquals(1, $bar->loaded);
         self::assertEquals(1, $bar->subLoaded);
 
-        $this->_em->refresh($bar);
+        $this->em->refresh($bar);
 
         self::assertEquals(2, $bar->loaded);
         self::assertEquals(2, $bar->subLoaded);

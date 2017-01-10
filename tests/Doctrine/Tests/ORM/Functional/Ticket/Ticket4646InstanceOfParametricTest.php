@@ -9,23 +9,23 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646Parametric::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646Parametric::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(PersonTicket4646Parametric::class),
+            $this->em->getClassMetadata(EmployeeTicket4646Parametric::class),
         ]);
     }
 
     public function testInstanceOf(): void
     {
-        $this->_em->persist(new PersonTicket4646Parametric());
-        $this->_em->persist(new EmployeeTicket4646Parametric());
-        $this->_em->flush();
+        $this->em->persist(new PersonTicket4646Parametric());
+        $this->em->persist(new EmployeeTicket4646Parametric());
+        $this->em->flush();
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Parametric p
                 WHERE p INSTANCE OF :parameter';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setParameter(
             'parameter',
-            $this->_em->getClassMetadata(PersonTicket4646Parametric::class)
+            $this->em->getClassMetadata(PersonTicket4646Parametric::class)
         );
         $result = $query->getResult();
         self::assertCount(2, $result);

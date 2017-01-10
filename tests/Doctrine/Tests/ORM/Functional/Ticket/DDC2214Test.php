@@ -17,10 +17,10 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2214Foo::class),
-            $this->_em->getClassMetadata(DDC2214Bar::class),
+            $this->em->getClassMetadata(DDC2214Foo::class),
+            $this->em->getClassMetadata(DDC2214Bar::class),
             ]
         );
     }
@@ -32,19 +32,19 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $foo->bar = $bar;
 
-        $this->_em->persist($foo);
-        $this->_em->persist($bar);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foo);
+        $this->em->persist($bar);
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $foo \Doctrine\Tests\ORM\Functional\Ticket\DDC2214Foo */
-        $foo = $this->_em->find(DDC2214Foo::class, $foo->id);
+        $foo = $this->em->find(DDC2214Foo::class, $foo->id);
         $bar = $foo->bar;
 
-        $logger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
+        $logger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
 
         $related = $this
-            ->_em
+            ->em
             ->createQuery('SELECT b FROM '.__NAMESPACE__ . '\DDC2214Bar b WHERE b.id IN(:ids)')
             ->setParameter('ids', [$bar])
             ->getResult();

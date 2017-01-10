@@ -47,8 +47,8 @@ final class GH6029Test extends OrmFunctionalTestCase
             )
         );
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
     }
 
     /**
@@ -72,8 +72,8 @@ final class GH6029Test extends OrmFunctionalTestCase
             )
         );
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
     }
 }
 

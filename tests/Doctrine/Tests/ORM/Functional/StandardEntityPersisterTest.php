@@ -28,17 +28,17 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $cart = new ECommerceCart();
         $cart->setPayment('Credit card');
         $customer->setCart($cart);
-        $this->_em->persist($customer);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($customer);
+        $this->em->flush();
+        $this->em->clear();
         $cardId = $cart->getId();
         unset($cart);
 
-        $class = $this->_em->getClassMetadata(ECommerceCart::class);
+        $class = $this->em->getClassMetadata(ECommerceCart::class);
 
-        $persister = $this->_em->getUnitOfWork()->getEntityPersister(ECommerceCart::class);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(ECommerceCart::class);
         $newCart = new ECommerceCart();
-        $this->_em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
+        $this->em->getUnitOfWork()->registerManaged($newCart, ['id' => $cardId], []);
         $persister->load(['customer_id' => $customer->getId()], $newCart, $class->associationMappings['customer']);
         self::assertEquals('Credit card', $newCart->getPayment());
     }
@@ -57,14 +57,14 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $p = new ECommerceProduct;
         $p->addFeature($f1);
         $p->addFeature($f2);
-        $this->_em->persist($p);
+        $this->em->persist($p);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(2, count($p->getFeatures()));
         self::assertInstanceOf(PersistentCollection::class, $p->getFeatures());
 
-        $q = $this->_em->createQuery(
+        $q = $this->em->createQuery(
             'SELECT p, f
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
                JOIN p.features f'
@@ -91,10 +91,10 @@ class StandardEntityPersisterTest extends OrmFunctionalTestCase
         $p->addFeature($f3);
 
         // Now we persist the Feature #3
-        $this->_em->persist($p);
-        $this->_em->flush();
+        $this->em->persist($p);
+        $this->em->flush();
 
-        $q = $this->_em->createQuery(
+        $q = $this->em->createQuery(
             'SELECT p, f
                FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
                JOIN p.features f'

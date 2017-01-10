@@ -27,13 +27,13 @@ class PersistentCollectionTest extends OrmTestCase
     /**
      * @var EntityManagerMock
      */
-    private $_emMock;
+    private $emMock;
 
     protected function setUp()
     {
         parent::setUp();
 
-        $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
+        $this->emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
 
         $this->setUpPersistentCollection();
     }
@@ -43,16 +43,16 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function setUpPersistentCollection()
     {
-        $classMetaData = $this->_emMock->getClassMetadata(ECommerceCart::class);
-        $this->collection = new PersistentCollection($this->_emMock, $classMetaData, new ArrayCollection);
+        $classMetaData = $this->emMock->getClassMetadata(ECommerceCart::class);
+        $this->collection = new PersistentCollection($this->emMock, $classMetaData, new ArrayCollection);
         $this->collection->setInitialized(false);
         $this->collection->setOwner(new ECommerceCart(), $classMetaData->getAssociationMapping('products'));
     }
 
     public function testCanBePutInLazyLoadingMode()
     {
-        $class = $this->_emMock->getClassMetadata(ECommerceProduct::class);
-        $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
+        $class = $this->emMock->getClassMetadata(ECommerceProduct::class);
+        $collection = new PersistentCollection($this->emMock, $class, new ArrayCollection);
         $collection->setInitialized(false);
         self::assertFalse($collection->isInitialized());
     }
@@ -156,7 +156,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElement       = new \stdClass();
         $persistedElement = new \stdClass();
@@ -191,7 +191,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElement                    = new \stdClass();
         $newElementThatIsAlsoPersisted = new \stdClass();
@@ -235,7 +235,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElementThatIsAlsoPersisted = new \stdClass();
         $persistedElement              = new \stdClass();

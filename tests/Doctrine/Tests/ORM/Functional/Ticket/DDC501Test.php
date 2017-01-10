@@ -29,20 +29,20 @@ class DDC501Test extends OrmFunctionalTestCase
     {
         // Create User
         $user = $this->createAndPersistUser();
-        $this->_em->flush();
+        $this->em->flush();
 
-        self::assertTrue($this->_em->contains($user));
-        $this->_em->clear();
-        self::assertFalse($this->_em->contains($user));
+        self::assertTrue($this->em->contains($user));
+        $this->em->clear();
+        self::assertFalse($this->em->contains($user));
 
         unset($user);
 
         // Reload User from DB *without* any associations (i.e. an uninitialized PersistantCollection)
         $userReloaded = $this->loadUserFromEntityManager();
 
-        self::assertTrue($this->_em->contains($userReloaded));
-        $this->_em->clear();
-        self::assertFalse($this->_em->contains($userReloaded));
+        self::assertTrue($this->em->contains($userReloaded));
+        $this->em->clear();
+        self::assertFalse($this->em->contains($userReloaded));
 
         // freeze and unfreeze
         $userClone = unserialize(serialize($userReloaded));
@@ -57,7 +57,7 @@ class DDC501Test extends OrmFunctionalTestCase
         self::assertFalse($userClone->getGroups()->isInitialized(), "User::groups should not be marked initialized.");
 
         // Merge back and flush
-        $userClone = $this->_em->merge($userClone);
+        $userClone = $this->em->merge($userClone);
 
         // Back in managed world I would expect to have my phonenumbers back but they aren't!
 	// Remember I didn't touch (and probably didn't need) them at all while in detached mode.
@@ -66,10 +66,10 @@ class DDC501Test extends OrmFunctionalTestCase
         // This works fine as long as cmUser::groups doesn't cascade "merge"
         self::assertEquals(2, count($userClone->getGroups()));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertFalse($this->_em->contains($userClone));
+        self::assertFalse($this->em->contains($userClone));
 
         // Reload user from DB
         $userFromEntityManager = $this->loadUserFromEntityManager();
@@ -101,7 +101,7 @@ class DDC501Test extends OrmFunctionalTestCase
             $user->addGroup($group);
         }
 
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         return $user;
     }
@@ -111,7 +111,7 @@ class DDC501Test extends OrmFunctionalTestCase
      */
     protected function loadUserFromEntityManager()
     {
-        return $this->_em
+        return $this->em
                 ->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name like :name')
                 ->setParameter('name', 'Luka')
                 ->getSingleResult();

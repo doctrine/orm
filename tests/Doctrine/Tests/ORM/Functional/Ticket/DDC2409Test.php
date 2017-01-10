@@ -19,7 +19,7 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIssue()
     {
-        $em     = $this->_em;
+        $em     = $this->em;
         $uow    = $em->getUnitOfWork();
 
         $originalArticle  = new CmsArticle();

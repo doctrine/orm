@@ -10,21 +10,21 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(PersonTicket4646::class),
+            $this->em->getClassMetadata(EmployeeTicket4646::class),
         ]);
     }
 
     public function testInstanceOf(): void
     {
-        $this->_em->persist(new PersonTicket4646());
-        $this->_em->persist(new EmployeeTicket4646());
-        $this->_em->flush();
+        $this->em->persist(new PersonTicket4646());
+        $this->em->persist(new EmployeeTicket4646());
+        $this->em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646 p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(2, $result);

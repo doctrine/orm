@@ -13,27 +13,27 @@ class LegacyCar
      * @GeneratedValue
      * @Column(name="iCarId", type="integer", nullable=false)
      */
-    public $_id;
+    public $id;
     /**
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars")
+     * @ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
      */
-    public $_users;
+    public $users;
 
     /**
      * @Column(name="sDescription", type="string", length=255, unique=true)
      */
-    public $_description;
+    public $description;
 
     function getDescription()
     {
-        return $this->_description;
+        return $this->description;
     }
 
     public function addUser(LegacyUser $user) {
-        $this->_users[] = $user;
+        $this->users[] = $user;
     }
 
     public function getUsers() {
-        return $this->_users;
+        return $this->users;
     }
 }

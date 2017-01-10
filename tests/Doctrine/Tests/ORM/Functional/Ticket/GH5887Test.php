@@ -18,10 +18,10 @@ class GH5887Test extends OrmFunctionalTestCase
 
         Type::addType(GH5887CustomIdObjectType::NAME, GH5887CustomIdObjectType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH5887Cart::class),
-                $this->_em->getClassMetadata(GH5887Customer::class),
+                $this->em->getClassMetadata(GH5887Cart::class),
+                $this->em->getClassMetadata(GH5887Customer::class),
             ]
         );
     }
@@ -37,14 +37,14 @@ class GH5887Test extends OrmFunctionalTestCase
         $cart->setId($cartId);
         $cart->setCustomer($customer);
 
-        $this->_em->persist($customer);
-        $this->_em->persist($cart);
-        $this->_em->flush();
+        $this->em->persist($customer);
+        $this->em->persist($cart);
+        $this->em->flush();
 
         // Clearing cached entities
-        $this->_em->clear();
+        $this->em->clear();
 
-        $customerRepository = $this->_em->getRepository(GH5887Customer::class);
+        $customerRepository = $this->em->getRepository(GH5887Customer::class);
         /** @var GH5887Customer $customer */
         $customer = $customerRepository->createQueryBuilder('c')
             ->where('c.id = :id')

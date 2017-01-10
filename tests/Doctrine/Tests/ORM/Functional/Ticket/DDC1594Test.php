@@ -22,17 +22,17 @@ class DDC1594Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'foo';
         $user->name = 'foo';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
         $detachedUser = clone $user;
         $detachedUser->name = 'bar';
         $detachedUser->status = 'bar';
 
-        $newUser = $this->_em->getReference(get_class($user), $user->id);
+        $newUser = $this->em->getReference(get_class($user), $user->id);
 
-        $mergedUser = $this->_em->merge($detachedUser);
+        $mergedUser = $this->em->merge($detachedUser);
 
         self::assertNotSame($mergedUser, $detachedUser);
         self::assertEquals('bar', $detachedUser->getName());

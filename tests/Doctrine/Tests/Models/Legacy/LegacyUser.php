@@ -15,66 +15,68 @@ class LegacyUser
      * @GeneratedValue
      * @Column(name="iUserId", type="integer", nullable=false)
      */
-    public $_id;
+    public $id;
     /**
      * @Column(name="sUsername", type="string", length=255, unique=true)
      */
-    public $_username;
+    public $username;
     /**
      * @Column(type="string", length=255, name="name")
      */
-    public $_name;
+    public $name;
     /**
-     * @OneToMany(targetEntity="LegacyArticle", mappedBy="_user")
+     * @OneToMany(targetEntity="LegacyArticle", mappedBy="user")
      */
-    public $_articles;
+    public $articles;
     /**
-     * @OneToMany(targetEntity="LegacyUserReference", mappedBy="_source", cascade={"remove"})
+     * @OneToMany(targetEntity="LegacyUserReference", mappedBy="source", cascade={"remove"})
      */
-    public $_references;
+    public $references;
     /**
-     * @ManyToMany(targetEntity="LegacyCar", inversedBy="_users", cascade={"persist", "merge"})
+     * @ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist", "merge"})
      * @JoinTable(name="legacy_users_cars",
      *      joinColumns={@JoinColumn(name="iUserId", referencedColumnName="iUserId")},
      *      inverseJoinColumns={@JoinColumn(name="iCarId", referencedColumnName="iCarId")}
      *      )
      */
-    public $_cars;
-    public function __construct() {
-        $this->_articles = new ArrayCollection;
-        $this->_references = new ArrayCollection;
-        $this->_cars = new ArrayCollection;
+    public $cars;
+    
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection;
+        $this->references = new ArrayCollection;
+        $this->cars = new ArrayCollection;
     }
 
     public function getId() {
-        return $this->_id;
+        return $this->id;
     }
 
     public function getUsername() {
-        return $this->_username;
+        return $this->username;
     }
 
     public function addArticle(LegacyArticle $article) {
-        $this->_articles[] = $article;
+        $this->articles[] = $article;
         $article->setAuthor($this);
     }
 
     public function addReference($reference)
     {
-        $this->_references[] = $reference;
+        $this->references[] = $reference;
     }
 
     public function references()
     {
-        return $this->_references;
+        return $this->references;
     }
 
     public function addCar(LegacyCar $car) {
-        $this->_cars[] = $car;
+        $this->cars[] = $car;
         $car->addUser($this);
     }
 
     public function getCars() {
-        return $this->_cars;
+        return $this->cars;
     }
 }

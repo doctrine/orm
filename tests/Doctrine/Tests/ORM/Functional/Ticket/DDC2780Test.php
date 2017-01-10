@@ -16,10 +16,10 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setup();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2780User::class),
-                $this->_em->getClassMetadata(DDC2780Project::class)
+                $this->em->getClassMetadata(DDC2780User::class),
+                $this->em->getClassMetadata(DDC2780Project::class)
             ]
         );
     }
@@ -34,12 +34,12 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->project = $project;
 
-        $this->_em->persist($project);
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($project);
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
             ->select('user')
             ->from(DDC2780User::class, 'user')
             ->leftJoin('user.project', 'project')

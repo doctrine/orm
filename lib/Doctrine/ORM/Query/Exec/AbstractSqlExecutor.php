@@ -36,7 +36,7 @@ abstract class AbstractSqlExecutor
     /**
      * @var array
      */
-    protected $_sqlStatements;
+    protected $sqlStatements;
 
     /**
      * @var QueryCacheProfile
@@ -50,7 +50,7 @@ abstract class AbstractSqlExecutor
      */
     public function getSqlStatements()
     {
-        return $this->_sqlStatements;
+        return $this->sqlStatements;
     }
 
     /**

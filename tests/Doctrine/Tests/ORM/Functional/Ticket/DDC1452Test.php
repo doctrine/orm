@@ -18,10 +18,10 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1452EntityA::class),
-                $this->_em->getClassMetadata(DDC1452EntityB::class),
+                $this->em->getClassMetadata(DDC1452EntityA::class),
+                $this->em->getClassMetadata(DDC1452EntityB::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -40,14 +40,14 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b->entityAFrom = $a1;
         $b->entityATo = $a2;
 
-        $this->_em->persist($a1);
-        $this->_em->persist($a2);
-        $this->_em->persist($b);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a1);
+        $this->em->persist($a2);
+        $this->em->persist($b);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT a, b, ba FROM " . __NAMESPACE__ . "\DDC1452EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba";
-        $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
+        $results = $this->em->createQuery($dql)->setMaxResults(1)->getResult();
 
         self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
         self::assertFalse( $results[0]->entitiesB[0]->entityATo instanceof Proxy);
@@ -69,19 +69,19 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->address = $address;
         $address->user = $user;
 
-        $this->_em->persist($address);
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($address);
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT a, u FROM Doctrine\Tests\Models\CMS\CmsAddress a INNER JOIN a.user u";
-        $data = $this->_em->createQuery($dql)->getResult();
-        $this->_em->clear();
+        $data = $this->em->createQuery($dql)->getResult();
+        $this->em->clear();
 
         self::assertFalse($data[0]->user instanceof Proxy);
 
         $dql = "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a";
-        $data = $this->_em->createQuery($dql)->getResult();
+        $data = $this->em->createQuery($dql)->getResult();
 
         self::assertFalse($data[0]->address instanceof Proxy);
     }

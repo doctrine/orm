@@ -34,14 +34,14 @@ class MappedSuperclassTest extends OrmFunctionalTestCase
         $file = new File($directory);
         $file->setName('test-b.html');
 
-        $this->_em->persist($root);
-        $this->_em->persist($directory);
-        $this->_em->persist($file);
+        $this->em->persist($root);
+        $this->em->persist($directory);
+        $this->em->persist($file);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $cleanFile = $this->_em->find(File::class, $file->getId());
+        $cleanFile = $this->em->find(File::class, $file->getId());
 
         self::assertInstanceOf(Directory::class, $cleanFile->getParent());
         self::assertInstanceOf(Proxy::class, $cleanFile->getParent());

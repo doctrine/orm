@@ -33,7 +33,7 @@ class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
         $this->command = new EntityRegionCommand();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add($this->command);
     }
 

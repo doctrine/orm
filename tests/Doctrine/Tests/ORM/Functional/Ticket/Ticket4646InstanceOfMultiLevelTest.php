@@ -10,23 +10,23 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
-            $this->_em->getClassMetadata(EngineerTicket4646MultiLevel::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(PersonTicket4646MultiLevel::class),
+            $this->em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
+            $this->em->getClassMetadata(EngineerTicket4646MultiLevel::class),
         ]);
     }
 
     public function testInstanceOf(): void
     {
-        $this->_em->persist(new PersonTicket4646MultiLevel());
-        $this->_em->persist(new EmployeeTicket4646MultiLevel());
-        $this->_em->persist(new EngineerTicket4646MultiLevel());
-        $this->_em->flush();
+        $this->em->persist(new PersonTicket4646MultiLevel());
+        $this->em->persist(new EmployeeTicket4646MultiLevel());
+        $this->em->persist(new EngineerTicket4646MultiLevel());
+        $this->em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(3, $result);

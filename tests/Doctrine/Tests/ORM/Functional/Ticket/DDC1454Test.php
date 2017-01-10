@@ -14,10 +14,10 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC1454File::class),
-                    $this->_em->getClassMetadata(DDC1454Picture::class),
+                    $this->em->getClassMetadata(DDC1454File::class),
+                    $this->em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -28,7 +28,7 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $pic = new DDC1454Picture();
 
-        self::assertSame(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($pic));
+        self::assertSame(UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($pic));
     }
 }
 

@@ -8,7 +8,7 @@ use Doctrine\Tests\Models\DDC889\DDC889Class;
 
 class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }

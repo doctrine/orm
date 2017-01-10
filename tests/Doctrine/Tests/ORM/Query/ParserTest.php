@@ -136,7 +136,7 @@ class ParserTest extends OrmTestCase
 
     private function createParser($dql)
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL($dql);
 
         $parser = new Parser($query);

@@ -12,12 +12,12 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     /**
      * @var BasicEntityPersister
      */
-    protected $_persister;
+    protected $persister;
 
     /**
      * @var \Doctrine\ORM\EntityManager
      */
-    protected $_em;
+    protected $em;
 
     /**
      * {@inheritDoc}
@@ -26,25 +26,25 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
     {
         parent::setUp();
 
-        $this->_em = $this->_getTestEntityManager();
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
+        $this->em = $this->getTestEntityManager();
+        $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
     }
 
     public function testSelectConditionStatementEq()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', 1, [], Comparison::EQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', 1, [], Comparison::EQ);
         self::assertEquals('t0."admin1" = ? AND t0."country" = ?', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::IS);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::IS);
         self::assertEquals('t0."admin1" IS NULL AND t0."country" IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::NEQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::NEQ);
         self::assertEquals('t0."admin1" IS NOT NULL AND t0."country" IS NOT NULL', $statement);
     }
 
@@ -53,6 +53,6 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
      */
     public function testSelectConditionStatementIn()
     {
-        $this->_persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
+        $this->persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
     }
 }

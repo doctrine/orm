@@ -36,8 +36,8 @@ class GearmanLockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $this->articleId = $article->id;
     }
@@ -175,7 +175,7 @@ class GearmanLockTest extends OrmFunctionalTestCase
     {
         $this->gearman->addTask($fn, serialize(
             [
-            'conn' => $this->_em->getConnection()->getParams(),
+            'conn' => $this->em->getConnection()->getParams(),
             'fixture' => $fixture
             ]
         ));

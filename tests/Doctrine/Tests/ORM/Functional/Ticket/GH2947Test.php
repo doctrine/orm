@@ -16,7 +16,7 @@ class GH2947Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(GH2947Car::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(GH2947Car::class)]);
     }
 
     public function testIssue()
@@ -43,7 +43,7 @@ class GH2947Test extends OrmFunctionalTestCase
 
     private function createQuery()
     {
-        return $this->_em->createQueryBuilder()
+        return $this->em->createQueryBuilder()
                          ->select('car')
                          ->from(GH2947Car::class, 'car')
                          ->getQuery()
@@ -52,14 +52,14 @@ class GH2947Test extends OrmFunctionalTestCase
 
     private function createData()
     {
-        $this->_em->persist(new GH2947Car('BMW'));
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new GH2947Car('BMW'));
+        $this->em->flush();
+        $this->em->clear();
     }
 
     private function updateData()
     {
-        $this->_em->createQueryBuilder()
+        $this->em->createQueryBuilder()
                   ->update(GH2947Car::class, 'car')
                   ->set('car.brand', ':newBrand')
                   ->where('car.brand = :oldBrand')

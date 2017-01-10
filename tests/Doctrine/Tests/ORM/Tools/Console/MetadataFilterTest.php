@@ -22,7 +22,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         parent::setUp();
 
         $driver = $this->createAnnotationDriver();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 

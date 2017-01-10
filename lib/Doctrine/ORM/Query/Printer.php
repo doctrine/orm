@@ -34,14 +34,14 @@ class Printer
      *
      * @var int
      */
-    protected $_indent = 0;
+    protected $indent = 0;
 
     /**
      * Defines whether parse tree is printed (default, false) or not (true).
      *
      * @var bool
      */
-    protected $_silent;
+    protected $silent;
 
     /**
      * Constructs a new parse tree printer.
@@ -50,7 +50,7 @@ class Printer
      */
     public function __construct($silent = false)
     {
-        $this->_silent = $silent;
+        $this->silent = $silent;
     }
 
     /**
@@ -66,7 +66,7 @@ class Printer
     public function startProduction($name)
     {
         $this->println('(' . $name);
-        $this->_indent++;
+        $this->indent++;
     }
 
     /**
@@ -78,7 +78,7 @@ class Printer
      */
     public function endProduction()
     {
-        $this->_indent--;
+        $this->indent--;
         $this->println(')');
     }
 
@@ -91,8 +91,8 @@ class Printer
      */
     public function println($str)
     {
-        if ( ! $this->_silent) {
-            echo str_repeat('    ', $this->_indent), $str, "\n";
+        if ( ! $this->silent) {
+            echo str_repeat('    ', $this->indent), $str, "\n";
         }
     }
 }

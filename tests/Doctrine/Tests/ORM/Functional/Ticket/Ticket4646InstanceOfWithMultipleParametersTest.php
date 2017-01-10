@@ -10,25 +10,25 @@ class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunction
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(PersonTicket4646Multiple::class),
-            $this->_em->getClassMetadata(EmployeeTicket4646Multiple::class),
-            $this->_em->getClassMetadata(ManagerTicket4646Multiple::class),
-            $this->_em->getClassMetadata(InternTicket4646Multiple::class),
+        $this->schemaTool->createSchema([
+            $this->em->getClassMetadata(PersonTicket4646Multiple::class),
+            $this->em->getClassMetadata(EmployeeTicket4646Multiple::class),
+            $this->em->getClassMetadata(ManagerTicket4646Multiple::class),
+            $this->em->getClassMetadata(InternTicket4646Multiple::class),
         ]);
     }
 
     public function testInstanceOf(): void
     {
-        $this->_em->persist(new PersonTicket4646Multiple());
-        $this->_em->persist(new EmployeeTicket4646Multiple());
-        $this->_em->persist(new ManagerTicket4646Multiple());
-        $this->_em->persist(new InternTicket4646Multiple());
-        $this->_em->flush();
+        $this->em->persist(new PersonTicket4646Multiple());
+        $this->em->persist(new EmployeeTicket4646Multiple());
+        $this->em->persist(new ManagerTicket4646Multiple());
+        $this->em->persist(new InternTicket4646Multiple());
+        $this->em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple p
                 WHERE p INSTANCE OF (Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple, Doctrine\Tests\ORM\Functional\Ticket\InternTicket4646Multiple)';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $result = $query->getResult();
 
         self::assertCount(2, $result);

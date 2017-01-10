@@ -33,10 +33,10 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
+        $this->em->lock($article, LockMode::OPTIMISTIC, $article->version);
 
         $this->addToAssertionCount(1);
     }
@@ -51,12 +51,12 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $this->expectException(OptimisticLockException::class);
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+        $this->em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
     /**
@@ -70,12 +70,12 @@ class LockTest extends OrmFunctionalTestCase
         $user->status = "active";
         $user->username = "foo";
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $this->expectException(OptimisticLockException::class);
 
-        $this->_em->lock($user, LockMode::OPTIMISTIC);
+        $this->em->lock($user, LockMode::OPTIMISTIC);
     }
 
     /**
@@ -89,7 +89,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Entity ' . CmsArticle::class);
 
-        $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
+        $this->em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
 
     /**
@@ -102,12 +102,12 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $this->expectException(TransactionRequiredException::class);
 
-        $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
+        $this->em->lock($article, LockMode::PESSIMISTIC_READ);
     }
 
     /**
@@ -120,12 +120,12 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $this->expectException(TransactionRequiredException::class);
 
-        $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
+        $this->em->lock($article, LockMode::PESSIMISTIC_WRITE);
     }
 
     /**
@@ -134,7 +134,7 @@ class LockTest extends OrmFunctionalTestCase
      */
     public function testLockPessimisticWrite()
     {
-        $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
+        $writeLockSql = $this->em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
 
         if (! $writeLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
@@ -144,22 +144,22 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
-        $this->_em->beginTransaction();
+        $this->em->beginTransaction();
 
         try {
-            $this->_em->lock($article, LockMode::PESSIMISTIC_WRITE);
-            $this->_em->commit();
+            $this->em->lock($article, LockMode::PESSIMISTIC_WRITE);
+            $this->em->commit();
         } catch (\Exception $e) {
-            $this->_em->rollback();
+            $this->em->rollback();
             throw $e;
         }
 
-        array_pop($this->_sqlLoggerStack->queries);
+        array_pop($this->sqlLoggerStack->queries);
 
-        $query = array_pop($this->_sqlLoggerStack->queries);
+        $query = array_pop($this->sqlLoggerStack->queries);
 
         self::assertContains($writeLockSql, $query['sql']);
     }
@@ -169,7 +169,7 @@ class LockTest extends OrmFunctionalTestCase
      */
     public function testLockPessimisticRead()
     {
-        $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
+        $readLockSql = $this->em->getConnection()->getDatabasePlatform()->getReadLockSQL();
 
         if (! $readLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
@@ -179,22 +179,22 @@ class LockTest extends OrmFunctionalTestCase
         $article->text = "my article";
         $article->topic = "Hello";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
-        $this->_em->beginTransaction();
+        $this->em->beginTransaction();
 
         try {
-            $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
-            $this->_em->commit();
+            $this->em->lock($article, LockMode::PESSIMISTIC_READ);
+            $this->em->commit();
         } catch (\Exception $e) {
-            $this->_em->rollback();
+            $this->em->rollback();
             throw $e;
         }
 
-        array_pop($this->_sqlLoggerStack->queries);
+        array_pop($this->sqlLoggerStack->queries);
 
-        $query = array_pop($this->_sqlLoggerStack->queries);
+        $query = array_pop($this->sqlLoggerStack->queries);
 
         self::assertContains($readLockSql, $query['sql']);
     }
@@ -209,7 +209,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->expectException(OptimisticLockException::class);
         $this->expectExceptionMessage('The optimistic lock on an entity failed.');
 
-        $this->_em->createQuery($dql)
+        $this->em->createQuery($dql)
                   ->setHint(Query::HINT_LOCK_MODE, LockMode::OPTIMISTIC)
                   ->getSQL();
     }

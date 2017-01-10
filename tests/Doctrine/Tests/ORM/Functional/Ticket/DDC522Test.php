@@ -15,11 +15,11 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC522Customer::class),
-                    $this->_em->getClassMetadata(DDC522Cart::class),
-                    $this->_em->getClassMetadata(DDC522ForeignKeyTest::class)
+                    $this->em->getClassMetadata(DDC522Customer::class),
+                    $this->em->getClassMetadata(DDC522Cart::class),
+                    $this->em->getClassMetadata(DDC522ForeignKeyTest::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -37,14 +37,14 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cart->total = 0;
         $cust->cart = $cart;
         $cart->customer = $cust;
-        $this->_em->persist($cust);
-        $this->_em->persist($cart);
-        $this->_em->flush();
+        $this->em->persist($cust);
+        $this->em->persist($cart);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $r = $this->_em->createQuery('select ca,c from ' . DDC522Cart::class . ' ca join ca.customer c')
-                       ->getResult();
+        $r = $this->em->createQuery('select ca,c from ' . DDC522Cart::class . ' ca join ca.customer c')
+            ->getResult();
 
         self::assertInstanceOf(DDC522Cart::class, $r[0]);
         self::assertInstanceOf(DDC522Customer::class, $r[0]->customer);
@@ -54,11 +54,11 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fkt = new DDC522ForeignKeyTest();
         $fkt->cartId = $r[0]->id; // ignored for persistence
         $fkt->cart = $r[0]; // must be set properly
-        $this->_em->persist($fkt);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($fkt);
+        $this->em->flush();
+        $this->em->clear();
 
-        $fkt2 = $this->_em->find(get_class($fkt), $fkt->id);
+        $fkt2 = $this->em->find(get_class($fkt), $fkt->id);
         self::assertEquals($fkt->cart->id, $fkt2->cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
         self::assertFalse($fkt2->cart->__isInitialized__);
@@ -74,15 +74,16 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fkCust->name = 'name';
         $fkCust->cart = null;
 
-        $this->_em->persist($fkCust);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($fkCust);
+        $this->em->flush();
+        $this->em->clear();
 
         $expected = clone $fkCust;
+
         // removing dynamic field (which is not persisted)
         unset($expected->name);
 
-        self::assertEquals($expected, $this->_em->find(DDC522ForeignKeyTest::class, $fkCust->id));
+        self::assertEquals($expected, $this->em->find(DDC522ForeignKeyTest::class, $fkCust->id));
     }
 }
 

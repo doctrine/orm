@@ -9,9 +9,9 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC381Entity::class),
+                $this->em->getClassMetadata(DDC381Entity::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -23,12 +23,12 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $entity = new DDC381Entity();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
         $persistedId = $entity->getId();
 
-        $entity = $this->_em->getReference(DDC381Entity::class, $persistedId);
+        $entity = $this->em->getReference(DDC381Entity::class, $persistedId);
 
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();

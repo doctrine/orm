@@ -39,11 +39,11 @@ use Doctrine\Tests\OrmTestCase;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
-    abstract protected function _loadDriver();
+    abstract protected function loadDriver();
 
     public function createClassMetadata($entityClassName)
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata($entityClassName);
         $class->initializeReflection(new RuntimeReflectionService());
@@ -58,8 +58,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     protected function createClassMetadataFactory(EntityManager $em = null)
     {
-        $driver     = $this->_loadDriver();
-        $em         = $em ?: $this->_getTestEntityManager();
+        $driver     = $this->loadDriver();
+        $em         = $em ?: $this->getTestEntityManager();
         $factory    = new ClassMetadataFactory();
         $em->getConfiguration()->setMetadataDriverImpl($driver);
         $factory->setEntityManager($em);
@@ -502,7 +502,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testMappedSuperclassWithRepository()
     {
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
         $class   = $factory->getMetadataFor(DDC869CreditCardPayment::class);
 
@@ -571,7 +571,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testNamingStrategy()
     {
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
         $factory = $this->createClassMetadataFactory($em);
 
         self::assertInstanceOf(DefaultNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
@@ -627,7 +627,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
     public function testNamedQuery()
     {
-        $driver = $this->_loadDriver();
+        $driver = $this->loadDriver();
         $class = $this->createClassMetadata(User::class);
 
         self::assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));

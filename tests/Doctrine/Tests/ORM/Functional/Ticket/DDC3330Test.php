@@ -30,9 +30,9 @@ class DDC3330Test extends OrmFunctionalTestCase
         $this->createBuildingAndHalls();
         $this->createBuildingAndHalls();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $query = $this->_em->createQuery(
+        $query = $this->em->createQuery(
             'SELECT b, h'.
             ' FROM Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Building b'.
             ' LEFT JOIN b.halls h'.
@@ -58,8 +58,8 @@ class DDC3330Test extends OrmFunctionalTestCase
             $building->addHall($hall);
         }
 
-        $this->_em->persist($building);
-        $this->_em->flush();
+        $this->em->persist($building);
+        $this->em->flush();
     }
 }
 

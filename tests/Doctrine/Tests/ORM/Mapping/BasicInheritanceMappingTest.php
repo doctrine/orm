@@ -27,7 +27,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     protected function setUp() {
         $this->cmf = new ClassMetadataFactory();
 
-        $this->cmf->setEntityManager($this->_getTestEntityManager());
+        $this->cmf->setEntityManager($this->getTestEntityManager());
     }
 
     public function testGetMetadataForTransientClassThrowsException()

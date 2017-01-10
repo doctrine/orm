@@ -20,7 +20,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        $platform = $this->em->getConnection()->getDatabasePlatform();
 
         if ( ! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
             $this->markTestSkipped("This test is only useful for databases that support schemas or can emulate them.");
@@ -36,8 +36,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName)
     {
-        $classMetadata   = $this->_em->getClassMetadata($className);
-        $platform        = $this->_em->getConnection()->getDatabasePlatform();
+        $classMetadata   = $this->em->getClassMetadata($className);
+        $platform        = $this->em->getConnection()->getDatabasePlatform();
         $quotedTableName = $classMetadata->table->getQuotedQualifiedName($platform);
 
         // Check if table name and schema properties are defined in the class metadata
@@ -66,18 +66,18 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testPersistenceOfEntityWithSchemaMapping($className)
     {
-        $classMetadata = $this->_em->getClassMetadata($className);
-        $repository    = $this->_em->getRepository($className);
+        $classMetadata = $this->em->getClassMetadata($className);
+        $repository    = $this->em->getRepository($className);
 
         try {
-            $this->_schemaTool->createSchema([$classMetadata]);
+            $this->schemaTool->createSchema([$classMetadata]);
         } catch (ToolsException $e) {
             // table already exists
         }
 
-        $this->_em->persist(new $className());
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new $className());
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertCount(1, $repository->findAll());
     }

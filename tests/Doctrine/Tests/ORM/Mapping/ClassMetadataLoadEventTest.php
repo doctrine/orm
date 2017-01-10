@@ -15,7 +15,7 @@ class ClassMetadataLoadEventTest extends OrmTestCase
      */
     public function testEvent()
     {
-        $entityManager   = $this->_getTestEntityManager();
+        $entityManager   = $this->getTestEntityManager();
         $metadataFactory = $entityManager->getMetadataFactory();
         $eventManager    = $entityManager->getEventManager();
 

@@ -18,15 +18,15 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(PersistentEntity::class),
+                    $this->em->getClassMetadata(PersistentEntity::class),
                 ]
             );
         } catch (\Exception $e) {
         }
 
-        PersistentObject::setObjectManager($this->_em);
+        PersistentObject::setObjectManager($this->em);
     }
 
     public function testPersist()
@@ -34,8 +34,8 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $entity = new PersistentEntity();
         $entity->setName("test");
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $this->addToAssertionCount(1);
     }
@@ -45,16 +45,16 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $entity = new PersistentEntity();
         $entity->setName("test");
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->find(PersistentEntity::class, $entity->getId());
+        $entity = $this->em->find(PersistentEntity::class, $entity->getId());
 
         self::assertEquals('test', $entity->getName());
         $entity->setName('foobar');
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function testGetReference()
@@ -62,11 +62,11 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $entity = new PersistentEntity();
         $entity->setName("test");
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
+        $entity = $this->em->getReference(PersistentEntity::class, $entity->getId());
 
         self::assertEquals('test', $entity->getName());
     }
@@ -77,11 +77,11 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $entity->setName("test");
         $entity->setParent($entity);
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
-        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
+        $entity = $this->em->getReference(PersistentEntity::class, $entity->getId());
         self::assertSame($entity, $entity->getParent());
     }
 }

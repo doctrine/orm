@@ -9,10 +9,10 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2996User::class),
-            $this->_em->getClassMetadata(DDC2996UserPreference::class),
+            $this->em->getClassMetadata(DDC2996User::class),
+            $this->em->getClassMetadata(DDC2996UserPreference::class),
             ]
         );
 
@@ -20,18 +20,18 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $pref->user = new DDC2996User();
         $pref->value = "foo";
 
-        $this->_em->persist($pref);
-        $this->_em->persist($pref->user);
-        $this->_em->flush();
+        $this->em->persist($pref);
+        $this->em->persist($pref->user);
+        $this->em->flush();
 
         $pref->value = "bar";
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(1, $pref->user->counter);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
+        $pref = $this->em->find(DDC2996UserPreference::class, $pref->id);
         self::assertEquals(1, $pref->user->counter);
     }
 }

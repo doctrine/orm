@@ -73,7 +73,7 @@ class WhereInWalker extends TreeWalkerAdapter
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
+        $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
 
@@ -94,7 +94,7 @@ class WhereInWalker extends TreeWalkerAdapter
         $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias, $identifierFieldName);
         $pathExpression->type = $pathType;
 
-        $count = $this->_getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
+        $count = $this->getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);
 
         if ($count > 0) {
             $arithmeticExpression = new ArithmeticExpression();

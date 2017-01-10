@@ -11,10 +11,10 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1515Foo::class),
-            $this->_em->getClassMetadata(DDC1515Bar::class),
+            $this->em->getClassMetadata(DDC1515Foo::class),
+            $this->em->getClassMetadata(DDC1515Bar::class),
             ]
         );
     }
@@ -22,16 +22,16 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $bar = new DDC1515Bar();
-        $this->_em->persist($bar);
-        $this->_em->flush();
+        $this->em->persist($bar);
+        $this->em->flush();
 
         $foo = new DDC1515Foo();
         $foo->bar = $bar;
-        $this->_em->persist($foo);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foo);
+        $this->em->flush();
+        $this->em->clear();
 
-        $bar = $this->_em->find(DDC1515Bar::class, $bar->id);
+        $bar = $this->em->find(DDC1515Bar::class, $bar->id);
         self::assertInstanceOf(DDC1515Foo::class, $bar->foo);
     }
 }

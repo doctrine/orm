@@ -17,12 +17,12 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2306Zone::class),
-            $this->_em->getClassMetadata(DDC2306User::class),
-            $this->_em->getClassMetadata(DDC2306Address::class),
-            $this->_em->getClassMetadata(DDC2306UserAddress::class),
+            $this->em->getClassMetadata(DDC2306Zone::class),
+            $this->em->getClassMetadata(DDC2306User::class),
+            $this->em->getClassMetadata(DDC2306Address::class),
+            $this->em->getClassMetadata(DDC2306UserAddress::class),
             ]
         );
     }
@@ -48,15 +48,15 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->zone    = $zone;
         $address->zone = $zone;
 
-        $this->_em->persist($zone);
-        $this->_em->persist($user);
-        $this->_em->persist($address);
-        $this->_em->persist($userAddress);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($zone);
+        $this->em->persist($user);
+        $this->em->persist($address);
+        $this->em->persist($userAddress);
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $address DDC2306Address */
-        $address = $this->_em->find(DDC2306Address::class, $address->id);
+        $address = $this->em->find(DDC2306Address::class, $address->id);
         /* @var $user DDC2306User|Proxy */
         $user    = $address->users->first()->user;
 

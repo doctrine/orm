@@ -12,33 +12,33 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3033User::class),
-            $this->_em->getClassMetadata(DDC3033Product::class),
+            $this->em->getClassMetadata(DDC3033User::class),
+            $this->em->getClassMetadata(DDC3033Product::class),
             ]
         );
 
         $user = new DDC3033User();
         $user->name = "Test User";
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         $user2 = new DDC3033User();
         $user2->name = "Test User 2";
-        $this->_em->persist($user2);
+        $this->em->persist($user2);
 
         $product = new DDC3033Product();
         $product->title = "Test product";
         $product->buyers[] = $user;
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         $product->title = "Test Change title";
         $product->buyers[] = $user2;
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         $expect = [
             'title' => [

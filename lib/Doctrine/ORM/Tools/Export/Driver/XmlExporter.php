@@ -38,7 +38,7 @@ class XmlExporter extends AbstractExporter
     /**
      * @var string
      */
-    protected $_extension = '.dcm.xml';
+    protected $extension = '.dcm.xml';
 
     /**
      * {@inheritdoc}
@@ -455,7 +455,7 @@ class XmlExporter extends AbstractExporter
 
         $this->processEntityListeners($metadata, $root);
 
-        return $this->_asXml($xml);
+        return $this->asXml($xml);
     }
 
     /**
@@ -502,7 +502,12 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml->addAttribute('allocation-size', $sequenceDefinition['allocationSize']);
     }
 
-    private function _asXml(SimpleXMLElement $simpleXml) : string
+    /**
+     * @param \SimpleXMLElement $simpleXml
+     *
+     * @return string $xml
+     */
+    private function asXml(SimpleXMLElement $simpleXml) : string
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
 
