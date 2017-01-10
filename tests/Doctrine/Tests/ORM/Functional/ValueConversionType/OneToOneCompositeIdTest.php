@@ -32,16 +32,16 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
         $inversed->associatedEntity = $owning;
         $owning->associatedEntity = $inversed;
 
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public static function tearDownAfterClass()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid');
@@ -49,7 +49,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_onetoone_compositeid LIMIT 1'));
         self::assertEquals('qrs', $conn->fetchColumn('SELECT id2 FROM vct_inversed_onetoone_compositeid LIMIT 1'));
@@ -64,12 +64,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
      */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
             'ghi'
         );
@@ -83,12 +83,12 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
      */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
             'ghi'
         );
@@ -103,7 +103,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
      */
     public function testThatTheProxyFromOwningToInversedIsLoaded()
     {
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdEntity::class,
             'ghi'
         );
@@ -118,7 +118,7 @@ class OneToOneCompositeIdTest extends OrmFunctionalTestCase
      */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );

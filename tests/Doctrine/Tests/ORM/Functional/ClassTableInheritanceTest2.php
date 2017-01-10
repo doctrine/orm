@@ -16,12 +16,12 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(CTIParent::class),
-                $this->_em->getClassMetadata(CTIChild::class),
-                $this->_em->getClassMetadata(CTIRelated::class),
-                $this->_em->getClassMetadata(CTIRelated2::class)
+                $this->em->getClassMetadata(CTIParent::class),
+                $this->em->getClassMetadata(CTIChild::class),
+                $this->em->getClassMetadata(CTIRelated::class),
+                $this->em->getClassMetadata(CTIRelated2::class)
                 ]
             );
         } catch (\Exception $ignored) {
@@ -37,15 +37,15 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
         $related = new CTIRelated;
         $related->setCTIParent($child);
 
-        $this->_em->persist($related);
-        $this->_em->persist($child);
+        $this->em->persist($related);
+        $this->em->persist($child);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $relatedId = $related->getId();
 
-        $related2 = $this->_em->find(CTIRelated::class, $relatedId);
+        $related2 = $this->em->find(CTIRelated::class, $relatedId);
 
         self::assertInstanceOf(CTIRelated::class, $related2);
         self::assertInstanceOf(CTIChild::class, $related2->getCTIParent());
@@ -57,19 +57,19 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
     public function testManyToManyToCTIHierarchy()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $mmrel = new CTIRelated2;
         $child = new CTIChild;
         $child->setData('child');
         $mmrel->addCTIChild($child);
 
-        $this->_em->persist($mmrel);
-        $this->_em->persist($child);
+        $this->em->persist($mmrel);
+        $this->em->persist($child);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $mmrel2 = $this->_em->find(get_class($mmrel), $mmrel->getId());
+        $mmrel2 = $this->em->find(get_class($mmrel), $mmrel->getId());
         self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
         self::assertEquals(1, count($mmrel2->getCTIChildren()));
         self::assertTrue($mmrel2->getCTIChildren()->isInitialized());

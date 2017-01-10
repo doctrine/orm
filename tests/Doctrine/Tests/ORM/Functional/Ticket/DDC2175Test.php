@@ -11,8 +11,8 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(DDC2175Entity::class)]
+        $this->schemaTool->createSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
         );
     }
 
@@ -20,8 +20,8 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(
-            [$this->_em->getClassMetadata(DDC2175Entity::class)]
+        $this->schemaTool->dropSchema(
+            [$this->em->getClassMetadata(DDC2175Entity::class)]
         );
     }
 
@@ -30,18 +30,18 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = new DDC2175Entity();
         $entity->field = "foo";
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         self::assertEquals(1, $entity->version);
 
         $entity->field = "bar";
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(2, $entity->version);
 
         $entity->field = "baz";
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(3, $entity->version);
     }

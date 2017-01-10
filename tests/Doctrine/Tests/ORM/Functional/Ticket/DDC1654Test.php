@@ -20,7 +20,7 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function tearDown()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
         $conn->executeUpdate('DELETE FROM DDC1654Comment');
         $conn->executeUpdate('DELETE FROM DDC1654Post');
@@ -32,16 +32,16 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->remove(0);
         $post->comments->remove(1);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertEquals(0, count($comments));
     }
 
@@ -51,16 +51,16 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->removeElement($post->comments[0]);
         $post->comments->removeElement($post->comments[1]);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertEquals(0, count($comments));
     }
 
@@ -73,17 +73,17 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $comment = $post->comments[0];
         $post->comments->removeElement($comment);
         $post->comments->add($comment);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertEquals(2, count($comments));
     }
 
@@ -93,15 +93,15 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->clear();
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertEquals(0, count($comments));
 
     }
@@ -115,17 +115,17 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $comment = $post->comments[0];
         $post->comments->clear();
         $post->comments->add($comment);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(DDC1654Comment::class)->findAll();
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertEquals(1, count($comments));
     }
 }

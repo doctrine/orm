@@ -34,7 +34,7 @@ class ScalarHydratorTest extends HydrationTestCase
 
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -65,7 +65,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
@@ -95,7 +95,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }

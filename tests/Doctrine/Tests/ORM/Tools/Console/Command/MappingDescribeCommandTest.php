@@ -41,7 +41,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
 
         $this->application->setHelperSet(new HelperSet(
             [
-            'em' => new EntityManagerHelper($this->_em)
+            'em' => new EntityManagerHelper($this->em)
             ]
         ));
 

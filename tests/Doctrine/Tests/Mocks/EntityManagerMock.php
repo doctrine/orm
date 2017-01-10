@@ -14,19 +14,19 @@ class EntityManagerMock extends EntityManager
     /**
      * @var \Doctrine\ORM\UnitOfWork|null
      */
-    private $_uowMock;
+    private $uowMock;
 
     /**
      * @var \Doctrine\ORM\Proxy\ProxyFactory|null
      */
-    private $_proxyFactoryMock;
+    private $proxyFactoryMock;
 
     /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
     {
-        return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
+        return isset($this->uowMock) ? $this->uowMock : parent::getUnitOfWork();
     }
 
     /* Mock API */
@@ -40,7 +40,7 @@ class EntityManagerMock extends EntityManager
      */
     public function setUnitOfWork($uow)
     {
-        $this->_uowMock = $uow;
+        $this->uowMock = $uow;
     }
 
     /**
@@ -50,7 +50,7 @@ class EntityManagerMock extends EntityManager
      */
     public function setProxyFactory($proxyFactory)
     {
-        $this->_proxyFactoryMock = $proxyFactory;
+        $this->proxyFactoryMock = $proxyFactory;
     }
 
     /**
@@ -58,7 +58,7 @@ class EntityManagerMock extends EntityManager
      */
     public function getProxyFactory()
     {
-        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+        return isset($this->proxyFactoryMock) ? $this->proxyFactoryMock : parent::getProxyFactory();
     }
 
     /**

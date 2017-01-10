@@ -22,21 +22,21 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         mkdir($testDir);
 
         // using a Filesystemcache to ensure that the cached data is serialized
-        $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
+        $this->em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC742User::class),
-                    $this->_em->getClassMetadata(DDC742Comment::class)
+                    $this->em->getClassMetadata(DDC742User::class),
+                    $this->em->getClassMetadata(DDC742Comment::class)
                 ]
             );
         } catch(\Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
-        $this->_em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
-        $this->_em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
+        $this->em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
+        $this->em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
     public function testIssue()
@@ -57,17 +57,18 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->favoriteComments->add($comment1);
         $user->favoriteComments->add($comment2);
 
-        $this->_em->persist($user);
-        $this->_em->persist($comment1);
-        $this->_em->persist($comment2);
-        $this->_em->persist($comment3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($comment1);
+        $this->em->persist($comment2);
+        $this->em->persist($comment3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DDC742User::class, $user->id);
-        $user->favoriteComments->add($this->_em->find(DDC742Comment::class, $comment3->id));
+        $user = $this->em->find(DDC742User::class, $user->id);
+        $user->favoriteComments->add($this->em->find(DDC742Comment::class, $comment3->id));
 
-        $this->_em->flush();
+        $this->em->flush();
+
         $this->addToAssertionCount(1);
     }
 }

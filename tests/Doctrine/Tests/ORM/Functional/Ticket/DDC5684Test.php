@@ -24,12 +24,12 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
             DBALTypes\Type::addType(DDC5684ObjectIdType::class, DDC5684ObjectIdType::class);
         }
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
     }
 
     protected function tearDown()
     {
-        $this->_schemaTool->dropSchema([$this->_em->getClassMetadata(DDC5684Object::class)]);
+        $this->schemaTool->dropSchema([$this->em->getClassMetadata(DDC5684Object::class)]);
 
         parent::tearDown();
     }
@@ -37,8 +37,8 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testAutoIncrementIdWithCustomType()
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
+        $this->em->persist($object);
+        $this->em->flush();
 
         $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
@@ -46,12 +46,12 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFetchObjectWithAutoIncrementedCustomType()
     {
         $object = new DDC5684Object();
-        $this->_em->persist($object);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($object);
+        $this->em->flush();
+        $this->em->clear();
 
         $rawId = $object->id->value;
-        $object = $this->_em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
+        $object = $this->em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
         $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
         $this->assertEquals($rawId, $object->id->value);

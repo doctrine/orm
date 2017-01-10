@@ -36,18 +36,18 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
         $this->bond->addStock($stock1);
         $this->bond->addStock($stock2);
 
-        $this->_em->persist($this->market);
-        $this->_em->persist($stock1);
-        $this->_em->persist($stock2);
-        $this->_em->persist($this->bond);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($this->market);
+        $this->em->persist($stock1);
+        $this->em->persist($stock2);
+        $this->em->persist($this->bond);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testManyToOneFinder()
     {
         /* @var $market Market */
-        $market = $this->_em->find(Market::class, $this->market->getId());
+        $market = $this->em->find(Market::class, $this->market->getId());
 
         self::assertEquals(2, count($market->stocks));
         self::assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
@@ -59,7 +59,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     public function testManyToOneDQL()
     {
         $dql = "SELECT m, s FROM Doctrine\Tests\Models\StockExchange\Market m JOIN m.stocks s WHERE m.id = ?1";
-        $market = $this->_em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
+        $market = $this->em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
 
         self::assertEquals(2, count($market->stocks));
         self::assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
@@ -70,7 +70,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
 
     public function testManyToMany()
     {
-        $bond = $this->_em->find(Bond::class, $this->bond->getId());
+        $bond = $this->em->find(Bond::class, $this->bond->getId());
 
         self::assertEquals(2, count($bond->stocks));
         self::assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
@@ -82,7 +82,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     public function testManytoManyDQL()
     {
         $dql = "SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s WHERE b.id = ?1";
-        $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
+        $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
         self::assertEquals(2, count($bond->stocks));
         self::assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
@@ -94,7 +94,7 @@ class IndexByAssociationTest extends OrmFunctionalTestCase
     public function testDqlOverrideIndexBy()
     {
         $dql = "SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s INDEX BY s.id WHERE b.id = ?1";
-        $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
+        $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
         self::assertEquals(2, count($bond->stocks));
         self::assertFalse(isset($bond->stocks['AAPL']), "AAPL symbol not exists in re-indexed association.");

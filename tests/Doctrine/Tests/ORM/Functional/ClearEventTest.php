@@ -16,9 +16,9 @@ class ClearEventTest extends OrmFunctionalTestCase
     public function testEventIsCalledOnClear()
     {
         $listener = new OnClearListener;
-        $this->_em->getEventManager()->addEventListener(Events::onClear, $listener);
+        $this->em->getEventManager()->addEventListener(Events::onClear, $listener);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($listener->called);
     }

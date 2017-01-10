@@ -37,7 +37,7 @@ class XmlExporter extends AbstractExporter
     /**
      * @var string
      */
-    protected $_extension = '.dcm.xml';
+    protected $extension = '.dcm.xml';
 
     /**
      * {@inheritdoc}
@@ -451,7 +451,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        return $this->_asXml($xml);
+        return $this->asXml($xml);
     }
 
     /**
@@ -503,7 +503,7 @@ class XmlExporter extends AbstractExporter
      *
      * @return string $xml
      */
-    private function _asXml($simpleXml)
+    private function asXml($simpleXml)
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
 

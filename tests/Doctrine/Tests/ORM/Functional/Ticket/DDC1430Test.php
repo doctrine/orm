@@ -13,10 +13,10 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1430Order::class),
-                $this->_em->getClassMetadata(DDC1430OrderProduct::class),
+                $this->em->getClassMetadata(DDC1430Order::class),
+                $this->em->getClassMetadata(DDC1430OrderProduct::class),
                 ]
             );
             $this->loadFixtures();
@@ -27,7 +27,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOrderByFields()
     {
-        $repository = $this->_em->getRepository(DDC1430Order::class);
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o.id, o.date, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -64,7 +64,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testOrderByAllObjectFields()
     {
-        $repository = $this->_em->getRepository(DDC1430Order::class);
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -99,7 +99,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $repository = $this->_em->getRepository(DDC1430Order::class);
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -144,10 +144,10 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $o2->addProduct(new DDC1430OrderProduct(2.2));
         $o2->addProduct(new DDC1430OrderProduct(2.3));
 
-        $this->_em->persist($o1);
-        $this->_em->persist($o2);
+        $this->em->persist($o1);
+        $this->em->persist($o2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 

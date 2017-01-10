@@ -15,11 +15,11 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2575Root::class),
-            $this->_em->getClassMetadata(DDC2575A::class),
-            $this->_em->getClassMetadata(DDC2575B::class),
+            $this->em->getClassMetadata(DDC2575Root::class),
+            $this->em->getClassMetadata(DDC2575A::class),
+            $this->em->getClassMetadata(DDC2575B::class),
             ]
         );
 
@@ -27,19 +27,19 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entityB1 = new DDC2575B(2);
         $entityA1 = new DDC2575A($entityRoot1, $entityB1);
 
-        $this->_em->persist($entityRoot1);
-        $this->_em->persist($entityA1);
-        $this->_em->persist($entityB1);
+        $this->em->persist($entityRoot1);
+        $this->em->persist($entityA1);
+        $this->em->persist($entityB1);
 
         $entityRoot2 = new DDC2575Root(3);
         $entityB2 = new DDC2575B(4);
         $entityA2 = new DDC2575A($entityRoot2, $entityB2);
 
-        $this->_em->persist($entityRoot2);
-        $this->_em->persist($entityA2);
-        $this->_em->persist($entityB2);
+        $this->em->persist($entityRoot2);
+        $this->em->persist($entityA2);
+        $this->em->persist($entityB2);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $this->rootsEntities[] = $entityRoot1;
         $this->rootsEntities[] = $entityRoot2;
@@ -50,12 +50,12 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->bEntities[] = $entityB1;
         $this->bEntities[] = $entityB2;
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testHydrationIssue()
     {
-        $repository = $this->_em->getRepository(DDC2575Root::class);
+        $repository = $this->em->getRepository(DDC2575Root::class);
         $qb = $repository->createQueryBuilder('r')
             ->select('r, a, b')
             ->leftJoin('r.aRelation', 'a')

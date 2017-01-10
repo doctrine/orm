@@ -14,17 +14,17 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2256User::class),
-                $this->_em->getClassMetadata(DDC2256Group::class)
+                $this->em->getClassMetadata(DDC2256User::class),
+                $this->em->getClassMetadata(DDC2256Group::class)
             ]
         );
     }
 
     public function testIssue()
     {
-        $config = $this->_em->getConfiguration();
+        $config = $this->em->getConfiguration();
         $config->addEntityNamespace('MyNamespace', __NAMESPACE__);
 
         $user = new DDC2256User();
@@ -33,10 +33,10 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group->name = 'group';
         $user->group = $group;
 
-        $this->_em->persist($user);
-        $this->_em->persist($group);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($group);
+        $this->em->flush();
+        $this->em->clear();
 
         $sql = 'SELECT u.id, u.name, g.id as group_id, g.name as group_name FROM ddc2256_users u LEFT JOIN ddc2256_groups g ON u.group_id = g.id';
 
@@ -51,14 +51,14 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('g', 'group_id', 'id');
         $rsm->addFieldResult('g', 'group_name', 'name');
 
-        self::assertCount(1, $this->_em->createNativeQuery($sql, $rsm)->getResult());
+        self::assertCount(1, $this->em->createNativeQuery($sql, $rsm)->getResult());
 
         // Test ResultSetMappingBuilder.
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
         $rsm->addRootEntityFromClassMetadata('MyNamespace:DDC2256User', 'u');
         $rsm->addJoinedEntityFromClassMetadata('MyNamespace:DDC2256Group', 'g', 'u', 'group', ['id' => 'group_id', 'name' => 'group_name']);
 
-        self::assertCount(1, $this->_em->createNativeQuery($sql, $rsm)->getResult());
+        self::assertCount(1, $this->em->createNativeQuery($sql, $rsm)->getResult());
     }
 }
 

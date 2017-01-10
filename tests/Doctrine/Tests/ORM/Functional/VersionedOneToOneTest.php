@@ -21,10 +21,10 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class)
+                    $this->em->getClassMetadata(FirstRelatedEntity::class),
+                    $this->em->getClassMetadata(SecondRelatedEntity::class)
                 ]
             );
         } catch (ORMException $e) {
@@ -40,20 +40,20 @@ class VersionedOneToOneTest extends OrmFunctionalTestCase
         $secondRelatedEntity = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
 
-        $this->_em->persist($secondRelatedEntity);
-        $this->_em->flush();
+        $this->em->persist($secondRelatedEntity);
+        $this->em->flush();
 
         $firstRelatedEntity = new FirstRelatedEntity();
         $firstRelatedEntity->name = 'Fred';
         $firstRelatedEntity->secondEntity = $secondRelatedEntity;
 
-        $this->_em->persist($firstRelatedEntity);
-        $this->_em->flush();
+        $this->em->persist($firstRelatedEntity);
+        $this->em->flush();
 
-        $firstEntity = $this->_em->getRepository(FirstRelatedEntity::class)
+        $firstEntity = $this->em->getRepository(FirstRelatedEntity::class)
             ->findOneBy(['name' => 'Fred']);
 
-        $secondEntity = $this->_em->getRepository(SecondRelatedEntity::class)
+        $secondEntity = $this->em->getRepository(SecondRelatedEntity::class)
             ->findOneBy(['name' => 'Bob']);
 
         self::assertSame($firstRelatedEntity, $firstEntity);

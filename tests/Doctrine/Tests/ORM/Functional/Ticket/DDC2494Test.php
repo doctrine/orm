@@ -19,10 +19,10 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         Type::addType('ddc2494_tinyint', DDC2494TinyIntType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2494Currency::class),
-            $this->_em->getClassMetadata(DDC2494Campaign::class),
+            $this->em->getClassMetadata(DDC2494Currency::class),
+            $this->em->getClassMetadata(DDC2494Campaign::class),
             ]
         );
     }
@@ -31,19 +31,19 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $currency = new DDC2494Currency(1, 2);
 
-        $this->_em->persist($currency);
-        $this->_em->flush();
+        $this->em->persist($currency);
+        $this->em->flush();
 
         $campaign = new DDC2494Campaign($currency);
 
-        $this->_em->persist($campaign);
-        $this->_em->flush();
-        $this->_em->close();
+        $this->em->persist($campaign);
+        $this->em->flush();
+        $this->em->close();
 
         self::assertArrayHasKey('convertToDatabaseValue', DDC2494TinyIntType::$calls);
         self::assertCount(3, DDC2494TinyIntType::$calls['convertToDatabaseValue']);
 
-        $item = $this->_em->find(DDC2494Campaign::class, $campaign->getId());
+        $item = $this->em->find(DDC2494Campaign::class, $campaign->getId());
 
         self::assertInstanceOf(DDC2494Campaign::class, $item);
         self::assertInstanceOf(DDC2494Currency::class, $item->getCurrency());

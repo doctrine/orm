@@ -23,24 +23,24 @@ class Issue5989Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $managerTags = ['tag1', 'tag2'];
         $manager->tags = $managerTags;
-        $this->_em->persist($manager);
+        $this->em->persist($manager);
 
         $employee = new Issue5989Employee();
 
         $employeeTags =['tag2', 'tag3'];
         $employee->tags = $employeeTags;
-        $this->_em->persist($employee);
+        $this->em->persist($employee);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $managerId = $manager->id;
         $employeeId = $employee->id;
 
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
         // instead of just returning the existing managed entities
-        $this->_em->clear();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(Issue5989Person::class);
+        $repository = $this->em->getRepository(Issue5989Person::class);
 
         $manager = $repository->find($managerId);
         $employee = $repository->find($employeeId);

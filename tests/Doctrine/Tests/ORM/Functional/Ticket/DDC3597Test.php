@@ -13,11 +13,11 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
 
     protected function setUp() {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3597Root::class),
-            $this->_em->getClassMetadata(DDC3597Media::class),
-            $this->_em->getClassMetadata(DDC3597Image::class)
+            $this->em->getClassMetadata(DDC3597Root::class),
+            $this->em->getClassMetadata(DDC3597Media::class),
+            $this->em->getClassMetadata(DDC3597Image::class)
             ]
         );
     }
@@ -32,22 +32,22 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
         $imageEntity->getDimension()->setWidth(300);
         $imageEntity->getDimension()->setHeight(500);
 
-        $this->_em->persist($imageEntity);
-        $this->_em->flush(); //before this fix, it will fail with a exception
+        $this->em->persist($imageEntity);
+        $this->em->flush(); //before this fix, it will fail with a exception
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //request entity
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
+        $imageEntity = $this->em->find(DDC3597Image::class, $imageEntity->getId());
         self::assertInstanceOf(DDC3597Image::class, $imageEntity);
 
         //cleanup
-        $this->_em->remove($imageEntity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($imageEntity);
+        $this->em->flush();
+        $this->em->clear();
 
         //check delete
-        $imageEntity = $this->_em->find(DDC3597Image::class, $imageEntity->getId());
+        $imageEntity = $this->em->find(DDC3597Image::class, $imageEntity->getId());
         self::assertNull($imageEntity);
     }
 }

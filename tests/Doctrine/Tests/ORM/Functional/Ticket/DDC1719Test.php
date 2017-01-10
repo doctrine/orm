@@ -11,9 +11,9 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1719SimpleEntity::class),
+            $this->em->getClassMetadata(DDC1719SimpleEntity::class),
             ]
         );
     }
@@ -22,9 +22,9 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(
+        $this->schemaTool->dropSchema(
             [
-            $this->_em->getClassMetadata(DDC1719SimpleEntity::class),
+            $this->em->getClassMetadata(DDC1719SimpleEntity::class),
             ]
         );
     }
@@ -35,17 +35,17 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2 = new DDC1719SimpleEntity('Foo 1');
 
         // Create
-        $this->_em->persist($e1);
-        $this->_em->persist($e2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($e1);
+        $this->em->persist($e2);
+        $this->em->flush();
+        $this->em->clear();
 
         $e1Id   = $e1->id;
         $e2Id   = $e2->id;
 
         // Retrieve
-        $e1     = $this->_em->find(DDC1719SimpleEntity::class, $e1Id);
-        $e2     = $this->_em->find(DDC1719SimpleEntity::class, $e2Id);
+        $e1     = $this->em->find(DDC1719SimpleEntity::class, $e1Id);
+        $e2     = $this->em->find(DDC1719SimpleEntity::class, $e2Id);
 
         self::assertInstanceOf(DDC1719SimpleEntity::class, $e1);
         self::assertInstanceOf(DDC1719SimpleEntity::class, $e2);
@@ -60,9 +60,9 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2->value = 'Foo 2';
 
         // Update
-        $this->_em->persist($e1);
-        $this->_em->persist($e2);
-        $this->_em->flush();
+        $this->em->persist($e1);
+        $this->em->persist($e2);
+        $this->em->flush();
 
         self::assertEquals('Bar 2', $e1->value);
         self::assertEquals('Foo 2', $e2->value);
@@ -77,13 +77,13 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals('Foo 2', $e2->value);
 
         // Delete
-        $this->_em->remove($e1);
-        $this->_em->remove($e2);
-        $this->_em->flush();
+        $this->em->remove($e1);
+        $this->em->remove($e2);
+        $this->em->flush();
 
 
-        $e1 = $this->_em->find(DDC1719SimpleEntity::class, $e1Id);
-        $e2 = $this->_em->find(DDC1719SimpleEntity::class, $e2Id);
+        $e1 = $this->em->find(DDC1719SimpleEntity::class, $e1Id);
+        $e2 = $this->em->find(DDC1719SimpleEntity::class, $e2Id);
 
         self::assertNull($e1);
         self::assertNull($e2);

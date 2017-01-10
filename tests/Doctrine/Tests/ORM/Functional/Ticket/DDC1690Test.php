@@ -11,10 +11,10 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp() {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1690Parent::class),
-                $this->_em->getClassMetadata(DDC1690Child::class)
+                $this->em->getClassMetadata(DDC1690Parent::class),
+                $this->em->getClassMetadata(DDC1690Child::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -32,14 +32,14 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $parent->setChild($child);
         $child->setParent($parent);
 
-        $this->_em->persist($parent);
-        $this->_em->persist($child);
+        $this->em->persist($parent);
+        $this->em->persist($child);
 
         self::assertEquals(1, count($parent->listeners));
         self::assertEquals(1, count($child->listeners));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertEquals(1, count($parent->listeners));
         self::assertEquals(1, count($child->listeners));
@@ -48,8 +48,8 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $childId = $child->getId();
         unset($parent, $child);
 
-        $parent = $this->_em->find(DDC1690Parent::class, $parentId);
-        $child = $this->_em->find(DDC1690Child::class, $childId);
+        $parent = $this->em->find(DDC1690Parent::class, $parentId);
+        $child = $this->em->find(DDC1690Child::class, $childId);
 
         self::assertEquals(1, count($parent->listeners));
         self::assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
@@ -58,14 +58,14 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertCount(1, $child->listeners);
         unset($parent, $child);
 
-        $parent = $this->_em->find(DDC1690Parent::class, $parentId);
+        $parent = $this->em->find(DDC1690Parent::class, $parentId);
         $child = $parent->getChild();
 
         self::assertEquals(1, count($parent->listeners));
         self::assertEquals(1, count($child->listeners));
         unset($parent, $child);
 
-        $child = $this->_em->find(DDC1690Child::class, $childId);
+        $child = $this->em->find(DDC1690Child::class, $childId);
         $parent = $child->getParent();
 
         self::assertEquals(1, count($parent->listeners));

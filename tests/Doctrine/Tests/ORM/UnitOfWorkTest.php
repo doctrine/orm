@@ -36,21 +36,21 @@ class UnitOfWorkTest extends OrmTestCase
      *
      * @var UnitOfWorkMock
      */
-    private $_unitOfWork;
+    private $unitOfWork;
 
     /**
      * Provides a sequence mock to the UnitOfWork
      *
      * @var ConnectionMock
      */
-    private $_connectionMock;
+    private $connectionMock;
 
     /**
      * The EntityManager mock that provides the mock persisters
      *
      * @var EntityManagerMock
      */
-    private $_emMock;
+    private $emMock;
 
     /**
      * @var EventManager|\PHPUnit_Framework_MockObject_MockObject
@@ -60,21 +60,22 @@ class UnitOfWorkTest extends OrmTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_connectionMock = new ConnectionMock([], new DriverMock());
-        $this->eventManager = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->_emMock = EntityManagerMock::create($this->_connectionMock, null, $this->eventManager);
-        // SUT
-        $this->_unitOfWork = new UnitOfWorkMock($this->_emMock);
-        $this->_emMock->setUnitOfWork($this->_unitOfWork);
+
+        $this->connectionMock = new ConnectionMock([], new DriverMock());
+        $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->emMock         = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
+        $this->unitOfWork     = new UnitOfWorkMock($this->emMock);
+
+        $this->emMock->setUnitOfWork($this->unitOfWork);
     }
 
     public function testRegisterRemovedOnNewEntityIsIgnored()
     {
         $user = new ForumUser();
         $user->username = 'romanb';
-        self::assertFalse($this->_unitOfWork->isScheduledForDelete($user));
-        $this->_unitOfWork->scheduleForDelete($user);
-        self::assertFalse($this->_unitOfWork->isScheduledForDelete($user));
+        self::assertFalse($this->unitOfWork->isScheduledForDelete($user));
+        $this->unitOfWork->scheduleForDelete($user);
+        self::assertFalse($this->unitOfWork->isScheduledForDelete($user));
     }
 
 
@@ -83,28 +84,28 @@ class UnitOfWorkTest extends OrmTestCase
     public function testSavingSingleEntityWithIdentityColumnForcesInsert()
     {
         // Setup fake persister and id generator for identity generation
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
-        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+        $userPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumUser::class));
+        $this->unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
         $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
 
         // Test
         $user = new ForumUser();
         $user->username = 'romanb';
-        $this->_unitOfWork->persist($user);
+        $this->unitOfWork->persist($user);
 
         // Check
         self::assertEquals(0, count($userPersister->getInserts()));
         self::assertEquals(0, count($userPersister->getUpdates()));
         self::assertEquals(0, count($userPersister->getDeletes()));
-        self::assertFalse($this->_unitOfWork->isInIdentityMap($user));
+        self::assertFalse($this->unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
-        self::assertTrue($this->_unitOfWork->isScheduledForInsert($user));
+        self::assertTrue($this->unitOfWork->isScheduledForInsert($user));
 
         // Now lets check whether a subsequent commit() does anything
         $userPersister->reset();
 
         // Test
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
 
         // Check.
         self::assertEquals(1, count($userPersister->getInserts()));
@@ -123,12 +124,12 @@ class UnitOfWorkTest extends OrmTestCase
     {
         // Setup fake persister and id generator for identity generation
         //ForumUser
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
-        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+        $userPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumUser::class));
+        $this->unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
         $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
         // ForumAvatar
-        $avatarPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumAvatar::class));
-        $this->_unitOfWork->setEntityPersister(ForumAvatar::class, $avatarPersister);
+        $avatarPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumAvatar::class));
+        $this->unitOfWork->setEntityPersister(ForumAvatar::class, $avatarPersister);
         $avatarPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
 
         // Test
@@ -136,9 +137,9 @@ class UnitOfWorkTest extends OrmTestCase
         $user->username = 'romanb';
         $avatar = new ForumAvatar();
         $user->avatar = $avatar;
-        $this->_unitOfWork->persist($user); // save cascaded to avatar
+        $this->unitOfWork->persist($user); // save cascaded to avatar
 
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
 
         self::assertTrue(is_numeric($user->id));
         self::assertTrue(is_numeric($avatar->id));
@@ -154,34 +155,34 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testChangeTrackingNotify()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedEntity::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
-        $itemPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(NotifyChangedRelatedItem::class));
-        $this->_unitOfWork->setEntityPersister(NotifyChangedRelatedItem::class, $itemPersister);
+        $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(NotifyChangedEntity::class));
+        $this->unitOfWork->setEntityPersister(NotifyChangedEntity::class, $persister);
+        $itemPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(NotifyChangedRelatedItem::class));
+        $this->unitOfWork->setEntityPersister(NotifyChangedRelatedItem::class, $itemPersister);
 
         $entity = new NotifyChangedEntity;
         $entity->setData('thedata');
-        $this->_unitOfWork->persist($entity);
+        $this->unitOfWork->persist($entity);
 
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
         self::assertEquals(1, count($persister->getInserts()));
         $persister->reset();
 
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+        self::assertTrue($this->unitOfWork->isInIdentityMap($entity));
 
         $entity->setData('newdata');
         $entity->setTransient('newtransientvalue');
 
-        self::assertTrue($this->_unitOfWork->isScheduledForDirtyCheck($entity));
+        self::assertTrue($this->unitOfWork->isScheduledForDirtyCheck($entity));
 
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->_unitOfWork->getEntityChangeSet($entity));
+        self::assertEquals(['data' => ['thedata', 'newdata']], $this->unitOfWork->getEntityChangeSet($entity));
 
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
         $item->setOwner($entity);
-        $this->_unitOfWork->persist($item);
+        $this->unitOfWork->persist($item);
 
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
         self::assertEquals(1, count($itemPersister->getInserts()));
         $persister->reset();
         $itemPersister->reset();
@@ -190,7 +191,7 @@ class UnitOfWorkTest extends OrmTestCase
         $entity->getItems()->removeElement($item);
         $item->setOwner(null);
         self::assertTrue($entity->getItems()->isDirty());
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
         $updates = $itemPersister->getUpdates();
         self::assertEquals(1, count($updates));
         self::assertTrue($updates[0] === $item);
@@ -198,35 +199,35 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testGetEntityStateOnVersionedEntityWithAssignedIdentifier()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
-        $this->_unitOfWork->setEntityPersister(VersionedAssignedIdentifierEntity::class, $persister);
+        $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(VersionedAssignedIdentifierEntity::class));
+        $this->unitOfWork->setEntityPersister(VersionedAssignedIdentifierEntity::class, $persister);
 
         $e = new VersionedAssignedIdentifierEntity();
         $e->id = 42;
-        self::assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($e));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->unitOfWork->getEntityState($e));
         self::assertFalse($persister->isExistsCalled());
     }
 
     public function testGetEntityStateWithAssignedIdentity()
     {
-        $persister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CmsPhonenumber::class));
-        $this->_unitOfWork->setEntityPersister(CmsPhonenumber::class, $persister);
+        $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CmsPhonenumber::class));
+        $this->unitOfWork->setEntityPersister(CmsPhonenumber::class, $persister);
 
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
-        self::assertEquals(UnitOfWork::STATE_NEW, $this->_unitOfWork->getEntityState($ph));
+        self::assertEquals(UnitOfWork::STATE_NEW, $this->unitOfWork->getEntityState($ph));
         self::assertTrue($persister->isExistsCalled());
 
         $persister->reset();
 
         // if the entity is already managed the exists() check should be skipped
-        $this->_unitOfWork->registerManaged($ph, ['phonenumber' => '12345'], []);
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->_unitOfWork->getEntityState($ph));
+        $this->unitOfWork->registerManaged($ph, ['phonenumber' => '12345'], []);
+        self::assertEquals(UnitOfWork::STATE_MANAGED, $this->unitOfWork->getEntityState($ph));
         self::assertFalse($persister->isExistsCalled());
         $ph2 = new CmsPhonenumber();
         $ph2->phonenumber = '12345';
-        self::assertEquals(UnitOfWork::STATE_DETACHED, $this->_unitOfWork->getEntityState($ph2));
+        self::assertEquals(UnitOfWork::STATE_DETACHED, $this->unitOfWork->getEntityState($ph2));
         self::assertFalse($persister->isExistsCalled());
     }
 
@@ -236,25 +237,25 @@ class UnitOfWorkTest extends OrmTestCase
     public function testNoUndefinedIndexNoticeOnScheduleForUpdateWithoutChanges()
     {
         // Setup fake persister and id generator
-        $userPersister = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(ForumUser::class));
+        $userPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(ForumUser::class));
         $userPersister->setMockIdGeneratorType(GeneratorType::IDENTITY);
-        $this->_unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
+        $this->unitOfWork->setEntityPersister(ForumUser::class, $userPersister);
 
         // Create a test user
         $user = new ForumUser();
         $user->name = 'Jasper';
-        $this->_unitOfWork->persist($user);
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->persist($user);
+        $this->unitOfWork->commit();
 
         // Schedule user for update without changes
-        $this->_unitOfWork->scheduleForUpdate($user);
+        $this->unitOfWork->scheduleForUpdate($user);
 
         self::assertNotEmpty($this->_unitOfWork->getScheduledEntityUpdates());
 
         // This commit should not raise an E_NOTICE
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->commit();
 
-        self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
+        self::assertEmpty($this->unitOfWork->getScheduledEntityUpdates());
     }
 
     /**
@@ -263,7 +264,7 @@ class UnitOfWorkTest extends OrmTestCase
     public function testLockWithoutEntityThrowsException()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->_unitOfWork->lock(null, null, null);
+        $this->unitOfWork->lock(null, null, null);
     }
 
     /**
@@ -275,11 +276,11 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testRejectsPersistenceOfObjectsWithInvalidAssociationValue($invalidValue)
     {
-        $this->_unitOfWork->setEntityPersister(
+        $this->unitOfWork->setEntityPersister(
             ForumUser::class,
             new EntityPersisterMock(
-                $this->_emMock,
-                $this->_emMock->getClassMetadata(ForumUser::class)
+                $this->emMock,
+                $this->emMock->getClassMetadata(ForumUser::class)
             )
         );
 
@@ -289,7 +290,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
 
-        $this->_unitOfWork->persist($user);
+        $this->unitOfWork->persist($user);
     }
 
     /**
@@ -301,23 +302,23 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testRejectsChangeSetComputationForObjectsWithInvalidAssociationValue($invalidValue)
     {
-        $metadata = $this->_emMock->getClassMetadata(ForumUser::class);
+        $metadata = $this->emMock->getClassMetadata(ForumUser::class);
 
-        $this->_unitOfWork->setEntityPersister(
+        $this->unitOfWork->setEntityPersister(
             ForumUser::class,
-            new EntityPersisterMock($this->_emMock, $metadata)
+            new EntityPersisterMock($this->emMock, $metadata)
         );
 
         $user = new ForumUser();
 
-        $this->_unitOfWork->persist($user);
+        $this->unitOfWork->persist($user);
 
         $user->username = 'John';
         $user->avatar   = $invalidValue;
 
         $this->expectException(\Doctrine\ORM\ORMInvalidArgumentException::class);
 
-        $this->_unitOfWork->computeChangeSet($metadata, $user);
+        $this->unitOfWork->computeChangeSet($metadata, $user);
     }
 
     /**
@@ -329,14 +330,14 @@ class UnitOfWorkTest extends OrmTestCase
         $entity     = new ForumUser();
         $entity->id = 123;
 
-        $this->_unitOfWork->registerManaged($entity, ['id' => 123], []);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+        $this->unitOfWork->registerManaged($entity, ['id' => 123], []);
+        self::assertTrue($this->unitOfWork->isInIdentityMap($entity));
 
-        $this->_unitOfWork->remove($entity);
-        self::assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+        $this->unitOfWork->remove($entity);
+        self::assertFalse($this->unitOfWork->isInIdentityMap($entity));
 
-        $this->_unitOfWork->persist($entity);
-        self::assertTrue($this->_unitOfWork->isInIdentityMap($entity));
+        $this->unitOfWork->persist($entity);
+        self::assertTrue($this->unitOfWork->isInIdentityMap($entity));
     }
 
     /**
@@ -348,17 +349,17 @@ class UnitOfWorkTest extends OrmTestCase
         $entity1 = new City(123, 'London');
         $entity2 = new Country(456, 'United Kingdom');
 
-        $this->_unitOfWork->persist($entity1);
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
+        $this->unitOfWork->persist($entity1);
+        $this->assertTrue($this->unitOfWork->isInIdentityMap($entity1));
 
-        $this->_unitOfWork->persist($entity2);
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity2));
+        $this->unitOfWork->persist($entity2);
+        $this->assertTrue($this->unitOfWork->isInIdentityMap($entity2));
 
-        $this->_unitOfWork->clear(Country::class);
-        $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity1));
-        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
-        $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
-        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+        $this->unitOfWork->clear(Country::class);
+        $this->assertTrue($this->unitOfWork->isInIdentityMap($entity1));
+        $this->assertFalse($this->unitOfWork->isInIdentityMap($entity2));
+        $this->assertTrue($this->unitOfWork->isScheduledForInsert($entity1));
+        $this->assertFalse($this->unitOfWork->isScheduledForInsert($entity2));
     }
 
     /**
@@ -388,10 +389,10 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testAddToIdentityMapValidIdentifiers($entity, $idHash)
     {
-        $this->_unitOfWork->persist($entity);
-        $this->_unitOfWork->addToIdentityMap($entity);
+        $this->unitOfWork->persist($entity);
+        $this->unitOfWork->addToIdentityMap($entity);
 
-        self::assertSame($entity, $this->_unitOfWork->getByIdHash($idHash, get_class($entity)));
+        self::assertSame($entity, $this->unitOfWork->getByIdHash($idHash, get_class($entity)));
     }
 
     public function entitiesWithValidIdentifiersProvider()
@@ -436,7 +437,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
-        $this->_unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
+        $this->unitOfWork->registerManaged(new EntityWithBooleanIdentifier(), [], []);
     }
 
     /**
@@ -451,7 +452,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $this->expectException(ORMInvalidArgumentException::class);
 
-        $this->_unitOfWork->registerManaged($entity, $identifier, []);
+        $this->unitOfWork->registerManaged($entity, $identifier, []);
     }
 
 
@@ -481,10 +482,10 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $user       = new CmsUser();
         $user->name = 'ocramius';
-        $mergedUser = $this->_unitOfWork->merge($user);
+        $mergedUser = $this->unitOfWork->merge($user);
 
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
+        self::assertSame([], $this->unitOfWork->getOriginalEntityData($user), 'No original data was stored');
+        self::assertSame([], $this->unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
 
 
         $user       = null;
@@ -496,9 +497,9 @@ class UnitOfWorkTest extends OrmTestCase
         $newUser       = new CmsUser();
         $newUser->name = 'ocramius';
 
-        $this->_unitOfWork->persist($newUser);
+        $this->unitOfWork->persist($newUser);
 
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
+        self::assertSame([], $this->unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
 
     /**
@@ -589,7 +590,7 @@ class UnitOfWorkTest extends OrmTestCase
  */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
-    private $_listeners = [];
+    private $listeners = [];
     /**
      * @Id
      * @Column(type="integer")
@@ -620,7 +621,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     public function setTransient($value) {
         if ($value != $this->transient) {
-            $this->_onPropertyChanged('transient', $this->transient, $value);
+            $this->onPropertyChanged('transient', $this->transient, $value);
             $this->transient = $value;
         }
     }
@@ -631,19 +632,19 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     public function setData($data) {
         if ($data != $this->data) {
-            $this->_onPropertyChanged('data', $this->data, $data);
+            $this->onPropertyChanged('data', $this->data, $data);
             $this->data = $data;
         }
     }
 
     public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
-        $this->_listeners[] = $listener;
+        $this->listeners[] = $listener;
     }
 
-    protected function _onPropertyChanged($propName, $oldValue, $newValue) {
-        if ($this->_listeners) {
-            foreach ($this->_listeners as $listener) {
+    protected function onPropertyChanged($propName, $oldValue, $newValue) {
+        if ($this->listeners) {
+            foreach ($this->listeners as $listener) {
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
             }
         }

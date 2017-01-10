@@ -50,14 +50,14 @@ class QueryBuilder
      *
      * @var EntityManagerInterface
      */
-    private $_em;
+    private $em;
 
     /**
      * The array of DQL parts collected.
      *
      * @var array
      */
-    private $_dqlParts = [
+    private $dqlParts = [
         'distinct' => false,
         'select'  => [],
         'from'    => [],
@@ -74,21 +74,21 @@ class QueryBuilder
      *
      * @var integer
      */
-    private $_type = self::SELECT;
+    private $type = self::SELECT;
 
     /**
      * The state of the query object. Can be dirty or clean.
      *
      * @var integer
      */
-    private $_state = self::STATE_CLEAN;
+    private $state = self::STATE_CLEAN;
 
     /**
      * The complete DQL string for this query.
      *
      * @var string
      */
-    private $_dql;
+    private $dql;
 
     /**
      * The query parameters.
@@ -102,14 +102,14 @@ class QueryBuilder
      *
      * @var integer
      */
-    private $_firstResult = null;
+    private $firstResult = null;
 
     /**
      * The maximum number of results to retrieve.
      *
      * @var integer
      */
-    private $_maxResults = null;
+    private $maxResults = null;
 
     /**
      * Keeps root entity alias names for join entities.
@@ -151,7 +151,7 @@ class QueryBuilder
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em = $em;
+        $this->em = $em;
         $this->parameters = new ArrayCollection();
     }
 
@@ -174,7 +174,7 @@ class QueryBuilder
      */
     public function expr()
     {
-        return $this->_em->getExpressionBuilder();
+        return $this->em->getExpressionBuilder();
     }
 
     /**
@@ -271,7 +271,7 @@ class QueryBuilder
      */
     public function getType()
     {
-        return $this->_type;
+        return $this->type;
     }
 
     /**
@@ -281,7 +281,7 @@ class QueryBuilder
      */
     public function getEntityManager()
     {
-        return $this->_em;
+        return $this->em;
     }
 
     /**
@@ -291,7 +291,7 @@ class QueryBuilder
      */
     public function getState()
     {
-        return $this->_state;
+        return $this->state;
     }
 
     /**
@@ -308,27 +308,27 @@ class QueryBuilder
      */
     public function getDQL()
     {
-        if ($this->_dql !== null && $this->_state === self::STATE_CLEAN) {
-            return $this->_dql;
+        if ($this->dql !== null && $this->state === self::STATE_CLEAN) {
+            return $this->dql;
         }
 
-        switch ($this->_type) {
+        switch ($this->type) {
             case self::DELETE:
-                $dql = $this->_getDQLForDelete();
+                $dql = $this->getDQLForDelete();
                 break;
 
             case self::UPDATE:
-                $dql = $this->_getDQLForUpdate();
+                $dql = $this->getDQLForUpdate();
                 break;
 
             case self::SELECT:
             default:
-                $dql = $this->_getDQLForSelect();
+                $dql = $this->getDQLForSelect();
                 break;
         }
 
-        $this->_state = self::STATE_CLEAN;
-        $this->_dql   = $dql;
+        $this->state = self::STATE_CLEAN;
+        $this->dql   = $dql;
 
         return $dql;
     }
@@ -349,10 +349,10 @@ class QueryBuilder
     public function getQuery()
     {
         $parameters = clone $this->parameters;
-        $query      = $this->_em->createQuery($this->getDQL())
+        $query      = $this->em->createQuery($this->getDQL())
             ->setParameters($parameters)
-            ->setFirstResult($this->_firstResult)
-            ->setMaxResults($this->_maxResults);
+            ->setFirstResult($this->firstResult)
+            ->setMaxResults($this->maxResults);
 
         if ($this->lifetime) {
             $query->setLifetime($this->lifetime);
@@ -446,7 +446,7 @@ class QueryBuilder
     {
         $aliases = [];
 
-        foreach ($this->_dqlParts['from'] as &$fromClause) {
+        foreach ($this->dqlParts['from'] as &$fromClause) {
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
                 $from     = substr($fromClause, 0, $spacePos);
@@ -498,7 +498,7 @@ class QueryBuilder
     {
         $entities = [];
 
-        foreach ($this->_dqlParts['from'] as &$fromClause) {
+        foreach ($this->dqlParts['from'] as &$fromClause) {
             if (is_string($fromClause)) {
                 $spacePos = strrpos($fromClause, ' ');
                 $from     = substr($fromClause, 0, $spacePos);
@@ -634,7 +634,7 @@ class QueryBuilder
      */
     public function setFirstResult($firstResult)
     {
-        $this->_firstResult = $firstResult;
+        $this->firstResult = $firstResult;
 
         return $this;
     }
@@ -647,7 +647,7 @@ class QueryBuilder
      */
     public function getFirstResult()
     {
-        return $this->_firstResult;
+        return $this->firstResult;
     }
 
     /**
@@ -659,7 +659,7 @@ class QueryBuilder
      */
     public function setMaxResults($maxResults)
     {
-        $this->_maxResults = $maxResults;
+        $this->maxResults = $maxResults;
 
         return $this;
     }
@@ -672,7 +672,7 @@ class QueryBuilder
      */
     public function getMaxResults()
     {
-        return $this->_maxResults;
+        return $this->maxResults;
     }
 
     /**
@@ -696,7 +696,7 @@ class QueryBuilder
             );
         }
 
-        $isMultiple = is_array($this->_dqlParts[$dqlPartName])
+        $isMultiple = is_array($this->dqlParts[$dqlPartName])
             && !($dqlPartName == 'join' && !$append);
 
         // Allow adding any part retrieved from self::getDQLParts().
@@ -722,15 +722,15 @@ class QueryBuilder
             if (is_array($dqlPart)) {
                 $key = key($dqlPart);
 
-                $this->_dqlParts[$dqlPartName][$key][] = $dqlPart[$key];
+                $this->dqlParts[$dqlPartName][$key][] = $dqlPart[$key];
             } else {
-                $this->_dqlParts[$dqlPartName][] = $dqlPart;
+                $this->dqlParts[$dqlPartName][] = $dqlPart;
             }
         } else {
-            $this->_dqlParts[$dqlPartName] = ($isMultiple) ? [$dqlPart] : $dqlPart;
+            $this->dqlParts[$dqlPartName] = ($isMultiple) ? [$dqlPart] : $dqlPart;
         }
 
-        $this->_state = self::STATE_DIRTY;
+        $this->state = self::STATE_DIRTY;
 
         return $this;
     }
@@ -752,7 +752,7 @@ class QueryBuilder
      */
     public function select($select = null)
     {
-        $this->_type = self::SELECT;
+        $this->type = self::SELECT;
 
         if (empty($select)) {
             return $this;
@@ -779,7 +779,7 @@ class QueryBuilder
      */
     public function distinct($flag = true)
     {
-        $this->_dqlParts['distinct'] = (bool) $flag;
+        $this->dqlParts['distinct'] = (bool) $flag;
 
         return $this;
     }
@@ -801,7 +801,7 @@ class QueryBuilder
      */
     public function addSelect($select = null)
     {
-        $this->_type = self::SELECT;
+        $this->type = self::SELECT;
 
         if (empty($select)) {
             return $this;
@@ -830,7 +830,7 @@ class QueryBuilder
      */
     public function delete($delete = null, $alias = null)
     {
-        $this->_type = self::DELETE;
+        $this->type = self::DELETE;
 
         if ( ! $delete) {
             return $this;
@@ -857,7 +857,7 @@ class QueryBuilder
      */
     public function update($update = null, $alias = null)
     {
-        $this->_type = self::UPDATE;
+        $this->type = self::UPDATE;
 
         if ( ! $update) {
             return $this;
@@ -920,7 +920,7 @@ class QueryBuilder
             );
         }
 
-        foreach ($this->_dqlParts['from'] as &$fromClause) {
+        foreach ($this->dqlParts['from'] as &$fromClause) {
             /* @var Expr\From $fromClause */
             if ($fromClause->getAlias() !== $alias) {
                 continue;
@@ -1353,7 +1353,7 @@ class QueryBuilder
      */
     public function getDQLPart($queryPartName)
     {
-        return $this->_dqlParts[$queryPartName];
+        return $this->dqlParts[$queryPartName];
     }
 
     /**
@@ -1365,40 +1365,40 @@ class QueryBuilder
      */
     public function getDQLParts()
     {
-        return $this->_dqlParts;
+        return $this->dqlParts;
     }
 
     /**
      * @return string
      */
-    private function _getDQLForDelete()
+    private function getDQLForDelete()
     {
          return 'DELETE'
-              . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
     /**
      * @return string
      */
-    private function _getDQLForUpdate()
+    private function getDQLForUpdate()
     {
          return 'UPDATE'
-              . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('set', ['pre' => ' SET ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('set', ['pre' => ' SET ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
     }
 
     /**
      * @return string
      */
-    private function _getDQLForSelect()
+    private function getDQLForSelect()
     {
         $dql = 'SELECT'
-             . ($this->_dqlParts['distinct']===true ? ' DISTINCT' : '')
-             . $this->_getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
+             . ($this->dqlParts['distinct']===true ? ' DISTINCT' : '')
+             . $this->getReducedDQLQueryPart('select', ['pre' => ' ', 'separator' => ', ']);
 
         $fromParts   = $this->getDQLPart('from');
         $joinParts   = $this->getDQLPart('join');
@@ -1422,10 +1422,10 @@ class QueryBuilder
         }
 
         $dql .= implode(', ', $fromClauses)
-              . $this->_getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
-              . $this->_getReducedDQLQueryPart('groupBy', ['pre' => ' GROUP BY ', 'separator' => ', '])
-              . $this->_getReducedDQLQueryPart('having', ['pre' => ' HAVING '])
-              . $this->_getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
+              . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
+              . $this->getReducedDQLQueryPart('groupBy', ['pre' => ' GROUP BY ', 'separator' => ', '])
+              . $this->getReducedDQLQueryPart('having', ['pre' => ' HAVING '])
+              . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
 
         return $dql;
     }
@@ -1436,7 +1436,7 @@ class QueryBuilder
      *
      * @return string
      */
-    private function _getReducedDQLQueryPart($queryPartName, $options = [])
+    private function getReducedDQLQueryPart($queryPartName, $options = [])
     {
         $queryPart = $this->getDQLPart($queryPartName);
 
@@ -1459,7 +1459,7 @@ class QueryBuilder
     public function resetDQLParts($parts = null)
     {
         if (null === $parts) {
-            $parts = array_keys($this->_dqlParts);
+            $parts = array_keys($this->dqlParts);
         }
 
         foreach ($parts as $part) {
@@ -1478,8 +1478,8 @@ class QueryBuilder
      */
     public function resetDQLPart($part)
     {
-        $this->_dqlParts[$part] = is_array($this->_dqlParts[$part]) ? [] : null;
-        $this->_state           = self::STATE_DIRTY;
+        $this->dqlParts[$part] = is_array($this->dqlParts[$part]) ? [] : null;
+        $this->state           = self::STATE_DIRTY;
 
         return $this;
     }
@@ -1502,15 +1502,15 @@ class QueryBuilder
      */
     public function __clone()
     {
-        foreach ($this->_dqlParts as $part => $elements) {
-            if (is_array($this->_dqlParts[$part])) {
-                foreach ($this->_dqlParts[$part] as $idx => $element) {
+        foreach ($this->dqlParts as $part => $elements) {
+            if (is_array($this->dqlParts[$part])) {
+                foreach ($this->dqlParts[$part] as $idx => $element) {
                     if (is_object($element)) {
-                        $this->_dqlParts[$part][$idx] = clone $element;
+                        $this->dqlParts[$part][$idx] = clone $element;
                     }
                 }
             } else if (is_object($elements)) {
-                $this->_dqlParts[$part] = clone $elements;
+                $this->dqlParts[$part] = clone $elements;
             }
         }
 

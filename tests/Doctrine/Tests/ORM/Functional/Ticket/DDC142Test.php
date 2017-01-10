@@ -18,12 +18,12 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(User::class),
-                $this->_em->getClassMetadata(Group::class),
-                $this->_em->getClassMetadata(Phone::class),
-                $this->_em->getClassMetadata(Address::class),
+                $this->em->getClassMetadata(User::class),
+                $this->em->getClassMetadata(Group::class),
+                $this->em->getClassMetadata(Phone::class),
+                $this->em->getClassMetadata(Address::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -35,26 +35,26 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user           = new User;
         $user->name     = 'FabioBatSilva';
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
         $address        = new Address;
         $address->zip   = '12345';
-        $this->_em->persist($address);
+        $this->em->persist($address);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $addressRef = $this->_em->getReference(Address::class, $address->getId());
+        $addressRef = $this->em->getReference(Address::class, $address->getId());
 
         $user->setAddress($addressRef);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $id = $user->id;
         self::assertNotNull($id);
 
 
-        $user       = $this->_em->find(User::class, $id);
+        $user       = $this->em->find(User::class, $id);
         $address    = $user->getAddress();
 
         self::assertInstanceOf(User::class, $user);
@@ -67,23 +67,23 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name     = 'FabioBatSilva1';
         $user->address  = null;
 
-        $this->_em->persist($user);
-        $this->_em->remove($address);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->remove($address);
+        $this->em->flush();
+        $this->em->clear();
 
 
-        $user = $this->_em->find(User::class, $id);
+        $user = $this->em->find(User::class, $id);
         self::assertInstanceOf(User::class, $user);
         self::assertNull($user->getAddress());
 
         self::assertEquals('FabioBatSilva1', $user->name);
 
-        $this->_em->remove($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertNull($this->_em->find(User::class, $id));
+        self::assertNull($this->em->find(User::class, $id));
     }
 
 }

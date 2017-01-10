@@ -27,7 +27,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     public function createEntityManager()
     {
         $logger = new DebugStack();
-        $em     = $this->_getEntityManager();
+        $em     = $this->getEntityManager();
 
         $em->getConnection()->getConfiguration()->setSQLLogger($logger);
         $em->getConfiguration()->setSQLLogger($logger);

@@ -13,16 +13,16 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(PersistentCollectionHolder::class),
-                $this->_em->getClassMetadata(PersistentCollectionContent::class),
+                $this->em->getClassMetadata(PersistentCollectionHolder::class),
+                $this->em->getClassMetadata(PersistentCollectionContent::class),
                 ]
             );
         } catch (\Exception $e) {
 
         }
-        PersistentObject::setObjectManager($this->_em);
+        PersistentObject::setObjectManager($this->em);
     }
 
     public function testPersist()
@@ -31,11 +31,11 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
         $content = new PersistentCollectionContent('first element');
         $collectionHolder->addElement($content);
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection();
 
         $content = new PersistentCollectionContent('second element');
@@ -51,11 +51,11 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     {
         $collectionHolder = new PersistentCollectionHolder();
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collection = $collectionHolder->getRawCollection();
 
         self::assertTrue($collection->isEmpty());
@@ -63,10 +63,10 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
 
         $collectionHolder->addElement(new PersistentCollectionContent());
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collection = $collectionHolder->getRawCollection();
 
         self::assertFalse($collection->isEmpty());
@@ -81,13 +81,13 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     {
         $collectionHolder = new PersistentCollectionHolder();
 
-        $this->_em->persist($collectionHolder);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($collectionHolder);
+        $this->em->flush();
+        $this->em->clear();
 
         $criteria = new Criteria();
 
-        $collectionHolder = $this->_em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
+        $collectionHolder = $this->em->find(PersistentCollectionHolder::class, $collectionHolder->getId());
         $collectionHolder->getCollection()->matching($criteria);
 
         self::assertEmpty($criteria->getWhereExpression());

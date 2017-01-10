@@ -12,21 +12,21 @@ class StatementArrayMock extends StatementMock
     /**
      * @var array
      */
-    private $_result;
+    private $result;
 
     public function __construct($result)
     {
-        $this->_result = $result;
+        $this->result = $result;
     }
 
     public function getIterator()
     {
-        return new \ArrayIterator($this->_result);
+        return new \ArrayIterator($this->result);
     }
 
     public function columnCount()
     {
-        $row = reset($this->_result);
+        $row = reset($this->result);
         if ($row) {
             return count($row);
         } else {
@@ -36,22 +36,22 @@ class StatementArrayMock extends StatementMock
 
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
-        return $this->_result;
+        return $this->result;
     }
 
     public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
-        $current = current($this->_result);
-        next($this->_result);
+        $current = current($this->result);
+        next($this->result);
 
         return $current;
     }
 
     public function fetchColumn($columnIndex = 0)
     {
-        $current = current($this->_result);
+        $current = current($this->result);
         if ($current) {
-            next($this->_result);
+            next($this->result);
             return reset($current);
         } else {
             return false;
@@ -60,6 +60,6 @@ class StatementArrayMock extends StatementMock
 
     public function rowCount()
     {
-        return count($this->_result);
+        return count($this->result);
     }
 }

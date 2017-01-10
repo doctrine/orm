@@ -32,12 +32,12 @@ class DDC3223Test extends OrmFunctionalTestCase
         $participant = new Journalist();
         $participant->profileStatus = $profileStatus;
 
-        $this->_em->persist($profileStatus);
-        $this->_em->persist($participant);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($profileStatus);
+        $this->em->persist($participant);
+        $this->em->flush();
+        $this->em->clear();
 
-        $participant = $this->_em->find(Participant::class, $participant->id);
+        $participant = $this->em->find(Participant::class, $participant->id);
 
         $profileStatus = clone $participant->profileStatus;
 

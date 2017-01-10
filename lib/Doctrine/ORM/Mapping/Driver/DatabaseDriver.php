@@ -51,7 +51,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * @var AbstractSchemaManager
      */
-    private $_sm;
+    private $sm;
 
     /**
      * @var array|null
@@ -90,7 +90,7 @@ class DatabaseDriver implements MappingDriver
      */
     public function __construct(AbstractSchemaManager $schemaManager)
     {
-        $this->_sm = $schemaManager;
+        $this->sm = $schemaManager;
     }
 
     /**
@@ -277,14 +277,14 @@ class DatabaseDriver implements MappingDriver
 
         $tables = [];
 
-        foreach ($this->_sm->listTableNames() as $tableName) {
-            $tables[$tableName] = $this->_sm->listTableDetails($tableName);
+        foreach ($this->sm->listTableNames() as $tableName) {
+            $tables[$tableName] = $this->sm->listTableDetails($tableName);
         }
 
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
         foreach ($tables as $tableName => $table) {
-            $foreignKeys = ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+            $foreignKeys = ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
                 ? $table->getForeignKeys()
                 : [];
 
@@ -508,7 +508,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function getTableForeignKeys(Table $table)
     {
-        return ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints())
+        return ($this->sm->getDatabasePlatform()->supportsForeignKeyConstraints())
             ? $table->getForeignKeys()
             : [];
     }

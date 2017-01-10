@@ -26,8 +26,8 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $dql    = 'SELECT PARTIAL l.{_source, _target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';
-        $result = $this->_em->createQuery($dql)->getResult();
+        $dql    = 'SELECT PARTIAL l.{source, target} FROM Doctrine\Tests\Models\Legacy\LegacyUserReference l';
+        $result = $this->em->createQuery($dql)->getResult();
 
         self::assertCount(2, $result);
         self::assertInstanceOf(LegacyUserReference::class, $result[0]);
@@ -57,30 +57,30 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function loadFixture()
     {
         $user1              = new LegacyUser();
-        $user1->_username   = 'FabioBatSilva';
-        $user1->_name       = 'Fabio B. Silva';
-        $user1->_status     = 'active';
+        $user1->username   = 'FabioBatSilva';
+        $user1->name       = 'Fabio B. Silva';
+        $user1->status     = 'active';
 
         $user2              = new LegacyUser();
-        $user2->_username   = 'doctrinebot';
-        $user2->_name       = 'Doctrine Bot';
-        $user2->_status     = 'active';
+        $user2->username   = 'doctrinebot';
+        $user2->name       = 'Doctrine Bot';
+        $user2->status     = 'active';
 
         $user3              = new LegacyUser();
-        $user3->_username   = 'test';
-        $user3->_name       = 'Tester';
-        $user3->_status     = 'active';
+        $user3->username   = 'test';
+        $user3->name       = 'Tester';
+        $user3->status     = 'active';
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->persist($user3);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->persist($user3);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->persist(new LegacyUserReference($user1, $user2, 'foo'));
-        $this->_em->persist(new LegacyUserReference($user1, $user3, 'bar'));
+        $this->em->persist(new LegacyUserReference($user1, $user2, 'foo'));
+        $this->em->persist(new LegacyUserReference($user1, $user3, 'bar'));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }

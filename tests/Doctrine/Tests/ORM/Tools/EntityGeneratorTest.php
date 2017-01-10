@@ -20,30 +20,30 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @var EntityGenerator
      */
-    private $_generator;
-    private $_tmpDir;
-    private $_namespace;
+    private $generator;
+    private $tmpDir;
+    private $namespace;
 
     public function setUp()
     {
-        $this->_namespace = uniqid("doctrine_");
-        $this->_tmpDir = sys_get_temp_dir();
+        $this->namespace = uniqid("doctrine_");
+        $this->tmpDir = sys_get_temp_dir();
 
-        mkdir($this->_tmpDir . \DIRECTORY_SEPARATOR . $this->_namespace);
+        mkdir($this->tmpDir . \DIRECTORY_SEPARATOR . $this->namespace);
 
-        $this->_generator = new EntityGenerator();
+        $this->generator = new EntityGenerator();
 
-        $this->_generator->setAnnotationPrefix("");
-        $this->_generator->setGenerateAnnotations(true);
-        $this->_generator->setGenerateStubMethods(true);
-        $this->_generator->setRegenerateEntityIfExists(false);
-        $this->_generator->setUpdateEntityIfExists(true);
-        $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
+        $this->generator->setAnnotationPrefix("");
+        $this->generator->setGenerateAnnotations(true);
+        $this->generator->setGenerateStubMethods(true);
+        $this->generator->setRegenerateEntityIfExists(false);
+        $this->generator->setUpdateEntityIfExists(true);
+        $this->generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
     }
 
     public function tearDown()
     {
-        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir . '/' . $this->_namespace));
+        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->tmpDir . '/' . $this->namespace));
 
         foreach ($ri AS $file) {
             /* @var $file \SplFileInfo */
@@ -52,7 +52,7 @@ class EntityGeneratorTest extends OrmTestCase
             }
         }
 
-        rmdir($this->_tmpDir . '/' . $this->_namespace);
+        rmdir($this->tmpDir . '/' . $this->namespace);
     }
 
     /**
@@ -62,8 +62,8 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function generateBookEntityFixture(array $embeddedClasses = [])
     {
-        $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorBook');
-        $metadata->customRepositoryClassName = $this->_namespace  . '\EntityGeneratorBookRepository';
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
+        $metadata->customRepositoryClassName = $this->namespace  . '\EntityGeneratorBookRepository';
 
         $tableMetadata = new Mapping\TableMetadata();
 
@@ -172,14 +172,14 @@ class EntityGeneratorTest extends OrmTestCase
             );
         }
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         return $metadata;
     }
 
     private function generateEntityTypeFixture(array $field)
     {
-        $metadata = new ClassMetadata($this->_namespace . '\EntityType');
+        $metadata = new ClassMetadata($this->namespace . '\EntityType');
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('entity_type');
@@ -203,7 +203,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         return $metadata;
     }
@@ -213,7 +213,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     private function generateIsbnEmbeddableFixture(array $embeddedClasses = [])
     {
-        $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorIsbn');
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorIsbn');
         $metadata->isEmbeddedClass = true;
 
         $fieldMetadata = new Mapping\FieldMetadata('prefix');
@@ -261,7 +261,7 @@ class EntityGeneratorTest extends OrmTestCase
             );
         }
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         return $metadata;
     }
@@ -271,7 +271,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     private function generateTestEmbeddableFixture()
     {
-        $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorTestEmbeddable');
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorTestEmbeddable');
 
         $metadata->isEmbeddedClass = true;
 
@@ -303,7 +303,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         return $metadata;
     }
@@ -314,7 +314,7 @@ class EntityGeneratorTest extends OrmTestCase
     private function loadEntityClass(ClassMetadata $metadata)
     {
         $className = basename(str_replace('\\', '/', $metadata->name));
-        $path      = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $path      = $this->tmpDir . '/' . $this->namespace . '/' . $className . '.php';
 
         self::assertFileExists($path);
 
@@ -344,19 +344,19 @@ class EntityGeneratorTest extends OrmTestCase
         $book         = $this->newInstance($metadata);
 
         self::assertTrue(class_exists($metadata->name), "Class does not exist.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'setName'), "EntityGeneratorBook::setName() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getName'), "EntityGeneratorBook::getName() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'setStatus'), "EntityGeneratorBook::setStatus() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getStatus'), "EntityGeneratorBook::getStatus() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'setIsbn'), "EntityGeneratorBook::setIsbn() missing.");
-        self::assertTrue(method_exists($this->_namespace . '\EntityGeneratorBook', 'getIsbn'), "EntityGeneratorBook::getIsbn() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', '__construct'), "EntityGeneratorBook::__construct() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getId'), "EntityGeneratorBook::getId() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'setName'), "EntityGeneratorBook::setName() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getName'), "EntityGeneratorBook::getName() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'setStatus'), "EntityGeneratorBook::setStatus() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getStatus'), "EntityGeneratorBook::getStatus() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'setAuthor'), "EntityGeneratorBook::setAuthor() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getAuthor'), "EntityGeneratorBook::getAuthor() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getComments'), "EntityGeneratorBook::getComments() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'addComment'), "EntityGeneratorBook::addComment() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'removeComment'), "EntityGeneratorBook::removeComment() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'setIsbn'), "EntityGeneratorBook::setIsbn() missing.");
+        self::assertTrue(method_exists($this->namespace . '\EntityGeneratorBook', 'getIsbn'), "EntityGeneratorBook::getIsbn() missing.");
 
         $reflClass = new \ReflectionClass($metadata->name);
 
@@ -421,9 +421,9 @@ class EntityGeneratorTest extends OrmTestCase
             ]
         );
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        self::assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/EntityGeneratorBook.php~");
+        self::assertFileExists($this->tmpDir . "/" . $this->namespace . "/EntityGeneratorBook.php~");
 
         $book = $this->newInstance($metadata);
         $reflClass = new \ReflectionClass($metadata->name);
@@ -481,7 +481,7 @@ class EntityGeneratorTest extends OrmTestCase
 
     public function testEntityExtendsStdClass()
     {
-        $this->_generator->setClassToExtend('stdClass');
+        $this->generator->setClassToExtend('stdClass');
         $metadata = $this->generateBookEntityFixture();
 
         $book = $this->newInstance($metadata);
@@ -542,7 +542,7 @@ class EntityGeneratorTest extends OrmTestCase
 
     public function testLoadPrefixedMetadata()
     {
-        $this->_generator->setAnnotationPrefix('ORM\\');
+        $this->generator->setAnnotationPrefix('ORM\\');
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
         $metadata = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
 
@@ -578,12 +578,12 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testMappedSuperclassAnnotationGeneration()
     {
-        $metadata = new ClassMetadata($this->_namespace . '\EntityGeneratorBook');
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
 
         $metadata->isMappedSuperclass = true;
 
-        $this->_generator->setAnnotationPrefix('ORM\\');
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->setAnnotationPrefix('ORM\\');
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
 
@@ -601,15 +601,15 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testParseTokensInEntityFile($php, $classes)
     {
-        $r = new \ReflectionObject($this->_generator);
+        $r = new \ReflectionObject($this->generator);
         $m = $r->getMethod('parseTokensInEntityFile');
         $m->setAccessible(true);
 
         $p = $r->getProperty('staticReflection');
         $p->setAccessible(true);
 
-        $ret = $m->invoke($this->_generator, $php);
-        self::assertEquals($classes, array_keys($p->getValue($this->_generator)));
+        $ret = $m->invoke($this->generator, $php);
+        self::assertEquals($classes, array_keys($p->getValue($this->generator)));
     }
 
     /**
@@ -617,7 +617,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithSequenceGenerator()
     {
-        $metadata = new ClassMetadata($this->_namespace . '\DDC1784Entity');
+        $metadata = new ClassMetadata($this->namespace . '\DDC1784Entity');
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -634,10 +634,10 @@ class EntityGeneratorTest extends OrmTestCase
             ]
         );
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
-                  . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC1784Entity.php';
+        $filename = $this->tmpDir . DIRECTORY_SEPARATOR
+                  . $this->namespace . DIRECTORY_SEPARATOR . 'DDC1784Entity.php';
 
         self::assertFileExists($filename);
 
@@ -657,7 +657,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithMultipleInverseJoinColumns()
     {
-        $metadata = new ClassMetadata($this->_namespace . '\DDC2079Entity');
+        $metadata = new ClassMetadata($this->namespace . '\DDC2079Entity');
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -702,10 +702,10 @@ class EntityGeneratorTest extends OrmTestCase
             ]
         );
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR
-            . $this->_namespace . DIRECTORY_SEPARATOR . 'DDC2079Entity.php';
+        $filename = $this->tmpDir . DIRECTORY_SEPARATOR
+            . $this->namespace . DIRECTORY_SEPARATOR . 'DDC2079Entity.php';
 
         self::assertFileExists($filename);
 
@@ -729,7 +729,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testGetInheritanceTypeString()
     {
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
-        $method     = new \ReflectionMethod($this->_generator, 'getInheritanceTypeString');
+        $method     = new \ReflectionMethod($this->generator, 'getInheritanceTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^InheritanceType::/';
 
@@ -741,7 +741,7 @@ class EntityGeneratorTest extends OrmTestCase
             }
 
             $expected = preg_replace($pattern, '', $name);
-            $actual   = $method->invoke($this->_generator, $value);
+            $actual   = $method->invoke($this->generator, $value);
 
             self::assertEquals($expected, $actual);
         }
@@ -749,7 +749,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided InheritanceType: INVALID');
 
-        $method->invoke($this->_generator, 'INVALID');
+        $method->invoke($this->generator, 'INVALID');
     }
 
     /**
@@ -758,7 +758,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testGetChangeTrackingPolicyString()
     {
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
-        $method     = new \ReflectionMethod($this->_generator, 'getChangeTrackingPolicyString');
+        $method     = new \ReflectionMethod($this->generator, 'getChangeTrackingPolicyString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^ChangeTrackingPolicy::/';
 
@@ -770,7 +770,7 @@ class EntityGeneratorTest extends OrmTestCase
             }
 
             $expected = preg_replace($pattern, '', $name);
-            $actual   = $method->invoke($this->_generator, $value);
+            $actual   = $method->invoke($this->generator, $value);
 
             self::assertEquals($expected, $actual);
         }
@@ -778,7 +778,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided ChangeTrackingPolicy: INVALID');
 
-        $method->invoke($this->_generator, 'INVALID');
+        $method->invoke($this->generator, 'INVALID');
     }
 
     /**
@@ -787,7 +787,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testGetIdGeneratorTypeString()
     {
         $reflection = new \ReflectionClass('\Doctrine\ORM\Mapping\ClassMetadata');
-        $method     = new \ReflectionMethod($this->_generator, 'getIdGeneratorTypeString');
+        $method     = new \ReflectionMethod($this->generator, 'getIdGeneratorTypeString');
         $constants  = $reflection->getConstants();
         $pattern    = '/^GeneratorType::/';
 
@@ -799,7 +799,7 @@ class EntityGeneratorTest extends OrmTestCase
             }
 
             $expected = preg_replace($pattern, '', $name);
-            $actual   = $method->invoke($this->_generator, $value);
+            $actual   = $method->invoke($this->generator, $value);
 
             self::assertEquals($expected, $actual);
         }
@@ -807,7 +807,7 @@ class EntityGeneratorTest extends OrmTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid provided IdGeneratorType: INVALID');
 
-        $method->invoke($this->_generator, 'INVALID');
+        $method->invoke($this->generator, 'INVALID');
     }
 
     /**
@@ -818,7 +818,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testEntityTypeAlias(array $field)
     {
         $metadata   = $this->generateEntityTypeFixture($field);
-        $path       = $this->_tmpDir . '/'. $this->_namespace . '/EntityType.php';
+        $path       = $this->tmpDir . '/'. $this->namespace . '/EntityType.php';
 
         self::assertFileExists($path);
         require_once $path;
@@ -846,18 +846,18 @@ class EntityGeneratorTest extends OrmTestCase
     public function testTraitPropertiesAndMethodsAreNotDuplicated()
     {
         $cmf = new ClassMetadataFactory();
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $cmf->setEntityManager($em);
 
         $user = new DDC2372User();
         $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->_namespace . "\DDC2372User";
+        $metadata->name = $this->namespace . "\DDC2372User";
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        self::assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php");
+        self::assertFileExists($this->tmpDir . "/" . $this->namespace . "/DDC2372User.php");
 
-        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372User.php";
+        require $this->tmpDir . "/" . $this->namespace . "/DDC2372User.php";
 
         $reflClass = new \ReflectionClass($metadata->name);
 
@@ -872,17 +872,17 @@ class EntityGeneratorTest extends OrmTestCase
     public function testTraitPropertiesAndMethodsAreNotDuplicatedInChildClasses()
     {
         $cmf = new ClassMetadataFactory();
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $cmf->setEntityManager($em);
 
         $user = new DDC2372Admin();
         $metadata = $cmf->getMetadataFor(get_class($user));
-        $metadata->name = $this->_namespace . "\DDC2372Admin";
+        $metadata->name = $this->namespace . "\DDC2372Admin";
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        self::assertFileExists($this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php");
-        require $this->_tmpDir . "/" . $this->_namespace . "/DDC2372Admin.php";
+        self::assertFileExists($this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php");
+        require $this->tmpDir . "/" . $this->namespace . "/DDC2372Admin.php";
 
         $reflClass = new \ReflectionClass($metadata->name);
 
@@ -897,12 +897,12 @@ class EntityGeneratorTest extends OrmTestCase
     public function testMethodsAndPropertiesAreNotDuplicatedInChildClasses()
     {
         $cmf    = new ClassMetadataFactory();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $cmf->setEntityManager($em);
 
-        $ns     = $this->_namespace;
-        $nsdir  = $this->_tmpDir . '/' . $ns;
+        $ns     = $this->namespace;
+        $nsdir  = $this->tmpDir . '/' . $ns;
 
         $content = str_replace(
             'namespace Doctrine\Tests\Models\DDC1590',
@@ -916,7 +916,7 @@ class EntityGeneratorTest extends OrmTestCase
 
 
         $metadata = $cmf->getMetadataFor($ns . '\DDC1590User');
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         // class DDC1590User extends DDC1590Entity { ... }
         $source = file_get_contents($fname);
@@ -1010,7 +1010,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGeneratedImmutableEmbeddablesClass()
     {
-        $this->_generator->setEmbeddablesImmutable(true);
+        $this->generator->setEmbeddablesImmutable(true);
         $embeddedMetadata = $this->generateTestEmbeddableFixture();
         $metadata = $this->generateIsbnEmbeddableFixture(['test' => $embeddedMetadata]);
 
@@ -1085,13 +1085,13 @@ class EntityGeneratorTest extends OrmTestCase
         $this->loadEntityClass($metadata);
 
         $className = basename(str_replace('\\', '/', $metadata->name));
-        $path = $this->_tmpDir . '/' . $this->_namespace . '/' . $className . '.php';
+        $path = $this->tmpDir . '/' . $this->namespace . '/' . $className . '.php';
         $classTest = file_get_contents($path);
 
-        $this->_generator->setRegenerateEntityIfExists(true);
-        $this->_generator->setBackupExisting(false);
+        $this->generator->setRegenerateEntityIfExists(true);
+        $this->generator->setBackupExisting(false);
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
         $classNew = file_get_contents($path);
 
         self::assertSame($classTest,$classNew);

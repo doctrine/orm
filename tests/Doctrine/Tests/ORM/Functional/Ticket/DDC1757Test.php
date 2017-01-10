@@ -8,7 +8,7 @@ class DDC1757Test extends OrmFunctionalTestCase
 {
     public function testFailingCase()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         /* @var $qb \Doctrine\ORM\QueryBuilder */
 
         $qb->select('_a')

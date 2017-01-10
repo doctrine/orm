@@ -20,12 +20,12 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $test = $this;
         $user = new CmsUser();
-        $uow  = $this->_em->getUnitOfWork();
+        $uow  = $this->em->getUnitOfWork();
 
         $user->name     = 'Marco';
         $user->username = 'ocramius';
 
-        $this->_em->persist($user);
+        $this->em->persist($user);
         $uow->scheduleExtraUpdate($user, ['name' => 'changed name']);
 
         $listener = $this->getMockBuilder(\stdClass::class)
@@ -39,8 +39,8 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $test->assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
             }));
 
-        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::postFlush, $listener);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }

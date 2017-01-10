@@ -12,9 +12,9 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1436Page::class),
+                $this->em->getClassMetadata(DDC1436Page::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -28,16 +28,16 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
         for ($i = 0; $i < 3; $i++) {
             $page = new DDC1436Page();
             $page->setParent($parent);
-            $this->_em->persist($page);
+            $this->em->persist($page);
             $parent = $page;
         }
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $id = $parent->getId();
 
         // step 1
-        $page = $this->_em
+        $page = $this->em
                 ->createQuery('SELECT p, parent FROM ' . __NAMESPACE__ . '\DDC1436Page p LEFT JOIN p.parent parent WHERE p.id = :id')
                 ->setParameter('id', $id)
                 ->getOneOrNullResult();
@@ -45,7 +45,7 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC1436Page::class, $page);
 
         // step 2
-        $page = $this->_em->find(DDC1436Page::class, $id);
+        $page = $this->em->find(DDC1436Page::class, $id);
         self::assertInstanceOf(DDC1436Page::class, $page);
         self::assertInstanceOf(DDC1436Page::class, $page->getParent());
         self::assertInstanceOf(DDC1436Page::class, $page->getParent()->getParent());

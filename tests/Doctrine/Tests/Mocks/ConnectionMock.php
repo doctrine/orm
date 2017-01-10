@@ -13,37 +13,37 @@ class ConnectionMock extends Connection
     /**
      * @var mixed
      */
-    private $_fetchOneResult;
+    private $fetchOneResult;
 
     /**
      * @var \Exception|null
      */
-    private $_fetchOneException;
+    private $fetchOneException;
 
     /**
      * @var Statement|null
      */
-    private $_queryResult;
+    private $queryResult;
 
     /**
      * @var DatabasePlatformMock
      */
-    private $_platformMock;
+    private $platformMock;
 
     /**
      * @var int
      */
-    private $_lastInsertId = 0;
+    private $lastInsertId = 0;
 
     /**
      * @var array
      */
-    private $_inserts = [];
+    private $inserts = [];
 
     /**
      * @var array
      */
-    private $_executeUpdates = [];
+    private $executeUpdates = [];
 
     /**
      * @param array                              $params
@@ -53,12 +53,12 @@ class ConnectionMock extends Connection
      */
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
-        $this->_platformMock = new DatabasePlatformMock();
+        $this->platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver, $config, $eventManager);
 
         // Override possible assignment of platform to database platform mock
-        $this->_platform = $this->_platformMock;
+        $this->platform = $this->platformMock;
     }
 
     /**
@@ -66,7 +66,7 @@ class ConnectionMock extends Connection
      */
     public function getDatabasePlatform()
     {
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
@@ -74,7 +74,7 @@ class ConnectionMock extends Connection
      */
     public function insert($tableName, array $data, array $types = [])
     {
-        $this->_inserts[$tableName][] = $data;
+        $this->inserts[$tableName][] = $data;
     }
 
     /**
@@ -82,7 +82,7 @@ class ConnectionMock extends Connection
      */
     public function executeUpdate($query, array $params = [], array $types = [])
     {
-        $this->_executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
+        $this->executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
     }
 
     /**
@@ -90,7 +90,7 @@ class ConnectionMock extends Connection
      */
     public function lastInsertId($seqName = null)
     {
-        return $this->_lastInsertId;
+        return $this->lastInsertId;
     }
 
     /**
@@ -98,11 +98,11 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if (null !== $this->_fetchOneException) {
-            throw $this->_fetchOneException;
+        if (null !== $this->fetchOneException) {
+            throw $this->fetchOneException;
         }
 
-        return $this->_fetchOneResult;
+        return $this->fetchOneResult;
     }
 
     /**
@@ -110,7 +110,7 @@ class ConnectionMock extends Connection
      */
     public function query() : Statement
     {
-        return $this->_queryResult;
+        return $this->queryResult;
     }
 
     /**
@@ -133,7 +133,7 @@ class ConnectionMock extends Connection
      */
     public function setFetchOneResult($fetchOneResult)
     {
-        $this->_fetchOneResult = $fetchOneResult;
+        $this->fetchOneResult = $fetchOneResult;
     }
 
     /**
@@ -143,7 +143,7 @@ class ConnectionMock extends Connection
      */
     public function setFetchOneException(\Exception $exception = null)
     {
-        $this->_fetchOneException = $exception;
+        $this->fetchOneException = $exception;
     }
 
     /**
@@ -153,7 +153,7 @@ class ConnectionMock extends Connection
      */
     public function setDatabasePlatform($platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
     /**
@@ -163,7 +163,7 @@ class ConnectionMock extends Connection
      */
     public function setLastInsertId($id)
     {
-        $this->_lastInsertId = $id;
+        $this->lastInsertId = $id;
     }
 
     /**
@@ -171,7 +171,7 @@ class ConnectionMock extends Connection
      */
     public function setQueryResult(Statement $result)
     {
-        $this->_queryResult = $result;
+        $this->queryResult = $result;
     }
 
     /**
@@ -179,7 +179,7 @@ class ConnectionMock extends Connection
      */
     public function getInserts()
     {
-        return $this->_inserts;
+        return $this->inserts;
     }
 
     /**
@@ -187,7 +187,7 @@ class ConnectionMock extends Connection
      */
     public function getExecuteUpdates()
     {
-        return $this->_executeUpdates;
+        return $this->executeUpdates;
     }
 
     /**
@@ -195,7 +195,7 @@ class ConnectionMock extends Connection
      */
     public function reset()
     {
-        $this->_inserts = [];
-        $this->_lastInsertId = 0;
+        $this->inserts = [];
+        $this->lastInsertId = 0;
     }
 }

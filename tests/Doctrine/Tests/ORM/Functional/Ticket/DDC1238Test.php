@@ -11,9 +11,9 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1238User::class),
+                $this->em->getClassMetadata(DDC1238User::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -26,15 +26,15 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new DDC1238User;
         $user->setName("test");
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $userId = $user->getId();
-        $this->_em->clear();
+        $this->em->clear();
 
-        $user = $this->_em->getReference(DDC1238User::class, $userId);
-        $this->_em->clear();
+        $user = $this->em->getReference(DDC1238User::class, $userId);
+        $this->em->clear();
 
         $userId2 = $user->getId();
         self::assertEquals($userId, $userId2, "This proxy can still be initialized.");
@@ -45,19 +45,19 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new DDC1238User;
         $user->setName("test");
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();
         $userId = $user->getId();
-        $this->_em->clear();
+        $this->em->clear();
 
-        $user = $this->_em->getReference(DDC1238User::class, $userId);
-        $this->_em->clear();
+        $user = $this->em->getReference(DDC1238User::class, $userId);
+        $this->em->clear();
 
-        $user2 = $this->_em->getReference(DDC1238User::class, $userId);
+        $user2 = $this->em->getReference(DDC1238User::class, $userId);
 
         // force proxy load, getId() doesn't work anymore
         $user->getName();

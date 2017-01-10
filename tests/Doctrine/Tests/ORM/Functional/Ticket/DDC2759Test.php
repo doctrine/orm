@@ -15,12 +15,12 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2759Qualification::class),
-                $this->_em->getClassMetadata(DDC2759Category::class),
-                $this->_em->getClassMetadata(DDC2759QualificationMetadata::class),
-                $this->_em->getClassMetadata(DDC2759MetadataCategory::class),
+                $this->em->getClassMetadata(DDC2759Qualification::class),
+                $this->em->getClassMetadata(DDC2759Category::class),
+                $this->em->getClassMetadata(DDC2759QualificationMetadata::class),
+                $this->em->getClassMetadata(DDC2759MetadataCategory::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -36,22 +36,22 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $metadataCategory1 = new DDC2759MetadataCategory($qualificationMetadata, $category1);
         $metadataCategory2 = new DDC2759MetadataCategory($qualificationMetadata, $category2);
 
-        $this->_em->persist($qualification);
-        $this->_em->persist($qualificationMetadata);
+        $this->em->persist($qualification);
+        $this->em->persist($qualificationMetadata);
 
-        $this->_em->persist($category1);
-        $this->_em->persist($category2);
+        $this->em->persist($category1);
+        $this->em->persist($category2);
 
-        $this->_em->persist($metadataCategory1);
-        $this->_em->persist($metadataCategory2);
+        $this->em->persist($metadataCategory1);
+        $this->em->persist($metadataCategory2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testCorrectNumberOfAssociationsIsReturned()
     {
-        $repository = $this->_em->getRepository(DDC2759Qualification::class);
+        $repository = $this->em->getRepository(DDC2759Qualification::class);
 
         $builder = $repository->createQueryBuilder('q')
             ->select('q, qm, qmc')

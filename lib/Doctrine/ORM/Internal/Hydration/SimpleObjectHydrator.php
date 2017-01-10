@@ -36,15 +36,15 @@ class SimpleObjectHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        if (count($this->_rsm->aliasMap) !== 1) {
+        if (count($this->rsm->aliasMap) !== 1) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
         }
 
-        if ($this->_rsm->scalarMappings) {
+        if ($this->rsm->scalarMappings) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
 
-        $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
+        $this->class = $this->getClassMetadata(reset($this->rsm->aliasMap));
     }
 
     /**
@@ -54,8 +54,8 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         parent::cleanup();
 
-        $this->_uow->triggerEagerLoads();
-        $this->_uow->hydrationComplete();
+        $this->uow->triggerEagerLoads();
+        $this->uow->hydrationComplete();
     }
 
     /**
@@ -65,11 +65,11 @@ class SimpleObjectHydrator extends AbstractHydrator
     {
         $result = [];
 
-        while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $this->stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($row, $result);
         }
 
-        $this->_em->getUnitOfWork()->triggerEagerLoads();
+        $this->em->getUnitOfWork()->triggerEagerLoads();
 
         return $result;
     }
@@ -84,19 +84,19 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== InheritanceType::NONE) {
-            $discrColumnName = $this->_platform->getSQLResultCasing($this->class->discriminatorColumn->getColumnName());
+            $discrColumnName = $this->platform->getSQLResultCasing($this->class->discriminatorColumn->getColumnName());
 
             // Find mapped discriminator column from the result set.
-            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->_rsm->metaMappings)) {
+            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->rsm->metaMappings)) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 
             if ( ! isset($sqlResult[$discrColumnName])) {
-                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->_rsm->aliasMap));
+                throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->rsm->aliasMap));
             }
 
             if ($sqlResult[$discrColumnName] === '') {
-                throw HydrationException::emptyDiscriminatorValue(key($this->_rsm->aliasMap));
+                throw HydrationException::emptyDiscriminatorValue(key($this->rsm->aliasMap));
             }
 
             $discrMap = $this->class->discriminatorMap;
@@ -112,7 +112,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         foreach ($sqlResult as $column => $value) {
             // An ObjectHydrator should be used instead of SimpleObjectHydrator
-            if (isset($this->_rsm->relationMap[$column])) {
+            if (isset($this->rsm->relationMap[$column])) {
                 throw new \Exception(sprintf('Unable to retrieve association information for column "%s"', $column));
             }
 
@@ -128,7 +128,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             // Convert field to a valid PHP value
             if (isset($cacheKeyInfo['type'])) {
                 $type  = $cacheKeyInfo['type'];
-                $value = $type->convertToPHPValue($value, $this->_platform);
+                $value = $type->convertToPHPValue($value, $this->platform);
             }
 
             $fieldName = $cacheKeyInfo['fieldName'];
@@ -139,17 +139,17 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
         }
 
-        if (isset($this->_hints[Query::HINT_REFRESH_ENTITY])) {
-            $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
+        if (isset($this->hints[Query::HINT_REFRESH_ENTITY])) {
+            $this->registerManaged($this->class, $this->hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $uow    = $this->em->getUnitOfWork();
+        $entity = $uow->createEntity($entityName, $data, $this->hints);
 
         $result[] = $entity;
 
-        if (isset($this->_hints[Query::HINT_INTERNAL_ITERATION]) && $this->_hints[Query::HINT_INTERNAL_ITERATION]) {
-            $this->_uow->hydrationComplete();
+        if (isset($this->hints[Query::HINT_INTERNAL_ITERATION]) && $this->hints[Query::HINT_INTERNAL_ITERATION]) {
+            $this->uow->hydrationComplete();
         }
     }
 }

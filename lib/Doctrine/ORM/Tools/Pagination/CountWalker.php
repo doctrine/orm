@@ -56,7 +56,7 @@ class CountWalker extends TreeWalkerAdapter
             throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
         }
 
-        $queryComponents = $this->_getQueryComponents();
+        $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
 
@@ -80,7 +80,7 @@ class CountWalker extends TreeWalkerAdapter
         );
         $pathExpression->type = $pathType;
 
-        $distinct = $this->_getQuery()->getHint(self::HINT_DISTINCT);
+        $distinct = $this->getQuery()->getHint(self::HINT_DISTINCT);
         $AST->selectClause->selectExpressions = [
             new SelectExpression(
                 new AggregateExpression('count', $pathExpression, $distinct), null

@@ -28,10 +28,10 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
-        $result = $this->_em->find(CustomIdObjectTypeParent::class, $parent->id);
+        $result = $this->em->find(CustomIdObjectTypeParent::class, $parent->id);
 
         self::assertSame($parent, $result);
     }
@@ -46,11 +46,11 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
@@ -72,12 +72,12 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         // note: hydration is willingly broken in this example:
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class

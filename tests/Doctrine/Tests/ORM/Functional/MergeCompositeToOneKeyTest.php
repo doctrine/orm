@@ -15,10 +15,10 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(Country::class),
-            $this->_em->getClassMetadata(CompositeToOneKeyState::class),
+            $this->em->getClassMetadata(Country::class),
+            $this->em->getClassMetadata(CompositeToOneKeyState::class),
             ]
         );
     }
@@ -37,7 +37,7 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
         $state->country = $country;
 
         /* @var $merged CompositeToOneKeyState */
-        $merged = $this->_em->merge($state);
+        $merged = $this->em->merge($state);
 
         self::assertInstanceOf(CompositeToOneKeyState::class, $state);
         self::assertNotSame($state, $merged);

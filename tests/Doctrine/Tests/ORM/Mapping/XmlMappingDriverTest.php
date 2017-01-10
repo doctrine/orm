@@ -16,14 +16,14 @@ use Doctrine\Tests\Models\ValueObjects\Person;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
     public function testClassTableInheritanceDiscriminatorMap()
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(CTI::class);
         $class->initializeReflection(new RuntimeReflectionService());
@@ -45,7 +45,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testFailingSecondLevelCacheAssociation()
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(XMLSLC::class);
         $mappingDriver->loadMetadataForClass(XMLSLC::class, $class);
@@ -53,8 +53,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
     public function testIdentifierWithAssociationKey()
     {
-        $driver  = $this->_loadDriver();
-        $em      = $this->_getTestEntityManager();
+        $driver  = $this->loadDriver();
+        $em      = $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -88,9 +88,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithUseColumnPrefix()
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
         self::assertEquals(
@@ -109,9 +109,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     public function testEmbeddedMappingsWithFalseUseColumnPrefix()
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
         self::assertFalse(

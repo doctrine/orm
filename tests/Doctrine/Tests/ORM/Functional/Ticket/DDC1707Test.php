@@ -17,10 +17,10 @@ class DDC1707Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1509File::class),
-                $this->_em->getClassMetadata(DDC1509Picture::class),
+                $this->em->getClassMetadata(DDC1509File::class),
+                $this->em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -30,10 +30,10 @@ class DDC1707Test extends OrmFunctionalTestCase
 
     public function testPostLoadOnChild()
     {
-        $class   = $this->_em->getClassMetadata(DDC1707Child::class);
+        $class   = $this->em->getClassMetadata(DDC1707Child::class);
         $entity  = new DDC1707Child();
-        $event   = new LifecycleEventArgs($entity, $this->_em);
-        $invoker = new ListenersInvoker($this->_em);
+        $event   = new LifecycleEventArgs($entity, $this->em);
+        $invoker = new ListenersInvoker($this->em);
         $invoke  = $invoker->getSubscribedSystems($class, \Doctrine\ORM\Events::postLoad);
 
         $invoker->invoke($class, \Doctrine\ORM\Events::postLoad, $entity, $event, $invoke);

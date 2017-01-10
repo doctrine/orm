@@ -11,9 +11,9 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1250ClientHistory::class),
+                $this->em->getClassMetadata(DDC1250ClientHistory::class),
                 ]
             );
         } catch(\PDOException $e) {
@@ -30,12 +30,12 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c2->declinedBy = $c1;
         $c2->declinedClientsHistory= $c1;
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($c2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $history = $this->_em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
+        $history = $this->em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
                   ->setParameter(1, $c2->id)->getSingleResult();
 
         self::assertInstanceOf(DDC1250ClientHistory::class, $history);

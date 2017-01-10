@@ -35,9 +35,10 @@ class NativeQueryTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
+
         parent::setUp();
 
-        $this->platform = $this->_em->getConnection()->getDatabasePlatform();
+        $this->platform = $this->em->getConnection()->getDatabasePlatform();
     }
 
     public function testBasicNativeQuery()
@@ -48,9 +49,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $user->username = 'romanb';
         $user->status = 'dev';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $rsm = new ResultSetMapping;
 
@@ -58,7 +59,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('id'), 'id');
         $rsm->addFieldResult('u', $this->platform->getSQLResultCasing('name'), 'name');
 
-        $query = $this->_em->createNativeQuery('SELECT id, name FROM cms_users WHERE username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT id, name FROM cms_users WHERE username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -85,9 +86,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setAddress($addr);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $rsm = new ResultSetMapping;
 
@@ -98,7 +99,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
         $rsm->addMetaResult('a', $this->platform->getSQLResultCasing('user_id'), 'user_id', false, DBALType::getType('integer'));
 
-        $query = $this->_em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT a.id, a.country, a.zip, a.city, a.user_id FROM cms_addresses a WHERE a.id = ?', $rsm);
 
         $query->setParameter(1, $addr->id);
 
@@ -127,9 +128,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->addPhonenumber($phone);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $rsm = new ResultSetMapping;
 
@@ -140,7 +141,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $rsm->addFieldResult('p', $this->platform->getSQLResultCasing('phonenumber'), 'phonenumber');
 
-        $query = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -175,9 +176,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setAddress($addr);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $rsm = new ResultSetMapping;
 
@@ -191,7 +192,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('zip'), 'zip');
         $rsm->addFieldResult('a', $this->platform->getSQLResultCasing('city'), 'city');
 
-        $query = $this->_em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -218,7 +219,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $rsm = new ResultSetMapping;
 
-        $q = $this->_em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
+        $q = $this->em->createNativeQuery('SELECT id, name, status, phonenumber FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?', $rsm);
         $q2 = $q->setSQL('foo')
           ->setResultSetMapping($rsm)
           ->expireResultCache(true)
@@ -245,15 +246,15 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->addPhonenumber($phone);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
-        $query = $this->_em->createNativeQuery('SELECT u.*, p.* FROM cms_users u LEFT JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT u.*, p.* FROM cms_users u LEFT JOIN cms_phonenumbers p ON u.id = p.user_id WHERE username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -271,13 +272,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals(424242, $phones[0]->phonenumber);
         self::assertTrue($phones[0]->getUser() === $users[0]);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsPhonenumber::class, 'p');
 
-        $query = $this->_em->createNativeQuery('SELECT p.* FROM cms_phonenumbers p WHERE p.phonenumber = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT p.* FROM cms_phonenumbers p WHERE p.phonenumber = ?', $rsm);
 
         $query->setParameter(1, $phone->phonenumber);
 
@@ -303,16 +304,16 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setAddress($addr);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address', ['id' => 'a_id']);
 
-        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -329,13 +330,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals(10827, $users[0]->getAddress()->getZipCode());
         self::assertEquals('Berlin', $users[0]->getAddress()->getCity());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsAddress::class, 'a');
 
-        $query = $this->_em->createNativeQuery('SELECT a.* FROM cms_addresses a WHERE a.id = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT a.* FROM cms_addresses a WHERE a.id = ?', $rsm);
 
         $query->setParameter(1, $addr->getId());
 
@@ -350,7 +351,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testConcreteClassInSingleTableInheritanceSchemaWithRSMBuilderIsFine()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CompanyFixContract::class, 'c');
 
@@ -365,7 +366,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('ResultSetMapping builder does not currently support your inheritance scheme.');
 
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CompanyContract::class, 'c');
     }
@@ -375,7 +376,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testRSMBuilderThrowsExceptionOnColumnConflict()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'u', 'address');
@@ -386,12 +387,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testUnknownParentAliasThrowsException()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
         $rsm->addJoinedEntityFromClassMetadata(CmsAddress::class, 'a', 'un', 'address', ['id' => 'a_id']);
 
-        $query = $this->_em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
+        $query = $this->em->createNativeQuery('SELECT u.*, a.*, a.id AS a_id FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?', $rsm);
 
         $query->setParameter(1, 'romanb');
 
@@ -421,12 +422,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setAddress($addr);
 
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(CmsAddress::class);
+        $repository = $this->em->getRepository(CmsAddress::class);
         $query      = $repository->createNativeNamedQuery('find-all');
         $result     = $query->getResult();
 
@@ -454,12 +455,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setEmail($email);
 
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
         $result     = $repository
             ->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
             ->setParameter(1, 'FabioBatSilva')
@@ -472,7 +473,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals($user->id, $result[0]->id);
         self::assertEquals('FabioBatSilva', $result[0]->username);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $result = $repository
             ->createNativeNamedQuery('fetchAllColumns')
@@ -505,14 +506,16 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->setAddress($addr);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->getRepository(CmsUser::class)
-                            ->createNativeNamedQuery('fetchJoinedAddress')
-                            ->setParameter(1, 'FabioBatSilva')
-                            ->getResult();
+        $repository = $this->em->getRepository(CmsUser::class);
+
+        $result = $repository
+            ->createNativeNamedQuery('fetchJoinedAddress')
+            ->setParameter(1, 'FabioBatSilva')
+            ->getResult();
 
         self::assertEquals(1, count($result));
         self::assertInstanceOf(CmsUser::class, $result[0]);
@@ -541,12 +544,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $user->addPhonenumber($phone);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
 
         $result = $repository->createNativeNamedQuery('fetchJoinedPhonenumber')
                         ->setParameter(1, 'FabioBatSilva')->getResult();
@@ -591,12 +594,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $user1->addPhonenumber($phone2);
         $user2->addPhonenumber($phone3);
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
         $result     = $repository
             ->createNativeNamedQuery('fetchUserPhonenumberCount')
             ->setParameter(1, ['test','FabioBatSilva'])->getResult();
@@ -631,12 +634,12 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $employee->setSalary(100000);
         $employee->setDepartment('IT');
 
-        $this->_em->persist($person);
-        $this->_em->persist($employee);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($person);
+        $this->em->persist($employee);
+        $this->em->flush();
+        $this->em->clear();
 
-        $repository = $this->_em->getRepository(CompanyPerson::class);
+        $repository = $this->em->getRepository(CompanyPerson::class);
         $result     = $repository
             ->createNativeNamedQuery('fetchAllWithSqlResultSetMapping')
             ->getResult();
@@ -649,7 +652,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         self::assertEquals('Fabio B. Silva', $result[0]->getName());
         self::assertEquals('Fabio Silva', $result[1]->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $result = $repository
             ->createNativeNamedQuery('fetchAllWithResultClass')
@@ -689,13 +692,13 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $user->setAddress($addr);
         $user->addPhonenumber($phone);
 
-        $this->_em->clear();
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
         $query      = $repository->createNativeNamedQuery('fetchMultipleJoinsEntityResults');
         $result     = $query->getResult();
 
@@ -716,8 +719,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testNamedNativeQueryInheritance()
     {
-        $contractMetadata   = $this->_em->getClassMetadata(CompanyContract::class);
-        $flexMetadata       = $this->_em->getClassMetadata(CompanyFlexContract::class);
+        $contractMetadata   = $this->em->getClassMetadata(CompanyContract::class);
+        $flexMetadata       = $this->em->getClassMetadata(CompanyFlexContract::class);
 
         $contractQueries    = $contractMetadata->getNamedNativeQueries();
         $flexQueries        = $flexMetadata->getNamedNativeQueries();
@@ -768,7 +771,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseNoRenameSingleEntity()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
 
@@ -782,7 +785,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseCustomRenames()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(
             CmsUser::class,
@@ -803,7 +806,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseRenameTableAlias()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em);
+        $rsm = new ResultSetMappingBuilder($this->em);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
 
@@ -817,7 +820,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseIncrement()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
 
@@ -831,7 +834,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseToString()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 
         $rsm->addRootEntityFromClassMetadata(CmsUser::class, 'u');
 
@@ -843,7 +846,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
      */
     public function testGenerateSelectClauseWithDiscriminatorColumn()
     {
-        $rsm = new ResultSetMappingBuilder($this->_em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
+        $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
 
         $rsm->addEntityResult(DDC3899User::class, 'u');
         $rsm->addJoinedEntityResult(DDC3899FixContract::class, 'c', 'u', 'contracts');

@@ -13,14 +13,14 @@ class SequenceMock extends SequenceGenerator
     /**
      * @var int
      */
-    private $_sequenceNumber = 0;
+    private $sequenceNumber = 0;
 
     /**
      * {@inheritdoc}
      */
     public function generate(EntityManager $em, $entity)
     {
-        return $this->_sequenceNumber++;
+        return $this->sequenceNumber++;
     }
 
     /* Mock API */
@@ -30,6 +30,6 @@ class SequenceMock extends SequenceGenerator
      */
     public function reset()
     {
-        $this->_sequenceNumber = 0;
+        $this->sequenceNumber = 0;
     }
 }

@@ -23,8 +23,8 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
     public function tearDown()
     {
-        if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces([]);
+        if ($this->em) {
+            $this->em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -36,36 +36,36 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $today->date =
         $today->time =
             new \DateTime('today');
-        $this->_em->persist($today);
+        $this->em->persist($today);
 
         $tomorrow = new DateTimeModel();
         $tomorrow->datetime =
         $tomorrow->date =
         $tomorrow->time =
             new \DateTime('tomorrow');
-        $this->_em->persist($tomorrow);
+        $this->em->persist($tomorrow);
 
         $yesterday = new DateTimeModel();
         $yesterday->datetime =
         $yesterday->date =
         $yesterday->time =
             new \DateTime('yesterday');
-        $this->_em->persist($yesterday);
+        $this->em->persist($yesterday);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         unset($today);
         unset($tomorrow);
         unset($yesterday);
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testLteDateComparison()
     {
         $this->loadFixture();
 
-        $repository = $this->_em->getRepository(DateTimeModel::class);
+        $repository = $this->em->getRepository(DateTimeModel::class);
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
@@ -80,23 +80,23 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $today->date =
             new \DateTime('today');
 
-        $this->_em->persist($today);
+        $this->em->persist($today);
 
         $tomorrow = new DateTimeModel();
         $tomorrow->datetime =
         $tomorrow->date =
         $tomorrow->time =
             new \DateTime('tomorrow');
-        $this->_em->persist($tomorrow);
+        $this->em->persist($tomorrow);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testIsNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository(DateTimeModel::class);
+        $repository = $this->em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->isNull('time')
@@ -108,7 +108,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository(DateTimeModel::class);
+        $repository = $this->em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->eq('time', null)
@@ -120,7 +120,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testNotEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository(DateTimeModel::class);
+        $repository = $this->em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->neq('time', null)
@@ -132,7 +132,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testCanCountWithoutLoadingCollection()
     {
         $this->loadFixture();
-        $repository = $this->_em->getRepository(DateTimeModel::class);
+        $repository = $this->em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria());
 
@@ -158,21 +158,21 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     {
         $user = new User();
         $user->name = 'Marco';
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $tweet = new Tweet();
         $tweet->author = $user;
         $tweet->content = 'Criteria is awesome';
-        $this->_em->persist($tweet);
-        $this->_em->flush();
+        $this->em->persist($tweet);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $criteria = new Criteria();
         $criteria->andWhere($criteria->expr()->contains('content', 'Criteria'));
 
-        $user   = $this->_em->find(User::class, $user->id);
+        $user   = $this->em->find(User::class, $user->id);
         $tweets = $user->tweets->matching($criteria);
 
         self::assertInstanceOf(LazyCriteriaCollection::class, $tweets);

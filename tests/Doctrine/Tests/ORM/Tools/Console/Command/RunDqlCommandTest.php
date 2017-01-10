@@ -43,7 +43,7 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         $this->application->setHelperSet(new HelperSet(
             [
-            'em' => new EntityManagerHelper($this->_em)
+            'em' => new EntityManagerHelper($this->em)
             ]
         ));
 
@@ -59,8 +59,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testWillRunQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
         self::assertSame(
             0,
@@ -77,8 +77,8 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testWillShowQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
         self::assertSame(
             0,
