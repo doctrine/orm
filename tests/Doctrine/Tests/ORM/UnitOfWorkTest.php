@@ -392,10 +392,11 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($entity2);
         self::assertTrue($this->unitOfWork->isInIdentityMap($entity2));
 
-        $this->unitOfWork->clear(Country::class);
-        self::assertTrue($this->unitOfWork->isInIdentityMap($entity1));
+        $this->unitOfWork->clear();
+
+        self::assertFalse($this->unitOfWork->isInIdentityMap($entity1));
         self::assertFalse($this->unitOfWork->isInIdentityMap($entity2));
-        self::assertTrue($this->unitOfWork->isScheduledForInsert($entity1));
+        self::assertFalse($this->unitOfWork->isScheduledForInsert($entity1));
         self::assertFalse($this->unitOfWork->isScheduledForInsert($entity2));
     }
 
