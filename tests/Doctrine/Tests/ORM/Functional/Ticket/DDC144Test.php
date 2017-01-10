@@ -8,12 +8,12 @@ class DDC144Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC144FlowElement::class),
-            $this->_em->getClassMetadata(DDC144Operand::class),
+            $this->em->getClassMetadata(DDC144FlowElement::class),
+            $this->em->getClassMetadata(DDC144Operand::class),
             ]
         );
 
@@ -28,8 +28,8 @@ class DDC144Test extends OrmFunctionalTestCase
         $operand = new DDC144Operand;
         $operand->property = 'flowValue';
         $operand->operandProperty = 'operandValue';
-        $this->_em->persist($operand);
-        $this->_em->flush();
+        $this->em->persist($operand);
+        $this->em->flush();
 
     }
 }

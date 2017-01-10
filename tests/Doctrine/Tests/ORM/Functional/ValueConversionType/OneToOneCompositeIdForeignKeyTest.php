@@ -36,17 +36,17 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
         $inversed->associatedEntity = $owning;
         $owning->associatedEntity = $inversed;
 
-        $this->_em->persist($auxiliary);
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($auxiliary);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public static function tearDownAfterClass()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_onetoone_compositeid_foreignkey');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetoone_compositeid_foreignkey');
@@ -55,7 +55,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         self::assertEquals('nop', $conn->fetchColumn('SELECT id4 FROM vct_auxiliary LIMIT 1'));
 
@@ -72,17 +72,17 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
-        $auxiliary = $this->_em->find(
+        $auxiliary = $this->em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
             'abc'
         );
 
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
             'ghi'
         );
@@ -97,17 +97,17 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
-        $auxiliary = $this->_em->find(
+        $auxiliary = $this->em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
             'abc'
         );
 
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
             'ghi'
         );
@@ -123,12 +123,12 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatInversedEntityIsFetchedFromTheDatabaseUsingAuxiliaryEntityAsId()
     {
-        $auxiliary = $this->_em->find(
+        $auxiliary = $this->em->find(
             Models\ValueConversionType\AuxiliaryEntity::class,
             'abc'
         );
 
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => $auxiliary]
         );
@@ -141,7 +141,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatTheProxyFromOwningToInversedIsLoaded()
     {
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningOneToOneCompositeIdForeignKeyEntity::class,
             'ghi'
         );
@@ -156,7 +156,7 @@ class OneToOneCompositeIdForeignKeyTest extends OrmFunctionalTestCase
      */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToOneCompositeIdForeignKeyEntity::class,
             ['id1' => 'def', 'foreignEntity' => 'abc']
         );

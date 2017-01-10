@@ -15,10 +15,10 @@ class DDC2645Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foo = new DDC2645Foo(1, $bar, 'Foo');
         $foo2 = new DDC2645Foo(1, $bar, 'Bar');
 
-        $this->_em->persist($bar);
-        $this->_em->persist($foo);
+        $this->em->persist($bar);
+        $this->em->persist($foo);
 
-        $foo3 = $this->_em->merge($foo2);
+        $foo3 = $this->em->merge($foo2);
 
         self::assertSame($foo, $foo3);
         self::assertEquals('Bar', $foo->name);

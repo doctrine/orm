@@ -15,7 +15,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * @var array
      */
-    private $_resultSet;
+    private $resultSet;
 
     /**
      * Creates a new mock statement that will serve the provided fake result set to clients.
@@ -24,7 +24,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function __construct(array $resultSet)
     {
-        $this->_resultSet = $resultSet;
+        $this->resultSet = $resultSet;
     }
 
     /**
@@ -38,7 +38,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function fetchAll($fetchStyle = null, $columnIndex = null, array $ctorArgs = null)
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**
@@ -46,7 +46,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = current($this->_resultSet);
+        $row = current($this->resultSet);
         if ( ! is_array($row)) return false;
         $val = array_shift($row);
         return $val !== null ? $val : false;
@@ -57,8 +57,8 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function fetch($fetchStyle = null)
     {
-        $current = current($this->_resultSet);
-        next($this->_resultSet);
+        $current = current($this->resultSet);
+        next($this->resultSet);
         return $current;
     }
 
@@ -124,7 +124,7 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function getIterator()
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**

@@ -36,7 +36,7 @@ class PhpExporter extends AbstractExporter
     /**
      * @var string
      */
-    protected $_extension = '.php';
+    protected $extension = '.php';
 
     /**
      * {@inheritdoc}
@@ -74,14 +74,14 @@ class PhpExporter extends AbstractExporter
             }
 
             $lines[] = '$table->setName("' . $table->getName() . '");';
-            $lines[] = '$table->setOptions(' . $this->_varExport($table->getOptions()) . ');';
+            $lines[] = '$table->setOptions(' . $this->varExport($table->getOptions()) . ');';
 
             foreach ($table->getIndexes() as $index) {
-                $lines[] = '$table->addIndex(' . $this->_varExport($index) . ');';
+                $lines[] = '$table->addIndex(' . $this->varExport($index) . ');';
             }
 
             foreach ($table->getUniqueConstraints() as $constraint) {
-                $lines[] = '$table->addUniqueConstraint(' . $this->_varExport($constraint) . ');';
+                $lines[] = '$table->addUniqueConstraint(' . $this->varExport($constraint) . ');';
             }
 
             $lines[] = null;
@@ -113,15 +113,15 @@ class PhpExporter extends AbstractExporter
                 $lines[] = '$property->setPrecision(' . $discrColumn->getPrecision() . ');';
             }
 
-            $lines[] = '$discrColumn->setOptions(' . $this->_varExport($discrColumn->getOptions()) . ');';
-            $lines[] = '$discrColumn->setNullable(' . $this->_varExport($discrColumn->isNullable()) . ');';
-            $lines[] = '$discrColumn->setUnique(' . $this->_varExport($discrColumn->isUnique()) . ');';
+            $lines[] = '$discrColumn->setOptions(' . $this->varExport($discrColumn->getOptions()) . ');';
+            $lines[] = '$discrColumn->setNullable(' . $this->varExport($discrColumn->isNullable()) . ');';
+            $lines[] = '$discrColumn->setUnique(' . $this->varExport($discrColumn->isUnique()) . ');';
             $lines[] = null;
             $lines[] = '$metadata->setDiscriminatorColumn($discrColumn);';
         }
 
         if ($metadata->discriminatorMap) {
-            $lines[] = '$metadata->setDiscriminatorMap(' . $this->_varExport($metadata->discriminatorMap) . ');';
+            $lines[] = '$metadata->setDiscriminatorMap(' . $this->varExport($metadata->discriminatorMap) . ');';
         }
 
         if ($metadata->changeTrackingPolicy) {
@@ -165,10 +165,10 @@ class PhpExporter extends AbstractExporter
                 $lines[] = '$property->setPrecision(' . $property->getPrecision() . ');';
             }
 
-            $lines[] = '$property->setOptions(' . $this->_varExport($property->getOptions()) . ');';
-            $lines[] = '$property->setPrimaryKey(' . $this->_varExport($property->isPrimaryKey()) . ');';
-            $lines[] = '$property->setNullable(' . $this->_varExport($property->isNullable()) . ');';
-            $lines[] = '$property->setUnique(' . $this->_varExport($property->isUnique()) . ');';
+            $lines[] = '$property->setOptions(' . $this->varExport($property->getOptions()) . ');';
+            $lines[] = '$property->setPrimaryKey(' . $this->varExport($property->isPrimaryKey()) . ');';
+            $lines[] = '$property->setNullable(' . $this->varExport($property->isNullable()) . ');';
+            $lines[] = '$property->setUnique(' . $this->varExport($property->isUnique()) . ');';
             $lines[] = null;
             $lines[] = '$metadata->addProperty($property);';
         }
@@ -205,8 +205,8 @@ class PhpExporter extends AbstractExporter
                     $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
                     $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
                     $lines[] = '    "joinColumns"   => $joinColumns,';
-                    $lines[] = '    "cascade"       => ' . $this->_varExport($cascade) . ',';
-                    $lines[] = '    "orphanRemoval" => ' . $this->_varExport($associationMapping['orphanRemoval']) . ',';
+                    $lines[] = '    "cascade"       => ' . $this->varExport($cascade) . ',';
+                    $lines[] = '    "orphanRemoval" => ' . $this->varExport($associationMapping['orphanRemoval']) . ',';
                     $lines[] = '));';
                     break;
 
@@ -226,14 +226,14 @@ class PhpExporter extends AbstractExporter
                     $lines[] = '    "fetch"         => "' . $associationMapping['fetch'] . '",';
                     $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
                     $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
-                    $lines[] = '    "orderBy"       => ' . $this->_varExport($associationMapping['orderBy']) . ',';
+                    $lines[] = '    "orderBy"       => ' . $this->varExport($associationMapping['orderBy']) . ',';
 
                     if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
                         $lines[] = '    "joinTable"     => $joinTable,';
                     }
 
-                    $lines[] = '    "cascade"       => ' . $this->_varExport($cascade) . ',';
-                    $lines[] = '    "orphanRemoval" => ' . $this->_varExport($associationMapping['orphanRemoval']) . ',';
+                    $lines[] = '    "cascade"       => ' . $this->varExport($cascade) . ',';
+                    $lines[] = '    "orphanRemoval" => ' . $this->varExport($associationMapping['orphanRemoval']) . ',';
                     $lines[] = '));';
                     break;
             }
@@ -253,7 +253,7 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$joinTable->setSchema("' . $joinTable->getSchema() . '");';
         }
 
-        $lines[] = '$joinTable->setOptions(' . $this->_varExport($joinTable->getOptions()) . ');';
+        $lines[] = '$joinTable->setOptions(' . $this->varExport($joinTable->getOptions()) . ');';
 
         $this->exportJoinColumns($joinTable->getJoinColumns(), $lines, 'joinColumns');
 
@@ -285,7 +285,7 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$joinColumn->setAliasedName("' . $joinColumn->getAliasedName() . '");';
             $lines[] = '$joinColumn->setColumnDefinition("' . $joinColumn->getColumnDefinition() . '");';
             $lines[] = '$joinColumn->setOnDelete("' . $joinColumn->getOnDelete() . '");';
-            $lines[] = '$joinColumn->setOptions(' . $this->_varExport($joinColumn->getOptions()) . ');';
+            $lines[] = '$joinColumn->setOptions(' . $this->varExport($joinColumn->getOptions()) . ');';
             $lines[] = '$joinColumn->setNullable("' . $joinColumn->isNullable() . '");';
             $lines[] = '$joinColumn->setUnique("' . $joinColumn->isUnique() . '");';
             $lines[] = '$joinColumn->setPrimaryKey("' . $joinColumn->isPrimaryKey() . '");';
@@ -299,7 +299,7 @@ class PhpExporter extends AbstractExporter
      *
      * @return string
      */
-    protected function _varExport($var)
+    protected function varExport($var)
     {
         $export = var_export($var, true);
         $export = str_replace("\n", PHP_EOL . str_repeat(' ', 8), $export);

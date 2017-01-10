@@ -7,14 +7,14 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC809Variant::class),
-            $this->_em->getClassMetadata(DDC809SpecificationValue::class)
+            $this->em->getClassMetadata(DDC809Variant::class),
+            $this->em->getClassMetadata(DDC809SpecificationValue::class)
             ]
         );
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
         $conn->insert('specification_value_test', ['specification_value_id' => 94589]);
         $conn->insert('specification_value_test', ['specification_value_id' => 94593]);
         $conn->insert('specification_value_test', ['specification_value_id' => 94606]);
@@ -41,7 +41,7 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
                         ->select('Variant, SpecificationValue')
                         ->from(DDC809Variant::class, 'Variant')
                         ->leftJoin('Variant.SpecificationValues', 'SpecificationValue')

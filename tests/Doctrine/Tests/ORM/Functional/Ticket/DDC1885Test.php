@@ -22,11 +22,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(User::class),
-                $this->_em->getClassMetadata(Group::class),
-                $this->_em->getClassMetadata(Address::class),
+                $this->em->getClassMetadata(User::class),
+                $this->em->getClassMetadata(Group::class),
+                $this->em->getClassMetadata(Address::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -40,9 +40,9 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->user     = $user;
 
         // Create
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
     }
 
@@ -57,7 +57,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $g2Id   = $g2->id;
 
         // Retrieve
-        $user = $this->_em->find(User::class, $u1Id);
+        $user = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
@@ -75,32 +75,32 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $g2->name = 'Foo 22';
 
         // Update
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(User::class, $u1Id);
+        $user = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
         self::assertEquals($u1Id, $user->id);
 
         // Delete
-        $this->_em->remove($user);
+        $this->em->remove($user);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertNull($this->_em->find(User::class, $u1Id));
-        self::assertNull($this->_em->find(Group::class, $g1Id));
-        self::assertNull($this->_em->find(Group::class, $g2Id));
+        self::assertNull($this->em->find(User::class, $u1Id));
+        self::assertNull($this->em->find(Group::class, $g1Id));
+        self::assertNull($this->em->find(Group::class, $g2Id));
     }
 
     public function testRemoveItem()
     {
         $user   = $this->user;
         $u1Id   = $user->id;
-        $user   = $this->_em->find(User::class, $u1Id);
+        $user   = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
@@ -113,11 +113,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->getGroups()->remove(0);
 
         // Update
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(User::class, $u1Id);
+        $user = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
@@ -130,7 +130,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user   = $this->user;
         $u1Id   = $user->id;
-        $user   = $this->_em->find(User::class, $u1Id);
+        $user   = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
@@ -143,11 +143,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->getGroups()->clear();
 
         // Update
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(User::class, $u1Id);
+        $user = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);
@@ -160,7 +160,7 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user   = $this->user;
         $u1Id   = $user->id;
-        $user   = $this->_em->find(User::class, $u1Id);
+        $user   = $this->em->find(User::class, $u1Id);
 
         self::assertInstanceOf(User::class, $user);
         self::assertEquals('FabioBatSilva', $user->name);

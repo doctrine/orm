@@ -31,8 +31,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->product->setShipping($this->shipping);
-        $this->_em->persist($this->product);
-        $this->_em->flush();
+        $this->em->persist($this->product);
+        $this->em->flush();
 
         self::assertForeignKeyIs($this->shipping->getId());
     }
@@ -40,19 +40,19 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testRemovesOneToOneAssociation()
     {
         $this->product->setShipping($this->shipping);
-        $this->_em->persist($this->product);
+        $this->em->persist($this->product);
         $this->product->removeShipping();
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertForeignKeyIs(null);
     }
 
     public function _testEagerLoad()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
+        $query = $this->em->createQuery('select p, s from Doctrine\Tests\Models\ECommerce\ECommerceProduct p left join p.shipping s');
         $result = $query->getResult();
         $product = $result[0];
 
@@ -61,11 +61,11 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     }
 
     public function testLazyLoadsObjects() {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceProduct::class);
+        $this->createFixture();
+        $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
         $metadata->associationMappings['shipping']['fetch'] = FetchMode::LAZY;
 
-        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
         $product = $result[0];
 
@@ -74,9 +74,9 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     }
 
     public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
+        $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
 
         $result = $query->getResult();
@@ -85,7 +85,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertNull($product->getShipping());
     }
 
-    protected function _createFixture()
+    protected function createFixture()
     {
         $product = new ECommerceProduct;
         $product->setName('Php manual');
@@ -93,14 +93,14 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $shipping->setDays('1');
         $product->setShipping($shipping);
 
-        $this->_em->persist($product);
+        $this->em->persist($product);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery(
+        $foreignKey = $this->em->getConnection()->executeQuery(
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
             [$this->product->getId()]
         )->fetchColumn();
@@ -115,10 +115,10 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $product = new ECommerceProduct();
         $product->setName('Doctrine 2 Manual');
 
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
-        $product = $this->_em->find(get_class($product), $product->getId());
+        $product = $this->em->find(get_class($product), $product->getId());
 
         self::assertNull($product->getShipping());
     }

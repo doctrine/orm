@@ -8,10 +8,10 @@ class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation()
     {
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC192User::class),
-            $this->_em->getClassMetadata(DDC192Phonenumber::class)
+            $this->em->getClassMetadata(DDC192User::class),
+            $this->em->getClassMetadata(DDC192Phonenumber::class)
             ]
         );
     }

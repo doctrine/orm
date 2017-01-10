@@ -11,9 +11,9 @@ class DBAL483Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConnection();
+        $this->em->getConnection();
 
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
+        $this->schemaTool = new Tools\SchemaTool($this->em);
     }
 
     /**
@@ -21,7 +21,7 @@ class DBAL483Test extends OrmFunctionalTestCase
      */
     public function testDefaultValueIsComparedCorrectly()
     {
-        $class = $this->_em->getClassMetadata(DBAL483Default::class);
+        $class = $this->em->getClassMetadata(DBAL483Default::class);
 
         $this->schemaTool->createSchema([$class]);
 

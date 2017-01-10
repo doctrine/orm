@@ -10,10 +10,10 @@ class DDC960Test extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC960Root::class),
-                $this->_em->getClassMetadata(DDC960Child::class)
+                $this->em->getClassMetadata(DDC960Root::class),
+                $this->em->getClassMetadata(DDC960Child::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -27,12 +27,12 @@ class DDC960Test extends OrmFunctionalTestCase
     public function testUpdateRootVersion()
     {
         $child = new DDC960Child('Test');
-        $this->_em->persist($child);
-        $this->_em->flush();
+        $this->em->persist($child);
+        $this->em->flush();
 
         $child->setName("Test2");
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertEquals(2, $child->getVersion());
     }

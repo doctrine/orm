@@ -21,10 +21,10 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testInsertWithCompositeKey()
     {
         $childEntity = new JoinedChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
         self::assertEquals($childEntity, $entity);
@@ -36,17 +36,17 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testUpdateWithCompositeKey()
     {
         $childEntity = new JoinedChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
         $entity->extension = 'ext-new';
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $persistedEntity = $this->findEntity();
         self::assertEquals($entity, $persistedEntity);
@@ -57,7 +57,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
      */
     private function findEntity()
     {
-        return $this->_em->find(
+        return $this->em->find(
             JoinedRootClass::class,
             ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
         );

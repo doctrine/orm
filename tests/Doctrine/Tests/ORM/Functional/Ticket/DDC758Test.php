@@ -22,7 +22,7 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private function setCascadeMergeFor($class)
     {
-        $metadata = $this->_em->getMetadataFactory()->getMetaDataFor($class);
+        $metadata = $this->em->getMetadataFactory()->getMetaDataFor($class);
 
         foreach ($metadata->associationMappings as $key => &$associationMapping) {
             $associationMapping['cascade'] = ['merge'];
@@ -51,16 +51,16 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group2 = new CmsGroup();
         $group2->name = "Group 2";
 
-        $this->_em->persist($cmsUser);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->flush();
+        $this->em->persist($cmsUser);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
 
         $cmsUserId = $cmsUser->id;
         $group1Id = $group1->id;
         $group2Id = $group2->id;
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // Now create detached versions of the entities with some new associations.
         $cmsUser = new CmsUser();
@@ -84,13 +84,13 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cmsUser->addGroup($group2);
 
         // Cascade merge of cmsUser followed by a flush should add in the bidirectional new many-to-many associations between the user and the groups
-        $this->_em->merge($cmsUser);
-        $this->_em->flush();
+        $this->em->merge($cmsUser);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $cmsUsers = $this->_em->getRepository(CmsUser::class)->findAll();
-        $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
+        $cmsUsers = $this->em->getRepository(CmsUser::class)->findAll();
+        $cmsGroups = $this->em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
         self::assertEquals(1, sizeof($cmsUsers));
@@ -130,16 +130,16 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cmsUser->addGroup($group1);
         $cmsUser->addGroup($group2);
 
-        $this->_em->persist($cmsUser);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->flush();
+        $this->em->persist($cmsUser);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
 
         $cmsUserId = $cmsUser->id;
         $group1Id = $group1->id;
         $group2Id = $group2->id;
 
-        $this->_em->clear();
+        $this->em->clear();
 
         // Now create detached versions of the entities with NO associations.
         $cmsUser = new CmsUser();
@@ -160,13 +160,13 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $group2->users = new ArrayCollection();
 
         // Cascade merge of cmsUser followed by a flush should result in the association array collection being empty
-        $this->_em->merge($cmsUser);
-        $this->_em->flush();
+        $this->em->merge($cmsUser);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $cmsUsers = $this->_em->getRepository(CmsUser::class)->findAll();
-        $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
+        $cmsUsers = $this->em->getRepository(CmsUser::class)->findAll();
+        $cmsGroups = $this->em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
         self::assertEquals(1, sizeof($cmsUsers));

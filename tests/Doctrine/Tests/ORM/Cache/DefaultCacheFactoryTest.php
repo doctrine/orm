@@ -52,7 +52,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->em               = $this->_getTestEntityManager();
+        $this->em               = $this->getTestEntityManager();
         $this->regionsConfig    = new RegionsConfiguration;
         $arguments              = [$this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl()];
         $this->factory          = $this->getMockBuilder(DefaultCacheFactory::class)

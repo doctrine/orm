@@ -67,7 +67,7 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this->_em);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\SingleScalarHydrator($this->em);
 
         if ($name == 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);

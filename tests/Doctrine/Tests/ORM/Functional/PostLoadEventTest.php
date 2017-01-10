@@ -44,11 +44,11 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $this->_em->find(CmsUser::class, $this->userId);
+        $this->em->find(CmsUser::class, $this->userId);
     }
 
     public function testLoadedEntityUsingQueryShouldTriggerEvent()
@@ -61,11 +61,11 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
@@ -81,11 +81,11 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u, e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u, e FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.email e WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
@@ -101,11 +101,11 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT u, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
@@ -113,7 +113,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
     public function testLoadedProxyEntityShouldTriggerEvent()
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         // Should not be invoked during getReference call
         $mockListener = $this->createMock(PostLoadListener::class);
@@ -125,7 +125,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $userProxy = $this->_em->getReference(CmsUser::class, $this->userId);
+        $userProxy = $this->em->getReference(CmsUser::class, $this->userId);
 
         // Now deactivate original listener and attach new one
         $eventManager->removeEventListener([Events::postLoad], $mockListener);
@@ -144,7 +144,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
     public function testLoadedProxyPartialShouldTriggerEvent()
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         // Should not be invoked during getReference call
         $mockListener = $this->createMock(PostLoadListener::class);
@@ -157,7 +157,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
-        $query = $this->_em->createQuery('SELECT PARTIAL u.{id, name}, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
+        $query = $this->em->createQuery('SELECT PARTIAL u.{id, name}, p FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.phonenumbers p WHERE u.id = :id');
 
         $query->setParameter('id', $this->userId);
         $query->getResult();
@@ -165,7 +165,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
     public function testLoadedProxyAssociationToOneShouldTriggerEvent()
     {
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -175,7 +175,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -186,7 +186,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
 
     public function testLoadedProxyAssociationToManyShouldTriggerEvent()
     {
-        $user = $this->_em->find(CmsUser::class, $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $mockListener = $this->createMock(PostLoadListener::class);
 
@@ -196,7 +196,7 @@ class PostLoadEventTest extends OrmFunctionalTestCase
             ->method('postLoad')
             ->will($this->returnValue(true));
 
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
 
         $eventManager->addEventListener([Events::postLoad], $mockListener);
 
@@ -211,9 +211,9 @@ class PostLoadEventTest extends OrmFunctionalTestCase
     public function testAssociationsArePopulatedWhenEventIsFired()
     {
         $checkerListener = new PostLoadListenerCheckAssociationsArePopulated();
-        $this->_em->getEventManager()->addEventListener([Events::postLoad], $checkerListener);
+        $this->em->getEventManager()->addEventListener([Events::postLoad], $checkerListener);
 
-        $qb = $this->_em->getRepository(CmsUser::class)->createQueryBuilder('u');
+        $qb = $this->em->getRepository(CmsUser::class)->createQueryBuilder('u');
         $qb->leftJoin('u.email', 'email');
         $qb->addSelect('email');
         $qb->getQuery()->getSingleResult();
@@ -227,11 +227,11 @@ class PostLoadEventTest extends OrmFunctionalTestCase
      */
     public function testEventRaisedCorrectTimesWhenOtherEntityLoadedInEventHandler()
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
         $listener = new PostLoadListenerLoadEntityInEventHandler();
         $eventManager->addEventListener([Events::postLoad], $listener);
 
-        $this->_em->find(CmsUser::class, $this->userId);
+        $this->em->find(CmsUser::class, $this->userId);
         self::assertSame(1, $listener->countHandledEvents(CmsUser::class), CmsUser::class . ' should be handled once!');
         self::assertSame(1, $listener->countHandledEvents(CmsEmail::class), CmsEmail::class . ' should be handled once!');
     }
@@ -264,12 +264,12 @@ class PostLoadEventTest extends OrmFunctionalTestCase
         $user->addPhonenumber($ph1);
         $user->addPhonenumber($ph2);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $this->userId = $user->getId();
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 }
 

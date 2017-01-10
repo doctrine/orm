@@ -35,24 +35,24 @@ class SequenceGenerator implements Generator, Serializable
      *
      * @var int
      */
-    private $_allocationSize;
+    private $allocationSize;
 
     /**
      * The name of the sequence.
      *
      * @var string
      */
-    private $_sequenceName;
+    private $sequenceName;
 
     /**
      * @var int
      */
-    private $_nextValue = 0;
+    private $nextValue = 0;
 
     /**
      * @var int|null
      */
-    private $_maxValue = null;
+    private $maxValue = null;
 
     /**
      * Initializes a new sequence generator.
@@ -62,8 +62,8 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function __construct($sequenceName, $allocationSize)
     {
-        $this->_sequenceName = $sequenceName;
-        $this->_allocationSize = $allocationSize;
+        $this->sequenceName = $sequenceName;
+        $this->allocationSize = $allocationSize;
     }
 
     /**
@@ -71,16 +71,16 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function generate(EntityManager $em, $entity)
     {
-        if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
+        if ($this->maxValue === null || $this->nextValue == $this->maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
-            $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->_sequenceName);
+            $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->sequenceName);
 
-            $this->_nextValue = (int) $conn->fetchColumn($sql);
-            $this->_maxValue  = $this->_nextValue + $this->_allocationSize;
+            $this->nextValue = (int) $conn->fetchColumn($sql);
+            $this->maxValue  = $this->nextValue + $this->allocationSize;
         }
 
-        return $this->_nextValue++;
+        return $this->nextValue++;
     }
 
     /**
@@ -90,7 +90,7 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function getCurrentMaxValue()
     {
-        return $this->_maxValue;
+        return $this->maxValue;
     }
 
     /**
@@ -100,7 +100,7 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function getNextValue()
     {
-        return $this->_nextValue;
+        return $this->nextValue;
     }
 
     /**
@@ -110,8 +110,8 @@ class SequenceGenerator implements Generator, Serializable
     {
         return serialize(
             [
-            'allocationSize' => $this->_allocationSize,
-            'sequenceName'   => $this->_sequenceName
+            'allocationSize' => $this->allocationSize,
+            'sequenceName'   => $this->sequenceName
             ]
         );
     }
@@ -125,8 +125,8 @@ class SequenceGenerator implements Generator, Serializable
     {
         $array = unserialize($serialized);
 
-        $this->_sequenceName = $array['sequenceName'];
-        $this->_allocationSize = $array['allocationSize'];
+        $this->sequenceName = $array['sequenceName'];
+        $this->allocationSize = $array['allocationSize'];
     }
 
     /**

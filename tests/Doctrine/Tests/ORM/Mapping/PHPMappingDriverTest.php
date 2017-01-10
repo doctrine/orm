@@ -9,7 +9,7 @@ use Doctrine\Tests\ORM\Mapping;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         $path = __DIR__ . DIRECTORY_SEPARATOR . 'php';
 
@@ -41,7 +41,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testFailingSecondLevelCacheAssociation()
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(Mapping\PHPSLC::class);
         $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class);

@@ -29,14 +29,14 @@ class DDC849Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->user->addGroup($this->group1);
         $this->user->addGroup($this->group2);
 
-        $this->_em->persist($this->user);
-        $this->_em->persist($this->group1);
-        $this->_em->persist($this->group2);
+        $this->em->persist($this->user);
+        $this->em->persist($this->group1);
+        $this->em->persist($this->group2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->user = $this->em->find(CmsUser::class, $this->user->getId());
     }
 
     public function testRemoveContains()

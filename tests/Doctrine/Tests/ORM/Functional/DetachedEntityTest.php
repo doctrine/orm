@@ -28,28 +28,28 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $user->name = 'Roman';
         $user->username = 'romanb';
         $user->status = 'dev';
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         // $user is now detached
 
-        self::assertFalse($this->_em->contains($user));
+        self::assertFalse($this->em->contains($user));
 
         $user->name = 'Roman B.';
 
-        //self::assertEquals(UnitOfWork::STATE_DETACHED, $this->_em->getUnitOfWork()->getEntityState($user));
+        //self::assertEquals(UnitOfWork::STATE_DETACHED, $this->em->getUnitOfWork()->getEntityState($user));
 
-        $user2 = $this->_em->merge($user);
+        $user2 = $this->em->merge($user);
 
         self::assertFalse($user === $user2);
-        self::assertTrue($this->_em->contains($user2));
+        self::assertTrue($this->em->contains($user2));
         self::assertEquals('Roman B.', $user2->name);
     }
 
     public function testSerializeUnserializeModifyMerge()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -59,17 +59,17 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $ph1->phonenumber = "1234";
         $user->addPhonenumber($ph1);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        self::assertTrue($this->_em->contains($user));
+        self::assertTrue($this->em->contains($user));
         self::assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        self::assertFalse($this->_em->contains($user));
+        self::assertFalse($this->em->contains($user));
 
         unset($user);
 
@@ -85,28 +85,28 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $oldPhonenumbers = $user->getPhonenumbers();
 
         self::assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
-        self::assertFalse($this->_em->contains($user));
+        self::assertFalse($this->em->contains($user));
 
-        $this->_em->persist($ph2);
+        $this->em->persist($ph2);
 
         // Merge back in
-        $user = $this->_em->merge($user); // merge cascaded to phonenumbers
+        $user = $this->em->merge($user); // merge cascaded to phonenumbers
         self::assertInstanceOf(CmsUser::class, $user->phonenumbers[0]->user);
         self::assertInstanceOf(CmsUser::class, $user->phonenumbers[1]->user);
-        $im = $this->_em->getUnitOfWork()->getIdentityMap();
-        $this->_em->flush();
+        $im = $this->em->getUnitOfWork()->getIdentityMap();
+        $this->em->flush();
 
-        self::assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
+        self::assertTrue($this->em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
         $phonenumbers = $user->getPhonenumbers();
         self::assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
         self::assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
 
         self::assertInstanceOf(CmsPhonenumber::class, $phonenumbers[1]);
-        self::assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
+        self::assertTrue($this->em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
 
         self::assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
-        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
-        self::assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
+        self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
+        self::assertTrue($this->em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
     }
 
     /**
@@ -116,12 +116,12 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     {
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
-        $this->_em->persist($ph);
-        $this->_em->flush();
-        $this->_em->clear();
-        $this->_em->persist($ph);
+        $this->em->persist($ph);
+        $this->em->flush();
+        $this->em->clear();
+        $this->em->persist($ph);
         try {
-            $this->_em->flush();
+            $this->em->flush();
             $this->fail();
         } catch (\Exception $expected) {}
     }
@@ -139,20 +139,20 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $address->street = 'Sesamestreet';
         $address->zip = 12345;
         $address->setUser($user);
-        $this->_em->persist($address);
-        $this->_em->persist($user);
+        $this->em->persist($address);
+        $this->em->persist($user);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $address2 = $this->_em->find(get_class($address), $address->id);
+        $address2 = $this->em->find(get_class($address), $address->id);
         self::assertInstanceOf(Proxy::class, $address2->user);
         self::assertFalse($address2->user->__isInitialized__);
         $detachedAddress2 = unserialize(serialize($address2));
         self::assertInstanceOf(Proxy::class, $detachedAddress2->user);
         self::assertFalse($detachedAddress2->user->__isInitialized__);
 
-        $managedAddress2 = $this->_em->merge($detachedAddress2);
+        $managedAddress2 = $this->em->merge($detachedAddress2);
         self::assertInstanceOf(Proxy::class, $managedAddress2->user);
         self::assertFalse($managedAddress2->user === $detachedAddress2->user);
         self::assertFalse($managedAddress2->user->__isInitialized__);
@@ -168,13 +168,13 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $user->username = 'gblanco';
         $user->status = 'developer';
 
-        $this->_em->persist($user);
+        $this->em->persist($user);
 
-        $this->_em->flush();
-        $this->_em->detach($user);
+        $this->em->flush();
+        $this->em->detach($user);
 
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setParameter(1, $user);
 
         $newUser = $query->getSingleResult();
@@ -193,13 +193,13 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $user->username = 'gblanco';
         $user->status = 'developer';
 
-        $this->_em->persist($user);
-        $this->_em->detach($user);
+        $this->em->persist($user);
+        $this->em->detach($user);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        self::assertFalse($this->_em->contains($user));
-        self::assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
+        self::assertFalse($this->em->contains($user));
+        self::assertFalse($this->em->getUnitOfWork()->isInIdentityMap($user));
     }
 
     /**
@@ -211,18 +211,18 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $article->topic = "test";
         $article->text = "test";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
-        $this->_em->detach($article);
+        $this->em->detach($article);
 
         $sql = "UPDATE cms_articles SET version = version+1 WHERE id = " . $article->id;
-        $this->_em->getConnection()->executeUpdate($sql);
+        $this->em->getConnection()->executeUpdate($sql);
 
         $this->expectException(OptimisticLockException::class);
         $this->expectExceptionMessage('The optimistic lock failed, version 1 was expected, but is actually 2');
 
-        $this->_em->merge($article);
+        $this->em->merge($article);
     }
 }
 

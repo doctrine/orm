@@ -14,7 +14,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
  */
 class PhpClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {
-    protected function _getType()
+    protected function getType()
     {
         return 'php';
     }

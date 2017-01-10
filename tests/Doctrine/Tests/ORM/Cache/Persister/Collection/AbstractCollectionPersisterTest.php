@@ -80,7 +80,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
-        $this->em                   = $this->_getTestEntityManager();
+        $this->em                   = $this->getTestEntityManager();
         $this->region               = $this->createRegion();
         $this->collectionPersister  = $this->getMockBuilder(CollectionPersister::class)
                                            ->setMethods($this->collectionPersisterMockMethods)

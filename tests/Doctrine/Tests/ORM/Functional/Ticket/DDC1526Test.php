@@ -10,9 +10,9 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1526Menu::class),
+            $this->em->getClassMetadata(DDC1526Menu::class),
             ]
         );
     }
@@ -27,17 +27,17 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $entity->parent = $parents[($i%3)];
             }
 
-            $this->_em->persist($entity);
+            $this->em->persist($entity);
             $parents[$i] = $entity;
         }
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
 
         $dql = "SELECT m, c
             FROM " . __NAMESPACE__ . "\DDC1526Menu m
             LEFT JOIN m.children c";
-        $menus = $this->_em->createQuery($dql)->getResult();
+        $menus = $this->em->createQuery($dql)->getResult();
 
         // All Children collection now have to be initialized
         foreach ($menus as $menu) {

@@ -17,13 +17,13 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
 
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $country1   = $repository->find($this->countries[0]->getId());
         $country2   = $repository->find($this->countries[1]->getId());
 
@@ -43,12 +43,12 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertCount(2, $repository->findAll());
@@ -74,12 +74,12 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertCount(2, $repository->findAll());
@@ -95,9 +95,9 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Country::class, $countries[1]);
         $country = new Country('foo');
 
-        $this->_em->persist($country);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($country);
+        $this->em->flush();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -106,9 +106,9 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
 
         $country = $repository->find($country->getId());
 
-        $this->_em->remove($country);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($country);
+        $this->em->flush();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -121,12 +121,12 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
         $criteria   = ['name'=>$this->countries[0]->getName()];
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertCount(1, $repository->findBy($criteria));
@@ -151,12 +151,12 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->evictRegions();
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
         $criteria   = ['name'=>$this->countries[0]->getName()];
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertNotNull($repository->findOneBy($criteria));
@@ -183,10 +183,10 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
 
         $this->secondLevelCacheLogger->clearStats();
-        $this->_em->clear();
+        $this->em->clear();
 
         // load from database
-        $repository = $this->_em->getRepository(State::class);
+        $repository = $this->em->getRepository(State::class);
         $queryCount = $this->getCurrentQueryCount();
         $entities   = $repository->findAll();
 
@@ -215,9 +215,9 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Proxy::class, $entities[1]->getCountry());
 
         // invalidate cache
-        $this->_em->persist(new State('foo', $this->_em->find(Country::class, $this->countries[0]->getId())));
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new State('foo', $this->em->find(Country::class, $this->countries[0]->getId())));
+        $this->em->flush();
+        $this->em->clear();
 
         // load from database
         $queryCount = $this->getCurrentQueryCount();

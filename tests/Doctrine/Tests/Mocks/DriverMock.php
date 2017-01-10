@@ -15,12 +15,12 @@ class DriverMock implements Driver
     /**
      * @var \Doctrine\DBAL\Platforms\AbstractPlatform|null
      */
-    private $_platformMock;
+    private $platformMock;
 
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager|null
      */
-    private $_schemaManagerMock;
+    private $schemaManagerMock;
 
     /**
      * {@inheritdoc}
@@ -35,10 +35,10 @@ class DriverMock implements Driver
      */
     public function getDatabasePlatform()
     {
-        if ( ! $this->_platformMock) {
-            $this->_platformMock = new DatabasePlatformMock;
+        if ( ! $this->platformMock) {
+            $this->platformMock = new DatabasePlatformMock;
         }
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
@@ -46,10 +46,10 @@ class DriverMock implements Driver
      */
     public function getSchemaManager(Connection $conn)
     {
-        if ($this->_schemaManagerMock == null) {
+        if ($this->schemaManagerMock == null) {
             return new SchemaManagerMock($conn);
         } else {
-            return $this->_schemaManagerMock;
+            return $this->schemaManagerMock;
         }
     }
 
@@ -62,7 +62,7 @@ class DriverMock implements Driver
      */
     public function setDatabasePlatform(AbstractPlatform $platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
     /**
@@ -72,7 +72,7 @@ class DriverMock implements Driver
      */
     public function setSchemaManager(AbstractSchemaManager $sm)
     {
-        $this->_schemaManagerMock = $sm;
+        $this->schemaManagerMock = $sm;
     }
 
     /**

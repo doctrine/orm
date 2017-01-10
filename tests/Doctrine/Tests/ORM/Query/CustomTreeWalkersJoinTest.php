@@ -20,7 +20,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
 
     protected function setUp()
     {
-        $this->em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
@@ -83,7 +83,7 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $identificationVariableDecl->joins[]                = $join;
         $selectStatement->selectClause->selectExpressions[] = $selectExpression;
 
-        $entityManager   = $this->_getQuery()->getEntityManager();
+        $entityManager   = $this->getQuery()->getEntityManager();
         $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
         $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 

@@ -14,14 +14,14 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
+        if (!$this->em->getConnection()->getDatabasePlatform()->supportsSequences()) {
             $this->markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(SequenceEntity::class),
+                $this->em->getClassMetadata(SequenceEntity::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -33,9 +33,9 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
     {
         for ($i = 0; $i < 11; $i++) {
             $e = new SequenceEntity();
-            $this->_em->persist($e);
+            $this->em->persist($e);
         }
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 

@@ -16,10 +16,10 @@ class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article->text = "foo";
         $article->topic = "bar";
 
-        $this->_em->persist($article);
-        $this->_em->flush();
-        $this->_em->detach($article);
-        $this->_em->clear();
+        $this->em->persist($article);
+        $this->em->flush();
+        $this->em->detach($article);
+        $this->em->clear();
 
         $user = new \Doctrine\Tests\Models\CMS\CmsUser();
         $user->username = "beberlei";
@@ -27,8 +27,8 @@ class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->status = "active";
         $article->user = $user;
 
-        $this->_em->persist($user);
-        $managedArticle = $this->_em->merge($article);
+        $this->em->persist($user);
+        $managedArticle = $this->em->merge($article);
 
         self::assertSame($article->user, $managedArticle->user);
     }

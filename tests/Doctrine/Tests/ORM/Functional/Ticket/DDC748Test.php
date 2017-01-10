@@ -27,12 +27,12 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article->text = "foo";
         $article->topic = "bar";
 
-        $this->_em->persist($user);
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($article);
+        $this->em->flush();
 
         self::assertInstanceOf(Collection::class, $user->articles);
-        $this->_em->refresh($article);
+        $this->em->refresh($article);
         self::assertTrue($article !== $user->articles, "The article should not be replaced on the inverse side of the relation.");
         self::assertInstanceOf(Collection::class, $user->articles);
     }
@@ -51,11 +51,11 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->zip = 12345;
         $address->setUser($user);
 
-        $this->_em->persist($user);
-        $this->_em->persist($address);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($address);
+        $this->em->flush();
 
-        $this->_em->refresh($address);
+        $this->em->refresh($address);
         self::assertSame($user, $address->user);
         self::assertSame($user->address, $address);
     }

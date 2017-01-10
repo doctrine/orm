@@ -9,10 +9,10 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC440Phone::class),
-                $this->_em->getClassMetadata(DDC440Client::class)
+                $this->em->getClassMetadata(DDC440Phone::class),
+                $this->em->getClassMetadata(DDC440Client::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -52,13 +52,13 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $client->setMainPhone($phone);
 
-        $this->_em->persist($client);
-        $this->_em->flush();
+        $this->em->persist($client);
+        $this->em->flush();
         $id = $client->getId();
-        $this->_em->clear();
+        $this->em->clear();
 
-        $uw = $this->_em->getUnitOfWork();
-        $client = $this->_em->find(DDC440Client::class, $id);
+        $uw = $this->em->getUnitOfWork();
+        $client = $this->em->find(DDC440Client::class, $id);
         $clientPhones = $client->getPhones();
 
         $p1 = $clientPhones[1];

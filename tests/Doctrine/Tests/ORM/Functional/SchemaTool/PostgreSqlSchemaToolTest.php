@@ -12,14 +12,14 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'postgresql') {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of postgresql.');
         }
     }
 
     public function testPostgresMetadataSequenceIncrementedBy10()
     {
-        $address = $this->_em->getClassMetadata(Models\CMS\CmsAddress::class);
+        $address = $this->em->getClassMetadata(Models\CMS\CmsAddress::class);
 
         self::assertEquals(1, $address->generatorDefinition['allocationSize']);
     }
@@ -27,12 +27,12 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+            $this->em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
         $sqlCount = count($sql);
 
@@ -66,10 +66,10 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql2()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\Generic\DecimalModel::class)
+            $this->em->getClassMetadata(Models\Generic\DecimalModel::class)
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals(2, count($sql));
@@ -81,10 +81,10 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql3()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\Generic\BooleanModel::class)
+            $this->em->getClassMetadata(Models\Generic\BooleanModel::class)
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals(2, count($sql));
@@ -95,12 +95,12 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetDropSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+            $this->em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getDropSchemaSQL($classes);
 
         self::assertEquals(17, count($sql));
@@ -121,11 +121,11 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     public function testUpdateSchemaWithPostgreSQLSchema()
     {
         $classes = [
-            $this->_em->getClassMetadata(DDC1657Screen::class),
-            $this->_em->getClassMetadata(DDC1657Avatar::class),
+            $this->em->getClassMetadata(DDC1657Screen::class),
+            $this->em->getClassMetadata(DDC1657Avatar::class),
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $tool->createSchema($classes);
 
         $sql = $tool->getUpdateSchemaSql($classes);

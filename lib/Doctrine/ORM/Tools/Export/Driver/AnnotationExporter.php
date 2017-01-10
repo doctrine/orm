@@ -34,28 +34,28 @@ class AnnotationExporter extends AbstractExporter
     /**
      * @var string
      */
-    protected $_extension = '.php';
+    protected $extension = '.php';
 
     /**
      * @var EntityGenerator|null
      */
-    private $_entityGenerator;
+    private $entityGenerator;
 
     /**
      * {@inheritdoc}
      */
     public function exportClassMetadata(ClassMetadata $metadata)
     {
-        if ( ! $this->_entityGenerator) {
+        if ( ! $this->entityGenerator) {
             throw new \RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
         }
 
-        $this->_entityGenerator->setGenerateAnnotations(true);
-        $this->_entityGenerator->setGenerateStubMethods(false);
-        $this->_entityGenerator->setRegenerateEntityIfExists(false);
-        $this->_entityGenerator->setUpdateEntityIfExists(false);
+        $this->entityGenerator->setGenerateAnnotations(true);
+        $this->entityGenerator->setGenerateStubMethods(false);
+        $this->entityGenerator->setRegenerateEntityIfExists(false);
+        $this->entityGenerator->setUpdateEntityIfExists(false);
 
-        return $this->_entityGenerator->generateEntityClass($metadata);
+        return $this->entityGenerator->generateEntityClass($metadata);
     }
 
     /**
@@ -63,9 +63,9 @@ class AnnotationExporter extends AbstractExporter
      *
      * @return string
      */
-    protected function _generateOutputPath(ClassMetadata $metadata)
+    protected function generateOutputPath(ClassMetadata $metadata)
     {
-        return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
+        return $this->outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->extension;
     }
 
     /**
@@ -75,6 +75,6 @@ class AnnotationExporter extends AbstractExporter
      */
     public function setEntityGenerator(EntityGenerator $entityGenerator)
     {
-        $this->_entityGenerator = $entityGenerator;
+        $this->entityGenerator = $entityGenerator;
     }
 }

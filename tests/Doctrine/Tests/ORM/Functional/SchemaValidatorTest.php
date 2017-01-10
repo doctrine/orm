@@ -15,7 +15,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     static public function dataValidateModelSets()
     {
         $modelSets = [];
-        foreach (self::$_modelSets as $modelSet => $classes) {
+        foreach (self::$modelSets as $modelSet => $classes) {
             if ($modelSet == "customtype") {
                 continue;
             }
@@ -29,11 +29,11 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
      */
     public function testValidateModelSets($modelSet)
     {
-        $validator = new SchemaValidator($this->_em);
+        $validator = new SchemaValidator($this->em);
 
         $classes = [];
-        foreach (self::$_modelSets[$modelSet] as $className) {
-            $classes[] = $this->_em->getClassMetadata($className);
+        foreach (self::$modelSets[$modelSet] as $className) {
+            $classes[] = $this->em->getClassMetadata($className);
         }
 
         foreach ($classes as $class) {

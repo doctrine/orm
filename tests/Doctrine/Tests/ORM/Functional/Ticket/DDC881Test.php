@@ -13,11 +13,11 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC881User::class),
-                $this->_em->getClassMetadata(DDC881Phonenumber::class),
-                $this->_em->getClassMetadata(DDC881Phonecall::class),
+                $this->em->getClassMetadata(DDC881User::class),
+                $this->em->getClassMetadata(DDC881Phonenumber::class),
+                $this->em->getClassMetadata(DDC881Phonecall::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -34,61 +34,61 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* Create two test users: albert and alfons */
         $albert = new DDC881User;
         $albert->setName("albert");
-        $this->_em->persist($albert);
+        $this->em->persist($albert);
 
         $alfons = new DDC881User;
         $alfons->setName("alfons");
-        $this->_em->persist($alfons);
+        $this->em->persist($alfons);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         /* Assign two phone numbers to each user */
         $phoneAlbert1 = new DDC881PhoneNumber();
         $phoneAlbert1->setUser($albert);
         $phoneAlbert1->setId(1);
         $phoneAlbert1->setPhoneNumber("albert home: 012345");
-        $this->_em->persist($phoneAlbert1);
+        $this->em->persist($phoneAlbert1);
 
         $phoneAlbert2 = new DDC881PhoneNumber();
         $phoneAlbert2->setUser($albert);
         $phoneAlbert2->setId(2);
         $phoneAlbert2->setPhoneNumber("albert mobile: 67890");
-        $this->_em->persist($phoneAlbert2);
+        $this->em->persist($phoneAlbert2);
 
         $phoneAlfons1 = new DDC881PhoneNumber();
         $phoneAlfons1->setId(1);
         $phoneAlfons1->setUser($alfons);
         $phoneAlfons1->setPhoneNumber("alfons home: 012345");
-        $this->_em->persist($phoneAlfons1);
+        $this->em->persist($phoneAlfons1);
 
         $phoneAlfons2 = new DDC881PhoneNumber();
         $phoneAlfons2->setId(2);
         $phoneAlfons2->setUser($alfons);
         $phoneAlfons2->setPhoneNumber("alfons mobile: 67890");
-        $this->_em->persist($phoneAlfons2);
+        $this->em->persist($phoneAlfons2);
 
         /* We call alfons and albert once on their mobile numbers */
         $call1 = new DDC881PhoneCall();
         $call1->setPhoneNumber($phoneAlfons2);
-        $this->_em->persist($call1);
+        $this->em->persist($call1);
 
         $call2 = new DDC881PhoneCall();
         $call2->setPhoneNumber($phoneAlbert2);
-        $this->_em->persist($call2);
+        $this->em->persist($call2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         // fetch-join that foreign-key/primary-key entity association
         $dql = "SELECT c, p FROM " . DDC881PhoneCall::class . " c JOIN c.phonenumber p";
-        $calls = $this->_em->createQuery($dql)->getResult();
+        $calls = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals(2, count($calls));
         self::assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
         self::assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
 
         $dql = "SELECT p, c FROM " . DDC881PhoneNumber::class . " p JOIN p.calls c";
-        $numbers = $this->_em->createQuery($dql)->getResult();
+        $numbers = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals(2, count($numbers));
         self::assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());

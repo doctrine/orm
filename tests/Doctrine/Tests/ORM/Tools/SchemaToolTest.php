@@ -22,7 +22,7 @@ class SchemaToolTest extends OrmTestCase
 {
     public function testAddUniqueIndexForUniqueFieldAnnotation()
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -43,7 +43,7 @@ class SchemaToolTest extends OrmTestCase
 
     public function testAnnotationOptionsAttribute()
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $classes = [
@@ -65,7 +65,7 @@ class SchemaToolTest extends OrmTestCase
     {
         $customColumnDef = "MEDIUMINT(6) UNSIGNED NOT NULL";
 
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $avatar     = $em->getClassMetadata(ForumAvatar::class);
@@ -92,7 +92,7 @@ class SchemaToolTest extends OrmTestCase
     {
         $listener = new GenerateSchemaEventListener();
 
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $em->getEventManager()->addEventListener(
             [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener
         );
@@ -116,7 +116,7 @@ class SchemaToolTest extends OrmTestCase
 
     public function testNullDefaultNotAddedToCustomSchemaOptions()
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
@@ -132,7 +132,7 @@ class SchemaToolTest extends OrmTestCase
      */
     public function testSchemaHasProperIndexesFromUniqueConstraintAnnotation()
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
             $em->getClassMetadata(UniqueConstraintAnnotationModel::class),
@@ -151,7 +151,7 @@ class SchemaToolTest extends OrmTestCase
 
     public function testRemoveUniqueIndexOverruledByPrimaryKey()
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
             $em->getClassMetadata(FirstEntity::class),

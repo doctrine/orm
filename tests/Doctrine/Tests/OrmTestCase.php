@@ -22,14 +22,14 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @var \Doctrine\Common\Cache\Cache|null
      */
-    private static $_metadataCacheImpl = null;
+    private static $metadataCacheImpl = null;
 
     /**
      * The query cache that is shared between all ORM tests (except functional tests).
      *
      * @var \Doctrine\Common\Cache\Cache|null
      */
-    private static $_queryCacheImpl = null;
+    private static $queryCacheImpl = null;
 
     /**
      * @var bool
@@ -116,7 +116,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    protected function _getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
+    protected function getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
@@ -131,8 +131,10 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
             [
-            realpath(__DIR__ . '/Models/Cache')
-            ], true));
+                realpath(__DIR__ . '/Models/Cache')
+            ], 
+            true
+        ));
 
         if ($this->isSecondLevelCacheEnabled) {
 
@@ -174,11 +176,11 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     private static function getSharedMetadataCacheImpl()
     {
-        if (self::$_metadataCacheImpl === null) {
-            self::$_metadataCacheImpl = new ArrayCache();
+        if (self::$metadataCacheImpl === null) {
+            self::$metadataCacheImpl = new ArrayCache();
         }
 
-        return self::$_metadataCacheImpl;
+        return self::$metadataCacheImpl;
     }
 
     /**
@@ -186,11 +188,11 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     private static function getSharedQueryCacheImpl()
     {
-        if (self::$_queryCacheImpl === null) {
-            self::$_queryCacheImpl = new ArrayCache();
+        if (self::$queryCacheImpl === null) {
+            self::$queryCacheImpl = new ArrayCache();
         }
 
-        return self::$_queryCacheImpl;
+        return self::$queryCacheImpl;
     }
 
     /**

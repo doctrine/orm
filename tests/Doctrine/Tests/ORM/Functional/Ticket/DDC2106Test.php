@@ -12,9 +12,9 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2106Entity::class),
+            $this->em->getClassMetadata(DDC2106Entity::class),
             ]
         );
     }
@@ -23,14 +23,14 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         // We want an uninitialized PersistentCollection $entity->children
         $entity = new DDC2106Entity();
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->detach($entity);
-        $entity = $this->_em->getRepository(DDC2106Entity::class)->findOneBy([]);
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->detach($entity);
+        $entity = $this->em->getRepository(DDC2106Entity::class)->findOneBy([]);
 
         // ... and a managed entity without id
         $entityWithoutId = new DDC2106Entity();
-        $this->_em->persist($entityWithoutId);
+        $this->em->persist($entityWithoutId);
 
         $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $entityWithoutId));
         $entity->children->matching($criteria)->count();

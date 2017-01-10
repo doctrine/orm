@@ -35,7 +35,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         \mkdir($this->path);
 
 
-        $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
+        $metadataDriver = $this->em->getConfiguration()->getMetadataDriverImpl();
 
         $metadataDriver->addPaths(
             [
@@ -47,7 +47,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         $this->application->setHelperSet(new HelperSet(
             [
-            'em' => new EntityManagerHelper($this->_em)
+            'em' => new EntityManagerHelper($this->em)
             ]
         ));
 
@@ -134,7 +134,7 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
     private function generateRepositories($filter, $defaultRepository = null)
     {
         if ($defaultRepository) {
-            $this->_em->getConfiguration()->setDefaultRepositoryClassName($defaultRepository);
+            $this->em->getConfiguration()->setDefaultRepositoryClassName($defaultRepository);
         }
 
         $command    = $this->application->find('orm:generate-repositories');

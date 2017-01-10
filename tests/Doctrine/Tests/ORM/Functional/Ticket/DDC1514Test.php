@@ -14,11 +14,11 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1514EntityA::class),
-                $this->_em->getClassMetadata(DDC1514EntityB::class),
-                $this->_em->getClassMetadata(DDC1514EntityC::class),
+                $this->em->getClassMetadata(DDC1514EntityA::class),
+                $this->em->getClassMetadata(DDC1514EntityB::class),
+                $this->em->getClassMetadata(DDC1514EntityC::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -45,16 +45,16 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c->title = "baz";
         $a2->entityC = $c;
 
-        $this->_em->persist($a1);
-        $this->_em->persist($a2);
-        $this->_em->persist($b1);
-        $this->_em->persist($b2);
-        $this->_em->persist($c);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a1);
+        $this->em->persist($a2);
+        $this->em->persist($b1);
+        $this->em->persist($b2);
+        $this->em->persist($c);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT a, b, ba, c FROM " . __NAMESPACE__ . "\DDC1514EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba LEFT JOIN a.entityC AS c ORDER BY a.title";
-        $results = $this->_em->createQuery($dql)->getResult();
+        $results = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals($a1->id, $results[0]->id);
         self::assertNull($results[0]->entityC);

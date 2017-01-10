@@ -8,9 +8,9 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC656Entity::class)
+                $this->em->getClassMetadata(DDC656Entity::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -23,20 +23,20 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity = new DDC656Entity();
         $entity->setName('test1');
         $entity->setType('type1');
-        $this->_em->persist($entity);
+        $this->em->persist($entity);
 
-        $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
-        $data1 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
+        $this->em->getUnitOfWork()->computeChangeSet($this->em->getClassMetadata(get_class($entity)), $entity);
+        $data1 = $this->em->getUnitOfWork()->getEntityChangeSet($entity);
         $entity->setType('type2');
-        $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
-        $data2 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
+        $this->em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->em->getClassMetadata(get_class($entity)), $entity);
+        $data2 = $this->em->getUnitOfWork()->getEntityChangeSet($entity);
 
         self::assertEquals(array_keys($data1), array_keys($data2));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $persistedEntity = $this->_em->find(get_class($entity), $entity->specificationId);
+        $persistedEntity = $this->em->find(get_class($entity), $entity->specificationId);
         self::assertEquals('type2', $persistedEntity->getType());
         self::assertEquals('test1', $persistedEntity->getName());
     }

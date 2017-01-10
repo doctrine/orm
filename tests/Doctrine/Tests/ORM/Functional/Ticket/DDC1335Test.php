@@ -11,10 +11,10 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1335User::class),
-                $this->_em->getClassMetadata(DDC1335Phone::class),
+                $this->em->getClassMetadata(DDC1335User::class),
+                $this->em->getClassMetadata(DDC1335Phone::class),
                 ]
             );
             $this->loadFixture();
@@ -26,7 +26,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testDql()
     {
         $dql      = 'SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.id';
-        $query    = $this->_em->createQuery($dql);
+        $query    = $this->em->createQuery($dql);
         $result   = $query->getResult();
 
         self::assertEquals(sizeof($result), 3);
@@ -35,7 +35,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertArrayHasKey(3, $result);
 
         $dql      = 'SELECT u, p FROM '.__NAMESPACE__ . '\DDC1335User u INDEX BY u.email INNER JOIN u.phones p INDEX BY p.id';
-        $query    = $this->_em->createQuery($dql);
+        $query    = $this->em->createQuery($dql);
         $result   = $query->getResult();
 
         self::assertEquals(sizeof($result), 3);
@@ -66,7 +66,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $builder = $this->_em->createQueryBuilder();
+        $builder = $this->em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.id');
 
         $dql    = $builder->getQuery()->getDQL();
@@ -81,7 +81,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIndexByUnique()
     {
-        $builder = $this->_em->createQueryBuilder();
+        $builder = $this->em->createQueryBuilder();
         $builder->select('u')->from(DDC1335User::class, 'u', 'u.email');
 
         $dql    = $builder->getQuery()->getDQL();
@@ -96,7 +96,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function  testIndexWithJoin()
     {
-        $builder = $this->_em->createQueryBuilder();
+        $builder = $this->em->createQueryBuilder();
         $builder->select('u','p')
                 ->from(DDC1335User::class, 'u', 'u.email')
                 ->join('u.phones', 'p', null, null, 'p.id');
@@ -138,11 +138,11 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $u2 = new DDC1335User("bar@bar.com", "Bar",$p2);
         $u3 = new DDC1335User("foobar@foobar.com", "Foo Bar",$p3);
 
-        $this->_em->persist($u1);
-        $this->_em->persist($u2);
-        $this->_em->persist($u3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($u1);
+        $this->em->persist($u2);
+        $this->em->persist($u3);
+        $this->em->flush();
+        $this->em->clear();
     }
 
 }

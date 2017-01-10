@@ -18,10 +18,10 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(NotifyUser::class),
-                $this->_em->getClassMetadata(NotifyGroup::class)
+                $this->em->getClassMetadata(NotifyUser::class),
+                $this->em->getClassMetadata(NotifyGroup::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -39,14 +39,14 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $user->getGroups()->add($group);
         $group->getUsers()->add($user);
 
-        $this->_em->persist($user);
-        $this->_em->persist($group);
+        $this->em->persist($user);
+        $this->em->persist($group);
 
         self::assertEquals(1, count($user->listeners));
         self::assertEquals(1, count($group->listeners));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertEquals(1, count($user->listeners));
         self::assertEquals(1, count($group->listeners));
@@ -55,9 +55,9 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $groupId = $group->getId();
         unset($user, $group);
 
-        $user = $this->_em->find(NotifyUser::class, $userId);
+        $user = $this->em->find(NotifyUser::class, $userId);
         self::assertEquals(1, $user->getGroups()->count());
-        $group = $this->_em->find(NotifyGroup::class, $groupId);
+        $group = $this->em->find(NotifyGroup::class, $groupId);
         self::assertEquals(1, $group->getUsers()->count());
 
         self::assertEquals(1, count($user->listeners));
@@ -65,14 +65,14 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
-        $this->_em->persist($group2);
+        $this->em->persist($group2);
         $user->getGroups()->add($group2);
         $group2->getUsers()->add($user);
 
         $group->setName('geeks');
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertEquals(1, count($user->listeners));
         self::assertEquals(1, count($group->listeners));
@@ -80,11 +80,11 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $group2Id = $group2->getId();
         unset($group2, $user);
 
-        $user = $this->_em->find(NotifyUser::class, $userId);
+        $user = $this->em->find(NotifyUser::class, $userId);
         self::assertEquals(2, $user->getGroups()->count());
-        $group2 = $this->_em->find(NotifyGroup::class, $group2Id);
+        $group2 = $this->em->find(NotifyGroup::class, $group2Id);
         self::assertEquals(1, $group2->getUsers()->count());
-        $group = $this->_em->find(NotifyGroup::class, $groupId);
+        $group = $this->em->find(NotifyGroup::class, $groupId);
         self::assertEquals(1, $group->getUsers()->count());
         self::assertEquals('geeks', $group->getName());
     }

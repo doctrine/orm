@@ -10,10 +10,10 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1787Foo::class),
-            $this->_em->getClassMetadata(DDC1787Bar::class),
+            $this->em->getClassMetadata(DDC1787Foo::class),
+            $this->em->getClassMetadata(DDC1787Bar::class),
             ]
         );
     }
@@ -23,9 +23,9 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $bar = new DDC1787Bar;
         $bar2 = new DDC1787Bar;
 
-        $this->_em->persist($bar);
-        $this->_em->persist($bar2);
-        $this->_em->flush();
+        $this->em->persist($bar);
+        $this->em->persist($bar2);
+        $this->em->flush();
 
         self::assertSame(1, $bar->getVersion());
     }

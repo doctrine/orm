@@ -12,27 +12,27 @@ use Doctrine\Tests\OrmTestCase;
  */
 class SequenceGeneratorTest extends OrmTestCase
 {
-    private $_em;
-    private $_seqGen;
+    private $em;
+    private $seqGen;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
-        $this->_seqGen = new SequenceGenerator('seq', 10);
+        $this->em = $this->getTestEntityManager();
+        $this->seqGen = new SequenceGenerator('seq', 10);
     }
 
     public function testGeneration()
     {
         for ($i=0; $i < 42; ++$i) {
             if ($i % 10 == 0) {
-                $this->_em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
+                $this->em->getConnection()->setFetchOneResult((int)($i / 10) * 10);
             }
 
-            $id = $this->_seqGen->generate($this->_em, null);
+            $id = $this->seqGen->generate($this->em, null);
 
             self::assertEquals($i, $id);
-            self::assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
-            self::assertEquals($i + 1, $this->_seqGen->getNextValue());
+            self::assertEquals((int)($i / 10) * 10 + 10, $this->seqGen->getCurrentMaxValue());
+            self::assertEquals($i + 1, $this->seqGen->getNextValue());
         }
     }
 }

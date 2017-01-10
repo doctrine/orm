@@ -12,10 +12,10 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
-                $this->_em->getClassMetadata(DDC1461User::class)
+                $this->em->getClassMetadata(DDC1461TwitterAccount::class),
+                $this->em->getClassMetadata(DDC1461User::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -26,19 +26,19 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testChangeDetectionDeferredExplicit()
     {
         $user = new DDC1461User;
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
-        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user, \Doctrine\ORM\UnitOfWork::STATE_NEW), "Entity should be managed.");
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($user), "Entity should be managed.");
 
         $acc = new DDC1461TwitterAccount;
         $user->twitterAccount = $acc;
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $user = $this->_em->find(get_class($user), $user->id);
+        $user = $this->em->find(get_class($user), $user->id);
         self::assertNotNull($user->twitterAccount);
     }
 }

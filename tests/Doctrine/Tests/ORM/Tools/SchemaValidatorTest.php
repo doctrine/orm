@@ -20,7 +20,7 @@ class SchemaValidatorTest extends OrmTestCase
 
     public function setUp()
     {
-        $this->em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
         $this->validator = new SchemaValidator($this->em);
     }
 
@@ -28,7 +28,7 @@ class SchemaValidatorTest extends OrmTestCase
     {
         $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
             [
-            __DIR__ . "/../../Models/CMS"
+                __DIR__ . "/../../Models/CMS"
             ]
         );
         $this->validator->validateMapping();

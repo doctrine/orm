@@ -17,7 +17,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     public function testLockCTIClass()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
 
         $manager = new \Doctrine\Tests\Models\Company\CompanyManager();
         $manager->setName('beberlei');
@@ -25,11 +25,11 @@ class DDC933Test extends OrmFunctionalTestCase
         $manager->setTitle('Vice President of This Test');
         $manager->setDepartment("Foo");
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
+        $this->em->persist($manager);
+        $this->em->flush();
 
-        $this->_em->beginTransaction();
-        $this->_em->lock($manager, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ);
-        $this->_em->rollback();
+        $this->em->beginTransaction();
+        $this->em->lock($manager, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ);
+        $this->em->rollback();
     }
 }

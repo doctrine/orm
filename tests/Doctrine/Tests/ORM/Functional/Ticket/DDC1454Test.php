@@ -12,10 +12,10 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1454File::class),
-                $this->_em->getClassMetadata(DDC1454Picture::class),
+                $this->em->getClassMetadata(DDC1454File::class),
+                $this->em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -26,7 +26,7 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFailingCase()
     {
         $pic = new DDC1454Picture();
-        $this->_em->getUnitOfWork()->getEntityState($pic);
+        $this->em->getUnitOfWork()->getEntityState($pic);
     }
 
 }

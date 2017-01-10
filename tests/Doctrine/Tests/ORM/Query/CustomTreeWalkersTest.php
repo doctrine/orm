@@ -18,16 +18,16 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CustomTreeWalkersTest extends OrmTestCase
 {
-    private $_em;
+    private $em;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function generateSql($dqlToBeTested, $treeWalkers, $outputWalker)
     {
-        $query = $this->_em->createQuery($dqlToBeTested);
+        $query = $this->em->createQuery($dqlToBeTested);
         $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, $treeWalkers)
             ->useQueryCache(false);
 
@@ -115,7 +115,7 @@ class CustomTreeWalker extends Query\TreeWalkerAdapter
         // Get the DQL aliases of all the classes we want to modify
         $dqlAliases = [];
 
-        foreach ($this->_getQueryComponents() as $dqlAlias => $comp) {
+        foreach ($this->getQueryComponents() as $dqlAlias => $comp) {
             // Hard-coded check just for demonstration: We want to modify the query if
             // it involves the CmsUser class.
             if ($comp['metadata']->name == CmsUser::class) {
@@ -210,7 +210,7 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $identificationVariableDecl->joins[]                = $join;
         $selectStatement->selectClause->selectExpressions[] = $selectExpression;
 
-        $entityManager   = $this->_getQuery()->getEntityManager();
+        $entityManager   = $this->getQuery()->getEntityManager();
         $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
         $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 

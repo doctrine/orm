@@ -8,9 +8,9 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC425Entity::class),
+            $this->em->getClassMetadata(DDC425Entity::class),
             ]
         );
     }
@@ -20,9 +20,9 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $num = $this->_em->createQuery('DELETE '.__NAMESPACE__.'\DDC425Entity e WHERE e.someDatetimeField > ?1')
+        $num = $this->em->createQuery('DELETE '.__NAMESPACE__.'\DDC425Entity e WHERE e.someDatetimeField > ?1')
                 ->setParameter(1, new DateTime, Type::DATETIME)
                 ->getResult();
         self::assertEquals(0, $num);

@@ -17,12 +17,12 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC3170AbstractEntityJoined::class),
-                $this->_em->getClassMetadata(DDC3170ProductJoined::class),
-                $this->_em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
-                $this->_em->getClassMetadata(DDC3170ProductSingleTable::class),
+                $this->em->getClassMetadata(DDC3170AbstractEntityJoined::class),
+                $this->em->getClassMetadata(DDC3170ProductJoined::class),
+                $this->em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
+                $this->em->getClassMetadata(DDC3170ProductSingleTable::class),
             ]
         );
     }
@@ -38,17 +38,17 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        // $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        // $this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $productJoined = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
-        $this->_em->persist($productJoined);
-        $this->_em->persist($productSingleTable);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($productJoined);
+        $this->em->persist($productSingleTable);
+        $this->em->flush();
+        $this->em->clear();
 
         try {
-            $this->_em->createQueryBuilder()
+            $this->em->createQueryBuilder()
                 ->select('p')
                 ->from(DDC3170ProductJoined::class, 'p')
                 ->getQuery()
@@ -59,7 +59,7 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         try {
-            $this->_em->createQueryBuilder()
+            $this->em->createQueryBuilder()
                 ->select('p')
                 ->from(DDC3170ProductSingleTable::class, 'p')
                 ->getQuery()

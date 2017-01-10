@@ -13,21 +13,23 @@ class LegacyArticle
      * @Column(name="iArticleId", type="integer")
      * @GeneratedValue(strategy="AUTO")
      */
-    public $_id;
+    public $id;
     /**
      * @Column(name="sTopic", type="string", length=255)
      */
-    public $_topic;
+    public $topic;
     /**
      * @Column(name="sText", type="text")
      */
-    public $_text;
+    public $text;
     /**
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_articles")
+     * @ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
      * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
-    public $_user;
-    public function setAuthor(LegacyUser $author) {
-        $this->_user = $author;
+    public $user;
+    
+    public function setAuthor(LegacyUser $author) 
+    {
+        $this->user = $author;
     }
 }

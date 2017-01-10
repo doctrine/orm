@@ -24,14 +24,14 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostFlushListener();
-        $evm = $this->_em->getEventManager();
+        $evm = $this->em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
     public function testListenerShouldBeNotified()
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
         self::assertTrue($this->listener->wasNotified);
     }
 
@@ -39,11 +39,11 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     {
         $user = new CmsUser();
         $user->username = 'dfreudenberger';
-        $this->_em->persist($user);
+        $this->em->persist($user);
         $exceptionRaised = false;
 
         try {
-            $this->_em->flush();
+            $this->em->flush();
         } catch (\Exception $ex) {
             $exceptionRaised = true;
         }
@@ -54,10 +54,10 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
     public function testListenerShouldReceiveEntityManagerThroughArgs()
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
         $receivedEm = $this->listener->receivedArgs->getEntityManager();
-        self::assertSame($this->_em, $receivedEm);
+        self::assertSame($this->em, $receivedEm);
     }
 
     /**

@@ -12,11 +12,11 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1400Article::class),
-                $this->_em->getClassMetadata(DDC1400User::class),
-                $this->_em->getClassMetadata(DDC1400UserState::class),
+                $this->em->getClassMetadata(DDC1400Article::class),
+                $this->em->getClassMetadata(DDC1400User::class),
+                $this->em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -29,10 +29,10 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = new DDC1400User;
         $user2 = new DDC1400User;
 
-        $this->_em->persist($article);
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->flush();
 
         $userState1 = new DDC1400UserState;
         $userState1->article = $article;
@@ -46,19 +46,19 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $userState2->user = $user2;
         $userState2->userId = $user2->id;
 
-        $this->_em->persist($userState1);
-        $this->_em->persist($userState2);
+        $this->em->persist($userState1);
+        $this->em->persist($userState2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->getReference(DDC1400User::class, $user1->id);
+        $user1 = $this->em->getReference(DDC1400User::class, $user1->id);
 
-        $q = $this->_em->createQuery("SELECT a, s FROM ".__NAMESPACE__."\DDC1400Article a JOIN a.userStates s WITH s.user = :activeUser");
+        $q = $this->em->createQuery("SELECT a, s FROM ".__NAMESPACE__."\DDC1400Article a JOIN a.userStates s WITH s.user = :activeUser");
         $q->setParameter('activeUser', $user1);
         $articles = $q->getResult();
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 

@@ -53,7 +53,7 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $this->enableSecondLevelCache();
 
-        $this->em           = $this->_getTestEntityManager();
+        $this->em           = $this->getTestEntityManager();
         $this->region       = new CacheRegionMock();
         $this->queryCache   = new DefaultQueryCache($this->em, $this->region);
         $this->cacheFactory = new CacheFactoryDefaultQueryCacheTest($this->queryCache, $this->region);

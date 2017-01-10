@@ -16,34 +16,34 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     /**
      * @var EntityGenerator
      */
-    private $_generator;
+    private $generator;
 
     /**
      * @var EntityRepositoryGenerator
      */
-    private $_repositoryGenerator;
+    private $repositoryGenerator;
 
-    private $_tmpDir;
-    private $_namespace;
+    private $tmpDir;
+    private $namespace;
 
     /**
      * @inheritdoc
      */
     public function setUp()
     {
-        $this->_namespace   = uniqid('doctrine_');
-        $this->_tmpDir      = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->_namespace;
-        \mkdir($this->_tmpDir);
+        $this->namespace   = uniqid('doctrine_');
+        $this->tmpDir      = \sys_get_temp_dir() . DIRECTORY_SEPARATOR . $this->namespace;
+        \mkdir($this->tmpDir);
 
-        $this->_generator = new EntityGenerator();
-        $this->_generator->setAnnotationPrefix("");
-        $this->_generator->setGenerateAnnotations(true);
-        $this->_generator->setGenerateStubMethods(true);
-        $this->_generator->setRegenerateEntityIfExists(false);
-        $this->_generator->setUpdateEntityIfExists(true);
-        $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
+        $this->generator = new EntityGenerator();
+        $this->generator->setAnnotationPrefix("");
+        $this->generator->setGenerateAnnotations(true);
+        $this->generator->setGenerateStubMethods(true);
+        $this->generator->setRegenerateEntityIfExists(false);
+        $this->generator->setUpdateEntityIfExists(true);
+        $this->generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
 
-        $this->_repositoryGenerator = new EntityRepositoryGenerator();
+        $this->repositoryGenerator = new EntityRepositoryGenerator();
     }
 
     /**
@@ -53,7 +53,7 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     {
         $dirs = [];
 
-        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir));
+        $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->tmpDir));
         foreach ($ri AS $file) {
             /* @var $file \SplFileInfo */
             if ($file->isFile()) {
@@ -75,8 +75,8 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     public function testGeneratedEntityRepositoryClass()
     {
-        $em = $this->_getTestEntityManager();
-        $ns = $this->_namespace;
+        $em = $this->getTestEntityManager();
+        $ns = $this->namespace;
 
         $className = $ns . '\DDC3231User1Tmp';
         $this->writeEntityClass(DDC3231User1::class, $className);
@@ -116,8 +116,8 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     public function testGeneratedEntityRepositoryClassCustomDefaultRepository()
     {
-        $em = $this->_getTestEntityManager();
-        $ns = $this->_namespace;
+        $em = $this->getTestEntityManager();
+        $ns = $this->namespace;
 
         $className = $ns . '\DDC3231User2Tmp';
         $this->writeEntityClass(DDC3231User2::class, $className);
@@ -162,18 +162,18 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
     private function writeEntityClass($className, $newClassName)
     {
         $cmf    = new ClassMetadataFactory();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $cmf->setEntityManager($em);
 
         $metadata               = $cmf->getMetadataFor($className);
-        $metadata->namespace    = $this->_namespace;
+        $metadata->namespace    = $this->namespace;
         $metadata->name         = $newClassName;
         $metadata->customRepositoryClassName = $newClassName . "Repository";
 
-        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+        $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
-        require $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $newClassName) . ".php";
+        require $this->tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $newClassName) . ".php";
     }
 
     /**
@@ -183,11 +183,11 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
      */
     private function writeRepositoryClass($className, $defaultRepository = null)
     {
-        $this->_repositoryGenerator->setDefaultRepositoryName($defaultRepository);
+        $this->repositoryGenerator->setDefaultRepositoryName($defaultRepository);
 
-        $this->_repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->_tmpDir);
+        $this->repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->tmpDir);
 
-        return $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . 'Repository.php';
+        return $this->tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . 'Repository.php';
     }
 
 }

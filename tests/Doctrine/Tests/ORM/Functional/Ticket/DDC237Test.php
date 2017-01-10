@@ -9,11 +9,11 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC237EntityX::class),
-            $this->_em->getClassMetadata(DDC237EntityY::class),
-            $this->_em->getClassMetadata(DDC237EntityZ::class)
+            $this->em->getClassMetadata(DDC237EntityX::class),
+            $this->em->getClassMetadata(DDC237EntityY::class),
+            $this->em->getClassMetadata(DDC237EntityZ::class)
             ]
         );
     }
@@ -31,20 +31,20 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $x->y = $y;
         $z->y = $y;
 
-        $this->_em->persist($x);
-        $this->_em->persist($y);
-        $this->_em->persist($z);
+        $this->em->persist($x);
+        $this->em->persist($y);
+        $this->em->persist($z);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $x2 = $this->_em->find(get_class($x), $x->id); // proxy injected for Y
+        $x2 = $this->em->find(get_class($x), $x->id); // proxy injected for Y
         self::assertInstanceOf(Proxy::class, $x2->y);
         self::assertFalse($x2->y->__isInitialized__);
 
         // proxy for Y is in identity map
 
-        $z2 = $this->_em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
+        $z2 = $this->em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
         self::assertInstanceOf(Proxy::class, $z2->y);

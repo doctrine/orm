@@ -18,10 +18,10 @@ class DDC2230Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2230User::class),
-                $this->_em->getClassMetadata(DDC2230Address::class),
+                $this->em->getClassMetadata(DDC2230User::class),
+                $this->em->getClassMetadata(DDC2230Address::class),
                 ]
             );
         } catch (ToolsException $e) {}
@@ -32,16 +32,16 @@ class DDC2230Test extends OrmFunctionalTestCase
         $insertedUser          = new DDC2230User();
         $insertedUser->address = new DDC2230Address();
 
-        $this->_em->persist($insertedUser);
-        $this->_em->persist($insertedUser->address);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($insertedUser);
+        $this->em->persist($insertedUser->address);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DDC2230User::class, $insertedUser->id);
+        $user = $this->em->find(DDC2230User::class, $insertedUser->id);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $mergedUser = $this->_em->merge($user);
+        $mergedUser = $this->em->merge($user);
 
         /* @var $address Proxy */
         $address = $mergedUser->address;
@@ -54,11 +54,11 @@ class DDC2230Test extends OrmFunctionalTestCase
     {
         $insertedAddress = new DDC2230Address();
 
-        $this->_em->persist($insertedAddress);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($insertedAddress);
+        $this->em->flush();
+        $this->em->clear();
 
-        $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
+        $addressProxy = $this->em->getReference(DDC2230Address::class, $insertedAddress->id);
 
         /* @var $addressProxy Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
         self::assertFalse($addressProxy->__isInitialized());
@@ -66,7 +66,7 @@ class DDC2230Test extends OrmFunctionalTestCase
 
         $addressProxy->__load();
 
-        self::assertSame($this->_em->getUnitOfWork(), $addressProxy->listener);
+        self::assertSame($this->em->getUnitOfWork(), $addressProxy->listener);
     }
 }
 

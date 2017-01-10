@@ -27,18 +27,18 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $user = new CmsUser();
         $user->name = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
+        $this->em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
             return new NoOp($funcName);
         });
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
+        $this->em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
             return new NoOp($funcName);
         });
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
             . ' WHERE FOO(u.name) = \'Bob\''
             . ' AND BAR(1) = 1');
 

@@ -13,11 +13,11 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1509AbstractFile::class),
-                $this->_em->getClassMetadata(DDC1509File::class),
-                $this->_em->getClassMetadata(DDC1509Picture::class),
+                $this->em->getClassMetadata(DDC1509AbstractFile::class),
+                $this->em->getClassMetadata(DDC1509File::class),
+                $this->em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -36,7 +36,7 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
         /* @var $em \Doctrine\ORM\EntityManager */
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();

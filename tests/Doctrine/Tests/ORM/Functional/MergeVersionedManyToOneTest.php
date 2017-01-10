@@ -30,15 +30,15 @@ class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
         $article->name     = 'Article';
         $article->category = $category;
 
-        $this->_em->persist($article);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($article);
+        $this->em->flush();
+        $this->em->clear();
 
-        $articleMerged = $this->_em->merge($article);
+        $articleMerged = $this->em->merge($article);
 
         $articleMerged->name = 'Article Merged';
 
-        $this->_em->flush();
+        $this->em->flush();
         self::assertEquals(2, $articleMerged->version);
     }
 }

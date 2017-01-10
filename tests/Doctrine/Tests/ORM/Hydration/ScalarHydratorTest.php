@@ -33,7 +33,7 @@ class ScalarHydratorTest extends HydrationTestCase
 
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -64,7 +64,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -94,7 +94,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
     }

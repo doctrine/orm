@@ -15,11 +15,11 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
         Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC3785_Asset::class),
-                $this->_em->getClassMetadata(DDC3785_AssetId::class),
-                $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                $this->em->getClassMetadata(DDC3785_Asset::class),
+                $this->em->getClassMetadata(DDC3785_AssetId::class),
+                $this->em->getClassMetadata(DDC3785_Attribute::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -36,13 +36,13 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     		$attribute1 = new DDC3785_Attribute("foo1", "bar1"),
     		$attribute2 = new DDC3785_Attribute("foo2", "bar2")
         ];
-        $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
-        $this->_em->flush();
+        $this->em->persist($asset = new DDC3785_Asset($id, $attributes));
+        $this->em->flush();
 
         $asset->getAttributes()->removeElement($attribute1);
 
-        $this->_em->persist($asset);
-        $this->_em->flush();
+        $this->em->persist($asset);
+        $this->em->flush();
     }
 }
 

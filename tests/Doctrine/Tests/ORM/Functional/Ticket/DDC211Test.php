@@ -9,36 +9,36 @@ class DDC211Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC211User::class),
-            $this->_em->getClassMetadata(DDC211Group::class)
+            $this->em->getClassMetadata(DDC211User::class),
+            $this->em->getClassMetadata(DDC211Group::class)
             ]
         );
     }
 
     public function testIssue()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $user = new DDC211User;
         $user->setName('John Doe');
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $groupNames = ['group 1', 'group 2', 'group 3', 'group 4'];
         foreach ($groupNames as $name) {
 
             $group = new DDC211Group;
             $group->setName($name);
-            $this->_em->persist($group);
-            $this->_em->flush();
+            $this->em->persist($group);
+            $this->em->flush();
 
             if (!$user->getGroups()->contains($group)) {
                 $user->getGroups()->add($group);
                 $group->getUsers()->add($user);
-                $this->_em->flush();
+                $this->em->flush();
             }
         }
 

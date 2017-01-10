@@ -10,11 +10,11 @@ class DDC1209Test extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1209_1::class),
-                $this->_em->getClassMetadata(DDC1209_2::class),
-                $this->_em->getClassMetadata(DDC1209_3::class)
+                $this->em->getClassMetadata(DDC1209_1::class),
+                $this->em->getClassMetadata(DDC1209_2::class),
+                $this->em->getClassMetadata(DDC1209_3::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -26,8 +26,8 @@ class DDC1209Test extends OrmFunctionalTestCase
      */
     public function testIdentifierCanHaveCustomType()
     {
-        $this->_em->persist(new DDC1209_3());
-        $this->_em->flush();
+        $this->em->persist(new DDC1209_3());
+        $this->em->flush();
     }
 
     /**
@@ -36,14 +36,14 @@ class DDC1209Test extends OrmFunctionalTestCase
     public function testCompositeIdentifierCanHaveCustomType()
     {
         $future1 = new DDC1209_1();
-        $this->_em->persist($future1);
+        $this->em->persist($future1);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $future2 = new DDC1209_2($future1);
-        $this->_em->persist($future2);
+        $this->em->persist($future2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 

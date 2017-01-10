@@ -12,10 +12,10 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
+                $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity1'),
+                $this->em->getClassMetadata(__NAMESPACE__ . '\DDC2084\MyEntity2'),
                 ]
             );
         } catch (\Exception $exc) {
@@ -27,13 +27,13 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2 = new DDC2084\MyEntity2('Foo');
         $e1 = new DDC2084\MyEntity1($e2);
 
-        $this->_em->persist($e2);
-        $this->_em->flush();
+        $this->em->persist($e2);
+        $this->em->flush();
 
-        $this->_em->persist($e1);
-        $this->_em->flush();
+        $this->em->persist($e1);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         return $e1;
     }
@@ -42,7 +42,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $e1 = $this->loadFixture();
         $e2 = $e1->getMyEntity2();
-        $e  = $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
+        $e  = $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
 
         self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
         self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
@@ -55,7 +55,7 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testinvalidIdentifierBindingEntityException()
     {
-        $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
+        $this->em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', new DDC2084\MyEntity2('Foo'));
     }
 }
 
