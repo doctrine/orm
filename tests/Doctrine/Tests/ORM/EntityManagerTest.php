@@ -28,7 +28,7 @@ class EntityManagerTest extends OrmTestCase
      */
     private $em;
 
-    function setUp()
+    public function setUp()
     {
         parent::setUp();
         $this->em = $this->getTestEntityManager();
@@ -240,7 +240,7 @@ class EntityManagerTest extends OrmTestCase
     public function testTransactionalReThrowsThrowables()
     {
         try {
-            $this->_em->transactional(function () {
+            $this->em->transactional(function () {
                 (function (array $value) {
                     // this only serves as an IIFE that throws a `TypeError`
                 })(null);
@@ -248,54 +248,14 @@ class EntityManagerTest extends OrmTestCase
 
             self::fail('TypeError expected to be thrown');
         } catch (\TypeError $ignored) {
-            self::assertFalse($this->_em->isOpen());
+            self::assertFalse($this->em->isOpen());
         }
     }
 
     /**
      * @group 6017
      */
-    public function testClearManagerWithObject()
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->expectException(ORMInvalidArgumentException::class);
-
-        $this->em->clear($entity);
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithUnknownEntityName()
-    {
-        $this->expectException(MappingException::class);
-
-        $this->em->clear(uniqid('nonExisting', true));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithProxyClassName()
-    {
-        $proxy = $this->em->getReference(Country::class, ['id' => random_int(457, 100000)]);
-
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->em->persist($entity);
-
-        $this->assertTrue($this->em->contains($entity));
-
-        $this->em->clear(get_class($proxy));
-
-        $this->assertFalse($this->em->contains($entity));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithNullValue()
+    public function testClearManager()
     {
         $entity = new Country(456, 'United Kingdom');
 
