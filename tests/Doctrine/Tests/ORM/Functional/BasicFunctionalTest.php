@@ -1006,7 +1006,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1278
      */
-    public function testClearWithEntityName()
+    public function testClear()
     {
         $user = new CmsUser;
         $user->name = 'Dominik';
@@ -1040,15 +1040,11 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $unitOfWork = $this->em->getUnitOfWork();
 
-        $this->em->clear(CmsUser::class);
+        $this->em->clear();
 
         self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
         self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article1));
         self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article2));
-        self::assertEquals(UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
-
-        $this->em->clear();
-
         self::assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 

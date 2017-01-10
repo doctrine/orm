@@ -237,47 +237,7 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @group 6017
      */
-    public function testClearManagerWithObject()
-    {
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->expectException(ORMInvalidArgumentException::class);
-
-        $this->em->clear($entity);
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithUnknownEntityName()
-    {
-        $this->expectException(MappingException::class);
-
-        $this->em->clear(uniqid('nonExisting', true));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithProxyClassName()
-    {
-        $proxy = $this->em->getReference(Country::class, ['id' => rand(457, 100000)]);
-
-        $entity = new Country(456, 'United Kingdom');
-
-        $this->em->persist($entity);
-
-        $this->assertTrue($this->em->contains($entity));
-
-        $this->em->clear(get_class($proxy));
-
-        $this->assertFalse($this->em->contains($entity));
-    }
-
-    /**
-     * @group 6017
-     */
-    public function testClearManagerWithNullValue()
+    public function testClearManager()
     {
         $entity = new Country(456, 'United Kingdom');
 
