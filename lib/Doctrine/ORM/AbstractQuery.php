@@ -106,7 +106,7 @@ abstract class AbstractQuery
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
     /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
      */
     protected $_queryCacheProfile;
 
@@ -118,7 +118,7 @@ abstract class AbstractQuery
     protected $_expireResultCache = false;
 
     /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
      */
     protected $_hydrationCacheProfile;
 
