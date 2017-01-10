@@ -15,11 +15,11 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
         Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC3785_Asset::class),
-                    $this->_em->getClassMetadata(DDC3785_AssetId::class),
-                    $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                    $this->em->getClassMetadata(DDC3785_Asset::class),
+                    $this->em->getClassMetadata(DDC3785_AssetId::class),
+                    $this->em->getClassMetadata(DDC3785_Attribute::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -38,16 +38,16 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $attribute2 = new DDC3785_Attribute('foo2', 'bar2')
         ];
 
-        $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
-        $this->_em->flush();
+        $this->em->persist($asset = new DDC3785_Asset($id, $attributes));
+        $this->em->flush();
 
         $asset->getAttributes()
               ->removeElement($attribute1);
 
         $idToBeRemoved = $attribute1->id;
 
-        $this->_em->persist($asset);
-        $this->_em->flush();
+        $this->em->persist($asset);
+        $this->em->flush();
 
         self::assertNull($this->_em->find(DDC3785_Attribute::class, $idToBeRemoved));
         self::assertNotNull($this->_em->find(DDC3785_Attribute::class, $attribute2->id));
@@ -133,7 +133,7 @@ class DDC3785_AssetId
 
     public function __toString()
     {
-        return $this->id;
+        return (string) $this->id;
     }
 }
 

@@ -28,19 +28,19 @@ class DDC3719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setSalary(666);
         $manager->setTitle('Boss');
         $manager->setDepartment('Marketing');
-        $this->_em->persist($manager);
+        $this->em->persist($manager);
 
         $contractA = new CompanyFlexContract();
         $contractA->markCompleted();
         $contractA->addManager($manager);
-        $this->_em->persist($contractA);
+        $this->em->persist($contractA);
 
         $contractB = new CompanyFlexContract();
         $contractB->addManager($manager);
-        $this->_em->persist($contractB);
+        $this->em->persist($contractB);
 
-        $this->_em->flush();
-        $this->_em->refresh($manager);
+        $this->em->flush();
+        $this->em->refresh($manager);
 
         $contracts = $manager->managedContracts;
         static::assertCount(2, $contracts);

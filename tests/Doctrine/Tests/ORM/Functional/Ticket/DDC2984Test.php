@@ -24,9 +24,9 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2984User::class),
+                $this->em->getClassMetadata(DDC2984User::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -39,17 +39,17 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
 
-        $this->_em->persist($user);
-        $this->_em->flush($user);
+        $this->em->persist($user);
+        $this->em->flush($user);
 
-        $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
+        $repository = $this->em->getRepository(__NAMESPACE__ . "\DDC2984User");
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
         self::assertTrue($user->sameIdentityAs($sameUser));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));

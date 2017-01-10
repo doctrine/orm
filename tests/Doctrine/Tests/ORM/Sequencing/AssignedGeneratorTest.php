@@ -13,13 +13,13 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
-    private $_em;
-    private $_assignedGen;
+    private $em;
+    private $assignedGen;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
-        $this->_assignedGen = new AssignedGenerator;
+        $this->em = $this->getTestEntityManager();
+        $this->assignedGen = new AssignedGenerator;
     }
 
     /**
@@ -29,7 +29,7 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $this->expectException(ORMException::class);
 
-        $this->_assignedGen->generate($this->_em, $entity);
+        $this->assignedGen->generate($this->em, $entity);
     }
 
     public function entitiesWithoutId(): array
@@ -44,13 +44,13 @@ class AssignedGeneratorTest extends OrmTestCase
     {
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
-        $id = $this->_assignedGen->generate($this->_em, $entity);
+        $id = $this->assignedGen->generate($this->em, $entity);
         self::assertEquals(['myId' => 1], $id);
 
         $entity = new AssignedCompositeIdEntity;
         $entity->myId2 = 2;
         $entity->myId1 = 4;
-        $id = $this->_assignedGen->generate($this->_em, $entity);
+        $id = $this->assignedGen->generate($this->em, $entity);
         self::assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }

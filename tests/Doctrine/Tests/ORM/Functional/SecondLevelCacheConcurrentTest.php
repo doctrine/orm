@@ -34,33 +34,33 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
 
         $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCacheDriverImpl());
 
-        $this->_em->getConfiguration()
+        $this->em->getConfiguration()
             ->getSecondLevelCacheConfiguration()
             ->setCacheFactory($this->cacheFactory);
 
-        $this->countryMetadata = $this->_em->getClassMetadata(Country::class);
+        $this->countryMetadata = $this->em->getClassMetadata(Country::class);
         $countryMetadata       = clone $this->countryMetadata;
 
         $countryMetadata->cache['usage'] = CacheUsage::NONSTRICT_READ_WRITE;
 
-        $this->_em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
+        $this->em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
     }
 
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->_em->getMetadataFactory()->setMetadataFor(Country::class, $this->countryMetadata);
+        $this->em->getMetadataFactory()->setMetadataFor(Country::class, $this->countryMetadata);
     }
 
     public function testBasicConcurrentEntityReadLock()
     {
         $this->loadFixturesCountries();
-        $this->_em->clear();
+        $this->em->clear();
 
         $countryId = $this->countries[0]->getId();
         $cacheId   = new EntityCacheKey(Country::class, ['id'=>$countryId]);
-        $region    = $this->_em->getCache()->getEntityCacheRegion(Country::class);
+        $region    = $this->em->getCache()->getEntityCacheRegion(Country::class);
 
         self::assertTrue($this->cache->containsEntity(Country::class, $countryId));
 
@@ -70,7 +70,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsEntity(Country::class, $countryId));
 
         $queryCount = $this->getCurrentQueryCount();
-        $country    = $this->_em->find(Country::class, $countryId);
+        $country    = $this->em->find(Country::class, $countryId);
 
         self::assertInstanceOf(Country::class, $country);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
@@ -83,23 +83,23 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesStates();
         $this->loadFixturesCities();
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->evictRegions();
 
         $stateId    = $this->states[0]->getId();
-        $state      = $this->_em->find(State::class, $stateId);
+        $state      = $this->em->find(State::class, $stateId);
 
         self::assertInstanceOf(State::class, $state);
         self::assertInstanceOf(Country::class, $state->getCountry());
         self::assertNotNull($state->getCountry()->getName());
         self::assertCount(2, $state->getCities());
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
         $stateId   = $this->states[0]->getId();
         $cacheId   = new CollectionCacheKey(State::class, 'cities', ['id'=>$stateId]);
-        $region    = $this->_em->getCache()->getCollectionCacheRegion(State::class, 'cities');
+        $region    = $this->em->getCache()->getCollectionCacheRegion(State::class, 'cities');
 
         self::assertTrue($this->cache->containsCollection(State::class, 'cities', $stateId));
 
@@ -109,7 +109,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         self::assertFalse($this->cache->containsCollection(State::class, 'cities', $stateId));
 
         $queryCount = $this->getCurrentQueryCount();
-        $state      = $this->_em->find(State::class, $stateId);
+        $state      = $this->em->find(State::class, $stateId);
 
         self::assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
         self::assertEquals(1, $this->secondLevelCacheLogger->getHitCount());

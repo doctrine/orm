@@ -13,9 +13,9 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2895::class),
+                $this->em->getClassMetadata(DDC2895::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -25,7 +25,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testPostLoadOneToManyInheritance()
     {
-        $cm = $this->_em->getClassMetadata(DDC2895::class);
+        $cm = $this->em->getClassMetadata(DDC2895::class);
 
         self::assertEquals(
             [
@@ -37,12 +37,12 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $ddc2895 = new DDC2895();
 
-        $this->_em->persist($ddc2895);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($ddc2895);
+        $this->em->flush();
+        $this->em->clear();
 
         /** @var DDC2895 $ddc2895 */
-        $ddc2895 = $this->_em->find(get_class($ddc2895), $ddc2895->id);
+        $ddc2895 = $this->em->find(get_class($ddc2895), $ddc2895->id);
 
         self::assertNotNull($ddc2895->getLastModified());
 

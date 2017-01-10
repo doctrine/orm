@@ -8,10 +8,10 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC698Role::class),
-                $this->_em->getClassMetadata(DDC698Privilege::class)
+                $this->em->getClassMetadata(DDC698Role::class),
+                $this->em->getClassMetadata(DDC698Privilege::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -21,7 +21,7 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('p', 'r')
 		   ->from(__NAMESPACE__ .  '\DDC698Privilege', 'p')
 		   ->leftJoin('p.roles', 'r');

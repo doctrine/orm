@@ -6,13 +6,14 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC144Test extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC144FlowElement::class),
-                $this->_em->getClassMetadata(DDC144Operand::class),
+                $this->em->getClassMetadata(DDC144FlowElement::class),
+                $this->em->getClassMetadata(DDC144Operand::class),
             ]
         );
 
@@ -27,10 +28,10 @@ class DDC144Test extends OrmFunctionalTestCase
         $operand->property = 'flowValue';
         $operand->operandProperty = 'operandValue';
 
-        $this->_em->persist($operand);
-        $this->_em->flush();
+        $this->em->persist($operand);
+        $this->em->flush();
 
-        self::assertSame($operand, $this->_em->find(DDC144Operand::class, $operand->id));
+        self::assertSame($operand, $this->em->find(DDC144Operand::class, $operand->id));
     }
 }
 

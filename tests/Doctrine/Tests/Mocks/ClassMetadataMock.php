@@ -16,6 +16,6 @@ class ClassMetadataMock extends ClassMetadata
      */
     public function setIdGeneratorType($type)
     {
-        $this->_generatorType = $type;
+        $this->generatorType = $type;
     }
 }

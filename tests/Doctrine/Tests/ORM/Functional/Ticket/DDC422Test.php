@@ -9,12 +9,12 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC422Guest::class),
-            $this->_em->getClassMetadata(DDC422Customer::class),
-            $this->_em->getClassMetadata(DDC422Contact::class)
+            $this->em->getClassMetadata(DDC422Guest::class),
+            $this->em->getClassMetadata(DDC422Customer::class),
+            $this->em->getClassMetadata(DDC422Contact::class)
             ]
         );
     }
@@ -25,11 +25,11 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $customer = new DDC422Customer;
-        $this->_em->persist($customer);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($customer);
+        $this->em->flush();
+        $this->em->clear();
 
-        $customer = $this->_em->find(get_class($customer), $customer->id);
+        $customer = $this->em->find(get_class($customer), $customer->id);
 
         self::assertInstanceOf(PersistentCollection::class, $customer->contacts);
         self::assertFalse($customer->contacts->isInitialized());
@@ -37,9 +37,9 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $customer->contacts->add($contact);
         self::assertTrue($customer->contacts->isDirty());
         self::assertFalse($customer->contacts->isInitialized());
-        $this->_em->flush();
+        $this->em->flush();
 
-        self::assertEquals(1, $this->_em->getConnection()->fetchColumn("select count(*) from ddc422_customers_contacts"));
+        self::assertEquals(1, $this->em->getConnection()->fetchColumn("select count(*) from ddc422_customers_contacts"));
     }
 }
 

@@ -42,18 +42,18 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
         $inversed->associatedEntities->add($owning3);
         $owning3->associatedEntity = $inversed;
 
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning1);
-        $this->_em->persist($owning2);
-        $this->_em->persist($owning3);
+        $this->em->persist($inversed);
+        $this->em->persist($owning1);
+        $this->em->persist($owning2);
+        $this->em->persist($owning3);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public static function tearDownAfterClass()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_owning_manytoone_extralazy');
         $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_extralazy');
@@ -61,7 +61,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 
     public function testThatExtraLazyCollectionIsCounted()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
@@ -71,12 +71,12 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 
     public function testThatExtraLazyCollectionContainsAnEntity()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class,
             'def'
         );
@@ -86,7 +86,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 
     public function testThatExtraLazyCollectionContainsAnIndexbyKey()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
             'abc'
         );
@@ -96,7 +96,7 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
 
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
             'abc'
         );

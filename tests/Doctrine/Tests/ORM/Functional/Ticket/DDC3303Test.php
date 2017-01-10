@@ -9,7 +9,7 @@ class DDC3303Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3303Employee::class)]);
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC3303Employee::class)]);
     }
 
     /**
@@ -27,11 +27,11 @@ class DDC3303Test extends OrmFunctionalTestCase
             'Doctrine Inc'
         );
 
-        $this->_em->persist($employee);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($employee);
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertEquals($employee, $this->_em->find(DDC3303Employee::class, 'John Doe'));
+        self::assertEquals($employee, $this->em->find(DDC3303Employee::class, 'John Doe'));
     }
 }
 

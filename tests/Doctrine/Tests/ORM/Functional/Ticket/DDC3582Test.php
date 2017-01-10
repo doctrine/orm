@@ -9,13 +9,13 @@ class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     function testNestedEmbeddablesAreHydratedWithProperClass()
     {
-        $this->_schemaTool->createSchema([$this->_em->getClassMetadata(DDC3582Entity::class)]);
-        $this->_em->persist(new DDC3582Entity('foo'));
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC3582Entity::class)]);
+        $this->em->persist(new DDC3582Entity('foo'));
+        $this->em->flush();
+        $this->em->clear();
 
         /** @var DDC3582Entity $entity */
-        $entity = $this->_em->find(DDC3582Entity::class, 'foo');
+        $entity = $this->em->find(DDC3582Entity::class, 'foo');
 
         self::assertInstanceOf(DDC3582Embeddable1::class, $entity->embeddable1);
         self::assertInstanceOf(DDC3582Embeddable2::class, $entity->embeddable1->embeddable2);

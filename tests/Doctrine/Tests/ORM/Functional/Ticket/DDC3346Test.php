@@ -22,7 +22,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author $author */
-        $author = $this->_em->getRepository(DDC3346Author::class)->findOneBy(
+        $author = $this->em->getRepository(DDC3346Author::class)->findOneBy(
             ['username' => 'bwoogy']
         );
 
@@ -32,7 +32,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository(DDC3346Author::class)->findBy(
+        $authors = $this->em->getRepository(DDC3346Author::class)->findBy(
             ['username' => 'bwoogy'],
             null,
             1
@@ -45,7 +45,7 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository(DDC3346Author::class)->findBy(
+        $authors = $this->em->getRepository(DDC3346Author::class)->findBy(
             ['username' => 'bwoogy'],
             null,
             null,
@@ -68,10 +68,10 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles[] = $article1;
         $user->articles[] = $article2;
 
-        $this->_em->persist($user);
-        $this->_em->persist($article1);
-        $this->_em->persist($article2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($article1);
+        $this->em->persist($article2);
+        $this->em->flush();
+        $this->em->clear();
     }
 }

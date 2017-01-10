@@ -21,28 +21,28 @@ class DDC2943Test extends OrmFunctionalTestCase
 
     private function loadFixtures()
     {
-        $this->_em->persist(new Country("Brazil"));
-        $this->_em->persist(new Country("Canada"));
-        $this->_em->persist(new Country("Germany"));
-        $this->_em->persist(new Country("France"));
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new Country("Brazil"));
+        $this->em->persist(new Country("Canada"));
+        $this->em->persist(new Country("Germany"));
+        $this->em->persist(new Country("France"));
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testIssue()
     {
         $this->loadFixtures();
 
-        $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
+        $region = $this->em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $query  = $this->_em->createQuery($dql)
+        $query  = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->setFirstResult(0)
             ->setMaxResults(2);
 
         self::assertPaginatorQueryPut(new Paginator(clone $query), $region->getName(), 4, 2);
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
         self::assertPaginatorQueryHit(new Paginator(clone $query), $region->getName(), 4, 2);
@@ -52,16 +52,16 @@ class DDC2943Test extends OrmFunctionalTestCase
     {
         $this->loadFixtures();
 
-        $region = $this->_em->getCache()->getEntityCacheRegion(Country::class);
+        $region = $this->em->getCache()->getEntityCacheRegion(Country::class);
         $dql    = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
-        $query  = $this->_em->createQuery($dql)
+        $query  = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->setFirstResult(0)
             ->setMaxResults(2);
 
         self::assertPaginatorQueryPut(new Paginator(clone $query, false), $region->getName(), 4, 2);
 
-        $this->_em->clear();
+        $this->em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
         self::assertPaginatorQueryHit(new Paginator(clone $query, false), $region->getName(), 4, 2);

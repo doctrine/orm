@@ -7,13 +7,13 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC837Super::class),
-            $this->_em->getClassMetadata(DDC837Class1::class),
-            $this->_em->getClassMetadata(DDC837Class2::class),
-            $this->_em->getClassMetadata(DDC837Class3::class),
-            $this->_em->getClassMetadata(DDC837Aggregate::class),
+            $this->em->getClassMetadata(DDC837Super::class),
+            $this->em->getClassMetadata(DDC837Class1::class),
+            $this->em->getClassMetadata(DDC837Class2::class),
+            $this->em->getClassMetadata(DDC837Class3::class),
+            $this->em->getClassMetadata(DDC837Aggregate::class),
             ]
         );
     }
@@ -23,7 +23,7 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $c1 = new DDC837Class1();
         $c1->title = "Foo";
@@ -42,16 +42,16 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c3->apples = "Baz";
         $c3->bananas = "Baz";
 
-        $this->_em->persist($c1);
-        $this->_em->persist($aggregate1);
-        $this->_em->persist($c2);
-        $this->_em->persist($aggregate2);
-        $this->_em->persist($c3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($aggregate1);
+        $this->em->persist($c2);
+        $this->em->persist($aggregate2);
+        $this->em->persist($c3);
+        $this->em->flush();
+        $this->em->clear();
 
         // Test Class1
-        $e1 = $this->_em->find(DDC837Super::class, $c1->id);
+        $e1 = $this->em->find(DDC837Super::class, $c1->id);
 
         self::assertInstanceOf(DDC837Class1::class, $e1);
         self::assertEquals('Foo', $e1->title);
@@ -60,7 +60,7 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals('test1', $e1->aggregate->getSysname());
 
         // Test Class 2
-        $e2 = $this->_em->find(DDC837Super::class, $c2->id);
+        $e2 = $this->em->find(DDC837Super::class, $c2->id);
 
         self::assertInstanceOf(DDC837Class2::class, $e2);
         self::assertEquals('Bar', $e2->title);
@@ -69,7 +69,7 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC837Aggregate::class, $e2->aggregate);
         self::assertEquals('test2', $e2->aggregate->getSysname());
 
-        $all = $this->_em->getRepository(DDC837Super::class)->findAll();
+        $all = $this->em->getRepository(DDC837Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC837Class1) {

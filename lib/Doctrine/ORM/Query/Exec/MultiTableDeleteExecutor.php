@@ -38,17 +38,17 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
     /**
      * @var string
      */
-    private $_createTempTableSql;
+    private $createTempTableSql;
 
     /**
      * @var string
      */
-    private $_dropTempTableSql;
+    private $dropTempTableSql;
 
     /**
      * @var string
      */
-    private $_insertSql;
+    private $insertSql;
 
     /**
      * Initializes a new <tt>MultiTableDeleteExecutor</tt>.
@@ -77,16 +77,16 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
         $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $primaryDqlAlias);
 
-        $this->_insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
+        $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
                 . ' SELECT t0.' . implode(', t0.', array_keys($idColumns));
 
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
-        $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
+        $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // Append WHERE clause, if there is one.
         if ($AST->whereClause) {
-            $this->_insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
+            $this->insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
         // 2. Create ID subselect statement used in DELETE ... WHERE ... IN (subselect)
@@ -99,7 +99,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
             $parentClass = $em->getClassMetadata($className);
             $tableName   = $parentClass->table->getQuotedQualifiedName($platform);
 
-            $this->_sqlStatements[] = 'DELETE FROM ' . $tableName
+            $this->sqlStatements[] = 'DELETE FROM ' . $tableName
                 . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
         }
 
@@ -118,9 +118,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
             ];
         }
 
-        $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
+        $this->createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
                 . $platform->getColumnDeclarationListSQL($columnDefinitions) . ')';
-        $this->_dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
+        $this->dropTempTableSql = $platform->getDropTemporaryTableSQL($tempTable);
     }
 
     /**
@@ -129,26 +129,26 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
     public function execute(Connection $conn, array $params, array $types)
     {
         // Create temporary id table
-        $conn->executeUpdate($this->_createTempTableSql);
+        $conn->executeUpdate($this->createTempTableSql);
 
         try {
             // Insert identifiers
-            $numDeleted = $conn->executeUpdate($this->_insertSql, $params, $types);
+            $numDeleted = $conn->executeUpdate($this->insertSql, $params, $types);
 
             // Execute DELETE statements
-            foreach ($this->_sqlStatements as $sql) {
+            foreach ($this->sqlStatements as $sql) {
                 $conn->executeUpdate($sql);
             }
         } catch (\Exception $exception) {
             // FAILURE! Drop temporary table to avoid possible collisions
-            $conn->executeUpdate($this->_dropTempTableSql);
+            $conn->executeUpdate($this->dropTempTableSql);
 
             // Re-throw exception
             throw $exception;
         }
 
         // Drop temporary table
-        $conn->executeUpdate($this->_dropTempTableSql);
+        $conn->executeUpdate($this->dropTempTableSql);
 
         return $numDeleted;
     }

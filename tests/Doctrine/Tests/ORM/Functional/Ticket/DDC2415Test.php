@@ -19,20 +19,20 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver([]));
+        $this->em->getConfiguration()->setMetadataDriverImpl(new StaticPHPDriver([]));
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2415ParentEntity::class),
-            $this->_em->getClassMetadata(DDC2415ChildEntity::class),
+            $this->em->getClassMetadata(DDC2415ParentEntity::class),
+            $this->em->getClassMetadata(DDC2415ChildEntity::class),
             ]
         );
     }
 
     public function testTicket()
     {
-        $parentMetadata  = $this->_em->getClassMetadata(DDC2415ParentEntity::class);
-        $childMetadata   = $this->_em->getClassMetadata(DDC2415ChildEntity::class);
+        $parentMetadata  = $this->em->getClassMetadata(DDC2415ParentEntity::class);
+        $childMetadata   = $this->em->getClassMetadata(DDC2415ChildEntity::class);
 
         self::assertEquals($parentMetadata->generatorType, $childMetadata->generatorType);
         self::assertEquals($parentMetadata->generatorDefinition, $childMetadata->generatorDefinition);
@@ -41,10 +41,10 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e1 = new DDC2415ChildEntity("ChildEntity 1");
         $e2 = new DDC2415ChildEntity("ChildEntity 2");
 
-        $this->_em->persist($e1);
-        $this->_em->persist($e2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($e1);
+        $this->em->persist($e2);
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertEquals(md5($e1->getName()), $e1->getId());
         self::assertEquals(md5($e2->getName()), $e2->getId());

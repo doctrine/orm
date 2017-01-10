@@ -18,11 +18,11 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
 
         $this->loadFixturesCountries();
         $this->evictRegions();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
         $name       = $this->countries[0]->getName();
         $result1    = $repository->matching(new Criteria(
@@ -38,7 +38,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
 
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $result2 = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $name)
@@ -58,11 +58,11 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
 
         $this->loadFixturesCountries();
-        $this->_em->clear();
+        $this->em->clear();
 
         self::assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $repository = $this->_em->getRepository(Country::class);
+        $repository = $this->em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
         $result1    = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $this->countries[0]->getName())
@@ -76,7 +76,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $result2 = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $this->countries[0]->getName())
@@ -126,10 +126,10 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->loadFixturesStates();
         $this->loadFixturesCities();
-        $this->_em->clear();
+        $this->em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $entity     = $this->_em->find(State::class, $this->states[0]->getId());
+        $entity     = $this->em->find(State::class, $this->states[0]->getId());
         $itemName   = $this->states[0]->getCities()->get(0)->getName();
         $queryCount = $this->getCurrentQueryCount();
         $collection = $entity->getCities();
@@ -141,9 +141,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Collection::class, $matching);
         self::assertCount(1, $matching);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity     = $this->_em->find(State::class, $this->states[0]->getId());
+        $entity     = $this->em->find(State::class, $this->states[0]->getId());
         $queryCount = $this->getCurrentQueryCount();
         $collection = $entity->getCities();
         $matching   = $collection->matching(new Criteria(

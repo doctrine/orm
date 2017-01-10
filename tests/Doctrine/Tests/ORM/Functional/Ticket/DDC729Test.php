@@ -12,11 +12,11 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->_em);
+            $schemaTool = new \Doctrine\ORM\Tools\SchemaTool($this->em);
             $schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC729A::class),
-                $this->_em->getClassMetadata(DDC729B::class),
+                $this->em->getClassMetadata(DDC729A::class),
+                $this->em->getClassMetadata(DDC729B::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -30,10 +30,10 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b = new DDC729B();
         $a->related[] = $b;
 
-        $this->_em->persist($a);
-        $this->_em->persist($b);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a);
+        $this->em->persist($b);
+        $this->em->flush();
+        $this->em->clear();
         $aId = $a->id;
 
         $a = new DDC729A();
@@ -41,17 +41,17 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertInstanceOf(ArrayCollection::class, $a->related);
 
-        $a = $this->_em->merge($a);
+        $a = $this->em->merge($a);
 
         self::assertInstanceOf(PersistentCollection::class, $a->related);
 
         self::assertFalse($a->related->isInitialized(), "Collection should not be marked initialized.");
         self::assertFalse($a->related->isDirty(), "Collection should not be marked as dirty.");
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $a = $this->_em->find(DDC729A::class, $aId);
+        $a = $this->em->find(DDC729A::class, $aId);
         self::assertEquals(1, count($a->related));
     }
 
@@ -62,26 +62,26 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b2 = new DDC729B();
         $a->related[] = $b1;
 
-        $this->_em->persist($a);
-        $this->_em->persist($b1);
-        $this->_em->persist($b2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a);
+        $this->em->persist($b1);
+        $this->em->persist($b2);
+        $this->em->flush();
+        $this->em->clear();
         $aId = $a->id;
 
         $a = new DDC729A();
         $a->id = $aId;
 
-        $a = $this->_em->merge($a);
+        $a = $this->em->merge($a);
 
-        $a->related->set(0, $this->_em->merge($b1));
+        $a->related->set(0, $this->em->merge($b1));
 
-        $a->related->set(1, $this->_em->merge($b2));
+        $a->related->set(1, $this->em->merge($b2));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $a = $this->_em->find(DDC729A::class, $aId);
+        $a = $this->em->find(DDC729A::class, $aId);
         self::assertEquals(2, count($a->related));
     }
 
@@ -92,28 +92,28 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b2 = new DDC729B();
         $a->related[] = $b1;
 
-        $this->_em->persist($a);
-        $this->_em->persist($b1);
-        $this->_em->persist($b2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a);
+        $this->em->persist($b1);
+        $this->em->persist($b2);
+        $this->em->flush();
+        $this->em->clear();
         $aId = $a->id;
 
         $a = new DDC729A();
         $a->id = $aId;
 
-        $a = $this->_em->merge($a);
+        $a = $this->em->merge($a);
 
-        $a->related->set(0, $this->_em->merge($b1));
+        $a->related->set(0, $this->em->merge($b1));
         $b1->related->set(0, $a);
 
-        $a->related->set(1, $this->_em->merge($b2));
+        $a->related->set(1, $this->em->merge($b2));
         $b2->related->set(0, $a);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $a = $this->_em->find(DDC729A::class, $aId);
+        $a = $this->em->find(DDC729A::class, $aId);
         self::assertEquals(2, count($a->related));
     }
 
@@ -124,28 +124,28 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b2 = new DDC729B();
         $a->related[] = $b1;
 
-        $this->_em->persist($a);
-        $this->_em->persist($b1);
-        $this->_em->persist($b2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a);
+        $this->em->persist($b1);
+        $this->em->persist($b2);
+        $this->em->flush();
+        $this->em->clear();
         $aId = $a->id;
 
         $a = new DDC729A();
         $a->id = $aId;
 
-        $a = $this->_em->merge($a);
+        $a = $this->em->merge($a);
 
-        $a->related->set(0, $this->_em->merge($b1));
-        $b1->related->set(0, $this->_em->merge($a));
+        $a->related->set(0, $this->em->merge($b1));
+        $b1->related->set(0, $this->em->merge($a));
 
-        $a->related->set(1, $this->_em->merge($b2));
-        $b2->related->set(0, $this->_em->merge($a));
+        $a->related->set(1, $this->em->merge($b2));
+        $b2->related->set(0, $this->em->merge($a));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $a = $this->_em->find(DDC729A::class, $aId);
+        $a = $this->em->find(DDC729A::class, $aId);
         self::assertEquals(2, count($a->related));
     }
 }

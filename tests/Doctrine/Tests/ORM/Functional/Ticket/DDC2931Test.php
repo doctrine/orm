@@ -14,9 +14,9 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2931User::class),
+                $this->em->getClassMetadata(DDC2931User::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -33,14 +33,14 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $second->parent = $first;
         $third->parent  = $second;
 
-        $this->_em->persist($first);
-        $this->_em->persist($second);
-        $this->_em->persist($third);
+        $this->em->persist($first);
+        $this->em->persist($second);
+        $this->em->persist($third);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $second = $this->_em->find(DDC2931User::class, $second->id);
+        $second = $this->em->find(DDC2931User::class, $second->id);
 
         self::assertSame(2, $second->getRank());
     }
@@ -58,18 +58,18 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $second->value = 2;
         $third->value  = 3;
 
-        $this->_em->persist($first);
-        $this->_em->persist($second);
-        $this->_em->persist($third);
+        $this->em->persist($first);
+        $this->em->persist($second);
+        $this->em->persist($third);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $first->value  = 4;
         $second->value = 5;
         $third->value  = 6;
 
         $refreshedSecond = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT e, p, c FROM '
                 . __NAMESPACE__ . '\\DDC2931User e LEFT JOIN e.parent p LEFT JOIN e.child c WHERE e = :id'

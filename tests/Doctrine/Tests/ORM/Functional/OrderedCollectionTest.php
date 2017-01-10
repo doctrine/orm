@@ -22,10 +22,10 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         foreach ($locations AS $locationName) {
             $location = new RoutingLocation();
             $location->name = $locationName;
-            $this->_em->persist($location);
+            $this->em->persist($location);
             $this->locations[$locationName] = $location;
         }
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function createPersistedRouteWithLegs()
@@ -47,10 +47,10 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $route->legs[] = $leg2;
         $route->legs[] = $leg1;
 
-        $this->_em->persist($route);
-        $this->_em->flush();
+        $this->em->persist($route);
+        $this->em->flush();
         $routeId = $route->id;
-        $this->_em->clear();
+        $this->em->clear();
 
         return $routeId;
     }
@@ -59,7 +59,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
-        $route = $this->_em->find(RoutingRoute::class, $routeId);
+        $route = $this->em->find(RoutingRoute::class, $routeId);
 
         self::assertEquals(2, count($route->legs));
         self::assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
@@ -70,8 +70,8 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
     {
         $route = new RoutingRoute();
 
-        $this->_em->persist($route);
-        $this->_em->flush();
+        $this->em->persist($route);
+        $this->em->flush();
         $routeId = $route->id;
 
         $booking1 = new RoutingRouteBooking();
@@ -84,13 +84,13 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
         $route->bookings[] = $booking2;
         $booking2->route = $route;
 
-        $this->_em->persist($booking1);
-        $this->_em->persist($booking2);
+        $this->em->persist($booking1);
+        $this->em->persist($booking2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $route = $this->_em->find(RoutingRoute::class, $routeId);
+        $route = $this->em->find(RoutingRoute::class, $routeId);
 
         self::assertEquals(2, count($route->bookings));
         self::assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
@@ -101,7 +101,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
-        $route = $this->_em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
+        $route = $this->em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
                            ->setParameter(1, $routeId)
                            ->getSingleResult();
 

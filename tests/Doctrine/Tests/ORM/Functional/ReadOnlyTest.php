@@ -16,9 +16,9 @@ class ReadOnlyTest extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(ReadOnlyEntity::class),
+                $this->em->getClassMetadata(ReadOnlyEntity::class),
                 ]
             );
         } catch(\Exception $e) {
@@ -28,16 +28,16 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     public function testReadOnlyEntityNeverChangeTracked()
     {
         $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
+        $this->em->persist($readOnly);
+        $this->em->flush();
 
         $readOnly->name = "Test2";
         $readOnly->numericValue = 4321;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $dbReadOnly = $this->_em->find(ReadOnlyEntity::class, $readOnly->id);
+        $dbReadOnly = $this->em->find(ReadOnlyEntity::class, $readOnly->id);
         self::assertEquals("Test1", $dbReadOnly->name);
         self::assertEquals(1234, $dbReadOnly->numericValue);
     }
@@ -48,13 +48,13 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     public function testClearReadOnly()
     {
         $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
-        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
+        $this->em->persist($readOnly);
+        $this->em->flush();
+        $this->em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->em->getUnitOfWork()->isReadOnly($readOnly));
     }
 
     /**
@@ -63,13 +63,13 @@ class ReadOnlyTest extends OrmFunctionalTestCase
     public function testClearEntitiesReadOnly()
     {
         $readOnly = new ReadOnlyEntity("Test1", 1234);
-        $this->_em->persist($readOnly);
-        $this->_em->flush();
-        $this->_em->getUnitOfWork()->markReadOnly($readOnly);
+        $this->em->persist($readOnly);
+        $this->em->flush();
+        $this->em->getUnitOfWork()->markReadOnly($readOnly);
 
-        $this->_em->clear(get_class($readOnly));
+        $this->em->clear(get_class($readOnly));
 
-        self::assertFalse($this->_em->getUnitOfWork()->isReadOnly($readOnly));
+        self::assertFalse($this->em->getUnitOfWork()->isReadOnly($readOnly));
     }
 }
 

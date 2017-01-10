@@ -31,16 +31,16 @@ class ManyToManyTest extends OrmFunctionalTestCase
         $inversed->associatedEntities->add($owning);
         $owning->associatedEntities->add($inversed);
 
-        $this->_em->persist($inversed);
-        $this->_em->persist($owning);
+        $this->em->persist($inversed);
+        $this->em->persist($owning);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public static function tearDownAfterClass()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
 
         $conn->executeUpdate('DROP TABLE vct_xref_manytomany');
         $conn->executeUpdate('DROP TABLE vct_owning_manytomany');
@@ -49,7 +49,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
 
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         self::assertEquals('nop', $conn->fetchColumn('SELECT id1 FROM vct_inversed_manytomany LIMIT 1'));
 
@@ -64,12 +64,12 @@ class ManyToManyTest extends OrmFunctionalTestCase
      */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
@@ -83,12 +83,12 @@ class ManyToManyTest extends OrmFunctionalTestCase
      */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
@@ -102,7 +102,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
      */
     public function testThatTheCollectionFromOwningToInversedIsLoaded()
     {
-        $owning = $this->_em->find(
+        $owning = $this->em->find(
             Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
@@ -115,7 +115,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
      */
     public function testThatTheCollectionFromInversedToOwningIsLoaded()
     {
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
@@ -129,11 +129,11 @@ class ManyToManyTest extends OrmFunctionalTestCase
      */
     public function testThatTheJoinTableRowsAreRemovedWhenRemovingTheAssociation()
     {
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         // remove association
 
-        $inversed = $this->_em->find(
+        $inversed = $this->em->find(
             Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
@@ -143,8 +143,8 @@ class ManyToManyTest extends OrmFunctionalTestCase
             $owning->associatedEntities->removeElement($inversed);
         }
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         // test association is removed
 

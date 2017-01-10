@@ -19,8 +19,8 @@ final class GH5804Test extends OrmFunctionalTestCase
 
         Type::addType(GH5804Type::NAME, GH5804Type::class);
 
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(GH5804Article::class)]
+        $this->schemaTool->createSchema(
+            [$this->em->getClassMetadata(GH5804Article::class)]
         );
     }
 
@@ -28,14 +28,14 @@ final class GH5804Test extends OrmFunctionalTestCase
     {
         $firstArticle = new GH5804Article;
         $firstArticle->text = 'Max';
-        $this->_em->persist($firstArticle);
-        $this->_em->flush();
+        $this->em->persist($firstArticle);
+        $this->em->flush();
 
         self::assertSame(1, $firstArticle->version);
 
         $firstArticle->text = 'Moritz';
-        $this->_em->persist($firstArticle);
-        $this->_em->flush();
+        $this->em->persist($firstArticle);
+        $this->em->flush();
 
         self::assertSame(2, $firstArticle->version);
     }

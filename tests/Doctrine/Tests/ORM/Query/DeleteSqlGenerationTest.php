@@ -19,16 +19,16 @@ use Doctrine\Tests\OrmTestCase;
  */
 class DeleteSqlGenerationTest extends OrmTestCase
 {
-    private $_em;
+    private $em;
 
     protected function setUp() {
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed)
     {
         try {
-            $query = $this->_em->createQuery($dqlToBeTested);
+            $query = $this->em->createQuery($dqlToBeTested);
 
             $sqlGenerated = $query->getSql();
 

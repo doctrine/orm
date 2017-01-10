@@ -9,12 +9,12 @@ class DDC258Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC258Super::class),
-            $this->_em->getClassMetadata(DDC258Class1::class),
-            $this->_em->getClassMetadata(DDC258Class2::class),
-            $this->_em->getClassMetadata(DDC258Class3::class),
+            $this->em->getClassMetadata(DDC258Super::class),
+            $this->em->getClassMetadata(DDC258Class1::class),
+            $this->em->getClassMetadata(DDC258Class2::class),
+            $this->em->getClassMetadata(DDC258Class3::class),
             ]
         );
     }
@@ -24,7 +24,7 @@ class DDC258Test extends OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $c1 = new DDC258Class1();
         $c1->title = "Foo";
@@ -39,20 +39,20 @@ class DDC258Test extends OrmFunctionalTestCase
         $c3->apples = "Baz";
         $c3->bananas = "Baz";
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
-        $this->_em->persist($c3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($c2);
+        $this->em->persist($c3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $e2 = $this->_em->find(DDC258Super::class, $c2->id);
+        $e2 = $this->em->find(DDC258Super::class, $c2->id);
 
         self::assertInstanceOf(DDC258Class2::class, $e2);
         self::assertEquals('Bar', $e2->title);
         self::assertEquals('Bar', $e2->description);
         self::assertEquals('Bar', $e2->text);
 
-        $all = $this->_em->getRepository(DDC258Super::class)->findAll();
+        $all = $this->em->getRepository(DDC258Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC258Class1) {

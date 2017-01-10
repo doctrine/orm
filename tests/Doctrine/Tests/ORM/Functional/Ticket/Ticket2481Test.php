@@ -9,22 +9,22 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(Ticket2481Product::class)
+                $this->em->getClassMetadata(Ticket2481Product::class)
                 ]
             );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
-        $this->_conn = $this->_em->getConnection();
+        $this->conn = $this->em->getConnection();
     }
 
     public function testEmptyInsert()
     {
         $test = new Ticket2481Product();
-        $this->_em->persist($test);
-        $this->_em->flush();
+        $this->em->persist($test);
+        $this->em->flush();
 
         self::assertTrue($test->id > 0);
     }

@@ -17,8 +17,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
     {
         parent::setUp();
 
-        $sourceEntity = $this->_em->getClassMetadata(Travel::class);
-        $targetEntity = $this->_em->getClassMetadata(City::class);
+        $sourceEntity = $this->em->getClassMetadata(Travel::class);
+        $targetEntity = $this->em->getClassMetadata(City::class);
 
         $sourceEntity->associationMappings['visitedCities']['fetch'] = FetchMode::EXTRA_LAZY;
         $targetEntity->associationMappings['travels']['fetch']       = FetchMode::EXTRA_LAZY;
@@ -28,8 +28,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
     {
         parent::tearDown();
 
-        $sourceEntity = $this->_em->getClassMetadata(Travel::class);
-        $targetEntity = $this->_em->getClassMetadata(City::class);
+        $sourceEntity = $this->em->getClassMetadata(Travel::class);
+        $targetEntity = $this->em->getClassMetadata(City::class);
 
         $sourceEntity->associationMappings['visitedCities']['fetch'] = FetchMode::LAZY;
         $targetEntity->associationMappings['travels']['fetch']       = FetchMode::LAZY;
@@ -43,11 +43,11 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $ownerId    = $this->travels[0]->getId();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
-        $ref        = $this->_em->find(State::class, $this->states[1]->getId());
+        $owner      = $this->em->find(Travel::class, $ownerId);
+        $ref        = $this->em->find(State::class, $this->states[1]->getId());
 
         self::assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
         self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
@@ -55,8 +55,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $newItem = new City("New City", $ref);
         $owner->getVisitedCities()->add($newItem);
 
-        $this->_em->persist($newItem);
-        $this->_em->persist($owner);
+        $this->em->persist($newItem);
+        $this->em->persist($owner);
 
         $queryCount = $this->getCurrentQueryCount();
 
@@ -65,15 +65,15 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         self::assertFalse($owner->getVisitedCities()->isInitialized());
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertFalse($owner->getVisitedCities()->isInitialized());
         self::assertFalse($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
+        $owner      = $this->em->find(Travel::class, $ownerId);
 
         self::assertEquals(4, $owner->getVisitedCities()->count());
         self::assertFalse($owner->getVisitedCities()->isInitialized());

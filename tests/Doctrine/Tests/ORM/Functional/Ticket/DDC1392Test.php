@@ -14,10 +14,10 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1392File::class),
-                $this->_em->getClassMetadata(DDC1392Picture::class),
+                $this->em->getClassMetadata(DDC1392File::class),
+                $this->em->getClassMetadata(DDC1392Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -31,7 +31,7 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $picture = new DDC1392Picture;
         $picture->setFile($file);
 
-        $em = $this->_em;
+        $em = $this->em;
         $em->persist($picture);
         $em->flush();
         $em->clear();
@@ -57,7 +57,7 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $em->flush();
 
-        $q = $this->_em->createQuery("SELECT COUNT(e) FROM " . __NAMESPACE__ . '\DDC1392File e');
+        $q = $this->em->createQuery("SELECT COUNT(e) FROM " . __NAMESPACE__ . '\DDC1392File e');
         $result = $q->getSingleScalarResult();
 
         self::assertEquals(1, $result);

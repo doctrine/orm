@@ -13,13 +13,13 @@ class DDC2138Test extends OrmFunctionalTestCase
      */
     public function testForeignKeyOnSTIWithMultipleMapping()
     {
-        $schema = $this->_schemaTool->getSchemaFromMetadata(
+        $schema = $this->schemaTool->getSchemaFromMetadata(
             [
-                $this->_em->getClassMetadata(DDC2138User::class),
-                $this->_em->getClassMetadata(DDC2138Structure::class),
-                $this->_em->getClassMetadata(DDC2138UserFollowedObject::class),
-                $this->_em->getClassMetadata(DDC2138UserFollowedStructure::class),
-                $this->_em->getClassMetadata(DDC2138UserFollowedUser::class)
+                $this->em->getClassMetadata(DDC2138User::class),
+                $this->em->getClassMetadata(DDC2138Structure::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedObject::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedStructure::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedUser::class)
             ]
         );
 

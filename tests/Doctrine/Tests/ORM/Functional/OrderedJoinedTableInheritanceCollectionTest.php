@@ -16,11 +16,11 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(OJTIC_Pet::class),
-                $this->_em->getClassMetadata(OJTIC_Cat::class),
-                $this->_em->getClassMetadata(OJTIC_Dog::class),
+                $this->em->getClassMetadata(OJTIC_Pet::class),
+                $this->em->getClassMetadata(OJTIC_Cat::class),
+                $this->em->getClassMetadata(OJTIC_Dog::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -41,23 +41,23 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         $dog->children[] = $dog1;
         $dog->children[] = $dog2;
 
-        $this->_em->persist($dog);
-        $this->_em->persist($dog1);
-        $this->_em->persist($dog2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($dog);
+        $this->em->persist($dog1);
+        $this->em->persist($dog2);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testOrderdOneToManyCollection()
     {
-        $poofy = $this->_em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p WHERE p.name = 'Poofy'")->getSingleResult();
+        $poofy = $this->em->createQuery("SELECT p FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p WHERE p.name = 'Poofy'")->getSingleResult();
 
         self::assertEquals('Aari', $poofy->children[0]->getName());
         self::assertEquals('Zampa', $poofy->children[1]->getName());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $result = $this->_em->createQuery(
+        $result = $this->em->createQuery(
             "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'")
                 ->getResult();
 

@@ -23,7 +23,7 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
         for ($i = 0; $i < 3; $i++) {
             $group = new CmsGroup();
             $group->name = "test";
-            $this->_em->persist($group);
+            $this->em->persist($group);
 
             $groups[] = $group;
         }
@@ -35,12 +35,12 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $user->status = "active";
             $user->groups = $groups;
 
-            $this->_em->persist($user);
+            $this->em->persist($user);
         }
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
+        $query = $this->em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
         $query->setFirstResult(6);
         $query->setMaxResults(3);
 

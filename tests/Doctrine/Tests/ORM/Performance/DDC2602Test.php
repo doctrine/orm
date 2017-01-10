@@ -17,12 +17,12 @@ class DDC2602Test extends OrmPerformanceTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2602User::class),
-            $this->_em->getClassMetadata(DDC2602Biography::class),
-            $this->_em->getClassMetadata(DDC2602BiographyField::class),
-            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+            $this->em->getClassMetadata(DDC2602User::class),
+            $this->em->getClassMetadata(DDC2602Biography::class),
+            $this->em->getClassMetadata(DDC2602BiographyField::class),
+            $this->em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
 
@@ -33,26 +33,26 @@ class DDC2602Test extends OrmPerformanceTestCase
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(
+        $this->schemaTool->dropSchema(
             [
-            $this->_em->getClassMetadata(DDC2602User::class),
-            $this->_em->getClassMetadata(DDC2602Biography::class),
-            $this->_em->getClassMetadata(DDC2602BiographyField::class),
-            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+            $this->em->getClassMetadata(DDC2602User::class),
+            $this->em->getClassMetadata(DDC2602Biography::class),
+            $this->em->getClassMetadata(DDC2602BiographyField::class),
+            $this->em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
     }
 
     public function testIssue()
     {
-        $eventManager = $this->_em->getEventManager();
+        $eventManager = $this->em->getEventManager();
         $eventManager->addEventListener([Events::postLoad], new DDC2602PostLoadListener());
 
         // Set maximum seconds this can run
         $this->setMaxRunningTime(1);
 
         $this
-            ->_em
+            ->em
             ->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Performance\DDC2602User u JOIN u.biography b')
             ->getResult();
     }
@@ -114,14 +114,14 @@ class DDC2602Test extends OrmPerformanceTestCase
         $biographyFieldChoice6->field = $biographyField2;
         $biographyFieldChoice6->label = 'Answer 2.2';
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
 
-        $this->_em->persist($biographyField1);
-        $this->_em->persist($biographyField2);
+        $this->em->persist($biographyField1);
+        $this->em->persist($biographyField2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 

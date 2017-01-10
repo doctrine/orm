@@ -10,7 +10,7 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of mysql.');
         }
     }
@@ -18,15 +18,15 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\CMS\CmsGroup::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsUser::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsTag::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsAddress::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsEmail::class),
-            $this->_em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
+            $this->em->getClassMetadata(Models\CMS\CmsGroup::class),
+            $this->em->getClassMetadata(Models\CMS\CmsUser::class),
+            $this->em->getClassMetadata(Models\CMS\CmsTag::class),
+            $this->em->getClassMetadata(Models\CMS\CmsAddress::class),
+            $this->em->getClassMetadata(Models\CMS\CmsEmail::class),
+            $this->em->getClassMetadata(Models\CMS\CmsPhonenumber::class),
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals("CREATE TABLE cms_groups (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(50) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB", $sql[0]);
@@ -51,10 +51,10 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql2()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\Generic\DecimalModel::class)
+            $this->em->getClassMetadata(Models\Generic\DecimalModel::class)
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals(1, count($sql));
@@ -64,10 +64,10 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql3()
     {
         $classes = [
-            $this->_em->getClassMetadata(Models\Generic\BooleanModel::class)
+            $this->em->getClassMetadata(Models\Generic\BooleanModel::class)
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals(1, count($sql));
@@ -80,10 +80,10 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
     public function testGetCreateSchemaSql4()
     {
         $classes = [
-            $this->_em->getClassMetadata(MysqlSchemaNamespacedEntity::class)
+            $this->em->getClassMetadata(MysqlSchemaNamespacedEntity::class)
         ];
 
-        $tool = new SchemaTool($this->_em);
+        $tool = new SchemaTool($this->em);
         $sql = $tool->getCreateSchemaSql($classes);
 
         self::assertEquals(0, count($sql));

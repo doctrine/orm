@@ -21,7 +21,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     public function testLockCTIClass()
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() === 'sqlite') {
             self::markTestSkipped('It should not run on in-memory databases');
         }
 
@@ -31,12 +31,12 @@ class DDC933Test extends OrmFunctionalTestCase
         $manager->setTitle('Vice President of This Test');
         $manager->setDepartment("Foo");
 
-        $this->_em->persist($manager);
-        $this->_em->flush();
+        $this->em->persist($manager);
+        $this->em->flush();
 
-        $this->_em->beginTransaction();
-        $this->_em->lock($manager, LockMode::PESSIMISTIC_READ);
-        $this->_em->rollback();
+        $this->em->beginTransaction();
+        $this->em->lock($manager, LockMode::PESSIMISTIC_READ);
+        $this->em->rollback();
 
         // if lock hasn't been released we'd have an exception here
         $this->assertManagerCanBeUpdatedOnAnotherConnection($manager->getId(), 'Master of This Test');
@@ -55,7 +55,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     private function assertManagerCanBeUpdatedOnAnotherConnection(int $id, string $newName)
     {
-        $em = $this->_getEntityManager(TestUtil::getConnection());
+        $em = $this->getEntityManager(TestUtil::getConnection());
 
         /** @var CompanyManager $manager */
         $manager = $em->find(CompanyManager::class, $id);

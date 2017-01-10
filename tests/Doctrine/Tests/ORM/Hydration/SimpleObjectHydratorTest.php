@@ -38,7 +38,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->_em);
+        $hydrator = new SimpleObjectHydrator($this->em);
 
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -64,7 +64,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->city = 'Cracow';
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->_em);
+        $hydrator = new SimpleObjectHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
         self::assertEquals($result[0], $expectedEntity);
@@ -95,7 +95,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         ];
 
         $stmt     = new HydratorMockStatement($resultSet);
-        $hydrator = new SimpleObjectHydrator($this->_em);
+        $hydrator = new SimpleObjectHydrator($this->em);
 
         $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -125,7 +125,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->tags = ['tag1', 'tag2'];
 
         $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->_em);
+        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->em);
         $result = $hydrator->hydrateAll($stmt, $rsm);
         $this->assertEquals($result[0], $expectedEntity);
     }

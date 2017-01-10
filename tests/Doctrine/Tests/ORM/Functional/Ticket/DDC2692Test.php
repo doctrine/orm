@@ -18,15 +18,15 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2692Foo::class),
+                $this->em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
         } catch(\Exception $e) {
             return;
         }
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     public function testIsListenerCalledOnlyOnceOnPreFlush()
@@ -37,13 +37,13 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $listener->expects($this->once())->method('preFlush');
 
-        $this->_em->getEventManager()->addEventSubscriber($listener);
+        $this->em->getEventManager()->addEventSubscriber($listener);
 
-        $this->_em->persist(new DDC2692Foo);
-        $this->_em->persist(new DDC2692Foo);
+        $this->em->persist(new DDC2692Foo);
+        $this->em->persist(new DDC2692Foo);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }
 /**

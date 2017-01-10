@@ -17,11 +17,11 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         Type::addType(DDC2579Type::NAME, DDC2579Type::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2579Entity::class),
-            $this->_em->getClassMetadata(DDC2579EntityAssoc::class),
-            $this->_em->getClassMetadata(DDC2579AssocAssoc::class),
+            $this->em->getClassMetadata(DDC2579Entity::class),
+            $this->em->getClassMetadata(DDC2579EntityAssoc::class),
+            $this->em->getClassMetadata(DDC2579AssocAssoc::class),
             ]
         );
     }
@@ -32,18 +32,18 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $assoc      = new DDC2579AssocAssoc($id);
         $assocAssoc = new DDC2579EntityAssoc($assoc);
         $entity     = new DDC2579Entity($assocAssoc);
-        $repository = $this->_em->getRepository(DDC2579Entity::class);
+        $repository = $this->em->getRepository(DDC2579Entity::class);
 
-        $this->_em->persist($assoc);
-        $this->_em->persist($assocAssoc);
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($assoc);
+        $this->em->persist($assocAssoc);
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $entity->value++;
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
 
         $id       = $entity->id;
         $value    = $entity->value;
@@ -53,9 +53,9 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC2579Entity::class, $entity);
         self::assertEquals($value, $entity->value);
 
-        $this->_em->remove($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($entity);
+        $this->em->flush();
+        $this->em->clear();
 
         self::assertNull($repository->findOneBy($criteria));
         self::assertCount(0, $repository->findAll());

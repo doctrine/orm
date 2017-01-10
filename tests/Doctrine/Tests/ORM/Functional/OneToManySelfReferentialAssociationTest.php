@@ -32,9 +32,9 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->persist($this->parent);
+        $this->em->persist($this->parent);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertForeignKeyIs($this->parent->getId(), $this->firstChild);
         self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
@@ -42,16 +42,16 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testSavesAnEmptyCollection()
     {
-        $this->_em->persist($this->parent);
-        $this->_em->flush();
+        $this->em->persist($this->parent);
+        $this->em->flush();
 
         self::assertEquals(0, count($this->parent->getChildren()));
     }
 
     public function testDoesNotSaveAnInverseSideSet() {
         $this->parent->brokenAddChild($this->firstChild);
-        $this->_em->persist($this->parent);
-        $this->_em->flush();
+        $this->em->persist($this->parent);
+        $this->em->flush();
 
         self::assertForeignKeyIs(null, $this->firstChild);
     }
@@ -60,10 +60,10 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->persist($this->parent);
+        $this->em->persist($this->parent);
 
         $this->parent->removeChild($this->firstChild);
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertForeignKeyIs(null, $this->firstChild);
         self::assertForeignKeyIs($this->parent->getId(), $this->secondChild);
@@ -71,9 +71,9 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testEagerLoadsOneToManyAssociation()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
+        $query = $this->em->createQuery('select c1, c2 from Doctrine\Tests\Models\ECommerce\ECommerceCategory c1 join c1.children c2');
         $result = $query->getResult();
         self::assertEquals(1, count($result));
         $parent = $result[0];
@@ -89,11 +89,11 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testLazyLoadsOneToManyAssociation()
     {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceCategory::class);
+        $this->createFixture();
+        $metadata = $this->em->getClassMetadata(ECommerceCategory::class);
         $metadata->associationMappings['children']['fetch'] = FetchMode::LAZY;
 
-        $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
+        $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
         $result = $query->getResult();
         $parent = $result[0];
         $children = $parent->getChildren();
@@ -106,18 +106,18 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(' books', strstr($children[1]->getName(), ' books'));
     }
 
-    private function _createFixture()
+    private function createFixture()
     {
         $this->parent->addChild($this->firstChild);
         $this->parent->addChild($this->secondChild);
-        $this->_em->persist($this->parent);
+        $this->em->persist($this->parent);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function assertForeignKeyIs($value, ECommerceCategory $child) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', [$child->getId()])->fetchColumn();
+        $foreignKey = $this->em->getConnection()->executeQuery('SELECT parent_id FROM ecommerce_categories WHERE id=?', [$child->getId()])->fetchColumn();
         self::assertEquals($value, $foreignKey);
     }
 }

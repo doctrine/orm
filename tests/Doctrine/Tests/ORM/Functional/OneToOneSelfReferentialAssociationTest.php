@@ -33,8 +33,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 
     public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
         $this->customer->setMentor($this->mentor);
-        $this->_em->persist($this->customer);
-        $this->_em->flush();
+        $this->em->persist($this->customer);
+        $this->em->flush();
 
         self::assertForeignKeyIs($this->mentor->getId());
     }
@@ -42,27 +42,27 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     public function testRemovesOneToOneAssociation()
     {
         $this->customer->setMentor($this->mentor);
-        $this->_em->persist($this->customer);
+        $this->em->persist($this->customer);
         $this->customer->removeMentor();
 
-        $this->_em->flush();
+        $this->em->flush();
 
         self::assertForeignKeyIs(null);
     }
 
     public function testFind()
     {
-        $id = $this->_createFixture();
+        $id = $this->createFixture();
 
-        $customer = $this->_em->find(ECommerceCustomer::class, $id);
+        $customer = $this->em->find(ECommerceCustomer::class, $id);
         self::assertNotInstanceOf(Proxy::class, $customer->getMentor());
     }
 
     public function testEagerLoadsAssociation()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
+        $query = $this->em->createQuery('select c, m from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c left join c.mentor m order by c.id asc');
         $result = $query->getResult();
         $customer = $result[0];
         self::assertLoadingOfAssociation($customer);
@@ -74,12 +74,12 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
      */
     public function testLazyLoadsAssociation()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
+        $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = FetchMode::LAZY;
 
-        $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
+        $query = $this->em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
         $result = $query->getResult();
         $customer = $result[0];
         self::assertLoadingOfAssociation($customer);
@@ -88,9 +88,9 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     public function testMultiSelfReference()
     {
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(MultiSelfReference::class)
+                $this->em->getClassMetadata(MultiSelfReference::class)
                 ]
             );
         } catch (\Exception $e) {
@@ -98,14 +98,14 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         }
 
         $entity1 = new MultiSelfReference();
-        $this->_em->persist($entity1);
+        $this->em->persist($entity1);
         $entity1->setOther1($entity2 = new MultiSelfReference);
         $entity1->setOther2($entity3 = new MultiSelfReference);
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
+        $entity2 = $this->em->find(get_class($entity1), $entity1->getId());
 
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
         self::assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());
@@ -122,11 +122,11 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
     }
 
     public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchColumn();
+        $foreignKey = $this->em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchColumn();
         self::assertEquals($value, $foreignKey);
     }
 
-    private function _createFixture()
+    private function createFixture()
     {
         $customer = new ECommerceCustomer;
         $customer->setName('Luke Skywalker');
@@ -134,10 +134,10 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $mentor->setName('Obi-wan Kenobi');
         $customer->setMentor($mentor);
 
-        $this->_em->persist($customer);
+        $this->em->persist($customer);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         return $customer->getId();
     }

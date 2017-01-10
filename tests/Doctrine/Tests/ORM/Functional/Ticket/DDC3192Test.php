@@ -25,10 +25,10 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         Type::addType('ddc3192_currency_code', DDC3192CurrencyCode::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3192Currency::class),
-            $this->_em->getClassMetadata(DDC3192Transaction::class),
+            $this->em->getClassMetadata(DDC3192Currency::class),
+            $this->em->getClassMetadata(DDC3192Transaction::class),
             ]
         );
     }
@@ -37,24 +37,24 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $currency = new DDC3192Currency('BYR');
 
-        $this->_em->persist($currency);
-        $this->_em->flush();
+        $this->em->persist($currency);
+        $this->em->flush();
 
         $amount = 50;
         $transaction = new DDC3192Transaction($amount, $currency);
 
-        $this->_em->persist($transaction);
-        $this->_em->flush();
-        $this->_em->close();
+        $this->em->persist($transaction);
+        $this->em->flush();
+        $this->em->close();
 
-        $resultByPersister = $this->_em->find(DDC3192Transaction::class, $transaction->id);
+        $resultByPersister = $this->em->find(DDC3192Transaction::class, $transaction->id);
 
         // This works: DDC2494 makes persister set type mapping info to ResultSetMapping
         self::assertEquals('BYR', $resultByPersister->currency->code);
 
-        $this->_em->close();
+        $this->em->close();
 
-        $query = $this->_em->createQuery();
+        $query = $this->em->createQuery();
         $query->setDQL('SELECT t FROM ' . DDC3192Transaction::class . ' t WHERE t.id = ?1');
         $query->setParameter(1, $transaction->id);
 

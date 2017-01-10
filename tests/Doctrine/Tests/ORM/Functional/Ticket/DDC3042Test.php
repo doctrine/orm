@@ -13,10 +13,10 @@ class DDC3042Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3042Foo::class),
-            $this->_em->getClassMetadata(DDC3042Bar::class),
+            $this->em->getClassMetadata(DDC3042Foo::class),
+            $this->em->getClassMetadata(DDC3042Bar::class),
             ]
         );
     }
@@ -26,7 +26,7 @@ class DDC3042Test extends OrmFunctionalTestCase
         self::assertStringNotMatchesFormat(
             '%sfield11%sfield11%s',
             $this
-                ->_em
+                ->em
                 ->createQuery(
                     'SELECT f, b FROM ' . __NAMESPACE__ . '\DDC3042Foo f JOIN ' . __NAMESPACE__ . '\DDC3042Bar b WITH 1 = 1'
                 )

@@ -9,11 +9,11 @@ class DDC512Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC512Customer::class),
-            $this->_em->getClassMetadata(DDC512OfferItem::class),
-            $this->_em->getClassMetadata(DDC512Item::class),
+            $this->em->getClassMetadata(DDC512Customer::class),
+            $this->em->getClassMetadata(DDC512OfferItem::class),
+            $this->em->getClassMetadata(DDC512Item::class),
             ]
         );
     }
@@ -23,15 +23,15 @@ class DDC512Test extends OrmFunctionalTestCase
         $customer1 = new DDC512Customer();
         $item = new DDC512OfferItem();
         $customer1->item = $item;
-        $this->_em->persist($customer1);
+        $this->em->persist($customer1);
 
         $customer2 = new DDC512Customer();
-        $this->_em->persist($customer2);
+        $this->em->persist($customer2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $q = $this->_em->createQuery("select u,i from ".__NAMESPACE__."\\DDC512Customer u left join u.item i");
+        $q = $this->em->createQuery("select u,i from ".__NAMESPACE__."\\DDC512Customer u left join u.item i");
         $result = $q->getResult();
 
         self::assertEquals(2, count($result));

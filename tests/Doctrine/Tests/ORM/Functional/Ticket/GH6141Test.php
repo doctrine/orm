@@ -15,11 +15,11 @@ class GH6141Test extends OrmFunctionalTestCase
 
         Type::addType(GH6141PeopleType::NAME, GH6141PeopleType::class);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6141Person::class),
-                $this->_em->getClassMetadata(GH6141Boss::class),
-                $this->_em->getClassMetadata(GH6141Employee::class),
+                $this->em->getClassMetadata(GH6141Person::class),
+                $this->em->getClassMetadata(GH6141Boss::class),
+                $this->em->getClassMetadata(GH6141Employee::class),
             ]
         );
     }
@@ -36,13 +36,13 @@ class GH6141Test extends OrmFunctionalTestCase
         $boss = new GH6141Boss('John');
         $employee = new GH6141Employee('Bob');
 
-        $this->_em->persist($boss);
-        $this->_em->persist($employee);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($boss);
+        $this->em->persist($employee);
+        $this->em->flush();
+        $this->em->clear();
 
         // Using DQL here to make sure that we'll use ObjectHydrator instead of SimpleObjectHydrator
-        $query = $this->_em->createQueryBuilder()
+        $query = $this->em->createQueryBuilder()
             ->select('person')
             ->from(GH6141Person::class, 'person')
             ->where('person.name = :name')

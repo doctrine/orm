@@ -22,23 +22,23 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     public function putGermanysBrandenburderTor()
     {
         $country = new NavCountry("Germany");
-        $this->_em->persist($country);
+        $this->em->persist($country);
         $poi = new NavPointOfInterest(100, 200, "Brandenburger Tor", $country);
-        $this->_em->persist($poi);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($poi);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function putTripAroundEurope()
     {
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
         $tour = new NavTour("Trip around Europe");
         $tour->addPointOfInterest($poi);
 
-        $this->_em->persist($tour);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($tour);
+        $this->em->flush();
+        $this->em->clear();
 
         return $tour;
     }
@@ -47,7 +47,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
 
         self::assertInstanceOf(NavPointOfInterest::class, $poi);
         self::assertEquals(100, $poi->getLat());
@@ -62,32 +62,32 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
         $photo = new NavPhotos($poi, "asdf");
-        $this->_em->persist($photo);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($photo);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = 'SELECT t FROM Doctrine\Tests\Models\Navigation\NavPhotos t WHERE t.poi = ?1';
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('A single-valued association path expression to an entity with a composite primary key is not supported.');
 
-        $sql = $this->_em->createQuery($dql)->getSQL();
+        $sql = $this->em->createQuery($dql)->getSQL();
     }
 
     public function testIdentityFunctionWithCompositePrimaryKey()
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi    = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi    = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
         $photo  = new NavPhotos($poi, "asdf");
-        $this->_em->persist($photo);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($photo);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql    = "SELECT IDENTITY(p.poi, 'long') AS long, IDENTITY(p.poi, 'lat') AS lat FROM Doctrine\Tests\Models\Navigation\NavPhotos p";
-        $result = $this->_em->createQuery($dql)->getResult();
+        $result = $this->em->createQuery($dql)->getResult();
 
         self::assertCount(1, $result);
         self::assertEquals(200, $result[0]['long']);
@@ -99,7 +99,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->putGermanysBrandenburderTor();
         $tour = $this->putTripAroundEurope();
 
-        $tour = $this->_em->find(NavTour::class, $tour->getId());
+        $tour = $this->em->find(NavTour::class, $tour->getId());
 
         self::assertEquals(1, count($tour->getPointOfInterests()));
     }
@@ -115,7 +115,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
              . 'INNER JOIN p.country c'
         ;
 
-        $tours = $this->_em->createQuery($dql)->getResult();
+        $tours = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals(1, count($tours));
 
@@ -137,7 +137,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
              . 'WHERE p MEMBER OF t.pois'
         ;
 
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $tours = $query->getResult();
 
         self::assertEquals(0, count($tours));
@@ -148,7 +148,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['key1' => 100]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['key1' => 100]);
     }
 
     public function testUnrecognizedIdentifierFieldsOnGetReference()
@@ -156,7 +156,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage("Unrecognized identifier fields: 'key1'");
 
-        $poi = $this->_em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]
+        $poi = $this->em->getReference(NavPointOfInterest::class, ['lat' => 10, 'long' => 20, 'key1' => 100]
         );
     }
 
@@ -167,18 +167,18 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
     {
         $this->putGermanysBrandenburderTor();
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
         $poi->addVisitor(new NavUser("test1"));
         $poi->addVisitor(new NavUser("test2"));
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $poi->getVisitors()->clear();
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $poi = $this->_em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
+        $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
         self::assertEquals(0, count($poi->getVisitors()));
     }
 }

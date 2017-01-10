@@ -39,7 +39,7 @@ class EntityManagerHelper extends Helper
      *
      * @var EntityManagerInterface
      */
-    protected $_em;
+    protected $em;
 
     /**
      * Constructor.
@@ -48,7 +48,7 @@ class EntityManagerHelper extends Helper
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em = $em;
+        $this->em = $em;
     }
 
     /**
@@ -58,7 +58,7 @@ class EntityManagerHelper extends Helper
      */
     public function getEntityManager()
     {
-        return $this->_em;
+        return $this->em;
     }
 
     /**

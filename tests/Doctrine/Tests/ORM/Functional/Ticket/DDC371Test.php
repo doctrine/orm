@@ -12,11 +12,11 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC371Parent::class),
-            $this->_em->getClassMetadata(DDC371Child::class)
+            $this->em->getClassMetadata(DDC371Parent::class),
+            $this->em->getClassMetadata(DDC371Child::class)
             ]
         );
     }
@@ -33,13 +33,13 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child->parent = $parent;
         $parent->children->add($child);
 
-        $this->_em->persist($parent);
-        $this->_em->persist($child);
+        $this->em->persist($parent);
+        $this->em->persist($child);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $children = $this->_em->createQuery('select c,p from '.__NAMESPACE__.'\DDC371Child c '
+        $children = $this->em->createQuery('select c,p from '.__NAMESPACE__.'\DDC371Child c '
                 . 'left join c.parent p where c.id = 1 and p.id = 1')
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();

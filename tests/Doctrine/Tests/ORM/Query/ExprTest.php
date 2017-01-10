@@ -18,167 +18,167 @@ use Doctrine\Tests\OrmTestCase;
  */
 class ExprTest extends OrmTestCase
 {
-    private $_em;
+    private $em;
 
     /**
      * @var Expr
      */
-    private $_expr;
+    private $expr;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
-        $this->_expr = new Expr;
+        $this->em = $this->getTestEntityManager();
+        $this->expr = new Expr;
     }
 
     public function testAvgExpr()
     {
-        self::assertEquals('AVG(u.id)', (string) $this->_expr->avg('u.id'));
+        self::assertEquals('AVG(u.id)', (string) $this->expr->avg('u.id'));
     }
 
     public function testMaxExpr()
     {
-        self::assertEquals('MAX(u.id)', (string) $this->_expr->max('u.id'));
+        self::assertEquals('MAX(u.id)', (string) $this->expr->max('u.id'));
     }
 
     public function testMinExpr()
     {
-        self::assertEquals('MIN(u.id)', (string) $this->_expr->min('u.id'));
+        self::assertEquals('MIN(u.id)', (string) $this->expr->min('u.id'));
     }
 
     public function testCountExpr()
     {
-        self::assertEquals('MAX(u.id)', (string) $this->_expr->max('u.id'));
+        self::assertEquals('MAX(u.id)', (string) $this->expr->max('u.id'));
     }
 
     public function testCountDistinctExpr()
     {
-        self::assertEquals('COUNT(DISTINCT u.id)', (string) $this->_expr->countDistinct('u.id'));
+        self::assertEquals('COUNT(DISTINCT u.id)', (string) $this->expr->countDistinct('u.id'));
     }
 
     public function testCountDistinctExprMulti()
     {
-        self::assertEquals('COUNT(DISTINCT u.id, u.name)', (string) $this->_expr->countDistinct('u.id', 'u.name'));
+        self::assertEquals('COUNT(DISTINCT u.id, u.name)', (string) $this->expr->countDistinct('u.id', 'u.name'));
     }
 
     public function testExistsExpr()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
 
-        self::assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->exists($qb));
+        self::assertEquals('EXISTS(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->expr->exists($qb));
     }
 
     public function testAllExpr()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
 
-        self::assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->all($qb));
+        self::assertEquals('ALL(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->expr->all($qb));
     }
 
     public function testSomeExpr()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
 
-        self::assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->some($qb));
+        self::assertEquals('SOME(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->expr->some($qb));
     }
 
     public function testAnyExpr()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
 
-        self::assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->any($qb));
+        self::assertEquals('ANY(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->expr->any($qb));
     }
 
     public function testNotExpr()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         $qb->select('u')->from('User', 'u')->where('u.name = ?1');
 
-        self::assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->_expr->not($qb));
+        self::assertEquals('NOT(SELECT u FROM User u WHERE u.name = ?1)', (string) $this->expr->not($qb));
     }
 
     public function testAndExpr()
     {
-        self::assertEquals('1 = 1 AND 2 = 2', (string) $this->_expr->andX((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+        self::assertEquals('1 = 1 AND 2 = 2', (string) $this->expr->andX((string) $this->expr->eq(1, 1), (string) $this->expr->eq(2, 2)));
     }
 
     public function testIntelligentParenthesisPreventionAndExpr()
     {
         self::assertEquals(
             '1 = 1 AND 2 = 2',
-            (string) $this->_expr->andX($this->_expr->orX($this->_expr->andX($this->_expr->eq(1, 1))), (string) $this->_expr->eq(2, 2))
+            (string) $this->expr->andX($this->expr->orX($this->expr->andX($this->expr->eq(1, 1))), (string) $this->expr->eq(2, 2))
         );
     }
 
     public function testOrExpr()
     {
-        self::assertEquals('1 = 1 OR 2 = 2', (string) $this->_expr->orX((string) $this->_expr->eq(1, 1), (string) $this->_expr->eq(2, 2)));
+        self::assertEquals('1 = 1 OR 2 = 2', (string) $this->expr->orX((string) $this->expr->eq(1, 1), (string) $this->expr->eq(2, 2)));
     }
 
     public function testAbsExpr()
     {
-        self::assertEquals('ABS(1)', (string) $this->_expr->abs(1));
+        self::assertEquals('ABS(1)', (string) $this->expr->abs(1));
     }
 
     public function testProdExpr()
     {
-        self::assertEquals('1 * 2', (string) $this->_expr->prod(1, 2));
+        self::assertEquals('1 * 2', (string) $this->expr->prod(1, 2));
     }
 
     public function testDiffExpr()
     {
-        self::assertEquals('1 - 2', (string) $this->_expr->diff(1, 2));
+        self::assertEquals('1 - 2', (string) $this->expr->diff(1, 2));
     }
 
     public function testSumExpr()
     {
-        self::assertEquals('1 + 2', (string) $this->_expr->sum(1, 2));
+        self::assertEquals('1 + 2', (string) $this->expr->sum(1, 2));
     }
 
     public function testQuotientExpr()
     {
-        self::assertEquals('10 / 2', (string) $this->_expr->quot(10, 2));
+        self::assertEquals('10 / 2', (string) $this->expr->quot(10, 2));
     }
 
     public function testScopeInArithmeticExpr()
     {
-        self::assertEquals('(100 - 20) / 2', (string) $this->_expr->quot($this->_expr->diff(100, 20), 2));
-        self::assertEquals('100 - (20 / 2)', (string) $this->_expr->diff(100, $this->_expr->quot(20, 2)));
+        self::assertEquals('(100 - 20) / 2', (string) $this->expr->quot($this->expr->diff(100, 20), 2));
+        self::assertEquals('100 - (20 / 2)', (string) $this->expr->diff(100, $this->expr->quot(20, 2)));
     }
 
     public function testSquareRootExpr()
     {
-        self::assertEquals('SQRT(1)', (string) $this->_expr->sqrt(1));
+        self::assertEquals('SQRT(1)', (string) $this->expr->sqrt(1));
     }
 
     public function testEqualExpr()
     {
-        self::assertEquals('1 = 1', (string) $this->_expr->eq(1, 1));
+        self::assertEquals('1 = 1', (string) $this->expr->eq(1, 1));
     }
 
     public function testLikeExpr()
     {
-        self::assertEquals('a.description LIKE :description', (string) $this->_expr->like('a.description', ':description'));
+        self::assertEquals('a.description LIKE :description', (string) $this->expr->like('a.description', ':description'));
     }
 
     public function testNotLikeExpr()
     {
-        self::assertEquals('a.description NOT LIKE :description', (string) $this->_expr->notLike('a.description', ':description'));
+        self::assertEquals('a.description NOT LIKE :description', (string) $this->expr->notLike('a.description', ':description'));
     }
 
     public function testConcatExpr()
     {
-        self::assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.last_name'));
-        self::assertEquals('CONCAT(u.first_name, u.middle_name, u.last_name)', (string) $this->_expr->concat('u.first_name', 'u.middle_name', 'u.last_name'));
+        self::assertEquals('CONCAT(u.first_name, u.last_name)', (string) $this->expr->concat('u.first_name', 'u.last_name'));
+        self::assertEquals('CONCAT(u.first_name, u.middle_name, u.last_name)', (string) $this->expr->concat('u.first_name', 'u.middle_name', 'u.last_name'));
     }
 
     public function testSubstringExpr()
     {
-        self::assertEquals('SUBSTRING(a.title, 0, 25)', (string) $this->_expr->substring('a.title', 0, 25));
+        self::assertEquals('SUBSTRING(a.title, 0, 25)', (string) $this->expr->substring('a.title', 0, 25));
     }
 
     /**
@@ -187,42 +187,42 @@ class ExprTest extends OrmTestCase
      */
     public function testSubstringExprAcceptsTwoArguments()
     {
-        self::assertEquals('SUBSTRING(a.title, 5)', (string) $this->_expr->substring('a.title', 5));
+        self::assertEquals('SUBSTRING(a.title, 5)', (string) $this->expr->substring('a.title', 5));
     }
 
     public function testLowerExpr()
     {
-        self::assertEquals('LOWER(u.first_name)', (string) $this->_expr->lower('u.first_name'));
+        self::assertEquals('LOWER(u.first_name)', (string) $this->expr->lower('u.first_name'));
     }
 
     public function testUpperExpr()
     {
-        self::assertEquals('UPPER(u.first_name)', (string) $this->_expr->upper('u.first_name'));
+        self::assertEquals('UPPER(u.first_name)', (string) $this->expr->upper('u.first_name'));
     }
 
     public function testLengthExpr()
     {
-        self::assertEquals('LENGTH(u.first_name)', (string) $this->_expr->length('u.first_name'));
+        self::assertEquals('LENGTH(u.first_name)', (string) $this->expr->length('u.first_name'));
     }
 
     public function testGreaterThanExpr()
     {
-        self::assertEquals('5 > 2', (string) $this->_expr->gt(5, 2));
+        self::assertEquals('5 > 2', (string) $this->expr->gt(5, 2));
     }
 
     public function testLessThanExpr()
     {
-        self::assertEquals('2 < 5', (string) $this->_expr->lt(2, 5));
+        self::assertEquals('2 < 5', (string) $this->expr->lt(2, 5));
     }
 
     public function testStringLiteralExpr()
     {
-        self::assertEquals("'word'", (string) $this->_expr->literal('word'));
+        self::assertEquals("'word'", (string) $this->expr->literal('word'));
     }
 
     public function testNumericLiteralExpr()
     {
-        self::assertEquals(5, (string) $this->_expr->literal(5));
+        self::assertEquals(5, (string) $this->expr->literal(5));
     }
 
     /**
@@ -231,92 +231,92 @@ class ExprTest extends OrmTestCase
      */
     public function testLiteralExprProperlyQuotesStrings()
     {
-       self::assertEquals("'00010001'", (string) $this->_expr->literal('00010001'));
+       self::assertEquals("'00010001'", (string) $this->expr->literal('00010001'));
     }
 
     public function testGreaterThanOrEqualToExpr()
     {
-        self::assertEquals('5 >= 2', (string) $this->_expr->gte(5, 2));
+        self::assertEquals('5 >= 2', (string) $this->expr->gte(5, 2));
     }
 
     public function testLessThanOrEqualTo()
     {
-        self::assertEquals('2 <= 5', (string) $this->_expr->lte(2, 5));
+        self::assertEquals('2 <= 5', (string) $this->expr->lte(2, 5));
     }
 
     public function testBetweenExpr()
     {
-        self::assertEquals('u.id BETWEEN 3 AND 6', (string) $this->_expr->between('u.id', 3, 6));
+        self::assertEquals('u.id BETWEEN 3 AND 6', (string) $this->expr->between('u.id', 3, 6));
     }
 
     public function testTrimExpr()
     {
-        self::assertEquals('TRIM(u.id)', (string) $this->_expr->trim('u.id'));
+        self::assertEquals('TRIM(u.id)', (string) $this->expr->trim('u.id'));
     }
 
     public function testIsNullExpr()
     {
-        self::assertEquals('u.id IS NULL', (string) $this->_expr->isNull('u.id'));
+        self::assertEquals('u.id IS NULL', (string) $this->expr->isNull('u.id'));
     }
 
     public function testIsNotNullExpr()
     {
-        self::assertEquals('u.id IS NOT NULL', (string) $this->_expr->isNotNull('u.id'));
+        self::assertEquals('u.id IS NOT NULL', (string) $this->expr->isNotNull('u.id'));
     }
 
     public function testIsInstanceOfExpr() {
-        self::assertEquals('u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee', (string) $this->_expr->isInstanceOf('u', CompanyEmployee::class));
+        self::assertEquals('u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee', (string) $this->expr->isInstanceOf('u', CompanyEmployee::class));
     }
 
     public function testIsMemberOfExpr() {
-        self::assertEquals(':groupId MEMBER OF u.groups', (string) $this->_expr->isMemberOf(':groupId', 'u.groups'));
+        self::assertEquals(':groupId MEMBER OF u.groups', (string) $this->expr->isMemberOf(':groupId', 'u.groups'));
     }
 
     public function testInExpr()
     {
-        self::assertEquals('u.id IN(1, 2, 3)', (string) $this->_expr->in('u.id', [1, 2, 3]));
+        self::assertEquals('u.id IN(1, 2, 3)', (string) $this->expr->in('u.id', [1, 2, 3]));
     }
 
     public function testInLiteralExpr()
     {
-        self::assertEquals("u.type IN('foo', 'bar')", (string) $this->_expr->in('u.type', ['foo', 'bar']));
+        self::assertEquals("u.type IN('foo', 'bar')", (string) $this->expr->in('u.type', ['foo', 'bar']));
     }
 
     public function testNotInExpr()
     {
-        self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->_expr->notIn('u.id', [1, 2, 3]));
+        self::assertEquals('u.id NOT IN(1, 2, 3)', (string) $this->expr->notIn('u.id', [1, 2, 3]));
     }
 
     public function testNotInLiteralExpr()
     {
-        self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->_expr->notIn('u.type', ['foo', 'bar']));
+        self::assertEquals("u.type NOT IN('foo', 'bar')", (string) $this->expr->notIn('u.type', ['foo', 'bar']));
     }
 
     public function testAndxOrxExpr()
     {
-        $andExpr = $this->_expr->andX();
-        $andExpr->add($this->_expr->eq(1, 1));
-        $andExpr->add($this->_expr->lt(1, 5));
+        $andExpr = $this->expr->andX();
+        $andExpr->add($this->expr->eq(1, 1));
+        $andExpr->add($this->expr->lt(1, 5));
 
-        $orExpr = $this->_expr->orX();
+        $orExpr = $this->expr->orX();
         $orExpr->add($andExpr);
-        $orExpr->add($this->_expr->eq(1, 1));
+        $orExpr->add($this->expr->eq(1, 1));
 
         self::assertEquals('(1 = 1 AND 1 < 5) OR 1 = 1', (string) $orExpr);
     }
 
     public function testOrxExpr()
     {
-        $orExpr = $this->_expr->orX();
-        $orExpr->add($this->_expr->eq(1, 1));
-        $orExpr->add($this->_expr->lt(1, 5));
+        $orExpr = $this->expr->orX();
+        $orExpr->add($this->expr->eq(1, 1));
+        $orExpr->add($this->expr->lt(1, 5));
 
         self::assertEquals('1 = 1 OR 1 < 5', (string) $orExpr);
     }
 
     public function testOrderByCountExpr()
     {
-        $orderExpr = $this->_expr->desc('u.username');
+        $orderExpr = $this->expr->desc('u.username');
 
         self::assertEquals($orderExpr->count(), 1);
         self::assertEquals('u.username DESC', (string) $orderExpr);
@@ -324,13 +324,13 @@ class ExprTest extends OrmTestCase
 
     public function testOrderByOrder()
     {
-        $orderExpr = $this->_expr->desc('u.username');
+        $orderExpr = $this->expr->desc('u.username');
         self::assertEquals('u.username DESC', (string) $orderExpr);
     }
 
     public function testOrderByAsc()
     {
-        $orderExpr = $this->_expr->asc('u.username');
+        $orderExpr = $this->expr->asc('u.username');
         self::assertEquals('u.username ASC', (string) $orderExpr);
     }
 
@@ -339,8 +339,8 @@ class ExprTest extends OrmTestCase
      */
     public function testAddThrowsException()
     {
-        $orExpr = $this->_expr->orX();
-        $orExpr->add($this->_expr->quot(5, 2));
+        $orExpr = $this->expr->orX();
+        $orExpr->add($this->expr->quot(5, 2));
     }
 
     /**
@@ -348,8 +348,8 @@ class ExprTest extends OrmTestCase
      */
     public function testBooleanLiteral()
     {
-        self::assertEquals('true', $this->_expr->literal(true));
-        self::assertEquals('false', $this->_expr->literal(false));
+        self::assertEquals('true', $this->expr->literal(true));
+        self::assertEquals('false', $this->expr->literal(false));
     }
 
 
@@ -418,15 +418,15 @@ class ExprTest extends OrmTestCase
 
     public function testAddEmpty()
     {
-        $andExpr = $this->_expr->andX();
-        $andExpr->add($this->_expr->andX());
+        $andExpr = $this->expr->andX();
+        $andExpr->add($this->expr->andX());
 
         self::assertEquals(0, $andExpr->count());
     }
 
     public function testAddNull()
     {
-        $andExpr = $this->_expr->andX();
+        $andExpr = $this->expr->andX();
         $andExpr->add(null);
 
         self::assertEquals(0, $andExpr->count());

@@ -28,12 +28,12 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
-        $this->_em->persist($cust);
-        $this->_em->persist($cart);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($cust);
+        $this->em->persist($cart);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
+        $result = $this->em->createQuery("select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c")
             ->getSingleResult(/*\Doctrine\ORM\Query::HYDRATE_ARRAY*/);
 
         $cart2 = $result[0];
@@ -59,13 +59,13 @@ class DDC736Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $cart->setPayment('cash');
         $cart->setCustomer($cust);
 
-        $this->_em->persist($cust);
-        $this->_em->persist($cart);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($cust);
+        $this->em->persist($cart);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "select c, c.name, ca, ca.payment from Doctrine\Tests\Models\ECommerce\ECommerceCart ca join ca.customer c";
-        $result = $this->_em->createQuery($dql)
+        $result = $this->em->createQuery($dql)
                             ->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [DisableFetchJoinTreeWalker::class])
                             ->getResult();
 

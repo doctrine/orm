@@ -7,17 +7,17 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC719Group::class),
+            $this->em->getClassMetadata(DDC719Group::class),
             ]
         );
     }
 
     public function testIsEmptySqlGeneration()
     {
-        $q = $this->_em->createQuery(
+        $q = $this->em->createQuery(
             'SELECT g, c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC719Group g LEFT JOIN g.children c  WHERE g.parents IS EMPTY'
         );
 

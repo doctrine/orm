@@ -13,11 +13,11 @@ class LanguageRecognitionTest extends OrmTestCase
     /**
      * @var EntityManagerInterface
      */
-    private $_em;
+    private $em;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function assertValidDQL($dql, $debug = false)
@@ -51,7 +51,7 @@ class LanguageRecognitionTest extends OrmTestCase
 
     public function parseDql($dql, $hints = [])
     {
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setHint(Query::HINT_FORCE_PARTIAL_LOAD, true);
         $query->setDQL($dql);
 
@@ -89,7 +89,7 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $this->_em->getConfiguration()->setEntityNamespaces(
+        $this->em->getConfiguration()->setEntityNamespaces(
             [
             'Unknown' => 'Unknown',
             'CMS' => 'Doctrine\Tests\Models\CMS'
@@ -575,7 +575,7 @@ class LanguageRecognitionTest extends OrmTestCase
      */
     public function testCustomFunctionsReturningStringInStringPrimary()
     {
-        $this->_em->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
+        $this->em->getConfiguration()->addCustomStringFunction('CC', Query\AST\Functions\ConcatFunction::class);
 
         self::assertValidDQL("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE CC('%', u.name) LIKE '%foo%'", true);
     }

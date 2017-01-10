@@ -25,25 +25,25 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
             []
         );
 
-        $this->_em->getEventManager()->addEventSubscriber($resolveTargetEntity);
+        $this->em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC3300Person::class),
+            $this->em->getClassMetadata(DDC3300Person::class),
             ]
         );
 
         $boss     = new DDC3300Boss();
         $employee = new DDC3300Employee();
 
-        $this->_em->persist($boss);
-        $this->_em->persist($employee);
+        $this->em->persist($boss);
+        $this->em->persist($employee);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        self::assertEquals($boss, $this->_em->find(DDC3300BossInterface::class, $boss->id));
-        self::assertEquals($employee, $this->_em->find(DDC3300EmployeeInterface::class, $employee->id));
+        self::assertEquals($boss, $this->em->find(DDC3300BossInterface::class, $boss->id));
+        self::assertEquals($employee, $this->em->find(DDC3300EmployeeInterface::class, $employee->id));
     }
 }
 

@@ -10,11 +10,11 @@ class DDC1209Test extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC1209_1::class),
-                    $this->_em->getClassMetadata(DDC1209_2::class),
-                    $this->_em->getClassMetadata(DDC1209_3::class)
+                    $this->em->getClassMetadata(DDC1209_1::class),
+                    $this->em->getClassMetadata(DDC1209_2::class),
+                    $this->em->getClassMetadata(DDC1209_3::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -28,10 +28,10 @@ class DDC1209Test extends OrmFunctionalTestCase
     {
         $entity = new DDC1209_3();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        self::assertSame($entity, $this->_em->find(DDC1209_3::class, $entity->date));
+        self::assertSame($entity, $this->em->find(DDC1209_3::class, $entity->date));
     }
 
     /**
@@ -41,17 +41,17 @@ class DDC1209Test extends OrmFunctionalTestCase
     {
         $future1 = new DDC1209_1();
 
-        $this->_em->persist($future1);
-        $this->_em->flush();
+        $this->em->persist($future1);
+        $this->em->flush();
 
         $future2 = new DDC1209_2($future1);
 
-        $this->_em->persist($future2);
-        $this->_em->flush();
+        $this->em->persist($future2);
+        $this->em->flush();
 
         self::assertSame(
             $future2,
-            $this->_em->find(
+            $this->em->find(
                 DDC1209_2::class,
                 [
                     'future1'           => $future1,

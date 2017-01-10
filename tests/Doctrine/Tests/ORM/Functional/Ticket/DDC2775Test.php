@@ -38,21 +38,21 @@ class DDC2775Test extends OrmFunctionalTestCase
         $user->addAuthorization($authorization);
         $role->addAuthorization($authorization);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         // Need to clear so that associations are lazy-loaded
-        $this->_em->clear();
+        $this->em->clear();
 
-        $user = $this->_em->find(User::class, $user->id);
+        $user = $this->em->find(User::class, $user->id);
 
-        $this->_em->remove($user);
-        $this->_em->flush();
+        $this->em->remove($user);
+        $this->em->flush();
 
         self::assertEmpty($this->_em->getRepository(Authorization::class)->findAll());
 
         // With the bug, the second flush throws an error because the cascade remove didn't work correctly
-        $this->_em->flush();
+        $this->em->flush();
     }
 }
 

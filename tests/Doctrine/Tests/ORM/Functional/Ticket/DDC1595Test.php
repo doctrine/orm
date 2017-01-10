@@ -13,13 +13,13 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1595BaseInheritance::class),
-            $this->_em->getClassMetadata(DDC1595InheritedEntity1::class),
-            $this->_em->getClassMetadata(DDC1595InheritedEntity2::class),
+            $this->em->getClassMetadata(DDC1595BaseInheritance::class),
+            $this->em->getClassMetadata(DDC1595InheritedEntity1::class),
+            $this->em->getClassMetadata(DDC1595InheritedEntity2::class),
             ]
         );
     }
@@ -28,12 +28,12 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $e1 = new DDC1595InheritedEntity1();
 
-        $this->_em->persist($e1);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($e1);
+        $this->em->flush();
+        $this->em->clear();
 
-        $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-        $repository = $this->_em->getRepository(DDC1595InheritedEntity1::class);
+        $sqlLogger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
+        $repository = $this->em->getRepository(DDC1595InheritedEntity1::class);
 
         $entity1  = $repository->find($e1->id);
 
@@ -50,7 +50,7 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity1  = $repository->find($e1->id);
 
