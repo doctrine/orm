@@ -95,7 +95,6 @@ final class IdentifierFlattener
                 }
 
                 $flatId[$field] = implode(' ', $associatedId);
-
             }
         }
 
