@@ -296,6 +296,30 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
+    public function testAppendsNamespacedCacheInstancePerRegionInstanceWhenItsAlreadySet()
+    {
+        $cache = clone $this->getSharedSecondLevelCacheDriverImpl();
+        $cache->setNamespace('testing');
+
+        $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
+
+        $fooRegion = $factory->getRegion(
+            [
+                'region' => 'foo',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ]
+        );
+        $barRegion = $factory->getRegion(
+            [
+                'region' => 'bar',
+                'usage'  => ClassMetadata::CACHE_USAGE_READ_ONLY,
+            ]
+        );
+
+        $this->assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
+        $this->assertSame('testing:bar', $barRegion->getCache()->getNamespace());
+    }
+
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
     {
         /* @var $cache \Doctrine\Common\Cache\Cache */
