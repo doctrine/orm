@@ -448,7 +448,9 @@ only accessing it through the User entity:
 
         public function comment(string $text, DateTimeInterface $time) : void
         {
-            $this->comments->add(Comment::create($text, $time));
+            $newComment = Comment::create($text, $time);
+            $newComment->setUser($this);
+            $this->comments->add($newComment);
         }
 
         // ...
@@ -482,7 +484,13 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     $em->persist($user);
     $em->flush();
 
-Thanks to ``cascade: remove``, you can easily delete a user too (without having to loop through all associated comments):
+.. note::
+
+    The idea of ``cascade: persist`` is not to save you any lines of code in the controller.
+    If you instantiate the comment object in the controller (i.e. don't set up the user entity as shown above),
+    even with ``cascade: persist`` you still have to call ``$myFirstComment->setUser($user);``.
+
+Thanks to ``cascade: remove``, you can easily delete a user and all linked comments without having to loop through them:
 
 .. code-block:: php
 
@@ -491,12 +499,6 @@ Thanks to ``cascade: remove``, you can easily delete a user too (without having 
 
     $em->remove($user);
     $em->flush();
-
-.. note::
-
-    The idea of ``cascade: persist`` is not to save you any lines of code in the controller.
-    If you instantiate the comment object in the controller (i.e. don't set up the user entity as shown above),
-    even with ``cascade: persist`` you still have to call ``$myFirstComment->setUser($user);``.
 
 .. note::
 
