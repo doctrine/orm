@@ -512,8 +512,7 @@ Thanks to ``cascade: remove``, you can easily delete a user and all linked comme
     to weigh the benefits and downsides of each cascade operation that you define.
 
     To rely on the database level cascade operations for the delete operation instead, you can
-    configure each join column with the **onDelete** option. See the respective
-    mapping driver chapters for more information.
+    configure each join column with :doc:`the **onDelete** option <working-with-objects>`.
 
 Even though automatic cascading is convenient, it should be used
 with care. Do not blindly apply ``cascade=all`` to all associations as
