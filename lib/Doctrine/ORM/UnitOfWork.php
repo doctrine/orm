@@ -232,7 +232,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @var \Doctrine\Common\EventManager
      */
-    private $evm;
+    private $eventManager;
 
     /**
      * The ListenersInvoker used for dispatching events.
@@ -294,7 +294,7 @@ class UnitOfWork implements PropertyChangedListener
     public function __construct(EntityManagerInterface $em)
     {
         $this->em                         = $em;
-        $this->evm                        = $em->getEventManager();
+        $this->eventManager               = $em->getEventManager();
         $this->listenersInvoker           = new ListenersInvoker($em);
         $this->hasCache                   = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
@@ -324,8 +324,8 @@ class UnitOfWork implements PropertyChangedListener
     public function commit($entity = null)
     {
         // Raise preFlush
-        if ($this->evm->hasListeners(Events::preFlush)) {
-            $this->evm->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
+        if ($this->eventManager->hasListeners(Events::preFlush)) {
+            $this->eventManager->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
         }
 
         // Compute changes done since last commit.
@@ -2386,6 +2386,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear()
     {
+        $this->persisters =
+        $this->eagerLoadingEntities =
         $this->identityMap =
         $this->entityIdentifiers =
         $this->originalEntityData =
@@ -2402,8 +2404,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->orphanRemovals = [];
 
-        if ($this->evm->hasListeners(Events::onClear)) {
-            $this->evm->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
+        if ($this->eventManager->hasListeners(Events::onClear)) {
+            $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
         }
     }
 
@@ -3294,15 +3296,15 @@ class UnitOfWork implements PropertyChangedListener
 
     private function dispatchOnFlushEvent()
     {
-        if ($this->evm->hasListeners(Events::onFlush)) {
-            $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
+        if ($this->eventManager->hasListeners(Events::onFlush)) {
+            $this->eventManager->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
         }
     }
 
     private function dispatchPostFlushEvent()
     {
-        if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+        if ($this->eventManager->hasListeners(Events::postFlush)) {
+            $this->eventManager->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
         }
     }
 
