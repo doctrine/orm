@@ -472,7 +472,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 $columnList[] = $this->getSelectJoinColumnSQL(
                     $tableAlias,
                     $srcColumn,
-                    $className,
                     PersisterHelper::getTypeOfColumn(
                         $mapping['sourceToTargetKeyColumns'][$srcColumn],
                         $targetClass,
@@ -521,7 +520,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
                         $srcColumn,
-                        $className,
                         PersisterHelper::getTypeOfColumn(
                             $mapping['sourceToTargetKeyColumns'][$srcColumn],
                             $targetClass,
