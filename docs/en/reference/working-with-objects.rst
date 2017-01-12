@@ -743,8 +743,7 @@ The Repository implement the ``Doctrine\Common\Collections\Selectable``
 interface. That means you can build ``Doctrine\Common\Collections\Criteria``
 and pass them to the ``matching($criteria)`` method.
 
-See the :ref:`Working with Associations: Filtering collections
-<filtering-collections>`.
+See section `Filtering collections` of chapter :doc:`Working with Associations <working-with-associations>`
 
 By Eager Loading
 ~~~~~~~~~~~~~~~~
