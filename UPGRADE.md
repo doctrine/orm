@@ -1,8 +1,8 @@
 # Upgrade to 2.5
 
-## Minor BC BREAK: remove $className parameter on AbstractEntityInheritancePersister#getSelectJoinColumnSQL
+## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL`
 
-As `$className` parameter is not used on its method body, it was safely removed.
+As `$className` parameter was not used in the method, it was safely removed.
 
 ## Minor BC BREAK: query cache key time is now a float
 
