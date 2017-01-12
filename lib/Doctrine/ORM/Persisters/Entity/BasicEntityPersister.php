@@ -823,11 +823,12 @@ class BasicEntityPersister implements EntityPersister
 
         list($params, $types) = $this->expandCriteriaParameters($criteria);
 
-        $stmt       = $this->conn->executeQuery($query, $params, $types);
-        $hydrator   = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $stmt     = $this->conn->executeQuery($query, $params, $types);
+        $rsm      = $this->currentPersisterContext->rsm;
+        $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hints    = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
 
-        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, [UnitOfWork::HINT_DEFEREAGERLOAD => true]
-        );
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -869,13 +870,15 @@ class BasicEntityPersister implements EntityPersister
         $this->switchPersisterContext($offset, $limit);
 
         $sql = $this->getSelectSQL($criteria, null, null, $limit, $offset, $orderBy);
+
         list($params, $types) = $this->expandParameters($criteria);
-        $stmt = $this->conn->executeQuery($sql, $params, $types);
 
+        $stmt     = $this->conn->executeQuery($sql, $params, $types);
+        $rsm      = $this->currentPersisterContext->rsm;
         $hydrator = $this->em->newHydrator(($this->currentPersisterContext->selectJoinSql) ? Query::HYDRATE_OBJECT : Query::HYDRATE_SIMPLEOBJECT);
+        $hints    = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
 
-        return $hydrator->hydrateAll($stmt, $this->currentPersisterContext->rsm, [UnitOfWork::HINT_DEFEREAGERLOAD => true]
-        );
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -900,15 +903,17 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadArrayFromStatement($assoc, $stmt)
     {
-        $rsm    = $this->currentPersisterContext->rsm;
-        $hints  = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
+        $rsm = $this->currentPersisterContext->rsm;
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
-        return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
+        $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
+        $hints    = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
+
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**
@@ -922,18 +927,20 @@ class BasicEntityPersister implements EntityPersister
      */
     private function loadCollectionFromStatement($assoc, $stmt, $coll)
     {
-        $rsm   = $this->currentPersisterContext->rsm;
-        $hints = [
-            UnitOfWork::HINT_DEFEREAGERLOAD => true,
-            'collection' => $coll
-        ];
+        $rsm = $this->currentPersisterContext->rsm;
 
         if (isset($assoc['indexBy'])) {
             $rsm = clone ($this->currentPersisterContext->rsm); // this is necessary because the "default rsm" should be changed.
             $rsm->addIndexBy('r', $assoc['indexBy']);
         }
 
-        return $this->em->newHydrator(Query::HYDRATE_OBJECT)->hydrateAll($stmt, $rsm, $hints);
+        $hydrator = $this->em->newHydrator(Query::HYDRATE_OBJECT);
+        $hints    = [
+            UnitOfWork::HINT_DEFEREAGERLOAD => true,
+            'collection' => $coll
+        ];
+
+        return $hydrator->hydrateAll($stmt, $rsm, $hints);
     }
 
     /**

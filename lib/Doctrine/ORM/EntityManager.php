@@ -578,13 +578,10 @@ use Doctrine\Common\Util\ClassUtils;
      * @param null $entityName Unused. @todo Remove from ObjectManager.
      *
      * @return void
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
-     *                                                               found in the mappings
      */
     public function clear($entityName = null)
     {
-        $this->unitOfWork->clear(null);
+        $this->unitOfWork->clear();
     }
 
     /**
