@@ -424,7 +424,7 @@ comment might look like in your controller (without ``cascade: persist``):
     $user->addComment($myFirstComment);
     
     $em->persist($user);
-    $em->persist($myFirstComment); // required, if `cascade: persist` isn't set
+    $em->persist($myFirstComment); // required, if `cascade: persist` is not set
     $em->flush();
 
 Note that the Comment entity is instantiated right here in the controller.
@@ -504,15 +504,15 @@ Thanks to ``cascade: remove``, you can easily delete a user and all linked comme
 
     Cascade operations are performed in memory. That means collections and related entities
     are fetched into memory (even if they are marked as lazy) when
-    the cascade operation is about to be performed. However this approach allows
+    the cascade operation is about to be performed. This approach allows
     entity lifecycle events to be performed for each of these operations.
 
-    However, pulling objects graph into memory on cascade can cause considerable performance
+    However, pulling object graphs into memory on cascade can cause considerable performance
     overhead, especially when the cascaded collections are large. Make sure
     to weigh the benefits and downsides of each cascade operation that you define.
 
     To rely on the database level cascade operations for the delete operation instead, you can
-    configure each join column with :doc:`the **onDelete** option <working-with-objects>`.
+    configure each join column with :doc:`the onDelete option <working-with-objects>`.
 
 Even though automatic cascading is convenient, it should be used
 with care. Do not blindly apply ``cascade=all`` to all associations as
@@ -525,21 +525,20 @@ Persistence by Reachability: Cascade Persist
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are additional semantics that apply to the Cascade Persist
-operation. During each flush() operation Doctrine detects if there
+operation. During each ``flush()`` operation Doctrine detects if there
 are new entities in any collection and three possible cases can
 happen:
 
 
-1. New entities in a collection marked as cascade persist will be
+1. New entities in a collection marked as ``cascade: persist`` will be
    directly persisted by Doctrine.
-2. New entities in a collection not marked as cascade persist will
-   produce an Exception and rollback the flush() operation.
+2. New entities in a collection not marked as ``cascade: persist`` will
+   produce an Exception and rollback the ``flush()`` operation.
 3. Collections without new entities are skipped.
 
 This concept is called Persistence by Reachability: New entities
 that are found on already managed entities are automatically
-persisted as long as the association is defined as cascade
-persist.
+persisted as long as the association is defined as ``cascade: persist``.
 
 Orphan Removal
 --------------
