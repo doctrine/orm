@@ -21,5 +21,9 @@ namespace Doctrine\ORM\Mapping;
 
 class ToManyAssociationMetadata extends AssociationMetadata
 {
-
+    /** @var array<string, string> */
+    private $orderBy = [];
+    
+    /** @var array<string> */
+    private $indexedBy = [];
 }

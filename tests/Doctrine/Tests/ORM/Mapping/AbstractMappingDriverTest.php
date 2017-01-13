@@ -1029,24 +1029,21 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(City::class);
 
-        self::assertArrayHasKey('usage', $class->cache);
-        self::assertArrayHasKey('region', $class->cache);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->cache['usage']);
-        self::assertEquals('doctrine_tests_models_cache_city', $class->cache['region']);
+        self::assertNotNull($class->cache);
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->cache->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city', $class->cache->getRegion());
 
         self::assertArrayHasKey('state', $class->associationMappings);
         self::assertArrayHasKey('cache', $class->associationMappings['state']);
-        self::assertArrayHasKey('usage', $class->associationMappings['state']['cache']);
-        self::assertArrayHasKey('region', $class->associationMappings['state']['cache']);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['state']['cache']['usage']);
-        self::assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']['region']);
+        self::assertNotNull($class->associationMappings['state']['cache']);
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['state']['cache']->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']->getRegion());
 
         self::assertArrayHasKey('attractions', $class->associationMappings);
         self::assertArrayHasKey('cache', $class->associationMappings['attractions']);
-        self::assertArrayHasKey('usage', $class->associationMappings['attractions']['cache']);
-        self::assertArrayHasKey('region', $class->associationMappings['attractions']['cache']);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['attractions']['cache']['usage']);
-        self::assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']['region']);
+        self::assertNotNull($class->associationMappings['attractions']['cache']);
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['attractions']['cache']->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']->getRegion());
     }
 
     /**

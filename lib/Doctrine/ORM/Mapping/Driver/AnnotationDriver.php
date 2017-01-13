@@ -25,10 +25,12 @@ use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnot
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
+use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -331,12 +333,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             // Evaluate @Cache annotation
             if (($cacheAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Cache::class)) !== null) {
-                $mapping['cache'] = $metadata->getAssociationCacheDefaults(
-                    $mapping['fieldName'],
-                    [
-                        'usage'  => constant(sprintf('%s::%s', CacheUsage::class, $cacheAnnot->usage)),
-                        'region' => $cacheAnnot->region,
-                    ]
+                $mapping['cache'] = $this->convertCacheAnnotationToCacheMetadata(
+                    $cacheAnnot,
+                    $metadata,
+                    $fieldName
                 );
             }
 
@@ -833,6 +833,29 @@ class AnnotationDriver extends AbstractAnnotationDriver
         }
 
         return $joinColumn;
+    }
+    
+    /**
+     * Parse the given Cache as CacheMetadata
+     *
+     * @param Annotation\Cache $cacheAnnot
+     * @param ClassMetadata    $metadata
+     * @param null|string      $fieldName
+     *
+     * @return CacheMetadata
+     */
+    private function convertCacheAnnotationToCacheMetadata(Annotation\Cache $cacheAnnot, ClassMetadata $metadata, $fieldName = null)
+    {
+        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
+        $cacheBuilder  = new CacheMetadataBuilder();
+
+        $cacheBuilder
+            ->withUsage(constant(sprintf('%s::%s', CacheUsage::class, $cacheAnnot->usage)))
+            ->withRegion($cacheAnnot->region ?: $defaultRegion)
+        ;
+
+        return $cacheBuilder->build();
     }
 
     /**

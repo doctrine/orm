@@ -341,14 +341,29 @@ class ClassMetadata implements ClassMetadataInterface
      * READ-ONLY: The association mappings of this class.
      *
      * The mapping definition array supports the following keys:
+     * 
+     * - <b>type</b> (integer)
+     * Association type: ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY
      *
      * - <b>fieldName</b> (string)
      * The name of the field in the entity the association is mapped to.
+     *
+     * - <b>fetch</b> (integer, optional)
+     * The fetching strategy to use for the association, usually defaults to LAZY.
+     * Possible values are: FetchMode::EAGER, FetchMode::LAZY, FetchMode::EXTRA_LAZY.
      *
      * - <b>targetEntity</b> (string)
      * The class name of the target entity. If it is fully-qualified it is used as is.
      * If it is a simple, unqualified class name the namespace is assumed to be the same
      * as the namespace of the source entity.
+     * 
+     * - <b>sourceEntity</b> (string)
+     * The class name of the source entity. If it is fully-qualified it is used as is.
+     * If it is a simple, unqualified class name the namespace is assumed to be the same
+     * as the namespace of the source entity.
+     * 
+     * - <b>isOwningSide</b> (boolean)
+     * Whether the association is the owning side or the inverse side.
      *
      * - <b>mappedBy</b> (string, required for bidirectional associations)
      * The name of the field that completes the bidirectional association on the owning side.
@@ -358,38 +373,35 @@ class ClassMetadata implements ClassMetadataInterface
      * The name of the field that completes the bidirectional association on the inverse side.
      * This key must be specified on the owning side of a bidirectional association.
      *
-     * - <b>cascade</b> (array, optional)
+     * - <b>cascade</b> (array<string>, optional)
      * The names of persistence operations to cascade on the association. The set of possible
      * values are: "persist", "remove", "detach", "merge", "refresh", "all" (implies all others).
      *
-     * - <b>orderBy</b> (array, one-to-many/many-to-many only)
+     * - <b>orderBy</b> (array<string, string>, one-to-many/many-to-many only)
      * A map of field names (of the target entity) to sorting directions (ASC/DESC).
      * Example: array('priority' => 'desc')
-     *
-     * - <b>fetch</b> (integer, optional)
-     * The fetching strategy to use for the association, usually defaults to LAZY.
-     * Possible values are: FetchMode::EAGER, FetchMode::LAZY, FetchMode::EXTRA_LAZY.
-     *
-     * - <b>joinTable</b> (array, optional, many-to-many only)
-     * Specification of the join table and its join columns (foreign keys).
-     * Only valid for many-to-many mappings. Note that one-to-many associations can be mapped
-     * through a join table by simply mapping the association as many-to-many with a unique
-     * constraint on the join table.
-     *
+     * 
      * - <b>indexBy</b> (string, optional, to-many only)
      * Specification of a field on target-entity that is used to index the collection by.
      * This field HAS to be either the primary key or a unique column. Otherwise the collection
      * does not contain all the entities that are actually related.
      *
-     * A join table definition has the following structure:
-     * <pre>
-     * array(
-     *     'name' => <join table name>,
-     *      'joinColumns' => array(<join column mapping from join table to source table>),
-     *      'inverseJoinColumns' => array(<join column mapping from join table to target table>)
-     * )
-     * </pre>
+     * - <b>joinTable</b> (JoinTableMetadata, optional, many-to-many only)
+     * Specification of the join table and its join columns (foreign keys).
+     * Only valid for many-to-many mappings. Note that one-to-many associations can be mapped
+     * through a join table by simply mapping the association as many-to-many with a unique
+     * constraint on the join table.
+     * 
+     * - <b>joinColumns</b> (array<JoinColumnMetadata>, optional, to-one only)
+     * Specification of the join columns (foreign keys).
+     * 
+     * - <b>id</b> (boolean, optional)
+     * Whether the association is the entity identifier
+     * 
+     * - <b>orphanRemoval</b> (boolean, optional, all association types, except many-to-one)
      *
+     * - <b>cache</b> (CacheMetadata, optional)
+     * 
      * @var array
      */
     public $associationMappings = [];
@@ -402,7 +414,7 @@ class ClassMetadata implements ClassMetadataInterface
     public $versionProperty = null;
 
     /**
-     * @var array
+     * @var null|CacheMetadata
      */
     public $cache = null;
 
@@ -562,6 +574,16 @@ class ClassMetadata implements ClassMetadataInterface
     public function getFieldValue($entity, $field)
     {
         return $this->reflFields[$field]->getValue($entity);
+    }
+    
+    /**
+     * Handles metadata cloning nicely.
+     */
+    public function __clone()
+    {
+        if ($this->cache) {
+            $this->cache = clone $this->cache;
+        }
     }
 
     /**
@@ -836,25 +858,29 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * @param array $cache
+     * 
+     * @todo Consider using CacheMetadata instead
      *
      * @return void
      */
     public function enableCache(array $cache)
     {
-        if ( ! isset($cache['usage'])) {
-            $cache['usage'] = CacheUsage::READ_ONLY;
-        }
-
-        if ( ! isset($cache['region'])) {
-            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName));
-        }
-
-        $this->cache = $cache;
+        $defaultRegion = strtolower(str_replace('\\', '_', $this->rootEntityName));
+        $builder       = new Builder\CacheMetadataBuilder();
+        
+        $builder
+            ->withUsage($cache['usage'] ?? CacheUsage::READ_ONLY)
+            ->withRegion($cache['region'] ?? $defaultRegion)
+        ;
+        
+        $this->cache = $builder->build();
     }
 
     /**
      * @param string $fieldName
      * @param array  $cache
+     * 
+     * @todo Remove me once Association is OOed
      *
      * @return void
      */
@@ -866,22 +892,31 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * @param string $fieldName
      * @param array  $cache
+     * 
+     * @todo Remove me once Association is OOed
      *
      * @return array
      */
     public function getAssociationCacheDefaults($fieldName, array $cache)
     {
-        if ( ! isset($cache['usage'])) {
-            $cache['usage'] = isset($this->cache['usage'])
-                ? $this->cache['usage']
-                : CacheUsage::READ_ONLY;
+        $region = $cache['region'] ?? strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
+        $usage  = $cache['usage'] ?? null;
+        
+        if (! $usage) {
+            $usage = $this->cache->getUsage() !== null
+                ? $this->cache->getUsage()
+                : CacheUsage::READ_ONLY
+            ;
         }
-
-        if ( ! isset($cache['region'])) {
-            $cache['region'] = strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
-        }
-
-        return $cache;
+        
+        $builder = new Builder\CacheMetadataBuilder();
+        
+        $builder
+            ->withRegion($region)
+            ->withUsage($usage)
+        ;
+        
+        return $builder->build();
     }
 
     /**
