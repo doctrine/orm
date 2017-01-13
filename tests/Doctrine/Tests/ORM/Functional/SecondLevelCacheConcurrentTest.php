@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
@@ -30,6 +31,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
     protected function setUp()
     {
         $this->enableSecondLevelCache();
+        
         parent::setUp();
 
         $this->cacheFactory = new CacheFactorySecondLevelCacheConcurrentTest($this->getSharedSecondLevelCacheDriverImpl());
@@ -41,7 +43,7 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
         $this->countryMetadata = $this->em->getClassMetadata(Country::class);
         $countryMetadata       = clone $this->countryMetadata;
 
-        $countryMetadata->cache['usage'] = CacheUsage::NONSTRICT_READ_WRITE;
+        $countryMetadata->cache->setUsage(CacheUsage::NONSTRICT_READ_WRITE);
 
         $this->em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
     }
@@ -138,9 +140,9 @@ class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
         $this->cache = $cache;
     }
 
-    public function getRegion(array $cache)
+    public function getRegion(CacheMetadata $cache)
     {
-        $region = new DefaultRegion($cache['region'], $this->cache);
+        $region = new DefaultRegion($cache->getRegion(), $this->cache);
         $mock   = new ConcurrentRegionMock($region);
 
         return $mock;

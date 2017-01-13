@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,31 +22,55 @@
 
 namespace Doctrine\ORM\Mapping;
 
-class ToOneAssociationMetadata extends AssociationMetadata
+class CacheMetadata
 {
-    /** @var bool */
-    private $id = false;
+    /** @var string */
+    private $usage;
+    
+    /** @var string */
+    private $region;
     
     /**
-     * @var array<JoinColumnMetadata>
+     * Constructor.
+     * 
+     * @param string $usage
+     * @param string $region
      */
-    private $joinColumns = [];
-
-    /**
-     * @return array<JoinColumnMetadata>
-     */
-    public function getJoinColumns()
+    public function __construct(string $usage, string $region)
     {
-        return $this->joinColumns;
+        $this->usage  = $usage;
+        $this->region = $region;
     }
 
     /**
-     * @param JoinColumnMetadata $joinColumn
+     * @return string
      */
-    public function addJoinColumn(JoinColumnMetadata $joinColumn)
+    public function getUsage()
     {
-        $this->joinColumns[] = $joinColumn;
+        return $this->usage;
     }
 
+    /**
+     * @param string $usage
+     */
+    public function setUsage(string $usage)
+    {
+        $this->usage = $usage;
+    }
 
+    /**
+     * @return string
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * @param string $region
+     */
+    public function setRegion(string $region)
+    {
+        $this->region = $region;
+    }
 }
