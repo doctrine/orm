@@ -85,7 +85,7 @@ class DateAddFunction extends FunctionNode
 
         $this->firstDateExpression = $parser->ArithmeticPrimary();
         $parser->match(Lexer::T_COMMA);
-        $this->intervalExpression = $parser->ArithmeticPrimary();
+        $this->intervalExpression = $parser->ArithmeticExpression();
         $parser->match(Lexer::T_COMMA);
         $this->unit = $parser->StringPrimary();
 
