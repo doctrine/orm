@@ -24,6 +24,8 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
+use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -141,7 +143,12 @@ class XmlDriver extends FileDriver
 
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
-            $metadata->enableCache($this->cacheToArray($xmlRoot->cache));
+            $cache = $this->convertCacheElementToCacheMetadata($xmlRoot->cache, $metadata);
+            
+            $metadata->enableCache([
+                'usage'  => $cache->getUsage(),
+                'region' => $cache->getRegion(),
+            ]);
         }
 
         // Evaluate named queries
@@ -402,7 +409,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($oneToOneElement->cache)) {
-                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToOneElement->cache));
+                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
+                        $oneToOneElement->cache,
+                        $metadata,
+                        $mapping['fieldName']
+                    );
                 }
 
                 $metadata->mapOneToOne($mapping);
@@ -446,7 +457,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($oneToManyElement->cache)) {
-                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($oneToManyElement->cache));
+                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
+                        $oneToManyElement->cache,
+                        $metadata,
+                        $mapping['fieldName']
+                    );
                 }
 
                 $metadata->mapOneToMany($mapping);
@@ -491,7 +506,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($manyToOneElement->cache)) {
-                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToOneElement->cache));
+                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
+                        $manyToOneElement->cache,
+                        $metadata,
+                        $mapping['fieldName']
+                    );
                 }
 
                 $metadata->mapManyToOne($mapping);
@@ -574,7 +593,11 @@ class XmlDriver extends FileDriver
 
                 // Evaluate second level cache
                 if (isset($manyToManyElement->cache)) {
-                    $mapping['cache'] = $metadata->getAssociationCacheDefaults($mapping['fieldName'], $this->cacheToArray($manyToManyElement->cache));
+                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
+                        $manyToManyElement->cache,
+                        $metadata,
+                        $mapping['fieldName']
+                    );
                 }
 
                 $metadata->mapManyToMany($mapping);
@@ -813,6 +836,35 @@ class XmlDriver extends FileDriver
 
         return $joinColumnMetadata;
     }
+    
+    /**
+     * Parse the given Cache as CacheMetadata
+     *
+     * @param \SimpleXMLElement $cacheMapping
+     * @param ClassMetadata     $metadata
+     * @param null|string       $fieldName
+     *
+     * @return CacheMetadata
+     */
+    private function convertCacheElementToCacheMetadata(SimpleXMLElement $cacheMapping, ClassMetadata $metadata, $fieldName = null)
+    {
+        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
+        $cacheBuilder  = new CacheMetadataBuilder();
+
+        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
+        $usage  = isset($cacheMapping['usage'])
+            ? constant(sprintf('%s::%s', CacheUsage::class, strtoupper($cacheMapping['usage'])))
+            : CacheUsage::READ_ONLY
+        ;
+        
+        $cacheBuilder
+            ->withUsage($usage)
+            ->withRegion($region)
+        ;
+
+        return $cacheBuilder->build();
+    }
 
     /**
      * Parse / Normalize the cache configuration
@@ -825,10 +877,6 @@ class XmlDriver extends FileDriver
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
-
-        if ($usage && ! defined(sprintf('%s::%s', CacheUsage::class, $usage))) {
-            throw new \InvalidArgumentException(sprintf('Invalid cache usage "%s"', $usage));
-        }
 
         if ($usage) {
             $usage = constant(sprintf('%s::%s', CacheUsage::class, $usage));

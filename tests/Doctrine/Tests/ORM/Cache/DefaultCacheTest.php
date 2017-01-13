@@ -30,7 +30,8 @@ class DefaultCacheTest extends OrmTestCase
 
     protected function setUp()
     {
-        parent::enableSecondLevelCache();
+        $this->enableSecondLevelCache();
+        
         parent::setUp();
 
         $this->em    = $this->getTestEntityManager();
@@ -87,13 +88,12 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testContainsEntity()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
         self::assertFalse($this->cache->containsEntity(Country::class, 1));
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
         self::assertTrue($this->cache->containsEntity(Country::class, 1));
         self::assertFalse($this->cache->containsEntity(CmsUser::class, 1));
@@ -101,11 +101,10 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictEntity()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
         self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
@@ -117,11 +116,10 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictEntityRegion()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
         self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
@@ -133,11 +131,10 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictEntityRegions()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
         self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
@@ -148,17 +145,16 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testContainsCollection()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
         self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
         self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
         self::assertFalse($this->cache->containsCollection(CmsUser::class, 'phonenumbers', 1));
@@ -166,19 +162,18 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictCollection()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
         self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->cache->evictCollection($className, $association, $ownerId);
+        $this->cache->evictCollection(State::class, $association, $ownerId);
         $this->cache->evictCollection(CmsUser::class, 'phonenumbers', 1);
 
         self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
@@ -186,19 +181,18 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictCollectionRegion()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
         self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->cache->evictCollectionRegion($className, $association);
+        $this->cache->evictCollectionRegion(State::class, $association);
         $this->cache->evictCollectionRegion(CmsUser::class, 'phonenumbers');
 
         self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
@@ -206,15 +200,14 @@ class DefaultCacheTest extends OrmTestCase
 
     public function testEvictCollectionRegions()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
         self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 

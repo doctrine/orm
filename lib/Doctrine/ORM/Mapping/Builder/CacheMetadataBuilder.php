@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,33 +20,55 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping\Builder;
 
-class ToOneAssociationMetadata extends AssociationMetadata
+use Doctrine\ORM\Mapping\CacheMetadata;
+
+class CacheMetadataBuilder implements Builder
 {
-    /** @var bool */
-    private $id = false;
+    /** @var string */
+    protected $usage;
+
+    /** @var string */
+    protected $region;
     
     /**
-     * @var array<JoinColumnMetadata>
+     * @param string $usage
+     *
+     * @return self
      */
-    private $joinColumns = [];
-
-    /**
-     * @return array<JoinColumnMetadata>
-     */
-    public function getJoinColumns()
+    public function withUsage(string $usage)
     {
-        return $this->joinColumns;
+        $this->usage = $usage;
+
+        return $this;
     }
 
     /**
-     * @param JoinColumnMetadata $joinColumn
+     * @param string $region
+     *
+     * @return self
      */
-    public function addJoinColumn(JoinColumnMetadata $joinColumn)
+    public function withRegion(string $region)
     {
-        $this->joinColumns[] = $joinColumn;
+        $this->region = $region;
+
+        return $this;
+    }
+    
+    /**
+     * @return CacheMetadata
+     */
+    public function build()
+    {
+        return $this->createMetadataObject();
     }
 
-
+    /**
+     * @return CacheMetadata
+     */
+    protected function createMetadataObject()
+    {
+        return new CacheMetadata($this->usage, $this->region);
+    }
 }
