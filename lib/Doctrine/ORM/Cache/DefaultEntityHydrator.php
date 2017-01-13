@@ -81,13 +81,13 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if ( ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! ($assoc['type'] & ClassMetadata::TO_ONE)) {
                 unset($data[$name]);
 
                 continue;
             }
 
-            if ( ! isset($assoc['cache'])) {
+            if (! isset($assoc['cache'])) {
                 $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
                 $owningAssociation   = ( ! $assoc['isOwningSide'])
                     ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
@@ -178,7 +178,7 @@ class DefaultEntityHydrator implements EntityHydrator
         }
 
         foreach ($metadata->associationMappings as $name => $assoc) {
-            if ( ! isset($assoc['cache']) ||  ! isset($data[$name])) {
+            if (! isset($assoc['cache']) || ! isset($data[$name])) {
                 continue;
             }
 

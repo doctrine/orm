@@ -36,6 +36,8 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -78,8 +80,8 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function __construct(RegionsConfiguration $cacheConfig, CacheAdapter $cache)
     {
-        $this->cache         = $cache;
         $this->regionsConfig = $cacheConfig;
+        $this->cache         = $cache;
     }
 
     /**
@@ -119,8 +121,9 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
     {
-        $region = $this->getRegion($metadata->cache);
-        $usage  = $metadata->cache['usage'];
+        $cache  = $metadata->cache;
+        $region = $this->getRegion($cache);
+        $usage  = $cache->getUsage();
 
         switch ($usage) {
             case CacheUsage::READ_ONLY:
@@ -142,8 +145,9 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping)
     {
-        $region = $this->getRegion($mapping['cache']);
-        $usage  = $mapping['cache']['usage'];
+        $cache  = $mapping['cache'];
+        $region = $this->getRegion($cache);
+        $usage  = $cache->getUsage();
 
         switch ($usage) {
             case CacheUsage::READ_ONLY:
@@ -165,15 +169,14 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
-        return new DefaultQueryCache(
-            $em,
-            $this->getRegion(
-                [
-                    'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
-                    'usage'  => CacheUsage::NONSTRICT_READ_WRITE,
-                ]
-            )
-        );
+        $builder = new CacheMetadataBuilder();
+        
+        $builder
+            ->withRegion($regionName ?: Cache::DEFAULT_QUERY_REGION_NAME)
+            ->withUsage(CacheUsage::NONSTRICT_READ_WRITE)
+        ;
+        
+        return new DefaultQueryCache($em, $this->getRegion($builder->build()));
     }
 
     /**
@@ -195,26 +198,27 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function getRegion(array $cache)
+    public function getRegion(CacheMetadata $cache)
     {
-        if (isset($this->regions[$cache['region']])) {
-            return $this->regions[$cache['region']];
+        $regionName = $cache->getRegion();
+        
+        if (isset($this->regions[$regionName])) {
+            return $this->regions[$regionName];
         }
 
         $cacheAdapter = clone $this->cache;
 
         if ($cacheAdapter instanceof CacheProvider) {
-            $cacheAdapter->setNamespace($cache['region']);
+            $cacheAdapter->setNamespace($regionName);
         }
 
-        $name     = $cache['region'];
-        $lifetime = $this->regionsConfig->getLifetime($cache['region']);
+        $lifetime = $this->regionsConfig->getLifetime($regionName);
+        $region   = ($cacheAdapter instanceof MultiGetCache)
+            ? new DefaultMultiGetRegion($regionName, $cacheAdapter, $lifetime)
+            : new DefaultRegion($regionName, $cacheAdapter, $lifetime)
+        ;
 
-        $region = ($cacheAdapter instanceof MultiGetCache)
-            ? new DefaultMultiGetRegion($name, $cacheAdapter, $lifetime)
-            : new DefaultRegion($name, $cacheAdapter, $lifetime);
-
-        if ($cache['usage'] === CacheUsage::READ_WRITE) {
+        if ($cache->getUsage() === CacheUsage::READ_WRITE) {
             if ( ! $this->fileLockRegionDirectory) {
                 throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
@@ -222,11 +226,11 @@ class DefaultCacheFactory implements CacheFactory
                 );
             }
 
-            $directory = $this->fileLockRegionDirectory . DIRECTORY_SEPARATOR . $cache['region'];
-            $region    = new FileLockRegion($region, $directory, $this->regionsConfig->getLockLifetime($cache['region']));
+            $directory = $this->fileLockRegionDirectory . DIRECTORY_SEPARATOR . $regionName;
+            $region    = new FileLockRegion($region, $directory, $this->regionsConfig->getLockLifetime($regionName));
         }
 
-        return $this->regions[$cache['region']] = $region;
+        return $this->regions[$regionName] = $region;
     }
 
     /**
