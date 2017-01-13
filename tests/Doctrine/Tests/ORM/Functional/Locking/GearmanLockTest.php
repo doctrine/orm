@@ -26,7 +26,10 @@ class GearmanLockTest extends OrmFunctionalTestCase
         $this->tasks = [];
 
         $this->gearman = new \GearmanClient();
-        $this->gearman->addServer();
+        $this->gearman->addServer(
+            isset($_SERVER['GEARMAN_HOST']) ? $_SERVER['GEARMAN_HOST'] : null,
+            isset($_SERVER['GEARMAN_PORT']) ? $_SERVER['GEARMAN_PORT'] : 4730        
+        );
         $this->gearman->setCompleteCallback([$this, "gearmanTaskCompleted"]);
 
         $article = new CmsArticle();
