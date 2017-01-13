@@ -3,24 +3,25 @@
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Cache\DefaultQueryCache;
+use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCache;
-use Doctrine\Tests\Mocks\TimestampRegionMock;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\Tests\OrmTestCase;
-use Doctrine\Tests\Mocks\CacheRegionMock;
-use Doctrine\ORM\Cache\DefaultQueryCache;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\QueryCacheEntry;
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\Mocks\TimestampRegionMock;
+use Doctrine\Tests\Mocks\CacheRegionMock;
 use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Restaurant;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\Models\Generic\BooleanModel;
-use Doctrine\ORM\Cache\EntityCacheEntry;
-use Doctrine\ORM\Cache;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * @group DDC-2183
@@ -649,7 +650,7 @@ class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory
         return $this->queryCache;
     }
 
-    public function getRegion(array $cache)
+    public function getRegion(CacheMetadata $cache)
     {
         return $this->region;
     }

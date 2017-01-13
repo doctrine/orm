@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -88,11 +89,11 @@ interface CacheFactory
     /**
      * Build a cache region
      *
-     * @param array $cache The cache configuration.
+     * @param \Doctrine\ORM\Mapping\CacheMetadata $cache The cache configuration.
      *
      * @return \Doctrine\ORM\Cache\Region The cache region.
      */
-    public function getRegion(array $cache);
+    public function getRegion(CacheMetadata $cache);
 
     /**
      * Build timestamp cache region

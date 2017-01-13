@@ -36,13 +36,13 @@ class AssociationMetadata implements Property
     private $name;
 
     /** @var string */
-    private $targetEntity;
-
-    /** @var array<string> */
-    private $cascade = [];
+    private $fetchMode = FetchMode::LAZY;
 
     /** @var string */
-    private $fetchMode = FetchMode::LAZY;
+    private $targetEntity;
+
+    /** @var string */
+    private $sourceEntity;
 
     /** @var string */
     private $mappedBy;
@@ -50,8 +50,17 @@ class AssociationMetadata implements Property
     /** @var null|string */
     private $inversedBy;
 
+    /** @var array<string> */
+    private $cascade = [];
+    
+    /** @var bool */
+    private $owningSide = true;
+
     /** @var bool */
     private $orphanRemoval = false;
+    
+    /** @var null|CacheMetadata */
+    private $cache = null;
 
     /**
      * {@inheritdoc}
@@ -102,6 +111,22 @@ class AssociationMetadata implements Property
     }
 
     /**
+     * @return string
+     */
+    public function getSourceEntity()
+    {
+        return $this->sourceEntity;
+    }
+
+    /**
+     * @param string $sourceEntity
+     */
+    public function setSourceEntity($sourceEntity)
+    {
+        $this->sourceEntity = $sourceEntity;
+    }
+
+    /**
      * @return array
      */
     public function getCascade()
@@ -115,6 +140,22 @@ class AssociationMetadata implements Property
     public function setCascade(array $cascade)
     {
         $this->cascade = $cascade;
+    }
+    
+    /**
+     * @param bool $owningSide
+     */
+    public function setOwningSide(bool $owningSide)
+    {
+        $this->owningSide = $owningSide;
+    }
+    
+    /**
+     * @return bool
+     */
+    public function isOwningSide()
+    {
+        return $this->owningSide;
     }
 
     /**
@@ -179,6 +220,22 @@ class AssociationMetadata implements Property
     public function isOrphanRemoval()
     {
         return $this->orphanRemoval;
+    }
+    
+    /**
+     * @return null|CacheMetadata
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @param null|CacheMetadata $cache
+     */
+    public function setCache(CacheMetadata $cache = null)
+    {
+        $this->cache = $cache;
     }
 
     /**

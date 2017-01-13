@@ -210,7 +210,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->addInheritedIndexes($class, $parent);
 
             if ($parent->cache) {
-                $class->cache = $parent->cache;
+                $class->cache = clone $parent->cache;
             }
 
             if ($parent->containsForeignIdentifier) {
