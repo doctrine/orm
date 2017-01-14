@@ -40,19 +40,14 @@ class SecondLevelCacheConcurrentTest extends SecondLevelCacheAbstractTest
             ->getSecondLevelCacheConfiguration()
             ->setCacheFactory($this->cacheFactory);
 
-        $this->countryMetadata = $this->em->getClassMetadata(Country::class);
-        $countryMetadata       = clone $this->countryMetadata;
+        $this->countryMetadata = clone $this->em->getClassMetadata(Country::class);
 
-        $countryMetadata->cache->setUsage(CacheUsage::NONSTRICT_READ_WRITE);
-
-        $this->em->getMetadataFactory()->setMetadataFor(Country::class, $countryMetadata);
-    }
-
-    protected function tearDown()
-    {
-        parent::tearDown();
-
-        $this->em->getMetadataFactory()->setMetadataFor(Country::class, $this->countryMetadata);
+        $this->countryMetadata->setCache(
+            new CacheMetadata(
+                CacheUsage::NONSTRICT_READ_WRITE,
+                'doctrine_tests_models_cache_country'
+            )
+        );
     }
 
     public function testBasicConcurrentEntityReadLock()
