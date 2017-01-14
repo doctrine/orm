@@ -863,10 +863,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function setCache(CacheMetadata $cache = null)
     {
-        if ($cache && ! $cache->getRegion()) {
-            $cache->setRegion(strtolower(str_replace('\\', '_', $this->rootEntityName)));
-        }
-        
         $this->cache = $cache;
     }
 
