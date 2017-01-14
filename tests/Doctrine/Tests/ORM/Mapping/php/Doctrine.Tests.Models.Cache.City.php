@@ -15,7 +15,12 @@ $metadata->setPrimaryTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 $metadata->setIdGeneratorType(Mapping\GeneratorType::IDENTITY);
-$metadata->setCache(new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY));
+$metadata->setCache(
+    new Mapping\CacheMetadata(
+        Mapping\CacheUsage::READ_ONLY,
+        'doctrine_tests_models_cache_city'
+    )
+);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
