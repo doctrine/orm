@@ -760,11 +760,6 @@ class SqlWalker implements TreeWalker
                 $this->rsm->addMetaResult($dqlAlias, $sqlColumnAlias, $discrColumnName, false, $discrColumnType);
             }
 
-            // Add foreign key columns to SQL, if necessary
-            if ( ! $addMetaColumns && ! $class->containsForeignIdentifier) {
-                continue;
-            }
-
             // Add foreign key columns of class and also parent classes
             foreach ($class->associationMappings as $assoc) {
                 if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {

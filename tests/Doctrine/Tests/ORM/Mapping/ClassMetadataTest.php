@@ -633,7 +633,6 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        self::assertTrue($cm->containsForeignIdentifier, "Identifier Association should set 'containsForeignIdentifier' boolean flag.");
         self::assertEquals(["article"], $cm->identifier);
     }
 

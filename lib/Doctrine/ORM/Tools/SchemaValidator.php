@@ -21,7 +21,6 @@ namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
@@ -100,9 +99,13 @@ class SchemaValidator
                 $ce[] = "The association " . $class . "#" . $fieldName . " cannot be defined as both inverse and owning.";
             }
 
-            $targetMetadata = $cmf->getMetadataFor($assoc['targetEntity']);
+            /** @var ClassMetadata $targetmetadata */
+            $targetMetadata    = $cmf->getMetadataFor($assoc['targetEntity']);
+            $containsForeignId = array_filter($targetMetadata->identifier, function ($identifier) use ($targetMetadata) {
+                return isset($targetMetadata->associationMappings[$identifier]);
+            });
 
-            if (isset($assoc['id']) && $targetMetadata->containsForeignIdentifier) {
+            if (isset($assoc['id']) && count($containsForeignId)) {
                 $ce[] = "Cannot map association '" . $class->name. "#". $fieldName ." as identifier, because " .
                         "the target entity '". $targetMetadata->name . "' also maps an association as identifier.";
             }
