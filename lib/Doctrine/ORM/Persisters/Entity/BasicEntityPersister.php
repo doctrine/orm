@@ -967,6 +967,7 @@ class BasicEntityPersister implements EntityPersister
     {
         $this->switchPersisterContext($offset, $limit);
 
+        /** @var ClassMetadata $sourceClass */
         $sourceClass    = $this->em->getClassMetadata($assoc['sourceEntity']);
         $class          = $sourceClass;
         $association    = $assoc;
@@ -985,38 +986,22 @@ class BasicEntityPersister implements EntityPersister
         foreach ($joinColumns as $joinColumn) {
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedColumnName = $joinColumn->getReferencedColumnName();
+            $fieldName            = $sourceClass->getFieldForColumn($referencedColumnName);
+            $value                = $sourceClass->reflFields[$fieldName]->getValue($sourceEntity);
 
-            switch (true) {
-                case $sourceClass->containsForeignIdentifier:
-                    $field = $sourceClass->getFieldForColumn($referencedColumnName);
-                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+            if (isset($sourceClass->associationMappings[$fieldName])) {
+                $targetMapping = $sourceClass->associationMappings[$fieldName];
+                $targetClass   = $this->em->getClassMetadata($targetMapping['targetEntity']);
 
-                    if (isset($sourceClass->associationMappings[$field])) {
-                        $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
-
-                        $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                        $value = $value[$targetClass->identifier[0]];
-                    }
-
-                    break;
-
-                case isset($sourceClass->fieldNames[$referencedColumnName]):
-                    $field = $sourceClass->fieldNames[$referencedColumnName];
-                    $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
-
-                    break;
-
-                default:
-                    throw MappingException::joinColumnMustPointToMappedField(
-                        $sourceClass->name, $referencedColumnName
-                    );
+                $id    = $this->em->getUnitOfWork()->getEntityIdentifier($value);
+                $value = $id[$targetClass->identifier[0]];
             }
 
             $criteria[$joinTableName . '.' . $quotedColumnName] = $value;
 
             $parameters[] = [
                 'value' => $value,
-                'field' => $field,
+                'field' => $fieldName,
                 'class' => $sourceClass,
             ];
         }
@@ -1811,7 +1796,7 @@ class BasicEntityPersister implements EntityPersister
             $field = $sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName());
             $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
-            if ($sourceClass->containsForeignIdentifier && isset($sourceClass->associationMappings[$field])) {
+            if (isset($sourceClass->associationMappings[$field])) {
                 $targetClass = $this->em->getClassMetadata($sourceClass->associationMappings[$field]['targetEntity']);
 
                 $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);

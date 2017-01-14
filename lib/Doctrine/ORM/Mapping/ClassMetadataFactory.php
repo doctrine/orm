@@ -213,10 +213,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->cache = clone $parent->cache;
             }
 
-            if ($parent->containsForeignIdentifier) {
-                $class->containsForeignIdentifier = true;
-            }
-
             if ( ! empty($parent->namedQueries)) {
                 $this->addInheritedNamedQueries($class, $parent);
             }

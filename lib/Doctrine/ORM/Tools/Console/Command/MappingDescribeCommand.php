@@ -117,7 +117,6 @@ EOT
                 $this->formatTable($metadata->table),
                 [
                     $this->formatField('Composite identifier?', $metadata->isIdentifierComposite),
-                    $this->formatField('Foreign identifier?', $metadata->containsForeignIdentifier),
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned()),
                     $this->formatField('Version field', ($metadata->isVersioned() ? $metadata->versionProperty->getName() : '')),
