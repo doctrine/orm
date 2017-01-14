@@ -224,15 +224,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $isIdentifierComposite = false;
 
     /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key contains at least one foreign key association.
-     *
-     * This flag is necessary because some code blocks require special treatment of this cases.
-     *
-     * @var boolean
-     */
-    public $containsForeignIdentifier = false;
-
-    /**
      * READ-ONLY: The inheritance mapping type used by the class.
      *
      * @var string
@@ -659,10 +650,6 @@ class ClassMetadata implements ClassMetadataInterface
 
         if ($this->isEmbeddedClass) {
             $serialized[] = 'isEmbeddedClass';
-        }
-
-        if ($this->containsForeignIdentifier) {
-            $serialized[] = 'containsForeignIdentifier';
         }
 
         if ($this->isVersioned()) {
@@ -1151,7 +1138,6 @@ class ClassMetadata implements ClassMetadataInterface
                 }
 
                 $this->identifier[] = $mapping['fieldName'];
-                $this->containsForeignIdentifier = true;
             }
 
             // Check for composite key

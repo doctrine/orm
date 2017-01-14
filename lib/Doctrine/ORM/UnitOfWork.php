@@ -1499,13 +1499,11 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata(get_class($entity));
         $id    = $class->getIdentifierValues($entity);
 
-        if ( ! $id) {
+        if (! $id) {
             return self::STATE_NEW;
         }
 
-        if ($class->containsForeignIdentifier) {
-            $id = $this->identifierFlattener->flattenIdentifier($class, $id);
-        }
+        $flatId = $this->identifierFlattener->flattenIdentifier($class, $id);
 
         if ($class->generatorType === GeneratorType::NONE) {
             // Check for a version field, if available, to avoid a db lookup.
@@ -1516,7 +1514,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Last try before db lookup: check the identity map.
-            if ($this->tryGetById($id, $class->rootEntityName)) {
+            if ($this->tryGetById($flatId, $class->rootEntityName)) {
                 return self::STATE_DETACHED;
             }
 
@@ -1534,7 +1532,7 @@ class UnitOfWork implements PropertyChangedListener
             // the last resort: a db lookup
 
             // Last try before db lookup: check the identity map.
-            if ($this->tryGetById($id, $class->rootEntityName)) {
+            if ($this->tryGetById($flatId, $class->rootEntityName)) {
                 return self::STATE_DETACHED;
             }
 
@@ -1873,10 +1871,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $flatId = ($class->containsForeignIdentifier)
-                    ? $this->identifierFlattener->flattenIdentifier($class, $id)
-                    : $id;
-
+                $flatId      = $this->identifierFlattener->flattenIdentifier($class, $id);
                 $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
 
                 if ($managedCopy) {
