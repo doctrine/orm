@@ -145,10 +145,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->cache)) {
             $cache = $this->convertCacheElementToCacheMetadata($xmlRoot->cache, $metadata);
             
-            $metadata->enableCache([
-                'usage'  => $cache->getUsage(),
-                'region' => $cache->getRegion(),
-            ]);
+            $metadata->setCache($cache);
         }
 
         // Evaluate named queries
@@ -182,6 +179,7 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {
                 $entities   = [];
                 $columns    = [];
+                
                 foreach ($rsmElement as $entityElement) {
                     //<entity-result/>
                     if (isset($entityElement['entity-class'])) {
