@@ -4,12 +4,12 @@ namespace Doctrine\Tests\EventListener;
 
 use Doctrine\Common\Persistence\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 class CacheMetadataListener
 {
-
     /**
      * Tracks which entities we have already forced caching enabled on. This is
      * important to avoid some potential infinite-recursion issues.
@@ -64,15 +64,11 @@ class CacheMetadataListener
             return; // Already handled in the past
         }
 
-        $cache = [
-            'usage' => CacheUsage::NONSTRICT_READ_WRITE,
-        ];
-
         if ($metadata->isVersioned()) {
             return;
         }
 
-        $metadata->enableCache($cache);
+        $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE));
 
         $this->recordVisit($metadata);
 
@@ -80,10 +76,11 @@ class CacheMetadataListener
         // given caching settings
         foreach ($metadata->associationMappings as $mapping) {
             $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
+            
             $this->enableCaching($targetMeta, $em);
 
             if ($this->isVisited($targetMeta)) {
-                $metadata->enableAssociationCache($mapping['fieldName'], $cache);
+                $metadata->enableAssociationCache($mapping['fieldName'], []);
             }
         }
     }

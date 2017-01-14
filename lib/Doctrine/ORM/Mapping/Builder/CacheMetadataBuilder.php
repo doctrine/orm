@@ -45,11 +45,11 @@ class CacheMetadataBuilder implements Builder
     }
 
     /**
-     * @param string $region
+     * @param string|null $region
      *
      * @return self
      */
-    public function withRegion(string $region)
+    public function withRegion(string $region = null)
     {
         $this->region = $region;
 

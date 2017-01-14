@@ -857,23 +857,17 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * @param array $cache
-     * 
-     * @todo Consider using CacheMetadata instead
+     * @param null|CacheMetadata $cache
      *
      * @return void
      */
-    public function enableCache(array $cache)
+    public function setCache(CacheMetadata $cache = null)
     {
-        $defaultRegion = strtolower(str_replace('\\', '_', $this->rootEntityName));
-        $builder       = new Builder\CacheMetadataBuilder();
+        if ($cache && ! $cache->getRegion()) {
+            $cache->setRegion(strtolower(str_replace('\\', '_', $this->rootEntityName)));
+        }
         
-        $builder
-            ->withUsage($cache['usage'] ?? CacheUsage::READ_ONLY)
-            ->withRegion($cache['region'] ?? $defaultRegion)
-        ;
-        
-        $this->cache = $builder->build();
+        $this->cache = $cache;
     }
 
     /**
