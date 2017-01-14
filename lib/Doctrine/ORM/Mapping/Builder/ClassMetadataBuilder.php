@@ -152,16 +152,16 @@ class ClassMetadataBuilder
      * @param string      $usage
      * @param string|null $region
      */
-    public function setCache($usage, $region = null)
+    public function withCache(string $usage, string $region = null)
     {
-        $region = $region ?: strtolower(str_replace('\\', '_', $this->cm->rootEntityName));
+        $cacheBuilder = new CacheMetadataBuilder();
 
-        $this->cm->enableCache(
-            [
-                'usage'  => $usage,
-                'region' => $region,
-            ]
-        );
+        $cacheBuilder
+            ->withUsage(strtoupper($usage))
+            ->withRegion($region)
+        ;
+
+        $this->cm->setCache($cacheBuilder->build());
     }
 
     /**

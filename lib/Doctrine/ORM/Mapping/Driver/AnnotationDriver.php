@@ -159,7 +159,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         if (isset($classAnnotations[Annotation\Cache::class])) {
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
 
-            $builder->setCache(
+            $builder->withCache(
                 constant(sprintf('%s::%s', CacheUsage::class, $cacheAnnot->usage)),
                 $cacheAnnot->region
             );
