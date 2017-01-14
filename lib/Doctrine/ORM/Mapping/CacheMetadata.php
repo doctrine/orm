@@ -51,26 +51,10 @@ class CacheMetadata
     }
 
     /**
-     * @param string $usage
-     */
-    public function setUsage(string $usage)
-    {
-        $this->usage = $usage;
-    }
-
-    /**
      * @return string
      */
     public function getRegion()
     {
         return $this->region;
-    }
-
-    /**
-     * @param string $region
-     */
-    public function setRegion(string $region)
-    {
-        $this->region = $region;
     }
 }
