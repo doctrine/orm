@@ -27,16 +27,16 @@ class CacheMetadata
     /** @var string */
     private $usage;
     
-    /** @var string|null */
+    /** @var string */
     private $region;
     
     /**
      * Constructor.
      * 
-     * @param string      $usage
-     * @param string|null $region
+     * @param string $usage
+     * @param string $region
      */
-    public function __construct(string $usage, string $region = null)
+    public function __construct(string $usage, string $region)
     {
         $this->usage  = $usage;
         $this->region = $region;
@@ -59,7 +59,7 @@ class CacheMetadata
     }
 
     /**
-     * @return string|null
+     * @return string
      */
     public function getRegion()
     {

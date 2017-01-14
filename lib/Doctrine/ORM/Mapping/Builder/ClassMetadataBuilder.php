@@ -149,10 +149,10 @@ class ClassMetadataBuilder
     }
 
     /**
-     * @param string      $usage
-     * @param string|null $region
+     * @param string $usage
+     * @param string $region
      */
-    public function withCache(string $usage, string $region = null)
+    public function withCache(string $usage, string $region)
     {
         $cacheBuilder = new CacheMetadataBuilder();
 

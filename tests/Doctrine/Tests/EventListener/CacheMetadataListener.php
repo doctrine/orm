@@ -68,7 +68,12 @@ class CacheMetadataListener
             return;
         }
 
-        $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE));
+        $metadata->setCache(
+            new CacheMetadata(
+                CacheUsage::NONSTRICT_READ_WRITE,
+                strtolower(str_replace('\\', '_', $metadata->rootEntityName))
+            )
+        );
 
         $this->recordVisit($metadata);
 
