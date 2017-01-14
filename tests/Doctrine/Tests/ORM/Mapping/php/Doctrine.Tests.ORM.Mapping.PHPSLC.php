@@ -2,7 +2,7 @@
 
 use Doctrine\ORM\Mapping;
 
-$metadata->enableCache(['usage' => Mapping\CacheUsage::READ_ONLY]);
+$metadata->setCache(new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY));
 
 $metadata->mapManyToOne(
     [
