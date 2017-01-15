@@ -41,7 +41,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      *
      * @param integer $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct($case = \CASE_LOWER)
     {
         $this->case = $case;
     }
