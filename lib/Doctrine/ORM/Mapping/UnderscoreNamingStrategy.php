@@ -39,15 +39,15 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Underscore naming strategy construct.
      *
-     * @param integer $case CASE_LOWER | CASE_UPPER
+     * @param integer $case \CASE_LOWER | \CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct($case = \CASE_LOWER)
     {
         $this->case = $case;
     }
 
     /**
-     * @return integer CASE_LOWER | CASE_UPPER
+     * @return integer \CASE_LOWER | \CASE_UPPER
      */
     public function getCase()
     {
@@ -55,7 +55,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
 
     /**
-     * Sets string case CASE_LOWER | CASE_UPPER.
+     * Sets string case \CASE_LOWER | \CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
      * 
      * @param integer $case
@@ -100,7 +100,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName()
     {
-        return $this->case === CASE_UPPER ?  'ID' : 'id';
+        return $this->case === \CASE_UPPER ?  'ID' : 'id';
     }
 
     /**
@@ -137,7 +137,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     {
         $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
 
-        if ($this->case === CASE_UPPER) {
+        if ($this->case === \CASE_UPPER) {
             return strtoupper($string);
         }
 
