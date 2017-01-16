@@ -113,11 +113,12 @@ class DefaultQueryCache implements QueryCache
 
         $cm = $this->em->getClassMetadata($entityName);
 
-        $entityCacheKeys = [];
-        foreach ($entry->result as $index => $concreteEntry) {
-            $entityCacheKeys[$index] = new EntityCacheKey($cm->rootEntityName, $concreteEntry['identifier']);
-        }
-        $entries = $region->getMultiple(new CollectionCacheEntry($entityCacheKeys));
+        $generateKeys = function (array $entry) use ($cm): EntityCacheKey {
+            return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
+        };
+
+        $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $entry->result));
+        $entries   = $region->getMultiple($cacheKeys);
 
         // @TODO - move to cache hydration component
         foreach ($entry->result as $index => $entry) {
@@ -127,14 +128,14 @@ class DefaultQueryCache implements QueryCache
             if ($entityEntry === null) {
 
                 if ($this->cacheLogger !== null) {
-                    $this->cacheLogger->entityCacheMiss($regionName, $entityCacheKeys[$index]);
+                    $this->cacheLogger->entityCacheMiss($regionName, $cacheKeys->identifiers[$index]);
                 }
 
                 return null;
             }
 
             if ($this->cacheLogger !== null) {
-                $this->cacheLogger->entityCacheHit($regionName, $entityCacheKeys[$index]);
+                $this->cacheLogger->entityCacheHit($regionName, $cacheKeys->identifiers[$index]);
             }
 
             if ( ! $hasRelation) {
