@@ -979,21 +979,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the field name for a column name.
-     * If no field name can be found the column name is returned.
-     *
-     * @param string $columnName The column name.
-     *
-     * @return string The column alias.
-     */
-    public function getFieldName($columnName)
-    {
-        return isset($this->fieldNames[$columnName])
-            ? $this->fieldNames[$columnName]
-            : $columnName;
-    }
-
-    /**
      * Gets the named query.
      *
      * @see ClassMetadata::$namedQueries
@@ -1241,6 +1226,8 @@ class ClassMetadata implements ClassMetadataInterface
                 if (! $joinColumn->getReferencedColumnName()) {
                     $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
+
+                $this->fieldNames[$joinColumn->getColumnName()] = $mapping['fieldName'];
             }
 
             if ($uniqueConstraintColumns) {
@@ -1465,16 +1452,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets an array containing all the column names.
-     *
-     * @return array
-     */
-    public function getColumnNames()
-    {
-        return array_keys($this->fieldNames);
-    }
-
-    /**
      * Returns an array with identifier column names and their corresponding ColumnMetadata.
      *
      * @return array
@@ -1621,6 +1598,13 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $mapping = $this->associationMappings[$fieldName];
+
+        // Unset all defined fieldNames prior to override
+        if (isset($mapping['joinColumns'])) {
+            foreach ($mapping['joinColumns'] as $joinColumn) {
+                unset($this->fieldNames[$joinColumn->getColumnName()]);
+            }
+        }
 
         if (isset($overrideMapping['joinColumns'])) {
             $mapping['joinColumns'] = $overrideMapping['joinColumns'];
@@ -2358,36 +2342,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         return isset($this->associationMappings[$fieldName])
             && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
-    }
-
-    /**
-     * Used to retrieve a fieldname for either field or association from a given column.
-     *
-     * This method is used in foreign-key as primary-key contexts.
-     *
-     * @param string $columnName
-     *
-     * @return string
-     *
-     * @throws MappingException
-     */
-    public function getFieldForColumn($columnName)
-    {
-        if (isset($this->fieldNames[$columnName])) {
-            return $this->fieldNames[$columnName];
-        }
-
-        foreach ($this->associationMappings as $assocName => $mapping) {
-            foreach ($mapping['joinColumns'] as $joinColumn) {
-                if ($joinColumn->getColumnName() === $columnName) {
-                    //$this->fieldNames[$columnName] = $assocName;
-
-                    return $assocName;
-                }
-            }
-        }
-
-        throw MappingException::noFieldNameFoundForColumn($this->name, $columnName);
     }
 
     /**

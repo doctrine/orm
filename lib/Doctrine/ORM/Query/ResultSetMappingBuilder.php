@@ -143,45 +143,50 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     protected function addAllClassFields($class, $alias, $columnAliasMap = [])
     {
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($class);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
 
         if ( ! $this->isInheritanceSupported($classMetadata)) {
-            throw new \InvalidArgumentException('ResultSetMapping builder does not currently support your inheritance scheme.');
+            throw new \InvalidArgumentException(
+                'ResultSetMapping builder does not currently support your inheritance scheme.'
+            );
         }
 
+        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
+            $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
 
-        foreach ($classMetadata->getColumnNames() as $columnName) {
-            $propertyName = $classMetadata->getFieldName($columnName);
-            $columnAlias  = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
-
-            if (isset($this->fieldMappings[$columnAlias])) {
-                throw new \InvalidArgumentException("The column '$columnName' conflicts with another column in the mapper.");
-            }
-
-            $this->addFieldResult($alias, $columnAlias, $propertyName);
-        }
-
-        foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
-                $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
-                $isIdentifier = isset($associationMapping['id']) && $associationMapping['id'] === true;
-
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName  = $joinColumn->getColumnName();
-                    $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
-                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
-
-                    if (isset($this->metaMappings[$columnAlias])) {
-                        throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
-                    }
-
-                    $this->addMetaResult($alias, $columnAlias, $columnName, $isIdentifier, $columnType);
+            if ($classMetadata->hasField($propertyName)) {
+                if (isset($this->fieldMappings[$columnAlias])) {
+                    throw new \InvalidArgumentException(
+                        "The column '$columnName' conflicts with another column in the mapper."
+                    );
                 }
+
+                $this->addFieldResult($alias, $columnAlias, $propertyName);
+
+                continue;
             }
+
+            if (isset($this->metaMappings[$columnAlias])) {
+                throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
+            }
+
+            $associationMapping = $classMetadata->associationMappings[$propertyName];
+            $isIdentifier       = isset($associationMapping['id']) && $associationMapping['id'] === true;
+            $columnType         = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
+
+            $this->addMetaResult($alias, $columnAlias, $columnName, $isIdentifier, $columnType);
         }
     }
 
+    /**
+     * Checks if inheritance if supported.
+     *
+     * @param ClassMetadata $metadata
+     *
+     * @return boolean
+     */
     private function isInheritanceSupported(ClassMetadata $metadata)
     {
         if ($metadata->inheritanceType === InheritanceType::SINGLE_TABLE
@@ -237,19 +242,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $columnAlias   = [];
         $classMetadata = $this->em->getClassMetadata($className);
 
-        foreach ($classMetadata->getColumnNames() as $columnName) {
+        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
             $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
-        }
-
-        foreach ($classMetadata->associationMappings as $associationMapping) {
-            if (! ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE)) {
-                continue;
-            }
-
-            foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                $columnName  = $joinColumn->getColumnName();
-                $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
-            }
         }
 
         return $columnAlias;
@@ -297,24 +291,18 @@ class ResultSetMappingBuilder extends ResultSetMapping
             $this->addMetaResult($alias, $discrColumnName, $discrColumnName, false, $discrColumnType);
         }
 
-        foreach ($classMetadata->getColumnNames() as $key => $columnName) {
-            $propertyName = $classMetadata->getFieldName($columnName);
+        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
+            if ($classMetadata->hasField($propertyName)) {
+                $this->addFieldResult($alias, $columnName, $propertyName);
 
-            $this->addFieldResult($alias, $columnName, $propertyName);
-        }
-
-        foreach ($classMetadata->associationMappings as $associationMapping) {
-            if ($associationMapping['isOwningSide'] && $associationMapping['type'] & ClassMetadata::TO_ONE) {
-                $targetClass  = $this->em->getClassMetadata($associationMapping['targetEntity']);
-                $isIdentifier = (isset($associationMapping['id']) && $associationMapping['id'] === true);
-
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    $columnName  = $joinColumn->getColumnName();
-                    $columnType  = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
-
-                    $this->addMetaResult($alias, $columnName, $columnName, $isIdentifier, $columnType);
-                }
+                continue;
             }
+
+            $associationMapping = $classMetadata->associationMappings[$propertyName];
+            $isIdentifier       = (isset($associationMapping['id']) && $associationMapping['id'] === true);
+            $columnType         = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
+
+            $this->addMetaResult($alias, $columnName, $columnName, $isIdentifier, $columnType);
         }
 
         return $this;
@@ -423,8 +411,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
 
         } else {
-            foreach ($classMetadata->getColumnNames() as $columnName) {
-                $propertyName = $classMetadata->getFieldName($columnName);
+            foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
+                if (! $classMetadata->hasField($propertyName)) {
+                    continue;
+                }
 
                 $this->addFieldResult($alias, $columnName, $propertyName);
             }
@@ -459,7 +449,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
             if (isset($this->fieldMappings[$columnName])) {
                 $class = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
-                $sql  .= $class->getProperty($this->fieldMappings[$columnName])->getColumnName();
+                $field = $this->fieldMappings[$columnName];
+                $sql  .= $class->getProperty($field)->getColumnName();
             } else if (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
             } else if (isset($this->discriminatorColumns[$dqlAlias])) {

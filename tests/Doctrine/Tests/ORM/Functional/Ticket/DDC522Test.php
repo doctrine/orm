@@ -16,9 +16,9 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC522Customer::class),
-                $this->em->getClassMetadata(DDC522Cart::class),
-                $this->em->getClassMetadata(DDC522ForeignKeyTest::class)
+                    $this->em->getClassMetadata(DDC522Customer::class),
+                    $this->em->getClassMetadata(DDC522Cart::class),
+                    $this->em->getClassMetadata(DDC522ForeignKeyTest::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -33,33 +33,39 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $cust = new DDC522Customer;
         $cust->name = "name";
+
         $cart = new DDC522Cart;
         $cart->total = 0;
         $cust->cart = $cart;
         $cart->customer = $cust;
+
         $this->em->persist($cust);
         $this->em->persist($cart);
         $this->em->flush();
-
         $this->em->clear();
 
-        $r = $this->em->createQuery("select ca,c from ".get_class($cart)." ca join ca.customer c")
-                ->getResult();
+        $cart = $this->em
+            ->createQuery("select ca,c from ".DDC522Cart::class." ca join ca.customer c")
+            ->getSingleResult()
+        ;
 
-        self::assertInstanceOf(DDC522Cart::class, $r[0]);
-        self::assertInstanceOf(DDC522Customer::class, $r[0]->customer);
-        self::assertNotInstanceOf(Proxy::class, $r[0]->customer);
-        self::assertEquals('name', $r[0]->customer->name);
+        self::assertInstanceOf(DDC522Cart::class, $cart);
+        self::assertInstanceOf(DDC522Customer::class, $cart->customer);
+        self::assertNotInstanceOf(Proxy::class, $cart->customer);
+        self::assertEquals('name', $cart->customer->name);
+
+        $cartId = $cart->id;
 
         $fkt = new DDC522ForeignKeyTest();
-        $fkt->cartId = $r[0]->id; // ignored for persistence
-        $fkt->cart = $r[0]; // must be set properly
+        $fkt->cart = $cart; // must be set properly
+
         $this->em->persist($fkt);
         $this->em->flush();
         $this->em->clear();
 
         $fkt2 = $this->em->find(get_class($fkt), $fkt->id);
-        self::assertEquals($fkt->cart->id, $fkt2->cartId);
+
+        self::assertEquals($fkt->cart->id, $cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
         self::assertFalse($fkt2->cart->__isInitialized__);
     }
@@ -86,8 +92,10 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC522Customer {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
+
     /** @Column */
     public $name;
+
     /** @OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
     public $cart;
 }
@@ -96,8 +104,10 @@ class DDC522Customer {
 class DDC522Cart {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
+
     /** @Column(type="integer") */
     public $total;
+
     /**
      * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
      * @JoinColumn(name="customer", referencedColumnName="id")
@@ -109,8 +119,7 @@ class DDC522Cart {
 class DDC522ForeignKeyTest {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-    /** @Column(type="integer", name="cart_id", nullable=true) */
-    public $cartId;
+
     /**
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")

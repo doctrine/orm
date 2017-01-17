@@ -855,7 +855,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory       = $this->createClassMetadataFactory();
         $adminMetadata = $factory->getMetadataFor(DDC964Admin::class);
 
-        self::assertEquals(['user_id'=>'id', 'user_name'=>'name'], $adminMetadata->fieldNames);
+        self::assertEquals(
+            [
+                'user_id' => 'id',
+                'user_name' => 'name',
+                'adminaddress_id' => 'address',
+            ],
+            $adminMetadata->fieldNames
+        );
 
         self::assertNotNull($adminMetadata->getProperty('id'));
 
@@ -877,7 +884,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $guestMetadata = $factory->getMetadataFor(DDC964Guest::class);
 
-        self::assertEquals(['guest_id'=>'id','guest_name'=>'name'], $guestMetadata->fieldNames);
+        self::assertEquals(
+            [
+                'guest_id' => 'id',
+                'guest_name' => 'name',
+            ],
+            $guestMetadata->fieldNames
+        );
 
         self::assertNotNull($guestMetadata->getProperty('id'));
 

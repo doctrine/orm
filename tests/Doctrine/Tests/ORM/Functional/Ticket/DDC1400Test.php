@@ -14,9 +14,9 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->schemaTool->createSchema(
                 [
-                $this->em->getClassMetadata(DDC1400Article::class),
-                $this->em->getClassMetadata(DDC1400User::class),
-                $this->em->getClassMetadata(DDC1400UserState::class),
+                    $this->em->getClassMetadata(DDC1400Article::class),
+                    $this->em->getClassMetadata(DDC1400User::class),
+                    $this->em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -36,15 +36,11 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $userState1 = new DDC1400UserState;
         $userState1->article = $article;
-        $userState1->articleId = $article->id;
         $userState1->user = $user1;
-        $userState1->userId = $user1->id;
 
         $userState2 = new DDC1400UserState;
         $userState2->article = $article;
-        $userState2->articleId = $article->id;
         $userState2->user = $user2;
-        $userState2->userId = $user2->id;
 
         $this->em->persist($userState1);
         $this->em->persist($userState2);
@@ -75,7 +71,7 @@ class DDC1400Article
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY")
+     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
@@ -94,7 +90,7 @@ class DDC1400User
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY")
+     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
@@ -104,7 +100,6 @@ class DDC1400User
  */
 class DDC1400UserState
 {
-
     /**
       * @Id
      *  @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
@@ -116,15 +111,4 @@ class DDC1400UserState
      *  @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
      */
     public $user;
-
-    /**
-     * @Column(name="user_id", type="integer")
-     */
-    public $userId;
-
-    /**
-     * @Column(name="article_id", type="integer")
-     */
-    public $articleId;
-
 }
