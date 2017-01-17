@@ -1707,22 +1707,19 @@ class SqlWalker implements TreeWalker
         }
 
         // IdentificationVariable
-        $sqlParts = [];
+        $classMetadata = $this->queryComponents[$groupByItem]['metadata'];
+        $sqlParts      = [];
 
-        foreach ($this->queryComponents[$groupByItem]['metadata']->fieldNames as $field) {
-            $item       = new AST\PathExpression(AST\PathExpression::TYPE_STATE_FIELD, $groupByItem, $field);
-            $item->type = AST\PathExpression::TYPE_STATE_FIELD;
+        foreach ($classMetadata->fieldNames as $fieldName) {
+            $type = $classMetadata->hasField($fieldName)
+                ? AST\PathExpression::TYPE_STATE_FIELD
+                : AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+            ;
+
+            $item       = new AST\PathExpression($type, $groupByItem, $fieldName);
+            $item->type = $type;
 
             $sqlParts[] = $this->walkPathExpression($item);
-        }
-
-        foreach ($this->queryComponents[$groupByItem]['metadata']->associationMappings as $mapping) {
-            if ($mapping['isOwningSide'] && $mapping['type'] & ClassMetadata::TO_ONE) {
-                $item       = new AST\PathExpression(AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $groupByItem, $mapping['fieldName']);
-                $item->type = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
-
-                $sqlParts[] = $this->walkPathExpression($item);
-            }
         }
 
         return implode(', ', $sqlParts);
