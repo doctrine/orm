@@ -1,6 +1,11 @@
 # Upgrade to 2.5
 
-## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL`
+## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`
+
+Method `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()` was unused and part
+of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/doctrine2/pull/5600).
+
+## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
 
 As `$className` parameter was not used in the method, it was safely removed.
 

@@ -112,20 +112,30 @@ class DefaultQueryCache implements QueryCache
         $regionName  = $region->getName();
 
         $cm = $this->em->getClassMetadata($entityName);
+
+        $generateKeys = function (array $entry) use ($cm): EntityCacheKey {
+            return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
+        };
+
+        $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $entry->result));
+        $entries   = $region->getMultiple($cacheKeys);
+
         // @TODO - move to cache hydration component
         foreach ($entry->result as $index => $entry) {
 
-            if (($entityEntry = $region->get($entityKey = new EntityCacheKey($cm->rootEntityName, $entry['identifier']))) === null) {
+            $entityEntry = is_array($entries) && array_key_exists($index, $entries) ? $entries[$index] : null;
+
+            if ($entityEntry === null) {
 
                 if ($this->cacheLogger !== null) {
-                    $this->cacheLogger->entityCacheMiss($regionName, $entityKey);
+                    $this->cacheLogger->entityCacheMiss($regionName, $cacheKeys->identifiers[$index]);
                 }
 
                 return null;
             }
 
             if ($this->cacheLogger !== null) {
-                $this->cacheLogger->entityCacheHit($regionName, $entityKey);
+                $this->cacheLogger->entityCacheHit($regionName, $cacheKeys->identifiers[$index]);
             }
 
             if ( ! $hasRelation) {
