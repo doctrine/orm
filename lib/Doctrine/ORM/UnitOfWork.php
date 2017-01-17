@@ -2636,7 +2636,7 @@ class UnitOfWork implements PropertyChangedListener
                     foreach ($assoc['joinColumns'] as $joinColumn) {
                         $joinColumnName  = $joinColumn->getColumnName();
                         $joinColumnValue = isset($data[$joinColumnName]) ? $data[$joinColumnName] : null;
-                        $targetField     = $targetClass->getFieldForColumn($joinColumn->getReferencedColumnName());
+                        $targetField     = $targetClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
                         if ($joinColumnValue === null && in_array($targetField, $targetClass->identifier, true)) {
                             // the missing key is part of target's entity primary key

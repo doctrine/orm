@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Util\Debug;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
@@ -133,7 +132,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $referencedName   = $joinColumn->getReferencedColumnName();
 
             $conditions[]   = 't.' . $quotedColumnName . ' = ?';
-            $params[]       = $id[$sourceClass->getFieldForColumn($referencedName)];
+            $params[]       = $id[$sourceClass->fieldNames[$referencedName]];
             $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em);
         }
 
@@ -249,14 +248,17 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($joinColumns as $joinColumn) {
+            $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedName   = $joinColumn->getReferencedColumnName();
+
             if (! $joinColumn->getType()) {
                 $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $ownerMetadata, $this->em)
+                    PersisterHelper::getTypeOfColumn($referencedName, $ownerMetadata, $this->em)
                 );
             }
 
-            $whereClauses[] = sprintf('t.%s = ?', $this->platform->quoteIdentifier($joinColumn->getColumnName()));
-            $params[] = $id[$ownerMetadata->getFieldForColumn($joinColumn->getReferencedColumnName())];
+            $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
+            $params[] = $id[$ownerMetadata->fieldNames[$referencedName]];
             $types[] = $joinColumn->getType();
         }
 
@@ -420,7 +422,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params      = [];
 
         foreach ($joinColumns as $joinColumn) {
-            $params[] = $identifier[$sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName())];
+            $params[] = $identifier[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
         }
 
         return $params;
@@ -550,13 +552,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $targetIdentifier = $this->uow->getEntityIdentifier($element);
 
         foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
-            $fieldName = $owningClass->getFieldForColumn($joinColumn->getReferencedColumnName());
+            $fieldName = $owningClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
             $params[] = $owningIdentifier[$fieldName];
         }
 
         foreach ($mapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
-            $fieldName = $targetClass->getFieldForColumn($joinColumn->getReferencedColumnName());
+            $fieldName = $targetClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
             $params[] = $targetIdentifier[$fieldName];
         }
@@ -628,7 +630,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
 
             $whereClauses[] = 't.' . $this->platform->quoteIdentifier($joinColumn->getColumnName()) . ' = ?';
-            $params[]       = $id[$sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName())];
+            $params[]       = $id[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
             $types[]        = $joinColumn->getType();
         }
 
@@ -700,7 +702,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
-            $params[]       = $sourceId[$sourceClass->getFieldForColumn($referencedColumnName)];
+            $params[]       = $sourceId[$sourceClass->fieldNames[$referencedColumnName]];
             $types[]        = PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em);
         }
 
@@ -709,7 +711,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
-            $params[]       = $targetId[$targetClass->getFieldForColumn($referencedColumnName)];
+            $params[]       = $targetId[$targetClass->fieldNames[$referencedColumnName]];
             $types[]        = PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em);
         }
 

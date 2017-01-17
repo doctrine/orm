@@ -643,7 +643,7 @@ class BasicEntityPersister implements EntityPersister
             foreach ($assoc['joinColumns'] as $joinColumn) {
                 $columnName           = $joinColumn->getColumnName();
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
-                $targetField          = $targetClass->getFieldForColumn($referencedColumnName);
+                $targetField          = $targetClass->fieldNames[$referencedColumnName];
 
                 $joinColumn->setType(
                     PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
@@ -984,10 +984,9 @@ class BasicEntityPersister implements EntityPersister
         $joinColumns   = $assoc['isOwningSide'] ? $joinTable->getJoinColumns() : $joinTable->getInverseJoinColumns();
 
         foreach ($joinColumns as $joinColumn) {
-            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $referencedColumnName = $joinColumn->getReferencedColumnName();
-            $fieldName            = $sourceClass->getFieldForColumn($referencedColumnName);
-            $value                = $sourceClass->reflFields[$fieldName]->getValue($sourceEntity);
+            $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
+            $value            = $sourceClass->reflFields[$fieldName]->getValue($sourceEntity);
 
             if (isset($sourceClass->associationMappings[$fieldName])) {
                 $targetMapping = $sourceClass->associationMappings[$fieldName];
@@ -1177,13 +1176,16 @@ class BasicEntityPersister implements EntityPersister
         $columnList = [];
         $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r'); // r for root
 
-        // Add regular columns to select list
-        foreach ($this->class->fieldNames as $field) {
-            $columnList[] = $this->getSelectColumnSQL($field, $this->class);
-        }
-
         $this->currentPersisterContext->selectJoinSql    = '';
         $eagerAliasCounter      = 0;
+
+        foreach ($this->class->fieldNames as $field) {
+            if (! $this->class->hasField($field)) {
+                continue;
+            }
+
+            $columnList[] = $this->getSelectColumnSQL($field, $this->class);
+        }
 
         foreach ($this->class->associationMappings as $assocField => $assoc) {
             $assocColumnSQL = $this->getSelectColumnAssociationSQL($assocField, $assoc, $this->class);
@@ -1213,16 +1215,15 @@ class BasicEntityPersister implements EntityPersister
             $this->currentPersisterContext->rsm->addJoinedEntityResult($assoc['targetEntity'], $assocAlias, 'r', $assocField);
 
             foreach ($eagerEntity->fieldNames as $field) {
-                $columnList[] = $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias);
-            }
+                $columnSQL = $eagerEntity->hasField($field)
+                    ? $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias)
+                    : $this->getSelectColumnAssociationSQL(
+                        $field, $eagerEntity->associationMappings[$field], $eagerEntity, $assocAlias
+                    )
+                ;
 
-            foreach ($eagerEntity->associationMappings as $eagerAssocField => $eagerAssoc) {
-                $eagerAssocColumnSQL = $this->getSelectColumnAssociationSQL(
-                    $eagerAssocField, $eagerAssoc, $eagerEntity, $assocAlias
-                );
-
-                if ($eagerAssocColumnSQL) {
-                    $columnList[] = $eagerAssocColumnSQL;
+                if ($columnSQL) {
+                    $columnList[] = $columnSQL;
                 }
             }
 
@@ -1793,7 +1794,7 @@ class BasicEntityPersister implements EntityPersister
         $tableAlias  = $this->getSQLTableAlias($class->getTableName());
 
         foreach ($owningAssoc['joinColumns'] as $joinColumn) {
-            $field = $sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName());
+            $field = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
             $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
 
             if (isset($sourceClass->associationMappings[$field])) {

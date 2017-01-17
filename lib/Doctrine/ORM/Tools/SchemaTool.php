@@ -604,35 +604,39 @@ class SchemaTool
      */
     private function getDefiningClass($class, $referencedColumnName)
     {
-        $referencedFieldName = $class->getFieldName($referencedColumnName);
+        if (isset($class->fieldNames[$referencedColumnName])) {
+            $referencedFieldName = $class->fieldNames[$referencedColumnName];
 
-        if ($class->hasField($referencedFieldName)) {
-            return [$class, $referencedFieldName];
+            if ($class->hasField($referencedFieldName)) {
+                return [$class, $referencedFieldName];
+            }
         }
 
         $idColumns        = $class->getIdentifierColumns($this->em);
         $idColumnNameList = array_keys($idColumns);
 
-        if (in_array($referencedColumnName, $idColumnNameList)) {
-            // it seems to be an entity as foreign key
-            foreach ($class->getIdentifierFieldNames() as $fieldName) {
-                if (! $class->hasAssociation($fieldName)) {
-                    continue;
-                }
+        if (! in_array($referencedColumnName, $idColumnNameList)) {
+            return null;
+        }
 
-                $association = $class->getAssociationMapping($fieldName);
+        // it seems to be an entity as foreign key
+        foreach ($class->getIdentifierFieldNames() as $fieldName) {
+            if (! $class->hasAssociation($fieldName)) {
+                continue;
+            }
 
-                if (count($association['joinColumns']) > 1) {
-                    throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
-                }
+            $association = $class->getAssociationMapping($fieldName);
 
-                $joinColumn = reset($association['joinColumns']);
+            if (count($association['joinColumns']) > 1) {
+                throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
+            }
 
-                if ($joinColumn->getColumnName() === $referencedColumnName) {
-                    $targetEntity = $this->em->getClassMetadata($association['targetEntity']);
+            $joinColumn = reset($association['joinColumns']);
 
-                    return $this->getDefiningClass($targetEntity, $joinColumn->getReferencedColumnName());
-                }
+            if ($joinColumn->getColumnName() === $referencedColumnName) {
+                $targetEntity = $this->em->getClassMetadata($association['targetEntity']);
+
+                return $this->getDefiningClass($targetEntity, $joinColumn->getReferencedColumnName());
             }
         }
 

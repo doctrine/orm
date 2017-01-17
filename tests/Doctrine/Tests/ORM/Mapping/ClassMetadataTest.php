@@ -1452,56 +1452,6 @@ class ClassMetadataTest extends OrmTestCase
             $metadata->getReflectionProperties()
         );
     }
-
-    public function testGetColumnNames()
-    {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
-        $metadata->initializeReflection(new RuntimeReflectionService());
-
-        $fieldMetadata = new Mapping\FieldMetadata('status');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setColumnName('foo');
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('username');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setColumnName('bar');
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('name');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setColumnName('baz');
-
-        $metadata->addProperty($fieldMetadata);
-
-        self::assertSame(
-            ['foo', 'bar', 'baz'],
-            $metadata->getColumnNames()
-        );
-    }
-
-    /**
-     * @group DDC-6460
-     */
-    public function testInlineEmbeddable()
-    {
-        $classMetadata = new ClassMetadata(TestEntity1::class);
-
-        $classMetadata->mapEmbedded(
-            [
-                'fieldName'    => 'test',
-                'class'        => TestEntity1::class,
-                'columnPrefix' => false,
-            ]
-        );
-
-        $this->assertTrue($classMetadata->hasField('test'));
-    }
 }
 
 /**

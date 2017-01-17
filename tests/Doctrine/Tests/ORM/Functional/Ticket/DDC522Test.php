@@ -33,33 +33,39 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $cust = new DDC522Customer;
         $cust->name = "name";
+
         $cart = new DDC522Cart;
         $cart->total = 0;
         $cust->cart = $cart;
         $cart->customer = $cust;
+
         $this->em->persist($cust);
         $this->em->persist($cart);
         $this->em->flush();
-
         $this->em->clear();
 
-        $r = $this->em->createQuery('select ca,c from ' . DDC522Cart::class . ' ca join ca.customer c')
-            ->getResult();
+        $cart = $this->em
+            ->createQuery('select ca, c from ' . DDC522Cart::class . ' ca join ca.customer c')
+            ->getSingleResult()
+        ;
 
-        self::assertInstanceOf(DDC522Cart::class, $r[0]);
-        self::assertInstanceOf(DDC522Customer::class, $r[0]->customer);
-        self::assertNotInstanceOf(Proxy::class, $r[0]->customer);
-        self::assertEquals('name', $r[0]->customer->name);
+        self::assertInstanceOf(DDC522Cart::class, $cart);
+        self::assertInstanceOf(DDC522Customer::class, $cart->customer);
+        self::assertNotInstanceOf(Proxy::class, $cart->customer);
+        self::assertEquals('name', $cart->customer->name);
+
+        $cartId = $cart->id;
 
         $fkt = new DDC522ForeignKeyTest();
-        $fkt->cartId = $r[0]->id; // ignored for persistence
-        $fkt->cart = $r[0]; // must be set properly
+        $fkt->cart = $cart; // must be set properly
+
         $this->em->persist($fkt);
         $this->em->flush();
         $this->em->clear();
 
         $fkt2 = $this->em->find(get_class($fkt), $fkt->id);
-        self::assertEquals($fkt->cart->id, $fkt2->cartId);
+
+        self::assertEquals($fkt->cart->id, $cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
         self::assertFalse($fkt2->cart->__isInitialized__);
     }
@@ -121,9 +127,6 @@ class DDC522ForeignKeyTest
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-
-    /** @Column(type="integer", name="cart_id", nullable=true) */
-    public $cartId;
 
     /**
      * @OneToOne(targetEntity="DDC522Cart")
