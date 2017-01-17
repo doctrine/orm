@@ -23,7 +23,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for one-to-many collections.
@@ -215,7 +214,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         foreach ($targetClass->associationMappings[$mapping['mappedBy']]['joinColumns'] as $joinColumn) {
             $columns[]    = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $parameters[] = $identifier[$sourceClass->getFieldForColumn($joinColumn->getReferencedColumnName())];
+            $parameters[] = $identifier[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
         }
 
         $tableName = $targetClass->table->getQuotedQualifiedName($this->platform);
