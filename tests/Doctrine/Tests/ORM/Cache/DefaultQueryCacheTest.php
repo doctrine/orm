@@ -125,8 +125,7 @@ class DefaultQueryCacheTest extends OrmTestCase
         $stateClass = $this->em->getClassMetadata(State::class);
 
         $rsm->addRootEntityFromClassMetadata(City::class, 'c');
-        $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']
-        );
+        $rsm->addJoinedEntityFromClassMetadata(State::class, 's', 'c', 'state', ['id'=>'state_id', 'name'=>'state_name']);
 
         for ($i = 0; $i < 4; $i++) {
             $state    = new State("State $i");
@@ -283,8 +282,47 @@ class DefaultQueryCacheTest extends OrmTestCase
         $key   = new QueryCacheKey('query.key1', 0);
         $entry = new QueryCacheEntry(
             [
-            ['identifier' => ['id' => 1]],
-            ['identifier' => ['id' => 2]]
+                ['identifier' => ['id' => 1]],
+                ['identifier' => ['id' => 2]]
+            ]
+        );
+
+        $data = [
+            ['id'=>1, 'name' => 'Foo'],
+            ['id'=>2, 'name' => 'Bar']
+        ];
+
+        $this->region->addReturn('get', $entry);
+
+        $this->region->addReturn(
+            'getMultiple',
+            [
+                new EntityCacheEntry(Country::class, $data[0]),
+                new EntityCacheEntry(Country::class, $data[1])
+            ]
+        );
+
+        $rsm->addRootEntityFromClassMetadata(Country::class, 'c');
+
+        $result = $this->queryCache->get($key, $rsm);
+
+        $this->assertCount(2, $result);
+        $this->assertInstanceOf(Country::class, $result[0]);
+        $this->assertInstanceOf(Country::class, $result[1]);
+        $this->assertEquals(1, $result[0]->getId());
+        $this->assertEquals(2, $result[1]->getId());
+        $this->assertEquals('Foo', $result[0]->getName());
+        $this->assertEquals('Bar', $result[1]->getName());
+    }
+
+    public function testGetWithAssociation()
+    {
+        $rsm   = new ResultSetMappingBuilder($this->em);
+        $key   = new QueryCacheKey('query.key1', 0);
+        $entry = new QueryCacheEntry(
+            [
+                ['identifier' => ['id' => 1]],
+                ['identifier' => ['id' => 2]]
             ]
         );
 
