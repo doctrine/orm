@@ -175,7 +175,8 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
+            $assocMetadata  = $this->em->getClassMetadata($assoc['targetEntity']);
+            $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
             $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
             $assocRegion    = $assocPersister->getCacheRegion();
             $assocEntry     = $assocRegion->get($assocKey);

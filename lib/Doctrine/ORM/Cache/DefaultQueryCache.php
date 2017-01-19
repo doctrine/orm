@@ -148,13 +148,13 @@ class DefaultQueryCache implements QueryCache
             $data = $entityEntry->data;
 
             foreach ($entry['associations'] as $name => $assoc) {
-
                 $assocPersister  = $this->uow->getEntityPersister($assoc['targetEntity']);
                 $assocRegion     = $assocPersister->getCacheRegion();
+                $assocMetadata   = $this->em->getClassMetadata($assoc['targetEntity']);
 
                 if ($assoc['type'] & ClassMetadata::TO_ONE) {
 
-                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assoc['targetEntity'], $assoc['identifier']))) === null) {
+                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assocMetadata->rootEntityName, $assoc['identifier']))) === null) {
 
                         if ($this->cacheLogger !== null) {
                             $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
@@ -178,12 +178,11 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
-                $collection  = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
+                $collection  = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
 
-                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assoc['targetEntity'], $assocId))) === null) {
+                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocId))) === null) {
 
                         if ($this->cacheLogger !== null) {
                             $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
