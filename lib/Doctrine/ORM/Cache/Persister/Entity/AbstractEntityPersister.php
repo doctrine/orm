@@ -272,7 +272,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             }
 
             $assocId        = $this->uow->getEntityIdentifier($assocEntity);
-            $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
+            $assocMetadata  = $this->metadataFactory->getMetadataFor($assoc['targetEntity']);
+            $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
             $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
