@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
- * @group
+ * @group DDC-2660
  */
 class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
