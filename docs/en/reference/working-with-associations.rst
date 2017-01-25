@@ -616,10 +616,10 @@ address reference. When flush is called not only are the references removed
 but both the old standing data and the one address entity are also deleted 
 from the database.
 
+.. _filtering-collections:
+
 Filtering Collections
 ---------------------
-
-.. filtering-collections:
 
 Collections have a filtering API that allows to slice parts of data from
 a collection. If the collection has not been loaded from the database yet,
