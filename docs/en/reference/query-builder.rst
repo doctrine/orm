@@ -499,6 +499,24 @@ complete list of supported helper methods available:
         public function countDistinct($x); // Returns Expr\Func
     }
 
+Adding a Criteria to a Query
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can also add a :ref:`Criteria <filtering-collections>` to a QueryBuilder by
+using ``addCriteria``:
+
+.. code-block:: php
+
+    <?php
+    use Doctrine\Common\Collections\Criteria;
+    // ...
+
+    $criteria = Criteria::create()
+        ->orderBy(['firstName', 'ASC']);
+
+    // $qb instanceof QueryBuilder
+    $qb->addCriteria($criteria);
+    // then execute your query like normal
 
 Low Level API
 ^^^^^^^^^^^^^
