@@ -364,7 +364,7 @@ Here is the list of possible generation strategies:
    a new entity is passed to ``EntityManager#persist``. NONE is the
    same as leaving off the @GeneratedValue entirely.
 -  ``CUSTOM``: With this option, you can use the ``@CustomIdGenerator`` annotation.
-   It will allow you to pass a :ref:`class of your own to generate the identifiers <_annref_customidgenerator>`
+   It will allow you to pass a :doc:`class of your own to generate the identifiers.<_annref_customidgenerator>`
 
 Sequence Generator
 ^^^^^^^^^^^^^^^^^^
