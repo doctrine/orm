@@ -911,35 +911,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-2478
-     */
-    public function testMatchingCriteriaNullAssocComparison()
-    {
-        $fixtures       = $this->loadFixtureUserEmail();
-        $user           = $this->em->merge($fixtures[0]);
-        $repository     = $this->em->getRepository(CmsUser::class);
-        $criteriaIsNull = Criteria::create()->where(Criteria::expr()->isNull('email'));
-        $criteriaEqNull = Criteria::create()->where(Criteria::expr()->eq('email', null));
-
-        $user->setEmail(null);
-        $this->em->persist($user);
-        $this->em->flush();
-        $this->em->clear();
-
-        $usersIsNull = $repository->matching($criteriaIsNull);
-        $usersEqNull = $repository->matching($criteriaEqNull);
-
-        self::assertCount(1, $usersIsNull);
-        self::assertCount(1, $usersEqNull);
-
-        self::assertInstanceOf(CmsUser::class, $usersIsNull[0]);
-        self::assertInstanceOf(CmsUser::class, $usersEqNull[0]);
-
-        self::assertNull($usersIsNull[0]->getEmail());
-        self::assertNull($usersEqNull[0]->getEmail());
-    }
-
-    /**
      * @group DDC-2055
      */
     public function testCreateResultSetMappingBuilder()
