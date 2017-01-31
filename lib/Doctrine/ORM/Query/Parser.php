@@ -2874,8 +2874,7 @@ class Parser
     /**
      * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
-     * @return \Doctrine\ORM\Query\AST\StringPrimary |
-     *         \Doctrine\ORM\Query\AST\Subselect |
+     * @return \Doctrine\ORM\Query\AST\Subselect |
      *         string
      */
     public function StringExpression()
