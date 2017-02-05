@@ -250,8 +250,6 @@ public function <methodName>()
 public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
 {
 <spaces>$this-><fieldName> = $<variableName>;
-
-<spaces>return $this;
 }';
 
     /**
