@@ -14,18 +14,18 @@
 <phpunit
     backupGlobals="false"
     backupStaticAttributes="false"
-    colors="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
     convertWarningsToExceptions="true"
     processIsolation="false"
     stopOnFailure="false"
     syntaxCheck="false"
+    colors="true"
     checkForUnintentionallyCoveredCode="true"
     beStrictAboutChangesToGlobalState="true"
     beStrictAboutOutputDuringTests="true"
     beStrictAboutTestSize="true"
-    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutTestsThatDoNotTestAnything="false"
     bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
 
