@@ -13,6 +13,10 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
      * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $wrapped;
+
+    /**
+     * @var EntityManagerDecorator|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $decorator;
 
     public function setUp()

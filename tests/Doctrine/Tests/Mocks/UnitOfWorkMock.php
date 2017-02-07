@@ -60,12 +60,4 @@ class UnitOfWorkMock extends UnitOfWork
     {
         $this->persisterMock[$entityName] = $persister;
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOriginalEntityData($entity, array $originalData)
-    {
-        $this->originalEntityData[spl_object_hash($entity)] = $originalData;
-    }
 }
