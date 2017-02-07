@@ -5,14 +5,14 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
-use PHPUnit_Framework_TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs}
  *
  * @covers \Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs
  */
-class OnClassMetadataNotFoundEventArgsTest extends PHPUnit_Framework_TestCase
+class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 {
     public function testEventArgsMutability()
     {

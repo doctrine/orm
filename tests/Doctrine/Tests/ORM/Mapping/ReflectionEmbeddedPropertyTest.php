@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
+use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Mapping\Entity;
 use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
@@ -16,7 +17,7 @@ use ReflectionProperty;
  *
  * @covers \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty
  */
-class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
+class ReflectionEmbeddedPropertyTest extends DoctrineTestCase
 {
     /**
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to

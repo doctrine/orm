@@ -47,6 +47,8 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 
         $this->em->remove($eOloaded);
         $this->em->flush();
+
+        $this->assertTrue(true);
     }
 
     public function testMany()
@@ -66,6 +68,8 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 
         $this->em->remove($eOloaded);
         $this->em->flush();
+
+        $this->assertTrue(true);
     }
 }
 

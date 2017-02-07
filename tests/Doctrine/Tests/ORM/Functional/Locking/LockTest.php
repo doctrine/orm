@@ -35,6 +35,8 @@ class LockTest extends OrmFunctionalTestCase
         $this->em->flush();
 
         $this->em->lock($article, LockMode::OPTIMISTIC, $article->version);
+
+        self::assertTrue(true);
     }
 
     /**

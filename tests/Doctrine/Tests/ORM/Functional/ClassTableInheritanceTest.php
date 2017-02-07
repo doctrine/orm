@@ -305,6 +305,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $result = $query->execute();
 
+        self::assertEquals(0, $result); // number of rows updated
     }
 
     /**

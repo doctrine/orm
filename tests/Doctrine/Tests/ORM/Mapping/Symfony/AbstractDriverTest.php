@@ -1,12 +1,14 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
+
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
+abstract class AbstractDriverTest extends DoctrineTestCase
 {
     public function testFindMappingFile()
     {

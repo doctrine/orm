@@ -6,8 +6,9 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\DoctrineTestCase;
 
-class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
+class EntityManagerDecoratorTest extends DoctrineTestCase
 {
     private $wrapped;
     private $decorator;
@@ -15,10 +16,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
-        $this->decorator = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$this->wrapped])
-            ->setMethods(null)
-            ->getMock();
+        $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {};
     }
 
     public function getMethodParameters()
@@ -26,6 +24,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
         $class = new \ReflectionClass(EntityManager::class);
 
         $methods = [];
+
         foreach ($class->getMethods() as $method) {
             if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
                 continue;
@@ -48,6 +47,7 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
             } elseif ($method->getNumberOfRequiredParameters() > 0) {
                 $methods[] = [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
             }
+
             if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
                 $methods[] = [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
             }
@@ -61,13 +61,15 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
+        $message = 'INNER VALUE FROM ' . $method;
         $stub = $this->wrapped
-            ->expects($this->once())
+            ->expects(self::once())
             ->method($method)
-            ->will($this->returnValue('INNER VALUE FROM ' . $method));
+            ->willReturn($message)
+        ;
 
         call_user_func_array([$stub, 'with'], $parameters);
 
-        self::assertSame('INNER VALUE FROM ' . $method, call_user_func_array([$this->decorator, $method], $parameters));
+        self::assertEquals($message, call_user_func_array([$this->decorator, $method], $parameters));
     }
 }
