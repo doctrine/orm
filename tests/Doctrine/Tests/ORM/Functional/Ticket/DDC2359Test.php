@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Connection;
@@ -8,12 +9,12 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2359
  */
-class DDC2359Test extends TestCase
+class DDC2359Test extends DoctrineTestCase
 {
 
     /**

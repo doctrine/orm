@@ -46,11 +46,11 @@ class OrmPerformanceTestCase extends OrmFunctionalTestCase
      */
     public function setMaxRunningTime($maxRunningTime)
     {
-        if (is_integer($maxRunningTime) && $maxRunningTime >= 0) {
-            $this->maxRunningTime = $maxRunningTime;
-        } else {
+        if (! (is_int($maxRunningTime) && $maxRunningTime >= 0)) {
             throw new \InvalidArgumentException;
         }
+
+        $this->maxRunningTime = $maxRunningTime;
     }
 
     /**

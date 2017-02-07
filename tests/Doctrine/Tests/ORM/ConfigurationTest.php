@@ -17,15 +17,15 @@ use Doctrine\ORM\Mapping\NamingStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
-use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
 /**
  * Tests for the Configuration object
  * @author Marco Pivetta <ocramius@gmail.com>
  */
-class ConfigurationTest extends TestCase
+class ConfigurationTest extends DoctrineTestCase
 {
     /**
      * @var Configuration
@@ -182,7 +182,7 @@ class ConfigurationTest extends TestCase
         $this->setProductionSettings();
         $this->configuration->ensureProductionSettings();
 
-        $this->addToAssertionCount(1);
+        self::addToAssertionCount(1);
     }
 
     public function testEnsureProductionSettingsQueryCache()

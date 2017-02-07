@@ -25,7 +25,7 @@ use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 use stdClass;
 
 /**
@@ -33,7 +33,7 @@ use stdClass;
  *
  * @covers \Doctrine\ORM\Internal\HydrationCompleteHandler
  */
-class HydrationCompleteHandlerTest extends TestCase
+class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
     /**
      * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
