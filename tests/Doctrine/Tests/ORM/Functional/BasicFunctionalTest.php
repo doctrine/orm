@@ -728,6 +728,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -743,8 +745,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->persist($address);
 
         // flushing without persisting $user should raise an exception
-        $this->expectException(\InvalidArgumentException::class);
-
         $this->em->flush();
     }
 
@@ -754,6 +754,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException2()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -777,8 +779,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $address->user = $u2;
 
         // flushing without persisting $u2 should raise an exception
-        $this->expectException(\InvalidArgumentException::class);
-
         $this->em->flush();
     }
 
@@ -788,6 +788,8 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException3()
     {
+        $this->expectException(\InvalidArgumentException::class);
+
         $art = new CmsArticle();
         $art->topic = 'topic';
         $art->text = 'the text';
@@ -800,8 +802,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->persist($art);
 
         // flushing without persisting $com should raise an exception
-        $this->expectException(\InvalidArgumentException::class);
-
         $this->em->flush();
     }
 
@@ -929,13 +929,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist()
     {
+        $this->expectException(EntityNotFoundException::class);
+
         $user = new CmsUser();
+
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
         $user->status = 'active';
         $user->id = 42;
-
-        $this->expectException(EntityNotFoundException::class);
 
         $this->em->merge($user);
     }
@@ -1293,7 +1294,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         );
 
         $this->em->persist($user);
-
         $this->em->flush();
     }
 }
