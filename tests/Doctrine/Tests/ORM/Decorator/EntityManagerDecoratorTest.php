@@ -61,15 +61,13 @@ class EntityManagerDecoratorTest extends DoctrineTestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
-        $message = 'INNER VALUE FROM ' . $method;
         $stub = $this->wrapped
             ->expects(self::once())
             ->method($method)
-            ->willReturn($message)
         ;
 
         call_user_func_array([$stub, 'with'], $parameters);
 
-        self::assertEquals($message, call_user_func_array([$this->decorator, $method], $parameters));
+        call_user_func_array([$this->decorator, $method], $parameters);
     }
 }
