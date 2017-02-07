@@ -6,16 +6,16 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
+use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
  *
  * @covers \Doctrine\ORM\Repository\DefaultRepositoryFactory
  */
-class DefaultRepositoryFactoryTest extends TestCase
+class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject

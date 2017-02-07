@@ -11,12 +11,23 @@
            tests/ folder: phpunit -c <filename> ...
            Example: phpunit -c mysqlconf.xml AllTests
 -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         colors="true"
-         verbose="true"
-         failOnRisky="true"
-         bootstrap="./tests/Doctrine/Tests/TestInit.php"
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+    backupGlobals="false"
+    backupStaticAttributes="false"
+    colors="true"
+    verbose="true"
+    failOnRisky="true"
+    convertErrorsToExceptions="true"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+    processIsolation="false"
+    stopOnFailure="false"
+    beStrictAboutChangesToGlobalState="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
 
     <testsuites>

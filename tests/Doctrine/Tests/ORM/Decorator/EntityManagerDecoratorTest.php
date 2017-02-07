@@ -5,28 +5,20 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
-class EntityManagerDecoratorTest extends TestCase
+class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    const VOID_METHODS = [
-        'persist',
-        'remove',
-        'clear',
-        'detach',
-        'refresh',
-        'flush',
-        'initializeObject',
-    ];
-
     /**
      * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $wrapped;
+    private $decorator;
 
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
+        $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {};
     }
 
     public function getMethodParameters()
@@ -77,16 +69,12 @@ class EntityManagerDecoratorTest extends TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
-        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
-
-        $this->wrapped->expects($this->once())
+        $stub = $this->wrapped
+            ->expects(self::once())
             ->method($method)
-            ->with(...$parameters)
-            ->willReturn($return);
+        ;
 
-        $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
-        };
-
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        call_user_func_array([$stub, 'with'], $parameters);
+        call_user_func_array([$this->decorator, $method], $parameters);
     }
 }

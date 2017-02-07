@@ -3,14 +3,14 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\EntityNotFoundException;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\EntityNotFoundException}
  *
  * @covers \Doctrine\ORM\EntityNotFoundException
  */
-class EntityNotFoundExceptionTest extends TestCase
+class EntityNotFoundExceptionTest extends DoctrineTestCase
 {
     public function testFromClassNameAndIdentifier()
     {

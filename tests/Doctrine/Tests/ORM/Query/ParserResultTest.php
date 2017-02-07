@@ -5,9 +5,9 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\ResultSetMapping;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
-class ParserResultTest extends TestCase
+class ParserResultTest extends DoctrineTestCase
 {
     public $parserResult;
 

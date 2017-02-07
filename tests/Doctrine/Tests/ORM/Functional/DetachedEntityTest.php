@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -112,6 +113,8 @@ class DetachedEntityTest extends OrmFunctionalTestCase
      */
     public function testDetachedEntityThrowsExceptionOnFlush()
     {
+        $this->expectException(UniqueConstraintViolationException::class);
+
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
 
@@ -120,10 +123,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $this->em->persist($ph);
-
-        // since it tries to insert the object twice (with the same PK)
-        $this->expectException(UniqueConstraintViolationException::class);
-
         $this->em->flush();
     }
 
