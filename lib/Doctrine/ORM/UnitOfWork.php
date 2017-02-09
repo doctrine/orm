@@ -1893,7 +1893,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function ensureVersionMatch(ClassMetadata $class, $entity, $managedCopy)
     {
-        if (! ($class->isVersioned && $this->isLoaded($managedCopy) && $this->isLoaded($entity))) {
+        if (! ($class->isVersioned() && $this->isLoaded($managedCopy) && $this->isLoaded($entity))) {
             return;
         }
 
