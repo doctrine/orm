@@ -15,11 +15,11 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH5562User::class),
-                $this->_em->getClassMetadata(GH5562Manager::class),
-                $this->_em->getClassMetadata(GH5562Merchant::class),
+                $this->em->getClassMetadata(GH5562User::class),
+                $this->em->getClassMetadata(GH5562Manager::class),
+                $this->em->getClassMetadata(GH5562Merchant::class),
             ]
         );
     }
@@ -38,20 +38,20 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         $merchant->name = 'Merchant';
 
-        $this->_em->persist($merchant);
-        $this->_em->persist($manager);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($merchant);
+        $this->em->persist($manager);
+        $this->em->flush();
+        $this->em->clear();
 
-        $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
+        $merchant = $this->em->find(GH5562Merchant::class, $merchant->id);
 
         $merchant->name = mt_rand();
         $merchant->manager->username = 'usernameUPDATE';
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
+        $merchant = $this->em->find(GH5562Merchant::class, $merchant->id);
 
         self::assertEquals('usernameUPDATE', $merchant->manager->username);
     }

@@ -586,7 +586,7 @@ class UnitOfWorkTest extends OrmTestCase
             );
 
         /* @var $object EntityWithRandomlyGeneratedField */
-        $object = $this->_unitOfWork->merge($entity);
+        $object = $this->unitOfWork->merge($entity);
 
         self::assertNotSame($object, $entity);
         self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
@@ -618,14 +618,14 @@ class UnitOfWorkTest extends OrmTestCase
             });
         $this->eventManager->expects(self::never())->method('dispatchEvent');
 
-        $this->_unitOfWork->registerManaged(
+        $this->unitOfWork->registerManaged(
             $persistedEntity,
             ['id' => $persistedEntity->id],
             ['generatedField' => $persistedEntity->generatedField]
         );
 
         /* @var $merged EntityWithRandomlyGeneratedField */
-        $merged = $this->_unitOfWork->merge($mergedEntity);
+        $merged = $this->unitOfWork->merge($mergedEntity);
 
         self::assertSame($merged, $persistedEntity);
         self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
