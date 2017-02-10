@@ -29,6 +29,7 @@ use ReflectionClass;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\AssociationCacheEntry;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -718,7 +719,7 @@ class ClassMetadataInfo implements ClassMetadata
             $id = [];
 
             foreach ($this->identifier as $idField) {
-                $value = $this->reflFields[$idField]->getValue($entity);
+                $value = $this->getIndentifierValue($entity, $idField);
 
                 if (null !== $value) {
                     $id[$idField] = $value;
@@ -729,13 +730,22 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $id = $this->identifier[0];
-        $value = $this->reflFields[$id]->getValue($entity);
+        $value = $this->getIndentifierValue($entity, $id);
 
         if (null === $value) {
             return [];
         }
 
         return [$id => $value];
+    }
+
+    private function getIndentifierValue($entity, $id)
+    {
+        if ($entity instanceof AssociationCacheEntry) {
+             return $entity->identifier[$id];
+        }
+
+        return $this->reflFields[$id]->getValue($entity);
     }
 
     /**
