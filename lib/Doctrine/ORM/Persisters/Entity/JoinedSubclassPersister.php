@@ -384,10 +384,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $joinSql     .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumns as $idColumn) {
-                $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
-                    : $this->platform->quoteIdentifier($idColumn['name'])
-                ;
+                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
@@ -586,10 +583,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $joinSql     .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumns as $idColumn) {
-                $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
-                    : $this->platform->quoteIdentifier($idColumn['name'])
-                ;
+                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
@@ -606,10 +600,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $joinSql    .= ' LEFT JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
 
             foreach ($identifierColumns as $idColumn) {
-                $quotedColumnName = $idColumn instanceof ColumnMetadata
-                    ? $this->platform->quoteIdentifier($idColumn->getColumnName())
-                    : $this->platform->quoteIdentifier($idColumn['name'])
-                ;
+                $quotedColumnName = $this->platform->quoteIdentifier($idColumn->getColumnName());
 
                 $conditions[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }

@@ -147,14 +147,9 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $columnDefinitions = [];
 
         foreach ($idColumns as $columnName => $column) {
-            $type = $column instanceof ColumnMetadata
-                ? $column->getType()
-                : $column['type']
-            ;
-
             $columnDefinitions[$columnName] = [
                 'notnull' => true,
-                'type'    => $type,
+                'type'    => $column->getType(),
             ];
         }
 
