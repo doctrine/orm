@@ -249,10 +249,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $columnDefinitions = [];
 
         foreach ($idColumns as $columnName => $column) {
-            $type = $column instanceof ColumnMetadata
-                ? $column->getType()
-                : $column['type']
-            ;
+            $type = $column->getType();
 
             $columnDefinitions[$columnName] = [
                 'notnull' => true,
