@@ -1471,7 +1471,17 @@ class ClassMetadata implements ClassMetadataInterface
             $assoc       = $this->associationMappings[$idProperty];
             $targetClass = $em->getClassMetadata($assoc['targetEntity']);
 
-            foreach ($assoc['joinColumns'] as $joinColumn) {
+            if (! $assoc['isOwningSide']) {
+                $assoc       = $targetClass->associationMappings[$assoc['mappedBy']];
+                $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+            }
+
+            $joinColumns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
+                ? $assoc['joinTable']->getInverseJoinColumns()
+                : $assoc['joinColumns']
+            ;
+
+            foreach ($joinColumns as $joinColumn) {
                 $joinColumn->setType(
                     PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em)
                 );
