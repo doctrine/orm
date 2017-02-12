@@ -3,51 +3,67 @@
 namespace Doctrine\Tests\ORM\Decorator;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
 
 class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
 {
+    const VOID_METHODS = [
+        'persist',
+        'remove',
+        'clear',
+        'detach',
+        'refresh',
+        'flush',
+        'initializeObject',
+    ];
+
+    /**
+     * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $wrapped;
-    private $decorator;
 
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
-        $this->decorator = $this->getMockBuilder(EntityManagerDecorator::class)
-            ->setConstructorArgs([$this->wrapped])
-            ->setMethods(null)
-            ->getMock();
     }
 
     public function getMethodParameters()
     {
-        $class = new \ReflectionClass(EntityManager::class);
-
+        $class = new \ReflectionClass(EntityManagerInterface::class);
         $methods = [];
+
         foreach ($class->getMethods() as $method) {
             if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
                 continue;
             }
 
-            /** Special case EntityManager::createNativeQuery() */
-            if ($method->getName() === 'createNativeQuery') {
-                $methods[] = [$method->getName(), ['name', new ResultSetMapping()]];
-                continue;
-            }
-
-            if ($method->getNumberOfRequiredParameters() === 0) {
-                $methods[] = [$method->getName(), []];
-            } elseif ($method->getNumberOfRequiredParameters() > 0) {
-                $methods[] = [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
-            }
-            if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
-                $methods[] = [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
-            }
+            $methods[$method->getName()] = $this->getParameters($method);
         }
 
         return $methods;
+    }
+
+    private function getParameters(\ReflectionMethod $method)
+    {
+        /** Special case EntityManager::createNativeQuery() */
+        if ($method->getName() === 'createNativeQuery') {
+            return [$method->getName(), ['name', new ResultSetMapping()]];
+        }
+
+        if ($method->getNumberOfRequiredParameters() === 0) {
+            return [$method->getName(), []];
+        }
+
+        if ($method->getNumberOfRequiredParameters() > 0) {
+            return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
+        }
+
+        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
+            return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
+        }
+
+        return [];
     }
 
     /**
@@ -55,13 +71,16 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
-        $stub = $this->wrapped
-            ->expects($this->once())
+        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+
+        $this->wrapped->expects($this->once())
             ->method($method)
-            ->will($this->returnValue('INNER VALUE FROM ' . $method));
+            ->with(...$parameters)
+            ->willReturn($return);
 
-        call_user_func_array([$stub, 'with'], $parameters);
+        $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
+        };
 
-        $this->assertSame('INNER VALUE FROM ' . $method, call_user_func_array([$this->decorator, $method], $parameters));
+        $this->assertSame($return, $decorator->$method(...$parameters));
     }
 }
