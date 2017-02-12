@@ -1,6 +1,10 @@
 sudo: false
 language: php
 
+# Required for HHVM builds
+dist: trusty
+group: edge
+
 php:
   - 7.0
   - 7.1
@@ -12,15 +16,20 @@ env:
   - DB=pgsql
   - DB=sqlite
 
+services:
+  - mysql
+
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
   - if [[ $TRAVIS_PHP_VERSION -lt '7.0' && $TRAVIS_PHP_VERSION != 'hhv*' ]]; then phpenv config-rm xdebug.ini; fi
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then echo hhvm.php7.all=1 >> /etc/hhvm/php.ini; fi
+  - if [[ $TRAVIS_PHP_VERSION == 'hhvm' ]]; then echo hhvm.php7.scalar_types=0 >> /etc/hhvm/php.ini; fi
   - composer self-update
   - composer install --prefer-source
 
 script:
-  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
-  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
+  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS --stop-on-error
+  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional --stop-on-error
 
 after_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
@@ -39,35 +48,19 @@ matrix:
         mariadb: 10.1
     - php: hhvm
       sudo: true
-      dist: trusty
-      group: edge # until the next Trusty update
       addons:
         mariadb: 10.1
       env: DB=mariadb
     - php: hhvm
       sudo: true
-      dist: trusty
-      group: edge # until the next update
-      addons:
-        apt:
-          packages:
-            - mysql-server-5.6
-            - mysql-client-core-5.6
-            - mysql-client-5.6
-      services:
-        - mysql
       env: DB=mysql
     - php: hhvm
       sudo: true
-      dist: trusty
-      group: edge # until the next update
       services:
         - postgresql
       env: DB=pgsql
     - php: hhvm
       sudo: true
-      dist: trusty
-      group: edge # until the next update
       env: DB=sqlite
 
   allow_failures:
