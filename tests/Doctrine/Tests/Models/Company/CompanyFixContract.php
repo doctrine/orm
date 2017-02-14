@@ -3,15 +3,16 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class CompanyFixContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $fixPrice = 0;

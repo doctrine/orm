@@ -1459,11 +1459,11 @@ class ClassMetadataTest extends OrmTestCase
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class DDC2700MappedSuperClass
 {
-    /** @Column */
+    /** @ORM\Column */
     private $foo;
 }
 

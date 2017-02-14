@@ -2,34 +2,36 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="company_employees")
+ * @ORM\Entity
+ * @ORM\Table(name="company_employees")
  */
 class CompanyEmployee extends CompanyPerson
 {
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     private $salary;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $department;
 
     /**
-     * @Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
-     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
      */
     public $contracts;
 
     /**
-     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
      */
     public $soldContracts;
 

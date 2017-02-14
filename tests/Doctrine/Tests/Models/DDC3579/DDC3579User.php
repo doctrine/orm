@@ -4,30 +4,30 @@ namespace Doctrine\Tests\Models\DDC3579;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperClass
  */
 class DDC3579User
 {
-
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user_id", length=150)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="user_id", length=150)
      */
     protected $id;
 
     /**
-     * @Column(name="user_name", nullable=true, unique=false, length=250)
+     * @ORM\Column(name="user_name", nullable=true, unique=false, length=250)
      */
     protected $name;
 
     /**
      * @var ArrayCollection
      *
-     * @ManyToMany(targetEntity="DDC3579Group")
+     * @ORM\ManyToMany(targetEntity="DDC3579Group")
      */
     protected $groups;
 

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1454
@@ -33,23 +34,23 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1454Picture extends DDC1454File
 {
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
  */
 class DDC1454File
 {
     /**
-     * @Column(name="file_id", type="integer")
-     * @Id
+     * @ORM\Column(name="file_id", type="integer")
+     * @ORM\Id
      */
     public $fileId;
 

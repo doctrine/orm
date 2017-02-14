@@ -2,26 +2,28 @@
 
 namespace Doctrine\Tests\Models\Routing;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingRouteBooking
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
-     * @JoinColumn(name="route_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
+     * @ORM\JoinColumn(name="route_id", referencedColumnName="id")
      */
     public $route;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $passengerName = null;
 

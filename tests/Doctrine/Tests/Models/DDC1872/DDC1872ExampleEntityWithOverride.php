@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\Models\DDC1872;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @AttributeOverrides({
- * @AttributeOverride(name="foo",
- *          column=@Column(
+ * @ORM\AttributeOverrides({
+ * @ORM\AttributeOverride(name="foo",
+ *          column=@ORM\Column(
  *              name     = "foo_overridden",
  *              type     = "integer",
  *              length   = 140,
@@ -17,9 +19,9 @@ namespace Doctrine\Tests\Models\DDC1872;
  *      )
  * })
  *
- * @AssociationOverrides({
- * @AssociationOverride(name="bar",
- *          joinColumns=@JoinColumn(
+ * @ORM\AssociationOverrides({
+ * @ORM\AssociationOverride(name="bar",
+ *          joinColumns=@ORM\JoinColumn(
  *              name="example_entity_overridden_bar_id", referencedColumnName="id"
  *          )
  *      )

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 use Doctrine\ORM\Events;
@@ -120,35 +121,35 @@ interface TargetInterface extends ResolveTargetInterface
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class ResolveTargetEntity implements ResolveTargetInterface
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
      */
     private $manyToMany;
 
     /**
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", inversedBy="oneToMany")
+     * @ORM\ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", inversedBy="oneToMany")
      */
     private $manyToOne;
 
     /**
-     * @OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", mappedBy="manyToOne")
+     * @ORM\OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", mappedBy="manyToOne")
      */
     private $oneToMany;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
-     * @JoinColumn(name="target_entity_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
+     * @ORM\JoinColumn(name="target_entity_id", referencedColumnName="id")
      */
     private $oneToOne;
 
@@ -159,14 +160,14 @@ class ResolveTargetEntity implements ResolveTargetInterface
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TargetEntity implements TargetInterface
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 

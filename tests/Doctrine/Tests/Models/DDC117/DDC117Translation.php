@@ -2,35 +2,37 @@
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Translation
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
     /**
-     * @Id @column(type="string")
+     * @ORM\Id @ORM\Column(type="string")
      */
     private $language;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     private $title;
 
     /**
-     * @ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
+     * @ORM\ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
      */
     public $reviewedByEditors;
 
     /**
-     * @OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
+     * @ORM\OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
      */
     public $lastTranslatedBy;
 

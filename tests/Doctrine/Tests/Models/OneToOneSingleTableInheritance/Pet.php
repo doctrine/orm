@@ -2,14 +2,16 @@
 
 namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="one_to_one_single_table_inheritance_pet")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cat" = "Cat"})
+ * @ORM\Entity
+ * @ORM\Table(name="one_to_one_single_table_inheritance_pet")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"cat" = "Cat"})
  */
 abstract class Pet
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }

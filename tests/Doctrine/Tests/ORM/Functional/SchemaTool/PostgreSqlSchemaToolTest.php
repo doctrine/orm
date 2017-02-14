@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -136,8 +137,8 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="stonewood.screen")
+ * @ORM\Entity
+ * @ORM\Table(name="stonewood.screen")
  */
 class DDC1657Screen
 {
@@ -145,9 +146,9 @@ class DDC1657Screen
      * Identifier
      * @var int
      *
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="pk", type="integer", nullable=false)
      */
     private $pk;
 
@@ -155,7 +156,7 @@ class DDC1657Screen
      * Title
      * @var string
      *
-     * @Column(name="title", type="string", length=255, nullable=false)
+     * @ORM\Column(name="title", type="string", length=255, nullable=false)
      */
     private $title;
 
@@ -163,31 +164,31 @@ class DDC1657Screen
      * Path
      * @var string
      *
-     * @Column(name="path", type="string", length=255, nullable=false)
+     * @ORM\Column(name="path", type="string", length=255, nullable=false)
      */
     private $path;
 
     /**
      * Register date
-     * @var Date
+     * @var \DateTime
      *
-     * @Column(name="ddate", type="date", nullable=false)
+     * @ORM\Column(name="ddate", type="date", nullable=false)
      */
     private $ddate;
 
     /**
      * Avatar
-     * @var Stonewood\Model\Entity\Avatar
+     * @var DDC1657Avatar
      *
-     * @ManyToOne(targetEntity="DDC1657Avatar")
-     * @JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="DDC1657Avatar")
+     * @ORM\JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
      */
     private $avatar;
 }
 
 /**
- * @Entity
- * @Table(name="stonewood.avatar")
+ * @ORM\Entity
+ * @ORM\Table(name="stonewood.avatar")
  */
 class DDC1657Avatar
 {
@@ -195,9 +196,9 @@ class DDC1657Avatar
      * Identifier
      * @var int
      *
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(name="pk", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="pk", type="integer", nullable=false)
      */
     private $pk;
 }

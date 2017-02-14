@@ -2,25 +2,27 @@
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="customtype_uppercases")
+ * @ORM\Entity
+ * @ORM\Table(name="customtype_uppercases")
  */
 class CustomTypeUpperCase
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="upper_case_string")
+     * @ORM\Column(type="upper_case_string")
      */
     public $lowerCaseString;
 
     /**
-     * @Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
+     * @ORM\Column(type="upper_case_string", name="named_lower_case_string", nullable = true)
      */
     public $namedLowerCaseString;
 }

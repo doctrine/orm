@@ -2,24 +2,26 @@
 
 namespace Doctrine\Tests\Models\DDC3346;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="ddc3346_articles")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc3346_articles")
  */
 class DDC3346Article
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
      * @var DDC3346Author
      *
-     * @ManyToOne(targetEntity="DDC3346Author", inversedBy="articles")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC3346Author", inversedBy="articles")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 }

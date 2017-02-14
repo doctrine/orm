@@ -3,55 +3,56 @@
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceProduct
  * Represents a type of product of a shopping application.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_products",indexes={@Index(name="name_idx", columns={"name"})})
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_products",indexes={@ORM\Index(name="name_idx", columns={"name"})})
  */
 class ECommerceProduct
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=50, nullable=true)
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
-     * @JoinColumn(name="shipping_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
+     * @ORM\JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
     /**
-     * @OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
      */
     private $features;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
-     * @JoinTable(name="ecommerce_products_categories",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="category_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
+     * @ORM\JoinTable(name="ecommerce_products_categories",
+     *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")})
      */
     private $categories;
 
     /**
      * This relation is saved with two records in the association table for
      * simplicity.
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
-     * @JoinTable(name="ecommerce_products_related",
-     *      joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="related_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
+     * @ORM\JoinTable(name="ecommerce_products_related",
+     *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="related_id", referencedColumnName="id")})
      */
     private $related;
 

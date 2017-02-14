@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Annotations\AnnotationException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\ORM\Annotation;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -34,7 +34,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     }
 
     /**
-     * @expectedException Doctrine\ORM\Cache\CacheException
+     * @expectedException \Doctrine\ORM\Cache\CacheException
      * @expectedExceptionMessage Entity association field "Doctrine\Tests\ORM\Mapping\AnnotationSLC#foo" not configured as part of the second-level cache.
      */
     public function testFailingSecondLevelCacheAssociation()
@@ -54,7 +54,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->loadDriver();
 
-        $annotationDriver->loadMetadataForClass(Annotation\InvalidColumn::class, $cm);
+        $annotationDriver->loadMetadataForClass(ColumnWithoutType::class, $cm);
 
         self::assertNotNull($cm->getProperty('id'));
 
@@ -192,10 +192,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage(
             "It is not supported to define inheritance information on a mapped " .
-            "superclass '" . MappedSuperClassInheritence::class . "'."
+            "superclass '" . MappedSuperClassInheritance::class . "'."
         );
 
-        $usingInvalidMsc = $factory->getMetadataFor(MappedSuperClassInheritence::class);
+        $usingInvalidMsc = $factory->getMetadataFor(MappedSuperClassInheritance::class);
     }
 
     /**
@@ -273,61 +273,61 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 }
 
 /**
- * @Entity
- */
-class ColumnWithoutType
-{
-    /** @Id @Column */
-    public $id;
-}
-
-/**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class InvalidMappedSuperClass
 {
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
      */
     private $users;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     private $id;
 }
 
 /**
- * @MappedSuperclass
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"test" = "ColumnWithoutType"})
+ * @ORM\MappedSuperclass
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"test" = "ColumnWithoutType"})
  */
-class MappedSuperClassInheritence
+class MappedSuperClassInheritance
 {
 
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"parent" = "AnnotationParent", "child" = "AnnotationChild"})
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ */
+class ColumnWithoutType extends MappedSuperClassInheritance
+{
+    /** @ORM\Id @ORM\Column */
+    public $id;
+}
+
+/**
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"parent" = "AnnotationParent", "child" = "AnnotationChild"})
+ * @ORM\HasLifecycleCallbacks
  */
 class AnnotationParent
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function postLoad()
     {
@@ -335,7 +335,7 @@ class AnnotationParent
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
     public function preUpdate()
     {
@@ -344,8 +344,8 @@ class AnnotationParent
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class AnnotationChild extends AnnotationParent
 {
@@ -353,66 +353,66 @@ class AnnotationChild extends AnnotationParent
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
  */
 class SuperEntity
 {
-    /** @Id @Column(type="string") */
+    /** @ORM\Id @ORM\Column(type="string") */
     private $id;
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class MiddleMappedSuperclass extends SuperEntity
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $name;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class ChildEntity extends MiddleMappedSuperclass
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $text;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class InvalidFetchOption
 {
     /**
-     * @OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
+     * @ORM\OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
      */
     private $collection;
 }
 
 /**
- * @Entity
- * @Cache
+ * @ORM\Entity
+ * @ORM\Cache
  */
 class AnnotationSLC
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="AnnotationSLCFoo")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="AnnotationSLCFoo")
      */
     public $foo;
 }
 /**
- * @Entity
+ * @ORM\Entity
  */
 class AnnotationSLCFoo
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $id;
 }

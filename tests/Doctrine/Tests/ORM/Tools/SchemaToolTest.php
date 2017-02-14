@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -238,16 +239,16 @@ class SchemaToolTest extends OrmTestCase
 }
 
 /**
- * @Entity
- * @Table(options={"foo": "bar", "baz": {"key": "val"}})
+ * @ORM\Entity
+ * @ORM\Table(options={"foo": "bar", "baz": {"key": "val"}})
  */
 class TestEntityWithAnnotationOptionsAttribute
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     private $id;
 
     /**
-     * @Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
+     * @ORM\Column(type="string", options={"foo": "bar", "baz": {"key": "val"}})
      */
     private $test;
 }
@@ -269,63 +270,63 @@ class GenerateSchemaEventListener
 }
 
 /**
- * @Entity
- * @Table(
+ * @ORM\Entity
+ * @ORM\Table(
  *     name="unique_constraint_annotation_table",
  *     uniqueConstraints={
- *         @UniqueConstraint(name="uniq_hash", columns={"hash"})
+ *         @ORM\UniqueConstraint(name="uniq_hash", columns={"hash"})
  *     }
  * )
  */
 class UniqueConstraintAnnotationModel
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     private $id;
 
     /**
-     * @Column(name="hash", type="string", length=8, nullable=false, unique=true)
+     * @ORM\Column(name="hash", type="string", length=8, nullable=false, unique=true)
      */
     private $hash;
 }
 
 /**
- * @Entity
- * @Table(name="first_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="first_entity")
  */
 class FirstEntity
 {
     /**
-     * @Id
-     * @Column(name="id")
+     * @ORM\Id
+     * @ORM\Column(name="id")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="SecondEntity")
-     * @JoinColumn(name="id", referencedColumnName="fist_entity_id")
+     * @ORM\OneToOne(targetEntity="SecondEntity")
+     * @ORM\JoinColumn(name="id", referencedColumnName="fist_entity_id")
      */
     public $secondEntity;
 
     /**
-     * @Column(name="name")
+     * @ORM\Column(name="name")
      */
     public $name;
 }
 
 /**
- * @Entity
- * @Table(name="second_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="second_entity")
  */
 class SecondEntity
 {
     /**
-     * @Id
-     * @Column(name="fist_entity_id")
+     * @ORM\Id
+     * @ORM\Column(name="fist_entity_id")
      */
     public $fist_entity_id;
 
     /**
-     * @Column(name="name")
+     * @ORM\Column(name="name")
      */
     public $name;
 }

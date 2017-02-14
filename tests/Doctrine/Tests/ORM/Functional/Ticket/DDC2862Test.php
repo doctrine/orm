@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 
 /**
@@ -113,28 +114,28 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="ddc2862_drivers")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2862_drivers")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class DDC2862Driver
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $name;
 
     /**
-     * @Cache()
-     * @OneToOne(targetEntity="DDC2862User")
+     * @ORM\Cache()
+     * @ORM\OneToOne(targetEntity="DDC2862User")
      * @var User
      */
     protected $userProfile;
@@ -188,21 +189,21 @@ class DDC2862Driver
 }
 
 /**
- * @Entity
- * @Table(name="ddc2862_users")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2862_users")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class DDC2862User
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $name;

@@ -2,16 +2,17 @@
 
 namespace Doctrine\Tests\Models\DDC1590;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\Models\DDC1590\DDC1590Entity;
 
 /**
- * @Entity
- * @Table(name="users")
+ * @ORM\Entity
+ * @ORM\Table(name="users")
  */
 class DDC1590User extends DDC1590Entity
 {
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     protected $name;
 

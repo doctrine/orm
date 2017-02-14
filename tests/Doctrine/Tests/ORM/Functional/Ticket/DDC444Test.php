@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
@@ -57,19 +59,19 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc444")
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\Entity @ORM\Table(name="ddc444")
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC444User
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     public $name;
 }

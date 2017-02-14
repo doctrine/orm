@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
 /**
@@ -81,36 +82,36 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 /**
- * @Entity @Table(name="ddc_2660_product")
+ * @ORM\Entity @ORM\Table(name="ddc_2660_product")
  */
 class DDC2660Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity  @Table(name="ddc_2660_customer") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2660_customer") */
 class DDC2660Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity @Table(name="ddc_2660_customer_order") */
+/** @ORM\Entity @ORM\Table(name="ddc_2660_customer_order") */
 class DDC2660CustomerOrder
 {
     /**
-     * @Id @ManyToOne(targetEntity="DDC2660Product")
+     * @ORM\Id @ORM\ManyToOne(targetEntity="DDC2660Product")
      */
     public $product;
 
     /**
-     * @Id @ManyToOne(targetEntity="DDC2660Customer")
+     * @ORM\Id @ORM\ManyToOne(targetEntity="DDC2660Customer")
      */
     public $customer;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 

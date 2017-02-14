@@ -3,47 +3,48 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name           = "all",
  *          resultClass    = "__CLASS__",
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name           = "all-flex",
  *          resultClass    = "CompanyFlexContract",
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all-flex",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("hoursWorked"),
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "CompanyFlexContract",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("hoursWorked"),
  *                  }
  *              )
  *          }
@@ -53,22 +54,22 @@ use Doctrine\ORM\Mapping;
 class CompanyFlexContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $hoursWorked = 0;
 
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $pricePerHour = 0;
 
     /**
-     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
-     * @JoinTable(name="company_contract_managers",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="company_contract_managers",
+     *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}
      * )
      */
     public $managers;
@@ -112,7 +113,7 @@ class CompanyFlexContract extends CompanyContract
         $this->managers->removeElement($manager);
     }
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    static public function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('hoursWorked');
         $fieldMetadata->setType(Type::getType('integer'));

@@ -2,21 +2,23 @@
 
 namespace Doctrine\Tests\Models\ValueConversionType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="vct_owning_manytoone_extralazy")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_owning_manytoone_extralazy")
  */
 class OwningManyToOneExtraLazyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @ManyToOne(targetEntity="InversedOneToManyExtraLazyEntity", inversedBy="associatedEntities")
-     * @JoinColumn(name="associated_id", referencedColumnName="id1")
+     * @ORM\ManyToOne(targetEntity="InversedOneToManyExtraLazyEntity", inversedBy="associatedEntities")
+     * @ORM\JoinColumn(name="associated_id", referencedColumnName="id1")
      */
     public $associatedEntity;
 }

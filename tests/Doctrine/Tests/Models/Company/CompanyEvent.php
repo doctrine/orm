@@ -2,22 +2,24 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity @Table(name="company_events")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="event_type", type="string")
- * @DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
+ * @ORM\Entity @ORM\Table(name="company_events")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="event_type", type="string")
+ * @ORM\DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
  */
 abstract class CompanyEvent {
    /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
-     * @JoinColumn(name="org_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
+     * @ORM\JoinColumn(name="org_id", referencedColumnName="id")
      */
      private $organization;
 

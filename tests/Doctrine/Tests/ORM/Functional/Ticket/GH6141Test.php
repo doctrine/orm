@@ -1,9 +1,11 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -160,10 +162,10 @@ class GH6141People
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="gh6141people")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="gh6141people")
+ * @ORM\DiscriminatorMap({
  *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::BOSS     = GH6141Boss::class,
  *      Doctrine\Tests\ORM\Functional\Ticket\GH6141People::EMPLOYEE = GH6141Employee::class
  * })
@@ -171,14 +173,14 @@ class GH6141People
 abstract class GH6141Person
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
@@ -191,12 +193,12 @@ abstract class GH6141Person
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6141Boss extends GH6141Person
 {
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6141Employee extends GH6141Person
 {
 }

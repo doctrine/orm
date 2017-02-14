@@ -2,24 +2,28 @@
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="forum_users")
+ * @ORM\Entity
+ * @ORM\Table(name="forum_users")
  */
 class ForumUser
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
+
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $username;
+
     /**
-     * @OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
-     * @JoinColumn(name="avatar_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
+     * @ORM\JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;
 

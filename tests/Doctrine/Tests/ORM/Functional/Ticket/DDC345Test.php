@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -53,21 +55,21 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC345User
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
+    /** @ORM\OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
     public $Memberships;
 
     public function __construct()
@@ -77,21 +79,21 @@ class DDC345User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC345Group
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /** @OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
+    /** @ORM\OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
     public $Memberships;
 
 
@@ -102,43 +104,43 @@ class DDC345Group
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(name="ddc345_memberships", uniqueConstraints={
- *      @UniqueConstraint(name="ddc345_memship_fks", columns={"user_id","group_id"})
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="ddc345_memberships", uniqueConstraints={
+ *      @ORM\UniqueConstraint(name="ddc345_memship_fks", columns={"user_id","group_id"})
  * })
  */
 class DDC345Membership
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
-     * @OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
-     * @JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
+     * @ORM\OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $state;
 
-    /** @Column(type="datetime") */
+    /** @ORM\Column(type="datetime") */
     public $updated;
 
     public $prePersistCallCount = 0;
     public $preUpdateCallCount = 0;
 
-    /** @PrePersist */
+    /** @ORM\PrePersist */
     public function doStuffOnPrePersist()
     {
         //echo "***** PrePersist\n";
@@ -146,7 +148,7 @@ class DDC345Membership
         $this->updated = new \DateTime;
     }
 
-    /** @PreUpdate */
+    /** @ORM\PreUpdate */
     public function doStuffOnPreUpdate()
     {
         //echo "***** PreUpdate\n";

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1787
  */
@@ -32,20 +34,20 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
  */
 class DDC1787Foo
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Version @Column(type="integer")
+     * @ORM\Version @ORM\Column(type="integer")
      */
     private $version;
 
@@ -56,7 +58,7 @@ class DDC1787Foo
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1787Bar extends DDC1787Foo
 {

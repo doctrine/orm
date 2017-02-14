@@ -2,38 +2,41 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="cms_articles")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_articles")
  */
 class CmsArticle
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $topic;
     /**
-     * @Column(type="text")
+     * @ORM\Column(type="text")
      */
     public $text;
     /**
-     * @ManyToOne(targetEntity="CmsUser", inversedBy="articles")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="CmsUser", inversedBy="articles")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
     /**
-     * @OneToMany(targetEntity="CmsComment", mappedBy="article")
+     * @ORM\OneToMany(targetEntity="CmsComment", mappedBy="article")
      */
     public $comments;
 
     /**
-     * @Version @column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 

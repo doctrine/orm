@@ -2,15 +2,17 @@
 
 namespace Doctrine\Tests\Models\DDC3699;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="ddc3699_relation_one")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc3699_relation_one")
  */
 class DDC3699RelationOne
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
+    /** @ORM\OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
     public $child;
 }

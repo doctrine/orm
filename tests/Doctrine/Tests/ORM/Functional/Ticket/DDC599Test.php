@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -72,22 +74,22 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="integer")
- * @DiscriminatorMap({"0" = "DDC599Item", "1" = "DDC599Subitem"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="integer")
+ * @ORM\DiscriminatorMap({"0" = "DDC599Item", "1" = "DDC599Subitem"})
  */
 class DDC599Item
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"})
      */
     protected $children;
 
@@ -103,31 +105,31 @@ class DDC599Item
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC599Subitem extends DDC599Item
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $elem;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC599Child
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC599Item", inversedBy="children")
-     * @JoinColumn(name="parentId", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC599Item", inversedBy="children")
+     * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
      */
     public $parent;
 }

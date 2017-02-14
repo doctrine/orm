@@ -3,28 +3,26 @@
 namespace Doctrine\Tests\Models\DDC964;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC964Group
 {
-
     /**
-     * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $name;
 
     /**
-     * @ArrayCollection
-     * 
-     * @ManyToMany(targetEntity="DDC964User", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity="DDC964User", mappedBy="groups")
      */
     private $users;
 

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -91,26 +92,26 @@ final class GH5804Type extends Type
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH5804Article
 {
     /**
-     * @Id
-     * @Column(type="GH5804Type")
-     * @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
+     * @ORM\Id
+     * @ORM\Column(type="GH5804Type")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
      */
     public $id;
 
     /**
-     * @Version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 
     /**
-     * @Column(type="text")
+     * @ORM\Column(type="text")
      */
     public $text;
 }

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1430
  */
@@ -152,29 +154,29 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1430Order
 {
     /**
-     * @Id
-     * @Column(name="order_id", type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(name="order_id", type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
     /**
-     * @Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      */
     private $date;
 
     /**
-     * @Column(name="order_status", type="string")
+     * @ORM\Column(name="order_status", type="string")
      */
     private $status;
 
     /**
-     * @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
      *
      * @var \Doctrine\Common\Collections\ArrayCollection $products
      */
@@ -238,27 +240,27 @@ class DDC1430Order
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1430OrderProduct
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
     /**
      * @var DDC1430Order $order
      *
-     * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
-     * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
+     * @ORM\ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
+     * @ORM\JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
     private $order;
 
     /**
-     * @column(type="float")
+     * @ORM\Column(type="float")
      */
     private $value;
 

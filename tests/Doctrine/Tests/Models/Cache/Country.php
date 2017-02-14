@@ -2,22 +2,24 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Cache
- * @Entity
- * @Table("cache_country")
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_country")
  */
 class Country
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     protected $name;
 

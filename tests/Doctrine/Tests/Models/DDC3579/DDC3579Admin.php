@@ -2,10 +2,13 @@
 
 namespace Doctrine\Tests\Models\DDC3579;
 
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping;
+
 /**
- * @Entity
- * @AssociationOverrides({
- *      @AssociationOverride(
+ * @ORM\Entity
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(
  *          name="groups",
  *          inversedBy="admins"
  *      )
@@ -13,7 +16,7 @@ namespace Doctrine\Tests\Models\DDC3579;
  */
 class DDC3579Admin extends DDC3579User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $metadata->setAssociationOverride('groups', [
             'inversedBy' => 'admins'

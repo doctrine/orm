@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Verifies that the type of parameters being bound to an SQL query is the same
  * of the identifier of the entities used as parameters in the DQL query, even
@@ -55,19 +57,19 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2214Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2214Bar") */
+    /** @ORM\ManyToOne(targetEntity="DDC2214Bar") */
     public $bar;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2214Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }

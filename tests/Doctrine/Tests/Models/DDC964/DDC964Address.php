@@ -2,35 +2,36 @@
 
 namespace Doctrine\Tests\Models\DDC964;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC964Address
 {
-
     /**
-     * @GeneratedValue
-     * @Id @Column(type="integer")
+     * @ORM\GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $country;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $zip;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $city;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $street;
 

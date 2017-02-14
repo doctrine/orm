@@ -2,30 +2,32 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_customers")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_customers")
  */
 class ECommerceCustomer
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
      */
     private $cart;
 
@@ -34,8 +36,8 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
-     * @JoinColumn(name="mentor_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
+     * @ORM\JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;
 

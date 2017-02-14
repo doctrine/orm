@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2494
@@ -67,21 +67,21 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table(name="ddc3192_currency")
- * @Entity
+ * @ORM\Table(name="ddc3192_currency")
+ * @ORM\Entity
  */
 class DDC3192Currency
 {
     /**
-     * @Id
-     * @Column(type="ddc3192_currency_code")
+     * @ORM\Id
+     * @ORM\Column(type="ddc3192_currency_code")
      */
     public $code;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
      */
     public $transactions;
 
@@ -92,30 +92,30 @@ class DDC3192Currency
 }
 
 /**
- * @Table(name="ddc3192_transaction")
- * @Entity
+ * @ORM\Table(name="ddc3192_transaction")
+ * @ORM\Entity
  */
 class DDC3192Transaction
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
      * @var int
      *
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $amount;
 
     /**
      * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC3192Currency
      *
-     * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
-     * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
      */
     public $currency;
 

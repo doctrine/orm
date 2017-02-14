@@ -1,7 +1,9 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
 use Doctrine\ORM\Query\QueryException;
@@ -333,20 +335,20 @@ class ValueObjectsTest extends OrmFunctionalTestCase
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC93Person
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 
-    /** @Embedded(class="DDC93Address") */
+    /** @ORM\Embedded(class="DDC93Address") */
     public $address;
 
-    /** @Embedded(class = "DDC93Timestamps") */
+    /** @ORM\Embedded(class = "DDC93Timestamps") */
     public $timestamps;
 
     public function __construct($name = null, DDC93Address $address = null)
@@ -358,11 +360,11 @@ class DDC93Person
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC93Timestamps
 {
-    /** @Column(type = "datetime") */
+    /** @ORM\Column(type = "datetime") */
     public $createdAt;
 
     public function __construct(\DateTime $createdAt)
@@ -372,20 +374,20 @@ class DDC93Timestamps
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name = "t", type = "string", length = 10)
- * @DiscriminatorMap({
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name = "t", type = "string", length = 10)
+ * @ORM\DiscriminatorMap({
  *     "v" = "Doctrine\Tests\ORM\Functional\DDC93Car",
  * })
  */
 abstract class DDC93Vehicle
 {
-    /** @Id @GeneratedValue(strategy = "AUTO") @Column(type = "integer") */
+    /** @ORM\Id @ORM\GeneratedValue(strategy = "AUTO") @ORM\Column(type = "integer") */
     public $id;
 
-    /** @Embedded(class = "DDC93Address") */
+    /** @ORM\Embedded(class = "DDC93Address") */
     public $address;
 
     public function __construct(DDC93Address $address)
@@ -395,19 +397,19 @@ abstract class DDC93Vehicle
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC93Car extends DDC93Vehicle
 {
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC93Country
 {
     /**
-     * @Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     public $name;
 
@@ -418,23 +420,23 @@ class DDC93Country
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC93Address
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $street;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $zip;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $city;
-    /** @Embedded(class = "DDC93Country") */
+    /** @ORM\Embedded(class = "DDC93Country") */
     public $country;
 
     public function __construct($street = null, $zip = null, $city = null, DDC93Country $country = null)
@@ -446,36 +448,36 @@ class DDC93Address
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC93Customer
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     private $id;
 
-    /** @Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_") */
+    /** @ORM\Embedded(class = "DDC93ContactInfo", columnPrefix = "contact_info_") */
     private $contactInfo;
 }
 
-/** @Embeddable */
+/** @ORM\Embeddable */
 class DDC93ContactInfo
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $email;
-    /** @Embedded(class = "DDC93Address") */
+    /** @ORM\Embedded(class = "DDC93Address") */
     public $address;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3028PersonWithPrefix
 {
-    /** @Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
     public $id;
 
-    /** @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_") */
+    /** @ORM\Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "bloo_") */
     public $nested;
 
     public function __construct(DDC3028Id $id = null, DDC3028NestedEmbeddable $nested = null)
@@ -486,14 +488,14 @@ class DDC3028PersonWithPrefix
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3028PersonEmptyPrefix
 {
-    /** @Embedded(class="DDC3028Id", columnPrefix = "") */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = "") */
     public $id;
 
-    /** @Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "") */
+    /** @ORM\Embedded(class="DDC3028NestedEmbeddable", columnPrefix = "") */
     public $nested;
 
     public function __construct(DDC3028Id $id = null, DDC3028NestedEmbeddable $nested = null)
@@ -504,11 +506,11 @@ class DDC3028PersonEmptyPrefix
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3028PersonPrefixFalse
 {
-    /** @Embedded(class="DDC3028Id", columnPrefix = false) */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = false) */
     public $id;
 
     public function __construct(DDC3028Id $id = null)
@@ -518,12 +520,12 @@ class DDC3028PersonPrefixFalse
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC3028Id
 {
     /**
-     * @Id @Column(type="string")
+     * @ORM\Id @ORM\Column(type="string")
      */
     public $id;
 
@@ -534,17 +536,17 @@ class DDC3028Id
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDC3028NestedEmbeddable
 {
-    /** @Embedded(class="DDC3028Id", columnPrefix = "foo_") */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = "foo_") */
     public $nestedWithPrefix;
 
-    /** @Embedded(class="DDC3028Id", columnPrefix = "") */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = "") */
     public $nestedWithEmptyPrefix;
 
-    /** @Embedded(class="DDC3028Id", columnPrefix = false) */
+    /** @ORM\Embedded(class="DDC3028Id", columnPrefix = false) */
     public $nestedWithPrefixFalse;
 
     public function __construct(
@@ -559,89 +561,89 @@ class DDC3028NestedEmbeddable
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 abstract class DDC3027Animal
 {
-    /** @Id @GeneratedValue(strategy = "AUTO") @Column(type = "integer") */
+    /** @ORM\Id @ORM\GeneratedValue(strategy = "AUTO") @ORM\Column(type = "integer") */
     public $id;
 
-    /** @Embedded(class = "DDC93Address") */
+    /** @ORM\Embedded(class = "DDC93Address") */
     public $address;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3027Dog extends DDC3027Animal
 {
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDCInfiniteNestingEmbeddable
 {
-    /** @Embedded(class="DDCInfiniteNestingEmbeddable") */
+    /** @ORM\Embedded(class="DDCInfiniteNestingEmbeddable") */
     public $nested;
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDCNestingEmbeddable1
 {
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id1;
 
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id2;
 
-    /** @Embedded(class="DDCNestingEmbeddable2") */
+    /** @ORM\Embedded(class="DDCNestingEmbeddable2") */
     public $nested;
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDCNestingEmbeddable2
 {
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id1;
 
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id2;
 
-    /** @Embedded(class="DDCNestingEmbeddable3") */
+    /** @ORM\Embedded(class="DDCNestingEmbeddable3") */
     public $nested;
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDCNestingEmbeddable3
 {
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id1;
 
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id2;
 
-    /** @Embedded(class="DDCNestingEmbeddable4") */
+    /** @ORM\Embedded(class="DDCNestingEmbeddable4") */
     public $nested;
 }
 
 /**
- * @Embeddable
+ * @ORM\Embeddable
  */
 class DDCNestingEmbeddable4
 {
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id1;
 
-    /** @Embedded(class="DDC3028Id") */
+    /** @ORM\Embedded(class="DDC3028Id") */
     public $id2;
 
-    /** @Embedded(class="DDCNestingEmbeddable1") */
+    /** @ORM\Embedded(class="DDCNestingEmbeddable1") */
     public $nested;
 }

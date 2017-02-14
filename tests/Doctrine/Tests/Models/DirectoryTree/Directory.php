@@ -2,13 +2,15 @@
 
 namespace Doctrine\Tests\Models\DirectoryTree;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Directory extends AbstractContentItem
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     protected $path;
 

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1509
  */
@@ -53,25 +55,25 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1509Picture
 {
 
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
      */
     private $thumbnail;
 
     /**
-     * @ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="DDC1509AbstractFile", cascade={"persist", "remove"})
      */
     private $file;
 
@@ -112,18 +114,18 @@ class DDC1509Picture
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"abstractFile" = "DDC1509AbstractFile", "file" = "DDC1509File"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"abstractFile" = "DDC1509AbstractFile", "file" = "DDC1509File"})
  */
 class DDC1509AbstractFile
 {
 
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
@@ -138,7 +140,7 @@ class DDC1509AbstractFile
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1509File extends DDC1509AbstractFile
 {

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -77,13 +78,13 @@ final class GH6029Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6029User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToMany(targetEntity=GH6029Group::class, cascade={"all"}) */
+    /** @ORM\ManyToMany(targetEntity=GH6029Group::class, cascade={"all"}) */
     public $groups;
 
     public function __construct()
@@ -92,28 +93,28 @@ class GH6029User
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6029Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6029Group2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6029Product
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
+     * @ORM\OneToMany(targetEntity=GH6029Feature::class, mappedBy="product", cascade={"all"})
      */
     public $features;
 
@@ -123,15 +124,15 @@ class GH6029Product
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6029Feature
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity=GH6029Product::class, inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=GH6029Product::class, inversedBy="features")
+     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     public $product;
 }

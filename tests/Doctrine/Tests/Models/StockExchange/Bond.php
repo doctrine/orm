@@ -2,30 +2,32 @@
 
 namespace Doctrine\Tests\Models\StockExchange;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Bonds have many stocks. This uses a many to many association and fails to model how many of a
  * particular stock a bond has. But i Need a many-to-many association, so please bear with my modelling skills ;)
  *
- * @Entity
- * @Table(name="exchange_bonds")
+ * @ORM\Entity
+ * @ORM\Table(name="exchange_bonds")
  */
 class Bond
 {
     /**
-     * @Id @GeneratedValue @column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      * @var int
      */
     private $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     private $name;
 
     /**
-     * @ManyToMany(targetEntity="Stock", indexBy="symbol")
-     * @JoinTable(name="exchange_bonds_stocks")
+     * @ORM\ManyToMany(targetEntity="Stock", indexBy="symbol")
+     * @ORM\JoinTable(name="exchange_bonds_stocks")
      * @var Stock[]
      */
     public $stocks;

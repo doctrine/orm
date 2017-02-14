@@ -1,6 +1,8 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -41,15 +43,15 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class SequenceEntity
 {
     /**
-     * @Id
-     * @column(type="integer")
-     * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(allocationSize=5,sequenceName="person_id_seq")
      */
     public $id;
 }

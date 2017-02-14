@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1225
  */
@@ -38,15 +40,15 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="te1")
+ * @ORM\Entity
+ * @ORM\Table(name="te1")
  */
 class DDC1225_TestEntity1
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity2")
-     * @JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity2")
+     * @ORM\JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
      */
     private $testEntity2;
 
@@ -68,15 +70,15 @@ class DDC1225_TestEntity1
 }
 
 /**
- * @Entity
- * @Table(name="te2")
+ * @ORM\Entity
+ * @ORM\Table(name="te2")
  */
 class DDC1225_TestEntity2
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     private $id;
 }

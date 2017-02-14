@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * CmsEmail
  *
- * @Entity
- * @Table(name="cms_emails")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_emails")
  */
 class CmsEmail
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(length=250)
+     * @ORM\Column(length=250)
      */
     public $email;
 
     /**
-     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
+     * @ORM\OneToOne(targetEntity="CmsUser", mappedBy="email")
      */
     public $user;
 

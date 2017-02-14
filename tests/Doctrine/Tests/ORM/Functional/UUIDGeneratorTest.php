@@ -1,5 +1,7 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -33,11 +35,11 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class UUIDEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="UUID") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="UUID") */
     private $id;
     /**
      * Get id.

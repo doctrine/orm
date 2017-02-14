@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types as DBALTypes;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * This test verifies that custom post-insert identifiers respect type conversion semantics.
@@ -97,15 +98,15 @@ class DDC5684ObjectId
 }
 
 /**
- * @Entity
- * @Table(name="ticket_5684_objects")
+ * @ORM\Entity
+ * @ORM\Table(name="ticket_5684_objects")
  */
 class DDC5684Object
 {
     /**
-     * @Id
-     * @Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type=Doctrine\Tests\ORM\Functional\Ticket\DDC5684ObjectIdType::class)
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

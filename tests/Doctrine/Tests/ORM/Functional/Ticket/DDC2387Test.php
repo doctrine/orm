@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 class DDC2387Test extends DatabaseDriverTestCase
 {

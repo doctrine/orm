@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -76,24 +77,24 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class CascadeRemoveOrderEntityO
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
-     * @JoinColumn(nullable=true, onDelete="SET NULL")
+     * @ORM\OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $oneToOneG;
 
     /**
-     * @OneToMany(
+     * @ORM\OneToMany(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
      *     mappedBy="ownerO",
      *     cascade={"persist", "remove"}
@@ -134,18 +135,18 @@ class CascadeRemoveOrderEntityO
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class CascadeRemoveOrderEntityG
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(
+     * @ORM\ManyToOne(
      *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
      *     inversedBy="oneToMany"
      * )

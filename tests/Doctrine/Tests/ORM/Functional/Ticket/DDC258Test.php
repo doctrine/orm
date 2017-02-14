@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC258Test extends OrmFunctionalTestCase
@@ -74,54 +75,54 @@ class DDC258Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="DDC258Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC258Class1", "class2" = "DDC258Class2", "class3"="DDC258Class3"})
+ * @ORM\Entity
+ * @ORM\Table(name="DDC258Super")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"class1" = "DDC258Class1", "class2" = "DDC258Class2", "class3"="DDC258Class3"})
  */
 abstract class DDC258Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
     */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class1 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class2 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
-     * @Column(name="text", type="text")
+     * @ORM\Column(name="text", type="text")
      */
     public $text;
 }
@@ -129,17 +130,17 @@ class DDC258Class2 extends DDC258Super
 /**
  * An extra class to demonstrate why title and description aren't in Super
  *
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class3 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $bananas;
 }

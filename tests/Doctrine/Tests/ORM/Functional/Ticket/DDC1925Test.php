@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1925
@@ -46,33 +47,33 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table
- * @Entity
+ * @ORM\Table
+ * @ORM\Entity
  */
 class DDC1925Product
 {
     /**
      * @var int $id
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      * @var string $title
      *
-     * @Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
 
     /**
-     * @ManyToMany(targetEntity="DDC1925User")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="DDC1925User")
+     * @ORM\JoinTable(
      *   name="user_purchases",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
+     *   joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
     private $buyers;
@@ -129,24 +130,24 @@ class DDC1925Product
 }
 
 /**
- * @Table
- * @Entity
+ * @ORM\Table
+ * @ORM\Entity
  */
 class DDC1925User
 {
     /**
      * @var int
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      * @var string
      *
-     * @Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      */
     private $title;
 

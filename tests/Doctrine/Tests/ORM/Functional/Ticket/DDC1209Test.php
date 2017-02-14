@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1209Test extends OrmFunctionalTestCase
@@ -65,12 +66,12 @@ class DDC1209Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1209_1
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     private $id;
 
@@ -81,31 +82,31 @@ class DDC1209_1
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1209_2
 {
     /**
-     *  @Id
-     *  @ManyToOne(targetEntity="DDC1209_1")
-     *  @JoinColumn(referencedColumnName="id", nullable=false)
+     *  @ORM\Id
+     *  @ORM\ManyToOne(targetEntity="DDC1209_1")
+     *  @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $future1;
     /**
-     *  @Id
-     *  @Column(type="datetime", nullable=false)
+     *  @ORM\Id
+     *  @ORM\Column(type="datetime", nullable=false)
      */
     public $starting_datetime;
 
     /**
-     *  @Id
-     *  @Column(type="datetime", nullable=false)
+     *  @ORM\Id
+     *  @ORM\Column(type="datetime", nullable=false)
      */
     public $during_datetime;
 
     /**
-     *  @Id
-     *  @Column(type="datetime", nullable=false)
+     *  @ORM\Id
+     *  @ORM\Column(type="datetime", nullable=false)
      */
     public $ending_datetime;
 
@@ -119,13 +120,13 @@ class DDC1209_2
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1209_3
 {
     /**
-     * @Id
-     * @Column(type="datetime", name="somedate")
+     * @ORM\Id
+     * @ORM\Column(type="datetime", name="somedate")
      */
     public $date;
 

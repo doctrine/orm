@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -31,14 +33,14 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="ticket_2481_products")
+ * @ORM\Entity
+ * @ORM\Table(name="ticket_2481_products")
  */
 class Ticket2481Product
 {
   /**
-   * @Id @Column(type="integer")
-   * @GeneratedValue(strategy="AUTO")
+   * @ORM\Id @ORM\Column(type="integer")
+   * @ORM\GeneratedValue(strategy="AUTO")
    */
   public $id;
 }

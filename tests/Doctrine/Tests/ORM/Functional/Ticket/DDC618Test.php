@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-618
  */
@@ -128,21 +130,21 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC618Author
 {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
      */
     public $books;
 
@@ -159,20 +161,20 @@ class DDC618Author
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC618Book
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     public $title;
 
-    /** @ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+    /** @ORM\ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
     public $author;
 
     function __construct($title, $author)

@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -44,11 +45,11 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 
-/** @Entity @Table(name="ddc2231_y") */
+/** @ORM\Entity @ORM\Table(name="ddc2231_y") */
 class DDC2231EntityY implements ObjectManagerAware
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 

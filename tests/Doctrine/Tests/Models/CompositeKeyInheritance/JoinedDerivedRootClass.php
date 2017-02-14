@@ -1,29 +1,31 @@
 <?php
 namespace Doctrine\Tests\Models\CompositeKeyInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name = "joined_derived_root")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"child" = "JoinedDerivedChildClass", "root" = "JoinedDerivedRootClass"})
+ * @ORM\Entity
+ * @ORM\Table(name = "joined_derived_root")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"child" = "JoinedDerivedChildClass", "root" = "JoinedDerivedRootClass"})
  */
 class JoinedDerivedRootClass
 {
     /**
      * @var JoinedDerivedIdentityClass
-     * @ManyToOne(
+     * @ORM\ManyToOne(
      *     targetEntity="JoinedDerivedIdentityClass",
      *     inversedBy="children"
      * )
-     * @Id
+     * @ORM\Id
      */
     protected $keyPart1 = 'part-1';
 
     /**
      * @var string
-     * @Column(type="string")
-     * @Id
+     * @ORM\Column(type="string")
+     * @ORM\Id
      */
     protected $keyPart2 = 'part-2';
 }

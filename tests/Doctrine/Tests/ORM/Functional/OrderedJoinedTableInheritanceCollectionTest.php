@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -70,45 +70,45 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *      "cat" = "OJTIC_Cat",
  *      "dog" = "OJTIC_Dog"})
  */
 abstract class OJTIC_Pet
 {
     /**
-     * @Id
-     * @column(type="integer")
-     * @generatedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
      *
-     * @Column
+     * @ORM\Column
      */
     public $name;
 
     /**
-     * @ManyToOne(targetEntity="OJTIC_PET")
+     * @ORM\ManyToOne(targetEntity="OJTIC_PET")
      */
     public $mother;
 
     /**
-     * @OneToMany(targetEntity="OJTIC_Pet", mappedBy="mother")
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\OneToMany(targetEntity="OJTIC_Pet", mappedBy="mother")
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     public $children;
 
     /**
-     * @ManyToMany(targetEntity="OJTIC_Pet")
-     * @JoinTable(name="OTJIC_Pet_Friends",
-     *     joinColumns={@JoinColumn(name="pet_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_id", referencedColumnName="id")})
-     * @OrderBy({"name" = "ASC"})
+     * @ORM\ManyToMany(targetEntity="OJTIC_Pet")
+     * @ORM\JoinTable(name="OTJIC_Pet_Friends",
+     *     joinColumns={@ORM\JoinColumn(name="pet_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id")})
+     * @ORM\OrderBy({"name" = "ASC"})
      */
     public $friends;
 
@@ -119,7 +119,7 @@ abstract class OJTIC_Pet
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class OJTIC_Cat extends OJTIC_Pet
 {
@@ -127,7 +127,7 @@ class OJTIC_Cat extends OJTIC_Pet
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class OJTIC_Dog extends OJTIC_Pet
 {

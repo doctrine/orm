@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-2575
  */
@@ -85,23 +87,23 @@ class DDC2575Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2575Root
 {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $sampleField;
 
     /**
-     * @OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
+     * @ORM\OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
      **/
     public $aRelation;
 
@@ -114,20 +116,20 @@ class DDC2575Root
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2575A
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
-     * @JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
+     * @ORM\JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */
     public $rootRelation;
 
     /**
-     * @ManyToOne(targetEntity="DDC2575B")
-     * @JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
+     * @ORM\ManyToOne(targetEntity="DDC2575B")
+     * @ORM\JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */
     public $bRelation;
 
@@ -139,18 +141,18 @@ class DDC2575A
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2575B
 {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $sampleField;
 

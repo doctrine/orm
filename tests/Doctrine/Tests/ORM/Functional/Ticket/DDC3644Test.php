@@ -4,7 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -130,29 +130,29 @@ class DDC3644Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3644User
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="hash_id")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="hash_id")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
      */
     public $addresses = [];
 
     /**
-     * @OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
      */
     public $pets = [];
 
@@ -180,25 +180,25 @@ class DDC3644User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3644Address
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
-     * @JoinColumn(referencedColumnName="hash_id")
+     * @ORM\ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
+     * @ORM\JoinColumn(referencedColumnName="hash_id")
      */
     public $user;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $address;
 
@@ -209,22 +209,22 @@ class DDC3644Address
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({"pet" = "DDC3644Pet"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discriminator", type="string")
+ * @ORM\DiscriminatorMap({"pet" = "DDC3644Pet"})
  */
 abstract class DDC3644Animal
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
@@ -235,13 +235,13 @@ abstract class DDC3644Animal
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3644Pet extends DDC3644Animal
 {
     /**
-     * @ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
-     * @JoinColumn(referencedColumnName="hash_id")
+     * @ORM\ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
+     * @ORM\JoinColumn(referencedColumnName="hash_id")
      */
     public $owner;
 }

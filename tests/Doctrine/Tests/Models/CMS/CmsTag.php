@@ -2,26 +2,28 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of CmsTag
  *
- * @Entity
- * @Table(name="cms_tags")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_tags")
  */
 class CmsTag
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(length=50, name="tag_name", nullable=true)
+     * @ORM\Column(length=50, name="tag_name", nullable=true)
      */
     public $name;
     /**
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="tags")
+     * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="tags")
      */
     public $users;
 

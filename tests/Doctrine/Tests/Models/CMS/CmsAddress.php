@@ -3,87 +3,89 @@
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
  * CmsAddress
  *
  * @author Roman S. Borschel
- * @Entity
- * @Table(name="cms_addresses")
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\Entity
+ * @ORM\Table(name="cms_addresses")
+ *
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name                = "find-all",
  *          resultSetMapping    = "mapping-find-all",
  *          query               = "SELECT id, country, city FROM cms_addresses"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name           = "find-by-id",
  *          resultClass    = "CmsAddress",
  *          query          = "SELECT * FROM cms_addresses WHERE id = ?"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "count",
  *          resultSetMapping= "mapping-count",
  *          query           = "SELECT COUNT(*) AS count FROM cms_addresses"
  *      )
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-find-all",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "CmsAddress",
  *                  fields      = {
- *                      @FieldResult(name = "id",       column="id"),
- *                      @FieldResult(name = "city",     column="city"),
- *                      @FieldResult(name = "country",  column="country")
+ *                      @ORM\FieldResult(name = "id",       column="id"),
+ *                      @ORM\FieldResult(name = "city",     column="city"),
+ *                      @ORM\FieldResult(name = "country",  column="country")
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-without-fields",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "__CLASS__"
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-count",
  *          columns = {
- *              @ColumnResult(
+ *              @ORM\ColumnResult(
  *                  name = "count"
  *              )
  *          }
  *      )
  * })
  *
- * @EntityListeners({"CmsAddressListener"})
+ * @ORM\EntityListeners({"CmsAddressListener"})
  */
 class CmsAddress
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(length=50)
+     * @ORM\Column(length=50)
      */
     public $country;
 
     /**
-     * @Column(length=50)
+     * @ORM\Column(length=50)
      */
     public $zip;
 
     /**
-     * @Column(length=50)
+     * @ORM\Column(length=50)
      */
     public $city;
 
@@ -93,8 +95,8 @@ class CmsAddress
     public $street;
 
     /**
-     * @OneToOne(targetEntity="CmsUser", inversedBy="address")
-     * @JoinColumn(referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="CmsUser", inversedBy="address")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     public $user;
 
@@ -125,7 +127,7 @@ class CmsAddress
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('company_person');

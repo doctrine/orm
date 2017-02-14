@@ -3,36 +3,37 @@
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table("cache_state")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_state")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class State
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     protected $name;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\JoinColumn(name="country_id", referencedColumnName="id")
      */
     protected $country;
 
     /**
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="City", mappedBy="state")
+     * @ORM\Cache("NONSTRICT_READ_WRITE")
+     * @ORM\OneToMany(targetEntity="City", mappedBy="state")
      */
     protected $cities;
 

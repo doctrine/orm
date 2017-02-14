@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
@@ -63,50 +64,50 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="ddc2256_users")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2256_users")
  */
 class DDC2256User
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
     /**
-     * @ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
-     * @JoinColumn(name="group_id")
+     * @ORM\ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
+     * @ORM\JoinColumn(name="group_id")
      */
     public $group;
 }
 
 /**
- * @Entity
- * @Table(name="ddc2256_groups")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2256_groups")
  */
 class DDC2256Group
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="DDC2256User", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="DDC2256User", mappedBy="group")
      */
     public $users;
 
