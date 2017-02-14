@@ -7,8 +7,8 @@ use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
@@ -588,25 +588,25 @@ class UnitOfWorkTest extends OrmTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class NotifyChangedEntity implements NotifyPropertyChanged
 {
     private $listeners = [];
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $data;
 
     private $transient; // not persisted
 
-    /** @OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
+    /** @ORM\OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
     private $items;
 
     public function  __construct() {
@@ -653,17 +653,17 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class NotifyChangedRelatedItem
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
-    /** @ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    /** @ORM\ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
     private $owner;
 
     public function getId() {
@@ -679,67 +679,67 @@ class NotifyChangedRelatedItem
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class VersionedAssignedIdentifierEntity
 {
     /**
-     * @Id @Column(type="integer")
+     * @ORM\Id @ORM\Column(type="integer")
      */
     public $id;
     /**
-     * @Version @Column(type="integer")
+     * @ORM\Version @ORM\Column(type="integer")
      */
     public $version;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithStringIdentifier
 {
     /**
-     * @Id @Column(type="string")
+     * @ORM\Id @ORM\Column(type="string")
      *
      * @var string|null
      */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithBooleanIdentifier
 {
     /**
-     * @Id @Column(type="boolean")
+     * @ORM\Id @ORM\Column(type="boolean")
      *
      * @var bool|null
      */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithCompositeStringIdentifier
 {
     /**
-     * @Id @Column(type="string")
+     * @ORM\Id @ORM\Column(type="string")
      *
      * @var string|null
      */
     public $id1;
 
     /**
-     * @Id @Column(type="string")
+     * @ORM\Id @ORM\Column(type="string")
      *
      * @var string|null
      */
     public $id2;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithRandomlyGeneratedField
 {
-    /** @Id @Column(type="string") */
+    /** @ORM\Id @ORM\Column(type="string") */
     public $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $generatedField;
 

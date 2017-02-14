@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -77,29 +78,29 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306Zone
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2306User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
      * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="DDC2306UserAddress", mappedBy="user")
      */
     public $addresses;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
     public $zone;
 
     /** Constructor */
@@ -108,20 +109,20 @@ class DDC2306User
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306Address
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
      * @var DDC2306UserAddress[]|\Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC2306UserAddress", mappedBy="address", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="DDC2306UserAddress", mappedBy="address", orphanRemoval=true)
      */
     public $users;
 
-    /** @ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity="DDC2306Zone", fetch="EAGER") */
     public $zone;
 
     /** Constructor */
@@ -130,16 +131,16 @@ class DDC2306Address
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2306UserAddress
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2306User") */
+    /** @ORM\ManyToOne(targetEntity="DDC2306User") */
     public $user;
 
-    /** @ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
+    /** @ORM\ManyToOne(targetEntity="DDC2306Address", fetch="LAZY") */
     public $address;
 
     /** Constructor */

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1400
  */
@@ -62,56 +64,56 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400Article
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400User
 {
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400UserState
 {
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
+      * @ORM\Id
+     *  @ORM\ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
      */
     public $article;
 
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
+      * @ORM\Id
+     *  @ORM\ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
      */
     public $user;
 }

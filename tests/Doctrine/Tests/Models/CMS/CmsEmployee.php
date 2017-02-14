@@ -2,30 +2,33 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of CmsEmployee
  *
  * @author robo
- * @Entity
- * @Table(name="cms_employees")
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="cms_employees")
  */
 class CmsEmployee
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="CmsEmployee")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="CmsEmployee")
+     * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
 

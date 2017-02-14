@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -41,18 +42,18 @@ class ClassMetadataLoadEventTest extends OrmTestCase
 }
 
 /**
- * @Entity
- * @Table(name="load_event_test_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="load_event_test_entity")
  */
 class LoadEventTestEntity
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $name;
 

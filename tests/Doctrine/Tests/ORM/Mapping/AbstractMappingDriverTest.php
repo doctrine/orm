@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
@@ -1144,79 +1145,79 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(
  *  name="cms_users",
- *  uniqueConstraints={@UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
- *  indexes={@Index(name="name_idx", columns={"name"}), @Index(columns={"user_email"})},
+ *  uniqueConstraints={@ORM\UniqueConstraint(name="search_idx", columns={"name", "user_email"})},
+ *  indexes={@ORM\Index(name="name_idx", columns={"name"}), @ORM\Index(columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
- * @NamedQueries({@NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
+ * @ORM\NamedQueries({@ORM\NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
 class User
 {
     /**
-     * @Id
-     * @Column(type="integer", options={"foo": "bar", "unsigned": false})
-     * @GeneratedValue(strategy="AUTO")
-     * @SequenceGenerator(sequenceName="tablename_seq", allocationSize=100)
+     * @ORM\Id
+     * @ORM\Column(type="integer", options={"foo": "bar", "unsigned": false})
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\SequenceGenerator(sequenceName="tablename_seq", allocationSize=100)
      **/
     public $id;
 
     /**
-     * @Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
+     * @ORM\Column(length=50, nullable=true, unique=true, options={"foo": "bar", "baz": {"key": "val"}, "fixed": false})
      */
     public $name;
 
     /**
-     * @Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
+     * @ORM\Column(name="user_email", columnDefinition="CHAR(32) NOT NULL")
      */
     public $email;
 
     /**
-     * @OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
-     * @JoinColumn(onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
-     * @OrderBy({"number"="ASC"})
+     * @ORM\OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 
     /**
-     * @ManyToMany(targetEntity="Group", cascade={"all"})
-     * @JoinTable(name="cms_user_groups",
-     *    joinColumns={@JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
-     *    inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
+     * @ORM\ManyToMany(targetEntity="Group", cascade={"all"})
+     * @ORM\JoinTable(name="cms_user_groups",
+     *    joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
      * )
      */
     public $groups;
 
     /**
-     * @Column(type="integer")
-     * @Version
+     * @ORM\Column(type="integer")
+     * @ORM\Version
      */
     public $version;
 
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function doStuffOnPrePersist()
     {
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function doOtherStuffOnPrePersistToo() {
     }
 
     /**
-     * @PostPersist
+     * @ORM\PostPersist
      */
     public function doStuffOnPostPersist()
     {
@@ -1386,16 +1387,16 @@ class User
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
- * @DiscriminatorColumn(name="discr", length=32, type="string")
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
+ * @ORM\DiscriminatorColumn(name="discr", length=32, type="string")
  */
 abstract class Animal
 {
     /**
-     * @Id @Column(type="string") @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class="stdClass")
+     * @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="stdClass")
      */
     public $id;
 
@@ -1411,7 +1412,7 @@ abstract class Animal
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Cat extends Animal
 {
     public static function loadMetadata(ClassMetadata $metadata)
@@ -1420,7 +1421,7 @@ class Cat extends Animal
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Dog extends Animal
 {
     public static function loadMetadata(ClassMetadata $metadata)
@@ -1430,7 +1431,7 @@ class Dog extends Animal
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1170Entity
 {
@@ -1443,14 +1444,14 @@ class DDC1170Entity
     }
 
     /**
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE")
+     * @ORM\Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
      **/
     private $id;
 
     /**
-     * @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+     * @ORM\Column(columnDefinition = "VARCHAR(255) NOT NULL")
      */
     private $value;
 
@@ -1493,17 +1494,17 @@ class DDC1170Entity
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
- * @DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
+ * @ORM\DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
  */
 class DDC807Entity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      **/
     public $id;
 
@@ -1537,13 +1538,13 @@ class Phonenumber {}
 class Group {}
 
 /**
- * @Entity
- * @Table(indexes={@Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
+ * @ORM\Entity
+ * @ORM\Table(indexes={@ORM\Index(columns={"content"}, flags={"fulltext"}, options={"where": "content IS NOT NULL"})})
  */
 class Comment
 {
     /**
-     * @Column(type="text")
+     * @ORM\Column(type="text")
      */
     private $content;
 
@@ -1574,9 +1575,9 @@ class Comment
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
  *     "ONE" = "SingleTableEntityNoDiscriminatorColumnMappingSub1",
  *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
  * })
@@ -1584,9 +1585,9 @@ class Comment
 class SingleTableEntityNoDiscriminatorColumnMapping
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
@@ -1602,24 +1603,31 @@ class SingleTableEntityNoDiscriminatorColumnMapping
     }
 }
 
+/**
+ * @ORM\Entity
+ */
 class SingleTableEntityNoDiscriminatorColumnMappingSub1 extends SingleTableEntityNoDiscriminatorColumnMapping {}
+
+/**
+ * @ORM\Entity
+ */
 class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntityNoDiscriminatorColumnMapping {}
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
  *     "ONE" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub1",
  *     "TWO" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub2"
  * })
- * @DiscriminatorColumn(name="dtype")
+ * @ORM\DiscriminatorColumn(name="dtype")
  */
 class SingleTableEntityIncompleteDiscriminatorColumnMapping
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 

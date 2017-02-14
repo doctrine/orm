@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
@@ -88,15 +89,15 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1452EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $title;
-    /** @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
+    /** @ORM\OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
     public $entitiesB;
 
     public function __construct()
@@ -111,19 +112,19 @@ class DDC1452EntityA
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1452EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
+     * @ORM\ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
      */
     public $entityAFrom;
     /**
-     * @ManyToOne(targetEntity="DDC1452EntityA")
+     * @ORM\ManyToOne(targetEntity="DDC1452EntityA")
      */
     public $entityATo;
 }

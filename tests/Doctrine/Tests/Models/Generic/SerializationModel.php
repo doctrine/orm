@@ -2,24 +2,26 @@
 
 namespace Doctrine\Tests\Models\Generic;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="serialize_model")
+ * @ORM\Entity
+ * @ORM\Table(name="serialize_model")
  */
 class SerializationModel
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @Column(name="the_array", type="array", nullable=true)
+     * @ORM\Column(name="the_array", type="array", nullable=true)
      */
     public $array;
 
     /**
-     * @Column(name="the_obj", type="object", nullable=true)
+     * @ORM\Column(name="the_obj", type="object", nullable=true)
      */
     public $object;
 }

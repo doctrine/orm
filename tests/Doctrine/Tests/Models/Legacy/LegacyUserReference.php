@@ -2,37 +2,39 @@
 
 namespace Doctrine\Tests\Models\Legacy;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="legacy_users_reference")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_users_reference")
  */
 class LegacyUserReference
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="references")
-     * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="LegacyUser", inversedBy="references")
+     * @ORM\JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
     private $source;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser")
-     * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="LegacyUser")
+     * @ORM\JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
      */
     private $target;
 
     /**
-     * @column(type="string", name="description")
+     * @ORM\Column(type="string", name="description")
      */
     private $description;
 
     /**
-     * @column(type="datetime", name="created")
+     * @ORM\Column(type="datetime", name="created")
      */
     private $created;
 
-    public function __construct($source, $target, $description)
+    public function __construct(LegacyUser $source, LegacyUser $target, $description)
     {
         $source->addReference($this);
         $target->addReference($this);

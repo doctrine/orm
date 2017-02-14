@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC512Test extends OrmFunctionalTestCase
@@ -49,13 +50,13 @@ class DDC512Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC512Customer {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
@@ -63,31 +64,31 @@ class DDC512Customer {
      * NOTE that we can currently not name the join column the same as the field
      * (item = item), this currently confuses Doctrine.
      *
-     * @OneToOne(targetEntity="DDC512OfferItem", cascade={"remove","persist"})
-     * @JoinColumn(name="item_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC512OfferItem", cascade={"remove","persist"})
+     * @ORM\JoinColumn(name="item_id", referencedColumnName="id")
      */
     public $item;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
   */
 class DDC512OfferItem extends DDC512Item
 {
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"item" = "DDC512Item", "offerItem" = "DDC512OfferItem"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"item" = "DDC512Item", "offerItem" = "DDC512OfferItem"})
  */
 class DDC512Item
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -72,28 +73,28 @@ class DDC3634Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC3634Entity
 {
-    /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="bigint") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
  *  DDC3634JTIBaseEntity::class  = DDC3634JTIBaseEntity::class,
  *  DDC3634JTIChildEntity::class = DDC3634JTIChildEntity::class,
  * })
  */
 class DDC3634JTIBaseEntity
 {
-    /** @Id @Column(type="bigint") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="bigint") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC3634JTIChildEntity extends DDC3634JTIBaseEntity
 {
 }

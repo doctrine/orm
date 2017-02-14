@@ -1,7 +1,9 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -234,29 +236,29 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Train
 {
     /**
-     * @id @column(type="integer") @generatedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     public $id;
     /**
      * Owning side
-     * @OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
-     * @JoinColumn(nullable=true)
+     * @ORM\OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      */
     public $driver;
     /**
      * Owning side
-     * @OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
-     * @JoinColumn(nullable=false)
+     * @ORM\OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
      */
     public $owner;
     /**
-     * @oneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
      */
     public $waggons;
 
@@ -286,17 +288,17 @@ class Train
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TrainDriver
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
     /**
      * Inverse side
-     * @OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
      */
     public $train;
 
@@ -312,17 +314,17 @@ class TrainDriver
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TrainOwner
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
     /**
      * Inverse side
-     * @OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
      */
     public $train;
 
@@ -338,15 +340,15 @@ class TrainOwner
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Waggon
 {
-    /** @id @generatedValue @column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
     /**
-     * @ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
-     * @JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
+     * @ORM\JoinColumn(nullable=false)
      */
     public $train;
 
@@ -357,14 +359,14 @@ class Waggon
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TrainOrder
 {
-    /** @id @generatedValue @column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity = "Train", fetch = "EAGER") */
+    /** @ORM\OneToOne(targetEntity = "Train", fetch = "EAGER") */
     public $train;
 
     public function __construct(Train $train)

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -28,45 +30,45 @@ class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
   */
 class DDC513OfferItem extends DDC513Item
 {
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"item" = "DDC513Item", "offerItem" = "DDC513OfferItem"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"item" = "DDC513Item", "offerItem" = "DDC513OfferItem"})
  */
 class DDC513Item
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
-     * @JoinColumn(name="price", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
+     * @ORM\JoinColumn(name="price", referencedColumnName="id")
      */
     public $price;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC513Price {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $data;
 }

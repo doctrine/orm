@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmPerformanceTestCase;
@@ -166,32 +167,32 @@ class DDC2602PostLoadListener
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602User
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var integer
      */
     public $id;
 
     /**
-     * @Column(type="string", length=15)
+     * @ORM\Column(type="string", length=15)
      *
      * @var string
      */
     public $name;
 
     /**
-     * @OneToOne(
+     * @ORM\OneToOne(
      *     targetEntity="DDC2602Biography",
      *     inversedBy="user",
      *     cascade={"persist", "merge", "refresh", "remove"}
      * )
-     * @JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false)
      *
      * @var DDC2602Biography
      */
@@ -199,20 +200,20 @@ class DDC2602User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602Biography
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var integer
      */
     public $id;
 
     /**
-     * @OneToOne(
+     * @ORM\OneToOne(
      *     targetEntity="DDC2602User",
      *     mappedBy="biography",
      *     cascade={"persist", "merge", "refresh"}
@@ -223,7 +224,7 @@ class DDC2602Biography
     public $user;
 
     /**
-     * @Column(type="text", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      *
      * @var string
      */
@@ -236,30 +237,30 @@ class DDC2602Biography
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602BiographyField
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var integer
      */
     public $id;
 
     /**
-     * @Column(type="string", unique=true, length=100)
+     * @ORM\Column(type="string", unique=true, length=100)
      */
     public $alias;
 
     /**
-     * @Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100)
      */
     public $label;
 
     /**
-     * @OneToMany(
+     * @ORM\OneToMany(
      *     targetEntity="DDC2602BiographyFieldChoice",
      *     mappedBy="field",
      *     cascade={"persist", "merge", "refresh"}
@@ -280,29 +281,29 @@ class DDC2602BiographyField
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2602BiographyFieldChoice
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var integer
      */
     public $id;
 
     /**
-     * @Column(type="string", unique=true, length=100)
+     * @ORM\Column(type="string", unique=true, length=100)
      */
     public $label;
 
     /**
-     * @ManyToOne(
+     * @ORM\ManyToOne(
      *     targetEntity="DDC2602BiographyField",
      *     inversedBy="choiceList"
      * )
-     * @JoinColumn(onDelete="CASCADE")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      *
      * @var DDC2602BiographyField
      */

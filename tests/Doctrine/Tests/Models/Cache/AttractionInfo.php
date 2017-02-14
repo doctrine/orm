@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Cache
- * @Entity
- * @Table("cache_attraction_info")
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction_info")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
  *  1  = "AttractionContactInfo",
  *  2  = "AttractionLocationInfo",
  * })
@@ -15,16 +17,16 @@ namespace Doctrine\Tests\Models\Cache;
 abstract class AttractionInfo
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="Attraction", inversedBy="infos")
-     * @JoinColumn(name="attraction_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity="Attraction", inversedBy="infos")
+     * @ORM\JoinColumn(name="attraction_id", referencedColumnName="id")
      */
     protected $attraction;
 

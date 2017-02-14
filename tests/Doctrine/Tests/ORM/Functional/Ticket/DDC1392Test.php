@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\UnitOfWork;
 
 /**
@@ -65,19 +66,19 @@ class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1392Picture
 {
     /**
-     * @Column(name="picture_id", type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(name="picture_id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     private $pictureId;
 
     /**
-     * @ManyToOne(targetEntity="DDC1392File", cascade={"persist", "remove"})
-     * @JoinColumn(name="file_id", referencedColumnName="file_id")
+     * @ORM\ManyToOne(targetEntity="DDC1392File", cascade={"persist", "remove"})
+     * @ORM\JoinColumn(name="file_id", referencedColumnName="file_id")
      */
     private $file;
 
@@ -107,14 +108,14 @@ class DDC1392Picture
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1392File
 {
     /**
-     * @Column(name="file_id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="file_id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $fileId;
 

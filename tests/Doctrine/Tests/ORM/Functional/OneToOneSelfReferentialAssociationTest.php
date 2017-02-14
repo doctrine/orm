@@ -2,8 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
@@ -144,19 +143,19 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class MultiSelfReference {
-    /** @Id @GeneratedValue(strategy="AUTO") @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue(strategy="AUTO") @ORM\Column(type="integer") */
     private $id;
     /**
-     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
-     * @JoinColumn(name="other1", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @ORM\JoinColumn(name="other1", referencedColumnName="id")
      */
     private $other1;
     /**
-     * @OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
-     * @JoinColumn(name="other2", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @ORM\JoinColumn(name="other2", referencedColumnName="id")
      */
     private $other2;
 

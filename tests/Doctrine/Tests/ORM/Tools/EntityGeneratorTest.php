@@ -33,7 +33,6 @@ class EntityGeneratorTest extends OrmTestCase
 
         $this->generator = new EntityGenerator();
 
-        $this->generator->setAnnotationPrefix("");
         $this->generator->setGenerateAnnotations(true);
         $this->generator->setGenerateStubMethods(true);
         $this->generator->setRegenerateEntityIfExists(false);
@@ -542,7 +541,6 @@ class EntityGeneratorTest extends OrmTestCase
 
     public function testLoadPrefixedMetadata()
     {
-        $this->generator->setAnnotationPrefix('ORM\\');
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
         $metadata = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
 
@@ -582,7 +580,6 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->isMappedSuperclass = true;
 
-        $this->generator->setAnnotationPrefix('ORM\\');
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
         $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
@@ -646,10 +643,10 @@ class EntityGeneratorTest extends OrmTestCase
         $reflection = new \ReflectionProperty($metadata->name, 'id');
         $docComment = $reflection->getDocComment();
 
-        self::assertContains('@Id', $docComment);
-        self::assertContains('@Column(name="id", type="integer")', $docComment);
-        self::assertContains('@GeneratedValue(strategy="SEQUENCE")', $docComment);
-        self::assertContains('@SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1)', $docComment);
+        self::assertContains('@ORM\Id', $docComment);
+        self::assertContains('@ORM\Column(name="id", type="integer")', $docComment);
+        self::assertContains('@ORM\GeneratedValue(strategy="SEQUENCE")', $docComment);
+        self::assertContains('@ORM\SequenceGenerator(sequenceName="DDC1784_ID_SEQ", allocationSize=1)', $docComment);
     }
 
     /**
@@ -715,11 +712,11 @@ class EntityGeneratorTest extends OrmTestCase
         $docComment = $property->getDocComment();
 
         //joinColumns
-        self::assertContains('@JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
-        self::assertContains('@JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
+        self::assertContains('@ORM\JoinColumn(name="idorcamento", referencedColumnName="idorcamento"),', $docComment);
+        self::assertContains('@ORM\JoinColumn(name="idunidade", referencedColumnName="idunidade")', $docComment);
         //inverseJoinColumns
-        self::assertContains('@JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),', $docComment);
-        self::assertContains('@JoinColumn(name="idpais", referencedColumnName="idpais")', $docComment);
+        self::assertContains('@ORM\JoinColumn(name="idcentrocusto", referencedColumnName="idcentrocusto"),', $docComment);
+        self::assertContains('@ORM\JoinColumn(name="idpais", referencedColumnName="idpais")', $docComment);
 
     }
 
@@ -904,6 +901,7 @@ class EntityGeneratorTest extends OrmTestCase
         $ns     = $this->namespace;
         $nsdir  = $this->tmpDir . '/' . $ns;
 
+        // Dump DDC1590User into temp file
         $content = str_replace(
             'namespace Doctrine\Tests\Models\DDC1590',
             'namespace ' . $ns,
@@ -912,8 +910,9 @@ class EntityGeneratorTest extends OrmTestCase
 
         $fname = $nsdir . "/DDC1590User.php";
         file_put_contents($fname, $content);
-        require $fname;
 
+        // Require DDC1590User
+        require $fname;
 
         $metadata = $cmf->getMetadataFor($ns . '\DDC1590User');
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
@@ -947,7 +946,6 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertFalse($rc2->hasMethod('setId'));
         self::assertTrue($rc2->hasMethod('getCreatedAt'));
         self::assertTrue($rc2->hasMethod('setCreatedAt'));
-
 
         // class __DDC1590User { ... }
         $rc3 = new \ReflectionClass($ns.'\__DDC1590User');

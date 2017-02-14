@@ -2,7 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC2182Test extends OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns()
     {
@@ -24,27 +27,27 @@ class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table
+ * @ORM\Entity
+ * @ORM\Table
  */
 class DDC2182OptionParent
 {
-    /** @Id @Column(type="integer", options={"unsigned": true}) */
+    /** @ORM\Id @ORM\Column(type="integer", options={"unsigned": true}) */
     private $id;
 }
 
 /**
- * @Entity
- * @Table
+ * @ORM\Entity
+ * @ORM\Table
  */
 class DDC2182OptionChild
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC2182OptionParent")
-     * @JoinColumn(referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC2182OptionParent")
+     * @ORM\JoinColumn(referencedColumnName="id")
      */
     private $parent;
 }

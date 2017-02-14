@@ -3,14 +3,15 @@
 namespace Doctrine\Tests\Models\DDC889;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  */
 class DDC889SuperClass
 {
-    /** @Column() */
+    /** @ORM\Column() */
     protected $name;
 
     public static function loadMetadata(Mapping\ClassMetadata $metadata)

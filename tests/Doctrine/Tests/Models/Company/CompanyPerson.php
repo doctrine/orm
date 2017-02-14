@@ -2,45 +2,47 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
  * Description of CompanyPerson
  *
  * @author robo
- * @Entity
- * @Table(name="company_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="company_persons")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *      "person"    = "CompanyPerson",
  *      "manager"   = "CompanyManager",
  *      "employee"  = "CompanyEmployee"
  * })
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name           = "fetchAllWithResultClass",
  *          resultClass    = "__CLASS__",
  *          query          = "SELECT id, name, discr FROM company_persons ORDER BY name"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "fetchAllWithSqlResultSetMapping",
  *          resultSetMapping= "mappingFetchAll",
  *          query           = "SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name"
  *      )
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mappingFetchAll",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discriminator",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("name"),
  *                  }
  *              )
  *          }
@@ -50,32 +52,32 @@ use Doctrine\ORM\Mapping;
 class CompanyPerson
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="CompanyPerson")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
+     * @ORM\OneToOne(targetEntity="CompanyPerson")
+     * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
-     * @ManyToMany(targetEntity="CompanyPerson")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="CompanyPerson")
+     * @ORM\JoinTable(
      *     name="company_persons_friends",
      *     joinColumns={
-     *         @JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
+     *         @ORM\JoinColumn(name="person_id", referencedColumnName="id", onDelete="CASCADE")
      *     },
      *     inverseJoinColumns={
-     *         @JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
+     *         @ORM\JoinColumn(name="friend_id", referencedColumnName="id", onDelete="CASCADE")
      *     }
      * )
      */
@@ -119,7 +121,7 @@ class CompanyPerson
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('company_person');

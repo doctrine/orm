@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\Models\DDC2504;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2504ChildClass extends DDC2504RootClass
 {

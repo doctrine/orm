@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
-use Doctrine\Tests\OrmTestCase;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\AttachEntityListenersListener;
+use Doctrine\Tests\OrmTestCase;
 
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
@@ -113,28 +114,28 @@ class AttachEntityListenersListenerTest extends OrmTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class AttachEntityListenersListenerTestFooEntity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }
 
 /**
- * @Entity
- * @EntityListeners({"AttachEntityListenersListenerTestListener"})
+ * @ORM\Entity
+ * @ORM\EntityListeners({"AttachEntityListenersListenerTestListener"})
  */
 class AttachEntityListenersListenerTestBarEntity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

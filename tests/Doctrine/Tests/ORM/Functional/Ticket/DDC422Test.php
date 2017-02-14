@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 
 class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -44,23 +45,23 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
  */
 class DDC422Guest {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC422Customer extends DDC422Guest {
     /**
-     * @ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
-     * @JoinTable(name="ddc422_customers_contacts",
-     *      joinColumns={@JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
-     *      inverseJoinColumns={@JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
+     * @ORM\ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
+     * @ORM\JoinTable(name="ddc422_customers_contacts",
+     *      joinColumns={@ORM\JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}
      *      )
      */
     public $contacts;
@@ -70,9 +71,9 @@ class DDC422Customer extends DDC422Guest {
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC422Contact {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 

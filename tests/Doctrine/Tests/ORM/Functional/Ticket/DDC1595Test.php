@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1595
  * @group DDC-1596
@@ -64,12 +66,12 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="base")
+ * @ORM\Entity
+ * @ORM\Table(name="base")
  *
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({
  *     "Entity1" = "DDC1595InheritedEntity1",
  *     "Entity2" = "DDC1595InheritedEntity2"
  * })
@@ -77,8 +79,8 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
 abstract class DDC1595BaseInheritance
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var int
      */
@@ -86,15 +88,15 @@ abstract class DDC1595BaseInheritance
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
-     * @ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
-     * @JoinTable(name="entity1_entity2",
-     *     joinColumns={@JoinColumn(name="parent", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="item", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="entity1_entity2",
+     *     joinColumns={@ORM\JoinColumn(name="parent", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="item", referencedColumnName="id")}
      * )
      */
     protected $entities;
@@ -106,7 +108,7 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1595InheritedEntity2 extends DDC1595BaseInheritance
 {

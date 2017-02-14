@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -57,26 +58,26 @@ class DDC2775Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="ddc2775_role")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="role_type", type="string")
- * @DiscriminatorMap({"admin"="AdminRole"})
+ * @ORM\Entity @ORM\Table(name="ddc2775_role")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="role_type", type="string")
+ * @ORM\DiscriminatorMap({"admin"="AdminRole"})
  */
 abstract class Role
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="roles")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="roles")
      */
     public $user;
 
     /**
-     * @OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
      */
     public $authorizations;
 
@@ -87,51 +88,51 @@ abstract class Role
     }
 }
 
-/** @Entity @Table(name="ddc2775_admin_role") */
+/** @ORM\Entity @ORM\Table(name="ddc2775_admin_role") */
 class AdminRole extends Role
 {
 }
 
 /**
- * @Entity @Table(name="ddc2775_authorizations")
+ * @ORM\Entity @ORM\Table(name="ddc2775_authorizations")
  */
 class Authorization
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="authorizations")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="authorizations")
      */
     public $user;
 
     /**
-     * @ManyToOne(targetEntity="Role", inversedBy="authorizations")
+     * @ORM\ManyToOne(targetEntity="Role", inversedBy="authorizations")
      */
     public $role;
 }
 
 /**
- * @Entity @Table(name="ddc2775_users")
+ * @ORM\Entity @ORM\Table(name="ddc2775_users")
  */
 class User
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
      */
     public $roles;
 
     /**
-     * @OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
      */
     public $authorizations;
 

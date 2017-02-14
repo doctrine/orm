@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1998
@@ -47,17 +48,17 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1998Entity
 {
     /**
-     * @Id @Column(type="ddc1998")
+     * @ORM\Id @ORM\Column(type="ddc1998")
      */
     public $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $num = 0;
 }

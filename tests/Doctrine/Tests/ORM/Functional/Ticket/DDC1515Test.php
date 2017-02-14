@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1515
@@ -37,28 +38,28 @@ class DDC1515Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1515Foo
 {
     /**
-     * @OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @Id
+     * @ORM\OneToOne(targetEntity="DDC1515Bar", inversedBy="foo") @ORM\Id
      */
     public $bar;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1515Bar
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
+     * @ORM\OneToOne(targetEntity="DDC1515Foo", mappedBy="bar")
      */
     public $foo;
 }

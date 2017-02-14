@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
@@ -54,25 +56,25 @@ class DDC809Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table(name="variant_test")
- * @Entity
+ * @ORM\Table(name="variant_test")
+ * @ORM\Entity
  */
 class DDC809Variant
 {
     /**
-     * @Column(name="variant_id", type="integer")
-     * @Id
+     * @ORM\Column(name="variant_id", type="integer")
+     * @ORM\Id
      */
     protected $variantId;
 
     /**
-     * @ManyToMany(targetEntity="DDC809SpecificationValue", inversedBy="Variants")
-     * @JoinTable(name="var_spec_value_test",
+     * @ORM\ManyToMany(targetEntity="DDC809SpecificationValue", inversedBy="Variants")
+     * @ORM\JoinTable(name="var_spec_value_test",
      *   joinColumns={
-     *     @JoinColumn(name="variant_id", referencedColumnName="variant_id")
+     *     @ORM\JoinColumn(name="variant_id", referencedColumnName="variant_id")
      *   },
      *   inverseJoinColumns={
-     *     @JoinColumn(name="specification_value_id", referencedColumnName="specification_value_id")
+     *     @ORM\JoinColumn(name="specification_value_id", referencedColumnName="specification_value_id")
      *   }
      * )
      */
@@ -85,21 +87,21 @@ class DDC809Variant
 }
 
 /**
- * @Table(name="specification_value_test")
- * @Entity
+ * @ORM\Table(name="specification_value_test")
+ * @ORM\Entity
  */
 class DDC809SpecificationValue
 {
     /**
-     * @Column(name="specification_value_id", type="integer")
-     * @Id
+     * @ORM\Column(name="specification_value_id", type="integer")
+     * @ORM\Id
      */
     protected $specificationValueId;
 
     /**
-     * @var Variant
+     * @var DDC809Variant
      *
-     * @ManyToMany(targetEntity="DDC809Variant", mappedBy="SpecificationValues")
+     * @ORM\ManyToMany(targetEntity="DDC809Variant", mappedBy="SpecificationValues")
      */
     protected $Variants;
 }

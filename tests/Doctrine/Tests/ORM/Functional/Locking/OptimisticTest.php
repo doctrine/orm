@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use DateTime;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -264,62 +265,62 @@ class OptimisticTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="optimistic_joined_parent")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"parent" = "OptimisticJoinedParent", "child" = "OptimisticJoinedChild"})
+ * @ORM\Entity
+ * @ORM\Table(name="optimistic_joined_parent")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"parent" = "OptimisticJoinedParent", "child" = "OptimisticJoinedChild"})
  */
 class OptimisticJoinedParent
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @ORM\Version @ORM\Column(type="integer")
      */
     public $version;
 }
 
 /**
- * @Entity
- * @Table(name="optimistic_joined_child")
+ * @ORM\Entity
+ * @ORM\Table(name="optimistic_joined_child")
  */
 class OptimisticJoinedChild extends OptimisticJoinedParent
 {
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $whatever;
 }
 
 /**
- * @Entity
- * @Table(name="optimistic_standard")
+ * @ORM\Entity
+ * @ORM\Table(name="optimistic_standard")
  */
 class OptimisticStandard
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="integer")
+     * @ORM\Version @ORM\Column(type="integer")
      */
     private $version;
 
@@ -330,24 +331,24 @@ class OptimisticStandard
 }
 
 /**
- * @Entity
- * @Table(name="optimistic_timestamp")
+ * @ORM\Entity
+ * @ORM\Table(name="optimistic_timestamp")
  */
 class OptimisticTimestamp
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $name;
 
     /**
-     * @Version @Column(type="datetime")
+     * @ORM\Version @ORM\Column(type="datetime")
      */
     public $version;
 }

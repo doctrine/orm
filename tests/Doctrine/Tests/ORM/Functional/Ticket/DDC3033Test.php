@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
 /**
@@ -52,8 +53,8 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Table
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC3033Product
 {
@@ -62,25 +63,25 @@ class DDC3033Product
     /**
      * @var int $id
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
      * @var string $title
      *
-     * @Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      */
     public $title;
 
     /**
-     * @ManyToMany(targetEntity="DDC3033User")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="DDC3033User")
+     * @ORM\JoinTable(
      *   name="user_purchases_3033",
-     *   joinColumns={@JoinColumn(name="product_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")}
+     *   joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")}
      * )
      */
     public $buyers;
@@ -94,14 +95,14 @@ class DDC3033Product
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
     public function preUpdate(LifecycleEventArgs $eventArgs)
     {
     }
 
     /**
-     * @PostUpdate
+     * @ORM\PostUpdate
      */
     public function postUpdate(LifecycleEventArgs $eventArgs)
     {
@@ -116,24 +117,24 @@ class DDC3033Product
 }
 
 /**
- * @Table
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Table
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC3033User
 {
     /**
      * @var int
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
      * @var string
      *
-     * @Column(name="title", type="string", length=255)
+     * @ORM\Column(name="title", type="string", length=255)
      */
     public $name;
 }

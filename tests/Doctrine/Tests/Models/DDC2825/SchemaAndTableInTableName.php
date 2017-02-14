@@ -3,24 +3,25 @@
 namespace Doctrine\Tests\Models\DDC2825;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
  * Quoted column name to check that sequence names are
  * correctly handled
  *
- * @Entity
- * @Table(name="implicit_table", schema="implicit_schema")
+ * @ORM\Entity
+ * @ORM\Table(name="implicit_table", schema="implicit_schema")
  */
 class SchemaAndTableInTableName
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $tableMetadata = new Mapping\TableMetadata();
 

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
@@ -59,13 +60,13 @@ class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="seq_identity") */
+/** @ORM\Entity @ORM\Table(name="seq_identity") */
 class SequenceEmulatedIdentityEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="IDENTITY") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="IDENTITY") */
     private $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $value;
 
     public function getId()

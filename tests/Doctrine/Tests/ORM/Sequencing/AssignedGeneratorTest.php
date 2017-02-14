@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Sequencing;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
@@ -55,16 +56,16 @@ class AssignedGeneratorTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class AssignedSingleIdEntity {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $myId;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class AssignedCompositeIdEntity {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $myId1;
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $myId2;
 }

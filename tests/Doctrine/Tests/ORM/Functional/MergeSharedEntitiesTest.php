@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -96,27 +97,27 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MSEPicture
 {
-    /** @Column(type="integer") @Id @GeneratedValue */
+    /** @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /** @ORM\ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
     public $file;
 
-    /** @ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
+    /** @ORM\ManyToOne(targetEntity="MSEFile", cascade={"merge"}) */
     public $otherFile;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MSEFile
 {
-    /** @Column(type="integer") @Id @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class MSEUser
 {
     private $session; // intentionally transient property
@@ -132,9 +133,9 @@ abstract class MSEUser
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MSEAdmin extends MSEUser
 {
-    /** @Column(type="integer") @Id @GeneratedValue(strategy="NONE") */
+    /** @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue(strategy="NONE") */
     public $id;
 }

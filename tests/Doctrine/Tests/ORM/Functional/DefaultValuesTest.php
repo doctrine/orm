@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -88,25 +89,25 @@ class DefaultValuesTest extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="defaultvalueuser")
+ * @ORM\Entity @ORM\Table(name="defaultvalueuser")
  */
 class DefaultValueUser
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name = '';
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $type = 'Poweruser';
     /**
-     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
      */
     public $address;
 
@@ -116,28 +117,28 @@ class DefaultValueUser
 /**
  * CmsAddress
  *
- * @Entity @Table(name="defaultvalueaddresses")
+ * @ORM\Entity @ORM\Table(name="defaultvalueaddresses")
  */
 class DefaultValueAddress
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $country;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $zip;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $city;
 
@@ -147,8 +148,8 @@ class DefaultValueAddress
     public $street;
 
     /**
-     * @OneToOne(targetEntity="DefaultValueUser")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DefaultValueUser")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

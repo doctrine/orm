@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -45,41 +46,41 @@ class DDC3223Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="ddc3223_journalist") */
+/** @ORM\Entity @ORM\Table(name="ddc3223_journalist") */
 class Journalist extends Participant
 {
 }
 
 /**
- * @Entity @Table(name="ddc3223_participant")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity @ORM\Table(name="ddc3223_participant")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *     "journalist"  = "Journalist",
  *     "participant" = "Participant",
  * })
  */
 class Participant
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="ProfileStatus") */
+    /** @ORM\ManyToOne(targetEntity="ProfileStatus") */
     public $profileStatus;
 }
 
 /**
- * @Entity @Table(name="ddc3223_status")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity @ORM\Table(name="ddc3223_status")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *     "profile" = "ProfileStatus",
  *     "status"  = "Status",
  * })
  */
 class Status
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     private $id;
 
     public function getId()
@@ -89,7 +90,7 @@ class Status
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class ProfileStatus extends Status
 {

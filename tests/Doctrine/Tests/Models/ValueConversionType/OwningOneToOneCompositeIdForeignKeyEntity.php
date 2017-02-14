@@ -2,28 +2,30 @@
 
 namespace Doctrine\Tests\Models\ValueConversionType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(
+ * @ORM\Entity
+ * @ORM\Table(
  *     name="vct_owning_onetoone_compositeid_foreignkey",
  *     uniqueConstraints={
- *         @UniqueConstraint(name="associated_entity_uniq", columns={"associated_id", "associated_foreign_id"})
+ *         @ORM\UniqueConstraint(name="associated_entity_uniq", columns={"associated_id", "associated_foreign_id"})
  *     }
  * )
  */
 class OwningOneToOneCompositeIdForeignKeyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @OneToOne(targetEntity="InversedOneToOneCompositeIdForeignKeyEntity", inversedBy="associatedEntity")
-     * @JoinColumns({
-     *     @JoinColumn(name="associated_id", referencedColumnName="id1"),
-     *     @JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
+     * @ORM\OneToOne(targetEntity="InversedOneToOneCompositeIdForeignKeyEntity", inversedBy="associatedEntity")
+     * @ORM\JoinColumns({
+     *     @ORM\JoinColumn(name="associated_id", referencedColumnName="id1"),
+     *     @ORM\JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
      * })
      */
     public $associatedEntity;

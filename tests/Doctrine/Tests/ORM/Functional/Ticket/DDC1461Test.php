@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1461
  */
@@ -44,40 +46,40 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\Entity
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC1461User
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
+     * @ORM\OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
      * @var TwitterAccount
      */
     public $twitterAccount;
 }
 
 /**
- * @Entity
- * @ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\Entity
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class DDC1461TwitterAccount
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1461User", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity="DDC1461User", fetch="EAGER")
      */
     public $user;
 }

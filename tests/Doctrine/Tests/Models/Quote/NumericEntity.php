@@ -2,21 +2,23 @@
 
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="table")
+ * @ORM\Entity
+ * @ORM\Table(name="table")
  */
 class NumericEntity
 {
     /**
-     * @Id
-     * @Column(type="integer", name="1:1")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="1:1")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="2:2")
+     * @ORM\Column(type="string", name="2:2")
      */
     public $value;
 
@@ -27,5 +29,4 @@ class NumericEntity
     {
         $this->value = $value;
     }
-
 }

@@ -1,41 +1,44 @@
 <?php
+
 namespace Doctrine\Tests\Models\Pagination;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Logo
  *
  * @package Doctrine\Tests\Models\Pagination
+ * @author Bill Schaller
  *
- * @Author Bill Schaller
- * @Entity
- * @Table(name="pagination_logo")
+ * @ORM\Entity
+ * @ORM\Table(name="pagination_logo")
  */
 class Logo
 {
     /**
-     * @Column(type="integer") @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer") @ORM\Id
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $image;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $image_height;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $image_width;
 
     /**
-     * @OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
-     * @JoinColumn(name="company_id")
+     * @ORM\OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
+     * @ORM\JoinColumn(name="company_id")
      */
     public $company;
 }

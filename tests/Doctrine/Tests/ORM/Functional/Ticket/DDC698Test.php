@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -35,27 +37,27 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  *
- * @Table(name="Roles")
- * @Entity
+ * @ORM\Table(name="Roles")
+ * @ORM\Entity
  */
 class DDC698Role
 {
 	/**
-	 *  @Id @Column(name="roleID", type="integer")
-	 *  @GeneratedValue(strategy="AUTO")
+	 *  @ORM\Id @ORM\Column(name="roleID", type="integer")
+	 *  @ORM\GeneratedValue(strategy="AUTO")
 	 *
 	 */
 	protected $roleID;
 
 	/**
-	 * @Column(name="name", type="string", length=45)
+	 * @ORM\Column(name="name", type="string", length=45)
 	 *
 	 *
 	 */
 	protected $name;
 
 	/**
-	 * @Column(name="shortName", type="string", length=45)
+	 * @ORM\Column(name="shortName", type="string", length=45)
 	 *
 	 *
 	 */
@@ -64,10 +66,10 @@ class DDC698Role
 
 
 	/**
-	 * @ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
-	 * @JoinTable(name="RolePrivileges",
-	 *     joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-	 *     inverseJoinColumns={@JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
+	 * @ORM\ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
+	 * @ORM\JoinTable(name="RolePrivileges",
+	 *     joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
+	 *     inverseJoinColumns={@ORM\JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
 	 * )
 	 */
 	protected $privilege;
@@ -77,27 +79,27 @@ class DDC698Role
 
 /**
  *
- * @Table(name="Privileges")
- * @Entity()
+ * @ORM\Table(name="Privileges")
+ * @ORM\Entity()
  */
 class DDC698Privilege
 {
 	/**
-	 *  @Id  @Column(name="privilegeID", type="integer")
-	 *  @GeneratedValue(strategy="AUTO")
+	 *  @ORM\Id  @ORM\Column(name="privilegeID", type="integer")
+	 *  @ORM\GeneratedValue(strategy="AUTO")
 	 *
 	 */
 	protected $privilegeID;
 
 	/**
-	 * @Column(name="name", type="string", length=45)
+	 * @ORM\Column(name="name", type="string", length=45)
 	 *
 	 *
 	 */
 	protected $name;
 
 	/**
-     * @ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+     * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
      */
 	protected $roles;
 }

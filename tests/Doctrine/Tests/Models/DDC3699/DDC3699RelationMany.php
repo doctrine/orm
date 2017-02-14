@@ -2,15 +2,17 @@
 
 namespace Doctrine\Tests\Models\DDC3699;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="ddc3699_relation_many")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc3699_relation_many")
  */
 class DDC3699RelationMany
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC3699Child", inversedBy="relations") */
+    /** @ORM\ManyToOne(targetEntity="DDC3699Child", inversedBy="relations") */
     public $child;
 }

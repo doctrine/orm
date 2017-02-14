@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\Generic;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="date_time_model")
+ * @ORM\Entity
+ * @ORM\Table(name="date_time_model")
  */
 class DateTimeModel
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(name="col_datetime", type="datetime", nullable=true)
+     * @ORM\Column(name="col_datetime", type="datetime", nullable=true)
      */
     public $datetime;
     /**
-     * @Column(name="col_date", type="date", nullable=true)
+     * @ORM\Column(name="col_date", type="date", nullable=true)
      */
     public $date;
     /**
-     * @Column(name="col_time", type="time", nullable=true)
+     * @ORM\Column(name="col_time", type="time", nullable=true)
      */
     public $time;
 }

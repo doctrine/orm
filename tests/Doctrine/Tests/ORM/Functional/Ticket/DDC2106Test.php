@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2106
@@ -40,22 +41,22 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2106Entity
 {
     /**
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(type="integer")
      */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2106Entity", inversedBy="children") */
+    /** @ORM\ManyToOne(targetEntity="DDC2106Entity", inversedBy="children") */
     public $parent;
 
     /**
-     * @OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="DDC2106Entity", mappedBy="parent", cascade={"persist"})
      */
     public $children;
 

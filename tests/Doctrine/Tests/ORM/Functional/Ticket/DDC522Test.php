@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -93,44 +94,62 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class DDC522Customer
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     */
     public $id;
 
-    /** @Column */
+    /** @ORM\Column */
     public $name;
 
-    /** @OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
+    /** @ORM\OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
     public $cart;
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class DDC522Cart
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     */
     public $id;
 
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $total;
 
     /**
-     * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
-     * @JoinColumn(name="customer", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
+     * @ORM\JoinColumn(name="customer", referencedColumnName="id")
      */
     public $customer;
 }
 
-/** @Entity */
+/**
+ * @ORM\Entity
+ */
 class DDC522ForeignKeyTest
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC522Cart")
-     * @JoinColumn(name="cart_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC522Cart")
+     * @ORM\JoinColumn(name="cart_id", referencedColumnName="id")
      */
     public $cart;
 }

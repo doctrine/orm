@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2252
@@ -102,15 +103,15 @@ class DDC2252Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity()
- * @Table(name="ddc2252_acl_privilege")
+ * @ORM\Entity()
+ * @ORM\Table(name="ddc2252_acl_privilege")
  */
 class DDC2252Privilege
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $privilegeid;
 
@@ -121,14 +122,14 @@ class DDC2252Privilege
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_mch_account")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_mch_account")
  */
 class DDC2252MerchantAccount
 {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     protected $accountid = 111;
 
@@ -139,19 +140,19 @@ class DDC2252MerchantAccount
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_user_account")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_user_account")
  */
 class DDC2252User {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     protected $uid = 222;
 
     /**
-     * @OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @ORM\OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $memberships;
 
@@ -177,35 +178,35 @@ class DDC2252User {
 }
 
 /**
- * @Entity
- * @Table(name="ddc2252_mch_account_member")
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2252_mch_account_member")
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC2252Membership
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
-     * @JoinColumn(name="uid", referencedColumnName="uid")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
+     * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $userAccount;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2252MerchantAccount")
-     * @JoinColumn(name="mch_accountid", referencedColumnName="accountid")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC2252MerchantAccount")
+     * @ORM\JoinColumn(name="mch_accountid", referencedColumnName="accountid")
      */
     protected $merchantAccount;
 
     /**
-     * @ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
-     * @JoinTable(name="ddc2252_user_mch_account_privilege",
+     * @ORM\ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
+     * @ORM\JoinTable(name="ddc2252_user_mch_account_privilege",
      *   joinColumns={
-     *       @JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
-     *       @JoinColumn(name="uid", referencedColumnName="uid")
+     *       @ORM\JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),
+     *       @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      *   },
      *   inverseJoinColumns={
-     *       @JoinColumn(name="privilegeid", referencedColumnName="privilegeid")
+     *       @ORM\JoinColumn(name="privilegeid", referencedColumnName="privilegeid")
      *   }
      * )
      */

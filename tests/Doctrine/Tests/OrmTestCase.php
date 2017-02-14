@@ -64,7 +64,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      */
     protected function createAnnotationDriver($paths = [], $alias = null)
     {
-        if (version_compare(Version::VERSION, '3.0.0', '>=')) {
+        if (version_compare(Version::VERSION, '3.0.0-DEV', '>=')) {
             $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
         } else if (version_compare(Version::VERSION, '2.2.0-DEV', '>=')) {
             // Register the ORM Annotations in the AnnotationRegistry
@@ -125,16 +125,15 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([]));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache')
-            ], 
-            true
-        ));
+            ])
+        );
 
         if ($this->isSecondLevelCacheEnabled) {
 

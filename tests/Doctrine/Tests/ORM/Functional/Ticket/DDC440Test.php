@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
@@ -25,8 +27,6 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOriginalEntityDataEmptyWhenProxyLoadedFromTwoAssociations()
     {
-
-
         /* The key of the problem is that the first phone is fetched via two association, main_phone and phones.
          *
          * You will notice that the original_entity_datas are not loaded for the first phone. (They are for the second)
@@ -81,27 +81,27 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="phone")
+ * @ORM\Entity
+ * @ORM\Table(name="phone")
  */
 class DDC440Phone
 {
 
     /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
-     * @ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
-     * @JoinColumns({
-     *   @JoinColumn(name="client_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      * })
      */
     protected $client;
     /**
-     * @Column(name="phonenumber", type="string")
+     * @ORM\Column(name="phonenumber", type="string")
      */
     protected $number;
 
@@ -141,32 +141,32 @@ class DDC440Phone
 }
 
 /**
- * @Entity
- * @Table(name="client")
+ * @ORM\Entity
+ * @ORM\Table(name="client")
  */
 class DDC440Client
 {
 
     /**
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
-     * @OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
-     * @JoinColumns({
-     *   @JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
+     * @ORM\OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
      * })
      */
     protected $main_phone;
     /**
-     * @OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
-     * @OrderBy({"number"="ASC"})
+     * @ORM\OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
+     * @ORM\OrderBy({"number"="ASC"})
      */
     protected $phones;
     /**
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     protected $name;
 

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
@@ -342,27 +343,27 @@ DQL;
     }
 }
 
-/** @Entity @HasLifecycleCallbacks */
+/** @ORM\Entity @ORM\HasLifecycleCallbacks */
 class LifecycleCallbackTestUser {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $value;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $name;
     public function getId() {return $this->id;}
     public function getValue() {return $this->value;}
     public function setValue($value) {$this->value = $value;}
     public function getName() {return $this->name;}
     public function setName($name) {$this->name = $name;}
-    /** @PreUpdate */
+    /** @ORM\PreUpdate */
     public function testCallback() {$this->value = 'Hello World';}
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
- * @Table(name="lc_cb_test_entity")
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="lc_cb_test_entity")
  */
 class LifecycleCallbackTestEntity
 {
@@ -374,18 +375,18 @@ class LifecycleCallbackTestEntity
     public $preFlushCallbackInvoked = false;
 
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
-     * @Column(type="string", nullable=true)
+     * @ORM\Column(type="string", nullable=true)
      */
     public $value;
 
     /**
-     * @ManyToOne(targetEntity="LifecycleCallbackCascader")
-     * @JoinColumn(name="cascader_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="LifecycleCallbackCascader")
+     * @ORM\JoinColumn(name="cascader_id", referencedColumnName="id")
      */
     public $cascader;
 
@@ -397,36 +398,36 @@ class LifecycleCallbackTestEntity
         return $this->value;
     }
 
-    /** @PrePersist */
+    /** @ORM\PrePersist */
     public function doStuffOnPrePersist() {
         $this->prePersistCallbackInvoked = true;
     }
 
-    /** @PostPersist */
+    /** @ORM\PostPersist */
     public function doStuffOnPostPersist() {
         $this->postPersistCallbackInvoked = true;
     }
 
-    /** @PostLoad */
+    /** @ORM\PostLoad */
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadCascaderNotNull = isset($this->cascader);
     }
 
-    /** @PreUpdate */
+    /** @ORM\PreUpdate */
     public function doStuffOnPreUpdate() {
         $this->value = 'changed from preUpdate callback!';
     }
 
-    /** @PreFlush */
+    /** @ORM\PreFlush */
     public function doStuffOnPreFlush() {
         $this->preFlushCallbackInvoked = true;
     }
 }
 
 /**
- * @Entity @HasLifecycleCallbacks
- * @Table(name="lc_cb_test_cascade")
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
+ * @ORM\Table(name="lc_cb_test_cascade")
  */
 class LifecycleCallbackCascader
 {
@@ -435,13 +436,13 @@ class LifecycleCallbackCascader
     public $postLoadEntitiesCount = 0;
 
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
      */
     public $entities;
 
@@ -450,24 +451,24 @@ class LifecycleCallbackCascader
         $this->entities = new ArrayCollection();
     }
 
-    /** @PostLoad */
+    /** @ORM\PostLoad */
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
     }
 }
 
-/** @MappedSuperclass @HasLifecycleCallbacks */
+/** @ORM\MappedSuperclass @ORM\HasLifecycleCallbacks */
 class LifecycleCallbackParentEntity {
-    /** @PrePersist */
+    /** @ORM\PrePersist */
     function doStuff() {
 
     }
 }
 
-/** @Entity @Table(name="lc_cb_childentity") */
+/** @ORM\Entity @ORM\Table(name="lc_cb_childentity") */
 class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 }
 
@@ -479,19 +480,19 @@ class LifecycleListenerPreUpdate
     }
 }
 
-/** @Entity @HasLifecycleCallbacks */
+/** @ORM\Entity @ORM\HasLifecycleCallbacks */
 class LifecycleCallbackEventArgEntity
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @Column() */
+    /** @ORM\Column() */
     public $value;
 
     public $calls = [];
 
     /**
-     * @PostPersist
+     * @ORM\PostPersist
      */
     public function postPersistHandler(LifecycleEventArgs $event)
     {
@@ -499,7 +500,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function prePersistHandler(LifecycleEventArgs $event)
     {
@@ -507,7 +508,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PostUpdate
+     * @ORM\PostUpdate
      */
     public function postUpdateHandler(LifecycleEventArgs $event)
     {
@@ -515,7 +516,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
     public function preUpdateHandler(PreUpdateEventArgs $event)
     {
@@ -523,7 +524,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PostRemove
+     * @ORM\PostRemove
      */
     public function postRemoveHandler(LifecycleEventArgs $event)
     {
@@ -531,7 +532,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PreRemove
+     * @ORM\PreRemove
      */
     public function preRemoveHandler(LifecycleEventArgs $event)
     {
@@ -539,7 +540,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PreFlush
+     * @ORM\PreFlush
      */
     public function preFlushHandler(PreFlushEventArgs $event)
     {
@@ -547,7 +548,7 @@ class LifecycleCallbackEventArgEntity
     }
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function postLoadHandler(LifecycleEventArgs $event)
     {

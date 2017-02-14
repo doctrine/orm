@@ -18,10 +18,12 @@ final class EntityManagerFactory
         $config->setProxyDir(__DIR__ . '/../Tests/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/GeoNames')
-        ], true));
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver([
+                realpath(__DIR__ . '/Models/Cache'),
+                realpath(__DIR__ . '/Models/GeoNames')
+            ])
+        );
 
         $entityManager = EntityManager::create(
             [

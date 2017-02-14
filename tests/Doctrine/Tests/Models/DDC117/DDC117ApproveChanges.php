@@ -2,36 +2,38 @@
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117ApproveChanges
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC117ArticleDetails")
-     * @JoinColumn(name="details_id", referencedColumnName="article_id")
+     * @ORM\ManyToOne(targetEntity="DDC117ArticleDetails")
+     * @ORM\JoinColumn(name="details_id", referencedColumnName="article_id")
      */
     private $articleDetails;
 
     /**
-     * @ManyToOne(targetEntity="DDC117Reference")
-     * @JoinColumns({
-     *  @JoinColumn(name="source_id", referencedColumnName="source_id"),
-     *  @JoinColumn(name="target_id", referencedColumnName="target_id")
+     * @ORM\ManyToOne(targetEntity="DDC117Reference")
+     * @ORM\JoinColumns({
+     *  @ORM\JoinColumn(name="source_id", referencedColumnName="source_id"),
+     *  @ORM\JoinColumn(name="target_id", referencedColumnName="target_id")
      * })
      */
     private $reference;
 
     /**
-     * @ManyToOne(targetEntity="DDC117Translation")
-     * @JoinColumns({
-     *  @JoinColumn(name="trans_article_id", referencedColumnName="article_id"),
-     *  @JoinColumn(name="trans_language", referencedColumnName="language")
+     * @ORM\ManyToOne(targetEntity="DDC117Translation")
+     * @ORM\JoinColumns({
+     *  @ORM\JoinColumn(name="trans_article_id", referencedColumnName="article_id"),
+     *  @ORM\JoinColumn(name="trans_language", referencedColumnName="language")
      * })
      */
     private $translation;

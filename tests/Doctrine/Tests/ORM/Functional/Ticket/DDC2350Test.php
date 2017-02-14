@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -49,23 +50,23 @@ class DDC2350Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2350User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
+    /** @ORM\OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
     public $reportedBugs;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2350Bug
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
+    /** @ORM\ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
     public $user;
 }

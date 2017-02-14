@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -30,19 +32,19 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC588Site
 {
     /**
-     * @Id
-     * @Column(type="integer", name="site_id")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="site_id")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="string", length=45)
+     * @ORM\Column(type="string", length=45)
      */
     protected $name = null;
 

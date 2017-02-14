@@ -3,17 +3,18 @@
 namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC869CreditCardPayment extends DDC869Payment
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     protected $creditCardNumber;
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('creditCardNumber');
 

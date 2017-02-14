@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1250
  */
@@ -43,20 +45,20 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1250ClientHistory
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
-     * @JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
+    /** @ORM\OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
+     * @ORM\JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
     public $declinedClientsHistory;
 
     /**
-     * @OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
+     * @ORM\OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
      * @var
      */
     public $declinedBy;

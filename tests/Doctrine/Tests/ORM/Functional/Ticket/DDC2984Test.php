@@ -6,6 +6,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2984
@@ -59,18 +60,18 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Table(name="users") */
+/** @ORM\Entity @ORM\Table(name="users") */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id @ORM\Column(type="ddc2984_domain_user_id")
+     * @ORM\GeneratedValue(strategy="NONE")
      *
      * @var DDC2984DomainUserId
      */
     private $userId;
 
-    /** @Column(type="string", length=50) */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -91,64 +93,64 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="DDC837Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC837Class1", "class2" = "DDC837Class2", "class3"="DDC837Class3"})
+ * @ORM\Entity
+ * @ORM\Table(name="DDC837Super")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"class1" = "DDC837Class1", "class2" = "DDC837Class2", "class3"="DDC837Class3"})
  */
 abstract class DDC837Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
     */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC837Class1 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
-     * @OneToOne(targetEntity="DDC837Aggregate")
+     * @ORM\OneToOne(targetEntity="DDC837Aggregate")
      */
     public $aggregate;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC837Class2 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
-     * @Column(name="text", type="text")
+     * @ORM\Column(name="text", type="text")
      */
     public $text;
 
     /**
-     * @OneToOne(targetEntity="DDC837Aggregate")
+     * @ORM\OneToOne(targetEntity="DDC837Aggregate")
      */
     public $aggregate;
 }
@@ -156,34 +158,34 @@ class DDC837Class2 extends DDC837Super
 /**
  * An extra class to demonstrate why title and description aren't in Super
  *
- * @Entity
+ * @ORM\Entity
  */
 class DDC837Class3 extends DDC837Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $bananas;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC837Aggregate
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(name="sysname", type="string")
+     * @ORM\Column(name="sysname", type="string")
      */
     protected $sysname;
 

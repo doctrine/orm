@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 
 class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -151,14 +152,14 @@ class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC729A
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", inversedBy="related") */
+    /** @ORM\ManyToMany(targetEntity="DDC729B", inversedBy="related") */
     public $related;
 
     public function __construct()
@@ -168,14 +169,14 @@ class DDC729A
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC729B
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC729B", mappedBy="related") */
+    /** @ORM\ManyToMany(targetEntity="DDC729B", mappedBy="related") */
     public $related;
 
     public function __construct()

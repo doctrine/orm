@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -148,8 +149,8 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="lemma")
+ * @ORM\Entity
+ * @ORM\Table(name="lemma")
  */
 class Lemma 
 {
@@ -157,21 +158,21 @@ class Lemma
 
     /**
      * @var int
-     * @Id
-     * @Column(type="integer", name="lemma_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="lemma_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="lemma_name", unique=true, length=255)
+     * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
      */
     private $lemma;
 
     /**
-     * @ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
      */
     private $types;
 
@@ -240,8 +241,8 @@ class Lemma
 }
 
 /**
- * @Entity
- * @Table(name="type")
+ * @ORM\Entity
+ * @ORM\Table(name="type")
  */
 class Type 
 {
@@ -250,32 +251,32 @@ class Type
     /**
      *
      * @var int
-     * @Id
-     * @Column(type="integer", name="type_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="type_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="type_name", unique=true)
+     * @ORM\Column(type="string", name="type_name", unique=true)
      */
     private $type;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="type_abbreviation", unique=true)
+     * @ORM\Column(type="string", name="type_abbreviation", unique=true)
      */
     private $abbreviation;
 
     /**
      * @var kateglo\application\helpers\collections\ArrayCollection
-     * @ManyToMany(targetEntity="Lemma")
-     * @JoinTable(name="lemma_type",
-     *     joinColumns={@JoinColumn(name="type_id", referencedColumnName="type_id")},
-     * 	   inverseJoinColumns={@JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
+     * @ORM\ManyToMany(targetEntity="Lemma")
+     * @ORM\JoinTable(name="lemma_type",
+     *     joinColumns={@ORM\JoinColumn(name="type_id", referencedColumnName="type_id")},
+     * 	   inverseJoinColumns={@ORM\JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
      * )
      */
     private $lemmas;
@@ -370,33 +371,33 @@ class Type
 }
 
 /**
- * @Entity
- * @Table(name="phrase")
+ * @ORM\Entity
+ * @ORM\Table(name="phrase")
  */
 class Phrase 
 {
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @Id
-     * @Column(type="integer", name="phrase_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="phrase_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column(type="string", name="phrase_name", unique=true, length=255)
+     * @ORM\Column(type="string", name="phrase_name", unique=true, length=255)
      */
     private $phrase;
 
     /**
-     * @ManyToOne(targetEntity="PhraseType")
-     * @JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
+     * @ORM\ManyToOne(targetEntity="PhraseType")
+     * @ORM\JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
     private $type;
 
     /**
-     * @OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
      */
     private $definitions;
 
@@ -471,32 +472,32 @@ class Phrase
 }
 
 /**
- * @Entity
- * @Table(name="phrase_type")
+ * @ORM\Entity
+ * @ORM\Table(name="phrase_type")
  */
 class PhraseType 
 {
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @Id
-     * @Column(type="integer", name="phrase_type_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="phrase_type_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column(type="string", name="phrase_type_name", unique=true)
+     * @ORM\Column(type="string", name="phrase_type_name", unique=true)
      */
     private $type;
 
     /**
-     * @Column(type="string", name="phrase_type_abbreviation", unique=true)
+     * @ORM\Column(type="string", name="phrase_type_abbreviation", unique=true)
      */
     private $abbreviation;
 
     /**
-     * @OneToMany(targetEntity="Phrase", mappedBy="type")
+     * @ORM\OneToMany(targetEntity="Phrase", mappedBy="type")
      */
     private $phrases;
 
@@ -568,28 +569,28 @@ class PhraseType
 }
 
 /**
- * @Entity
- * @Table(name="definition")
+ * @ORM\Entity
+ * @ORM\Table(name="definition")
  */
 class Definition
 {
     const CLASS_NAME = __CLASS__;
 
     /**
-     * @Id
-     * @Column(type="integer", name="definition_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="definition_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="Phrase")
-     * @JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
+     * @ORM\ManyToOne(targetEntity="Phrase")
+     * @ORM\JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
     private $phrase;
 
     /**
-     * @Column(type="text", name="definition_text")
+     * @ORM\Column(type="text", name="definition_text")
      */
     private $definition;
 

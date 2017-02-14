@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -97,25 +98,25 @@ class GH5762Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="driver")
+ * @ORM\Entity
+ * @ORM\Table(name="driver")
  */
 class GH5762Driver
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=255);
+     * @ORM\Column(type="string", length=255);
      */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
+     * @ORM\OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
      */
     public $driverRides;
 
@@ -128,22 +129,22 @@ class GH5762Driver
 }
 
 /**
- * @Entity
- * @Table(name="driver_ride")
+ * @ORM\Entity
+ * @ORM\Table(name="driver_ride")
  */
 class GH5762DriverRide
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
-     * @JoinColumn(name="driver_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
+     * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     public $driver;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
-     * @JoinColumn(name="car", referencedColumnName="brand")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
+     * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     public $car;
 
@@ -158,26 +159,26 @@ class GH5762DriverRide
 }
 
 /**
- * @Entity
- * @Table(name="car")
+ * @ORM\Entity
+ * @ORM\Table(name="car")
  */
 class GH5762Car
 {
 
     /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $brand;
 
     /**
-     * @Column(type="string", length=255);
+     * @ORM\Column(type="string", length=255);
      */
     public $model;
 
     /**
-     * @OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
+     * @ORM\OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
      */
     public $carRides;
 

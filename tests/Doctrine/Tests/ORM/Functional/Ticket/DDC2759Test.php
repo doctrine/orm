@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-2759
  */
@@ -65,36 +67,36 @@ class DDC2759Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_qualification") */
 class DDC2759Qualification
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
+    /** @ORM\OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
     public $metadata;
 }
 
-/** @Entity  @Table(name="ddc_2759_category") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_category") */
 class DDC2759Category
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
+    /** @ORM\OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
     public $metadataCategories;
 }
 
-/** @Entity  @Table(name="ddc_2759_qualification_metadata") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_qualification_metadata") */
 class DDC2759QualificationMetadata
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+    /** @ORM\OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
     public $content;
 
-    /** @OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
+    /** @ORM\OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
     protected $metadataCategories;
 
     public function __construct(DDC2759Qualification $content)
@@ -103,16 +105,16 @@ class DDC2759QualificationMetadata
     }
 }
 
-/** @Entity  @Table(name="ddc_2759_metadata_category") */
+/** @ORM\Entity  @ORM\Table(name="ddc_2759_metadata_category") */
 class DDC2759MetadataCategory
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
     public $metadata;
 
-    /** @ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
     public $category;
 
     public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)

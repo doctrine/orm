@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
 /**
@@ -48,17 +49,17 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DdiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *      "boss"     = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300BossInterface",
  *      "employee" = "Doctrine\Tests\ORM\Functional\Ticket\DDC3300EmployeeInterface"
  * })
  */
 abstract class DDC3300Person
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
 
@@ -66,7 +67,7 @@ interface DDC3300BossInterface
 {
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC3300Boss extends DDC3300Person implements DDC3300BossInterface
 {
 }
@@ -75,7 +76,7 @@ interface DDC3300EmployeeInterface
 {
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC3300Employee extends DDC3300Person implements DDC3300EmployeeInterface
 {
 }

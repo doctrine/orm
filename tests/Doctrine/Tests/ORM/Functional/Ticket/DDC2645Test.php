@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-2645
  */
@@ -25,16 +27,16 @@ class DDC2645Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2645Foo
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     private $id;
 
-    /** @Id @ManyToOne(targetEntity="DDC2645Bar") */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity="DDC2645Bar") */
     private $bar;
 
-    /** @Column */
+    /** @ORM\Column */
     public $name;
 
     public function __construct($id, $bar, $name)
@@ -45,9 +47,9 @@ class DDC2645Foo
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2645Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="NONE") */
     public $id;
 }
