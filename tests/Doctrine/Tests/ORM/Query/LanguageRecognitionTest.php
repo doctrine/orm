@@ -2,9 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query,
-    Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\MockTreeWalker;
 use Doctrine\Tests\OrmTestCase;
 
@@ -710,21 +711,21 @@ class LanguageRecognitionTest extends OrmTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DQLKeywordsModelUser
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    /** @ORM\OneToOne(targetEntity="DQLKeywordsModelGroup") */
     private $group;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DQLKeywordsModelGroup
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @Column */
+    /** @ORM\Column */
     private $from;
 }
 

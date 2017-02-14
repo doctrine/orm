@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1151
  */
@@ -33,24 +35,24 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="User")
+ * @ORM\Entity
+ * @ORM\Table(name="User")
  */
 class DDC1151User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToMany(targetEntity="DDC1151Group") */
+    /** @ORM\ManyToMany(targetEntity="DDC1151Group") */
     public $groups;
 }
 
 /**
- * @Entity
- * @Table(name="Group")
+ * @ORM\Entity
+ * @ORM\Table(name="Group")
  */
 class DDC1151Group
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

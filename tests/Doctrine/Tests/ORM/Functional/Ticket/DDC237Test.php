@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -65,50 +66,50 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc237_x")
+ * @ORM\Entity @ORM\Table(name="ddc237_x")
  */
 class DDC237EntityX
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $data;
     /**
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC237EntityY")
+     * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
 }
 
 
-/** @Entity @Table(name="ddc237_y") */
+/** @ORM\Entity @ORM\Table(name="ddc237_y") */
 class DDC237EntityY
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $data;
 }
 
-/** @Entity @Table(name="ddc237_z") */
+/** @ORM\Entity @ORM\Table(name="ddc237_z") */
 class DDC237EntityZ
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $data;
 
     /**
-     * @OneToOne(targetEntity="DDC237EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC237EntityY")
+     * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
 }

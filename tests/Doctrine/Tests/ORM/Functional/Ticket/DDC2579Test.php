@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2579
@@ -63,25 +64,25 @@ class DDC2579Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579Entity
 {
     /**
-     * @Id
-     * @Column(type="ddc2579")
+     * @ORM\Id
+     * @ORM\Column(type="ddc2579")
      */
     public $id;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579EntityAssoc")
-     * @JoinColumn(name="relation_id", referencedColumnName="association_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC2579EntityAssoc")
+     * @ORM\JoinColumn(name="relation_id", referencedColumnName="association_id")
      */
     public $assoc;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $value;
 
@@ -95,14 +96,14 @@ class DDC2579Entity
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579EntityAssoc
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC2579AssocAssoc")
-     * @JoinColumn(name="association_id", referencedColumnName="associationId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC2579AssocAssoc")
+     * @ORM\JoinColumn(name="association_id", referencedColumnName="associationId")
      */
     public $assocAssoc;
 
@@ -113,13 +114,13 @@ class DDC2579EntityAssoc
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2579AssocAssoc
 {
     /**
-     * @Id
-     * @Column(type="ddc2579")
+     * @ORM\Id
+     * @ORM\Column(type="ddc2579")
      */
     public $associationId;
 

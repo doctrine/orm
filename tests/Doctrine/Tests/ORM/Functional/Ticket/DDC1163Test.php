@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -90,21 +91,21 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163ProxyHolder
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
      * @var SpecialProduct
-     * @OneToOne(targetEntity="DDC1163SpecialProduct")
+     * @ORM\OneToOne(targetEntity="DDC1163SpecialProduct")
      */
     private $specialProduct;
 
@@ -126,19 +127,19 @@ class DDC1163ProxyHolder
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"special" = "DDC1163SpecialProduct"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"special" = "DDC1163SpecialProduct"})
  */
 abstract class DDC1163Product
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -150,14 +151,14 @@ abstract class DDC1163Product
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163SpecialProduct extends DDC1163Product
 {
 
     /**
      * @var string
-     * @Column(name="subclass_property", type="string", nullable=true)
+     * @ORM\Column(name="subclass_property", type="string", nullable=true)
      */
     private $subclassProperty;
 
@@ -172,28 +173,28 @@ class DDC1163SpecialProduct extends DDC1163Product
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163Tag
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     private $name;
     /**
      * @var Product
-     * @ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
-     * @JoinColumns({
-     *   @JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      * })
      */
     private $product;

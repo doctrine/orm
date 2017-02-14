@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Represents a board in a forum.
  *
  * @author robo
- * @Entity
- * @Table(name="forum_boards")
+ * @ORM\Entity
+ * @ORM\Table(name="forum_boards")
  */
 class ForumBoard
 {
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     public $id;
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $position;
     /**
-     * @ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
-     * @JoinColumn(name="category_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */
     public $category;
 }

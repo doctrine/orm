@@ -2,13 +2,15 @@
 
 namespace Doctrine\Tests\Models\DDC4006;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC4006User
 {
     /**
-     * @Embedded(class="DDC4006UserId")
+     * @ORM\Embedded(class="DDC4006UserId")
      */
     private $id;
 }

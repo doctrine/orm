@@ -101,10 +101,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $exporter = $cme->getExporter($type, __DIR__ . '/export/' . $type);
 
         if ($type === 'annotation') {
-            $entityGenerator = new EntityGenerator();
-
-            $entityGenerator->setAnnotationPrefix("");
-            $exporter->setEntityGenerator($entityGenerator);
+            $exporter->setEntityGenerator(new EntityGenerator());
         }
 
         $this->extension = $exporter->getExtension();

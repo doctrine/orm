@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1436
  */
@@ -53,19 +55,19 @@ class DDC1436Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1436Page
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="id")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="id")
      */
     protected $id;
     /**
-     * @ManyToOne(targetEntity="DDC1436Page")
-     * @JoinColumn(name="pid", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC1436Page")
+     * @ORM\JoinColumn(name="pid", referencedColumnName="id")
      */
     protected $parent;
 

@@ -2,21 +2,23 @@
 
 namespace Doctrine\Tests\Models\Generic;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="not-a-simple-entity")
+ * @ORM\Entity
+ * @ORM\Table(name="not-a-simple-entity")
  */
 class NonAlphaColumnsEntity
 {
     /**
-     * @Id
-     * @Column(type="integer", name="simple-entity-id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="simple-entity-id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="simple-entity-value")
+     * @ORM\Column(type="string", name="simple-entity-value")
      */
     public $value;
 

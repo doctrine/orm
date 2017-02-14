@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -91,15 +92,15 @@ class NotifyBaseEntity implements NotifyPropertyChanged {
     }
 }
 
-/** @Entity @ChangeTrackingPolicy("NOTIFY") */
+/** @ORM\Entity @ORM\ChangeTrackingPolicy("NOTIFY") */
 class DDC1690Parent extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
-    /** @OneToOne(targetEntity="DDC1690Child") */
+    /** @ORM\OneToOne(targetEntity="DDC1690Child") */
     private $child;
 
     function getId() {
@@ -124,15 +125,15 @@ class DDC1690Parent extends NotifyBaseEntity {
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC1690Child extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
-    /** @OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
+    /** @ORM\OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
     private $parent;
 
     function getId() {

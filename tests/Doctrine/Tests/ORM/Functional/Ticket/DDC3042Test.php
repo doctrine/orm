@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -36,39 +37,39 @@ class DDC3042Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3042Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $field;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field1;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field2;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field3;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field4;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field5;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field6;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field7;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field8;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field9;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $field10;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC3042Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $field;
 }

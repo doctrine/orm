@@ -2,14 +2,16 @@
 
 namespace Doctrine\Tests\Models\Issue5989;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="issue5989_managers")
+ * @ORM\Entity
+ * @ORM\Table(name="issue5989_managers")
  */
 class Issue5989Manager extends Issue5989Person
 {
     /**
-     * @Column(type="simple_array", nullable=true)
+     * @ORM\Column(type="simple_array", nullable=true)
      *
      * @var array
      */

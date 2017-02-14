@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1258Test extends OrmFunctionalTestCase
@@ -53,22 +54,22 @@ class DDC1258Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TestEntity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     protected $value;
     /**
-     * @OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
      */
     protected $additional;
 
@@ -93,22 +94,22 @@ class TestEntity
     }
 }
 /**
- * @Entity
+ * @ORM\Entity
  */
 class TestAdditionalEntity
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
     /**
-     * @OneToOne(targetEntity="TestEntity", mappedBy="additional")
+     * @ORM\OneToOne(targetEntity="TestEntity", mappedBy="additional")
      */
     protected $entity;
     /**
-     * @Column(type="boolean")
+     * @ORM\Column(type="boolean")
      */
     protected $bool;
 

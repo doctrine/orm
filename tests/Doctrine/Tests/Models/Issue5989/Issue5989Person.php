@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\Models\Issue5989;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="issue5989_persons")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\Table(name="issue5989_persons")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *      "person"    = "Issue5989Person",
  *      "manager"   = "Issue5989Manager",
  *      "employee"  = "Issue5989Employee"
@@ -16,9 +18,9 @@ namespace Doctrine\Tests\Models\Issue5989;
 class Issue5989Person
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 }

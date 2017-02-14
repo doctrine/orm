@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
@@ -98,19 +99,19 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentCollectionHolder extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     protected $id;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     * @ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
      */
     protected $collection;
 
@@ -145,12 +146,12 @@ class PersistentCollectionHolder extends PersistentObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentCollectionContent extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     protected $id;

@@ -2,42 +2,43 @@
 
 namespace Doctrine\Tests\Models\GeoNames;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="geonames_city")
- * @Cache
+ * @ORM\Entity
+ * @ORM\Table(name="geonames_city")
+ * @ORM\Cache
  */
 class City
 {
     /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="Country")
-     * @JoinColumn(name="country", referencedColumnName="id")
-     * @Cache
+     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\JoinColumn(name="country", referencedColumnName="id")
+     * @ORM\Cache
      */
     public $country;
 
     /**
-     * @ManyToOne(targetEntity="Admin1")
-     * @JoinColumns({
-     *   @JoinColumn(name="admin1", referencedColumnName="id"),
-     *   @JoinColumn(name="country", referencedColumnName="country")
+     * @ORM\ManyToOne(targetEntity="Admin1")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="admin1", referencedColumnName="id"),
+     *   @ORM\JoinColumn(name="country", referencedColumnName="country")
      * })
-     * @Cache
+     * @ORM\Cache
      */
     public $admin1;
 
     /**
-     * @Column(type="string", length=255);
+     * @ORM\Column(type="string", length=255)
      */
     public $name;
-
 
     public function __construct($id, $name)
     {

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2346
@@ -67,16 +68,16 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2346Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
      * @var DDC2346Bar[]|\Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC2346Bar", mappedBy="foo")
+     * @ORM\OneToMany(targetEntity="DDC2346Bar", mappedBy="foo")
      */
     public $bars;
 
@@ -87,23 +88,23 @@ class DDC2346Foo
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
  */
 class DDC2346Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */
     public $foo;
 }
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2346Baz extends DDC2346Bar
 {

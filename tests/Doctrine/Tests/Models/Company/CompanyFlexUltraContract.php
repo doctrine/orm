@@ -3,17 +3,17 @@
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
- * @EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
+ * @ORM\Entity
+ * @ORM\EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
  */
 class CompanyFlexUltraContract extends CompanyFlexContract
 {
     /**
-     * @column(type="integer")
-     * @var int
+     * @ORM\Column(type="integer")
      */
     private $maxPrice = 0;
 
@@ -32,7 +32,7 @@ class CompanyFlexUltraContract extends CompanyFlexContract
         $this->maxPrice = $maxPrice;
     }
 
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    static public function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $fieldMetadata = new Mapping\FieldMetadata('maxPrice');
         $fieldMetadata->setType(Type::getType('integer'));

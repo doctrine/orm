@@ -2,19 +2,21 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="cms_phonenumbers")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_phonenumbers")
  */
 class CmsPhonenumber
 {
     /**
-     * @Id @Column(length=50)
+     * @ORM\Id @ORM\Column(length=50)
      */
     public $phonenumber;
     /**
-     * @ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers", cascade={"merge"})
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers", cascade={"merge"})
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 

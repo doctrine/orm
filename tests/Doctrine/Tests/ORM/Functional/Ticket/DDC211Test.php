@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC211Test extends OrmFunctionalTestCase
@@ -49,28 +50,28 @@ class DDC211Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity
- * @Table(name="ddc211_users")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc211_users")
 */
 class DDC211User
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     protected $name;
 
     /**
-    * @ManyToMany(targetEntity="DDC211Group", inversedBy="users")
-    *   @JoinTable(name="user_groups",
-    *       joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-    *       inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+    * @ORM\ManyToMany(targetEntity="DDC211Group", inversedBy="users")
+    *   @ORM\JoinTable(name="user_groups",
+    *       joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+    *       inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
     *   )
     */
     protected $groups;
@@ -85,25 +86,25 @@ class DDC211User
 }
 
 /**
- * @Entity
- * @Table(name="ddc211_groups")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc211_groups")
  */
 class DDC211Group
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     protected $name;
 
     /**
-    * @ManyToMany(targetEntity="DDC211User", mappedBy="groups")
+    * @ORM\ManyToMany(targetEntity="DDC211User", mappedBy="groups")
     */
     protected $users;
 

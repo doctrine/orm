@@ -2,24 +2,26 @@
 
 namespace Doctrine\Tests\Models\ECommerce;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * ECommerceShipping
  * Represents a shipping method.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_shippings")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_shippings")
  */
 class ECommerceShipping
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     private $days;
 

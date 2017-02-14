@@ -3,22 +3,21 @@
 namespace Doctrine\Tests\Models\DDC2504;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2504OtherClass
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @var \Doctrine\Tests\Models\DDC2504\DDC2504ChildClass
-     *
-     * @OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
      *
      * @var ArrayCollection|\Doctrine\ORM\PersistentCollection
      */

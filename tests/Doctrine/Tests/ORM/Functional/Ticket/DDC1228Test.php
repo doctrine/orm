@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1228
  * @group DDC-1226
@@ -76,24 +78,24 @@ class DDC1228Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1228User
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     public $name = 'Bar';
 
     /**
-     * @OneToOne(targetEntity="DDC1228Profile")
+     * @ORM\OneToOne(targetEntity="DDC1228Profile")
      * @var Profile
      */
     public $profile;
@@ -105,18 +107,18 @@ class DDC1228User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1228Profile
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     public $name;

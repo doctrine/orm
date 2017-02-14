@@ -2,20 +2,22 @@
 
 namespace Doctrine\Tests\Models\DDC753;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity(repositoryClass = "Doctrine\Tests\Models\DDC753\DDC753CustomRepository")
+ * @ORM\Entity(repositoryClass = "Doctrine\Tests\Models\DDC753\DDC753CustomRepository")
  */
 class DDC753EntityWithCustomRepository
 {
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     protected $name;
 
 }

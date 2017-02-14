@@ -2,31 +2,33 @@
 
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="navigation_tours")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_tours")
  */
 class NavTour
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 
     /**
-     * @ManyToMany(targetEntity="NavPointOfInterest")
-     * @JoinTable(name="navigation_tour_pois",
-     *      joinColumns={@JoinColumn(name="tour_id", referencedColumnName="id")},
+     * @ORM\ManyToMany(targetEntity="NavPointOfInterest")
+     * @ORM\JoinTable(name="navigation_tour_pois",
+     *      joinColumns={@ORM\JoinColumn(name="tour_id", referencedColumnName="id")},
      *      inverseJoinColumns={
-     *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
      *      }
      * )
      *

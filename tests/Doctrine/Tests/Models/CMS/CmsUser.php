@@ -3,118 +3,119 @@
 namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
- * @Table(name="cms_users")
- * @NamedQueries({
- *     @NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_users")
+ * @ORM\NamedQueries({
+ *     @ORM\NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
  * })
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name           = "fetchIdAndUsernameWithResultClass",
  *          resultClass    = "CmsUser",
  *          query          = "SELECT id, username FROM cms_users WHERE username = ?"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name           = "fetchAllColumns",
  *          resultClass    = "CmsUser",
  *          query          = "SELECT * FROM cms_users WHERE username = ?"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "fetchJoinedAddress",
  *          resultSetMapping= "mappingJoinedAddress",
  *          query           = "SELECT u.id, u.name, u.status, a.id AS a_id, a.country, a.zip, a.city FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id WHERE u.username = ?"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "fetchJoinedPhonenumber",
  *          resultSetMapping= "mappingJoinedPhonenumber",
  *          query           = "SELECT id, name, status, phonenumber AS number FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username = ?"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "fetchUserPhonenumberCount",
  *          resultSetMapping= "mappingUserPhonenumberCount",
  *          query           = "SELECT id, name, status, COUNT(phonenumber) AS numphones FROM cms_users INNER JOIN cms_phonenumbers ON id = user_id WHERE username IN (?) GROUP BY id, name, status, username ORDER BY username"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name            = "fetchMultipleJoinsEntityResults",
  *          resultSetMapping= "mappingMultipleJoinsEntityResults",
  *          query           = "SELECT u.id AS u_id, u.name AS u_name, u.status AS u_status, a.id AS a_id, a.zip AS a_zip, a.country AS a_country, COUNT(p.phonenumber) AS numphones FROM cms_users u INNER JOIN cms_addresses a ON u.id = a.user_id INNER JOIN cms_phonenumbers p ON u.id = p.user_id GROUP BY u.id, u.name, u.status, u.username, a.id, a.zip, a.country ORDER BY u.username"
  *      ),
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mappingJoinedAddress",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "__CLASS__",
  *                  fields      = {
- *                      @FieldResult(name = "id"),
- *                      @FieldResult(name = "name"),
- *                      @FieldResult(name = "status"),
- *                      @FieldResult(name = "address.zip"),
- *                      @FieldResult(name = "address.city"),
- *                      @FieldResult(name = "address.country"),
- *                      @FieldResult(name = "address.id", column = "a_id"),
+ *                      @ORM\FieldResult(name = "id"),
+ *                      @ORM\FieldResult(name = "name"),
+ *                      @ORM\FieldResult(name = "status"),
+ *                      @ORM\FieldResult(name = "address.zip"),
+ *                      @ORM\FieldResult(name = "address.city"),
+ *                      @ORM\FieldResult(name = "address.country"),
+ *                      @ORM\FieldResult(name = "address.id", column = "a_id"),
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mappingJoinedPhonenumber",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "CmsUser",
  *                  fields      = {
- *                      @FieldResult("id"),
- *                      @FieldResult("name"),
- *                      @FieldResult("status"),
- *                      @FieldResult("phonenumbers.phonenumber" , column = "number"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("name"),
+ *                      @ORM\FieldResult("status"),
+ *                      @ORM\FieldResult("phonenumbers.phonenumber" , column = "number"),
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mappingUserPhonenumberCount",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "CmsUser",
  *                  fields      = {
- *                      @FieldResult(name = "id"),
- *                      @FieldResult(name = "name"),
- *                      @FieldResult(name = "status"),
+ *                      @ORM\FieldResult(name = "id"),
+ *                      @ORM\FieldResult(name = "name"),
+ *                      @ORM\FieldResult(name = "status"),
  *                  }
  *              )
  *          },
  *          columns = {
- *              @ColumnResult("numphones")
+ *              @ORM\ColumnResult("numphones")
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mappingMultipleJoinsEntityResults",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "__CLASS__",
  *                  fields      = {
- *                      @FieldResult(name = "id",       column="u_id"),
- *                      @FieldResult(name = "name",     column="u_name"),
- *                      @FieldResult(name = "status",   column="u_status"),
+ *                      @ORM\FieldResult(name = "id",       column="u_id"),
+ *                      @ORM\FieldResult(name = "name",     column="u_name"),
+ *                      @ORM\FieldResult(name = "status",   column="u_status"),
  *                  }
  *              ),
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass = "CmsAddress",
  *                  fields      = {
- *                      @FieldResult(name = "id",       column="a_id"),
- *                      @FieldResult(name = "zip",      column="a_zip"),
- *                      @FieldResult(name = "country",  column="a_country"),
+ *                      @ORM\FieldResult(name = "id",       column="a_id"),
+ *                      @ORM\FieldResult(name = "zip",      column="a_zip"),
+ *                      @ORM\FieldResult(name = "country",  column="a_country"),
  *                  }
  *              )
  *          },
  *          columns = {
- *              @ColumnResult("numphones")
+ *              @ORM\ColumnResult("numphones")
  *          }
  *      )
  * })
@@ -122,52 +123,52 @@ use Doctrine\ORM\Mapping;
 class CmsUser
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(type="string", length=50, nullable=true)
+     * @ORM\Column(type="string", length=50, nullable=true)
      */
     public $status;
     /**
-     * @Column(type="string", length=255, unique=true)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     public $username;
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $name;
     /**
-     * @OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**
-     * @OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
+     * @ORM\OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
      */
     public $articles;
     /**
-     * @OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     public $address;
     /**
-     * @OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
-     * @JoinColumn(referencedColumnName="id", nullable=true)
+     * @ORM\OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
      */
     public $email;
     /**
-     * @ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
-     * @JoinTable(name="cms_users_groups",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="group_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
+     * @ORM\JoinTable(name="cms_users_groups",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      *      )
      */
     public $groups;
     /**
-     * @ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"all"})
-     * @JoinTable(name="cms_users_tags",
-     *      joinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="tag_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"all"})
+     * @ORM\JoinTable(name="cms_users_tags",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}
      *      )
      */
     public $tags;
@@ -270,7 +271,7 @@ class CmsUser
         }
     }
 
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('cms_users');

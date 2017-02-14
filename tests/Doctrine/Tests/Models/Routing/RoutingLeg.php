@@ -2,36 +2,38 @@
 
 namespace Doctrine\Tests\Models\Routing;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingLeg
 {
     /**
-     * @Id @generatedValue
-     * @column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="RoutingLocation")
-     * @JoinColumn(name="from_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="RoutingLocation")
+     * @ORM\JoinColumn(name="from_id", referencedColumnName="id")
      */
     public $fromLocation;
 
     /**
-     * @ManyToOne(targetEntity="RoutingLocation")
-     * @JoinColumn(name="to_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="RoutingLocation")
+     * @ORM\JoinColumn(name="to_id", referencedColumnName="id")
      */
     public $toLocation;
 
     /**
-     * @Column(type="datetime")
+     * @ORM\Column(type="datetime")
      */
     public $departureDate;
 
     /**
-     * @Column(type="datetime")
+     * @ORM\Column(type="datetime")
      */
     public $arrivalDate;
 }

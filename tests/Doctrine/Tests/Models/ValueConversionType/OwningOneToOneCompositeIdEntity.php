@@ -2,23 +2,25 @@
 
 namespace Doctrine\Tests\Models\ValueConversionType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="vct_owning_onetoone_compositeid")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_owning_onetoone_compositeid")
  */
 class OwningOneToOneCompositeIdEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id3;
 
     /**
-     * @OneToOne(targetEntity="InversedOneToOneCompositeIdEntity", inversedBy="associatedEntity")
-     * @JoinColumns({
-     *     @JoinColumn(name="associated_id1", referencedColumnName="id1"),
-     *     @JoinColumn(name="associated_id2", referencedColumnName="id2")
+     * @ORM\OneToOne(targetEntity="InversedOneToOneCompositeIdEntity", inversedBy="associatedEntity")
+     * @ORM\JoinColumns({
+     *     @ORM\JoinColumn(name="associated_id1", referencedColumnName="id1"),
+     *     @ORM\JoinColumn(name="associated_id2", referencedColumnName="id2")
      * })
      */
     public $associatedEntity;

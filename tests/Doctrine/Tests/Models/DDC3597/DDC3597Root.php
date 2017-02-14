@@ -1,45 +1,46 @@
 <?php
 
 namespace Doctrine\Tests\Models\DDC3597;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of Root
  *
- * @Entity
+ * @ORM\Entity
  *
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discriminator", type="string")
- * @DiscriminatorMap({ "image" = "DDC3597Image"})
- * @HasLifecycleCallbacks
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discriminator", type="string")
+ * @ORM\DiscriminatorMap({ "image" = "DDC3597Image"})
+ * @ORM\HasLifecycleCallbacks
  */
-abstract class DDC3597Root {
-
+abstract class DDC3597Root
+{
     /**
      * @var int
      *
-     * @Column(name="id", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="id", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     protected $id;
 
     /**
      * @var \DateTime
-     * @Column(name="created_at", type="datetime", nullable=false)
+     * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
     protected $createdAt = null;
 
     /**
      * @var \DateTime
-     * @Column(name="updated_at", type="datetime", nullable=false)
+     * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
     protected $updatedAt = null;
 
     /**
      * Set createdAt
      *
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function prePersist() {
         $this->updatedAt = $this->createdAt = new \DateTime();
@@ -48,7 +49,7 @@ abstract class DDC3597Root {
     /**
      * Set updatedAt
      *
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
     public function preUpdate() {
         $this->updatedAt = new \DateTime();

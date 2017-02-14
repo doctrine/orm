@@ -2,20 +2,21 @@
 
 namespace Doctrine\Tests\Models\DDC753;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity(repositoryClass = "\stdClass")
+ * @ORM\Entity(repositoryClass = "\stdClass")
  */
 class DDC753EntityWithInvalidRepository
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /** @column(type="string") */
+    /** @ORM\Column(type="string") */
     protected $name;
 
 }

@@ -3,13 +3,14 @@
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache("NONSTRICT_READ_WRITE")
- * @Entity
- * @Table("cache_attraction")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
  *  1  = "Restaurant",
  *  2  = "Beach",
  *  3  = "Bar"
@@ -18,27 +19,27 @@ use Doctrine\Common\Collections\ArrayCollection;
 abstract class Attraction
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     protected $name;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="City", inversedBy="attractions")
-     * @JoinColumn(name="city_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity="City", inversedBy="attractions")
+     * @ORM\JoinColumn(name="city_id", referencedColumnName="id")
      */
     protected $city;
 
     /**
-     * @Cache
-     * @OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
+     * @ORM\Cache
+     * @ORM\OneToMany(targetEntity="AttractionInfo", mappedBy="attraction")
      */
     protected $infos;
 

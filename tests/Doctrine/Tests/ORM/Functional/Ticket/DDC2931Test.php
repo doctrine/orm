@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 
 /**
@@ -86,20 +87,20 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2931User
 {
 
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC2931User", inversedBy="child") */
+    /** @ORM\OneToOne(targetEntity="DDC2931User", inversedBy="child") */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
+    /** @ORM\OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
     public $child;
 
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $value = 0;
 
     /**

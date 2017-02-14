@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models;
@@ -92,12 +93,12 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table("namespace.entity")
+ * @ORM\Entity
+ * @ORM\Table("namespace.entity")
  */
 class MysqlSchemaNamespacedEntity
 {
-    /** @Column(type="integer") @Id @GeneratedValue */
+    /** @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue */
     public $id;
 }
 

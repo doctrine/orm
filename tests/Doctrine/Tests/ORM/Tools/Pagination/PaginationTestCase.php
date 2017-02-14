@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmTestCase;
 
 abstract class PaginationTestCase extends OrmTestCase
@@ -22,163 +23,146 @@ abstract class PaginationTestCase extends OrmTestCase
     }
 }
 
-
 /**
-* @Entity
+* @ORM\Entity
 */
 class MyBlogPost
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ManyToOne(targetEntity="Author")
+     * @ORM\ManyToOne(targetEntity="Author")
      */
     public $author;
     /**
-     * @ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity="Category")
      */
     public $category;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $title;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class MyAuthor
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
 }
 
 /**
-* @Entity
+* @ORM\Entity
 */
 class MyCategory
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
 }
 
-
 /**
- * @Entity
+ * @ORM\Entity
  */
 class BlogPost
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ManyToOne(targetEntity="Author")
+     * @ORM\ManyToOne(targetEntity="Author")
      */
     public $author;
     /**
-     * @ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity="Category")
      */
     public $category;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Author
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Person
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $biography;
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Category
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-
 }
 
-
-/** @Entity @Table(name="groups") */
+/** @ORM\Entity @ORM\Table(name="groups") */
 class Group
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ManyToMany(targetEntity="User", mappedBy="groups") */
+    /** @ORM\ManyToMany(targetEntity="User", mappedBy="groups") */
     public $users;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class User
 {
-
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ManyToMany(targetEntity="Group", inversedBy="users")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users")
+     * @ORM\JoinTable(
      * name="user_group",
-     * joinColumns = {@JoinColumn(name="user_id", referencedColumnName="id")},
-     * inverseJoinColumns = {@JoinColumn(name="group_id", referencedColumnName="id")}
+     * joinColumns = {@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     * inverseJoinColumns = {@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
      * )
      */
     public $groups;
     /**
-     * @OneToOne(targetEntity="Avatar", mappedBy="user")
+     * @ORM\OneToOne(targetEntity="Avatar", mappedBy="user")
      */
     public $avatar;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Avatar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @OneToOne(targetEntity="User", inversedBy="avatar")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="User", inversedBy="avatar")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
-    /** @Column(type="string", length=255) */
+    /** @ORM\Column(type="string", length=255) */
     public $image;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $image_height;
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $image_width;
-    /** @Column(type="string", length=255) */
+    /** @ORM\Column(type="string", length=255) */
     public $image_alt_desc;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class Identified
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
     public function getId()
@@ -187,9 +171,9 @@ abstract class Identified
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class Banner extends Identified
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $name;
 }

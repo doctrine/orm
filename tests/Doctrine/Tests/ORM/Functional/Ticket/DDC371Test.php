@@ -1,6 +1,8 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 
@@ -51,23 +53,23 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC371Child {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $data;
-    /** @ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @JoinColumn(name="parentId") */
+    /** @ORM\ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @ORM\JoinColumn(name="parentId") */
     public $parent;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC371Parent {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $data;
-    /** @OneToMany(targetEntity="DDC371Child", mappedBy="parent") */
+    /** @ORM\OneToMany(targetEntity="DDC371Child", mappedBy="parent") */
     public $children;
 }
 

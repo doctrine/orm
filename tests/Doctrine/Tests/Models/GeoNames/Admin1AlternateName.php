@@ -2,35 +2,36 @@
 
 namespace Doctrine\Tests\Models\GeoNames;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="geonames_admin1_alternate_name")
- * @Cache
+ * @ORM\Entity
+ * @ORM\Table(name="geonames_admin1_alternate_name")
+ * @ORM\Cache
  */
 class Admin1AlternateName
 {
     /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="Admin1", inversedBy="names")
-     * @JoinColumns({
-     *    @JoinColumn(name="admin1", referencedColumnName="id"),
-     *    @JoinColumn(name="country", referencedColumnName="country")
+     * @ORM\ManyToOne(targetEntity="Admin1", inversedBy="names")
+     * @ORM\JoinColumns({
+     *    @ORM\JoinColumn(name="admin1", referencedColumnName="id"),
+     *    @ORM\JoinColumn(name="country", referencedColumnName="country")
      * })
-     * @Cache
+     * @ORM\Cache
      */
     public $admin1;
 
     /**
-     * @Column(type="string", length=255);
+     * @ORM\Column(type="string", length=255);
      */
     public $name;
-
 
     public function __construct($id, $name, Admin1 $admin1)
     {

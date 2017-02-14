@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1695
  */
@@ -29,136 +31,136 @@ class DDC1695Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table(name="DDC1695News")
- * @Entity
+ * @ORM\Table(name="DDC1695News")
+ * @ORM\Entity
  */
 class DDC1695News
 {
     /**
      * @var int
      *
-     * @Column(name="IdNews", type="integer", nullable=false)
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(name="IdNews", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $idNews;
 
     /**
      * @var int
      *
-     * @Column(name="IdUser", type="bigint", nullable=false)
+     * @ORM\Column(name="IdUser", type="bigint", nullable=false)
      */
     private $idUser;
 
     /**
      * @var int
      *
-     * @Column(name="IdLanguage", type="integer", nullable=false)
+     * @ORM\Column(name="IdLanguage", type="integer", nullable=false)
      */
     private $idLanguage;
 
     /**
      * @var int
      *
-     * @Column(name="IdCondition", type="integer", nullable=true)
+     * @ORM\Column(name="IdCondition", type="integer", nullable=true)
      */
     private $idCondition;
 
     /**
      * @var int
      *
-     * @Column(name="IdHealthProvider", type="integer", nullable=true)
+     * @ORM\Column(name="IdHealthProvider", type="integer", nullable=true)
      */
     private $idHealthProvider;
 
     /**
      * @var int
      *
-     * @Column(name="IdSpeciality", type="integer", nullable=true)
+     * @ORM\Column(name="IdSpeciality", type="integer", nullable=true)
      */
     private $idSpeciality;
 
     /**
      * @var int
      *
-     * @Column(name="IdMedicineType", type="integer", nullable=true)
+     * @ORM\Column(name="IdMedicineType", type="integer", nullable=true)
      */
     private $idMedicineType;
 
     /**
      * @var int
      *
-     * @Column(name="IdTreatment", type="integer", nullable=true)
+     * @ORM\Column(name="IdTreatment", type="integer", nullable=true)
      */
     private $idTreatment;
 
     /**
      * @var string
      *
-     * @Column(name="Title", type="string", nullable=true)
+     * @ORM\Column(name="Title", type="string", nullable=true)
      */
     private $title;
 
     /**
      * @var string
      *
-     * @Column(name="SmallText", type="string", nullable=true)
+     * @ORM\Column(name="SmallText", type="string", nullable=true)
      */
     private $smallText;
 
     /**
      * @var string
      *
-     * @Column(name="LongText", type="string", nullable=true)
+     * @ORM\Column(name="LongText", type="string", nullable=true)
      */
     private $longText;
 
     /**
      * @var DateTimeZone
      *
-     * @Column(name="PublishDate", type="datetimetz", nullable=true)
+     * @ORM\Column(name="PublishDate", type="datetimetz", nullable=true)
      */
     private $publishDate;
 
     /**
      * @var array
      *
-     * @Column(name="IdxNews", type="json_array", nullable=true)
+     * @ORM\Column(name="IdxNews", type="json_array", nullable=true)
      */
     private $idxNews;
 
     /**
      * @var bool
      *
-     * @Column(name="Highlight", type="boolean", nullable=false)
+     * @ORM\Column(name="Highlight", type="boolean", nullable=false)
      */
     private $highlight;
 
     /**
      * @var int
      *
-     * @Column(name="Order", type="integer", nullable=false)
+     * @ORM\Column(name="Order", type="integer", nullable=false)
      */
     private $order;
 
     /**
      * @var bool
      *
-     * @Column(name="Deleted", type="boolean", nullable=false)
+     * @ORM\Column(name="Deleted", type="boolean", nullable=false)
      */
     private $deleted;
 
     /**
      * @var bool
      *
-     * @Column(name="Active", type="boolean", nullable=false)
+     * @ORM\Column(name="Active", type="boolean", nullable=false)
      */
     private $active;
 
     /**
      * @var bool
      *
-     * @Column(name="UpdateToHighlighted", type="boolean", nullable=true)
+     * @ORM\Column(name="UpdateToHighlighted", type="boolean", nullable=true)
      */
     private $updateToHighlighted;
 }

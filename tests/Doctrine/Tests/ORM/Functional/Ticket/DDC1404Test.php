@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1404
  */
@@ -59,20 +61,20 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\MappedSuperclass
  *
- * @NamedQueries({
- *      @NamedQuery(name="all",     query="SELECT p FROM __CLASS__ p"),
- *      @NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
+ * @ORM\NamedQueries({
+ *      @ORM\NamedQuery(name="all",     query="SELECT p FROM __CLASS__ p"),
+ *      @ORM\NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
  * })
  */
 class DDC1404ParentEntity
 {
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
@@ -87,18 +89,18 @@ class DDC1404ParentEntity
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @NamedQueries({
- *      @NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
- *      @NamedQuery(name="second",  query="SELECT p FROM __CLASS__ p WHERE p.id = 2")
+ * @ORM\NamedQueries({
+ *      @ORM\NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
+ *      @ORM\NamedQuery(name="second",  query="SELECT p FROM __CLASS__ p WHERE p.id = 2")
  * })
  */
 class DDC1404ChildEntity extends DDC1404ParentEntity
 {
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 

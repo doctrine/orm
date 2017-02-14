@@ -2,15 +2,17 @@
 
 namespace Doctrine\Tests\Models\DDC3899;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="dc3899_users")
+ * @ORM\Entity
+ * @ORM\Table(name="dc3899_users")
  */
 class DDC3899User
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @OneToMany(targetEntity="DDC3899Contract", mappedBy="user") */
+    /** @ORM\OneToMany(targetEntity="DDC3899Contract", mappedBy="user") */
     public $contracts;
 }

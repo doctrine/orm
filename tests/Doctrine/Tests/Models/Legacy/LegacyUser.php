@@ -3,40 +3,46 @@
 namespace Doctrine\Tests\Models\Legacy;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="legacy_users")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_users")
  */
 class LegacyUser
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="iUserId", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(name="iUserId", type="integer", nullable=false)
      */
     public $id;
+
     /**
-     * @Column(name="sUsername", type="string", length=255, unique=true)
+     * @ORM\Column(name="sUsername", type="string", length=255, unique=true)
      */
     public $username;
+
     /**
-     * @Column(type="string", length=255, name="name")
+     * @ORM\Column(type="string", length=255, name="name")
      */
     public $name;
+
     /**
-     * @OneToMany(targetEntity="LegacyArticle", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="LegacyArticle", mappedBy="user")
      */
     public $articles;
+
     /**
-     * @OneToMany(targetEntity="LegacyUserReference", mappedBy="source", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="LegacyUserReference", mappedBy="source", cascade={"remove"})
      */
     public $references;
+
     /**
-     * @ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist", "merge"})
-     * @JoinTable(name="legacy_users_cars",
-     *      joinColumns={@JoinColumn(name="iUserId", referencedColumnName="iUserId")},
-     *      inverseJoinColumns={@JoinColumn(name="iCarId", referencedColumnName="iCarId")}
+     * @ORM\ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist", "merge"})
+     * @ORM\JoinTable(name="legacy_users_cars",
+     *      joinColumns={@ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="iCarId", referencedColumnName="iCarId")}
      *      )
      */
     public $cars;

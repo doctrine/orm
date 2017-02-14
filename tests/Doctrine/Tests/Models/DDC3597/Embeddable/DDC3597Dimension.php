@@ -2,26 +2,28 @@
 
 namespace Doctrine\Tests\Models\DDC3597\Embeddable;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of DDC3597Dimension
  *
- * @Embeddable
+ * @ORM\Embeddable
  */
-class DDC3597Dimension {
-
+class DDC3597Dimension
+{
     /**
      * @var int
-     * @Column(type="integer", name="width")
+     * @ORM\Column(type="integer", name="width")
      */
     private $width;
 
     /**
      * @var int
-     * @Column(type="integer", name="height")
+     * @ORM\Column(type="integer", name="height")
      */
     private $height;
 
-    function __construct($width = 0, $height = 0) {
+    public function __construct($width = 0, $height = 0) {
         $this->setWidth($width);
         $this->setHeight($height);
     }

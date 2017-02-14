@@ -3,27 +3,28 @@
 namespace Doctrine\Tests\Models\StockExchange;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="exchange_markets")
+ * @ORM\Entity
+ * @ORM\Table(name="exchange_markets")
  */
 class Market
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     private $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     private $name;
 
     /**
-     * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
+     * @ORM\OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
      * @var Stock[]
      */
     public $stocks;

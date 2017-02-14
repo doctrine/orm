@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -87,24 +88,24 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class PersistentEntity extends PersistentObject
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      * @var int
      */
     protected $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     protected $name;
 
     /**
-     * @ManyToOne(targetEntity="PersistentEntity")
+     * @ORM\ManyToOne(targetEntity="PersistentEntity")
      * @var PersistentEntity
      */
     protected $parent;

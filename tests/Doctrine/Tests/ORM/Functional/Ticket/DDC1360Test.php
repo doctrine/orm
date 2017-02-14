@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -33,11 +34,11 @@ class DDC1360Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="user.user")
+ * @ORM\Entity @ORM\Table(name="user.user")
  */
 class DDC1360DoubleQuote
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 }
 

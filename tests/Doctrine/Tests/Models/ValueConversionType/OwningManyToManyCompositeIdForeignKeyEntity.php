@@ -3,27 +3,28 @@
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_owning_manytomany_compositeid_foreignkey")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_owning_manytomany_compositeid_foreignkey")
  */
 class OwningManyToManyCompositeIdForeignKeyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @ManyToMany(targetEntity="InversedManyToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="InversedManyToManyCompositeIdForeignKeyEntity", inversedBy="associatedEntities")
+     * @ORM\JoinTable(
      *     name="vct_xref_manytomany_compositeid_foreignkey",
-     *     joinColumns={@JoinColumn(name="owning_id", referencedColumnName="id2")},
+     *     joinColumns={@ORM\JoinColumn(name="owning_id", referencedColumnName="id2")},
      *     inverseJoinColumns={
-     *         @JoinColumn(name="associated_id", referencedColumnName="id1"),
-     *         @JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
+     *         @ORM\JoinColumn(name="associated_id", referencedColumnName="id1"),
+     *         @ORM\JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")
      *     }
      * )
      */

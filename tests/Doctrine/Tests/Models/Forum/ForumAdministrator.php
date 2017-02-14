@@ -2,13 +2,15 @@
 
 namespace Doctrine\Tests\Models\Forum;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class ForumAdministrator extends ForumUser
 {
     /**
-     * @Column(type="integer", name="access_level")
+     * @ORM\Column(type="integer", name="access_level")
      */
     public $accessLevel;
 }

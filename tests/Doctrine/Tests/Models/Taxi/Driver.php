@@ -2,31 +2,33 @@
 
 namespace Doctrine\Tests\Models\Taxi;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="taxi_driver")
+ * @ORM\Entity
+ * @ORM\Table(name="taxi_driver")
  */
 class Driver
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column(type="string", length=255);
+     * @ORM\Column(type="string", length=255);
      */
     private $name;
 
     /**
-     * @OneToMany(targetEntity="Ride", mappedBy="driver")
+     * @ORM\OneToMany(targetEntity="Ride", mappedBy="driver")
      */
     private $freeDriverRides;
 
     /**
-     * @OneToMany(targetEntity="PaidRide", mappedBy="driver")
+     * @ORM\OneToMany(targetEntity="PaidRide", mappedBy="driver")
      */
     private $driverRides;
     

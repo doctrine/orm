@@ -3,40 +3,41 @@
 namespace Doctrine\Tests\Models\ECommerce;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceCart
  * Represents a typical cart of a shopping application.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_carts")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_carts")
  */
 class ECommerceCart
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(length=50, nullable=true)
+     * @ORM\Column(length=50, nullable=true)
      */
     private $payment;
 
     /**
-     * @OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
-     * @JoinColumn(name="customer_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
+     * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
     /**
-     * @ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
-     * @JoinTable(name="ecommerce_carts_products",
-            joinColumns={@JoinColumn(name="cart_id", referencedColumnName="id")},
-            inverseJoinColumns={@JoinColumn(name="product_id", referencedColumnName="id")})
+     * @ORM\ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
+     * @ORM\JoinTable(name="ecommerce_carts_products",
+            joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
+            inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 

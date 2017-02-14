@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
 
@@ -98,23 +99,24 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC881User
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
+
     /**
-     * @OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
+     * @ORM\OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
      */
     private $phoneNumbers;
 
@@ -130,28 +132,27 @@ class DDC881User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC881PhoneNumber
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      */
     private $id;
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC881User",cascade={"all"})
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC881User",cascade={"all"})
      */
     private $user;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $phonenumber;
 
     /**
-     * @OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
+     * @ORM\OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
      */
     private $calls;
 
@@ -182,27 +183,26 @@ class DDC881PhoneNumber
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC881PhoneCall
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
-     * @ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
-     * @JoinColumns({
-     *  @JoinColumn(name="phonenumber_id", referencedColumnName="id"),
-     *  @JoinColumn(name="user_id", referencedColumnName="user_id")
+     * @ORM\ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
+     * @ORM\JoinColumns({
+     *  @ORM\JoinColumn(name="phonenumber_id", referencedColumnName="id"),
+     *  @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
      * })
      */
     private $phonenumber;
     /**
-     * @Column(type="string",nullable=true)
+     * @ORM\Column(type="string",nullable=true)
      */
     private $callDate;
 

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1655
  * @group DDC-1640
@@ -111,28 +113,28 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({
  *    "foo" = "DDC1655Foo",
  *    "bar" = "DDC1655Bar"
  * })
- * @HasLifecycleCallbacks
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC1655Foo
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
     public $loaded = 0;
 
     /**
-     * @ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
+     * @ORM\ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
      */
     public $baz;
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function postLoad()
     {
@@ -141,15 +143,15 @@ class DDC1655Foo
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC1655Bar extends DDC1655Foo
 {
     public $subLoaded;
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function postSubLoaded()
     {
@@ -158,15 +160,15 @@ class DDC1655Bar extends DDC1655Foo
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1655Baz
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
+     * @ORM\OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
      */
     public $foos = [];
 }

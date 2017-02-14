@@ -2,18 +2,20 @@
 
 namespace Doctrine\Tests\Models\DDC3699;
 
-/** @Entity @Table(name="ddc3699_child") */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity @ORM\Table(name="ddc3699_child") */
 class DDC3699Child extends DDC3699Parent
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $childField;
 
-    /** @OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */
+    /** @ORM\OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */
     public $oneRelation;
 
-    /** @OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child") */
+    /** @ORM\OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child") */
     public $relations;
 }

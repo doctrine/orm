@@ -2,8 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for paginator with collection order
@@ -64,18 +65,18 @@ class DDC3330Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="ddc3330_building")
+ * @ORM\Entity @ORM\Table(name="ddc3330_building")
  */
 class DDC3330_Building
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
      */
     public $halls;
 
@@ -87,23 +88,23 @@ class DDC3330_Building
 }
 
 /**
- * @Entity @Table(name="ddc3330_hall")
+ * @ORM\Entity @ORM\Table(name="ddc3330_hall")
  */
 class DDC3330_Hall
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls")
+     * @ORM\ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls")
      */
     public $building;
 
     /**
-     * @Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100)
      */
     public $name;
 }

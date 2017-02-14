@@ -78,19 +78,19 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity @Table(name="cti_parents")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
+ * @ORM\Entity @ORM\Table(name="cti_parents")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
  */
 class CTIParent {
    /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    /** @ORM\OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
     private $related;
 
     public function getId() {
@@ -108,11 +108,11 @@ class CTIParent {
 }
 
 /**
- * @Entity @Table(name="cti_children")
+ * @ORM\Entity @ORM\Table(name="cti_children")
  */
 class CTIChild extends CTIParent {
    /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $data;
 
@@ -126,17 +126,17 @@ class CTIChild extends CTIParent {
 
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class CTIRelated {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @OneToOne(targetEntity="CTIParent")
-     * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="CTIParent")
+     * @ORM\JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
     private $ctiParent;
 
@@ -153,12 +153,12 @@ class CTIRelated {
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class CTIRelated2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @ManyToMany(targetEntity="CTIChild") */
+    /** @ORM\ManyToMany(targetEntity="CTIChild") */
     private $ctiChildren;
 
 

@@ -2,15 +2,17 @@
 
 namespace Doctrine\Tests\Models\JoinedInheritanceType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @InheritanceType("JOINED")
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
  */
 class RootClass
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 }

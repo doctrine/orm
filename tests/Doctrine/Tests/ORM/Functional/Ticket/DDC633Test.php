@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Proxy\Proxy;
 
 class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -73,30 +74,30 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC633Appointment
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
      */
     public $patient;
 
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC633Patient
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
+     * @ORM\OneToOne(targetEntity="DDC633Appointment", mappedBy="patient")
      */
     public $appointment;
 }

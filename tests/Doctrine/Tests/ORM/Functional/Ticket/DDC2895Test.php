@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Class DDC2895Test
  * @package Doctrine\Tests\ORM\Functional\Ticket
@@ -50,20 +52,20 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @MappedSuperclass
- * @HasLifecycleCallbacks
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class AbstractDDC2895
 {
     /**
-     * @Column(name="last_modified", type="datetimetz", nullable=false)
+     * @ORM\Column(name="last_modified", type="datetimetz", nullable=false)
      * @var \DateTime
      */
     protected $lastModified;
 
     /**
-     * @PrePersist
-     * @PreUpdate
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
      */
     public function setLastModifiedPreUpdate()
     {
@@ -88,12 +90,12 @@ abstract class AbstractDDC2895
 }
 
 /**
- * @Entity
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC2895 extends AbstractDDC2895
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
     /**

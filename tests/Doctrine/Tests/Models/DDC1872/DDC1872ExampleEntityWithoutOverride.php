@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\Models\DDC1872;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1872ExampleEntityWithoutOverride
 {
