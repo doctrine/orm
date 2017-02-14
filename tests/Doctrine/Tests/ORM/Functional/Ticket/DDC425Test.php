@@ -1,7 +1,9 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use DateTime, Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 
 class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -29,14 +31,14 @@ class DDC425Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC425Entity {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /** @Column(type="datetime") */
+    /** @ORM\Column(type="datetime") */
     public $someDatetimeField;
 }

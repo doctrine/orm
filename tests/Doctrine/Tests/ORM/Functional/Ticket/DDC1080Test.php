@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -68,26 +69,26 @@ class DDC1080Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="foo")
+ * @ORM\Entity
+ * @ORM\Table(name="foo")
  */
 class DDC1080Foo
 {
     /**
-     * @Id
-     * @Column(name="fooID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="fooID", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $fooID;
     
     /**
-     * @Column(name="fooTitle", type="string")
+     * @ORM\Column(name="fooTitle", type="string")
      */
     
     protected $fooTitle;
     /**
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo", cascade={"persist"})
-     * @OrderBy({"orderNr"="ASC"})
+     * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo", cascade={"persist"})
+     * @ORM\OrderBy({"orderNr"="ASC"})
      */
     protected $fooBars;
 
@@ -146,26 +147,26 @@ class DDC1080Foo
 
 }
 /**
- * @Entity
- * @Table(name="bar")
+ * @ORM\Entity
+ * @ORM\Table(name="bar")
  */
 class DDC1080Bar
 {
     /**
-     * @Id
-     * @Column(name="barID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="barID", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $barID;
     
     /**
-     * @Column(name="barTitle", type="string")
+     * @ORM\Column(name="barTitle", type="string")
      */
     protected $barTitle;
     
     /**
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar", cascade={"persist"})
-     * @OrderBy({"orderNr"="ASC"})
+     * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar", cascade={"persist"})
+     * @ORM\OrderBy({"orderNr"="ASC"})
      */
     protected $fooBars;
 
@@ -225,26 +226,26 @@ class DDC1080Bar
 }
 
 /**
- * @Table(name="fooBar")
- * @Entity
+ * @ORM\Table(name="fooBar")
+ * @ORM\Entity
  */
 class DDC1080FooBar
 {
     /**
-     * @ManyToOne(targetEntity="DDC1080Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
+     * @ORM\ManyToOne(targetEntity="DDC1080Foo")
+     * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
+     * @ORM\Id
      */
     protected $foo = null;
     /**
-     * @ManyToOne(targetEntity="DDC1080Bar")
-     * @JoinColumn(name="barID", referencedColumnName="barID")
-     * @Id
+     * @ORM\ManyToOne(targetEntity="DDC1080Bar")
+     * @ORM\JoinColumn(name="barID", referencedColumnName="barID")
+     * @ORM\Id
      */
     protected $bar = null;
     /**
      * @var int orderNr
-     * @Column(name="orderNr", type="integer", nullable=false)
+     * @ORM\Column(name="orderNr", type="integer", nullable=false)
      */
     protected $orderNr = null;
 

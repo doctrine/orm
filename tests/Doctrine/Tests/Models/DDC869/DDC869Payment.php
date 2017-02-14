@@ -3,24 +3,23 @@
 namespace Doctrine\Tests\Models\DDC869;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @MappedSuperclass(repositoryClass = "Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
+ * @ORM\MappedSuperclass(repositoryClass="Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
  */
 class DDC869Payment
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
-    /** @Column(type="float") */
+    /** @ORM\Column(type="float") */
     protected $value;
-
 
     public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
@@ -40,5 +39,4 @@ class DDC869Payment
         $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
-
 }

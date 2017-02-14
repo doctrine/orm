@@ -3,21 +3,22 @@
 namespace Doctrine\Tests\Models\DDC1476;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
 
 /**
- * @Entity()
+ * @ORM\Entity()
  */
 class DDC1476EntityWithDefaultFieldType
 {
     /**
-     * @Id
-     * @Column()
-     * @GeneratedValue("NONE")
+     * @ORM\Id
+     * @ORM\Column()
+     * @ORM\GeneratedValue("NONE")
      */
     protected $id;
 
-    /** @Column() */
+    /** @ORM\Column() */
     protected $name;
 
     /**

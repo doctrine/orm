@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\Common\Proxy\Proxy;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -70,25 +71,25 @@ class DDC2230Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2230User
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC2230Address")
+     * @ORM\OneToOne(targetEntity="DDC2230Address")
      */
     public $address;
 }
 
 /**
- * @Entity
- * @ChangeTrackingPolicy("NOTIFY")
+ * @ORM\Entity
+ * @ORM\ChangeTrackingPolicy("NOTIFY")
  */
 class DDC2230Address implements NotifyPropertyChanged
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
     /**

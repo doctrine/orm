@@ -2,19 +2,21 @@
 
 namespace Doctrine\Tests\Models\Routing;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingLocation
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 

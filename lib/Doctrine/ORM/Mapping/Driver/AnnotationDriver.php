@@ -79,14 +79,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         $classAnnotations = $this->reader->getClassAnnotations($class);
 
-        if ($classAnnotations) {
-            foreach ($classAnnotations as $key => $annot) {
-                if ( ! is_numeric($key)) {
-                    continue;
-                }
-
-                $classAnnotations[get_class($annot)] = $annot;
+        foreach ($classAnnotations as $key => $annot) {
+            if ( ! is_numeric($key)) {
+                continue;
             }
+
+            $classAnnotations[get_class($annot)] = $annot;
         }
 
         // Evaluate Entity annotation
@@ -260,6 +258,48 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $metadata->setChangeTrackingPolicy(
                 constant(sprintf('%s::%s', ChangeTrackingPolicy::class, $changeTrackingAnnot->value))
             );
+        }
+
+        // Evaluate EntityListeners annotation
+        if (isset($classAnnotations[Annotation\EntityListeners::class])) {
+            $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
+
+            foreach ($entityListenersAnnot->value as $item) {
+                $listenerClassName = $metadata->fullyQualifiedClassName($item);
+
+                if ( ! class_exists($listenerClassName)) {
+                    throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
+                }
+
+                $hasMapping     = false;
+                $listenerClass  = new \ReflectionClass($listenerClassName);
+
+                /* @var $method \ReflectionMethod */
+                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                    // find method callbacks.
+                    $callbacks  = $this->getMethodCallbacks($method);
+                    $hasMapping = $hasMapping ?: ( ! empty($callbacks));
+
+                    foreach ($callbacks as $value) {
+                        $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
+                    }
+                }
+
+                // Evaluate the listener using naming convention.
+                if ( ! $hasMapping ) {
+                    EntityListenerBuilder::bindEntityListener($metadata, $listenerClassName);
+                }
+            }
+        }
+
+        // Evaluate @HasLifecycleCallbacks annotation
+        if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
+            /* @var $method \ReflectionMethod */
+            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                foreach ($this->getMethodCallbacks($method) as $value) {
+                    $metadata->addLifecycleCallback($value[0], $value[1]);
+                }
+            }
         }
 
         // Evaluate annotations on properties/fields
@@ -539,48 +579,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $metadata->setAttributeOverride($fieldMetadata);
             }
         }
-
-        // Evaluate EntityListeners annotation
-        if (isset($classAnnotations[Annotation\EntityListeners::class])) {
-            $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
-
-            foreach ($entityListenersAnnot->value as $item) {
-                $listenerClassName = $metadata->fullyQualifiedClassName($item);
-
-                if ( ! class_exists($listenerClassName)) {
-                    throw MappingException::entityListenerClassNotFound($listenerClassName, $className);
-                }
-
-                $hasMapping     = false;
-                $listenerClass  = new \ReflectionClass($listenerClassName);
-
-                /* @var $method \ReflectionMethod */
-                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                    // find method callbacks.
-                    $callbacks  = $this->getMethodCallbacks($method);
-                    $hasMapping = $hasMapping ?: ( ! empty($callbacks));
-
-                    foreach ($callbacks as $value) {
-                        $metadata->addEntityListener($value[1], $listenerClassName, $value[0]);
-                    }
-                }
-
-                // Evaluate the listener using naming convention.
-                if ( ! $hasMapping ) {
-                    EntityListenerBuilder::bindEntityListener($metadata, $listenerClassName);
-                }
-            }
-        }
-
-        // Evaluate @HasLifecycleCallbacks annotation
-        if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /* @var $method \ReflectionMethod */
-            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                foreach ($this->getMethodCallbacks($method) as $value) {
-                    $metadata->addLifecycleCallback($value[0], $value[1]);
-                }
-            }
-        }
     }
 
     /**
@@ -692,65 +690,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             'entities' => $entities,
             'columns'  => $columns
         ];
-    }
-
-    /**
-     * @param \ReflectionProperty $reflProperty
-     *
-     * @return Property
-     */
-    private function convertProperty(\ReflectionProperty $reflProperty)
-    {
-        if ($columnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Column::class)) {
-            $className = $reflProperty->getDeclaringClass()->name;
-
-            if ($columnAnnot->type == null) {
-                throw MappingException::propertyTypeIsRequired($className, $reflProperty->getName());
-            }
-
-            $isFieldVersioned = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class) !== null;
-            $fieldMetadata    = $this->convertColumnAnnotationToFieldMetadata($columnAnnot, $reflProperty->getName(), $isFieldVersioned);
-
-            // Check for Id
-            if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
-                $fieldMetadata->setPrimaryKey(true);
-            }
-
-            // Check for GeneratedValue strategy
-            if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\GeneratedValue::class)) {
-                $strategy = strtoupper($generatedValueAnnot->strategy);
-
-                $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, $strategy)));
-            }
-
-            // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
-            if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\SequenceGenerator::class)) {
-                $metadata->setGeneratorDefinition(
-                    [
-                        'sequenceName'   => $seqGeneratorAnnot->sequenceName,
-                        'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                    ]
-                );
-            } else if ($this->reader->getPropertyAnnotation($reflProperty, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                throw MappingException::tableIdGeneratorNotImplemented($className);
-            } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\CustomIdGenerator::class)) {
-                $metadata->setGeneratorDefinition(
-                    [
-                        'class'     => $customGeneratorAnnot->class,
-                        'arguments' => $customGeneratorAnnot->arguments,
-                    ]
-                );
-            }
-
-            $metadata->addProperty($fieldMetadata);
-
-            // Check for Version
-            if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
-                $metadata->setVersionProperty($fieldMetadata);
-            }
-
-            return $fieldMetadata;
-        }
     }
 
     /**

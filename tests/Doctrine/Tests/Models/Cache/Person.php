@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_person")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_person")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class Person
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     public $name;
 
     /**
-     * @OneToOne(targetEntity="Address", mappedBy="person")
+     * @ORM\OneToOne(targetEntity="Address", mappedBy="person")
      */
     public $address;
 

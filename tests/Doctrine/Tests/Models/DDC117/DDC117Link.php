@@ -2,24 +2,26 @@
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Foreign Key Entity without additional fields!
  *
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Link
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="links")
-     * @JoinColumn(name="source_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC117Article", inversedBy="links")
+     * @ORM\JoinColumn(name="source_id", referencedColumnName="article_id")
      */
     public $source;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
-     * @JoinColumn(name="target_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity="DDC117Article")
+     * @ORM\JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     public $target;
 

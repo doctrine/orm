@@ -2,23 +2,23 @@
 
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="quote-phone")
+ * @ORM\Entity
+ * @ORM\Table(name="quote-phone")
  */
 class Phone
 {
-
     /**
-     * @Id
-     * @Column(name="phone-number")
+     * @ORM\Id
+     * @ORM\Column(name="phone-number")
      */
     public $number;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="phones")
-     * @JoinColumn(name="user-id", referencedColumnName="user-id")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="phones")
+     * @ORM\JoinColumn(name="user-id", referencedColumnName="user-id")
      */
     public $user;
-
 }

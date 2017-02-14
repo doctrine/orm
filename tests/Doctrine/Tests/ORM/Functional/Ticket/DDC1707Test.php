@@ -2,8 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
 
@@ -43,22 +43,22 @@ class DDC1707Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"c": "DDC1707Child"})
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"c": "DDC1707Child"})
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class DDC1707Base
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     public $postLoad = false;
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function onPostLoad()
     {
@@ -66,7 +66,7 @@ abstract class DDC1707Base
     }
 }
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1707Child extends DDC1707Base
 {

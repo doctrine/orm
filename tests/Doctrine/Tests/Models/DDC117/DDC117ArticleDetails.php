@@ -2,20 +2,22 @@
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117ArticleDetails
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="DDC117Article", inversedBy="details")
-     * @JoinColumn(name="article_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="DDC117Article", inversedBy="details")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
 
     /**
-     * @Column(type="text")
+     * @ORM\Column(type="text")
      */
     private $text;
 

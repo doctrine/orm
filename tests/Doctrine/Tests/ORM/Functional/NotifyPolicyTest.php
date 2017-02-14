@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -106,68 +107,68 @@ class NotifyBaseEntity implements NotifyPropertyChanged {
     }
 }
 
-/** @Entity @ChangeTrackingPolicy("NOTIFY") */
+/** @ORM\Entity @ORM\ChangeTrackingPolicy("NOTIFY") */
 class NotifyUser extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyGroup") */
+    /** @ORM\ManyToMany(targetEntity="NotifyGroup") */
     private $groups;
 
-    function __construct() {
+    public function __construct() {
         $this->groups = new ArrayCollection;
     }
 
-    function getId() {
+    public function getId() {
         return $this->id;
     }
 
-    function getName() {
+    public function getName() {
         return $this->name;
     }
 
-    function setName($name) {
+    public function setName($name) {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getGroups() {
+    public function getGroups() {
         return $this->groups;
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class NotifyGroup extends NotifyBaseEntity {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $name;
 
-    /** @ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
+    /** @ORM\ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
     private $users;
 
-    function __construct() {
+    public function __construct() {
         $this->users = new ArrayCollection;
     }
 
-    function getId() {
+    public function getId() {
         return $this->id;
     }
 
-    function getName() {
+    public function getName() {
         return $this->name;
     }
 
-    function setName($name) {
+    public function setName($name) {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function getUsers() {
+    public function getUsers() {
         return $this->users;
     }
 }

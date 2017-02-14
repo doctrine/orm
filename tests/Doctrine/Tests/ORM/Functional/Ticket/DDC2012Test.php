@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2012
@@ -68,11 +69,11 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table(name="ddc2010_item")
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type_id", type="smallint")
- * @DiscriminatorMap({
+ * @ORM\Table(name="ddc2010_item")
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type_id", type="smallint")
+ * @ORM\DiscriminatorMap({
  *      1 = "DDC2012ItemPerson",
  *      2 = "DDC2012Item"
  * })
@@ -80,21 +81,21 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 class DDC2012Item
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(name="tsv", type="tsvector", nullable=true)
+     * @ORM\Column(name="tsv", type="tsvector", nullable=true)
      */
     public $tsv;
 }
 
 /**
- * @Table(name="ddc2010_item_person")
- * @Entity
+ * @ORM\Table(name="ddc2010_item_person")
+ * @ORM\Entity
  */
 class DDC2012ItemPerson extends DDC2012Item
 {

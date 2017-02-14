@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
@@ -223,66 +224,66 @@ class TransientBaseClass {
     private $transient2;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntitySubClass extends TransientBaseClass
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $name;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 class MappedSuperclassBase {
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     private $mapped1;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $mapped2;
     /**
-     * @OneToOne(targetEntity="MappedSuperclassRelated1")
-     * @JoinColumn(name="related1_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="MappedSuperclassRelated1")
+     * @ORM\JoinColumn(name="related1_id", referencedColumnName="id")
      */
     private $mappedRelated1;
     private $transient;
 }
 class MappedSuperclassRelated1 {}
 
-/** @Entity */
+/** @ORM\Entity */
 class EntitySubClass2 extends MappedSuperclassBase {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $name;
 }
 
 /**
- * @MappedSuperclass
- * @Table(
- *  uniqueConstraints={@UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
- *  indexes={@Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
+ * @ORM\MappedSuperclass
+ * @ORM\Table(
+ *  uniqueConstraints={@ORM\UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
+ *  indexes={@ORM\Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
  * )
  */
 class MappedSuperclassBaseIndex {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $mapped1;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $mapped2;
 }
 
-/** @Entity @Table(uniqueConstraints={@UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
+/** @ORM\Entity @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="IDX_NAME_INDEX",columns={"name"})}) */
 class EntityIndexSubClass extends MappedSuperclassBaseIndex
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     private $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $name;
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string", length=20)
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string", length=20)
+ * @ORM\DiscriminatorMap({
  *     "c"   = "HierarchyC",
  *     "d"   = "HierarchyD",
  *     "e"   = "HierarchyE"
@@ -291,74 +292,74 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
 abstract class HierarchyBase
 {
     /**
-     * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo")
+     * @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(sequenceName="foo")
      * @var int
      */
     public $id;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class HierarchyASuperclass extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $a;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class HierarchyBEntity extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $b;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class HierarchyC extends HierarchyBase
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $c;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class HierarchyD extends HierarchyASuperclass
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $d;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class HierarchyE extends HierarchyBEntity
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $e;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class SuperclassEntity extends SuperclassBase
 {
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class SuperclassBase
 {
     /**
-     * @Column(type="integer") @Id @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(sequenceName="foo")
+     * @ORM\Column(type="integer") @ORM\Id @ORM\GeneratedValue(strategy="SEQUENCE")
+     * @ORM\SequenceGenerator(sequenceName="foo")
      */
     public $id;
 }
 
-/** @MappedSuperclass */
+/** @ORM\MappedSuperclass */
 abstract class MediumSuperclassBase extends SuperclassBase
 {
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MediumSuperclassEntity extends MediumSuperclassBase
 {
 }
 
-/** @Entity(repositoryClass = "Doctrine\ORM\EntityRepository") */
+/** @ORM\Entity(repositoryClass = "Doctrine\ORM\EntityRepository") */
 class SubclassWithRepository extends DDC869Payment
 {
 }

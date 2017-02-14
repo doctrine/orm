@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1193Test extends OrmFunctionalTestCase
@@ -54,38 +55,38 @@ class DDC1193Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC1193Company {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"}) */
+    /** @ORM\OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"}) */
     public $member;
 
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC1193Person {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
      */
     public $account;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC1193Account {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 

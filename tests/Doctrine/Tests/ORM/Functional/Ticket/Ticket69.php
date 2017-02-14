@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *
@@ -97,8 +99,8 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
 }
 
 /**
- * @Entity
- * @Table(name="lemma")
+ * @ORM\Entity
+ * @ORM\Table(name="lemma")
  */
 class Lemma {
 
@@ -106,23 +108,23 @@ class Lemma {
 
     /**
      * @var int
-     * @Id
-     * @Column(type="integer", name="lemma_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="lemma_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="lemma_name", unique=true, length=255)
+     * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
      */
     private $lemma;
 
 
     /**
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
      */
     private $relations;
 
@@ -193,8 +195,8 @@ class Lemma {
 
 /**
  *
- * @Entity
- * @Table(name="relation")
+ * @ORM\Entity
+ * @ORM\Table(name="relation")
  */
 class Relation {
 
@@ -202,30 +204,30 @@ class Relation {
 
     /**
      * @var int
-     * @Id
-     * @Column(type="integer", name="relation_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="relation_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      * @var Lemma
-     * @ManyToOne(targetEntity="Lemma", inversedBy="relations")
-     * @JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
+     * @ORM\ManyToOne(targetEntity="Lemma", inversedBy="relations")
+     * @ORM\JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
     private $parent;
 
     /**
      * @var Lemma
-     * @OneToOne(targetEntity="Lemma")
-     * @JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
+     * @ORM\OneToOne(targetEntity="Lemma")
+     * @ORM\JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
      */
     private $child;
 
     /**
      * @var RelationType
-     * @ManyToOne(targetEntity="RelationType", inversedBy="relations")
-     * @JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
+     * @ORM\ManyToOne(targetEntity="RelationType", inversedBy="relations")
+     * @ORM\JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
     private $type;
 
@@ -309,8 +311,8 @@ class Relation {
 
 /**
  *
- * @Entity
- * @Table(name="relation_type")
+ * @ORM\Entity
+ * @ORM\Table(name="relation_type")
  */
 class RelationType {
 
@@ -319,29 +321,29 @@ class RelationType {
     /**
      *
      * @var int
-     * @Id
-     * @Column(type="integer", name="relation_type_id")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="relation_type_id")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="relation_type_name", unique=true, length=255)
+     * @ORM\Column(type="string", name="relation_type_name", unique=true, length=255)
      */
     private $type;
 
     /**
      *
      * @var string
-     * @Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
+     * @ORM\Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
      */
     private $abbreviation;
 
     /**
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
      */
     private $relations;
 

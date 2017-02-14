@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1654
  */
@@ -131,29 +133,29 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1654Post
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
+     * @ORM\ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
      * cascade={"persist"})
      */
     public $comments = [];
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1654Comment
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 }

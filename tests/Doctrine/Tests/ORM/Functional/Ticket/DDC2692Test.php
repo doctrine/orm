@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 
 /**
@@ -47,11 +48,11 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 /**
- * @Entity @Table(name="ddc_2692_foo")
+ * @ORM\Entity @ORM\Table(name="ddc_2692_foo")
  */
 class DDC2692Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC309Test extends OrmFunctionalTestCase
@@ -50,27 +51,27 @@ class DDC309Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC309Country
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC309User
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 }

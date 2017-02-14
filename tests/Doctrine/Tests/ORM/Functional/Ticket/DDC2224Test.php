@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 
 /**
@@ -14,7 +15,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public static function setUpBeforeClass()
     {
-        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', DDC2224Type::class);
+        Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
     public function testIssue()
@@ -74,17 +75,17 @@ class DDC2224Type extends Type
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2224Entity
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="DDC2224Type")
+     * @ORM\Column(type="DDC2224Type")
      */
     public $field;
 }

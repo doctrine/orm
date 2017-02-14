@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1548
  */
@@ -38,46 +40,46 @@ class DDC1548Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1548E1
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
      */
     public $rel;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1548E2
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
      */
     public $rel;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1548Rel
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
+     * @ORM\OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
      */
     public $e1;
     /**
-     * @OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
+     * @ORM\OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
      */
     public $e2;
 }

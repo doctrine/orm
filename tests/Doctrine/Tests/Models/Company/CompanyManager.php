@@ -2,25 +2,27 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="company_managers")
+ * @ORM\Entity
+ * @ORM\Table(name="company_managers")
  */
 class CompanyManager extends CompanyEmployee
 {
     /**
-     * @Column(type="string", length=250)
+     * @ORM\Column(type="string", length=250)
      */
     private $title;
 
     /**
-     * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
-     * @JoinColumn(name="car_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="CompanyCar", cascade={"persist"})
+     * @ORM\JoinColumn(name="car_id", referencedColumnName="id")
      */
     private $car;
 
     /**
-     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
      */
     public $managedContracts;
 

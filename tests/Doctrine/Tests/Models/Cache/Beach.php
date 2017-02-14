@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class Beach extends Attraction
 {

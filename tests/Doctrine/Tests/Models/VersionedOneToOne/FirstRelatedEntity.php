@@ -2,31 +2,33 @@
 
 namespace Doctrine\Tests\Models\VersionedOneToOne;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @author Rob Caiger <rob@clocal.co.uk>
  *
- * @Entity
- * @Table(name="first_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="first_entity")
  */
 class FirstRelatedEntity
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="SecondRelatedEntity", fetch="EAGER")
-     * @JoinColumn(name="second_entity_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="SecondRelatedEntity", fetch="EAGER")
+     * @ORM\JoinColumn(name="second_entity_id", referencedColumnName="id")
      */
     public $secondEntity;
 
     /**
-     * @Column(name="name")
+     * @ORM\Column(name="name")
      */
     public $name;
 
     /**
      * Version column
      *
-     * @Column(type="integer", name="version")
-     * @Version
+     * @ORM\Column(type="integer", name="version")
+     * @ORM\Version
      */
     public $version;
 }

@@ -61,16 +61,18 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 namespace Doctrine\Tests\ORM\Functional\Ticket\DDC2084;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="DDC2084_ENTITY1")
+ * @ORM\Entity
+ * @ORM\Table(name="DDC2084_ENTITY1")
  */
 class MyEntity1
 {
     /**
-     * @Id
-     * @OneToOne(targetEntity="MyEntity2")
-     * @JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
+     * @ORM\Id
+     * @ORM\OneToOne(targetEntity="MyEntity2")
+     * @ORM\JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
      */
     private $entity2;
 
@@ -91,20 +93,20 @@ class MyEntity1
 }
 
 /**
- * @Entity
- * @Table(name="DDC2084_ENTITY2")
+ * @ORM\Entity
+ * @ORM\Table(name="DDC2084_ENTITY2")
  */
 class MyEntity2
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $value;
 

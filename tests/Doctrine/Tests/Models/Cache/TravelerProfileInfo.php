@@ -2,29 +2,31 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_traveler_profile_info")
- * @Cache("NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Table("cache_traveler_profile_info")
+ * @ORM\Cache("NONSTRICT_READ_WRITE")
  */
 class TravelerProfileInfo
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     private $description;
 
     /**
-     * @Cache()
-     * @JoinColumn(name="profile_id", referencedColumnName="id")
-     * @OneToOne(targetEntity="TravelerProfile", inversedBy="info")
+     * @ORM\Cache()
+     * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="TravelerProfile", inversedBy="info")
      */
     private $profile;
 

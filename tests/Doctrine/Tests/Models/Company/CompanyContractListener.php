@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class CompanyContractListener
 {
     public $postPersistCalls;
@@ -18,7 +20,7 @@ class CompanyContractListener
     public $postLoadCalls;
 
     /**
-     * @PostPersist
+     * @ORM\PostPersist
      */
     public function postPersistHandler(CompanyContract $contract)
     {
@@ -26,7 +28,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function prePersistHandler(CompanyContract $contract)
     {
@@ -34,7 +36,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PostUpdate
+     * @ORM\PostUpdate
      */
     public function postUpdateHandler(CompanyContract $contract)
     {
@@ -42,7 +44,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PreUpdate
+     * @ORM\PreUpdate
      */
     public function preUpdateHandler(CompanyContract $contract)
     {
@@ -50,7 +52,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PostRemove
+     * @ORM\PostRemove
      */
     public function postRemoveHandler(CompanyContract $contract)
     {
@@ -58,7 +60,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PreRemove
+     * @ORM\PreRemove
      */
     public function preRemoveHandler(CompanyContract $contract)
     {
@@ -66,7 +68,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PreFlush
+     * @ORM\PreFlush
      */
     public function preFlushHandler(CompanyContract $contract)
     {
@@ -74,7 +76,7 @@ class CompanyContractListener
     }
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function postLoadHandler(CompanyContract $contract)
     {

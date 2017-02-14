@@ -2,34 +2,36 @@
 
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Article
 {
-    /** @Id @Column(type="integer", name="article_id") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer", name="article_id") @ORM\GeneratedValue */
     private $id;
 
-    /** @Column */
+    /** @ORM\Column */
     private $title;
 
     /**
-     * @OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity="DDC117Reference", mappedBy="source", cascade={"remove"})
      */
     private $references;
 
     /**
-     * @OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="DDC117ArticleDetails", mappedBy="article", cascade={"persist", "remove"})
      */
     private $details;
 
     /**
-     * @OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DDC117Translation", mappedBy="article", cascade={"persist", "remove"})
      */
     private $translations;
 
     /**
-     * @OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DDC117Link", mappedBy="source", indexBy="target_id", cascade={"persist", "remove"})
      */
     private $links;
 

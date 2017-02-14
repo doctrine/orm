@@ -2,9 +2,17 @@
 
 namespace Doctrine\Tests\Models\Company;
 
-/** @Entity @Table(name="company_auctions") */
-class CompanyAuction extends CompanyEvent {
-    /** @Column(type="string") */
+use Doctrine\ORM\Annotation as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="company_auctions")
+ */
+class CompanyAuction extends CompanyEvent
+{
+    /**
+     * @ORM\Column(type="string")
+     */
     private $data;
 
     public function setData($data) {

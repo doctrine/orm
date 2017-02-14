@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -59,9 +60,9 @@ class DDC2359Test extends DoctrineTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2359Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

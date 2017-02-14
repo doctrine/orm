@@ -3,32 +3,33 @@
 namespace Doctrine\Tests\Models\Routing;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class RoutingRoute
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @ManyToMany(targetEntity="RoutingLeg", cascade={"all"})
-     * @JoinTable(name="RoutingRouteLegs",
-     *     joinColumns={@JoinColumn(name="route_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="leg_id", referencedColumnName="id", unique=true)}
+     * @ORM\ManyToMany(targetEntity="RoutingLeg", cascade={"all"})
+     * @ORM\JoinTable(name="RoutingRouteLegs",
+     *     joinColumns={@ORM\JoinColumn(name="route_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="leg_id", referencedColumnName="id", unique=true)}
      * )
-     * @OrderBy({"departureDate" = "ASC"})
+     * @ORM\OrderBy({"departureDate" = "ASC"})
      */
     public $legs;
 
     /**
-     * @OneToMany(targetEntity="RoutingRouteBooking", mappedBy="route")
-     * @OrderBy({"passengerName" = "ASC"})
+     * @ORM\OneToMany(targetEntity="RoutingRouteBooking", mappedBy="route")
+     * @ORM\OrderBy({"passengerName" = "ASC"})
      */
     public $bookings = [];
 

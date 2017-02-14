@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -28,43 +30,43 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
  */
 class DDC493Customer {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
-     * @JoinColumn(name="contact", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
+     * @ORM\JoinColumn(name="contact", referencedColumnName="id")
      */
     public $contact;
 
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC493Distributor extends DDC493Customer {
 }
 
 /**
- * @Entity
+ * @ORM\Entity
   */
 class DDC493Contact
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     public $data;
 }

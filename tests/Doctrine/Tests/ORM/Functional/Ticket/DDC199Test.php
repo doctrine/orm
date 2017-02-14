@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC199Test extends OrmFunctionalTestCase
@@ -52,51 +53,51 @@ class DDC199Test extends OrmFunctionalTestCase
 
 
 /**
- * @Entity @Table(name="ddc199_entities")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
+ * @ORM\Entity @ORM\Table(name="ddc199_entities")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
  */
 class DDC199ParentClass
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $parentData;
 
     /**
-     * @OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
      */
     public $relatedEntities;
 }
 
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC199ChildClass extends DDC199ParentClass
 {
     /**
-     * @Column
+     * @ORM\Column
      */
     public $childData;
 }
 
-/** @Entity @Table(name="ddc199_relatedclass") */
+/** @ORM\Entity @ORM\Table(name="ddc199_relatedclass") */
 class DDC199RelatedClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $relatedData;
 
     /**
-     * @ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
-     * @JoinColumn(name="parent_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     public $parent;
 }

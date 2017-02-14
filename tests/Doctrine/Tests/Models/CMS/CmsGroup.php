@@ -2,27 +2,30 @@
 
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of CmsGroup
  *
  * @author robo
- * @Entity
- * @Table(name="cms_groups")
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="cms_groups")
  */
 class CmsGroup
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(length=50)
+     * @ORM\Column(length=50)
      */
     public $name;
     /**
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="groups")
      */
     public $users;
 

@@ -2,29 +2,32 @@
 
 namespace Doctrine\Tests\Models\Legacy;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="legacy_cars")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_cars")
  */
 class LegacyCar
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="iCarId", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(name="iCarId", type="integer", nullable=false)
      */
     public $id;
+
     /**
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
+     * @ORM\ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
      */
     public $users;
 
     /**
-     * @Column(name="sDescription", type="string", length=255, unique=true)
+     * @ORM\Column(name="sDescription", type="string", length=255, unique=true)
      */
     public $description;
 
-    function getDescription()
+    public function getDescription()
     {
         return $this->description;
     }

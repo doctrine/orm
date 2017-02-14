@@ -2,16 +2,21 @@
 
 namespace Doctrine\Tests\Models\Company;
 
-/** @Entity @Table(name="company_organizations") */
+use Doctrine\ORM\Annotation as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="company_organizations")
+ */
 class CompanyOrganization {
    /**
-    * @Id @Column(type="integer")
-    * @GeneratedValue(strategy="AUTO")
+    * @ORM\Id @ORM\Column(type="integer")
+    * @ORM\GeneratedValue(strategy="AUTO")
     */
    private $id;
 
     /**
-     * @OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
      */
     public $events;
 
@@ -29,8 +34,8 @@ class CompanyOrganization {
     }
 
     /**
-     * @OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
-     * @JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
+     * @ORM\OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
+     * @ORM\JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
     private $mainevent;
 

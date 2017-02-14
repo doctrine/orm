@@ -2,19 +2,20 @@
 
 namespace Doctrine\Tests\Models\DDC2372;
 
-use Doctrine\Tests\Models\DDC2372\Traits\DDC2372AddressTrait;
+use Doctrine\ORM\Annotation as ORM;
 
-/** @Entity @Table(name="users") */
+/** @ORM\Entity @ORM\Table(name="users") */
 class DDC2372User
 {
-    use DDC2372AddressTrait;
+    use Traits\DDC2372AddressTrait;
 
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=50) */
+
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     public function getId()

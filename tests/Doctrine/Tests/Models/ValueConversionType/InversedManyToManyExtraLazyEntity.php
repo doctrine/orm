@@ -3,21 +3,22 @@
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_inversed_manytomany_extralazy")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_inversed_manytomany_extralazy")
  */
 class InversedManyToManyExtraLazyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id1;
 
     /**
-     * @ManyToMany(
+     * @ORM\ManyToMany(
      *     targetEntity="OwningManyToManyExtraLazyEntity",
      *     mappedBy="associatedEntities",
      *     fetch="EXTRA_LAZY",

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1335
  */
@@ -148,28 +150,28 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1335User
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="string", unique=true)
+     * @ORM\Column(type="string", unique=true)
      */
     public $email;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
      */
     public $phones;
 
@@ -186,25 +188,25 @@ class DDC1335User
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1335Phone
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(name="numericalValue", type="string", nullable = false)
+     * @ORM\Column(name="numericalValue", type="string", nullable = false)
      */
     public $numericalValue;
 
     /**
-     * @ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
+     * @ORM\ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
      */
     public $user;
 

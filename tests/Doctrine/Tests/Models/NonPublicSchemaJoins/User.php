@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\NonPublicSchemaJoins;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Doctrine\Tests\Models\NonPublicSchemaJoins\User
  *
- * @Entity
- * @Table(name="readers.user")
+ * @ORM\Entity
+ * @ORM\Table(name="readers.user")
  */
 class User
 {
     /**
-     * @Column(type="integer")
-     * @Id
+     * @ORM\Column(type="integer")
+     * @ORM\Id
      */
     public $id;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", inversedBy="authors")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", inversedBy="authors")
+     * @ORM\JoinTable(
      *      name="author_reader",
      *      schema="readers",
-     *      joinColumns={@JoinColumn(name="author_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="reader_id", referencedColumnName="id")}
+     *      joinColumns={@ORM\JoinColumn(name="author_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="reader_id", referencedColumnName="id")}
      * )
      *
      * @var User[]
@@ -30,7 +32,7 @@ class User
     public $readers;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", mappedBy="readers")
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", mappedBy="readers")
      *
      * @var User[]
      */

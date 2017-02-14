@@ -2,39 +2,41 @@
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="customtype_parents")
+ * @ORM\Entity
+ * @ORM\Table(name="customtype_parents")
  */
 class CustomTypeParent
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="negative_to_positive", nullable=true)
+     * @ORM\Column(type="negative_to_positive", nullable=true)
      */
     public $customInteger;
 
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
      */
     public $child;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
      */
     private $friendsWithMe;
 
     /**
-     * @ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
+     * @ORM\JoinTable(
      *     name="customtype_parent_friends",
-     *     joinColumns={@JoinColumn(name="customtypeparent_id", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="friend_customtypeparent_id", referencedColumnName="id")}
+     *     joinColumns={@ORM\JoinColumn(name="customtypeparent_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="friend_customtypeparent_id", referencedColumnName="id")}
      * )
      */
     private $myFriends;

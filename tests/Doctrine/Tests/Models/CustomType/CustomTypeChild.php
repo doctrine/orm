@@ -2,20 +2,22 @@
 
 namespace Doctrine\Tests\Models\CustomType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="customtype_children")
+ * @ORM\Entity
+ * @ORM\Table(name="customtype_children")
  */
 class CustomTypeChild
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="upper_case_string")
+     * @ORM\Column(type="upper_case_string")
      */
     public $lowerCaseString = 'foo';
 }

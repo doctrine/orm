@@ -2,29 +2,34 @@
 
 namespace Doctrine\Tests\Models\Legacy;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="legacy_articles")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_articles")
  */
 class LegacyArticle
 {
     /**
-     * @Id
-     * @Column(name="iArticleId", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="iArticleId", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
+
     /**
-     * @Column(name="sTopic", type="string", length=255)
+     * @ORM\Column(name="sTopic", type="string", length=255)
      */
     public $topic;
+
     /**
-     * @Column(name="sText", type="text")
+     * @ORM\Column(name="sText", type="text")
      */
     public $text;
+
     /**
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
-     * @JoinColumn(name="iUserId", referencedColumnName="iUserId")
+     * @ORM\ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
+     * @ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
     public $user;
     

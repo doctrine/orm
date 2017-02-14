@@ -2,26 +2,28 @@
 
 namespace Doctrine\Tests\Models\Tweet;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="tweet_user_list")
+ * @ORM\Entity
+ * @ORM\Table(name="tweet_user_list")
  */
 class UserList
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $listName;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="userLists")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="userLists")
      */
     public $owner;
 }

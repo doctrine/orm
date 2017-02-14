@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group DDC-1300
  */
@@ -43,26 +45,26 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1300Foo
 {
     /**
      * @var int fooID
-     * @Column(name="fooID", type="integer", nullable=false)
-     * @GeneratedValue(strategy="AUTO")
-     * @Id
+     * @ORM\Column(name="fooID", type="integer", nullable=false)
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Id
      */
     public $fooID = null;
 
     /**
      * @var string fooReference
-     * @Column(name="fooReference", type="string", nullable=true, length=45)
+     * @ORM\Column(name="fooReference", type="string", nullable=true, length=45)
      */
     public $fooReference = null;
 
     /**
-     * @OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
+     * @ORM\OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
      * cascade={"persist"})
      */
     public $fooLocaleRefFoo = null;
@@ -81,28 +83,28 @@ class DDC1300Foo
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1300FooLocale
 {
 
     /**
-     * @ManyToOne(targetEntity="DDC1300Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
+     * @ORM\ManyToOne(targetEntity="DDC1300Foo")
+     * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
+     * @ORM\Id
      */
     public $foo = null;
 
     /**
      * @var string locale
-     * @Column(name="locale", type="string", nullable=false, length=5)
-     * @Id
+     * @ORM\Column(name="locale", type="string", nullable=false, length=5)
+     * @ORM\Id
      */
     public $locale = null;
 
     /**
      * @var string title
-     * @Column(name="title", type="string", nullable=true, length=150)
+     * @ORM\Column(name="title", type="string", nullable=true, length=150)
      */
     public $title = null;
 

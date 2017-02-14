@@ -3,47 +3,48 @@
 namespace Doctrine\Tests\Models\Quote;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="quote-user")
+ * @ORM\Entity
+ * @ORM\Table(name="quote-user")
  */
 class User
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="user-id")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="user-id")
      */
     public $id;
 
     /**
-     * @Column(type="string", name="user-name")
+     * @ORM\Column(type="string", name="user-name")
      */
     public $name;
 
     /**
-     * @OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
      */
     public $phones;
 
     /**
-     * @JoinColumn(name="address-id", referencedColumnName="address-id")
-     * @OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
+     * @ORM\JoinColumn(name="address-id", referencedColumnName="address-id")
+     * @ORM\OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
      */
     public $address;
 
     /**
-     * @ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
-     * @JoinTable(name="quote-users-groups",
+     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="quote-users-groups",
      *      joinColumns={
-     *          @JoinColumn(
+     *          @ORM\JoinColumn(
      *              name="user-id",
      *              referencedColumnName="user-id"
      *          )
      *      },
      *      inverseJoinColumns={
-     *          @JoinColumn(
+     *          @ORM\JoinColumn(
      *              name="group-id",
      *              referencedColumnName="group-id"
      *          )

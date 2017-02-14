@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * @group embedded
  */
 class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    function testNestedEmbeddablesAreHydratedWithProperClass()
+    public function testNestedEmbeddablesAreHydratedWithProperClass()
     {
         $this->schemaTool->createSchema([$this->em->getClassMetadata(DDC3582Entity::class)]);
         $this->em->persist(new DDC3582Entity('foo'));
@@ -23,13 +25,13 @@ class DDC3582Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC3582Entity
 {
-    /** @Column @Id */
+    /** @ORM\Column @ORM\Id */
     private $id;
 
-    /** @Embedded(class="DDC3582Embeddable1") @var DDC3582Embeddable1 */
+    /** @ORM\Embedded(class="DDC3582Embeddable1") @var DDC3582Embeddable1 */
     public $embeddable1;
 
     public function __construct($id)
@@ -39,27 +41,27 @@ class DDC3582Entity
     }
 }
 
-/** @Embeddable */
+/** @ORM\Embeddable */
 class DDC3582Embeddable1
 {
-    /** @Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
+    /** @ORM\Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
     public $embeddable2;
 
     public function __construct() { $this->embeddable2 = new DDC3582Embeddable2(); }
 }
 
-/** @Embeddable */
+/** @ORM\Embeddable */
 class DDC3582Embeddable2
 {
-    /** @Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
+    /** @ORM\Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
     public $embeddable3;
 
     public function __construct() { $this->embeddable3 = new DDC3582Embeddable3(); }
 }
 
-/** @Embeddable */
+/** @ORM\Embeddable */
 class DDC3582Embeddable3
 {
-    /** @Column */
+    /** @ORM\Column */
     public $embeddedValue = 'foo';
 }

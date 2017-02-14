@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC144Test extends OrmFunctionalTestCase
@@ -36,21 +37,24 @@ class DDC144Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="ddc144_flowelements")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(type="string", name="discr")
- * @DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
+ * @ORM\Entity
+ * @ORM\Table(name="ddc144_flowelements")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(type="string", name="discr")
+ * @ORM\DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
  */
 class DDC144FlowElement
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     *
      * @var int
      */
     public $id;
 
-    /** @Column */
+    /** @ORM\Column */
     public $property;
 }
 
@@ -59,10 +63,9 @@ abstract class DDC144Expression extends DDC144FlowElement
     abstract public function method();
 }
 
-/** @Entity @Table(name="ddc144_operands") */
-class DDC144Operand extends DDC144Expression
-{
-    /** @Column */
+/** @ORM\Entity @ORM\Table(name="ddc144_operands") */
+class DDC144Operand extends DDC144Expression {
+    /** @ORM\Column */
     public $operandProperty;
 
     public function method()

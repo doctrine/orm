@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1514
@@ -65,17 +66,17 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1514EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $title;
-    /** @ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
+    /** @ORM\ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
     public $entitiesB;
-    /** @ManyToOne(targetEntity="DDC1514EntityC") */
+    /** @ORM\ManyToOne(targetEntity="DDC1514EntityC") */
     public $entityC;
 
     public function __construct()
@@ -85,30 +86,30 @@ class DDC1514EntityA
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1514EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
+     * @ORM\ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
      */
     public $entityAFrom;
     /**
-     * @ManyToOne(targetEntity="DDC1514EntityA")
+     * @ORM\ManyToOne(targetEntity="DDC1514EntityA")
      */
     public $entityATo;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1514EntityC
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $title;
 }

@@ -82,20 +82,13 @@ class ConfigurationTest extends DoctrineTestCase
         $paths = [__DIR__];
         $reflectionClass = new ReflectionClass(ConfigurationTestAnnotationReaderChecker::class);
 
-        $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths, false);
-        $reader = $annotationDriver->getReader();
-        $annotation = $reader->getMethodAnnotation(
-            $reflectionClass->getMethod('namespacedAnnotationMethod'),
-            AnnotationNamespace\PrePersist::class
-        );
-        self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
-
         $annotationDriver = $this->configuration->newDefaultAnnotationDriver($paths);
         $reader = $annotationDriver->getReader();
         $annotation = $reader->getMethodAnnotation(
-            $reflectionClass->getMethod('simpleAnnotationMethod'),
+            $reflectionClass->getMethod('annotatedMethod'),
             AnnotationNamespace\PrePersist::class
         );
+
         self::assertInstanceOf(AnnotationNamespace\PrePersist::class, $annotation);
     }
 
@@ -393,13 +386,8 @@ class ConfigurationTest extends DoctrineTestCase
 
 class ConfigurationTestAnnotationReaderChecker
 {
-    /** @PrePersist */
-    public function simpleAnnotationMethod()
-    {
-    }
-
     /** @AnnotationNamespace\PrePersist */
-    public function namespacedAnnotationMethod()
+    public function annotatedMethod()
     {
     }
 }

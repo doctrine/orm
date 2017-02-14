@@ -3,37 +3,38 @@
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache
- * @Entity
- * @Table("cache_traveler")
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_traveler")
  */
 class Traveler
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     protected $name;
 
     /**
-     * @Cache("NONSTRICT_READ_WRITE")
-     * @OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\Cache("NONSTRICT_READ_WRITE")
+     * @ORM\OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var \Doctrine\Common\Collections\Collection
      */
     public $travels;
 
     /**
-     * @Cache
-     * @OneToOne(targetEntity="TravelerProfile")
+     * @ORM\Cache
+     * @ORM\OneToOne(targetEntity="TravelerProfile")
      */
      protected $profile;
 

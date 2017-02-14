@@ -2,27 +2,29 @@
 
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_login")
+ * @ORM\Entity
+ * @ORM\Table("cache_login")
  */
 class Login
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     public $name;
 
     /**
-     * @ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
-     * @JoinColumn(name="token_id", referencedColumnName="token")
+     * @ORM\ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
+     * @ORM\JoinColumn(name="token_id", referencedColumnName="token")
      */
     public $token;
 

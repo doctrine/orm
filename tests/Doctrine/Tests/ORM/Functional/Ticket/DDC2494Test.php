@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2494
@@ -71,26 +72,26 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Table(name="ddc2494_currency")
- * @Entity
+ * @ORM\Table(name="ddc2494_currency")
+ * @ORM\Entity
  */
 class DDC2494Currency
 {
     /**
-     * @Id
-     * @Column(type="integer", type="ddc2494_tinyint")
+     * @ORM\Id
+     * @ORM\Column(type="integer", type="ddc2494_tinyint")
      */
     protected $id;
 
     /**
-     * @Column(name="temp", type="ddc2494_tinyint", nullable=false)
+     * @ORM\Column(name="temp", type="ddc2494_tinyint", nullable=false)
      */
     protected $temp;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
      */
     protected $campaigns;
 
@@ -117,23 +118,23 @@ class DDC2494Currency
 }
 
 /**
- * @Table(name="ddc2494_campaign")
- * @Entity
+ * @ORM\Table(name="ddc2494_campaign")
+ * @ORM\Entity
  */
 class DDC2494Campaign
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
      * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
      *
-     * @ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
-     * @JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
      */
     protected $currency;
 

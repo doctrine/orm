@@ -9,6 +9,7 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query as ORMQuery;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 use Doctrine\ORM\Query\Lexer;
@@ -2364,34 +2365,34 @@ class MyAbsFunction extends FunctionNode
     }
 }
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1384Model
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $aVeryLongIdentifierThatShouldBeShortenedByTheSQLWalker_fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo;
 }
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1474Entity
 {
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
     /**
-     * @column(type="float")
+     * @ORM\Column(type="float")
      */
     private $value;
 

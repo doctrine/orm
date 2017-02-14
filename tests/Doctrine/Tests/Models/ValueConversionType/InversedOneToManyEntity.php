@@ -3,26 +3,27 @@
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_inversed_onetomany")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_inversed_onetomany")
  */
 class InversedOneToManyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id1;
 
     /**
-     * @OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
+     * @ORM\OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
      */
     public $associatedEntities;
 
     /**
-     * @Column(type="string", name="some_property")
+     * @ORM\Column(type="string", name="some_property")
      */
     public $someProperty;
 

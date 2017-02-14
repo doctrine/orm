@@ -2,35 +2,37 @@
 
 namespace Doctrine\Tests\Models\DDC3597;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
  * Description of Media
  *
  * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
- * @Entity
+ * @ORM\Entity
  */
-abstract class DDC3597Media extends DDC3597Root {
-
+abstract class DDC3597Media extends DDC3597Root
+{
     /**
      * @var string
      *
-     * @Column
+     * @ORM\Column
      */
     private $distributionHash;
 
     /**
      * @var integer
      *
-     * @Column
+     * @ORM\Column
      */
     private $size = 0;
 
     /**
      * @var string
-     * @Column
+     * @ORM\Column
      */
     private $format;
 
-    function __construct($distributionHash) {
+    public function __construct($distributionHash) {
         $this->distributionHash = $distributionHash;
     }
 
@@ -68,7 +70,4 @@ abstract class DDC3597Media extends DDC3597Root {
     public function setFormat($format) {
         $this->format = $format;
     }
-
-
-
 }

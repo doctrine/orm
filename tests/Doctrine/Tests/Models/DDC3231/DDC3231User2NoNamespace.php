@@ -1,20 +1,22 @@
 <?php
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity(repositoryClass="DDC3231User2NoNamespaceRepository")
- * @Table(name="no_namespace_users2")
+ * @ORM\Entity(repositoryClass="DDC3231User2NoNamespaceRepository")
+ * @ORM\Table(name="no_namespace_users2")
  */
 class DDC3231User2NoNamespace
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     protected $name;
 

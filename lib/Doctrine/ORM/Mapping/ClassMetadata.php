@@ -474,22 +474,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the ReflectionProperty for the single identifier field.
-     *
-     * @return \ReflectionProperty
-     *
-     * @throws BadMethodCallException If the class has a composite identifier.
-     */
-    public function getSingleIdReflectionProperty()
-    {
-        if ($this->isIdentifierComposite) {
-            throw new BadMethodCallException("Class " . $this->name . " has a composite identifier.");
-        }
-
-        return $this->reflFields[$this->identifier[0]];
-    }
-
-    /**
      * Extracts the identifier values of an entity of this class.
      *
      * For composite identifiers, the identifier values are returned as an array
@@ -1232,7 +1216,9 @@ class ClassMetadata implements ClassMetadataInterface
 
             if ($uniqueConstraintColumns) {
                 if ( ! $this->table) {
-                    throw new RuntimeException("ClassMetadata::setTable() has to be called before defining a one to one relationship.");
+                    throw new RuntimeException(
+                        "ClassMetadata::setTable() has to be called before defining a one to one relationship."
+                    );
                 }
 
                 $this->table->addUniqueConstraint(
@@ -1432,7 +1418,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function setIdentifier(array $identifier)
     {
         $this->identifier = $identifier;
-        $this->isIdentifierComposite = (count($this->identifier) > 1);
+        $this->isIdentifierComposite = count($this->identifier) > 1;
     }
 
     /**

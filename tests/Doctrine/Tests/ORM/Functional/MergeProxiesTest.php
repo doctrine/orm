@@ -239,10 +239,11 @@ class MergeProxiesTest extends OrmFunctionalTestCase
 
         $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [realpath(__DIR__ . '/../../Models/Cache')],
-            true
-        ));
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver([
+                realpath(__DIR__ . '/../../Models/Cache')
+            ])
+        );
         $config->setSQLLogger($logger);
 
         // always runs on sqlite to prevent multi-connection race-conditions with the test suite

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -36,22 +37,22 @@ class DBAL483Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DBAL483Default
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="integer", options={"default": 0})
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     public $num;
 
     /**
-     * @Column(type="string", options={"default": "foo"})
+     * @ORM\Column(type="string", options={"default": "foo"})
      */
     public $str = "foo";
 }

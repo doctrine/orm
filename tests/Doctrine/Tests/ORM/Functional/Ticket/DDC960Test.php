@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC960Test extends OrmFunctionalTestCase
@@ -39,9 +40,9 @@ class DDC960Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
  *  "root" = "DDC960Root",
  *  "child" = "DDC960Child"
  * })
@@ -49,12 +50,12 @@ class DDC960Test extends OrmFunctionalTestCase
 class DDC960Root
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @Column(type="integer") @Version
+     * @ORM\Column(type="integer") @ORM\Version
      */
     private $version;
 
@@ -70,12 +71,12 @@ class DDC960Root
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC960Child extends DDC960Root
 {
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      * @var string
      */
     private $name;

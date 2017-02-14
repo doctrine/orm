@@ -1,50 +1,55 @@
 <?php
 
 namespace Doctrine\Tests\Models\Cache;
+
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Cache("READ_ONLY")
- * @Table("cache_token")
+ * @ORM\Entity
+ * @ORM\Cache("READ_ONLY")
+ * @ORM\Table("cache_token")
  */
 class Token
 {
     /**
-     * @Id
-     * @Column(type="string")
+     * @ORM\Id
+     * @ORM\Column(type="string")
      */
     public $token;
 
     /**
-     * @Column(type="date")
+     * @ORM\Column(type="date")
      */
     public $expiresAt;
 
     /**
-     * @OneToOne(targetEntity="Client")
+     * @ORM\OneToOne(targetEntity="Client")
      */
     public $client;
 
     /**
-     * @OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
+     * @ORM\OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
+     *
      * @var array
      */
     public $logins;
 
     /**
-     * @ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumn(name="action_name", referencedColumnName="name")
+     * @ORM\ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\JoinColumn(name="action_name", referencedColumnName="name")
+     *
      * @var array
      */
     public $action;
 
     /**
-     * @ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
-     * @JoinColumns({
-     *   @JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
-     *   @JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
+     * @ORM\ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
+     *   @ORM\JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")
      * })
+     *
      * @var ComplexAction
      */
     public $complexAction;

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -54,17 +55,17 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC735Product
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @OneToMany(
+     * @ORM\OneToMany(
      *   targetEntity="DDC735Review",
      *   mappedBy="product",
      *   cascade={"persist"},
@@ -95,17 +96,17 @@ class DDC735Product
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC735Review
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
+     * @ORM\ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
      */
     protected $product;
 

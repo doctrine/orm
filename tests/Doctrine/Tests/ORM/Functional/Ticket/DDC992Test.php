@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-992
@@ -83,22 +84,22 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
  */
 class DDC992Parent
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-    /** @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs") */
+    /** @ORM\ManyToOne(targetEntity="DDC992Parent", inversedBy="childs") */
     public $parent;
-    /** @OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
+    /** @ORM\OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
     public $childs;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC992Child extends DDC992Parent
 {
@@ -109,7 +110,7 @@ class DDC992Child extends DDC992Parent
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC992Role
 {
@@ -119,23 +120,23 @@ class DDC992Role
     }
 
     /**
-     *  @Id  @Column(name="roleID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     *  @ORM\Id  @ORM\Column(name="roleID", type="integer")
+     *  @ORM\GeneratedValue(strategy="AUTO")
      */
     public $roleID;
     /**
-     * @Column (name="name", type="string", length=45)
+     * @ORM\Column (name="name", type="string", length=45)
      */
     public $name;
     /**
-     * @ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
+     * @ORM\ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
      */
     public $extendedBy;
     /**
-     * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
-     * @JoinTable (name="RoleRelations",
-     *      joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *      inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}
+     * @ORM\ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
+     * @ORM\JoinTable (name="RoleRelations",
+     *      joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}
      *      )
      */
     public $extends;

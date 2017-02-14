@@ -3,8 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Tools\SchemaTool;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
@@ -50,39 +50,39 @@ class DDC2138Test extends OrmFunctionalTestCase
 
 
 /**
- * @Table(name="structures")
- * @Entity
+ * @ORM\Table(name="structures")
+ * @ORM\Entity
  */
 class DDC2138Structure
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(type="string", length=32, nullable=true)
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $name;
 }
 
 /**
- * @Entity
- * @Table(name="users_followed_objects")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="object_type", type="smallint")
- * @DiscriminatorMap({4 = "DDC2138UserFollowedUser", 3 = "DDC2138UserFollowedStructure"})
+ * @ORM\Entity
+ * @ORM\Table(name="users_followed_objects")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="object_type", type="smallint")
+ * @ORM\DiscriminatorMap({4 = "DDC2138UserFollowedUser", 3 = "DDC2138UserFollowedStructure"})
  */
 abstract class DDC2138UserFollowedObject
 {
     /**
      * @var int $id
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -98,20 +98,20 @@ abstract class DDC2138UserFollowedObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     protected $user;
 
     /**
-     * @ManyToOne(targetEntity="DDC2138Structure")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC2138Structure")
+     * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
      * @var Structure $followedStructure
      */
     private $followedStructure;
@@ -149,20 +149,20 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     protected $user;
 
     /**
-     * @ManyToOne(targetEntity="DDC2138User")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="DDC2138User")
+     * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     private $followedUser;
@@ -201,32 +201,32 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 }
 
 /**
- * @Table(name="users")
- * @Entity
+ * @ORM\Table(name="users")
+ * @ORM\Entity
  */
 class DDC2138User
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(type="string", length=32, nullable=true)
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $name;
 
     /**
      * @var ArrayCollection $followedUsers
-     * @OneToMany(targetEntity="DDC2138UserFollowedUser", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="DDC2138UserFollowedUser", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     protected $followedUsers;
 
     /**
      * @var ArrayCollection $followedStructures
-     * @OneToMany(targetEntity="DDC2138UserFollowedStructure", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="DDC2138UserFollowedStructure", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     protected $followedStructures;
 

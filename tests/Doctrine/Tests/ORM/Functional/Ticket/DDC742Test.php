@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group non-cacheable
@@ -74,33 +75,33 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="ddc742_users")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc742_users")
  */
 class DDC742User
 {
     /**
      * User Id
      *
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @var int
      */
     public $id;
 
     /**
-     * @Column(length=100, type="string")
+     * @ORM\Column(length=100, type="string")
      * @var string
      */
     public $title;
 
     /**
-     * @ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
+     * @ORM\JoinTable(
      *  name="user_comments",
-     *  joinColumns={@JoinColumn(name="user_id",referencedColumnName="id")},
-     *  inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
+     *  joinColumns={@ORM\JoinColumn(name="user_id",referencedColumnName="id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="comment_id", referencedColumnName="id")}
      * )
      *
      * @var \Doctrine\ORM\PersistentCollection
@@ -109,23 +110,23 @@ class DDC742User
 }
 
 /**
- * @Entity
- * @Table(name="ddc742_comments")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc742_comments")
  */
 class DDC742Comment
 {
     /**
      * User Id
      *
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @var int
      */
     public $id;
 
     /**
-     * @Column(length=100, type="string")
+     * @ORM\Column(length=100, type="string")
      * @var string
      */
     public $content;

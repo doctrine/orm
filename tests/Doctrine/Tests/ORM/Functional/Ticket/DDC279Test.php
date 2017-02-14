@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
+
 class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
@@ -59,75 +61,75 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
  */
 abstract class DDC279EntityXAbstract
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     public $data;
 
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
-     * @OneToOne(targetEntity="DDC279EntityY")
-     * @JoinColumn(name="y_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC279EntityY")
+     * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityY
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     public $data;
 
     /**
-     * @OneToOne(targetEntity="DDC279EntityZ")
-     * @JoinColumn(name="z_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity="DDC279EntityZ")
+     * @ORM\JoinColumn(name="z_id", referencedColumnName="id")
      */
     public $z;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC279EntityZ
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(name="id", type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(name="id", type="integer")
      */
     public $id;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     public $data;
 }

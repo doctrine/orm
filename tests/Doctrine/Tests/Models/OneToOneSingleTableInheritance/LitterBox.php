@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="one_to_one_single_table_inheritance_litter_box")
+ * @ORM\Entity
+ * @ORM\Table(name="one_to_one_single_table_inheritance_litter_box")
  */
 class LitterBox
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }
