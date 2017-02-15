@@ -5,26 +5,29 @@ There are use-cases when you'll want to sort collections when they are
 retrieved from the database. In userland you do this as long as you
 haven't initially saved an entity with its associations into the
 database. To retrieve a sorted collection from the database you can
-use the ``@OrderBy`` annotation with an collection that specifies
+use the ``@ORM\OrderBy`` annotation with an collection that specifies
 an DQL snippet that is appended to all queries with this
 collection.
 
-Additional to any ``@OneToMany`` or ``@ManyToMany`` annotation you
-can specify the ``@OrderBy`` in the following way:
+Additional to any ``@ORM\OneToMany`` or ``@ORM\ManyToMany`` annotation
+you can specify the ``@ORM\OrderBy`` in the following way:
 
 .. configuration-block::
 
     .. code-block:: php
 
         <?php
-        /** @Entity **/
+
+        use Doctrine\ORM\Annotation as ORM;
+
+        /** @ORM\Entity **/
         class User
         {
             // ...
         
             /**
-             * @ManyToMany(targetEntity="Group")
-             * @OrderBy({"name" = "ASC"})
+             * @ORM\ManyToMany(targetEntity="Group")
+             * @ORM\OrderBy({"name" = "ASC"})
              **/
             private $groups;
         }
@@ -62,12 +65,12 @@ The DQL Snippet in OrderBy is only allowed to consist of
 unqualified, unquoted field names and of an optional ASC/DESC
 positional statement. Multiple Fields are separated by a comma (,).
 The referenced field names have to exist on the ``targetEntity``
-class of the ``@ManyToMany`` or ``@OneToMany`` annotation.
+class of the ``@ORM\ManyToMany`` or ``@ORM\OneToMany`` annotation.
 
 The semantics of this feature can be described as follows.
 
 
--  ``@OrderBy`` acts as an implicit ORDER BY clause for the given
+-  ``@ORM\OrderBy`` acts as an implicit ORDER BY clause for the given
    fields, that is appended to all the explicitly given ORDER BY
    items.
 -  All collections of the ordered type are always retrieved in an

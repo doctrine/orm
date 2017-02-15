@@ -309,6 +309,39 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 continue;
             }
 
+            $propertyAnnotations = $this->reader->getPropertyAnnotations($reflProperty);
+
+            foreach ($propertyAnnotations as $key => $annot) {
+                if ( ! is_numeric($key)) {
+                    continue;
+                }
+
+                $propertyAnnotations[get_class($annot)] = $annot;
+            }
+
+            // Field can only be annotated with one of:
+            // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
+            switch (true) {
+                case isset($propertyAnnotations[Annotation\Column::class]):
+                    // Field found
+                    $fieldMetadata = $this->convertReflectionPropertyToFieldMetadata(
+                        $reflProperty,
+                        $propertyAnnotations,
+                        $metadata
+                    );
+
+                    $metadata->addProperty($fieldMetadata);
+
+                    // Check for Version
+                    if ($fieldMetadata instanceof VersionFieldMetadata) {
+                        $metadata->setVersionProperty($fieldMetadata);
+                    }
+
+                    break;
+
+
+            }
+
 //            $property = $this->convertProperty($reflProperty);
 //
 //            $metadata->addProperty($property);
@@ -316,55 +349,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             // Field can only be annotated with one of:
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany
             $fieldName = $reflProperty->getName();
-
-            if ($columnAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Column::class)) {
-                if ($columnAnnot->type == null) {
-                    throw MappingException::propertyTypeIsRequired($className, $fieldName);
-                }
-
-                $isFieldVersioned = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class) !== null;
-                $fieldMetadata    = $this->convertColumnAnnotationToFieldMetadata($columnAnnot, $fieldName, $isFieldVersioned);
-
-                // Check for Id
-                if ($idAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\Id::class)) {
-                    $fieldMetadata->setPrimaryKey(true);
-                }
-
-                // Check for GeneratedValue strategy
-                if ($generatedValueAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\GeneratedValue::class)) {
-                    $strategy = strtoupper($generatedValueAnnot->strategy);
-
-                    $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, $strategy)));
-                }
-
-                // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
-                if ($seqGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\SequenceGenerator::class)) {
-                    $metadata->setGeneratorDefinition(
-                        [
-                            'sequenceName'   => $seqGeneratorAnnot->sequenceName,
-                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                        ]
-                    );
-                } else if ($this->reader->getPropertyAnnotation($reflProperty, 'Doctrine\ORM\Mapping\TableGenerator')) {
-                    throw MappingException::tableIdGeneratorNotImplemented($className);
-                } else if ($customGeneratorAnnot = $this->reader->getPropertyAnnotation($reflProperty, Annotation\CustomIdGenerator::class)) {
-                    $metadata->setGeneratorDefinition(
-                        [
-                            'class'     => $customGeneratorAnnot->class,
-                            'arguments' => $customGeneratorAnnot->arguments,
-                        ]
-                    );
-                }
-
-                $metadata->addProperty($fieldMetadata);
-
-                // Check for Version
-                if ($this->reader->getPropertyAnnotation($reflProperty, Annotation\Version::class)) {
-                    $metadata->setVersionProperty($fieldMetadata);
-                }
-
-                continue;
-            }
 
             $mapping = [];
             $mapping['fieldName'] = $fieldName;
@@ -690,6 +674,67 @@ class AnnotationDriver extends AbstractAnnotationDriver
             'entities' => $entities,
             'columns'  => $columns
         ];
+    }
+
+    private function convertReflectionPropertyToFieldMetadata(
+        \ReflectionProperty $reflProperty,
+        array $propertyAnnotations,
+        ClassMetadata $metadata /* @todo Should be removed once FieldMetadata owns Generator information */
+    )
+    {
+        $className   = $reflProperty->getDeclaringClass()->getName();
+        $fieldName   = $reflProperty->getName();
+        $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
+        $columnAnnot = $propertyAnnotations[Annotation\Column::class];
+
+        if ($columnAnnot->type == null) {
+            throw MappingException::propertyTypeIsRequired($className, $fieldName);
+        }
+
+        $fieldMetadata = $this->convertColumnAnnotationToFieldMetadata($columnAnnot, $fieldName, $isVersioned);
+
+        // Check for Id
+        if (isset($propertyAnnotations[Annotation\Id::class])) {
+            $fieldMetadata->setPrimaryKey(true);
+        }
+
+        // Check for GeneratedValue strategy
+        if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
+            $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
+            $strategy            = strtoupper($generatedValueAnnot->strategy);
+            $idGeneratorType     = constant(sprintf('%s::%s', GeneratorType::class, $strategy));
+
+            $metadata->setIdGeneratorType($idGeneratorType);
+        }
+
+        // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
+        switch (true) {
+            case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
+                $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
+
+                $metadata->setGeneratorDefinition([
+                    'sequenceName'   => $seqGeneratorAnnot->sequenceName,
+                    'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                ]);
+
+                break;
+
+            case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
+                $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
+
+                $metadata->setGeneratorDefinition([
+                    'class'     => $customGeneratorAnnot->class,
+                    'arguments' => $customGeneratorAnnot->arguments,
+                ]);
+
+                break;
+
+            /* @todo If it is not supported, why does this exist? */
+            case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
+                throw MappingException::tableIdGeneratorNotImplemented($className);
+        }
+
+        return $fieldMetadata;
     }
 
     /**

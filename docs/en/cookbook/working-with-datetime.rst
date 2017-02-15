@@ -15,10 +15,13 @@ these comparisons are always made **BY REFERENCE**. That means the following cha
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="datetime") */
+        /** @ORM\Column(type="datetime") */
         private $updated;
 
         public function setUpdated()
@@ -149,17 +152,20 @@ requiring timezoned datetimes:
 .. code-block:: php
 
     <?php
+
     namespace Shipping;
 
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Event
     {
-        /** @Column(type="datetime") */
+        /** @ORM\Column(type="datetime") */
         private $created;
 
-        /** @Column(type="string") */
+        /** @ORM\Column(type="string") */
         private $timezone;
 
         /**

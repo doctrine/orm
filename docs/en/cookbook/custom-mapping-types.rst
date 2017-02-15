@@ -97,7 +97,7 @@ class name. Now the new type can be used when mapping columns:
     <?php
     class MyPersistentClass
     {
-        /** @Column(type="mytype") */
+        /** @ORM\Column(type="mytype") */
         private $field;
     }
 
