@@ -16,7 +16,7 @@ New Features and Improvements
 Events: PostLoad now triggered after associations are loaded
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before Doctrine 2.5 if you had an entity with a ``@PostLoad`` event
+Before Doctrine 2.5 if you had an entity with a ``@ORM\PostLoad`` event
 defined then Doctrine would trigger listeners after the fields were
 loaded, but before assocations are available.
 
@@ -62,9 +62,9 @@ Embeddable Objects
 ~~~~~~~~~~~~~~~~~~
 
 Doctrine now supports creating multiple PHP objects from one database table
-implementing a feature called "Embeddable Objects". Next to an ``@Entity``
+implementing a feature called "Embeddable Objects". Next to an ``@ORM\Entity``
 class you can now define a class that is embeddable into a database table of an
-entity using the ``@Embeddable`` annotation. Embeddable objects can never be
+entity using the ``@ORM\Embeddable`` annotation. Embeddable objects can never be
 saved, updated or deleted on their own, only as part of an entity (called
 "root-entity" or "aggregate"). Consequently embeddables don't have a primary
 key, they are identified only by their values.
@@ -75,23 +75,25 @@ Example of defining and using embeddables classes:
 
     <?php
 
-    /** @Entity */
+    use Doctrine\ORM\Mapping as ORM;
+
+    /** @ORM\Entity */
     class Product
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
+        /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
         private $id;
 
-        /** @Embedded(class = "Money") */
+        /** @ORM\Embedded(class = "Money") */
         private $price;
     }
 
-    /** @Embeddable */
+    /** @ORM\Embeddable */
     class Money
     {
-        /** @Column(type = "decimal") */
+        /** @ORM\Column(type = "decimal") */
         private $value;
 
-        /** @Column(type = "string") */
+        /** @ORM\Column(type = "string") */
         private $currency = 'EUR';
     }
 
@@ -124,21 +126,24 @@ query to this table.
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity
-     * @Cache(usage="READ_ONLY", region="country_region")
+     * @ORM\Entity
+     * @ORM\Cache(usage="READ_ONLY", region="country_region")
      */
     class Country
     {
         /**
-         * @Id
-         * @GeneratedValue
-         * @Column(type="integer")
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
          */
         protected $id;
 
         /**
-         * @Column(unique=true)
+         * @ORM\Column(unique=true)
          */
         protected $name;
     }
@@ -198,9 +203,14 @@ lazy collection when using ``Collection::matching($criteria)``:
 
     <?php
 
+    use Doctrine\ORM\Mapping as ORM;
+
+    /**
+     * @ORM\Entity
+     */
     class Post
     {
-        /** @OneToMany(targetEntity="Comment", fetch="EXTRA_LAZY") */
+        /** @ORM\OneToMany(targetEntity="Comment", fetch="EXTRA_LAZY") */
         private $comments;
     }
 
@@ -231,8 +241,11 @@ only with a schema event listener before.
 
     <?php
 
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Table(name="product", indexes={@Index(columns={"description"},flags={"fulltext"})})
+     * @ORM\Entity
+     * @ORM\Table(name="product", indexes={@Index(columns={"description"},flags={"fulltext"})})
      */
     class Product
     {
@@ -289,9 +302,14 @@ EXTRA_LAZY Improvements
 
         <?php
 
+        use Doctrine\ORM\Mapping as ORM;
+
+        /**
+         * @ORM\Entity
+         */
         class User
         {
-            /** @OneToMany(targetEntity="Group", indexBy="id") */
+            /** @ORM\OneToMany(targetEntity="Group", indexBy="id") */
             private $groups;
         }
 
