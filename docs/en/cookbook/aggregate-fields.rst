@@ -32,27 +32,26 @@ Our entities look like:
 .. code-block:: php
 
     <?php
+
     namespace Bank\Entities;
-    
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Account
     {
-        /** @Id @GeneratedValue @Column(type="integer") */
+        /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
         private $id;
     
-        /** @Column(type="string", unique=true) */
+        /** @ORM\Column(type="string", unique=true) */
         private $no;
     
-        /**
-         * @OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"})
-         */
+        /** @ORM\OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"}) */
         private $entries;
     
-        /**
-         * @Column(type="integer")
-         */
+        /** @ORM\Column(type="integer") */
         private $maxCredit = 0;
     
         public function __construct($no, $maxCredit = 0)
@@ -64,21 +63,17 @@ Our entities look like:
     }
     
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Entry
     {
-        /** @Id @GeneratedValue @Column(type="integer") */
+        /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
         private $id;
     
-        /**
-         * @ManyToOne(targetEntity="Account", inversedBy="entries")
-         */
+        /** @ORM\ManyToOne(targetEntity="Account", inversedBy="entries") */
         private $account;
     
-        /**
-         * @Column(type="integer")
-         */
+        /** @ORM\Column(type="integer") */
         private $amount;
     
         public function __construct($account, $amount)
@@ -266,7 +261,7 @@ entries collection) we want to add an aggregate field called
     class Account
     {
         /**
-         * @Column(type="integer")
+         * @ORM\Column(type="integer")
          */
         private $balance = 0;
     
@@ -334,7 +329,7 @@ Optimistic locking is as easy as adding a version column:
     <?php
     class Account
     {
-        /** @Column(type="integer") @Version */
+        /** @ORM\Column(type="integer") @ORM\Version */
         private $version;
     }
 

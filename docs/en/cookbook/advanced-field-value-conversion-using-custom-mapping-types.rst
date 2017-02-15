@@ -31,21 +31,23 @@ The entity class:
     <?php
     
     namespace Geo\Entity;
+
+    use Doctrine\ORM\Annotation as ORM;
  
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Location
     {
         /**
-         * @Column(type="point")
+         * @ORM\Column(type="point")
          *
          * @var \Geo\ValueObject\Point
          */
         private $point;
 
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          *
          * @var string
          */

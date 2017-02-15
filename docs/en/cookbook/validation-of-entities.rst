@@ -58,14 +58,17 @@ First Annotations:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
-     * @HasLifecycleCallbacks
+     * @ORM\Entity
+     * @ORM\HasLifecycleCallbacks
      */
     class Order
     {
         /**
-         * @PrePersist @PreUpdate
+         * @ORM\PrePersist @ORM\PreUpdate
          */
         public function assertCustomerAllowedBuying() {}
     }
@@ -99,10 +102,13 @@ validation callbacks.
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     class Order
     {
         /**
-         * @PrePersist @PreUpdate
+         * @ORM\PrePersist @ORM\PreUpdate
          */
         public function validate()
         {

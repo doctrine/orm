@@ -46,15 +46,18 @@ switch to extra lazy as shown in these examples:
     .. code-block:: php
 
         <?php
+
         namespace Doctrine\Tests\Models\CMS;
 
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class CmsGroup
         {
             /**
-             * @ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
+             * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="groups", fetch="EXTRA_LAZY")
              */
             public $users;
         }
