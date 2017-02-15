@@ -213,8 +213,8 @@ This might look like this:
 .. code-block:: php
 
     <?php
-    use \Doctrine\ORM,
-        \Doctrine\Common;
+    use Doctrine\ORM,
+        Doctrine\Common;
     
     /**
      * The BlockStrategyEventListener will initialize a strategy after the

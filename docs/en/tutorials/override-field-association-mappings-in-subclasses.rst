@@ -14,12 +14,15 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
+     * @ORM\Entity
      *
-     * @AttributeOverrides({
-     *      @AttributeOverride(name="foo",
-     *          column=@Column(
+     * @ORM\AttributeOverrides({
+     *      @ORM\AttributeOverride(name="foo",
+     *          column=@ORM\Column(
      *              name     = "foo_overridden",
      *              type     = "integer",
      *              length   = 140,
@@ -29,9 +32,9 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
      *      )
      * })
      *
-     * @AssociationOverrides({
-     *      @AssociationOverride(name="bar",
-     *          joinColumns=@JoinColumn(
+     * @ORM\AssociationOverrides({
+     *      @ORM\AssociationOverride(name="bar",
+     *          joinColumns=@ORM\JoinColumn(
      *              name="example_entity_overridden_bar_id", referencedColumnName="id"
      *          )
      *      )
@@ -43,11 +46,11 @@ Suppose we have a class ExampleEntityWithOverride. This class uses trait Example
     }
 
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Bar
     {
-        /** @Id @Column(type="string") */
+        /** @ORM\Id @ORM\Column(type="string") */
         private $id;
     }
 
@@ -59,22 +62,25 @@ which has mapping metadata that is overridden by the annotation above:
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
      * Trait class
      */
     trait ExampleTrait
     {
-        /** @Id @Column(type="string") */
+        /** @ORM\Id @ORM\Column(type="string") */
         private $id;
 
         /**
-         * @Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
+         * @ORM\Column(name="trait_foo", type="integer", length=100, nullable=true, unique=true)
          */
         protected $foo;
 
         /**
-         * @OneToOne(targetEntity="Bar", cascade={"persist", "merge"})
-         * @JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
+         * @ORM\OneToOne(targetEntity="Bar", cascade={"persist", "merge"})
+         * @ORM\JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
          */
         protected $bar;
     }

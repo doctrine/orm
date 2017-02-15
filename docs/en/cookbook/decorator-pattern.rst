@@ -22,24 +22,27 @@ concrete subclasses, ``ConcreteComponent`` and ``ConcreteDecorator``.
     <?php
     
     namespace Test;
+
+    use Doctrine\ORM\Annotation as ORM;
  
     /**
-     * @Entity
-     * @InheritanceType("SINGLE_TABLE")
-     * @DiscriminatorColumn(name="discr", type="string")
-     * @DiscriminatorMap({"cc" = "Test\Component\ConcreteComponent", 
-        "cd" = "Test\Decorator\ConcreteDecorator"})
+     * @ORM\Entity
+     * @ORM\InheritanceType("SINGLE_TABLE")
+     * @ORM\DiscriminatorColumn(name="discr", type="string")
+     * @ORM\DiscriminatorMap({
+     *   "cc" = "Test\Component\ConcreteComponent",
+     *   "cd" = "Test\Decorator\ConcreteDecorator"
+     * })
      */
     abstract class Component
     {
- 
         /**
-         * @Id @Column(type="integer")
-         * @GeneratedValue(strategy="AUTO")
+         * @ORM\Id @ORM\Column(type="integer")
+         * @ORM\GeneratedValue(strategy="AUTO")
          */
         protected $id;
  
-        /** @Column(type="string", nullable=true) */
+        /** @ORM\Column(type="string", nullable=true) */
         protected $name;
  
         /**
@@ -83,10 +86,11 @@ purpose of keeping this example simple).
     <?php
     
     namespace Test\Component;
- 
+
+    use Doctrine\ORM\Annotation as ORM;
     use Test\Component;
  
-    /** @Entity */
+    /** @ORM\Entity */
     class ConcreteComponent extends Component
     {}
     
@@ -102,14 +106,16 @@ use a ``MappedSuperclass`` for this.
     <?php
 
     namespace Test;
+
+    use Doctrine\ORM\Annotation as ORM;
  
-    /** @MappedSuperclass */
+    /** @ORM\MappedSuperclass */
     abstract class Decorator extends Component
     {
  
         /**
-         * @OneToOne(targetEntity="Test\Component", cascade={"all"})
-         * @JoinColumn(name="decorates", referencedColumnName="id")
+         * @ORM\OneToOne(targetEntity="Test\Component", cascade={"all"})
+         * @ORM\JoinColumn(name="decorates", referencedColumnName="id")
          */
         protected $decorates;
  
@@ -184,14 +190,15 @@ of the getSpecial() method to its return value.
     <?php
     
     namespace Test\Decorator;
- 
+
+    use Doctrine\ORM\Annotation as ORM;
     use Test\Decorator;
  
-    /** @Entity */
+    /** @ORM\Entity */
     class ConcreteDecorator extends Decorator
     {
  
-        /** @Column(type="string", nullable=true) */
+        /** @ORM\Column(type="string", nullable=true) */
         protected $special;
  
         /**

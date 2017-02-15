@@ -28,16 +28,19 @@ and year of production as primary keys:
     .. code-block:: php
 
         <?php
+
         namespace VehicleCatalogue\Model;
 
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class Car
         {
-            /** @Id @Column(type="string") */
+            /** @ORM\Id @ORM\Column(type="string") */
             private $name;
-            /** @Id @Column(type="integer") */
+            /** @ORM\Id @ORM\Column(type="integer") */
             private $year
 
             public function __construct($name, $year)
@@ -137,7 +140,7 @@ of one or many parent entities.
 The semantics of mapping identity through foreign entities are easy:
 
 -   Only allowed on Many-To-One or One-To-One associations.
--   Plug an ``@Id`` annotation onto every association.
+-   Plug an ``@ORM\Id`` annotation onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
 -   Set a key ``associationKey:`` with the field name of the association in YAML.
 
@@ -154,19 +157,21 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         namespace Application\Model;
 
         use Doctrine\Common\Collections\ArrayCollection;
+        use Doctrine\ORM\Annotation as ORM;
 
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class Article
         {
-            /** @Id @Column(type="integer") @GeneratedValue */
+            /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
             private $id;
-            /** @Column(type="string") */
+
+            /** @ORM\Column(type="string") */
             private $title;
 
             /**
-             * @OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
+             * @ORM\OneToMany(targetEntity="ArticleAttribute", mappedBy="article", cascade={"ALL"}, indexBy="attribute")
              */
             private $attributes;
 
@@ -177,17 +182,17 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
         }
 
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class ArticleAttribute
         {
-            /** @Id @ManyToOne(targetEntity="Article", inversedBy="attributes") */
+            /** @ORM\Id @ORM\ManyToOne(targetEntity="Article", inversedBy="attributes") */
             private $article;
 
-            /** @Id @Column(type="string") */
+            /** @ORM\Id @ORM\Column(type="string") */
             private $attribute;
 
-            /** @Column(type="string") */
+            /** @ORM\Column(type="string") */
             private $value;
 
             public function __construct($name, $value, $article)
@@ -246,21 +251,24 @@ One good example for this is a user-address relationship:
     .. code-block:: php
 
         <?php
+
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class User
         {
-            /** @Id @Column(type="integer") @GeneratedValue */
+            /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
             private $id;
         }
 
         /**
-         * @Entity
+         * @ORM\Entity
          */
         class Address
         {
-            /** @Id @OneToOne(targetEntity="User") */
+            /** @ORM\Id @ORM\OneToOne(targetEntity="User") */
             private $user;
         }
 
@@ -295,23 +303,27 @@ of products purchased and maybe even the current price.
 
     <?php
     use Doctrine\Common\Collections\ArrayCollection;
+    use Doctrine\ORM\Annotation as ORM;
 
-    /** @Entity */
+    /** @ORM\Entity */
     class Order
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
+        /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
         private $id;
 
-        /** @ManyToOne(targetEntity="Customer") */
+        /** @ORM\ManyToOne(targetEntity="Customer") */
         private $customer;
-        /** @OneToMany(targetEntity="OrderItem", mappedBy="order") */
+
+        /** @ORM\OneToMany(targetEntity="OrderItem", mappedBy="order") */
         private $items;
 
-        /** @Column(type="boolean") */
+        /** @ORM\Column(type="boolean") */
         private $payed = false;
-        /** @Column(type="boolean") */
+
+        /** @ORM\Column(type="boolean") */
         private $shipped = false;
-        /** @Column(type="datetime") */
+
+        /** @ORM\Column(type="datetime") */
         private $created;
 
         public function __construct(Customer $customer)
@@ -322,16 +334,16 @@ of products purchased and maybe even the current price.
         }
     }
 
-    /** @Entity */
+    /** @ORM\Entity */
     class Product
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
+        /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
         private $id;
 
-        /** @Column(type="string") */
+        /** @ORM\Column(type="string") */
         private $name;
 
-        /** @Column(type="decimal") */
+        /** @ORM\Column(type="decimal") */
         private $currentPrice;
 
         public function getCurrentPrice()
@@ -340,19 +352,19 @@ of products purchased and maybe even the current price.
         }
     }
 
-    /** @Entity */
+    /** @ORM\Entity */
     class OrderItem
     {
-        /** @Id @ManyToOne(targetEntity="Order") */
+        /** @ORM\Id @ORM\ManyToOne(targetEntity="Order") */
         private $order;
 
-        /** @Id @ManyToOne(targetEntity="Product") */
+        /** @ORM\Id @ORM\ManyToOne(targetEntity="Product") */
         private $product;
 
-        /** @Column(type="integer") */
+        /** @ORM\Column(type="integer") */
         private $amount = 1;
 
-        /** @Column(type="decimal") */
+        /** @ORM\Column(type="decimal") */
         private $offeredPrice;
 
         public function __construct(Order $order, Product $product, $amount = 1)

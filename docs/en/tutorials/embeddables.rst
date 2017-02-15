@@ -5,7 +5,7 @@ Embeddables are classes which are not entities themselves, but are embedded
 in entities and can also be queried in DQL. You'll mostly want to use them
 to reduce duplication or separating concerns. Value objects such as date range
 or address are the primary use case for this feature. Embeddables can only
-contain properties with basic ``@Column`` mapping.
+contain properties with basic ``@ORM\Column`` mapping.
 
 For the purposes of this tutorial, we will assume that you have a ``User``
 class in your application and you would like to store an address in
@@ -18,26 +18,28 @@ instead of simply adding the respective columns to the ``User`` class.
 
         <?php
 
-        /** @Entity */
+        use Doctrine\ORM\Annotation as ORM;
+
+        /** @ORM\Entity */
         class User
         {
-            /** @Embedded(class = "Address") */
+            /** @ORM\Embedded(class = "Address") */
             private $address;
         }
 
-        /** @Embeddable */
+        /** @ORM\Embeddable */
         class Address
         {
-            /** @Column(type = "string") */
+            /** @ORM\Column(type = "string") */
             private $street;
 
-            /** @Column(type = "string") */
+            /** @ORM\Column(type = "string") */
             private $postalCode;
 
-            /** @Column(type = "string") */
+            /** @ORM\Column(type = "string") */
             private $city;
 
-            /** @Column(type = "string") */
+            /** @ORM\Column(type = "string") */
             private $country;
         }
 
@@ -110,10 +112,12 @@ The following example shows you how to set your prefix to ``myPrefix_``:
 
         <?php
 
-        /** @Entity */
+        use Doctrine\ORM\Annotation as ORM;
+
+        /** @ORM\Entity */
         class User
         {
-            /** @Embedded(class = "Address", columnPrefix = "myPrefix_") */
+            /** @ORM\Embedded(class = "Address", columnPrefix = "myPrefix_") */
             private $address;
         }
 
@@ -141,10 +145,12 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
 
         <?php
 
-        /** @Entity */
+        use Doctrine\ORM\Annotation as ORM;
+
+        /** @ORM\Entity */
         class User
         {
-            /** @Embedded(class = "Address", columnPrefix = false) */
+            /** @ORM\Embedded(class = "Address", columnPrefix = false) */
             private $address;
         }
 

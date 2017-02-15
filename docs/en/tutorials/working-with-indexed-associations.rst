@@ -40,27 +40,28 @@ The code and mappings for the Market entity looks like this:
         namespace Doctrine\Tests\Models\StockExchange;
 
         use Doctrine\Common\Collections\ArrayCollection;
+        use Doctrine\ORM\Annotation as ORM;
 
         /**
-         * @Entity
-         * @Table(name="exchange_markets")
+         * @ORM\Entity
+         * @ORM\Table(name="exchange_markets")
          */
         class Market
         {
             /**
-             * @Id @Column(type="integer") @GeneratedValue
+             * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
              * @var int
              */
             private $id;
 
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              * @var string
              */
             private $name;
 
             /**
-             * @OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
+             * @ORM\OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
              * @var Stock[]
              */
             private $stocks;
@@ -146,19 +147,23 @@ The ``Stock`` entity doesn't contain any special instructions that are new, but 
 here are the code and mappings for it:
 
 .. configuration-block::
+
     .. code-block:: php
 
         <?php
+
         namespace Doctrine\Tests\Models\StockExchange;
 
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity
-         * @Table(name="exchange_stocks")
+         * @ORM\Entity
+         * @ORM\Table(name="exchange_stocks")
          */
         class Stock
         {
             /**
-             * @Id @GeneratedValue @Column(type="integer")
+             * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
              * @var int
              */
             private $id;
@@ -166,12 +171,12 @@ here are the code and mappings for it:
             /**
              * For real this column would have to be unique=true. But I want to test behavior of non-unique overrides.
              *
-             * @Column(type="string", unique=true)
+             * @ORM\Column(type="string", unique=true)
              */
             private $symbol;
 
             /**
-             * @ManyToOne(targetEntity="Market", inversedBy="stocks")
+             * @ORM\ManyToOne(targetEntity="Market", inversedBy="stocks")
              * @var Market
              */
             private $market;
