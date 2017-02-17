@@ -726,6 +726,8 @@ examples are equivalent:
     // A single user by its nickname (__call magic)
     $user = $em->getRepository('MyProject\Domain\User')->findOneByNickname('romanb');
 
+.. versionadded:: 2.6
+
 Additionally, you can just count the result of the provided conditions when you don't really need the data:
 
 .. code-block:: php
