@@ -930,7 +930,11 @@ public function __construct()
     {
         $methodName = $type . Inflector::classify($fieldName);
         if (in_array($type, array("add", "remove")) && substr($methodName, -1) == "s") {
-            $methodName = substr($methodName, 0, -1);
+            if (substr($methodName, -3) == "ies") {
+                $methodName = substr($methodName, 0, -3) . "y";
+            } else {
+                $methodName = substr($methodName, 0, -1);
+            }
         }
 
         if ($this->hasMethod($methodName, $metadata)) {
