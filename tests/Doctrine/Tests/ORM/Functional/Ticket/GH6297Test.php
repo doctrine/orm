@@ -52,7 +52,7 @@ class GH6297Test extends OrmFunctionalTestCase
 
 /**
  * @Entity
- * @Table(name="users")
+ * @Table(name="gh6297_users")
  */
 class GH6297User
 {
@@ -81,7 +81,7 @@ class GH6297User
 
 /**
  * @Entity
- * @Table(name="groups")
+ * @Table(name="gh6297_groups")
  */
 class GH6297Group
 {
