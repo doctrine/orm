@@ -36,9 +36,8 @@ class GH6297Test extends OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $group = new GH6297Group(1, 'test');
-
-        $user = new GH6297User(1, $group);
+        $group = new GH6297Group(1, 1);
+        $user  = new GH6297User(1, $group);
 
         $this->_em->persist($group);
         $this->_em->persist($user);
@@ -57,7 +56,7 @@ class GH6297Test extends OrmFunctionalTestCase
 class GH6297User
 {
     /**
-     * @Id()
+     * @Id
      * @Column(type="integer")
      */
     public $id;
@@ -72,9 +71,9 @@ class GH6297User
      * @param int         $id
      * @param GH6297Group $group
      */
-    public function __construct($id, GH6297Group $group)
+    public function __construct(int $id, GH6297Group $group)
     {
-        $this->id    = (int) $id;
+        $this->id    = $id;
         $this->group = $group;
     }
 }
@@ -86,7 +85,7 @@ class GH6297User
 class GH6297Group
 {
     /**
-     * @Id()
+     * @Id
      * @Column(name="primary_id", type="integer")
      */
     public $primaryId;
@@ -105,10 +104,10 @@ class GH6297Group
      * @param int $primaryId
      * @param int $secondaryId
      */
-    public function __construct($primaryId, $secondaryId)
+    public function __construct(int $primaryId, int $secondaryId)
     {
-        $this->primaryId   = (int) $primaryId;
-        $this->secondaryId = (int) $secondaryId;
+        $this->primaryId   = $primaryId;
+        $this->secondaryId = $secondaryId;
         $this->users       = new ArrayCollection();
     }
 }
