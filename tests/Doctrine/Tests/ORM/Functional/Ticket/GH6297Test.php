@@ -92,7 +92,7 @@ class GH6297Group
     public $primaryId;
 
     /**
-     * @Column(name="secondary_id", type="string")
+     * @Column(name="secondary_id", type="integer")
      */
     public $secondaryId;
 
@@ -108,7 +108,7 @@ class GH6297Group
     public function __construct($primaryId, $secondaryId)
     {
         $this->primaryId   = (int) $primaryId;
-        $this->secondaryId = (string) $secondaryId;
+        $this->secondaryId = (int) $secondaryId;
         $this->users       = new ArrayCollection();
     }
 }
