@@ -182,10 +182,13 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
+        return $this->uow->remove($element);
+        /*
         return $this
             ->uow
             ->getEntityPersister($mapping['targetEntity'])
             ->delete($element);
+        */
     }
 
     /**
