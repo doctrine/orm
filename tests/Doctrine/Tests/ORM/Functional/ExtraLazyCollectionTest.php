@@ -1146,6 +1146,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->userLists->removeElement($this->_em->find(UserList::class, $userListId));
 
+        $this->_em->flush();
         $this->_em->clear();
 
         /* @var $user User */
@@ -1199,6 +1200,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         $user->userLists->removeElement($this->_em->getReference(UserList::class, $userListId));
 
+        $this->_em->flush();
         $this->_em->clear();
 
         /* @var $user User */
