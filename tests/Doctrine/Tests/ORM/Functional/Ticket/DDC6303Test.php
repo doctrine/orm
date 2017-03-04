@@ -38,19 +38,18 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(DDC6303Contract::class);               
 
+        $dataMap = [
+            $contractA->id => $contractAData,
+            $contractB->id => $contractBData
+        ];              
+
         $contracts = $repository->createQueryBuilder('p')
-            ->getQuery()->getResult();
+            ->where('p.id IN(:ids)')
+            ->setParameter('ids', array_keys($dataMap))
+            ->getQuery()->getResult(); 
 
         foreach( $contracts as $contract ){
-            switch( $contract->id ){
-                case $contractA->id:
-                    static::assertEquals($contract->originalData, $contractAData);
-                    break;
-
-                case $contractB->id:
-                    static::assertEquals($contract->originalData, $contractBData);
-                    break;
-            }
+            static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
         }
      }
 
@@ -91,8 +90,6 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->where('p.id IN(:ids)')
             ->setParameter('ids', array_keys($dataMap))
             ->getQuery()->getResult(); 
-
-        
 
         foreach( $contracts as $contract ){
             static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
