@@ -53,4 +53,49 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
             }
         }
      }
+
+     public function testEmptyValuesInJoinedInheritance()
+    {
+        $contractStringEmptyData = '';
+        $contractStringZeroData = 0;
+
+        $contractArrayEmptyData = [];        
+
+        $contractStringEmpty = new DDC6303ContractA();
+        $contractStringEmpty->originalData = $contractStringEmptyData;
+
+        $contractStringZero = new DDC6303ContractA();
+        $contractStringZero->originalData = $contractStringZeroData;
+
+        $contractArrayEmpty = new DDC6303ContractB();
+        $contractArrayEmpty->originalData = $contractArrayEmptyData;
+
+        $this->_em->persist($contractStringZero);
+        $this->_em->persist($contractStringEmpty);
+        $this->_em->persist($contractArrayEmpty);
+
+        $this->_em->flush();
+        
+        // clear entity manager so that $repository->find actually fetches them and uses the hydrator
+        // instead of just returning the existing managed entities
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository(DDC6303Contract::class); 
+        $dataMap = [
+            $contractStringZero->id => $contractStringZeroData,
+            $contractStringEmpty->id => $contractStringEmptyData,
+            $contractArrayEmpty->id => $contractArrayEmptyData,
+        ];              
+
+        $contracts = $repository->createQueryBuilder('p')
+            ->where('p.id IN(:ids)')
+            ->setParameter('ids', array_keys($dataMap))
+            ->getQuery()->getResult(); 
+
+        
+
+        foreach( $contracts as $contract ){
+            static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
+        }
+     }
 }

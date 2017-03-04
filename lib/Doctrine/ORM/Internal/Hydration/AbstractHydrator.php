@@ -294,10 +294,14 @@ abstract class AbstractHydrator
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
 
+                    var_dump($dqlAlias);
+                    var_dump($cacheKeyInfo);
+                    echo "\n\n\n";
+
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
                     // Per definition it cannot be that a field is defined several times and has several values.
-                    if (isset($rowData['data'][$dqlAlias][$fieldName])) {
+                    if (!empty($rowData['data'][$dqlAlias][$fieldName])) {
                         break;
                     }
 
