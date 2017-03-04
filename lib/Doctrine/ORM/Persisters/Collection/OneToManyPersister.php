@@ -182,7 +182,9 @@ class OneToManyPersister extends AbstractCollectionPersister
             return false;
         }
 
-        return $this->uow->scheduleOrphanRemoval($element);
+        $this->uow->scheduleOrphanRemoval($element);
+
+        return true;
         /*
         return $this
             ->uow
