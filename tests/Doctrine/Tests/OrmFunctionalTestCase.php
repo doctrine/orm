@@ -312,6 +312,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'ddc6303' => [
+            Models\DDC6303\DDC6303Contract::class,
+            Models\DDC6303\DDC6303ContractA::class,
+            Models\DDC6303\DDC6303ContractB::class,
+        ]
+
     ];
 
     /**
