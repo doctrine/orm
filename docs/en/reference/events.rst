@@ -888,6 +888,9 @@ you need to map the listener method using the event type mapping:
               preRemove: [preRemoveHandler]
           # ....
 
+.. note::
+
+    The order of execution of multiple methods for the same event (e.g. multiple @PrePersist) is not guaranteed.
 
 
 Entity listeners resolver

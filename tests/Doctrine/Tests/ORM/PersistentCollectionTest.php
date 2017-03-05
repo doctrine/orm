@@ -40,7 +40,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function setUpPersistentCollection()
     {
-        $classMetaData = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $classMetaData = $this->_emMock->getClassMetadata(ECommerceCart::class);
         $this->collection = new PersistentCollection($this->_emMock, $classMetaData, new ArrayCollection);
         $this->collection->setInitialized(false);
         $this->collection->setOwner(new ECommerceCart(), $classMetaData->getAssociationMapping('products'));
@@ -48,7 +48,7 @@ class PersistentCollectionTest extends OrmTestCase
 
     public function testCanBePutInLazyLoadingMode()
     {
-        $class = $this->_emMock->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceProduct');
+        $class = $this->_emMock->getClassMetadata(ECommerceProduct::class);
         $collection = new PersistentCollection($this->_emMock, $class, new ArrayCollection);
         $collection->setInitialized(false);
         $this->assertFalse($collection->isInitialized());
@@ -106,5 +106,45 @@ class PersistentCollectionTest extends OrmTestCase
         $this->assertSame($product, $this->collection->get(1));
         $this->assertSame("dummy", $this->collection->get(2));
         $this->assertSame(null, $this->collection->get(3));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testRemovingElementsAlsoRemovesKeys()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
+
+        $this->collection->removeElement('dummy');
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoClearKeys()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->collection->clear();
+        $this->assertEquals([], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6110
+     */
+    public function testClearWillAlsoResetKeyPositions()
+    {
+        $this->setUpPersistentCollection();
+
+        $this->collection->add('dummy');
+        $this->collection->removeElement('dummy');
+        $this->collection->clear();
+        $this->collection->add('dummy');
+        $this->assertEquals([0], array_keys($this->collection->toArray()));
     }
 }

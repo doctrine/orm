@@ -37,5 +37,5 @@ final class EntityListeners implements Annotation
      *
      * @var array<string>
      */
-    public $value = array();
+    public $value = [];
 }

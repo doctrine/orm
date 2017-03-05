@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Client
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Tests\Models\Tweet\Tweet;
@@ -23,7 +24,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function tearDown()
     {
         if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces(array());
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -64,7 +65,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     {
         $this->loadFixture();
 
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->lte('datetime', new \DateTime('today'))
         ));
@@ -95,7 +96,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testIsNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->isNull('time')
@@ -107,7 +108,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->eq('time', null)
@@ -119,7 +120,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testNotEqNullComparison()
     {
         $this->loadNullFieldFixtures();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria(
             Criteria::expr()->neq('time', null)
@@ -131,7 +132,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
     public function testCanCountWithoutLoadingCollection()
     {
         $this->loadFixture();
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Generic\DateTimeModel');
+        $repository = $this->_em->getRepository(DateTimeModel::class);
 
         $dates = $repository->matching(new Criteria());
 
@@ -171,10 +172,10 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         $criteria = new Criteria();
         $criteria->andWhere($criteria->expr()->contains('content', 'Criteria'));
 
-        $user   = $this->_em->find('Doctrine\Tests\Models\Tweet\User', $user->id);
+        $user   = $this->_em->find(User::class, $user->id);
         $tweets = $user->tweets->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
 
         $tweets->contains($tweet);

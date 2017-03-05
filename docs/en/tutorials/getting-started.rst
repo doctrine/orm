@@ -717,8 +717,8 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $reportedBugs = null;
-        private $assignedBugs = null;
+        protected $reportedBugs = null;
+        protected $assignedBugs = null;
 
         public function addReportedBug($bug)
         {
@@ -969,7 +969,7 @@ The last missing definition is that of the User entity:
 
     .. code-block:: yaml
 
-        # config/xml/User.dcm.yml
+        # config/yaml/User.dcm.yml
         User:
           type: entity
           table: users
@@ -1008,7 +1008,7 @@ Update your database running:
 Implementing more Requirements
 ------------------------------
 
-For starters we need a create user entities:
+For starters we need to create user entities:
 
 .. code-block:: php
 
@@ -1084,7 +1084,7 @@ database.
 
 See how simple relating Bug, Reporter, Engineer and Products is
 done by using the discussed methods in the "A first prototype"
-section. The UnitOfWork will detect this relations when flush is
+section. The UnitOfWork will detect this relationship when flush is
 called and relate them in the database appropriately.
 
 Queries for Application Use-Cases
@@ -1150,7 +1150,7 @@ The console output of this script is then:
 
     An important reason why DQL is favourable to the Query API of most
     ORMs is its similarity to SQL. The DQL language allows query
-    constructs that most ORMs don't, GROUP BY even with HAVING,
+    constructs that most ORMs don't: GROUP BY even with HAVING,
     Sub-selects, Fetch-Joins of nested classes, mixed results with
     entities and scalar data such as COUNT() results and much more.
     Using DQL you should seldom come to the point where you want to

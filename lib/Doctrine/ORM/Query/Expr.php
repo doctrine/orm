@@ -220,7 +220,7 @@ class Expr
      */
     public function avg($x)
     {
-        return new Expr\Func('AVG', array($x));
+        return new Expr\Func('AVG', [$x]);
     }
 
     /**
@@ -232,7 +232,7 @@ class Expr
      */
     public function max($x)
     {
-        return new Expr\Func('MAX', array($x));
+        return new Expr\Func('MAX', [$x]);
     }
 
     /**
@@ -244,7 +244,7 @@ class Expr
      */
     public function min($x)
     {
-        return new Expr\Func('MIN', array($x));
+        return new Expr\Func('MIN', [$x]);
     }
 
     /**
@@ -256,7 +256,7 @@ class Expr
      */
     public function count($x)
     {
-        return new Expr\Func('COUNT', array($x));
+        return new Expr\Func('COUNT', [$x]);
     }
 
     /**
@@ -280,7 +280,7 @@ class Expr
      */
     public function exists($subquery)
     {
-        return new Expr\Func('EXISTS', array($subquery));
+        return new Expr\Func('EXISTS', [$subquery]);
     }
 
     /**
@@ -292,7 +292,7 @@ class Expr
      */
     public function all($subquery)
     {
-        return new Expr\Func('ALL', array($subquery));
+        return new Expr\Func('ALL', [$subquery]);
     }
 
     /**
@@ -304,7 +304,7 @@ class Expr
      */
     public function some($subquery)
     {
-        return new Expr\Func('SOME', array($subquery));
+        return new Expr\Func('SOME', [$subquery]);
     }
 
     /**
@@ -316,7 +316,7 @@ class Expr
      */
     public function any($subquery)
     {
-        return new Expr\Func('ANY', array($subquery));
+        return new Expr\Func('ANY', [$subquery]);
     }
 
     /**
@@ -328,7 +328,7 @@ class Expr
      */
     public function not($restriction)
     {
-        return new Expr\Func('NOT', array($restriction));
+        return new Expr\Func('NOT', [$restriction]);
     }
 
     /**
@@ -340,7 +340,7 @@ class Expr
      */
     public function abs($x)
     {
-        return new Expr\Func('ABS', array($x));
+        return new Expr\Func('ABS', [$x]);
     }
 
     /**
@@ -429,7 +429,7 @@ class Expr
      */
     public function sqrt($x)
     {
-        return new Expr\Func('SQRT', array($x));
+        return new Expr\Func('SQRT', [$x]);
     }
 
     /**
@@ -548,7 +548,7 @@ class Expr
      */
     public function substring($x, $from, $len = null)
     {
-        $args = array($x, $from);
+        $args = [$x, $from];
         if (null !== $len) {
             $args[] = $len;
         }
@@ -565,7 +565,7 @@ class Expr
      */
     public function lower($x)
     {
-        return new Expr\Func('LOWER', array($x));
+        return new Expr\Func('LOWER', [$x]);
     }
 
     /**
@@ -577,7 +577,7 @@ class Expr
      */
     public function upper($x)
     {
-        return new Expr\Func('UPPER', array($x));
+        return new Expr\Func('UPPER', [$x]);
     }
 
     /**
@@ -589,7 +589,7 @@ class Expr
      */
     public function length($x)
     {
-        return new Expr\Func('LENGTH', array($x));
+        return new Expr\Func('LENGTH', [$x]);
     }
 
     /**

@@ -13,10 +13,12 @@ class DDC1151Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped("This test is useful for all databases, but designed only for postgresql.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSql(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1151User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1151Group'),
-        ));
+        $sql = $this->_schemaTool->getCreateSchemaSql(
+            [
+            $this->_em->getClassMetadata(DDC1151User::class),
+            $this->_em->getClassMetadata(DDC1151Group::class),
+            ]
+        );
 
         $this->assertEquals("CREATE TABLE \"User\" (id INT NOT NULL, PRIMARY KEY(id))", $sql[0]);
         $this->assertEquals("CREATE TABLE ddc1151user_ddc1151group (ddc1151user_id INT NOT NULL, ddc1151group_id INT NOT NULL, PRIMARY KEY(ddc1151user_id, ddc1151group_id))", $sql[1]);

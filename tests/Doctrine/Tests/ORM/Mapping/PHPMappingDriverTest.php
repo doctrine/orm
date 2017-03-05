@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata,
-    Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\Models\DDC889\DDC889Class;
+use Doctrine\Tests\ORM\Mapping;
 
 class PHPMappingDriverTest extends AbstractMappingDriverTest
 {
@@ -30,7 +32,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->createClassMetadata('Doctrine\Tests\Models\DDC889\DDC889Class');
+        $this->createClassMetadata(DDC889Class::class);
     }
 
     /**
@@ -39,10 +41,9 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testFailingSecondLevelCacheAssociation()
     {
-        $className = 'Doctrine\Tests\ORM\Mapping\PHPSLC';
         $mappingDriver = $this->_loadDriver();
 
-        $class = new ClassMetadata($className);
-        $mappingDriver->loadMetadataForClass($className, $class);
+        $class = new ClassMetadata(Mapping\PHPSLC::class);
+        $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class);
     }
 }

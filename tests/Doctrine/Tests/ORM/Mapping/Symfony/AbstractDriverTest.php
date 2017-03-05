@@ -10,10 +10,12 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 {
     public function testFindMappingFile()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\EntityFoo' => 'foo',
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
@@ -21,9 +23,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
 
     public function testFindMappingFileInSubnamespace()
     {
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
         $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
@@ -34,9 +38,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('No mapping file found named');
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo');
     }
@@ -46,9 +52,11 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("No mapping file found named 'Foo" . $this->getFileExtension() . "' for class 'MyOtherNamespace\MySubnamespace\Entity\Foo'.");
 
-        $driver = $this->getDriver(array(
+        $driver = $this->getDriver(
+            [
             'MyNamespace\MySubnamespace\Entity' => $this->dir,
-        ));
+            ]
+        );
 
         $driver->getLocator()->findMappingFile('MyOtherNamespace\MySubnamespace\Entity\Foo');
     }
@@ -75,5 +83,5 @@ abstract class AbstractDriverTest extends \PHPUnit_Framework_TestCase
     }
 
     abstract protected function getFileExtension();
-    abstract protected function getDriver(array $paths = array());
+    abstract protected function getDriver(array $paths = []);
 }

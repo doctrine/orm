@@ -81,27 +81,33 @@ class DDC3579User
 
     public static function loadMetadata($metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
            'id'         => true,
            'fieldName'  => 'id',
            'type'       => 'integer',
            'columnName' => 'user_id',
            'length'     => 150,
-        ));
+            ]
+        );
 
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
             'fieldName' => 'name',
             'type'      => 'string',
             'columnName'=> 'user_name',
             'nullable'  => true,
             'unique'    => false,
             'length'    => 250,
-        ));
+            ]
+        );
 
-        $metadata->mapManyToMany(array(
+        $metadata->mapManyToMany(
+            [
            'fieldName'      => 'groups',
            'targetEntity'   => 'DDC3579Group'
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_AUTO);
     }

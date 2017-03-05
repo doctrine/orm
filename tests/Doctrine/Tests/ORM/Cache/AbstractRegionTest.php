@@ -37,10 +37,10 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
 
     static public function dataProviderCacheValues()
     {
-        return array(
-            array(new CacheKeyMock('key.1'), new CacheEntryMock(array('id'=>1, 'name' => 'bar'))),
-            array(new CacheKeyMock('key.2'), new CacheEntryMock(array('id'=>2, 'name' => 'foo'))),
-        );
+        return [
+            [new CacheKeyMock('key.1'), new CacheEntryMock(['id'=>1, 'name' => 'bar'])],
+            [new CacheKeyMock('key.2'), new CacheEntryMock(['id'=>2, 'name' => 'foo'])],
+        ];
     }
 
     /**
@@ -57,7 +57,7 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         $actual = $this->region->get($key);
 
         $this->assertEquals($value, $actual);
-        
+
         $this->region->evict($key);
 
         $this->assertFalse($this->region->contains($key));
@@ -71,8 +71,8 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
 
-        $this->region->put($key1, new CacheEntryMock(array('value' => 'foo')));
-        $this->region->put($key2, new CacheEntryMock(array('value' => 'bar')));
+        $this->region->put($key1, new CacheEntryMock(['value' => 'foo']));
+        $this->region->put($key2, new CacheEntryMock(['value' => 'bar']));
 
         $this->assertTrue($this->region->contains($key1));
         $this->assertTrue($this->region->contains($key2));

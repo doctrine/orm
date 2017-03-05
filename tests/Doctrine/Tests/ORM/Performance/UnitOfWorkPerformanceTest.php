@@ -23,7 +23,7 @@ class UnitOfWorkPerformanceTest extends OrmPerformanceTestCase
     {
         $n = 100;
 
-        $users = array();
+        $users = [];
         for ($i=1; $i<=$n; ++$i) {
             $user = new CmsUser;
             $user->status = 'user';

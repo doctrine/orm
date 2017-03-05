@@ -40,10 +40,12 @@ class ConsoleRunner
      */
     public static function createHelperSet(EntityManagerInterface $entityManager)
     {
-        return new HelperSet(array(
-            'db' => new ConnectionHelper($entityManager->getConnection()),
-            'em' => new EntityManagerHelper($entityManager)
-        ));
+        return new HelperSet(
+            [
+                'db' => new ConnectionHelper($entityManager->getConnection()),
+                'em' => new EntityManagerHelper($entityManager)
+            ]
+        );
     }
 
     /**
@@ -54,7 +56,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    static public function run(HelperSet $helperSet, $commands = array())
+    static public function run(HelperSet $helperSet, $commands = [])
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -69,7 +71,7 @@ class ConsoleRunner
      *
      * @return \Symfony\Component\Console\Application
      */
-    static public function createApplication(HelperSet $helperSet, $commands = array())
+    static public function createApplication(HelperSet $helperSet, $commands = [])
     {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
         $cli->setCatchExceptions(true);
@@ -87,29 +89,31 @@ class ConsoleRunner
      */
     static public function addCommands(Application $cli)
     {
-        $cli->addCommands(array(
-            // DBAL Commands
-            new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
-            new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
+        $cli->addCommands(
+            [
+                // DBAL Commands
+                new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
+                new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
 
-            // ORM Commands
-            new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
-            new \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand(),
-        ));
+                // ORM Commands
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\EnsureProductionSettingsCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\GenerateEntitiesCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ConvertMappingCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\RunDqlCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\InfoCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand(),
+            ]
+        );
     }
 
     static public function printCliConfigTemplate()

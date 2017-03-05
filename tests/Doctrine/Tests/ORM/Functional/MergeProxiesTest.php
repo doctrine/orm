@@ -7,6 +7,7 @@ use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -31,11 +32,11 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      */
     public function testMergeDetachedUnInitializedProxy()
     {
-        $detachedUninitialized = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
+        $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
 
         $this->_em->clear();
 
-        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
         $this->assertSame($managed, $this->_em->merge($detachedUninitialized));
 
@@ -51,11 +52,11 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      */
     public function testMergeUnserializedUnInitializedProxy()
     {
-        $detachedUninitialized = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
+        $detachedUninitialized = $this->_em->getReference(DateTimeModel::class, 123);
 
         $this->_em->clear();
 
-        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
         $this->assertSame(
             $managed,
@@ -74,7 +75,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      */
     public function testMergeManagedProxy()
     {
-        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, 123);
+        $managed = $this->_em->getReference(DateTimeModel::class, 123);
 
         $this->assertSame($managed, $this->_em->merge($managed));
 
@@ -98,9 +99,9 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $this->_em->flush($date);
         $this->_em->clear();
 
-        $managed = $this->_em->getReference(DateTimeModel::CLASSNAME, $date->id);
+        $managed = $this->_em->getReference(DateTimeModel::class, $date->id);
 
-        $this->assertInstanceOf('Doctrine\Common\Proxy\Proxy', $managed);
+        $this->assertInstanceOf(Proxy::class, $managed);
         $this->assertFalse($managed->__isInitialized());
 
         $date->date = $dateTime = new \DateTime();
@@ -134,8 +135,8 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $queryCount1 = count($logger1->queries);
         $queryCount2 = count($logger2->queries);
 
-        $proxy1  = $em1->getReference(DateTimeModel::CLASSNAME, $file1->id);
-        $proxy2  = $em2->getReference(DateTimeModel::CLASSNAME, $file1->id);
+        $proxy1  = $em1->getReference(DateTimeModel::class, $file1->id);
+        $proxy2  = $em2->getReference(DateTimeModel::class, $file1->id);
         $merged2 = $em2->merge($proxy1);
 
         $this->assertNotSame($proxy1, $merged2);
@@ -195,10 +196,10 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $queryCount1 = count($logger1->queries);
         $queryCount2 = count($logger1->queries);
 
-        $unManagedProxy = $em1->getReference(DateTimeModel::CLASSNAME, $file1->id);
+        $unManagedProxy = $em1->getReference(DateTimeModel::class, $file1->id);
         $mergedInstance = $em2->merge($unManagedProxy);
 
-        $this->assertNotInstanceOf('Doctrine\Common\Proxy\Proxy', $mergedInstance);
+        $this->assertNotInstanceOf(Proxy::class, $mergedInstance);
         $this->assertNotSame($unManagedProxy, $mergedInstance);
         $this->assertFalse($unManagedProxy->__isInitialized());
 
@@ -239,7 +240,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         $config->setProxyDir(realpath(__DIR__ . '/../../Proxies'));
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            array(realpath(__DIR__ . '/../../Models/Cache')),
+            [realpath(__DIR__ . '/../../Models/Cache')],
             true
         ));
         $config->setSQLLogger($logger);
@@ -248,17 +249,17 @@ class MergeProxiesTest extends OrmFunctionalTestCase
         // multi-connection is not relevant for the purpose of checking locking here, but merely
         // to stub out DB-level access and intercept it
         $connection = DriverManager::getConnection(
-            array(
+            [
                 'driver' => 'pdo_sqlite',
                 'memory' => true
-            ),
+            ],
             $config
         );
 
 
         $entityManager = EntityManager::create($connection, $config);
 
-        (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::CLASSNAME)]);
+        (new SchemaTool($entityManager))->createSchema([$entityManager->getClassMetadata(DateTimeModel::class)]);
 
         return $entityManager;
     }

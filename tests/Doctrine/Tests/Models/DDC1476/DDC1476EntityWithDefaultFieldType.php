@@ -44,13 +44,17 @@ class DDC1476EntityWithDefaultFieldType
 
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->mapField(array(
+        $metadata->mapField(
+            [
            'id'         => true,
            'fieldName'  => 'id',
-        ));
-        $metadata->mapField(array(
+            ]
+        );
+        $metadata->mapField(
+            [
            'fieldName'  => 'name',
-        ));
+            ]
+        );
 
         $metadata->setIdGeneratorType(\Doctrine\ORM\Mapping\ClassMetadataInfo::GENERATOR_TYPE_NONE);
     }

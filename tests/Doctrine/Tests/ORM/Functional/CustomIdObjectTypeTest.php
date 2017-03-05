@@ -14,9 +14,9 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         if (DBALType::hasType(CustomIdObjectType::NAME)) {
-            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::CLASSNAME);
+            DBALType::overrideType(CustomIdObjectType::NAME, CustomIdObjectType::class);
         } else {
-            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::CLASSNAME);
+            DBALType::addType(CustomIdObjectType::NAME, CustomIdObjectType::class);
         }
 
         $this->useModelSet('custom_id_object_type');
@@ -31,7 +31,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
         $this->_em->persist($parent);
         $this->_em->flush();
 
-        $result = $this->_em->find(CustomIdObjectTypeParent::CLASSNAME, $parent->id);
+        $result = $this->_em->find(CustomIdObjectTypeParent::class, $parent->id);
 
         $this->assertSame($parent, $result);
     }
@@ -53,7 +53,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->_em
             ->createQuery(
                 'SELECT parent, children FROM '
-                . CustomIdObjectTypeParent::CLASSNAME
+                . CustomIdObjectTypeParent::class
                 . ' parent LEFT JOIN parent.children children'
             )
             ->getResult();
@@ -80,7 +80,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->_em
             ->createQuery(
                 'SELECT parent, children FROM '
-                . CustomIdObjectTypeParent::CLASSNAME
+                . CustomIdObjectTypeParent::class
                 . ' parent LEFT JOIN parent.children children '
                 . 'WHERE children.id = ?1'
             )

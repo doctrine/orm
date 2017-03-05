@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\CountOutputWalker;
 
 class CountOutputWalkerTest extends PaginationTestCase
 {
@@ -10,7 +11,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -22,7 +23,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -34,7 +35,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT g, u, count(u.id) AS userCount FROM Doctrine\Tests\ORM\Tools\Pagination\Group g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -50,7 +51,7 @@ class CountOutputWalkerTest extends PaginationTestCase
 
         $query = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(

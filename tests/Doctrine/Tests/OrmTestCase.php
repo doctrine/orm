@@ -10,7 +10,7 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
-use Doctrine\Tests\Mocks\EntityManagerMock;
+use Doctrine\Tests\Mocks;
 
 /**
  * Base testcase class for all ORM testcases.
@@ -62,7 +62,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      *
      * @return \Doctrine\ORM\Mapping\Driver\AnnotationDriver
      */
-    protected function createAnnotationDriver($paths = array(), $alias = null)
+    protected function createAnnotationDriver($paths = [], $alias = null)
     {
         if (version_compare(Version::VERSION, '3.0.0', '>=')) {
             $reader = new Annotations\CachedReader(new Annotations\AnnotationReader(), new ArrayCache());
@@ -125,13 +125,14 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config = new Configuration();
 
         $config->setMetadataCacheImpl($metadataCache);
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(
+        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
+            [
             realpath(__DIR__ . '/Models/Cache')
-        ), true));
+            ], true));
 
         if ($this->isSecondLevelCacheEnabled) {
 
@@ -147,19 +148,19 @@ abstract class OrmTestCase extends DoctrineTestCase
         }
 
         if ($conn === null) {
-            $conn = array(
-                'driverClass'  => 'Doctrine\Tests\Mocks\DriverMock',
-                'wrapperClass' => 'Doctrine\Tests\Mocks\ConnectionMock',
+            $conn = [
+                'driverClass'  => Mocks\DriverMock::class,
+                'wrapperClass' => Mocks\ConnectionMock::class,
                 'user'         => 'john',
                 'password'     => 'wayne'
-            );
+            ];
         }
 
         if (is_array($conn)) {
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return EntityManagerMock::create($conn, $config, $eventManager);
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
     }
 
     protected function enableSecondLevelCache($log = true)

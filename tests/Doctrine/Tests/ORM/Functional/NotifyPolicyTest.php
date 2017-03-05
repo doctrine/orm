@@ -18,10 +18,12 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\NotifyUser'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\NotifyGroup')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(NotifyUser::class),
+                $this->_em->getClassMetadata(NotifyGroup::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -29,8 +31,6 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
 
     public function testChangeTracking()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $user = new NotifyUser();
         $group = new NotifyGroup();
         $user->setName('roman');
@@ -55,9 +55,9 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $groupId = $group->getId();
         unset($user, $group);
 
-        $user = $this->_em->find(__NAMESPACE__.'\NotifyUser', $userId);
+        $user = $this->_em->find(NotifyUser::class, $userId);
         $this->assertEquals(1, $user->getGroups()->count());
-        $group = $this->_em->find(__NAMESPACE__.'\NotifyGroup', $groupId);
+        $group = $this->_em->find(NotifyGroup::class, $groupId);
         $this->assertEquals(1, $group->getUsers()->count());
 
         $this->assertEquals(1, count($user->listeners));
@@ -80,18 +80,18 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $group2Id = $group2->getId();
         unset($group2, $user);
 
-        $user = $this->_em->find(__NAMESPACE__.'\NotifyUser', $userId);
+        $user = $this->_em->find(NotifyUser::class, $userId);
         $this->assertEquals(2, $user->getGroups()->count());
-        $group2 = $this->_em->find(__NAMESPACE__.'\NotifyGroup', $group2Id);
+        $group2 = $this->_em->find(NotifyGroup::class, $group2Id);
         $this->assertEquals(1, $group2->getUsers()->count());
-        $group = $this->_em->find(__NAMESPACE__.'\NotifyGroup', $groupId);
+        $group = $this->_em->find(NotifyGroup::class, $groupId);
         $this->assertEquals(1, $group->getUsers()->count());
         $this->assertEquals('geeks', $group->getName());
     }
 }
 
 class NotifyBaseEntity implements NotifyPropertyChanged {
-    public $listeners = array();
+    public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
         $this->listeners[] = $listener;

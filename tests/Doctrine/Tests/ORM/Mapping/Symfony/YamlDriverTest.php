@@ -14,7 +14,7 @@ class YamlDriverTest extends AbstractDriverTest
         return '.orm.yml';
     }
 
-    protected function getDriver(array $paths = array())
+    protected function getDriver(array $paths = [])
     {
         $driver = new SimplifiedYamlDriver(array_flip($paths));
 

@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -25,7 +27,7 @@ class CustomTreeWalkersJoinTest extends OrmTestCase
     {
         try {
             $query = $this->em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Query\CustomTreeWalkerJoin'))
+            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
                   ->useQueryCache(false);
 
             $this->assertEquals($sqlToBeConfirmed, $query->getSql());
@@ -59,15 +61,15 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
     {
         foreach ($selectStatement->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
             $rangeVariableDecl = $identificationVariableDeclaration->rangeVariableDeclaration;
-            
-            if ($rangeVariableDecl->abstractSchemaName !== 'Doctrine\Tests\Models\CMS\CmsUser') {
+
+            if ($rangeVariableDecl->abstractSchemaName !== CmsUser::class) {
                 continue;
             }
-            
+
             $this->modifySelectStatement($selectStatement, $identificationVariableDeclaration);
         }
     }
-    
+
     private function modifySelectStatement(Query\AST\SelectStatement $selectStatement, $identificationVariableDecl)
     {
         $rangeVariableDecl       = $identificationVariableDecl->rangeVariableDeclaration;
@@ -75,23 +77,23 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $joinAssocDeclaration    = new Query\AST\JoinAssociationDeclaration($joinAssocPathExpression, $rangeVariableDecl->aliasIdentificationVariable . 'a', null);
         $join                    = new Query\AST\Join(Query\AST\Join::JOIN_TYPE_LEFT, $joinAssocDeclaration);
         $selectExpression        = new Query\AST\SelectExpression($rangeVariableDecl->aliasIdentificationVariable . 'a', null, false);
-        
+
         $identificationVariableDecl->joins[]                = $join;
         $selectStatement->selectClause->selectExpressions[] = $selectExpression;
 
         $entityManager   = $this->_getQuery()->getEntityManager();
-        $userMetadata    = $entityManager->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $addressMetadata = $entityManager->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
+        $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 
         $this->setQueryComponent($rangeVariableDecl->aliasIdentificationVariable . 'a',
-            array(
+            [
                 'metadata'     => $addressMetadata,
                 'parent'       => $rangeVariableDecl->aliasIdentificationVariable,
                 'relation'     => $userMetadata->getAssociationMapping('address'),
                 'map'          => null,
                 'nestingLevel' => 0,
                 'token'        => null,
-            )
+            ]
         );
     }
 }

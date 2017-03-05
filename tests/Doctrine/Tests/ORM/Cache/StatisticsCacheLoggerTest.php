@@ -29,7 +29,7 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
     public function testEntityCache()
     {
         $name = 'my_entity_region';
-        $key  = new EntityCacheKey(State::CLASSNAME, array('id' => 1));
+        $key  = new EntityCacheKey(State::class, ['id' => 1]);
 
         $this->logger->entityCacheHit($name, $key);
         $this->logger->entityCachePut($name, $key);
@@ -46,7 +46,7 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
     public function testCollectionCache()
     {
         $name = 'my_collection_region';
-        $key  = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id' => 1));
+        $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->logger->collectionCacheHit($name, $key);
         $this->logger->collectionCachePut($name, $key);
@@ -83,8 +83,8 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         $entityRegion = 'my_entity_region';
         $queryRegion  = 'my_query_region';
 
-        $coolKey    = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id' => 1));
-        $entityKey  = new EntityCacheKey(State::CLASSNAME, array('id' => 1));
+        $coolKey    = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $entityKey  = new EntityCacheKey(State::class, ['id' => 1]);
         $queryKey   = new QueryCacheKey('my_query_hash');
 
         $this->logger->queryCacheHit($queryRegion, $queryKey);

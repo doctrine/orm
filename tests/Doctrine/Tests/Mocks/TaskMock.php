@@ -17,7 +17,7 @@ class TaskMock extends \Doctrine\Common\Cli\Tasks\AbstractTask
      *
      * @var array (TaskMock)
      */
-    static public $instances = array();
+    static public $instances = [];
 
     /**
      * @var int

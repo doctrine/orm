@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Company\CompanyFixContract;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -18,7 +18,7 @@ class DDC1041Test extends OrmFunctionalTestCase
 
     public function testGrabWrongSubtypeReturnsNull()
     {
-        $fix = new CompanyFixContract();
+        $fix = new Models\Company\CompanyFixContract();
         $fix->setFixPrice(2000);
 
         $this->_em->persist($fix);
@@ -26,8 +26,8 @@ class DDC1041Test extends OrmFunctionalTestCase
 
         $id = $fix->getId();
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\Company\CompanyFlexContract', $id));
-        $this->assertNull($this->_em->getReference('Doctrine\Tests\Models\Company\CompanyFlexContract', $id));
-        $this->assertNull($this->_em->getPartialReference('Doctrine\Tests\Models\Company\CompanyFlexContract', $id));
+        $this->assertNull($this->_em->find(Models\Company\CompanyFlexContract::class, $id));
+        $this->assertNull($this->_em->getReference(Models\Company\CompanyFlexContract::class, $id));
+        $this->assertNull($this->_em->getPartialReference(Models\Company\CompanyFlexContract::class, $id));
     }
 }

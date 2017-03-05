@@ -7,13 +7,15 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Super'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class2'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Class3'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC837Aggregate'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC837Super::class),
+            $this->_em->getClassMetadata(DDC837Class1::class),
+            $this->_em->getClassMetadata(DDC837Class2::class),
+            $this->_em->getClassMetadata(DDC837Class3::class),
+            $this->_em->getClassMetadata(DDC837Aggregate::class),
+            ]
+        );
     }
 
     /**
@@ -49,25 +51,25 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         // Test Class1
-        $e1 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC837Super', $c1->id);
+        $e1 = $this->_em->find(DDC837Super::class, $c1->id);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class1', $e1);
+        $this->assertInstanceOf(DDC837Class1::class, $e1);
         $this->assertEquals('Foo', $e1->title);
         $this->assertEquals('Foo', $e1->description);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC837Aggregate', $e1->aggregate);
+        $this->assertInstanceOf(DDC837Aggregate::class, $e1->aggregate);
         $this->assertEquals('test1', $e1->aggregate->getSysname());
 
         // Test Class 2
-        $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC837Super', $c2->id);
+        $e2 = $this->_em->find(DDC837Super::class, $c2->id);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC837Class2', $e2);
+        $this->assertInstanceOf(DDC837Class2::class, $e2);
         $this->assertEquals('Bar', $e2->title);
         $this->assertEquals('Bar', $e2->description);
         $this->assertEquals('Bar', $e2->text);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC837Aggregate', $e2->aggregate);
+        $this->assertInstanceOf(DDC837Aggregate::class, $e2->aggregate);
         $this->assertEquals('test2', $e2->aggregate->getSysname());
 
-        $all = $this->_em->getRepository(__NAMESPACE__.'\DDC837Super')->findAll();
+        $all = $this->_em->getRepository(DDC837Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC837Class1) {

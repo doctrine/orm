@@ -30,6 +30,6 @@ class MetadataDriverMock implements MappingDriver
      */
     public function getAllClassNames()
     {
-        return array();
+        return [];
     }
 }

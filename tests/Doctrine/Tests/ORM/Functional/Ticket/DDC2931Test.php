@@ -14,9 +14,11 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2931User'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC2931User::class),
+                ]
+            );
         } catch (\Exception $e) {
             // no action needed - schema seems to be already in place
         }
@@ -38,7 +40,7 @@ class DDC2931Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $second = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC2931User', $second->id);
+        $second = $this->_em->find(DDC2931User::class, $second->id);
 
         $this->assertSame(2, $second->getRank());
     }

@@ -82,12 +82,11 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * @param string $tableAlias
      * @param string $joinColumnName
-     * @param string $className
      * @param string $type
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $className, $type)
+    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $type)
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
 

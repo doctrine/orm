@@ -27,11 +27,11 @@ class DDC2359Test extends \PHPUnit_Framework_TestCase
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
-                                ->setMethods(array('newClassMetadataInstance', 'wakeupReflection'))
+                                ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
                                 ->getMock();
 
         $configuration = $this->getMockBuilder(Configuration::class)
-                              ->setMethods(array('getMetadataDriverImpl'))
+                              ->setMethods(['getMetadataDriverImpl'])
                               ->getMock();
 
         $connection = $this->createMock(Connection::class);
@@ -53,7 +53,7 @@ class DDC2359Test extends \PHPUnit_Framework_TestCase
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $this->assertSame($mockMetadata, $metadataFactory->getMetadataFor(__NAMESPACE__ . '\\DDC2359Foo'));
+        $this->assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
 

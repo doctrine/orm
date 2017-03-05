@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -15,13 +16,15 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         parent::setUp();
         $schemaTool = new SchemaTool($this->_em);
         try {
-            $schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Train'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainDriver'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOwner'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Waggon'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\TrainOrder'),
-            ));
+            $schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(Train::class),
+                $this->_em->getClassMetadata(TrainDriver::class),
+                $this->_em->getClassMetadata(TrainOwner::class),
+                $this->_em->getClassMetadata(Waggon::class),
+                $this->_em->getClassMetadata(TrainOrder::class),
+                ]
+            );
         } catch(\Exception $e) {}
     }
 
@@ -44,7 +47,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $train = $this->_em->find(get_class($train), $train->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $train->driver);
+        $this->assertNotInstanceOf(Proxy::class, $train->driver);
         $this->assertEquals("Benjamin", $train->driver->name);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
@@ -64,7 +67,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $train = $this->_em->find(get_class($train), $train->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $train->driver);
+        $this->assertNotInstanceOf(Proxy::class, $train->driver);
         $this->assertNull($train->driver);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
@@ -85,7 +88,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $driver = $this->_em->find(get_class($owner), $owner->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $owner->train);
+        $this->assertNotInstanceOf(Proxy::class, $owner->train);
         $this->assertNotNull($owner->train);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
@@ -107,7 +110,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->_sqlLoggerStack->queries);
 
         $driver = $this->_em->find(get_class($driver), $driver->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $driver->train);
+        $this->assertNotInstanceOf(Proxy::class, $driver->train);
         $this->assertNull($driver->train);
 
         $this->assertEquals($sqlCount + 1, count($this->_sqlLoggerStack->queries));
@@ -124,7 +127,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $waggon = $this->_em->find(get_class($waggon), $waggon->id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $waggon->train);
+        $this->assertNotInstanceOf(Proxy::class, $waggon->train);
         $this->assertNotNull($waggon->train);
     }
 

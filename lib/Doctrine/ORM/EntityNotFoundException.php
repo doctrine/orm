@@ -37,7 +37,7 @@ class EntityNotFoundException extends ORMException
      */
     public static function fromClassNameAndIdentifier($className, array $id)
     {
-        $ids = array();
+        $ids = [];
 
         foreach ($id as $key => $value) {
             $ids[] = $key . '(' . $value . ')';

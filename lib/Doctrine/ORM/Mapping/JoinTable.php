@@ -38,10 +38,10 @@ final class JoinTable implements Annotation
     /**
      * @var array<\Doctrine\ORM\Mapping\JoinColumn>
      */
-    public $joinColumns = array();
+    public $joinColumns = [];
 
     /**
      * @var array<\Doctrine\ORM\Mapping\JoinColumn>
      */
-    public $inverseJoinColumns = array();
+    public $inverseJoinColumns = [];
 }

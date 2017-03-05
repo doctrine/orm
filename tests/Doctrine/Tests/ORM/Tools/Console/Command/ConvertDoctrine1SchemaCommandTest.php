@@ -20,6 +20,6 @@ class ConvertDoctrine1SchemaCommandTest extends OrmTestCase
                ->method('writeln')
                ->with($this->equalTo('No Metadata Classes to process.'));
 
-        $command->convertDoctrine1Schema(array(), sys_get_temp_dir(), 'annotation', 4, null, $output);
+        $command->convertDoctrine1Schema([], sys_get_temp_dir(), 'annotation', 4, null, $output);
     }
 }

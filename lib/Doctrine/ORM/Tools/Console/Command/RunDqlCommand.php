@@ -46,30 +46,32 @@ class RunDqlCommand extends Command
         $this
         ->setName('orm:run-dql')
         ->setDescription('Executes arbitrary DQL directly from the command line.')
-        ->setDefinition(array(
-            new InputArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.'),
-            new InputOption(
-                'hydrate', null, InputOption::VALUE_REQUIRED,
-                'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.',
-                'object'
-            ),
-            new InputOption(
-                'first-result', null, InputOption::VALUE_REQUIRED,
-                'The first result in the result set.'
-            ),
-            new InputOption(
-                'max-result', null, InputOption::VALUE_REQUIRED,
-                'The maximum number of results in the result set.'
-            ),
-            new InputOption(
-                'depth', null, InputOption::VALUE_REQUIRED,
-                'Dumping depth of Entity graph.', 7
-            ),
-            new InputOption(
-                'show-sql', null, InputOption::VALUE_NONE,
-                'Dump generated SQL instead of executing query'
-            )
-        ))
+        ->setDefinition(
+            [
+                new InputArgument('dql', InputArgument::REQUIRED, 'The DQL to execute.'),
+                new InputOption(
+                    'hydrate', null, InputOption::VALUE_REQUIRED,
+                    'Hydration mode of result set. Should be either: object, array, scalar or single-scalar.',
+                    'object'
+                ),
+                new InputOption(
+                    'first-result', null, InputOption::VALUE_REQUIRED,
+                    'The first result in the result set.'
+                ),
+                new InputOption(
+                    'max-result', null, InputOption::VALUE_REQUIRED,
+                    'The maximum number of results in the result set.'
+                ),
+                new InputOption(
+                    'depth', null, InputOption::VALUE_REQUIRED,
+                    'Dumping depth of Entity graph.', 7
+                ),
+                new InputOption(
+                    'show-sql', null, InputOption::VALUE_NONE,
+                    'Dump generated SQL instead of executing query'
+                )
+            ]
+        )
         ->setHelp(<<<EOT
 Executes arbitrary DQL directly from the command line.
 EOT
@@ -126,7 +128,7 @@ EOT
             return;
         }
 
-        $resultSet = $query->execute(array(), constant($hydrationMode));
+        $resultSet = $query->execute([], constant($hydrationMode));
 
         $output->writeln(Debug::dump($resultSet, $input->getOption('depth'), true, false));
     }

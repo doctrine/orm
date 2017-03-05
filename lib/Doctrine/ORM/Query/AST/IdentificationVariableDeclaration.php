@@ -43,7 +43,7 @@ class IdentificationVariableDeclaration extends Node
     /**
      * @var array
      */
-    public $joins = array();
+    public $joins = [];
 
     /**
      * @param RangeVariableDeclaration|null $rangeVariableDecl

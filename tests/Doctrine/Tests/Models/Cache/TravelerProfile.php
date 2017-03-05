@@ -9,8 +9,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class TravelerProfile
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

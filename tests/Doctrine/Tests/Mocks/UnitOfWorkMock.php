@@ -12,7 +12,7 @@ class UnitOfWorkMock extends UnitOfWork
     /**
      * @var array
      */
-    private $_mockDataChangeSets = array();
+    private $_mockDataChangeSets = [];
 
     /**
      * @var array|null

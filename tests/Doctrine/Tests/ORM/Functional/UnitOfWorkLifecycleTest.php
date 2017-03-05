@@ -68,7 +68,7 @@ class UnitOfWorkLifecycleTest extends OrmFunctionalTestCase
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage("The given entity of type 'Doctrine\Tests\Models\CMS\CmsUser' (Doctrine\Tests\Models\CMS\CmsUser@");
 
-        $this->_em->getUnitOfWork()->registerManaged($user, array(), array());
+        $this->_em->getUnitOfWork()->registerManaged($user, [], []);
     }
 
     public function testMarkReadOnlyNonManaged()

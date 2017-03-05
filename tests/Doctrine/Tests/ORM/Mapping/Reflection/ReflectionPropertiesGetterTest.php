@@ -20,7 +20,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     public function testRetrievesProperties()
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
-            ->getProperties(ClassWithMixedProperties::CLASSNAME);
+            ->getProperties(ClassWithMixedProperties::class);
 
         $this->assertCount(5, $properties);
 
@@ -32,7 +32,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     public function testRetrievedInstancesAreNotStatic()
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
-            ->getProperties(ClassWithMixedProperties::CLASSNAME);
+            ->getProperties(ClassWithMixedProperties::class);
 
         foreach ($properties as $property) {
             $this->assertFalse($property->isStatic());
@@ -42,18 +42,18 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     public function testExpectedKeys()
     {
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
-            ->getProperties(ClassWithMixedProperties::CLASSNAME);
+            ->getProperties(ClassWithMixedProperties::class);
 
         $this->assertArrayHasKey(
-            "\0" . ClassWithMixedProperties::CLASSNAME . "\0" . 'privateProperty',
+            "\0" . ClassWithMixedProperties::class . "\0" . 'privateProperty',
             $properties
         );
         $this->assertArrayHasKey(
-            "\0" . ClassWithMixedProperties::CLASSNAME . "\0" . 'privatePropertyOverride',
+            "\0" . ClassWithMixedProperties::class . "\0" . 'privatePropertyOverride',
             $properties
         );
         $this->assertArrayHasKey(
-            "\0" . ParentClass::CLASSNAME . "\0" . 'privatePropertyOverride',
+            "\0" . ParentClass::class . "\0" . 'privatePropertyOverride',
             $properties
         );
         $this->assertArrayHasKey(
@@ -70,7 +70,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
     {
         $object     = new ClassWithMixedProperties();
         $properties = (new ReflectionPropertiesGetter(new RuntimeReflectionService()))
-            ->getProperties(ClassWithMixedProperties::CLASSNAME);
+            ->getProperties(ClassWithMixedProperties::class);
 
         foreach ($properties as $property) {
             $this->assertSame($property->getName(), $property->getValue($object));
@@ -82,8 +82,8 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
         $getter = (new ReflectionPropertiesGetter(new RuntimeReflectionService()));
 
         $this->assertSame(
-            $getter->getProperties(ClassWithMixedProperties::CLASSNAME),
-            $getter->getProperties(ClassWithMixedProperties::CLASSNAME)
+            $getter->getProperties(ClassWithMixedProperties::class),
+            $getter->getProperties(ClassWithMixedProperties::class)
         );
     }
 
@@ -95,10 +95,10 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
         $reflectionService
             ->expects($this->exactly(2))
             ->method('getClass')
-            ->with($this->logicalOr(ClassWithMixedProperties::CLASSNAME, ParentClass::CLASSNAME))
+            ->with($this->logicalOr(ClassWithMixedProperties::class, ParentClass::class))
             ->will($this->returnValueMap([
-                [ClassWithMixedProperties::CLASSNAME, new ReflectionClass(ClassWithMixedProperties::CLASSNAME)],
-                [ParentClass::CLASSNAME, new ReflectionClass(ParentClass::CLASSNAME)],
+                [ClassWithMixedProperties::class, new ReflectionClass(ClassWithMixedProperties::class)],
+                [ParentClass::class, new ReflectionClass(ParentClass::class)],
             ]));
 
         $reflectionService
@@ -107,7 +107,7 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
 
         $getter = (new ReflectionPropertiesGetter($reflectionService));
 
-        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::CLASSNAME));
+        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
 
     public function testPropertyGetterWillSkipClassesNotRetrievedByTheRuntimeReflectionService()
@@ -118,12 +118,12 @@ class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
         $reflectionService
             ->expects($this->once())
             ->method('getClass')
-            ->with(ClassWithMixedProperties::CLASSNAME);
+            ->with(ClassWithMixedProperties::class);
 
         $reflectionService->expects($this->never())->method('getAccessibleProperty');
 
         $getter = (new ReflectionPropertiesGetter($reflectionService));
 
-        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::CLASSNAME));
+        $this->assertEmpty($getter->getProperties(ClassWithMixedProperties::class));
     }
 }

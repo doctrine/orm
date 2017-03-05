@@ -33,7 +33,7 @@ class DefaultRegionTest extends AbstractRegionTest
         }
 
         $key     = new CacheKeyMock('key');
-        $entry   = new CacheEntryMock(array('value' => 'foo'));
+        $entry   = new CacheEntryMock(['value' => 'foo']);
         $region1 = new DefaultRegion('region1', new ApcCache());
         $region2 = new DefaultRegion('region2', new ApcCache());
 
@@ -79,10 +79,10 @@ class DefaultRegionTest extends AbstractRegionTest
     public function testGetMulti()
     {
         $key1 = new CacheKeyMock('key.1');
-        $value1 = new CacheEntryMock(array('id' => 1, 'name' => 'bar'));
+        $value1 = new CacheEntryMock(['id' => 1, 'name' => 'bar']);
 
         $key2 = new CacheKeyMock('key.2');
-        $value2 = new CacheEntryMock(array('id' => 2, 'name' => 'bar'));
+        $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
         $this->assertFalse($this->region->contains($key1));
         $this->assertFalse($this->region->contains($key2));
@@ -93,7 +93,7 @@ class DefaultRegionTest extends AbstractRegionTest
         $this->assertTrue($this->region->contains($key1));
         $this->assertTrue($this->region->contains($key2));
 
-        $actual = $this->region->getMultiple(new CollectionCacheEntry(array($key1, $key2)));
+        $actual = $this->region->getMultiple(new CollectionCacheEntry([$key1, $key2]));
 
         $this->assertEquals($value1, $actual[0]);
         $this->assertEquals($value2, $actual[1]);

@@ -59,11 +59,11 @@ class CountWalker extends TreeWalkerAdapter
         $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
-        
+
         if (count($from) > 1) {
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
-       
+
         $fromRoot            = reset($from);
         $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass           = $queryComponents[$rootAlias]['metadata'];
@@ -81,11 +81,11 @@ class CountWalker extends TreeWalkerAdapter
         $pathExpression->type = $pathType;
 
         $distinct = $this->_getQuery()->getHint(self::HINT_DISTINCT);
-        $AST->selectClause->selectExpressions = array(
+        $AST->selectClause->selectExpressions = [
             new SelectExpression(
                 new AggregateExpression('count', $pathExpression, $distinct), null
             )
-        );
+        ];
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.
         $AST->orderByClause = null;

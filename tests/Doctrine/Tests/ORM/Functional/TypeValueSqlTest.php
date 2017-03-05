@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class TypeValueSqlTest extends OrmFunctionalTestCase
@@ -51,7 +51,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
      */
     public function testUpperCaseStringTypeWhenColumnNameIsDefined()
     {
- 
+
         $entity = new CustomTypeUpperCase();
         $entity->lowerCaseString        = 'Some Value';
         $entity->namedLowerCaseString   = 'foo';
@@ -104,7 +104,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $entity = $this->_em->find('Doctrine\Tests\Models\CustomType\CustomTypeParent', $parentId);
+        $entity = $this->_em->find(CustomTypeParent::class, $parentId);
 
         $this->assertTrue($entity->customInteger < 0, 'Fetched customInteger negative');
         $this->assertEquals(1, $this->_em->getConnection()->fetchColumn("select customInteger from customtype_parents where id=".$entity->id.""), 'Database has stored customInteger positive');
@@ -131,7 +131,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CustomType\CustomTypeParent', $result[0][0]);
+        $this->assertInstanceOf(CustomTypeParent::class, $result[0][0]);
         $this->assertEquals(-1, $result[0][0]->customInteger);
 
         $this->assertEquals(-1, $result[0]['customInteger']);

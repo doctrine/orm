@@ -16,10 +16,13 @@ class LockAgentWorker
         $lockAgent = new LockAgentWorker();
 
         $worker = new \GearmanWorker();
-        $worker->addServer();
-        $worker->addFunction("findWithLock", array($lockAgent, "findWithLock"));
-        $worker->addFunction("dqlWithLock", array($lockAgent, "dqlWithLock"));
-        $worker->addFunction('lock', array($lockAgent, 'lock'));
+        $worker->addServer(
+            isset($_SERVER['GEARMAN_HOST']) ? $_SERVER['GEARMAN_HOST'] : null,
+            isset($_SERVER['GEARMAN_PORT']) ? $_SERVER['GEARMAN_PORT'] : 4730
+        );
+        $worker->addFunction("findWithLock", [$lockAgent, "findWithLock"]);
+        $worker->addFunction("dqlWithLock", [$lockAgent, "dqlWithLock"]);
+        $worker->addFunction('lock', [$lockAgent, 'lock']);
 
         while($worker->work()) {
             if ($worker->returnCode() != GEARMAN_SUCCESS) {
@@ -98,7 +101,7 @@ class LockAgentWorker
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver(array(__DIR__ . '/../../../Models/'), true);
+        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
         $config->setMetadataDriverImpl($annotDriver);
 
         $cache = new ArrayCache();

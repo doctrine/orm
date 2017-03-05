@@ -23,7 +23,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     protected function setUp()
     {
-        $this->cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);
 
         $this->useModelSet('cms');
@@ -116,7 +116,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $cache
             ->expects(self::once())
             ->method('save')
-            ->with(self::isType('string'), self::isInstanceOf('Doctrine\ORM\Query\ParserResult'));
+            ->with(self::isType('string'), self::isInstanceOf(ParserResult::class));
 
         $query->getResult();
     }
@@ -128,20 +128,22 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
-                            ->setMethods(array('execute'))
+                            ->setMethods(['execute'])
                             ->getMock();
 
         $sqlExecMock->expects($this->once())
                     ->method('execute')
                     ->will($this->returnValue( 10 ));
 
-        $parserResultMock = $this->createMock(ParserResult::class);
+        $parserResultMock = $this->getMockBuilder(ParserResult::class)
+                                 ->setMethods(['getSqlExecutor'])
+                                 ->getMock();
         $parserResultMock->expects($this->once())
                          ->method('getSqlExecutor')
                          ->will($this->returnValue($sqlExecMock));
 
         $cache = $this->getMockBuilder(CacheProvider::class)
-                      ->setMethods(array('doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'))
+                      ->setMethods(['doFetch', 'doContains', 'doSave', 'doDelete', 'doFlush', 'doGetStats'])
                       ->getMock();
 
         $cache->expects($this->at(0))->method('doFetch')->will($this->returnValue(1));
@@ -149,6 +151,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
               ->method('doFetch')
               ->with($this->isType('string'))
               ->will($this->returnValue($parserResultMock));
+
         $cache->expects($this->never())
               ->method('doSave');
 

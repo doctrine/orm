@@ -46,11 +46,11 @@ class PersisterHelper
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
         if (isset($class->fieldMappings[$fieldName])) {
-            return array($class->fieldMappings[$fieldName]['type']);
+            return [$class->fieldMappings[$fieldName]['type']];
         }
 
         if ( ! isset($class->associationMappings[$fieldName])) {
-            return array();
+            return [];
         }
 
         $assoc = $class->associationMappings[$fieldName];
@@ -65,7 +65,7 @@ class PersisterHelper
             $joinData = $assoc;
         }
 
-        $types       = array();
+        $types       = [];
         $targetClass = $em->getClassMetadata($assoc['targetEntity']);
 
         foreach ($joinData['joinColumns'] as $joinColumn) {

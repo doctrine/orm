@@ -3,13 +3,10 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\Comparison as CriteriaComparison;
-use Doctrine\ORM\Query\Expr\Comparison as QueryComparison;
+use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
-
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
 
@@ -30,12 +27,12 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->visitor = new QueryExpressionVisitor(array('o','p'));
+        $this->visitor = new QueryExpressionVisitor(['o','p']);
     }
 
     /**
      * @param CriteriaComparison     $criteriaExpr
-     * @param QueryComparison|string $queryExpr
+     * @param QueryBuilder\Comparison|string $queryExpr
      * @param Parameter              $parameter
      *
      * @dataProvider comparisonData
@@ -44,7 +41,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
-            $this->assertEquals(new ArrayCollection(array($parameter)), $this->visitor->getParameters());
+            $this->assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
         }
     }
 
@@ -53,30 +50,30 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
         $cb = new CriteriaBuilder();
         $qb = new QueryBuilder();
 
-        return array(
-            array($cb->eq('field', 'value'), $qb->eq('o.field', ':field'), new Parameter('field', 'value')),
-            array($cb->neq('field', 'value'), $qb->neq('o.field', ':field'), new Parameter('field', 'value')),
-            array($cb->eq('field', null), $qb->isNull('o.field')),
-            array($cb->neq('field', null), $qb->isNotNull('o.field')),
-            array($cb->isNull('field'), $qb->isNull('o.field')),
+        return [
+            [$cb->eq('field', 'value'), $qb->eq('o.field', ':field'), new Parameter('field', 'value')],
+            [$cb->neq('field', 'value'), $qb->neq('o.field', ':field'), new Parameter('field', 'value')],
+            [$cb->eq('field', null), $qb->isNull('o.field')],
+            [$cb->neq('field', null), $qb->isNotNull('o.field')],
+            [$cb->isNull('field'), $qb->isNull('o.field')],
 
-            array($cb->gt('field', 'value'), $qb->gt('o.field', ':field'), new Parameter('field', 'value')),
-            array($cb->gte('field', 'value'), $qb->gte('o.field', ':field'), new Parameter('field', 'value')),
-            array($cb->lt('field', 'value'), $qb->lt('o.field', ':field'), new Parameter('field', 'value')),
-            array($cb->lte('field', 'value'), $qb->lte('o.field', ':field'), new Parameter('field', 'value')),
+            [$cb->gt('field', 'value'), $qb->gt('o.field', ':field'), new Parameter('field', 'value')],
+            [$cb->gte('field', 'value'), $qb->gte('o.field', ':field'), new Parameter('field', 'value')],
+            [$cb->lt('field', 'value'), $qb->lt('o.field', ':field'), new Parameter('field', 'value')],
+            [$cb->lte('field', 'value'), $qb->lte('o.field', ':field'), new Parameter('field', 'value')],
 
-            array($cb->in('field', array('value')), $qb->in('o.field', ':field'), new Parameter('field', array('value'))),
-            array($cb->notIn('field', array('value')), $qb->notIn('o.field', ':field'), new Parameter('field', array('value'))),
+            [$cb->in('field', ['value']), $qb->in('o.field', ':field'), new Parameter('field', ['value'])],
+            [$cb->notIn('field', ['value']), $qb->notIn('o.field', ':field'), new Parameter('field', ['value'])],
 
-            array($cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')),
+            [$cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')],
 
             // Test parameter conversion
-            array($cb->eq('object.field', 'value'), $qb->eq('o.object.field', ':object_field'), new Parameter('object_field', 'value')),
+            [$cb->eq('object.field', 'value'), $qb->eq('o.object.field', ':object_field'), new Parameter('object_field', 'value')],
 
             // Test alternative rootAlias
-            array($cb->eq('p.field', 'value'), $qb->eq('p.field', ':p_field'), new Parameter('p_field', 'value')),
-            array($cb->eq('p.object.field', 'value'), $qb->eq('p.object.field', ':p_object_field'), new Parameter('p_object_field', 'value')),
-        );
+            [$cb->eq('p.field', 'value'), $qb->eq('p.field', ':p_field'), new Parameter('p_field', 'value')],
+            [$cb->eq('p.object.field', 'value'), $qb->eq('p.object.field', ':p_object_field'), new Parameter('p_object_field', 'value')],
+        ];
     }
 
     public function testWalkAndCompositeExpression()
@@ -89,7 +86,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\Query\Expr\Andx', $expr);
+        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
         $this->assertCount(2, $expr->getParts());
     }
 
@@ -103,7 +100,7 @@ class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\Query\Expr\Orx', $expr);
+        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
         $this->assertCount(2, $expr->getParts());
     }
 

@@ -64,7 +64,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @var \Doctrine\ORM\Cache\Region[]
      */
-    private $regions = array();
+    private $regions = [];
 
     /**
      * @var string|null
@@ -167,10 +167,10 @@ class DefaultCacheFactory implements CacheFactory
         return new DefaultQueryCache(
             $em,
             $this->getRegion(
-                array(
+                [
                     'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
                     'usage'  => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
-                )
+                ]
             )
         );
     }
@@ -200,14 +200,9 @@ class DefaultCacheFactory implements CacheFactory
             return $this->regions[$cache['region']];
         }
 
-        $cacheAdapter = clone $this->cache;
-
-        if ($cacheAdapter instanceof CacheProvider) {
-            $cacheAdapter->setNamespace($cache['region']);
-        }
-
-        $name     = $cache['region'];
-        $lifetime = $this->regionsConfig->getLifetime($cache['region']);
+        $name         = $cache['region'];
+        $cacheAdapter = $this->createRegionCache($name);
+        $lifetime     = $this->regionsConfig->getLifetime($cache['region']);
 
         $region = ($cacheAdapter instanceof MultiGetCache)
             ? new DefaultMultiGetRegion($name, $cacheAdapter, $lifetime)
@@ -227,6 +222,30 @@ class DefaultCacheFactory implements CacheFactory
         }
 
         return $this->regions[$cache['region']] = $region;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return CacheAdapter
+     */
+    private function createRegionCache($name)
+    {
+        $cacheAdapter = clone $this->cache;
+
+        if (!$cacheAdapter instanceof CacheProvider) {
+            return $cacheAdapter;
+        }
+
+        $namespace = $cacheAdapter->getNamespace();
+
+        if ('' !== $namespace) {
+            $namespace .= ':';
+        }
+
+        $cacheAdapter->setNamespace($namespace . $name);
+
+        return $cacheAdapter;
     }
 
     /**
