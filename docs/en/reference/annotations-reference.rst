@@ -445,6 +445,11 @@ instance variable which is annotated by :ref:`@Id <annref_id>`. This
 annotation is optional and only has meaning when used in
 conjunction with @Id.
 
+This annotation should not be used more than once.  The last annotation
+encountered during metadata loading will override the identity generation
+type for the entire entity.  Even if the last encounter is not used in 
+conjuction with @Id.
+
 If this annotation is not specified with @Id the NONE strategy is
 used as default.
 
