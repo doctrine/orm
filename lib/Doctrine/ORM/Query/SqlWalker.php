@@ -671,7 +671,7 @@ class SqlWalker implements TreeWalker
                 $assoc = $class->associationMappings[$fieldName];
 
                 if ( ! $assoc['isOwningSide']) {
-                    throw QueryException::associationPathInverseSideNotSupported();
+                    throw QueryException::associationPathInverseSideNotSupported($pathExpr);
                 }
 
                 // COMPOSITE KEYS NOT (YET?) SUPPORTED
