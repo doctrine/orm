@@ -16,55 +16,43 @@ final class Issue6313Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(Issue6313_Unit::class),
-                $this->_em->getClassMetadata(Issue6313_Port::class),
-                $this->_em->getClassMetadata(Issue6313_Container::class),
-                $this->_em->getClassMetadata(Issue6313_Container1::class),
-                $this->_em->getClassMetadata(Issue6313_Container2::class),
-                $this->_em->getClassMetadata(Issue6313_Container3::class),
-                $this->_em->getClassMetadata(Issue6313_Container4::class),
+                $this->_em->getClassMetadata(Issue6313Test_MainEntity::class),
+                $this->_em->getClassMetadata(Issue6313Test_SubEntity::class),
+                $this->_em->getClassMetadata(Issue6313Test_SubEntity_CollectionElement::class),
             ]
         );
     }
 
     public function testOrphanWithCollectionShouldBeDeletedOnOneToManyRelation()
     {
-        $unit1 = new Issue6313_Unit1();
+        $main = new Issue6313Test_MainEntity();
 
-        $port1 = new Issue6313_Port();
-        $port1->addContainer(new Issue6313_Container1());
-        $port1->addContainer(new Issue6313_Container2());
+        $sub_entity = new Issue6313Test_SubEntity();
+        $sub_entity->addElement(new Issue6313Test_SubEntity_CollectionElement());
+        $sub_entity->addElement(new Issue6313Test_SubEntity_CollectionElement());
 
-        $port2 = new Issue6313_Port();
-        $port2->addContainer(new Issue6313_Container1());
-        $port2->addContainer(new Issue6313_Container2());
+        $main->addSubEntity($sub_entity);
 
-        $unit1->addPort($port1);
-        $unit1->addPort($port2);
-
-        $this->_em->persist($unit1);
+        $this->_em->persist($main);
         $this->_em->flush();
         $this->_em->clear();
 
-        $unit1 = $this->_em->find(Issue6313_Unit::class, $unit1->id);
-        $port1 = $this->_em->find(Issue6313_Port::class, $port1->id);
-        $unit1->removePort($port1);
+        $main = $this->_em->find(Issue6313Test_MainEntity::class, $main->id);
+        $sub_entity = $this->_em->find(Issue6313Test_SubEntity::class, $sub_entity->id);
+        $main->removePort($sub_entity);
         $this->_em->flush();
         $this->_em->clear();
 
-        $unit1 = $this->_em->find(Issue6313_Unit::class, $unit1->id);
+        $main = $this->_em->find(Issue6313Test_MainEntity::class, $main->id);
 
-        self::assertEquals(1, $unit1->ports->count());
+        self::assertCount(0, $main->sub_entities);
     }
 }
 
 /**
  * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type_id", type="integer")
- * @DiscriminatorMap({1 = "Issue6313_Unit1", 2 = "Issue6313_Unit2"})
  */
-abstract class Issue6313_Unit
+class Issue6313Test_MainEntity
 {
     /**
      * @var integer
@@ -78,46 +66,32 @@ abstract class Issue6313_Unit
     /**
      * @var ArrayCollection
      *
-     * @OneToMany(targetEntity="Issue6313_Port", mappedBy="unit", fetch="EXTRA_LAZY", cascade={"all"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="Issue6313Test_SubEntity", mappedBy="main", fetch="EXTRA_LAZY", cascade={"persist", "remove"}, orphanRemoval=true)
      */
-    public $ports;
+    public $sub_entities;
 
     public function __construct()
     {
-        $this->ports = new ArrayCollection();
+        $this->sub_entities = new ArrayCollection();
     }
 
-    public function addPort(Issue6313_Port $port)
+    public function addSubEntity(Issue6313Test_SubEntity $sub_entity)
     {
-        $this->ports->add($port);
-        $port->unit = $this;
+        $this->sub_entities->add($sub_entity);
+        $sub_entity->main = $this;
     }
 
-    public function removePort(Issue6313_Port $port)
+    public function removePort(Issue6313Test_SubEntity $sub_entity)
     {
-        $this->ports->removeElement($port);
-        $port->unit = null;
+        $this->sub_entities->removeElement($sub_entity);
+        $sub_entity->main = null;
     }
 }
 
 /**
  * @Entity
  */
-class Issue6313_Unit1 extends Issue6313_Unit
-{
-}
-
-/**
- * @Entity
- */
-class Issue6313_Unit2 extends Issue6313_Unit
-{
-}
-
-/**
- * @Entity
- */
-class Issue6313_Port
+class Issue6313Test_SubEntity
 {
     /**
      * @var integer
@@ -129,39 +103,36 @@ class Issue6313_Port
     public $id;
 
     /**
-     * @var Issue6313_Unit
+     * @var Issue6313Test_MainEntity
      *
-     * @ManyToOne(targetEntity="Issue6313_Unit", inversedBy="ports")
-     * @JoinColumn(name="unit_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="Issue6313Test_MainEntity", inversedBy="sub_entities")
+     * @JoinColumn(name="main_id", referencedColumnName="id")
      */
-    public $unit;
+    public $main;
 
     /**
      * @var ArrayCollection
      *
-     * @OneToMany(targetEntity="Issue6313_Container", mappedBy="port", fetch="EXTRA_LAZY", cascade={"all"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="Issue6313Test_SubEntity_CollectionElement", mappedBy="sub_entity", fetch="EXTRA_LAZY", cascade={"persist", "remove"}, orphanRemoval=true)
      */
-    public $containers;
+    public $elements;
 
     public function __construct()
     {
-        $this->containers = new ArrayCollection();
+        $this->elements = new ArrayCollection();
     }
 
-    public function addContainer(Issue6313_Container $container)
+    public function addElement(Issue6313Test_SubEntity_CollectionElement $element)
     {
-        $this->containers->add($container);
-        $container->port = $this;
+        $this->elements->add($element);
+        $element->sub_entity = $this;
     }
 }
 
 /**
  * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type_id", type="integer")
- * @DiscriminatorMap({1 = "Issue6313_Container1", 2 = "Issue6313_Container2", 3 = "Issue6313_Container3", 4 = "Issue6313_Container4"})
  */
-abstract class Issue6313_Container
+class Issue6313Test_SubEntity_CollectionElement
 {
     /**
      * @var integer
@@ -173,73 +144,10 @@ abstract class Issue6313_Container
     public $id;
 
     /**
-     * @var Issue6313_Port
+     * @var SubEntity
      *
-     * @ManyToOne(targetEntity="Issue6313_Port", inversedBy="containers")
-     * @JoinColumn(name="port_id", referencedColumnName="id")
+     * @ManyToOne(targetEntity="Issue6313Test_SubEntity", inversedBy="elements")
+     * @JoinColumn(name="sub_entity_id", referencedColumnName="id")
      */
-    public $port;
-
-    /**
-     * @var Issue6313_Container
-     *
-     * @ManyToOne(targetEntity="Issue6313_Container", inversedBy="containers")
-     * @JoinColumn(name="upper_id", referencedColumnName="id")
-     */
-    public $upper;
-
-    /**
-     * @var ArrayCollection
-     *
-     * @OneToMany(targetEntity="Issue6313_Container", mappedBy="upper", fetch="EXTRA_LAZY", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    public $containers;
-
-    public function __construct()
-    {
-        $this->containers = new ArrayCollection();
-    }
-
-    public function addContainer(Issue6313_Container $container)
-    {
-        $this->containers->add($container);
-        $container->port = $this->port;
-        $container->upper = $this;
-    }
-}
-
-/**
- * @Entity
- */
-class Issue6313_Container1 extends Issue6313_Container
-{
-    /** @Column(type="string", length=255) */
-    public $field1 = '';
-}
-
-/**
- * @Entity
- */
-class Issue6313_Container2 extends Issue6313_Container
-{
-    /** @Column(type="string", length=255) */
-    public $field2 = '';
-}
-
-/**
- * @Entity
- */
-class Issue6313_Container3 extends Issue6313_Container
-{
-    /** @Column(type="string", length=255) */
-    public $field3 = '';
-}
-
-/**
- * @Entity
- */
-class Issue6313_Container4 extends Issue6313_Container
-{
-    /** @Column(type="string", length=255) */
-    public $field4 = '';
+    public $sub_entity;
 }
