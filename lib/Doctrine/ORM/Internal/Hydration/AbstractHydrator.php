@@ -391,7 +391,7 @@ abstract class AbstractHydrator
                     'dqlAlias'            => $ownerMap,
                     
                 ];
-                if( !empty($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap]))){
+                if( !empty($classMetadata->parentClasses) && isset($this->_rsm->discriminatorColumns[$ownerMap])){
                     $returnArray += [
                         'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
                         'discriminatorValue'  => $classMetadata->discriminatorValue
