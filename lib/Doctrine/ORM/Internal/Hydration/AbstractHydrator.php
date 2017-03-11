@@ -300,7 +300,7 @@ abstract class AbstractHydrator
                     if (isset($rowData['data'][$dqlAlias][$fieldName])) {
                         break;
                     }
-                    
+
                     $rowData['data'][$dqlAlias][$fieldName] = $type
                         ? $type->convertToPHPValue($value, $this->_platform)
                         : $value;
