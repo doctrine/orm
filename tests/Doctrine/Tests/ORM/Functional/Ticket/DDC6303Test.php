@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\DDC6303\DDC6303ContractA;
-use Doctrine\Tests\Models\DDC6303\DDC6303ContractB;
-use Doctrine\Tests\Models\DDC6303\DDC6303Contract;
-
 /**
  * @group DDC6303
  */
@@ -13,8 +9,16 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
     {
-        $this->useModelSet('ddc6303');
         parent::setUp();
+        try {
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC6303Contract::class),
+                $this->_em->getClassMetadata(DDC6303ContractA::class),
+                $this->_em->getClassMetadata(DDC6303ContractB::class)
+                ]
+            );
+        } catch (\Exception $ignored) {}
     }
     
     public function testMixedTypeHydratedCorrectlyInJoinedInheritance()
@@ -95,4 +99,56 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
             static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
         }
      }
+}
+
+
+/**
+ * @Entity
+ * @Table(name="ddc6303_contract")
+ * @InheritanceType("JOINED")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({
+ *      "contract"    = "DDC6303Contract",
+ *      "contract_b"  = "DDC6303ContractB",
+ *      "contract_a"  = "DDC6303ContractA"
+ * })
+ */
+class DDC6303Contract
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
+    public $id;
+}
+
+
+/**
+ * @Entity
+ * @Table(name="ddc6303_contracts_a")
+ */
+class DDC6303ContractA extends DDC6303Contract
+{
+    /**
+     * @Column(type="string", nullable=true)
+     *
+     * @var string
+     */
+    public $originalData;
+}
+
+
+/**
+ * @Entity
+ * @Table(name="ddc6303_contracts_b")
+ */
+class DDC6303ContractB extends DDC6303Contract
+{
+    /**
+     * @Column(type="simple_array", nullable=true)
+     *
+     * @var array
+     */
+    public $originalData;
 }
