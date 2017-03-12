@@ -134,6 +134,9 @@ Optional attributes:
 
    -  ``collation``: The collation of the column (only supported by Drizzle, Mysql, PostgreSQL>=9.1, Sqlite and SQLServer).
 
+   -  ``check``: Adds a check constraint type to the column (might not
+      be supported by all vendors).
+
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
    This attribute allows to make use of advanced RMDBS features.
