@@ -33,7 +33,7 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
            ->setParameter(1, 0);
 
         self::assertSQLEquals(
-            'SELECT t0_."test_entity2_id" AS test_entity2_id_0 FROM "te1" t0_ WHERE t0_."test_entity2_id" = ?',
+            'SELECT t0."test_entity2_id" AS c0 FROM "te1" t0 WHERE t0."test_entity2_id" = ?',
             $qb->getQuery()->getSQL()
         );
     }

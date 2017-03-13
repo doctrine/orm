@@ -22,7 +22,7 @@ class DDC331Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->em->createQuery('SELECT e.name FROM Doctrine\Tests\Models\Company\CompanyEmployee e');
 
         self::assertSQLEquals(
-            'SELECT c0_."name" AS name_0 FROM "company_employees" c1_ INNER JOIN "company_persons" c0_ ON c1_."id" = c0_."id" LEFT JOIN "company_managers" c2_ ON c1_."id" = c2_."id"',
+            'SELECT t0."name" AS c0 FROM "company_employees" t1 INNER JOIN "company_persons" t0 ON t1."id" = t0."id" LEFT JOIN "company_managers" t2 ON t1."id" = t2."id"',
             $q->getSQL()
         );
     }

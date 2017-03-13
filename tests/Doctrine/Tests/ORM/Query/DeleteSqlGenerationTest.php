@@ -260,7 +260,7 @@ class DeleteSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10',
-            'DELETE FROM "cms_users" WHERE (SELECT COUNT(*) FROM "cms_users_groups" c0_ WHERE c0_."user_id" = "cms_users"."id") = 10'
+            'DELETE FROM "cms_users" WHERE (SELECT COUNT(*) FROM "cms_users_groups" t0 WHERE t0."user_id" = "cms_users"."id") = 10'
         );
     }
 }

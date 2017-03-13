@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
-use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;
@@ -349,14 +348,6 @@ class ConfigurationTest extends DoctrineTestCase
         $namingStrategy = $this->createMock(NamingStrategy::class);
         $this->configuration->setNamingStrategy($namingStrategy);
         self::assertSame($namingStrategy, $this->configuration->getNamingStrategy());
-    }
-
-    public function testSetGetQuoteStrategy()
-    {
-        self::assertInstanceOf(QuoteStrategy::class, $this->configuration->getQuoteStrategy());
-        $quoteStrategy = $this->createMock(QuoteStrategy::class);
-        $this->configuration->setQuoteStrategy($quoteStrategy);
-        self::assertSame($quoteStrategy, $this->configuration->getQuoteStrategy());
     }
 
     /**

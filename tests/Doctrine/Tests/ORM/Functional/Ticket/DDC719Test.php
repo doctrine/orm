@@ -24,7 +24,7 @@ class DDC719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         self::assertSQLEquals(
-            'SELECT g0_."id" AS id_0, g0_."name" AS name_1, g0_."description" AS description_2, g1_."id" AS id_3, g1_."name" AS name_4, g1_."description" AS description_5 FROM "groups" g0_ LEFT JOIN "groups_groups" g2_ ON g0_."id" = g2_."parent_id" LEFT JOIN "groups" g1_ ON g1_."id" = g2_."child_id" WHERE (SELECT COUNT(*) FROM "groups_groups" g3_ WHERE g3_."child_id" = g0_."id") = 0',
+            'SELECT t0."id" AS c0, t0."name" AS c1, t0."description" AS c2, t1."id" AS c3, t1."name" AS c4, t1."description" AS c5 FROM "groups" t0 LEFT JOIN "groups_groups" t2 ON t0."id" = t2."parent_id" LEFT JOIN "groups" t1 ON t1."id" = t2."child_id" WHERE (SELECT COUNT(*) FROM "groups_groups" t3 WHERE t3."child_id" = t0."id") = 0',
             $q->getSQL()
         );
     }

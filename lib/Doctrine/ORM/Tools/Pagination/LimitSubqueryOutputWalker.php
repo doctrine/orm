@@ -75,13 +75,6 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private $em;
 
     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    private $quoteStrategy;
-
-    /**
      * @var array
      */
     private $orderByPathExpressions = [];
@@ -105,17 +98,20 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
-        $this->rsm = $parserResult->getResultSetMapping();
+        $this->platform        = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->rsm             = $parserResult->getResultSetMapping();
         $this->queryComponents = $queryComponents;
 
         // Reset limit and offset
         $this->firstResult = $query->getFirstResult();
-        $this->maxResults = $query->getMaxResults();
-        $query->setFirstResult(null)->setMaxResults(null);
+        $this->maxResults  = $query->getMaxResults();
 
-        $this->em               = $query->getEntityManager();
-        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
+        $query
+            ->setFirstResult(null)
+            ->setMaxResults(null)
+        ;
+
+        $this->em = $query->getEntityManager();
 
         parent::__construct($query, $parserResult, $queryComponents);
     }

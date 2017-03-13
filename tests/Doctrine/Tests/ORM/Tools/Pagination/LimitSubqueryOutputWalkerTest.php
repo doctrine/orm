@@ -19,7 +19,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT m0_."id" AS id_0, m0_."title" AS title_1, c1_."id" AS id_2, a2_."id" AS id_3, a2_."name" AS name_4, m0_."author_id" AS author_id_5, m0_."category_id" AS category_id_6 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id") dctrn_result',
+            'SELECT DISTINCT c0 FROM (SELECT t0."id" AS c0, t0."title" AS c1, t1."id" AS c2, t2."id" AS c3, t2."name" AS c4, t0."author_id" AS c5, t0."category_id" AS c6 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id") dctrn_result',
             $limitQuery->getSQL()
         );
     }
@@ -35,7 +35,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0, MIN(sclr_5) AS dctrn_minrownum FROM (SELECT m0_."id" AS id_0, m0_."title" AS title_1, c1_."id" AS id_2, a2_."id" AS id_3, a2_."name" AS name_4, ROW_NUMBER() OVER(ORDER BY m0_."title" ASC) AS sclr_5, m0_."author_id" AS author_id_6, m0_."category_id" AS category_id_7 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id") dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c0, MIN(c5) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, t0."title" AS c1, t1."id" AS c2, t2."id" AS c3, t2."name" AS c4, ROW_NUMBER() OVER(ORDER BY t0."title" ASC) AS c5, t0."author_id" AS c6, t0."category_id" AS c7 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id") dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -54,7 +54,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_."id") AS sclr_0, u1_."id" AS id_1, g0_."id" AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_."id") ASC) AS sclr_3 FROM "User" u1_ INNER JOIN "user_group" u2_ ON u1_."id" = u2_."user_id" INNER JOIN "groups" g0_ ON g0_."id" = u2_."group_id") dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c1, MIN(c3) AS dctrn_minrownum FROM (SELECT COUNT(t0."id") AS c0, t1."id" AS c1, t0."id" AS c2, ROW_NUMBER() OVER(ORDER BY COUNT(t0."id") ASC) AS c3 FROM "User" t1 INNER JOIN "user_group" t2 ON t1."id" = t2."user_id" INNER JOIN "groups" t0 ON t0."id" = t2."group_id") dctrn_result GROUP BY c1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -73,7 +73,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_."id") AS sclr_0, u1_."id" AS id_1, g0_."id" AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_."id") ASC, u1_."id" DESC) AS sclr_3 FROM "User" u1_ INNER JOIN "user_group" u2_ ON u1_."id" = u2_."user_id" INNER JOIN "groups" g0_ ON g0_."id" = u2_."group_id") dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c1, MIN(c3) AS dctrn_minrownum FROM (SELECT COUNT(t0."id") AS c0, t1."id" AS c1, t0."id" AS c2, ROW_NUMBER() OVER(ORDER BY COUNT(t0."id") ASC, t1."id" DESC) AS c3 FROM "User" t1 INNER JOIN "user_group" t2 ON t1."id" = t2."user_id" INNER JOIN "groups" t0 ON t0."id" = t2."group_id") dctrn_result GROUP BY c1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -92,7 +92,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_1, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_."id") AS sclr_0, u1_."id" AS id_1, g0_."id" AS id_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_."id") ASC, u1_."id" DESC) AS sclr_3 FROM "User" u1_ INNER JOIN "user_group" u2_ ON u1_."id" = u2_."user_id" INNER JOIN "groups" g0_ ON g0_."id" = u2_."group_id") dctrn_result GROUP BY id_1 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c1, MIN(c3) AS dctrn_minrownum FROM (SELECT COUNT(t0."id") AS c0, t1."id" AS c1, t0."id" AS c2, ROW_NUMBER() OVER(ORDER BY COUNT(t0."id") ASC, t1."id" DESC) AS c3 FROM "User" t1 INNER JOIN "user_group" t2 ON t1."id" = t2."user_id" INNER JOIN "groups" t0 ON t0."id" = t2."group_id") dctrn_result GROUP BY c1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -121,7 +121,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT ID_0, MIN(SCLR_5) AS dctrn_minrownum FROM (SELECT m0_."id" AS ID_0, m0_."title" AS TITLE_1, c1_."id" AS ID_2, a2_."id" AS ID_3, a2_."name" AS NAME_4, ROW_NUMBER() OVER(ORDER BY m0_."title" ASC) AS SCLR_5, m0_."author_id" AS AUTHOR_ID_6, m0_."category_id" AS CATEGORY_ID_7 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id") dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C0, MIN(C5) AS dctrn_minrownum FROM (SELECT t0."id" AS C0, t0."title" AS C1, t1."id" AS C2, t2."id" AS C3, t2."name" AS C4, ROW_NUMBER() OVER(ORDER BY t0."title" ASC) AS C5, t0."author_id" AS C6, t0."category_id" AS C7 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id") dctrn_result GROUP BY C0 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -141,7 +141,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT ID_1, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_."id") AS SCLR_0, u1_."id" AS ID_1, g0_."id" AS ID_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_."id") ASC) AS SCLR_3 FROM "User" u1_ INNER JOIN "user_group" u2_ ON u1_."id" = u2_."user_id" INNER JOIN "groups" g0_ ON g0_."id" = u2_."group_id") dctrn_result GROUP BY ID_1 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C1, MIN(C3) AS dctrn_minrownum FROM (SELECT COUNT(t0."id") AS C0, t1."id" AS C1, t0."id" AS C2, ROW_NUMBER() OVER(ORDER BY COUNT(t0."id") ASC) AS C3 FROM "User" t1 INNER JOIN "user_group" t2 ON t1."id" = t2."user_id" INNER JOIN "groups" t0 ON t0."id" = t2."group_id") dctrn_result GROUP BY C1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -161,7 +161,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT ID_1, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT COUNT(g0_."id") AS SCLR_0, u1_."id" AS ID_1, g0_."id" AS ID_2, ROW_NUMBER() OVER(ORDER BY COUNT(g0_."id") ASC, u1_."id" DESC) AS SCLR_3 FROM "User" u1_ INNER JOIN "user_group" u2_ ON u1_."id" = u2_."user_id" INNER JOIN "groups" g0_ ON g0_."id" = u2_."group_id") dctrn_result GROUP BY ID_1 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C1, MIN(C3) AS dctrn_minrownum FROM (SELECT COUNT(t0."id") AS C0, t1."id" AS C1, t0."id" AS C2, ROW_NUMBER() OVER(ORDER BY COUNT(t0."id") ASC, t1."id" DESC) AS C3 FROM "User" t1 INNER JOIN "user_group" t2 ON t1."id" = t2."user_id" INNER JOIN "groups" t0 ON t0."id" = t2."group_id") dctrn_result GROUP BY C1 ORDER BY dctrn_minrownum ASC',
             $limitQuery->getSQL()
         );
 
@@ -180,7 +180,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT ID_0 FROM (SELECT m0_."id" AS ID_0, m0_."title" AS TITLE_1, c1_."id" AS ID_2, a2_."id" AS ID_3, a2_."name" AS NAME_4, m0_."author_id" AS AUTHOR_ID_5, m0_."category_id" AS CATEGORY_ID_6 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id") dctrn_result',
+            'SELECT DISTINCT C0 FROM (SELECT t0."id" AS C0, t0."title" AS C1, t1."id" AS C2, t2."id" AS C3, t2."name" AS C4, t0."author_id" AS C5, t0."category_id" AS C6 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id") dctrn_result',
             $limitQuery->getSQL()
         );
 
@@ -195,7 +195,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_."id" AS id_0, a0_."name" AS name_1, sum(a0_."name") AS sclr_2 FROM "Author" a0_) dctrn_result',
+            'SELECT DISTINCT c0 FROM (SELECT t0."id" AS c0, t0."name" AS c1, sum(t0."name") AS c2 FROM "Author" t0) dctrn_result',
             $limitQuery->getSQL()
         );
     }
@@ -213,7 +213,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.`id` AS id_0, a0_.`name` AS name_1 FROM `Author` a0_) dctrn_result ORDER BY (1 - 1000) * 1 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`name` AS c1 FROM `Author` t0) dctrn_result ORDER BY (1 - 1000) * 1 DESC',
             $query->getSQL()
         );
     }
@@ -228,7 +228,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.`id` AS id_0, a0_.`image` AS image_1, a0_.`image_height` AS image_height_2, a0_.`image_width` AS image_width_3, a0_.`image_alt_desc` AS image_alt_desc_4, a0_.`user_id` AS user_id_5 FROM `Avatar` a0_) dctrn_result ORDER BY image_height_2 * image_width_3 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`image` AS c1, t0.`image_height` AS c2, t0.`image_width` AS c3, t0.`image_alt_desc` AS c4, t0.`user_id` AS c5 FROM `Avatar` t0) dctrn_result ORDER BY c2 * c3 DESC',
             $query->getSQL()
         );
     }
@@ -243,7 +243,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT u0_.`id` AS id_0, a1_.`image_height` AS image_height_1, a1_.`image_width` AS image_width_2, a1_.`user_id` AS user_id_3 FROM `User` u0_ INNER JOIN `Avatar` a1_ ON u0_.`id` = a1_.`user_id`) dctrn_result ORDER BY image_height_1 * image_width_2 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t1.`image_height` AS c1, t1.`image_width` AS c2, t1.`user_id` AS c3 FROM `User` t0 INNER JOIN `Avatar` t1 ON t0.`id` = t1.`user_id`) dctrn_result ORDER BY c1 * c2 DESC',
             $query->getSQL()
         );
     }
@@ -258,7 +258,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT u0_.`id` AS id_0, a1_.`id` AS id_1, a1_.`image_alt_desc` AS image_alt_desc_2, a1_.`image_height` AS image_height_3, a1_.`image_width` AS image_width_4, a1_.`user_id` AS user_id_5 FROM `User` u0_ INNER JOIN `Avatar` a1_ ON u0_.`id` = a1_.`user_id`) dctrn_result ORDER BY image_height_3 * image_width_4 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t1.`id` AS c1, t1.`image_alt_desc` AS c2, t1.`image_height` AS c3, t1.`image_width` AS c4, t1.`user_id` AS c5 FROM `User` t0 INNER JOIN `Avatar` t1 ON t0.`id` = t1.`user_id`) dctrn_result ORDER BY c3 * c4 DESC',
             $query->getSQL()
         );
     }
@@ -273,7 +273,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT ID_0, MIN(SCLR_5) AS dctrn_minrownum FROM (SELECT a0_."id" AS ID_0, a0_."image" AS IMAGE_1, a0_."image_height" AS IMAGE_HEIGHT_2, a0_."image_width" AS IMAGE_WIDTH_3, a0_."image_alt_desc" AS IMAGE_ALT_DESC_4, ROW_NUMBER() OVER(ORDER BY a0_."image_height" * a0_."image_width" DESC) AS SCLR_5, a0_."user_id" AS USER_ID_6 FROM "Avatar" a0_) dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C0, MIN(C5) AS dctrn_minrownum FROM (SELECT t0."id" AS C0, t0."image" AS C1, t0."image_height" AS C2, t0."image_width" AS C3, t0."image_alt_desc" AS C4, ROW_NUMBER() OVER(ORDER BY t0."image_height" * t0."image_width" DESC) AS C5, t0."user_id" AS C6 FROM "Avatar" t0) dctrn_result GROUP BY C0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }
@@ -290,7 +290,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_."id" AS id_0, a0_."name" AS name_1, a0_."name" AS name_2 FROM "Author" a0_) dctrn_result ORDER BY name_2 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0."id" AS c0, t0."name" AS c1, t0."name" AS c2 FROM "Author" t0) dctrn_result ORDER BY c2 DESC',
             $query->getSQL()
         );
     }
@@ -305,7 +305,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertSame(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.`id` AS id_0, a0_.`image` AS image_1, a0_.`image_height` AS image_height_2, a0_.`image_width` AS image_width_3, a0_.`image_alt_desc` AS image_alt_desc_4, a0_.`user_id` AS user_id_5 FROM `Avatar` a0_) dctrn_result ORDER BY image_alt_desc_4 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`image` AS c1, t0.`image_height` AS c2, t0.`image_width` AS c3, t0.`image_alt_desc` AS c4, t0.`user_id` AS c5 FROM `Avatar` t0) dctrn_result ORDER BY c4 DESC',
             $query->getSQL()
         );
     }
@@ -319,7 +319,7 @@ class LimitSubqueryOutputWalkerTest extends PaginationTestCase
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT b0_."id" AS id_0, a1_."name" AS name_1, b0_."author_id" AS author_id_2, b0_."category_id" AS category_id_3 FROM "BlogPost" b0_ INNER JOIN "Author" a1_ ON b0_."author_id" = a1_."id") dctrn_result ORDER BY name_1 ASC',
+            'SELECT DISTINCT c0 FROM (SELECT t0."id" AS c0, t1."name" AS c1, t0."author_id" AS c2, t0."category_id" AS c3 FROM "BlogPost" t0 INNER JOIN "Author" t1 ON t0."author_id" = t1."id") dctrn_result ORDER BY c1 ASC',
             $query->getSQL()
         );
     }
@@ -335,7 +335,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT b0_.`id` AS id_0, b0_.`author_id` AS author_id_1, b0_.`category_id` AS category_id_2 FROM `BlogPost` b0_ WHERE ((SELECT COUNT(b1_.`id`) AS dctrn__1 FROM `BlogPost` b1_) = 1)) dctrn_result ORDER BY id_0 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`author_id` AS c1, t0.`category_id` AS c2 FROM `BlogPost` t0 WHERE ((SELECT COUNT(t1.`id`) AS dctrn__1 FROM `BlogPost` t1) = 1)) dctrn_result ORDER BY c0 DESC',
             $query->getSQL()
         );
     }
@@ -351,7 +351,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0, MIN(sclr_1) AS dctrn_minrownum FROM (SELECT b0_."id" AS id_0, ROW_NUMBER() OVER(ORDER BY b0_."id" DESC) AS sclr_1, b0_."author_id" AS author_id_2, b0_."category_id" AS category_id_3 FROM "BlogPost" b0_ WHERE ((SELECT COUNT(b1_."id") AS dctrn__1 FROM "BlogPost" b1_) = 1)) dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c0, MIN(c1) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, ROW_NUMBER() OVER(ORDER BY t0."id" DESC) AS c1, t0."author_id" AS c2, t0."category_id" AS c3 FROM "BlogPost" t0 WHERE ((SELECT COUNT(t1."id") AS dctrn__1 FROM "BlogPost" t1) = 1)) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }
@@ -370,7 +370,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT b0_.`id` AS id_0, b0_.`name` AS name_1 FROM `Banner` b0_) dctrn_result ORDER BY id_0 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`name` AS c1 FROM `Banner` t0) dctrn_result ORDER BY c0 DESC',
             $query->getSQL()
         );
     }
@@ -395,7 +395,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0 FROM (SELECT a0_.`id` AS id_0, a0_.`name` AS name_1, (SELECT MIN(m1_.`title`) AS dctrn__1 FROM `MyBlogPost` m1_ WHERE m1_.`author_id` = a0_.`id`) AS sclr_2 FROM `Author` a0_) dctrn_result ORDER BY sclr_2 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`name` AS c1, (SELECT MIN(t1.`title`) AS dctrn__1 FROM `MyBlogPost` t1 WHERE t1.`author_id` = t0.`id`) AS c2 FROM `Author` t0) dctrn_result ORDER BY c2 DESC',
             $query->getSQL()
         );
     }
@@ -420,7 +420,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT id_0, MIN(sclr_3) AS dctrn_minrownum FROM (SELECT a0_."id" AS id_0, a0_."name" AS name_1, (SELECT MIN(m1_."title") AS dctrn__1 FROM "MyBlogPost" m1_ WHERE m1_."author_id" = a0_."id") AS sclr_2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(m1_."title") AS dctrn__2 FROM "MyBlogPost" m1_ WHERE m1_."author_id" = a0_."id") DESC) AS sclr_3 FROM "Author" a0_) dctrn_result GROUP BY id_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c0, MIN(c3) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, t0."name" AS c1, (SELECT MIN(t1."title") AS dctrn__1 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS c2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS dctrn__2 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS c3 FROM "Author" t0) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }
@@ -445,7 +445,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT ID_0, MIN(SCLR_3) AS dctrn_minrownum FROM (SELECT a0_."id" AS ID_0, a0_."name" AS NAME_1, (SELECT MIN(m1_."title") AS dctrn__1 FROM "MyBlogPost" m1_ WHERE m1_."author_id" = a0_."id") AS SCLR_2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(m1_."title") AS dctrn__2 FROM "MyBlogPost" m1_ WHERE m1_."author_id" = a0_."id") DESC) AS SCLR_3 FROM "Author" a0_) dctrn_result GROUP BY ID_0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C0, MIN(C3) AS dctrn_minrownum FROM (SELECT t0."id" AS C0, t0."name" AS C1, (SELECT MIN(t1."title") AS dctrn__1 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS C2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS dctrn__2 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS C3 FROM "Author" t0) dctrn_result GROUP BY C0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }

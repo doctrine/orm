@@ -168,13 +168,6 @@ class BasicEntityPersister implements EntityPersister
     private $insertSql;
 
     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    protected $quoteStrategy;
-
-    /**
      * The IdentifierFlattener used for manipulating identifiers
      *
      * @var \Doctrine\ORM\Utility\IdentifierFlattener
@@ -209,7 +202,6 @@ class BasicEntityPersister implements EntityPersister
         $this->class                 = $class;
         $this->conn                  = $em->getConnection();
         $this->platform              = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy         = $em->getConfiguration()->getQuoteStrategy();
         $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
         $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
@@ -340,7 +332,10 @@ class BasicEntityPersister implements EntityPersister
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
         $columnName     = $this->platform->quoteIdentifier($versionProperty->getColumnName());
-        $identifier     = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
+        $identifier     = array_map(
+            function ($columnName) { return $this->platform->quoteIdentifier($columnName); },
+            array_keys($versionedClass->getIdentifierColumns($this->em))
+        );
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
@@ -1397,7 +1392,7 @@ class BasicEntityPersister implements EntityPersister
         foreach ($association->getJoinColumns() as $joinColumn) {
             $columnName       = $joinColumn->getColumnName();
             $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-            $resultColumnName = $this->getSQLColumnAlias($columnName);
+            $resultColumnName = $this->getSQLColumnAlias();
 
             if (! $joinColumn->getType()) {
                 $joinColumn->setType(
@@ -1570,7 +1565,7 @@ class BasicEntityPersister implements EntityPersister
     protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
     {
         $property     = $class->getProperty($field);
-        $columnAlias  = $this->getSQLColumnAlias($property->getColumnName());
+        $columnAlias  = $this->getSQLColumnAlias();
         $sql          = sprintf(
             '%s.%s',
             $this->getSQLTableAlias($property->getTableName(), ($alias == 'r' ? '' : $alias)),
@@ -2150,15 +2145,13 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * Gets an SQL column alias for a column name.
+     *
+     * @return string
      */
-    public function getSQLColumnAlias($columnName)
+    public function getSQLColumnAlias()
     {
-        return $this->quoteStrategy->getColumnAlias(
-            $columnName,
-            $this->currentPersisterContext->sqlAliasCounter++,
-            $this->platform
-        );
+        return $this->platform->getSQLResultCasing('c' . $this->currentPersisterContext->sqlAliasCounter++);
     }
 
     /**
