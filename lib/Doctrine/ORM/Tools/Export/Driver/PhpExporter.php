@@ -195,33 +195,23 @@ class PhpExporter extends AbstractExporter
                 $cascade = ['all'];
             }
 
-            $method = null;
-
             if ($association instanceof OneToOneAssociationMetadata) {
-                $method = 'mapOneToOne';
-
                 $this->exportJoinColumns($association->getJoinColumns(), $lines, 'joinColumns');
 
                 $lines[] = '$association = new Mapping\OneToOneAssociationMetadata("' . $association->getName() . '");';
                 $lines[] = null;
                 $lines[] = '$association->setJoinColumns($joinColumns);';
             } else if ($association instanceof ManyToOneAssociationMetadata) {
-                $method = 'mapManyToOne';
-
                 $this->exportJoinColumns($association->getJoinColumns(), $lines, 'joinColumns');
 
                 $lines[] = '$association = new Mapping\ManyToOneAssociationMetadata("' . $association->getName() . '");';
                 $lines[] = null;
                 $lines[] = '$association->setJoinColumns($joinColumns);';
             } else if ($association instanceof OneToManyAssociationMetadata) {
-                $method = 'mapOneToMany';
-
                 $lines[] = '$association = new Mapping\OneToManyAssociationMetadata("' . $association->getName() . '");';
                 $lines[] = null;
                 $lines[] = '$association->setOrderBy(' . $this->varExport($association->getOrderBy()) . ');';
             } else if ($association instanceof ManyToManyAssociationMetadata) {
-                $method = 'mapManyToMany';
-
                 if ($association->getJoinTable()) {
                     $this->exportJoinTable($association->getJoinTable(), $lines);
                 }
@@ -255,7 +245,7 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$association->setOrphanRemoval(' . $this->varExport($association->isOrphanRemoval()) . ');';
             $lines[] = '$association->setPrimaryKey(' . $this->varExport($association->isPrimaryKey()) . ');';
             $lines[] = null;
-            $lines[] = '$metadata->' . $method . '($association);';
+            $lines[] = '$metadata->addAssociation($association);';
         }
 
         return implode(PHP_EOL, $lines);

@@ -421,7 +421,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->mapOneToOne($association);
+                $metadata->addAssociation($association);
             }
         }
 
@@ -474,7 +474,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->mapOneToMany($association);
+                $metadata->addAssociation($association);
             }
         }
 
@@ -526,7 +526,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->mapManyToOne($association);
+                $metadata->addAssociation($association);
             }
         }
 
@@ -615,7 +615,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->mapManyToMany($association);
+                $metadata->addAssociation($association);
             }
         }
 

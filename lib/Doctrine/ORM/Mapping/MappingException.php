@@ -401,35 +401,14 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function duplicateProperty(Property $property)
+    public static function duplicateProperty(ClassMetadata $metadata, Property $property)
     {
         return new self(sprintf(
-            'Property "%s" in "%s" was already declared, but it must be declared only once',
+            'Property "%s" in "%s" was already declared in "%s", but it must be declared only once',
             $property->getName(),
+            $metadata->getName(),
             $property->getDeclaringClass()->getName()
         ));
-    }
-
-    /**
-     * @param string $entity    The entity's name.
-     * @param string $fieldName The name of the field that was already declared.
-     *
-     * @return MappingException
-     */
-    public static function duplicateFieldMapping($entity, $fieldName)
-    {
-        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
-    }
-
-    /**
-     * @param string $entity
-     * @param string $fieldName
-     *
-     * @return MappingException
-     */
-    public static function duplicateAssociationMapping($entity, $fieldName)
-    {
-        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
     }
 
     /**

@@ -121,7 +121,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $association->setCascade(['persist']);
         $association->addJoinColumn($joinColumn);
 
-        $cm->mapOneToOne($association);
+        $cm->addAssociation($association);
 
         $cm->addNamedNativeQuery(
             [

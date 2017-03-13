@@ -25,6 +25,6 @@ $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
 $association->setTargetEntity('DDC3579Group');
 
-$metadata->mapManyToMany($association);
+$metadata->addAssociation($association);
 
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

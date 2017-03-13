@@ -121,7 +121,7 @@ $association->setInversedBy('user');
 $association->setCascade(['remove']);
 $association->setOrphanRemoval(false);
 
-$metadata->mapOneToOne($association);
+$metadata->addAssociation($association);
 
 $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
 
@@ -131,7 +131,7 @@ $association->setCascade(['persist']);
 $association->setOrphanRemoval(true);
 $association->setOrderBy(['number' => 'ASC']);
 
-$metadata->mapOneToMany($association);
+$metadata->addAssociation($association);
 
 $joinTable = new Mapping\JoinTableMetadata();
 $joinTable->setName('cms_users_groups');
@@ -158,4 +158,4 @@ $association->setJoinTable($joinTable);
 $association->setTargetEntity(Group::class);
 $association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
 
-$metadata->mapManyToMany($association);
+$metadata->addAssociation($association);
