@@ -169,7 +169,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = \'inactive\' WHERE SIZE(u.groups) = 10',
-            'UPDATE "cms_users" SET "status" = \'inactive\' WHERE (SELECT COUNT(*) FROM "cms_users_groups" c0_ WHERE c0_."user_id" = "cms_users"."id") = 10'
+            'UPDATE "cms_users" SET "status" = \'inactive\' WHERE (SELECT COUNT(*) FROM "cms_users_groups" t0 WHERE t0."user_id" = "cms_users"."id") = 10'
         );
     }
 
@@ -185,7 +185,7 @@ class UpdateSqlGenerationTest extends OrmTestCase
     {
         self::assertSqlGeneration(
             'UPDATE Doctrine\Tests\Models\Company\CompanyFixContract fc SET fc.fixPrice = (SELECT ce2.salary FROM Doctrine\Tests\Models\Company\CompanyEmployee ce2 WHERE ce2.id = 2) WHERE fc.id = 1',
-            'UPDATE "company_contracts" SET "fixPrice" = (SELECT c0_."salary" FROM "company_employees" c0_ INNER JOIN "company_persons" c1_ ON c0_."id" = c1_."id" LEFT JOIN "company_managers" c2_ ON c0_."id" = c2_."id" WHERE c1_."id" = 2) WHERE ("id" = 1) AND "discr" IN (\'fix\')'
+            'UPDATE "company_contracts" SET "fixPrice" = (SELECT t0."salary" FROM "company_employees" t0 INNER JOIN "company_persons" t1 ON t0."id" = t1."id" LEFT JOIN "company_managers" t2 ON t0."id" = t2."id" WHERE t1."id" = 2) WHERE ("id" = 1) AND "discr" IN (\'fix\')'
         );
     }
 }

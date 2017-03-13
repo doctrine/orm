@@ -218,7 +218,7 @@ class QueryTest extends OrmTestCase
         $driverConnectionMock = $this->em->getConnection()->getWrappedConnection();
         $stmt = new StatementArrayMock([
             [
-                'id_0' => 1,
+                'c0' => 1,
             ]
         ]);
         $driverConnectionMock->setStatementMock($stmt);

@@ -43,7 +43,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         self::assertSQLEquals(
-            'SELECT d0_."order_id" AS order_id_0, d0_."created_at" AS created_at_1, COUNT(d1_."id") AS sclr_2 FROM "DDC1430Order" d0_ LEFT JOIN "DDC1430OrderProduct" d1_ ON d0_."order_id" = d1_."order_id" GROUP BY d0_."order_id", d0_."created_at" ORDER BY d0_."order_id" ASC',
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, COUNT(t1."id") AS c2 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at" ORDER BY t0."order_id" ASC',
             $query->getSQL()
         );
 
@@ -81,7 +81,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         self::assertSQLEquals(
-            'SELECT d0_."order_id" AS order_id_0, d0_."created_at" AS created_at_1, d0_."order_status" AS order_status_2, COUNT(d1_."id") AS sclr_3 FROM "DDC1430Order" d0_ LEFT JOIN "DDC1430OrderProduct" d1_ ON d0_."order_id" = d1_."order_id" GROUP BY d0_."order_id", d0_."created_at", d0_."order_status" ORDER BY d0_."order_id" ASC',
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, t0."order_status" AS c2, COUNT(t1."id") AS c3 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at", t0."order_status" ORDER BY t0."order_id" ASC',
             $query->getSQL()
         );
 
@@ -116,7 +116,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         );
 
         self::assertSQLEquals(
-            'SELECT d0_."order_id" AS order_id_0, d0_."created_at" AS created_at_1, d0_."order_status" AS order_status_2, COUNT(d1_."id") AS sclr_3 FROM "DDC1430Order" d0_ LEFT JOIN "DDC1430OrderProduct" d1_ ON d0_."order_id" = d1_."order_id" GROUP BY d0_."order_id", d0_."created_at", d0_."order_status" ORDER BY d0_."order_id" ASC',
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, t0."order_status" AS c2, COUNT(t1."id") AS c3 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at", t0."order_status" ORDER BY t0."order_id" ASC',
             $query->getSQL()
         );
 

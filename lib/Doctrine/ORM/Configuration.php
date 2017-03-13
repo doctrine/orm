@@ -32,11 +32,9 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\NamingStrategy;
-use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
@@ -710,36 +708,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
         }
 
         return $this->attributes['namingStrategy'];
-    }
-
-    /**
-     * Sets quote strategy.
-     *
-     * @since 2.3
-     *
-     * @param \Doctrine\ORM\Mapping\QuoteStrategy $quoteStrategy
-     *
-     * @return void
-     */
-    public function setQuoteStrategy(QuoteStrategy $quoteStrategy)
-    {
-        $this->attributes['quoteStrategy'] = $quoteStrategy;
-    }
-
-    /**
-     * Gets quote strategy.
-     *
-     * @since 2.3
-     *
-     * @return \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    public function getQuoteStrategy()
-    {
-        if ( ! isset($this->attributes['quoteStrategy'])) {
-            $this->attributes['quoteStrategy'] = new DefaultQuoteStrategy();
-        }
-
-        return $this->attributes['quoteStrategy'];
     }
 
     /**

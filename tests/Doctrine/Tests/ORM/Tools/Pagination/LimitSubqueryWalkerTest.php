@@ -19,7 +19,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT m0_."id" AS id_0 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id"',
+            'SELECT DISTINCT t0."id" AS c0 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id"',
             $limitQuery->getSQL()
         );
     }
@@ -33,7 +33,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT m0_."id" AS id_0, m0_."title" AS title_1 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON m0_."category_id" = c1_."id" INNER JOIN "Author" a2_ ON m0_."author_id" = a2_."id" ORDER BY m0_."title" ASC',
+            'SELECT DISTINCT t0."id" AS c0, t0."title" AS c1 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" INNER JOIN "Author" t2 ON t0."author_id" = t2."id" ORDER BY t0."title" ASC',
             $limitQuery->getSQL()
         );
     }
@@ -47,7 +47,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertSame(
-            'SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY COUNT(c1_.id) ASC',
+            'SELECT DISTINCT t0."id" AS c0 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON t0."category_id" = t1."id" GROUP BY t0."id" ORDER BY COUNT(t1."id") ASC',
             $limitQuery->getSQL()
         );
     }
@@ -61,7 +61,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT a0_."id" AS id_0, sum(a0_."name") AS sclr_1 FROM "Author" a0_',
+            'SELECT DISTINCT t0."id" AS c0 FROM "Author" t0',
             $limitQuery->getSQL()
         );
     }
@@ -75,7 +75,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertSame(
-            'SELECT DISTINCT a0_."id" AS id_0, sum(a0_."name") AS sclr_1 FROM "Author" a0_ ORDER BY sclr_1 DESC',
+            'SELECT DISTINCT t0."id" AS c0, sum(t0."name") AS c1 FROM "Author" t0 ORDER BY c1 DESC',
             $limitQuery->getSQL()
         );
     }
@@ -89,7 +89,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertSame(
-            'SELECT DISTINCT a0_."id" AS id_0, sum(a0_."name") AS sclr_1, (SELECT count(a1_."id") AS sclr_3 FROM "Author" a1_ WHERE a1_."id" = a0_."id") AS sclr_2 FROM "Author" a0_ ORDER BY sclr_1 DESC, sclr_2 ASC',
+            'SELECT DISTINCT t0."id" AS c0, sum(t0."name") AS c1, (SELECT count(t1."id") AS c3 FROM "Author" t1 WHERE t1."id" = t0."id") AS c2 FROM "Author" t0 ORDER BY c1 DESC, c2 ASC',
             $limitQuery->getSQL()
         );
     }
@@ -106,7 +106,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT m0_."id" AS id_0, m0_."author_id" AS sclr_1 FROM "MyBlogPost" m0_ ORDER BY m0_."author_id" ASC',
+            'SELECT DISTINCT t0."id" AS c0, t0."author_id" AS c1 FROM "MyBlogPost" t0 ORDER BY t0."author_id" ASC',
             $limitQuery->getSQL()
         );
     }
@@ -123,7 +123,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT m0_."id" AS id_0 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON (m0_."category_id" = c1_."id")',
+            'SELECT DISTINCT t0."id" AS c0 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON (t0."category_id" = t1."id")',
             $limitQuery->getSQL()
         );
     }
@@ -137,7 +137,7 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         self::assertEquals(
-            'SELECT DISTINCT m0_."id" AS id_0, m0_."title" AS title_1 FROM "MyBlogPost" m0_ INNER JOIN "Category" c1_ ON (m0_."category_id" = c1_."id") ORDER BY m0_."title" ASC',
+            'SELECT DISTINCT t0."id" AS c0, t0."title" AS c1 FROM "MyBlogPost" t0 INNER JOIN "Category" t1 ON (t0."category_id" = t1."id") ORDER BY t0."title" ASC',
             $limitQuery->getSQL()
         );
     }
