@@ -61,7 +61,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     protected function getSelectJoinColumnSQL($tableName, $field, $type)
     {
         $tableAlias  = $this->getSQLTableAlias($tableName);
-        $columnAlias = $this->getSQLColumnAlias($field);
+        $columnAlias = $this->getSQLColumnAlias();
         $sql         = sprintf('%s.%s', $tableAlias, $field);
 
         $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $field, false, $type);

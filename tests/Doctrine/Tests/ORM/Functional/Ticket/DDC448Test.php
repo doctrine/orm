@@ -24,7 +24,7 @@ class DDC448Test extends OrmFunctionalTestCase
         $q = $this->em->createQuery("select b from ".__NAMESPACE__."\\DDC448SubTable b where b.connectedClassId = ?1");
 
         self::assertSQLEquals(
-            'SELECT d0_."id" AS id_0, d0_."discr" AS discr_1, d0_."connectedClassId" AS connectedClassId_2 FROM "SubTable" s1_ INNER JOIN "DDC448MainTable" d0_ ON s1_."id" = d0_."id" WHERE d0_."connectedClassId" = ?',
+            'SELECT t0."id" AS c0, t0."discr" AS c1, t0."connectedClassId" AS c2 FROM "SubTable" t1 INNER JOIN "DDC448MainTable" t0 ON t1."id" = t0."id" WHERE t0."connectedClassId" = ?',
             $q->getSQL()
         );
     }

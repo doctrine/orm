@@ -63,13 +63,6 @@ class SchemaTool
     private $platform;
 
     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    private $quoteStrategy;
-
-    /**
      * Initializes a new SchemaTool instance that uses the connection of the
      * provided EntityManager.
      *
@@ -77,9 +70,8 @@ class SchemaTool
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em               = $em;
-        $this->platform         = $em->getConnection()->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->em       = $em;
+        $this->platform = $em->getConnection()->getDatabasePlatform();
     }
 
     /**

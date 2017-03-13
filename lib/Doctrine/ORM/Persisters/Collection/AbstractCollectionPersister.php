@@ -53,24 +53,16 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     protected $platform;
 
     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    protected $quoteStrategy;
-
-    /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
      * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em               = $em;
-        $this->uow              = $em->getUnitOfWork();
-        $this->conn             = $em->getConnection();
-        $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $em->getConfiguration()->getQuoteStrategy();
+        $this->em       = $em;
+        $this->uow      = $em->getUnitOfWork();
+        $this->conn     = $em->getConnection();
+        $this->platform = $this->conn->getDatabasePlatform();
     }
 
     /**
