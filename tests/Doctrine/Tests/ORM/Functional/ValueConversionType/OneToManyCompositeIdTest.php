@@ -40,14 +40,6 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone_compositeid');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_compositeid');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->em->getConnection();
@@ -60,67 +52,46 @@ class OneToManyCompositeIdTest extends OrmFunctionalTestCase
         self::assertEquals('qrs', $conn->fetchColumn('SELECT associated_id2 FROM vct_owning_manytoone_compositeid LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
         $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
+            Entity\InversedOneToManyCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );
 
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningManyToOneCompositeIdEntity::class, 'ghi');
 
-        self::assertInstanceOf(Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class, $inversed);
-        self::assertInstanceOf(Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class, $owning);
+        self::assertInstanceOf(Entity\InversedOneToManyCompositeIdEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningManyToOneCompositeIdEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
         $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
+            Entity\InversedOneToManyCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );
 
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningManyToOneCompositeIdEntity::class, 'ghi');
 
         self::assertEquals('abc', $inversed->id1);
         self::assertEquals('def', $inversed->id2);
         self::assertEquals('ghi', $owning->id3);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheProxyFromOwningToInversedIsLoaded()
     {
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneCompositeIdEntity::class,
-            'ghi'
-        );
+        $owning = $this->em->find(Entity\OwningManyToOneCompositeIdEntity::class, 'ghi');
 
         $inversedProxy = $owning->associatedEntity;
 
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheCollectionFromInversedToOwningIsLoaded()
     {
         $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyCompositeIdEntity::class,
+            Entity\InversedOneToManyCompositeIdEntity::class,
             ['id1' => 'abc', 'id2' => 'def']
         );
 

@@ -9,10 +9,9 @@ $metadata->setCache(
     )
 );
 
-$metadata->mapManyToOne(
-    [
-        'fieldName'    => 'foo',
-        'id'           => true,
-        'targetEntity' => 'PHPSLCFoo',
-    ]
-);
+$association = new Mapping\ManyToOneAssociationMetadata('foo');
+
+$association->setTargetEntity('PHPSLCFoo');
+$association->setPrimaryKey(true);
+
+$metadata->mapManyToOne($association);

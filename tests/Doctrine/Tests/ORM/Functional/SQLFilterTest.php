@@ -43,6 +43,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         $this->useModelSet('company');
+
         parent::setUp();
     }
 
@@ -51,8 +52,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch'] = FetchMode::LAZY;
-        $class->associationMappings['articles']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['groups']->setFetchMode(FetchMode::LAZY);
+        $class->associationMappings['articles']->setFetchMode(FetchMode::LAZY);
     }
 
     public function testConfigureFilter()
@@ -523,8 +524,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function loadLazyFixtureData()
     {
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['articles']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['groups']['fetch'] = FetchMode::EXTRA_LAZY;
+        $class->associationMappings['articles']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->associationMappings['groups']->setFetchMode(FetchMode::EXTRA_LAZY);
         $this->loadFixtureData();
     }
 
@@ -831,10 +832,14 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function useCompletedContractFilter()
     {
         $conf = $this->em->getConfiguration();
-        $conf->addFilter("completed_contract", "\Doctrine\Tests\ORM\Functional\CompletedContractFilter");
-        $this->em->getFilters()
+
+        $conf->addFilter("completed_contract", CompletedContractFilter::class);
+
+        $this->em
+            ->getFilters()
             ->enable("completed_contract")
-            ->setParameter("completed", true, DBALType::BOOLEAN);
+            ->setParameter("completed", true, DBALType::BOOLEAN)
+        ;
     }
 
     public function testManyToMany_ExtraLazyCountWithFilterOnSTI()
@@ -1170,7 +1175,7 @@ class CompletedContractFilter extends SQLFilter
             return "";
         }
 
-        return $targetTableAlias.'.completed = ' . $this->getParameter('completed');
+        return $targetTableAlias.'."completed" = ' . $this->getParameter('completed');
     }
 }
 

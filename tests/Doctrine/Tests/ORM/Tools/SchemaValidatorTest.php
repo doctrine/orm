@@ -59,10 +59,13 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class1);
 
+        $message1 = "The inverse join columns of the many-to-many table '%s' have to contain to ALL identifier columns of the target entity '%s', however '%s' are missing.";
+        $message2 = "The join columns of the many-to-many table '%s' have to contain to ALL identifier columns of the source entity '%s', however '%s' are missing.";
+
         self::assertEquals(
             [
-                "The inverse join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity2', however 'key4' are missing.",
-                "The join columns of the many-to-many table 'Entity1Entity2' have to contain to ALL identifier columns of the source entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key2' are missing."
+                sprintf($message1, 'Entity1Entity2', InvalidEntity2::class, 'key4'),
+                sprintf($message2, 'Entity1Entity2', InvalidEntity1::class, 'key2'),
             ],
             $ce
         );
@@ -78,10 +81,13 @@ class SchemaValidatorTest extends OrmTestCase
 
         $ce = $this->validator->validateClass($class2);
 
+        $message1 = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
+        $message2 = "The join columns of the association '%s' have to match to ALL identifier columns of the target entity '%s', however '%s' are missing.";
+
         self::assertEquals(
             [
-                "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\InvalidEntity1'.",
-                "The join columns of the association 'assoc' have to match to ALL identifier columns of the target entity 'Doctrine\Tests\ORM\Tools\InvalidEntity1', however 'key1, key2' are missing."
+                sprintf($message1, 'id', InvalidEntity1::class),
+                sprintf($message2, 'assoc', InvalidEntity1::class, "key1', 'key2"),
             ],
             $ce
         );
@@ -108,10 +114,13 @@ class SchemaValidatorTest extends OrmTestCase
         $classThree = $this->em->getClassMetadata(DDC1649Three::class);
         $ce = $this->validator->validateClass($classThree);
 
+        $message1 = "Cannot map association %s#%s as identifier, because the target entity '%s' also maps an association as identifier.";
+        $message2 = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
+
         self::assertEquals(
             [
-                "Cannot map association 'Doctrine\Tests\ORM\Tools\DDC1649Three#two as identifier, because the target entity 'Doctrine\Tests\ORM\Tools\DDC1649Two' also maps an association as identifier.",
-                "The referenced column name 'id' has to be a primary key column on the target entity class 'Doctrine\Tests\ORM\Tools\DDC1649Two'."
+                sprintf($message1, DDC1649Three::class, 'two', DDC1649Two::class),
+                sprintf($message2, 'id', DDC1649Two::class),
             ],
             $ce
         );
@@ -125,11 +134,12 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3274One::class);
         $ce = $this->validator->validateClass($class);
 
+        $message = "The property %s#%s is on the inverse side of a bi-directional relationship, but the "
+            . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
+
         self::assertEquals(
             [
-                "The field Doctrine\Tests\ORM\Tools\DDC3274One#two is on the inverse side of a bi-directional " .
-                "relationship, but the specified mappedBy association on the target-entity " .
-                "Doctrine\Tests\ORM\Tools\DDC3274Two#one does not contain the required 'inversedBy=\"two\"' attribute."
+                sprintf($message, DDC3274One::class, 'two', DDC3274Two::class, 'one', 'two')
             ],
             $ce
         );
@@ -143,10 +153,11 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322One::class);
         $ce = $this->validator->validateClass($class);
 
+        $message = "The association %s#%s is ordered by a property '%s' that is non-existing field on the target entity '%s'.";
+
         self::assertEquals(
             [
-                "The association Doctrine\Tests\ORM\Tools\DDC3322One#invalidAssoc is ordered by a foreign field " .
-                "invalidField that is not a field on the target entity Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1."
+                sprintf($message, DDC3322One::class, 'invalidAssoc', 'invalidField', DDC3322ValidEntity1::class)
             ],
             $ce
         );
@@ -160,10 +171,11 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322Two::class);
         $ce = $this->validator->validateClass($class);
 
+        $message = "The association %s#%s is ordered by a property '%s' on '%s' that is a collection-valued association.";
+
         self::assertEquals(
             [
-                "The association Doctrine\Tests\ORM\Tools\DDC3322Two#invalidAssoc is ordered by a field oneToMany " .
-                "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is a collection-valued association."
+                sprintf($message, DDC3322Two::class, 'invalidAssoc', 'oneToMany', DDC3322ValidEntity1::class)
             ],
             $ce
         );
@@ -177,10 +189,11 @@ class SchemaValidatorTest extends OrmTestCase
         $class = $this->em->getClassMetadata(DDC3322Three::class);
         $ce = $this->validator->validateClass($class);
 
+        $message = "The association %s#%s is ordered by a property '%s' on '%s' that is the inverse side of an association.";
+
         self::assertEquals(
             [
-                "The association Doctrine\Tests\ORM\Tools\DDC3322Three#invalidAssoc is ordered by a field oneToOneInverse " .
-                "on Doctrine\Tests\ORM\Tools\DDC3322ValidEntity1 that is the inverse side of an association."
+                sprintf($message, DDC3322Three::class, 'invalidAssoc', 'oneToOneInverse', DDC3322ValidEntity1::class)
             ],
             $ce
         );

@@ -21,13 +21,18 @@ namespace Doctrine\ORM\Mapping;
 
 class ToOneAssociationMetadata extends AssociationMetadata
 {
-    /** @var bool */
-    private $id = false;
-    
     /**
      * @var array<JoinColumnMetadata>
      */
     private $joinColumns = [];
+
+    /**
+     * @param array<JoinColumnMetadata> $joinColumns
+     */
+    public function setJoinColumns(array $joinColumns)
+    {
+        $this->joinColumns = $joinColumns;
+    }
 
     /**
      * @return array<JoinColumnMetadata>
@@ -45,5 +50,12 @@ class ToOneAssociationMetadata extends AssociationMetadata
         $this->joinColumns[] = $joinColumn;
     }
 
+    public function __clone()
+    {
+        parent::__clone();
 
+        foreach ($this->joinColumns as $index => $joinColumn) {
+            $this->joinColumns[$index] = clone $joinColumn;
+        }
+    }
 }

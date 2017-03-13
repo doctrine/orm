@@ -4,8 +4,10 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation\OneToOne;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -109,24 +111,17 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm = new ClassMetadata(CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $joinColumns = [];
-
         $joinColumn = new JoinColumnMetadata();
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setNullable(true);
 
-        $joinColumns[] = $joinColumn;
+        $association = new OneToOneAssociationMetadata('email');
+        $association->setTargetEntity(CmsEmail::class);
+        $association->setInversedBy('user');
+        $association->setCascade(['persist']);
+        $association->addJoinColumn($joinColumn);
 
-        $cm->mapOneToOne(
-            [
-                'fieldName'     => 'email',
-                'targetEntity'  => CmsEmail::class,
-                'cascade'       => ['persist'],
-                'inversedBy'    => 'user',
-                'orphanRemoval' => false,
-                'joinColumns'   => $joinColumns,
-            ]
-        );
+        $cm->mapOneToOne($association);
 
         $cm->addNamedNativeQuery(
             [

@@ -301,7 +301,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cm1->addProperty($fieldMetadata);
 
         // and a mapped association
-        $cm1->mapOneToOne(['fieldName' => 'other', 'targetEntity' => 'TestEntity1', 'mappedBy' => 'this']);
+        $association = new Mapping\OneToOneAssociationMetadata('other');
+
+        $association->setTargetEntity('TestEntity1');
+        $association->setMappedBy('this');
+
+        $cm1->mapOneToOne($association);
 
         // and an association on the owning side
         $joinColumns = [];
@@ -313,13 +318,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $joinColumns[] = $joinColumn;
 
-        $cm1->mapOneToOne(
-            [
-                'fieldName'    => 'association',
-                'targetEntity' => 'TestEntity1',
-                'joinColumns'  => $joinColumns,
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('association');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity('TestEntity1');
+
+        $cm1->mapOneToOne($association);
 
         // and an id generator type
         $cm1->setIdGeneratorType(Mapping\GeneratorType::AUTO);
@@ -347,7 +351,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('phone-number', $phoneMetadata->getProperty('number')->getColumnName());
 
         $user                = $phoneMetadata->associationMappings['user'];
-        $phoneUserJoinColumn = reset($user['joinColumns']);
+        $userJoinColumns     = $user->getJoinColumns();
+        $phoneUserJoinColumn = reset($userJoinColumns);
 
         self::assertEquals('user-id', $phoneUserJoinColumn->getColumnName());
         self::assertEquals('user-id', $phoneUserJoinColumn->getReferencedColumnName());
@@ -365,30 +370,34 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('user-name', $userMetadata->getProperty('name')->getColumnName());
 
         $group               = $groupMetadata->associationMappings['parent'];
-        $groupUserJoinColumn = reset($group['joinColumns']);
+        $groupJoinColumns    = $group->getJoinColumns();
+        $groupUserJoinColumn = reset($groupJoinColumns);
 
         self::assertEquals('parent-id', $groupUserJoinColumn->getColumnName());
         self::assertEquals('group-id', $groupUserJoinColumn->getReferencedColumnName());
 
         $user                  = $addressMetadata->associationMappings['user'];
-        $addressUserJoinColumn = reset($user['joinColumns']);
+        $userJoinColumns       = $user->getJoinColumns();
+        $addressUserJoinColumn = reset($userJoinColumns);
 
         self::assertEquals('user-id', $addressUserJoinColumn->getColumnName());
         self::assertEquals('user-id', $addressUserJoinColumn->getReferencedColumnName());
 
         $address               = $userMetadata->associationMappings['address'];
-        $userAddressJoinColumn = reset($address['joinColumns']);
+        $addressJoinColumns    = $address->getJoinColumns();
+        $userAddressJoinColumn = reset($addressJoinColumns);
 
         self::assertEquals('address-id', $userAddressJoinColumn->getColumnName());
         self::assertEquals('address-id', $userAddressJoinColumn->getReferencedColumnName());
 
         $groups                       = $userMetadata->associationMappings['groups'];
-        $userGroupsJoinColumns        = $groups['joinTable']->getJoinColumns();
+        $groupsJoinTable              = $groups->getJoinTable();
+        $userGroupsJoinColumns        = $groupsJoinTable->getJoinColumns();
         $userGroupsJoinColumn         = reset($userGroupsJoinColumns);
-        $userGroupsInverseJoinColumns = $groups['joinTable']->getInverseJoinColumns();
+        $userGroupsInverseJoinColumns = $groupsJoinTable->getInverseJoinColumns();
         $userGroupsInverseJoinColumn  = reset($userGroupsInverseJoinColumns);
 
-        self::assertEquals('quote-users-groups', $groups['joinTable']->getName());
+        self::assertEquals('quote-users-groups', $groupsJoinTable->getName());
         self::assertEquals('user-id', $userGroupsJoinColumn->getColumnName());
         self::assertEquals('user-id', $userGroupsJoinColumn->getReferencedColumnName());
         self::assertEquals('group-id', $userGroupsInverseJoinColumn->getColumnName());

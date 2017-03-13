@@ -228,7 +228,7 @@ class ColumnMetadataBuilder implements Builder
             $columnMetadata->setPrecision($this->precision);
         }
 
-        // @todo: Remove this once constructor arguments is in place
+        // @todo guilhermeblanco Remove this once constructor arguments is in place
         $columnMetadata->setColumnName($this->columnName);
         $columnMetadata->setType($this->type);
 

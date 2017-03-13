@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Persisters;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
@@ -112,19 +113,19 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
      */
     public function testSelectConditionStatementIsNull()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::IS);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::IS);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::EQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::EQ);
         self::assertEquals('test IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('test', null, [], Comparison::NEQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('test', null, new OneToOneAssociationMetadata('test'), Comparison::NEQ);
         self::assertEquals('test IS NOT NULL', $statement);
     }
 

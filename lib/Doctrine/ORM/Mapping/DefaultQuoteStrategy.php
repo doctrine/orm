@@ -44,7 +44,7 @@ class DefaultQuoteStrategy implements QuoteStrategy
             }
 
             // Association defined as Id field
-            $joinColumns            = $class->associationMappings[$fieldName]['joinColumns'];
+            $joinColumns            = $class->associationMappings[$fieldName]->getJoinColumns();
             $assocQuotedColumnNames = array_map(
                 function (JoinColumnMetadata $joinColumn) use ($platform)
                 {

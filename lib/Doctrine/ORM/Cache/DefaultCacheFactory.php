@@ -35,6 +35,7 @@ use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
@@ -118,7 +119,11 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata)
+    public function buildCachedEntityPersister(
+        EntityManagerInterface $em,
+        EntityPersister $persister,
+        ClassMetadata $metadata
+    )
     {
         $cache  = $metadata->cache;
         $region = $this->getRegion($cache);
@@ -142,24 +147,30 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping)
+    public function buildCachedCollectionPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        AssociationMetadata $association
+    )
     {
-        $cache  = $mapping['cache'];
+        $cache  = $association->getCache();
         $region = $this->getRegion($cache);
         $usage  = $cache->getUsage();
 
         switch ($usage) {
             case CacheUsage::READ_ONLY:
-                return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $mapping);
+                return new ReadOnlyCachedCollectionPersister($persister, $region, $em, $association);
 
             case CacheUsage::READ_WRITE:
-                return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+                return new ReadWriteCachedCollectionPersister($persister, $region, $em, $association);
 
             case CacheUsage::NONSTRICT_READ_WRITE:
-                return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+                return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $association);
 
             default:
-                throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
+                throw new \InvalidArgumentException(
+                    sprintf("Unrecognized access strategy type [%s]", $usage)
+                );
         }
     }
 
@@ -181,7 +192,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * {@inheritdoc}
      */
-    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping)
+    public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMetadata $association)
     {
         return new DefaultCollectionHydrator($em);
     }

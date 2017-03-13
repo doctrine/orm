@@ -25,6 +25,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 
 /**
@@ -218,10 +219,8 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-
             foreach ($metadata->associationMappings as $association) {
-
-                if ( ! $association['type'] & ClassMetadata::TO_MANY) {
+                if (! $association instanceof ToManyAssociationMetadata) {
                     continue;
                 }
 

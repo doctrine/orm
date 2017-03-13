@@ -33,7 +33,11 @@ use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use SimpleXMLElement;
 
@@ -144,7 +148,7 @@ class XmlDriver extends FileDriver
         // Evaluate second level cache
         if (isset($xmlRoot->cache)) {
             $cache = $this->convertCacheElementToCacheMetadata($xmlRoot->cache, $metadata);
-            
+
             $metadata->setCache($cache);
         }
 
@@ -179,7 +183,7 @@ class XmlDriver extends FileDriver
             foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {
                 $entities   = [];
                 $columns    = [];
-                
+
                 foreach ($rsmElement as $entityElement) {
                     //<entity-result/>
                     if (isset($entityElement['entity-class'])) {
@@ -364,24 +368,25 @@ class XmlDriver extends FileDriver
         // Evaluate <one-to-one ...> mappings
         if (isset($xmlRoot->{'one-to-one'})) {
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
-                $mapping = [
-                    'fieldName' => (string) $oneToOneElement['field'],
-                    'targetEntity' => (string) $oneToOneElement['target-entity']
-                ];
+                $association = new OneToOneAssociationMetadata((string) $oneToOneElement['field']);
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                $association->setTargetEntity((string) $oneToOneElement['target-entity']);
+
+                if (isset($associationIds[$association->getName()])) {
+                    $association->setPrimaryKey(true);
                 }
 
                 if (isset($oneToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToOneElement['fetch']);
+                    $association->setFetchMode(
+                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToOneElement['fetch'])
+                    );
                 }
 
                 if (isset($oneToOneElement['mapped-by'])) {
-                    $mapping['mappedBy'] = (string) $oneToOneElement['mapped-by'];
+                    $association->setMappedBy((string) $oneToOneElement['mapped-by']);
                 } else {
                     if (isset($oneToOneElement['inversed-by'])) {
-                        $mapping['inversedBy'] = (string) $oneToOneElement['inversed-by'];
+                        $association->setInversedBy((string) $oneToOneElement['inversed-by']);
                     }
 
                     $joinColumns = [];
@@ -394,96 +399,104 @@ class XmlDriver extends FileDriver
                         }
                     }
 
-                    $mapping['joinColumns'] = $joinColumns;
+                    $association->setJoinColumns($joinColumns);
                 }
 
                 if (isset($oneToOneElement->cascade)) {
-                    $mapping['cascade'] = $this->getCascadeMappings($oneToOneElement->cascade);
+                    $association->setCascade($this->getCascadeMappings($oneToOneElement->cascade));
                 }
 
                 if (isset($oneToOneElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = $this->evaluateBoolean($oneToOneElement['orphan-removal']);
+                    $association->setOrphanRemoval($this->evaluateBoolean($oneToOneElement['orphan-removal']));
                 }
 
                 // Evaluate second level cache
                 if (isset($oneToOneElement->cache)) {
-                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
-                        $oneToOneElement->cache,
-                        $metadata,
-                        $mapping['fieldName']
+                    $association->setCache(
+                        $this->convertCacheElementToCacheMetadata(
+                            $oneToOneElement->cache,
+                            $metadata,
+                            $association->getName()
+                        )
                     );
                 }
 
-                $metadata->mapOneToOne($mapping);
+                $metadata->mapOneToOne($association);
             }
         }
 
         // Evaluate <one-to-many ...> mappings
         if (isset($xmlRoot->{'one-to-many'})) {
             foreach ($xmlRoot->{'one-to-many'} as $oneToManyElement) {
-                $mapping = [
-                    'fieldName' => (string) $oneToManyElement['field'],
-                    'targetEntity' => (string) $oneToManyElement['target-entity'],
-                    'mappedBy' => (string) $oneToManyElement['mapped-by']
-                ];
+                $association = new OneToManyAssociationMetadata((string) $oneToManyElement['field']);
+
+                $association->setTargetEntity((string) $oneToManyElement['target-entity']);
+                $association->setMappedBy((string) $oneToManyElement['mapped-by']);
 
                 if (isset($oneToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToManyElement['fetch']);
+                    $association->setFetchMode(
+                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToManyElement['fetch'])
+                    );
                 }
 
                 if (isset($oneToManyElement->cascade)) {
-                    $mapping['cascade'] = $this->getCascadeMappings($oneToManyElement->cascade);
+                    $association->setCascade($this->getCascadeMappings($oneToManyElement->cascade));
                 }
 
                 if (isset($oneToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = $this->evaluateBoolean($oneToManyElement['orphan-removal']);
+                    $association->setOrphanRemoval($this->evaluateBoolean($oneToManyElement['orphan-removal']));
                 }
 
                 if (isset($oneToManyElement->{'order-by'})) {
                     $orderBy = [];
+
                     foreach ($oneToManyElement->{'order-by'}->{'order-by-field'} as $orderByField) {
                         $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
                     }
-                    $mapping['orderBy'] = $orderBy;
+
+                    $association->setOrderBy($orderBy);
                 }
 
                 if (isset($oneToManyElement['index-by'])) {
-                    $mapping['indexBy'] = (string) $oneToManyElement['index-by'];
+                    $association->setIndexedBy((string) $oneToManyElement['index-by']);
                 } else if (isset($oneToManyElement->{'index-by'})) {
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
                 // Evaluate second level cache
                 if (isset($oneToManyElement->cache)) {
-                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
-                        $oneToManyElement->cache,
-                        $metadata,
-                        $mapping['fieldName']
+                    $association->setCache(
+                        $this->convertCacheElementToCacheMetadata(
+                            $oneToManyElement->cache,
+                            $metadata,
+                            $association->getName()
+                        )
                     );
                 }
 
-                $metadata->mapOneToMany($mapping);
+                $metadata->mapOneToMany($association);
             }
         }
 
         // Evaluate <many-to-one ...> mappings
         if (isset($xmlRoot->{'many-to-one'})) {
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
-                $mapping = [
-                    'fieldName' => (string) $manyToOneElement['field'],
-                    'targetEntity' => (string) $manyToOneElement['target-entity']
-                ];
+                $association = new ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
 
-                if (isset($associationIds[$mapping['fieldName']])) {
-                    $mapping['id'] = true;
+                $association->setTargetEntity((string) $manyToOneElement['target-entity']);
+
+                if (isset($associationIds[$association->getName()])) {
+                    $association->setPrimaryKey(true);
                 }
 
                 if (isset($manyToOneElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $manyToOneElement['fetch']);
+                    $association->setFetchMode(
+                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $manyToOneElement['fetch'])
+                    );
                 }
 
                 if (isset($manyToOneElement['inversed-by'])) {
-                    $mapping['inversedBy'] = (string) $manyToOneElement['inversed-by'];
+                    $association->setInversedBy((string) $manyToOneElement['inversed-by']);
                 }
 
                 $joinColumns = [];
@@ -496,47 +509,49 @@ class XmlDriver extends FileDriver
                     }
                 }
 
-                $mapping['joinColumns'] = $joinColumns;
+                $association->setJoinColumns($joinColumns);
 
                 if (isset($manyToOneElement->cascade)) {
-                    $mapping['cascade'] = $this->getCascadeMappings($manyToOneElement->cascade);
+                    $association->setCascade($this->getCascadeMappings($manyToOneElement->cascade));
                 }
 
                 // Evaluate second level cache
                 if (isset($manyToOneElement->cache)) {
-                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
-                        $manyToOneElement->cache,
-                        $metadata,
-                        $mapping['fieldName']
+                    $association->setCache(
+                        $this->convertCacheElementToCacheMetadata(
+                            $manyToOneElement->cache,
+                            $metadata,
+                            $association->getName()
+                        )
                     );
                 }
 
-                $metadata->mapManyToOne($mapping);
-
+                $metadata->mapManyToOne($association);
             }
         }
 
         // Evaluate <many-to-many ...> mappings
         if (isset($xmlRoot->{'many-to-many'})) {
             foreach ($xmlRoot->{'many-to-many'} as $manyToManyElement) {
-                $mapping = [
-                    'fieldName' => (string) $manyToManyElement['field'],
-                    'targetEntity' => (string) $manyToManyElement['target-entity']
-                ];
+                $association = new ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
+
+                $association->setTargetEntity((string) $manyToManyElement['target-entity']);
 
                 if (isset($manyToManyElement['fetch'])) {
-                    $mapping['fetch'] = constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $manyToManyElement['fetch']);
+                    $association->setFetchMode(
+                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $manyToManyElement['fetch'])
+                    );
                 }
 
                 if (isset($manyToManyElement['orphan-removal'])) {
-                    $mapping['orphanRemoval'] = $this->evaluateBoolean($manyToManyElement['orphan-removal']);
+                    $association->setOrphanRemoval($this->evaluateBoolean($manyToManyElement['orphan-removal']));
                 }
 
                 if (isset($manyToManyElement['mapped-by'])) {
-                    $mapping['mappedBy'] = (string) $manyToManyElement['mapped-by'];
+                    $association->setMappedBy((string) $manyToManyElement['mapped-by']);
                 } else if (isset($manyToManyElement->{'join-table'})) {
                     if (isset($manyToManyElement['inversed-by'])) {
-                        $mapping['inversedBy'] = (string) $manyToManyElement['inversed-by'];
+                        $association->setInversedBy((string) $manyToManyElement['inversed-by']);
                     }
 
                     $joinTableElement = $manyToManyElement->{'join-table'};
@@ -566,11 +581,11 @@ class XmlDriver extends FileDriver
                         }
                     }
 
-                    $mapping['joinTable'] = $joinTable;
+                    $association->setJoinTable($joinTable);
                 }
 
                 if (isset($manyToManyElement->cascade)) {
-                    $mapping['cascade'] = $this->getCascadeMappings($manyToManyElement->cascade);
+                    $association->setCascade($this->getCascadeMappings($manyToManyElement->cascade));
                 }
 
                 if (isset($manyToManyElement->{'order-by'})) {
@@ -580,25 +595,27 @@ class XmlDriver extends FileDriver
                         $orderBy[(string) $orderByField['name']] = (string) $orderByField['direction'];
                     }
 
-                    $mapping['orderBy'] = $orderBy;
+                    $association->setOrderBy($orderBy);
                 }
 
                 if (isset($manyToManyElement['index-by'])) {
-                    $mapping['indexBy'] = (string) $manyToManyElement['index-by'];
+                    $association->setIndexedBy((string) $manyToManyElement['index-by']);
                 } else if (isset($manyToManyElement->{'index-by'})) {
                     throw new \InvalidArgumentException("<index-by /> is not a valid tag");
                 }
 
                 // Evaluate second level cache
                 if (isset($manyToManyElement->cache)) {
-                    $mapping['cache'] = $this->convertCacheElementToCacheMetadata(
-                        $manyToManyElement->cache,
-                        $metadata,
-                        $mapping['fieldName']
+                    $association->setCache(
+                        $this->convertCacheElementToCacheMetadata(
+                            $manyToManyElement->cache,
+                            $metadata,
+                            $association->getName()
+                        )
                     );
                 }
 
-                $metadata->mapManyToMany($mapping);
+                $metadata->mapManyToMany($association);
             }
         }
 
@@ -618,8 +635,14 @@ class XmlDriver extends FileDriver
         // Evaluate association-overrides
         if (isset($xmlRoot->{'association-overrides'})) {
             foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $overrideElement) {
-                $fieldName  = (string) $overrideElement['name'];
-                $override   = [];
+                $fieldName = (string) $overrideElement['name'];
+
+                if (! isset($metadata->associationMappings[$fieldName])) {
+                    throw MappingException::invalidOverrideFieldName($metadata->name, $fieldName);
+                }
+
+                $existingClass = get_class($metadata->associationMappings[$fieldName]);
+                $override      = new $existingClass($fieldName);
 
                 // Check for join-columns
                 if (isset($overrideElement->{'join-columns'})) {
@@ -629,7 +652,7 @@ class XmlDriver extends FileDriver
                         $joinColumns[] = $this->convertJoinColumnElementToJoinColumnMetadata($joinColumnElement);
                     }
 
-                    $override['joinColumns'] = $joinColumns;
+                    $override->setJoinColumns($joinColumns);
                 }
 
                 // Check for join-table
@@ -661,20 +684,22 @@ class XmlDriver extends FileDriver
                         }
                     }
 
-                    $override['joinTable'] = $joinTable;
+                    $override->setJoinTable($joinTable);
                 }
 
                 // Check for inversed-by
                 if (isset($overrideElement->{'inversed-by'})) {
-                    $override['inversedBy'] = (string) $overrideElement->{'inversed-by'}['name'];
+                    $override->setInversedBy((string) $overrideElement->{'inversed-by'}['name']);
                 }
 
-                // Check for `fetch`
+                // Check for fetch
                 if (isset($overrideElement['fetch'])) {
-                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . (string) $overrideElement['fetch']);
+                    $override->setFetchMode(
+                        constant(Metadata::class . '::FETCH_' . (string) $overrideElement['fetch'])
+                    );
                 }
 
-                $metadata->setAssociationOverride($fieldName, $override);
+                $metadata->setAssociationOverride($override);
             }
         }
 
@@ -834,7 +859,7 @@ class XmlDriver extends FileDriver
 
         return $joinColumnMetadata;
     }
-    
+
     /**
      * Parse the given Cache as CacheMetadata
      *
@@ -855,7 +880,7 @@ class XmlDriver extends FileDriver
             ? constant(sprintf('%s::%s', CacheUsage::class, strtoupper($cacheMapping['usage'])))
             : CacheUsage::READ_ONLY
         ;
-        
+
         $cacheBuilder
             ->withUsage($usage)
             ->withRegion($region)

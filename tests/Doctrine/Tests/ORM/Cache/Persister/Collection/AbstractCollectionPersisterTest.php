@@ -2,17 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\Tests\OrmTestCase;
-
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
-
+use Doctrine\Tests\OrmTestCase;
 use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @group DDC-2183
@@ -20,17 +20,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 abstract class AbstractCollectionPersisterTest extends OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\Cache\Region
+     * @var Region
      */
     protected $region;
 
     /**
-     * @var \Doctrine\ORM\Persisters\Collection\CollectionPersister
+     * @var CollectionPersister
      */
     protected $collectionPersister;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManager
      */
     protected $em;
 
@@ -65,14 +65,19 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     ];
 
     /**
-     * @param \Doctrine\ORM\EntityManager                             $em
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister
-     * @param \Doctrine\ORM\Cache\Region                              $region
-     * @param array                                                   $mapping
+     * @param EntityManager       $em
+     * @param CollectionPersister $persister
+     * @param Region              $region
+     * @param AssociationMetadata $association
      *
-     * @return \Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister
+     * @return AbstractCollectionPersister
      */
-    abstract protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping);
+    abstract protected function createPersister(
+        EntityManager $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMetadata $association
+    );
 
     protected function setUp()
     {

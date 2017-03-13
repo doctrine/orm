@@ -42,32 +42,29 @@ $joinColumn->setReferencedColumnName("id");
 
 $joinColumns[] = $joinColumn;
 
-$metadata->mapOneToOne(
-    [
-        'fieldName'    => 'state',
-        'targetEntity' => State::class,
-        'inversedBy'   => 'cities',
-        'joinColumns'  => $joinColumns,
-    ]
-);
+$association = new Mapping\OneToOneAssociationMetadata('state');
+
+$association->setJoinColumns($joinColumns);
+$association->setTargetEntity(State::class);
+$association->setInversedBy('cities');
+
+$metadata->mapOneToOne($association);
 
 $metadata->enableAssociationCache('state', ['usage' => Mapping\CacheUsage::READ_ONLY]);
 
-$metadata->mapManyToMany(
-    [
-       'fieldName'    => 'travels',
-       'targetEntity' => Travel::class,
-       'mappedBy'     => 'visitedCities',
-    ]
-);
+$association = new Mapping\ManyToManyAssociationMetadata('travels');
 
-$metadata->mapOneToMany(
-    [
-       'fieldName'    => 'attractions',
-       'targetEntity' => Attraction::class,
-       'mappedBy'     => 'city',
-       'orderBy'      => ['name' => 'ASC'],
-    ]
-);
+$association->setTargetEntity(Travel::class);
+$association->setMappedBy('visitedCities');
+
+$metadata->mapManyToMany($association);
+
+$association = new Mapping\OneToManyAssociationMetadata('attractions');
+
+$association->setTargetEntity(Attraction::class);
+$association->setMappedBy('city');
+$association->setOrderBy(['name' => 'ASC']);
+
+$metadata->mapOneToMany($association);
 
 $metadata->enableAssociationCache('attractions', ['usage' => Mapping\CacheUsage::READ_ONLY]);

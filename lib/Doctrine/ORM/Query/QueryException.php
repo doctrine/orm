@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Query;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 
 use Doctrine\ORM\Query\AST\PathExpression;
 
@@ -219,15 +220,18 @@ class QueryException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param array $assoc
+     * @param AssociationMetadata $association
      *
      * @return QueryException
      */
-    public static function iterateWithFetchJoinNotAllowed($assoc)
+    public static function iterateWithFetchJoinNotAllowed(AssociationMetadata $association)
     {
         return new self(
-            "Iterate with fetch join in class " . $assoc['sourceEntity'] .
-            " using association " . $assoc['fieldName'] . " not allowed."
+            sprintf(
+                'Iterate with fetch join in class %s using association %s not allowed.',
+                $association->getSourceEntity(),
+                $association->getName()
+            )
         );
     }
 

@@ -1035,7 +1035,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = FetchMode::LAZY;
+        $metadata->associationMappings['shipping']->setFetchMode(FetchMode::LAZY);
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->em);
@@ -1084,7 +1084,7 @@ class ObjectHydratorTest extends HydrationTestCase
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']['fetch'] = FetchMode::LAZY;
+        $metadata->associationMappings['shipping']->setFetchMode(FetchMode::LAZY);
 
         $stmt     = new HydratorMockStatement($resultSet);
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->em);
