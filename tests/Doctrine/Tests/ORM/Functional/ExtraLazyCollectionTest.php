@@ -41,21 +41,25 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->useModelSet('ddc2504');
         parent::setUp();
 
-        $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['groups']['indexBy'] = 'name';
-        $class->associationMappings['articles']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['articles']['indexBy'] = 'topic';
-        $class->associationMappings['phonenumbers']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['phonenumbers']['indexBy'] = 'phonenumber';
+        $class       = $this->em->getClassMetadata(CmsUser::class);
 
-        unset($class->associationMappings['phonenumbers']['cache']);
-        unset($class->associationMappings['articles']['cache']);
-        unset($class->associationMappings['users']['cache']);
+        $class->associationMappings['groups']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->associationMappings['articles']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->associationMappings['phonenumbers']->setFetchMode(FetchMode::EXTRA_LAZY);
+
+        $class->associationMappings['groups']->setIndexedBy('name');
+        $class->associationMappings['articles']->setIndexedBy('topic');
+        $class->associationMappings['phonenumbers']->setIndexedBy('phonenumber');
+
+        $class->associationMappings['groups']->setCache(null);
+        $class->associationMappings['articles']->setCache(null);
+        $class->associationMappings['phonenumbers']->setCache(null);
 
         $class = $this->em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['users']['indexBy'] = 'username';
+
+        $class->associationMappings['users']->setFetchMode(FetchMode::EXTRA_LAZY);
+
+        $class->associationMappings['users']->setIndexedBy('username');
 
         $this->loadFixture();
     }
@@ -65,18 +69,20 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['fetch'] = FetchMode::LAZY;
-        $class->associationMappings['articles']['fetch'] = FetchMode::LAZY;
-        $class->associationMappings['phonenumbers']['fetch'] = FetchMode::LAZY;
 
-        unset($class->associationMappings['groups']['indexBy']);
-        unset($class->associationMappings['articles']['indexBy']);
-        unset($class->associationMappings['phonenumbers']['indexBy']);
+        $class->associationMappings['groups']->setFetchMode(FetchMode::LAZY);
+        $class->associationMappings['articles']->setFetchMode(FetchMode::LAZY);
+        $class->associationMappings['phonenumbers']->setFetchMode(FetchMode::LAZY);
+
+        $class->associationMappings['groups']->setIndexedBy(null);
+        $class->associationMappings['articles']->setIndexedBy(null);
+        $class->associationMappings['phonenumbers']->setIndexedBy(null);
 
         $class = $this->em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['fetch'] = FetchMode::LAZY;
 
-        unset($class->associationMappings['users']['indexBy']);
+        $class->associationMappings['users']->setFetchMode(FetchMode::LAZY);
+
+        $class->associationMappings['users']->setIndexedBy(null);
     }
 
     /**
@@ -851,7 +857,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsKeyIndexByOneToManyJoinedInheritance()
     {
         $class = $this->em->getClassMetadata(DDC2504OtherClass::class);
-        $class->associationMappings['childClasses']['indexBy'] = 'id';
+        $class->associationMappings['childClasses']->setIndexedBy('id');
 
         $otherClass = $this->em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
@@ -895,7 +901,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsKeyIndexByWithPkManyToMany()
     {
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']['indexBy'] = 'id';
+        $class->associationMappings['groups']->setIndexedBy('id');
 
         $user = $this->em->find(CmsUser::class, $this->userId2);
 
@@ -910,7 +916,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     public function testContainsKeyIndexByWithPkManyToManyNonOwning()
     {
         $class = $this->em->getClassMetadata(CmsGroup::class);
-        $class->associationMappings['users']['indexBy'] = 'id';
+        $class->associationMappings['users']->setIndexedBy('id');
 
         $group = $this->em->find(CmsGroup::class, $this->groupId);
 

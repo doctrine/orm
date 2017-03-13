@@ -468,7 +468,8 @@ abstract class AbstractHydrator
             }
 
             $association = $class->associationMappings[$fieldName];
-            $joinColumn  = reset($association['joinColumns']);
+            $joinColumns = $association->getJoinColumns();
+            $joinColumn  = reset($joinColumns);
 
             $id[$fieldName] = $data[$joinColumn->getColumnName()];
         }

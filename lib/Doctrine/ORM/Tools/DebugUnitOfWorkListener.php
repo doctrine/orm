@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 
@@ -95,11 +96,12 @@ class DebugUnitOfWorkListener
 
                 $cm = $em->getClassMetadata($className);
 
-                foreach ($cm->associationMappings as $field => $assoc) {
+                foreach ($cm->associationMappings as $field => $association) {
                     fwrite($fh, "   " . $field . " ");
-                    $value = $cm->getFieldValue($entity, $field);
 
-                    if ($assoc['type'] & ClassMetadata::TO_ONE) {
+                    $value = $association->getValue($entity);
+
+                    if ($association instanceof ToOneAssociationMetadata) {
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } else {
@@ -111,6 +113,7 @@ class DebugUnitOfWorkListener
                         }
                     } else {
                         $initialized = !($value instanceof PersistentCollection) || $value->isInitialized();
+
                         if ($value === null) {
                             fwrite($fh, " NULL\n");
                         } elseif ($initialized) {
@@ -121,6 +124,7 @@ class DebugUnitOfWorkListener
                             }
                         } else {
                             fwrite($fh, "[PROXY] " . $this->getType($value) . " unknown element size\n");
+
                             foreach ($value->unwrap() as $obj) {
                                 fwrite($fh, "    " . $this->getIdString($obj, $uow) . " " . spl_object_hash($obj)."\n");
                             }

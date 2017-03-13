@@ -11,13 +11,11 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
         //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         try {
-            $this->schemaTool->createSchema(
-                [
+            $this->schemaTool->createSchema([
                 $this->em->getClassMetadata(DDC599Item::class),
                 $this->em->getClassMetadata(DDC599Subitem::class),
                 $this->em->getClassMetadata(DDC599Child::class),
-                ]
-            );
+            ]);
         } catch (\Exception $ignored) {}
     }
 
@@ -69,7 +67,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $class = $this->em->getClassMetadata(DDC599Subitem::class);
 
         self::assertArrayHasKey('children', $class->associationMappings);
-        self::assertContains('remove', $class->associationMappings['children']['cascade']);
+        self::assertContains('remove', $class->associationMappings['children']->getCascade());
     }
 }
 

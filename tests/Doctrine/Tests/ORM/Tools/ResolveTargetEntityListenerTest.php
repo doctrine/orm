@@ -41,17 +41,17 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testResolveTargetEntityListenerCanResolveTargetEntity()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
-        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class);
         $evm->addEventSubscriber($this->listener);
 
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings;
 
-        self::assertSame(TargetEntity::class, $meta['manyToMany']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']['targetEntity']);
-        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']['targetEntity']);
-        self::assertSame(TargetEntity::class, $meta['oneToOne']['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta['manyToMany']->getTargetEntity());
+        self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']->getTargetEntity());
+        self::assertSame(ResolveTargetEntity::class, $meta['oneToMany']->getTargetEntity());
+        self::assertSame(TargetEntity::class, $meta['oneToOne']->getTargetEntity());
 
         self::assertSame($cm, $this->factory->getMetadataFor(ResolveTargetInterface::class));
     }
@@ -63,7 +63,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
      */
     public function testResolveTargetEntityListenerCanRetrieveTargetEntityByInterfaceName()
     {
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class);
 
         $this->em->getEventManager()->addEventSubscriber($this->listener);
 
@@ -78,14 +78,14 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testAssertTableColumnsAreNotAddedInManyToMany()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
-        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class);
+        $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class);
 
         $evm->addEventListener(Events::loadClassMetadata, $this->listener);
         $cm = $this->factory->getMetadataFor(ResolveTargetEntity::class);
         $meta = $cm->associationMappings['manyToMany'];
 
-        self::assertSame(TargetEntity::class, $meta['targetEntity']);
+        self::assertSame(TargetEntity::class, $meta->getTargetEntity());
     }
 
     /**
@@ -97,7 +97,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testDoesResolveTargetEntitiesInDQLAlsoWithInterfaces()
     {
         $evm = $this->em->getEventManager();
-        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class, []);
+        $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class);
 
         $evm->addEventSubscriber($this->listener);
 

@@ -524,7 +524,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
 
             if (isset($rootClass->associationMappings[$identifier])) {
                 $association = $rootClass->associationMappings[$identifier];
-                $joinColumn  = reset($association['joinColumns']);
+                $joinColumns = $association->getJoinColumns();
+                $joinColumn  = reset($joinColumns);
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {

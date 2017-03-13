@@ -31,6 +31,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
@@ -270,9 +273,9 @@ class SchemaTool
 
                 if (isset($class->associationMappings[$identifierField])) {
                     /** @var array $assoc */
-                    $assoc = $class->associationMappings[$identifierField];
+                    $association = $class->associationMappings[$identifierField];
 
-                    foreach ($assoc['joinColumns'] as $joinColumn) {
+                    foreach ($association->getJoinColumns() as $joinColumn) {
                         $pkColumns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                     }
                 }
@@ -531,59 +534,70 @@ class SchemaTool
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
-        foreach ($class->associationMappings as $mapping) {
-            if (isset($mapping['inherited'])) {
+        foreach ($class->associationMappings as $fieldName => $property) {
+            if ($class->isInheritedAssociation($fieldName) && ! $property->getDeclaringClass()->isMappedSuperclass) {
                 continue;
             }
 
-            $foreignClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            if (! $property->isOwningSide()) {
+                continue;
+            }
 
-            if ($mapping['type'] & ClassMetadata::TO_ONE && $mapping['isOwningSide']) {
-                $primaryKeyColumns = []; // PK is unnecessary for this relation-type
+            $foreignClass = $this->em->getClassMetadata($property->getTargetEntity());
 
-                $this->gatherRelationJoinColumns(
-                    $mapping['joinColumns'],
-                    $table,
-                    $foreignClass,
-                    $mapping,
-                    $primaryKeyColumns,
-                    $addedFks,
-                    $blacklistedFks
-                );
-            } elseif ($mapping['type'] == ClassMetadata::ONE_TO_MANY && $mapping['isOwningSide']) {
-                //... create join table, one-many through join table supported later
-                throw ORMException::notSupported();
-            } elseif ($mapping['type'] == ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
-                // create join table
-                $joinTable     = $mapping['joinTable'];
-                $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
-                $theJoinTable  = $schema->createTable($joinTableName);
+            switch (true) {
+                case ($property instanceof ToOneAssociationMetadata):
+                    $primaryKeyColumns = []; // PK is unnecessary for this relation-type
 
-                $primaryKeyColumns = [];
+                    $this->gatherRelationJoinColumns(
+                        $property->getJoinColumns(),
+                        $table,
+                        $foreignClass,
+                        $property,
+                        $primaryKeyColumns,
+                        $addedFks,
+                        $blacklistedFks
+                    );
 
-                // Build first FK constraint (relation table => source table)
-                $this->gatherRelationJoinColumns(
-                    $joinTable->getJoinColumns(),
-                    $theJoinTable,
-                    $class,
-                    $mapping,
-                    $primaryKeyColumns,
-                    $addedFks,
-                    $blacklistedFks
-                );
+                    break;
 
-                // Build second FK constraint (relation table => target table)
-                $this->gatherRelationJoinColumns(
-                    $joinTable->getInverseJoinColumns(),
-                    $theJoinTable,
-                    $foreignClass,
-                    $mapping,
-                    $primaryKeyColumns,
-                    $addedFks,
-                    $blacklistedFks
-                );
+                case ($property instanceof OneToManyAssociationMetadata):
+                    //... create join table, one-many through join table supported later
+                    throw ORMException::notSupported();
 
-                $theJoinTable->setPrimaryKey($primaryKeyColumns);
+                case ($property instanceof ManyToManyAssociationMetadata):
+                    // create join table
+                    $joinTable     = $property->getJoinTable();
+                    $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+                    $theJoinTable  = $schema->createTable($joinTableName);
+
+                    $primaryKeyColumns = [];
+
+                    // Build first FK constraint (relation table => source table)
+                    $this->gatherRelationJoinColumns(
+                        $joinTable->getJoinColumns(),
+                        $theJoinTable,
+                        $class,
+                        $property,
+                        $primaryKeyColumns,
+                        $addedFks,
+                        $blacklistedFks
+                    );
+
+                    // Build second FK constraint (relation table => target table)
+                    $this->gatherRelationJoinColumns(
+                        $joinTable->getInverseJoinColumns(),
+                        $theJoinTable,
+                        $foreignClass,
+                        $property,
+                        $primaryKeyColumns,
+                        $addedFks,
+                        $blacklistedFks
+                    );
+
+                    $theJoinTable->setPrimaryKey($primaryKeyColumns);
+
+                    break;
             }
         }
     }
@@ -625,16 +639,17 @@ class SchemaTool
                 continue;
             }
 
-            $association = $class->getAssociationMapping($fieldName);
+            $association = $class->associationMappings[$fieldName];
+            $joinColumns = $association->getJoinColumns();
 
-            if (count($association['joinColumns']) > 1) {
+            if (count($joinColumns) > 1) {
                 throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
             }
 
-            $joinColumn = reset($association['joinColumns']);
+            $joinColumn = reset($joinColumns);
 
             if ($joinColumn->getColumnName() === $referencedColumnName) {
-                $targetEntity = $this->em->getClassMetadata($association['targetEntity']);
+                $targetEntity = $this->em->getClassMetadata($association->getTargetEntity());
 
                 return $this->getDefiningClass($targetEntity, $joinColumn->getReferencedColumnName());
             }

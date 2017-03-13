@@ -19,14 +19,17 @@
 
 namespace Doctrine\ORM\Persisters\Entity;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the
  * SINGLE_TABLE strategy.
  *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Alexander <iam.asm89@gmail.com>
@@ -75,18 +78,26 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
             }
 
             // Foreign key columns
-            foreach ($subClass->associationMappings as $mapping) {
-                if ( ! $mapping['isOwningSide'] || ! ($mapping['type'] & ClassMetadata::TO_ONE) || isset($mapping['inherited'])) {
+            foreach ($subClass->associationMappings as $association) {
+                if (! $association->isOwningSide() ||
+                    ! ($association instanceof ToOneAssociationMetadata) ||
+                    $subClass->isInheritedAssociation($association->getName())) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+                $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
-                foreach ($mapping['joinColumns'] as $joinColumn) {
+                foreach ($association->getJoinColumns() as $joinColumn) {
+                    if (! $joinColumn->getType()) {
+                        $joinColumn->setType(
+                            PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                        );
+                    }
+
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $joinColumn->getTableName(),
                         $joinColumn->getColumnName(),
-                        PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                        $joinColumn->getType()
                     );
                 }
             }
@@ -126,9 +137,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectConditionSQL(array $criteria, $assoc = null)
+    protected function getSelectConditionSQL(array $criteria, AssociationMetadata $association = null)
     {
-        $conditionSql = parent::getSelectConditionSQL($criteria, $assoc);
+        $conditionSql = parent::getSelectConditionSQL($criteria, $association);
 
         if ($conditionSql) {
             $conditionSql .= ' AND ';

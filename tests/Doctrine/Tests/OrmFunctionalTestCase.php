@@ -566,6 +566,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM vct_owning_manytomany_extralazy');
             $conn->executeUpdate('DELETE FROM vct_inversed_manytomany_extralazy');
         }
+
         if (isset($this->usedModelSets['geonames'])) {
             $conn->executeUpdate('DELETE FROM geonames_admin1_alternate_name');
             $conn->executeUpdate('DELETE FROM geonames_admin1');
@@ -643,7 +644,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
             if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ["mysql", "postgresql"])) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } else if (static::$sharedConn->getDatabasePlatform()->getName() == "oracle") {
+            } else if (static::$sharedConn->getDatabasePlatform()->getName() === "oracle") {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
@@ -653,20 +654,12 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->schemaTool = new SchemaTool($this->em);
         }
 
-        $classes = [];
-
         foreach ($this->usedModelSets as $setName => $bool) {
             if (! isset(static::$tablesCreated[$setName])) {
-                foreach (static::$modelSets[$setName] as $className) {
-                    $classes[] = $this->em->getClassMetadata($className);
-                }
+                $this->setUpEntitySchema(static::$modelSets[$setName]);
 
                 static::$tablesCreated[$setName] = true;
             }
-        }
-
-        if ($classes) {
-            $this->schemaTool->createSchema($classes);
         }
 
         $this->sqlLoggerStack->enabled = true;
@@ -715,7 +708,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
 
         if ($this->isSecondLevelCacheEnabled || $enableSecondLevelCache) {
-
             $cacheConfig    = new CacheConfiguration();
             $cache          = $this->getSharedSecondLevelCacheDriverImpl();
             $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
@@ -785,17 +777,24 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             throw $e;
         }
 
-        if(isset($this->sqlLoggerStack->queries) && count($this->sqlLoggerStack->queries)) {
+        if (isset($this->sqlLoggerStack->queries) && count($this->sqlLoggerStack->queries)) {
             $queries = "";
             $last25queries = array_slice(array_reverse($this->sqlLoggerStack->queries, true), 0, 25, true);
+
             foreach ($last25queries as $i => $query) {
-                $params = array_map(function($p) { if (is_object($p)) return get_class($p); else return var_export($p, true); }, $query['params'] ?: []
+                $params = array_map(
+                    function($p) {
+                        if (is_object($p)) return get_class($p); else return var_export($p, true);
+                    },
+                    $query['params'] ?: []
                 );
+
                 $queries .= $i.". SQL: '".$query['sql']."' Params: ".implode(", ", $params).PHP_EOL;
             }
 
             $trace = $e->getTrace();
             $traceMsg = "";
+
             foreach($trace AS $part) {
                 if(isset($part['file'])) {
                     if(strpos($part['file'], "PHPUnit/") !== false) {
@@ -811,12 +810,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
             throw new \Exception($message, (int)$e->getCode(), $e);
         }
+
         throw $e;
     }
 
     public static function assertSQLEquals($expectedSql, $actualSql)
     {
-        return self::assertEquals(
+        self::assertEquals(
             strtolower($expectedSql),
             strtolower($actualSql),
             "Lowercase comparison of SQL statements failed."

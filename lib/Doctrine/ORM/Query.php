@@ -394,6 +394,7 @@ final class Query extends AbstractQuery
                 throw QueryException::unknownParameter($key);
             }
 
+            // @todo guilhermeblanco Why is this needed?
             if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
                 $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }

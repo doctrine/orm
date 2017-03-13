@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
@@ -29,6 +31,13 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\JoinTableMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
  * Generic class used to generate PHP5 entity classes from ClassMetadata instances.
@@ -654,9 +663,9 @@ public function __construct(<params>)
 
         $collections = [];
 
-        foreach ($metadata->associationMappings as $mapping) {
-            if ($mapping['type'] & ClassMetadata::TO_MANY) {
-                $collections[] = '$this->'.$mapping['fieldName'].' = new \Doctrine\Common\Collections\ArrayCollection();';
+        foreach ($metadata->associationMappings as $association) {
+            if ($association instanceof ToManyAssociationMetadata) {
+                $collections[] = sprintf('$this->%s = new \%s();', $association->getName(), ArrayCollection::class);
             }
         }
 
@@ -1145,7 +1154,7 @@ public function __construct(<params>)
             }*/
 
             $fieldType = $property->getTypeName();
-            $nullable = $this->nullableFieldExpression($property);
+            $nullable  = $property->isNullable() ? 'null' : null;
 
             if (( ! $property->isPrimaryKey() || $metadata->generatorType == GeneratorType::NONE) &&
                 ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
@@ -1174,23 +1183,24 @@ public function __construct(<params>)
             }
         }*/
 
-        foreach ($metadata->associationMappings as $associationMapping) {
-            if ($associationMapping['type'] & ClassMetadata::TO_ONE) {
-                $nullable = $this->isAssociationIsNullable($associationMapping) ? 'null' : null;
-                if ($code = $this->generateEntityStubMethod($metadata, 'set', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
+        foreach ($metadata->associationMappings as $association) {
+            if ($association instanceof ToOneAssociationMetadata) {
+                $nullable = $this->isAssociationIsNullable($association) ? 'null' : null;
+
+                if ($code = $this->generateEntityStubMethod($metadata, 'set', $association->getName(), $association->getTargetEntity(), $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], $associationMapping['targetEntity'], $nullable)) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $association->getName(), $association->getTargetEntity(), $nullable)) {
                     $methods[] = $code;
                 }
-            } elseif ($associationMapping['type'] & ClassMetadata::TO_MANY) {
-                if ($code = $this->generateEntityStubMethod($metadata, 'add', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
+            } else if ($association instanceof ToManyAssociationMetadata) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'add', $association->getName(), $association->getTargetEntity())) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'remove', $associationMapping['fieldName'], $associationMapping['targetEntity'])) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'remove', $association->getName(), $association->getTargetEntity())) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $associationMapping['fieldName'], Collection::class)) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $association->getName(), Collection::class)) {
                     $methods[] = $code;
                 }
             }
@@ -1200,25 +1210,23 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array $associationMapping
+     * @param AssociationMetadata $association
      *
      * @return bool
      */
-    protected function isAssociationIsNullable(array $associationMapping)
+    protected function isAssociationIsNullable(AssociationMetadata $association)
     {
-        if (isset($associationMapping['id']) && $associationMapping['id']) {
+        if ($association->isPrimaryKey()) {
             return false;
         }
 
-        if (isset($associationMapping['joinColumns'])) {
-            $joinColumns = $associationMapping['joinColumns'];
-        } else {
-            //@todo there is no way to retrieve targetEntity metadata
-            $joinColumns = [];
-        }
+        $joinColumns = $association instanceof ToOneAssociationMetadata
+            ? $association->getJoinColumns()
+            : []
+        ;
 
         foreach ($joinColumns as $joinColumn) {
-            if (!$joinColumn->isNullable()) {
+            if (! $joinColumn->isNullable()) {
                 return false;
             }
         }
@@ -1257,14 +1265,14 @@ public function __construct(<params>)
     {
         $lines = [];
 
-        foreach ($metadata->associationMappings as $associationMapping) {
-            if ($this->hasProperty($associationMapping['fieldName'], $metadata)) {
+        foreach ($metadata->associationMappings as $association) {
+            if ($this->hasProperty($association->getName(), $metadata)) {
                 continue;
             }
 
-            $lines[] = $this->generateAssociationMappingPropertyDocBlock($associationMapping, $metadata);
-            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $associationMapping['fieldName']
-                     . ($associationMapping['type'] == 'manyToMany' ? ' = array()' : null) . ";\n";
+            $lines[] = $this->generateAssociationMappingPropertyDocBlock($association, $metadata);
+            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $association->getName()
+                     . ($association instanceof ManyToManyAssociationMetadata ? ' = array()' : null) . ";\n";
         }
 
         return implode("\n", $lines);
@@ -1406,6 +1414,77 @@ public function __construct(<params>)
     }
 
     /**
+     * @param ClassMetadata $metadata
+     *
+     * @return string
+     */
+    protected function generateIdentifierAnnotation(ClassMetadata $metadata)
+    {
+        $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
+
+        if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
+            $lines[] = $this->spaces.' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
+        }
+
+        if ($metadata->generatorDefinition) {
+            $generator = [];
+
+            if (isset($metadata->generatorDefinition['sequenceName'])) {
+                $generator[] = 'sequenceName="' . $metadata->generatorDefinition['sequenceName'] . '"';
+            }
+
+            if (isset($metadata->generatorDefinition['allocationSize'])) {
+                $generator[] = 'allocationSize=' . $metadata->generatorDefinition['allocationSize'];
+            }
+
+            $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';
+        }
+
+        return implode(PHP_EOL, $lines);
+    }
+
+    /**
+     * @param JoinTableMetadata $joinTable
+     *
+     * @return string
+     */
+    protected function generateJoinTableAnnotation(JoinTableMetadata $joinTable)
+    {
+        $lines            = [];
+        $joinTableAnnot   = [];
+        $joinTableAnnot[] = 'name="' . $joinTable->getName() . '"';
+
+        if (! empty($joinTable->getSchema())) {
+            $joinTableAnnot[] = 'schema="' . $joinTable->getSchema() . '"';
+        }
+
+        $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'JoinTable(' . implode(', ', $joinTableAnnot) . ',';
+        $lines[] = $this->spaces . ' *   joinColumns={';
+
+        $joinColumnsLines = [];
+
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
+            $joinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
+        }
+
+        $lines[] = implode(",". PHP_EOL, $joinColumnsLines);
+        $lines[] = $this->spaces . ' *   },';
+        $lines[] = $this->spaces . ' *   inverseJoinColumns={';
+
+        $inverseJoinColumnsLines = [];
+
+        foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
+            $inverseJoinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
+        }
+
+        $lines[] = implode(",". PHP_EOL, $inverseJoinColumnsLines);
+        $lines[] = $this->spaces . ' *   }';
+        $lines[] = $this->spaces . ' * )';
+
+        return implode(PHP_EOL, $lines);
+    }
+
+    /**
      * @param JoinColumnMetadata $joinColumn
      *
      * @return string
@@ -1433,73 +1512,82 @@ public function __construct(<params>)
             $joinColumnAnnot[] = 'columnDefinition="' . $joinColumn->getColumnDefinition() . '"';
         }
 
+        $options = [];
+
+        if ($joinColumn->getOptions()) {
+            foreach ($joinColumn->getOptions() as $key => $value) {
+                $options[] = sprintf('"%s"=%s', $key, str_replace("'", '"', var_export($value, true)));
+            }
+        }
+
+        if ($options) {
+            $joinColumnAnnot[] = 'options={'.implode(',', $options).'}';
+        }
+
         return '@' . $this->annotationsPrefix . 'JoinColumn(' . implode(', ', $joinColumnAnnot) . ')';
     }
 
     /**
-     * @param array         $associationMapping
-     * @param ClassMetadata $metadata
+     * @param AssociationMetadata $association
+     * @param ClassMetadata       $metadata
      *
      * @return string
      */
-    protected function generateAssociationMappingPropertyDocBlock(array $associationMapping, ClassMetadata $metadata)
+    protected function generateAssociationMappingPropertyDocBlock(AssociationMetadata $association, ClassMetadata $metadata)
     {
         $lines = [];
         $lines[] = $this->spaces . '/**';
 
-        if ($associationMapping['type'] & ClassMetadata::TO_MANY) {
+        if ($association instanceof ToManyAssociationMetadata) {
             $lines[] = $this->spaces . ' * @var \Doctrine\Common\Collections\Collection';
         } else {
-            $lines[] = $this->spaces . ' * @var \\' . ltrim($associationMapping['targetEntity'], '\\');
+            $lines[] = $this->spaces . ' * @var \\' . ltrim($association->getTargetEntity(), '\\');
         }
 
         if ($this->generateAnnotations) {
             $lines[] = $this->spaces . ' *';
 
-            if (isset($associationMapping['id']) && $associationMapping['id']) {
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
-
-                if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
-                    $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
-                }
+            if ($association->isPrimaryKey()) {
+                $lines[] = $this->generateIdentifierAnnotation($metadata);
             }
 
             $type = null;
 
-            switch ($associationMapping['type']) {
-                case ClassMetadata::ONE_TO_ONE:
-                    $type = 'OneToOne';
-                    break;
-                case ClassMetadata::MANY_TO_ONE:
-                    $type = 'ManyToOne';
-                    break;
-                case ClassMetadata::ONE_TO_MANY:
-                    $type = 'OneToMany';
-                    break;
-                case ClassMetadata::MANY_TO_MANY:
-                    $type = 'ManyToMany';
-                    break;
+            if ($association instanceof OneToOneAssociationMetadata) {
+                $type = 'OneToOne';
+            } else if ($association instanceof ManyToOneAssociationMetadata) {
+                $type = 'ManyToOne';
+            } else if ($association instanceof OneToManyAssociationMetadata) {
+                $type = 'OneToMany';
+            } else if ($association instanceof ManyToManyAssociationMetadata) {
+                $type = 'ManyToMany';
             }
 
             $typeOptions = [];
 
-            if (isset($associationMapping['targetEntity'])) {
-                $typeOptions[] = 'targetEntity="' . $associationMapping['targetEntity'] . '"';
+            $typeOptions[] = 'targetEntity="' . $association->getTargetEntity() . '"';
+
+            if ($association->getMappedBy()) {
+                $typeOptions[] = 'mappedBy="' . $association->getMappedBy() . '"';
             }
 
-            if (isset($associationMapping['inversedBy'])) {
-                $typeOptions[] = 'inversedBy="' . $associationMapping['inversedBy'] . '"';
+            if ($association->getInversedBy()) {
+                $typeOptions[] = 'inversedBy="' . $association->getInversedBy() . '"';
             }
 
-            if (isset($associationMapping['mappedBy'])) {
-                $typeOptions[] = 'mappedBy="' . $associationMapping['mappedBy'] . '"';
+            if ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy()) {
+                $typeOptions[] = 'indexBy="' . $association->getIndexedBy() . '"';
             }
 
-            if ($associationMapping['cascade']) {
+            if ($association->isOrphanRemoval()) {
+                $typeOptions[] = 'orphanRemoval=true';
+            }
+
+            if ($association->getCascade()) {
                 $cascades = [];
 
                 foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $cascadeType) {
-                    if (in_array($cascadeType, $associationMapping['cascade'])) {
+                    if (in_array($cascadeType, $association->getCascade())) {
                         $cascades[] = sprintf('"%s"', $cascadeType);
                     }
                 }
@@ -1511,22 +1599,18 @@ public function __construct(<params>)
                 $typeOptions[] = 'cascade={' . implode(',', $cascades) . '}';
             }
 
-            if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval']) {
-                $typeOptions[] = 'orphanRemoval=' . ($associationMapping['orphanRemoval'] ? 'true' : 'false');
-            }
-
-            if (isset($associationMapping['fetch']) && $associationMapping['fetch'] !== FetchMode::LAZY) {
-                $typeOptions[] = 'fetch="' . $associationMapping['fetch'] . '"';
+            if ($association->getFetchMode() !== FetchMode::LAZY) {
+                $typeOptions[] = 'fetch="' . $association->getFetchMode() . '"';
             }
 
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . '' . $type . '(' . implode(', ', $typeOptions) . ')';
 
-            if (isset($associationMapping['joinColumns']) && $associationMapping['joinColumns']) {
+            if ($association instanceof ToOneAssociationMetadata && $association->getJoinColumns()) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'JoinColumns({';
 
                 $joinColumnsLines = [];
 
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
+                foreach ($association->getJoinColumns() as $joinColumn) {
                     if ($joinColumnAnnot = $this->generateJoinColumnAnnotation($joinColumn)) {
                         $joinColumnsLines[] = $this->spaces . ' *   ' . $joinColumnAnnot;
                     }
@@ -1536,47 +1620,22 @@ public function __construct(<params>)
                 $lines[] = $this->spaces . ' * })';
             }
 
-            if (isset($associationMapping['joinTable'])) {
-                $joinTable = [];
-                $joinTable[] = 'name="' . $associationMapping['joinTable']->getName() . '"';
-
-                if (!empty($associationMapping['joinTable']->getSchema())) {
-                    $joinTable[] = 'schema="' . $associationMapping['joinTable']->getSchema() . '"';
+            if ($association instanceof ToManyAssociationMetadata) {
+                if ($association instanceof ManyToManyAssociationMetadata && $association->getJoinTable()) {
+                    $lines[] = $this->generateJoinTableAnnotation($association->getJoinTable());
                 }
 
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'JoinTable(' . implode(', ', $joinTable) . ',';
-                $lines[] = $this->spaces . ' *   joinColumns={';
+                if ($association->getOrderBy()) {
+                    $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'OrderBy({';
+                    $orderBy = [];
 
-                $joinColumnsLines = [];
+                    foreach ($association->getOrderBy() as $name => $direction) {
+                        $orderBy[] = $this->spaces . ' *     "' . $name . '"="' . $direction . '"';
+                    }
 
-                foreach ($associationMapping['joinTable']->getJoinColumns() as $joinColumn) {
-                    $joinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
+                    $lines[] = implode(',' . PHP_EOL, $orderBy);
+                    $lines[] = $this->spaces . ' * })';
                 }
-
-                $lines[] = implode(",". PHP_EOL, $joinColumnsLines);
-                $lines[] = $this->spaces . ' *   },';
-                $lines[] = $this->spaces . ' *   inverseJoinColumns={';
-
-                $inverseJoinColumnsLines = [];
-
-                foreach ($associationMapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
-                    $inverseJoinColumnsLines[] = $this->spaces . ' *     ' . $this->generateJoinColumnAnnotation($joinColumn);
-                }
-
-                $lines[] = implode(",". PHP_EOL, $inverseJoinColumnsLines);
-                $lines[] = $this->spaces . ' *   }';
-                $lines[] = $this->spaces . ' * )';
-            }
-
-            if (isset($associationMapping['orderBy'])) {
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'OrderBy({';
-
-                foreach ($associationMapping['orderBy'] as $name => $direction) {
-                    $lines[] = $this->spaces . ' *     "' . $name . '"="' . $direction . '",';
-                }
-
-                $lines[count($lines) - 1] = substr($lines[count($lines) - 1], 0, strlen($lines[count($lines) - 1]) - 1);
-                $lines[] = $this->spaces . ' * })';
             }
         }
 
@@ -1651,25 +1710,7 @@ public function __construct(<params>)
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
 
             if ($propertyMetadata->isPrimaryKey()) {
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
-
-                if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
-                    $lines[] = $this->spaces.' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
-                }
-
-                if ($metadata->generatorDefinition) {
-                    $generator = [];
-
-                    if (isset($metadata->generatorDefinition['sequenceName'])) {
-                        $generator[] = 'sequenceName="' . $metadata->generatorDefinition['sequenceName'] . '"';
-                    }
-
-                    if (isset($metadata->generatorDefinition['allocationSize'])) {
-                        $generator[] = 'allocationSize=' . $metadata->generatorDefinition['allocationSize'];
-                    }
-
-                    $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';
-                }
+                $lines[] = $this->generateIdentifierAnnotation($metadata);
             }
 
             if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $propertyMetadata->getName()) {
@@ -1779,16 +1820,6 @@ public function __construct(<params>)
     }
 
     /**
-     * @param FieldMetadata $property
-     *
-     * @return string|null
-     */
-    private function nullableFieldExpression(FieldMetadata $property)
-    {
-        return $property->isNullable() ? 'null' : null;
-    }
-
-    /**
      * Exports (nested) option elements.
      *
      * @param array $options
@@ -1800,11 +1831,12 @@ public function __construct(<params>)
         $optionsStr = [];
 
         foreach ($options as $name => $option) {
-            if (is_array($option)) {
-                $optionsStr[] = '"' . $name . '"={' . $this->exportTableOptions($option) . '}';
-            } else {
-                $optionsStr[] = '"' . $name . '"="' . (string) $option . '"';
-            }
+            $optionValue = is_array($option)
+                ? '{' . $this->exportTableOptions($option) . '}'
+                : '"' . (string) $option . '"'
+            ;
+
+            $optionsStr[] = sprintf('"%s"=%s', $name, $optionValue);
         }
 
         return implode(',', $optionsStr);

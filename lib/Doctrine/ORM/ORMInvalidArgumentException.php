@@ -18,7 +18,9 @@
  */
 
 namespace Doctrine\ORM;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
@@ -82,34 +84,49 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array  $assoc
-     * @param object $entry
+     * @param AssociationMetadata $association
+     * @param object              $entry
      *
      * @return ORMInvalidArgumentException
      */
-    static public function newEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function newEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
-        return new self("A new entity was found through the relationship '"
-            . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
-            . " configured to cascade persist operations for entity: " . self::objToStr($entry) . "."
-            . " To solve this issue: Either explicitly call EntityManager#persist()"
-            . " on this unknown entity or configure cascade persist "
-            . " this association in the mapping for example @ManyToOne(..,cascade={\"persist\"})."
-            . (method_exists($entry, '__toString') ? "": " If you cannot find out which entity causes the problem"
-            . " implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue."));
+        $message = "A new entity was found through the relationship '%s#%s' that was not configured to cascade "
+            . "persist operations for entity: %s. To solve this issue: Either explicitly call EntityManager#persist() "
+            . "on this unknown entity or configure cascade persist this association in the mapping for example "
+            . "@ManyToOne(..,cascade={\"persist\"}).%s";
+
+        $messageAppend = method_exists($entry, '__toString')
+            ? ""
+            : " If you cannot find out which entity causes the problem implement '%s#__toString()' to get a clue."
+        ;
+
+        return new self(sprintf(
+            $message,
+            $association->getSourceEntity(),
+            $association->getName(),
+            self::objToStr($entry),
+            sprintf($messageAppend, $association->getTargetEntity())
+        ));
     }
 
     /**
-     * @param array  $assoc
-     * @param object $entry
+     * @param AssociationMetadata $association
+     * @param object              $entry
      *
      * @return ORMInvalidArgumentException
      */
-    static public function detachedEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function detachedEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
-        return new self("A detached entity of type " . $assoc['targetEntity'] . " (" . self::objToStr($entry) . ") "
-            . " was found through the relationship '" . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' "
-            . "during cascading a persist operation.");
+        $messsage = "A detached entity of type %s (%s) was found through the relationship '%s#%s' during cascading a persist operation.";
+
+        return new self(sprintf(
+            $messsage,
+            $association->getTargetEntity(),
+            self::objToStr($entry),
+            $association->getSourceEntity(),
+            $association->getName()
+        ));
     }
 
     /**
@@ -193,19 +210,19 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return self
      */
-    public static function invalidAssociation(ClassMetadata $targetClass, $assoc, $actualValue)
+    public static function invalidAssociation(ClassMetadata $targetClass, AssociationMetadata $association, $actualValue)
     {
         $expectedType = 'Doctrine\Common\Collections\Collection|array';
 
-        if (($assoc['type'] & ClassMetadata::TO_ONE) > 0) {
+        if ($association instanceof ToOneAssociationMetadata) {
             $expectedType = $targetClass->getName();
         }
 
         return new self(sprintf(
             'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',
             $expectedType,
-            $assoc['sourceEntity'],
-            $assoc['fieldName'],
+            $association->getSourceEntity(),
+            $association->getName(),
             is_object($actualValue) ? get_class($actualValue) : gettype($actualValue)
         ));
     }

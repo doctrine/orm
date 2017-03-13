@@ -43,7 +43,7 @@ final class OneToOne implements Annotation
     /**
      * @var array<string>
      */
-    public $cascade;
+    public $cascade = [];
 
     /**
      * The fetching strategy to use for the association.

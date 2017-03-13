@@ -320,42 +320,25 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateManyToOne()
     {
-        self::assertIsFluent(
-            $this->builder->createManyToOne('groups', CmsGroup::class)
-                  ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                  ->cascadeAll()
-                  ->fetchExtraLazy()
-                  ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setTableName('CmsUser');
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
 
+        $association = $this->builder->createManyToOne('groups', CmsGroup::class)
+            ->withJoinColumn($joinColumn)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->build()
+        ;
+
+        $this->cm->mapManyToOne($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
-                    ],
-                    'fetch' => FetchMode::EXTRA_LAZY,
-                    'joinColumns' => [$joinColumn],
-                    'type' => 2,
-                    'mappedBy' => null,
-                    'inversedBy' => null,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                  ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -363,46 +346,28 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateManyToOneWithIdentity()
     {
-        self::assertIsFluent(
-            $this
-                ->builder
-                ->createManyToOne('groups', CmsGroup::class)
-                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                ->cascadeAll()
-                ->fetchExtraLazy()
-                ->makePrimaryKey()
-                ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setTableName('CmsUser');
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
 
+        $association = $this
+            ->builder
+            ->createManyToOne('groups', CmsGroup::class)
+            ->withJoinColumn($joinColumn)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->withPrimaryKey(true)
+            ->build()
+        ;
+
+        $this->cm->mapManyToOne($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
-                    ],
-                    'fetch' => FetchMode::EXTRA_LAZY,
-                    'joinColumns' => [$joinColumn],
-                    'type' => 2,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                    'id' => true,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -410,43 +375,26 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateOneToOne()
     {
-        self::assertIsFluent(
-            $this->builder->createOneToOne('groups', CmsGroup::class)
-                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                ->cascadeAll()
-                ->fetchExtraLazy()
-                ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setTableName('CmsUser');
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
         $joinColumn->setUnique(true);
 
+        $association = $this->builder->createOneToOne('groups', CmsGroup::class)
+            ->withJoinColumn($joinColumn)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->build()
+        ;
+
+        $this->cm->mapOneToOne($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
-                    ],
-                    'fetch' => FetchMode::EXTRA_LAZY,
-                    'joinColumns' => [$joinColumn],
-                    'type' => 1,
-                    'mappedBy' => null,
-                    'inversedBy' => null,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -454,44 +402,26 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateOneToOneWithIdentity()
     {
-        self::assertIsFluent(
-            $this->builder->createOneToOne('groups', CmsGroup::class)
-                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                ->cascadeAll()
-                ->fetchExtraLazy()
-                ->makePrimaryKey()
-                ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setTableName('CmsUser');
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
 
+        $association = $this->builder->createOneToOne('groups', CmsGroup::class)
+            ->withJoinColumn($joinColumn)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->withPrimaryKey(true)
+            ->build()
+        ;
+
+        $this->cm->mapOneToOne($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
-                    ],
-                    'fetch' => FetchMode::EXTRA_LAZY,
-                    'id' => true,
-                    'joinColumns' => [$joinColumn],
-                    'type' => 1,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -501,64 +431,48 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
-        $this
+        $association = $this
             ->builder
             ->createOneToOne('groups', CmsGroup::class)
-            ->mappedBy('test')
-            ->fetchExtraLazy()
-            ->makePrimaryKey()
+            ->withMappedBy('test')
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->withPrimaryKey(true)
             ->build();
+
+        $this->cm->mapOneToOne($association);
     }
 
     public function testCreateManyToMany()
     {
-        self::assertIsFluent(
-            $this->builder->createManyToMany('groups', CmsGroup::class)
-                  ->setJoinTable('groups_users')
-                  ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                  ->addInverseJoinColumn('user_id', 'id')
-                  ->cascadeAll()
-                  ->fetchExtraLazy()
-                  ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
 
         $inverseJoinColumn = new JoinColumnMetadata();
+
         $inverseJoinColumn->setColumnName('user_id');
         $inverseJoinColumn->setReferencedColumnName('id');
 
         $joinTable = new JoinTableMetadata();
+
         $joinTable->setName('groups_users');
         $joinTable->addJoinColumn($joinColumn);
         $joinTable->addInverseJoinColumn($inverseJoinColumn);
 
+        $association = $this->builder->createManyToMany('groups', CmsGroup::class)
+            ->withJoinTable($joinTable)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->build()
+        ;
+
+        $this->cm->mapManyToMany($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' =>
-                    [
-                        0 => 'remove',
-                        1 => 'persist',
-                        2 => 'refresh',
-                        3 => 'merge',
-                        4 => 'detach',
-                    ],
-                    'fetch' => FetchMode::EXTRA_LAZY,
-                    'joinTable' => $joinTable,
-                    'type' => 8,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -566,47 +480,50 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testThrowsExceptionOnCreateManyToManyWithIdentity()
     {
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setOnDelete('CASCADE');
+
+        $inverseJoinColumn = new JoinColumnMetadata();
+
+        $inverseJoinColumn->setColumnName('user_id');
+        $inverseJoinColumn->setReferencedColumnName('id');
+
+        $joinTable = new JoinTableMetadata();
+
+        $joinTable->setName('groups_users');
+        $joinTable->addJoinColumn($joinColumn);
+        $joinTable->addInverseJoinColumn($inverseJoinColumn);
+
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
-        $this->builder->createManyToMany('groups', CmsGroup::class)
-              ->makePrimaryKey()
-              ->setJoinTable('groups_users')
-              ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-              ->addInverseJoinColumn('user_id', 'id')
-              ->cascadeAll()
-              ->fetchExtraLazy()
-              ->build();
+        $association = $this->builder->createManyToMany('groups', CmsGroup::class)
+            ->withJoinTable($joinTable)
+            ->withCascade(['ALL'])
+            ->withFetchMode(FetchMode::EXTRA_LAZY)
+            ->withPrimaryKey(true)
+            ->build()
+        ;
+
+        $this->cm->mapManyToMany($association);
     }
 
     public function testCreateOneToMany()
     {
-        self::assertIsFluent(
-            $this->builder->createOneToMany('groups', CmsGroup::class)
-                ->mappedBy('test')
-                ->setOrderBy(['test'])
-                ->setIndexBy('test')
-                ->build()
-        );
+        $association = $this->builder->createOneToMany('groups', CmsGroup::class)
+            ->withMappedBy('test')
+            ->withOrderBy('test', 'ASC')
+            ->withIndexedBy('test')
+            ->build()
+        ;
+
+        $this->cm->mapOneToMany($association);
 
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'mappedBy' => 'test',
-                    'orderBy' => [
-                        0 => 'test',
-                    ],
-                    'indexBy' => 'test',
-                    'type' => 4,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => false,
-                    'sourceEntity' => CmsUser::class,
-                    'fetch' => FetchMode::LAZY,
-                    'cascade' => [],
-                    'orphanRemoval' => false,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -616,47 +533,38 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
-        $this->builder->createOneToMany('groups', CmsGroup::class)
-            ->makePrimaryKey()
-            ->mappedBy('test')
-            ->setOrderBy(['test'])
-            ->setIndexBy('test')
+        $association = $this->builder->createOneToMany('groups', CmsGroup::class)
+            ->withPrimaryKey(true)
+            ->withMappedBy('test')
+            ->withOrderBy('test', 'ASC')
+            ->withIndexedBy('test')
             ->build();
+
+        $this->cm->mapOneToMany($association);
     }
 
     public function testOrphanRemovalOnCreateOneToOne()
     {
-        self::assertIsFluent(
-            $this->builder
-                ->createOneToOne('groups', CmsGroup::class)
-                ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-                ->orphanRemoval()
-                ->build()
-        );
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setTableName('CmsUser');
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
         $joinColumn->setUnique(true);
 
+        $association = $this->builder
+            ->createOneToOne('groups', CmsGroup::class)
+            ->withJoinColumn($joinColumn)
+            ->withOrphanRemoval(true)
+            ->build()
+        ;
+
+        $this->cm->mapOneToOne($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [0 => 'remove'],
-                    'fetch' => FetchMode::LAZY,
-                    'joinColumns' => [$joinColumn],
-                    'type' => 1,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => true,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -664,29 +572,18 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testOrphanRemovalOnCreateOneToMany()
     {
-        self::assertIsFluent(
-            $this->builder
-                ->createOneToMany('groups', CmsGroup::class)
-                ->mappedBy('test')
-                ->orphanRemoval()
-                ->build()
-        );
+        $association = $this->builder
+            ->createOneToMany('groups', CmsGroup::class)
+            ->withMappedBy('test')
+            ->withOrphanRemoval(true)
+            ->build()
+        ;
+
+        $this->cm->mapOneToMany($association);
 
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'mappedBy' => 'test',
-                    'type' => 4,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => false,
-                    'sourceEntity' => CmsUser::class,
-                    'fetch' => FetchMode::LAZY,
-                    'cascade' => [0 => 'remove'],
-                    'orphanRemoval' => true,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );
@@ -694,54 +591,56 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testExceptionOnOrphanRemovalOnManyToOne()
     {
+        $joinColumn = new JoinColumnMetadata();
+
+        $joinColumn->setTableName('CmsUser');
+        $joinColumn->setColumnName('group_id');
+        $joinColumn->setReferencedColumnName('id');
+        $joinColumn->setOnDelete('CASCADE');
+        $joinColumn->setUnique(true);
+
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
-        $this->builder
+        $association = $this->builder
             ->createManyToOne('groups', CmsGroup::class)
-            ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-            ->orphanRemoval()
+            ->withJoinColumn($joinColumn)
+            ->withOrphanRemoval(true)
             ->build();
+
+        $this->cm->mapManyToOne($association);
     }
 
     public function testOrphanRemovalOnManyToMany()
     {
-        $this->builder
-            ->createManyToMany('groups', CmsGroup::class)
-            ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
-            ->orphanRemoval()
-            ->build();
-
         $joinColumn = new JoinColumnMetadata();
+
         $joinColumn->setColumnName('group_id');
         $joinColumn->setReferencedColumnName('id');
         $joinColumn->setOnDelete('CASCADE');
 
         $inverseJoinColumn = new JoinColumnMetadata();
+
         $inverseJoinColumn->setColumnName('cmsgroup_id');
         $inverseJoinColumn->setReferencedColumnName('id');
         $inverseJoinColumn->setOnDelete('CASCADE');
 
         $joinTable = new JoinTableMetadata();
+
         $joinTable->setName('cmsuser_cmsgroup');
         $joinTable->addJoinColumn($joinColumn);
         $joinTable->addInverseJoinColumn($inverseJoinColumn);
 
+        $association = $this->builder
+            ->createManyToMany('groups', CmsGroup::class)
+            ->withJoinTable($joinTable)
+            ->withOrphanRemoval(true)
+            ->build();
+
+        $this->cm->mapManyToMany($association);
+
         self::assertEquals(
             [
-                'groups' => [
-                    'fieldName' => 'groups',
-                    'targetEntity' => CmsGroup::class,
-                    'cascade' => [],
-                    'fetch' => FetchMode::LAZY,
-                    'joinTable' => $joinTable,
-                    'type' => 8,
-                    'mappedBy' => NULL,
-                    'inversedBy' => NULL,
-                    'isOwningSide' => true,
-                    'sourceEntity' => CmsUser::class,
-                    'orphanRemoval' => true,
-                    'declaringClass' => $this->cm,
-                ],
+                'groups' => $association
             ],
             $this->cm->associationMappings
         );

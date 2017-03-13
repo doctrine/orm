@@ -24,6 +24,38 @@ class ToManyAssociationMetadata extends AssociationMetadata
     /** @var array<string, string> */
     private $orderBy = [];
     
-    /** @var array<string> */
-    private $indexedBy = [];
+    /** @var null|string */
+    private $indexedBy;
+
+    /**
+     * @param array $orderBy
+     */
+    public function setOrderBy(array $orderBy)
+    {
+        $this->orderBy = $orderBy;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderBy()
+    {
+        return $this->orderBy;
+    }
+
+    /**
+     * @param null|string $indexedBy
+     */
+    public function setIndexedBy(string $indexedBy = null)
+    {
+        $this->indexedBy = $indexedBy;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getIndexedBy()
+    {
+        return $this->indexedBy;
+    }
 }

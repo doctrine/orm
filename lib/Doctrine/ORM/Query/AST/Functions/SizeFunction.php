@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Query\Lexer;
 
 /**
@@ -46,28 +47,30 @@ class SizeFunction extends FunctionNode
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
-        $platform       = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
-        $quoteStrategy  = $sqlWalker->getEntityManager()->getConfiguration()->getQuoteStrategy();
-        $dqlAlias       = $this->collectionPathExpression->identificationVariable;
-        $assocField     = $this->collectionPathExpression->field;
+        $platform          = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
+        $dqlAlias          = $this->collectionPathExpression->identificationVariable;
+        $assocField        = $this->collectionPathExpression->field;
+        $sql               = 'SELECT COUNT(*) FROM ';
+        $qComp             = $sqlWalker->getQueryComponent($dqlAlias);
+        $class             = $qComp['metadata'];
+        $association       = $class->associationMappings[$assocField];
+        $targetClass       = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
+        $owningAssociation = $association->isOwningSide()
+            ? $association
+            : $targetClass->associationMappings[$association->getMappedBy()]
+        ;
 
-        $qComp  = $sqlWalker->getQueryComponent($dqlAlias);
-        $class  = $qComp['metadata'];
-        $assoc  = $class->associationMappings[$assocField];
-        $sql    = 'SELECT COUNT(*) FROM ';
-
-        if ($assoc['type'] == \Doctrine\ORM\Mapping\ClassMetadata::ONE_TO_MANY) {
-            $targetClass        = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
+        if ($association instanceof OneToManyAssociationMetadata) {
             $targetTableName    = $targetClass->table->getQuotedQualifiedName($platform);
             $targetTableAlias   = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
             $sourceTableAlias   = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' WHERE ';
 
-            $owningAssoc = $targetClass->associationMappings[$assoc['mappedBy']];
-            $first       = true;
+            $owningAssociation = $targetClass->associationMappings[$association->getMappedBy()];
+            $first             = true;
 
-            foreach ($owningAssoc['joinColumns'] as $joinColumn) {
+            foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
                 if ($first) $first = false; else $sql .= ' AND ';
 
                 $sql .= sprintf('%s.%s = %s.%s',
@@ -78,10 +81,7 @@ class SizeFunction extends FunctionNode
                 );
             }
         } else { // many-to-many
-            $targetClass = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
-
-            $owningAssoc   = $assoc['isOwningSide'] ? $assoc : $targetClass->associationMappings[$assoc['mappedBy']];
-            $joinTable     = $owningAssoc['joinTable'];
+            $joinTable     = $owningAssociation->getJoinTable();
             $joinTableName = $joinTable->getQuotedQualifiedName($platform);
 
             // SQL table aliases
@@ -96,7 +96,7 @@ class SizeFunction extends FunctionNode
             // join to target table
             $sql .= $joinTableName . ' ' . $joinTableAlias . ' WHERE ';
 
-            $joinColumns = $assoc['isOwningSide']
+            $joinColumns = $association->isOwningSide()
                 ? $joinTable->getJoinColumns()
                 : $joinTable->getInverseJoinColumns()
             ;

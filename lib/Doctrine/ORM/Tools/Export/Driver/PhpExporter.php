@@ -23,6 +23,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
  * ClassMetadata exporter for PHP code.
@@ -177,10 +182,11 @@ class PhpExporter extends AbstractExporter
             $lines[] = '$metadata->setIdGeneratorType(Mapping\GeneratorType::' . $metadata->generatorType . ');';
         }
 
-        foreach ($metadata->associationMappings as $associationMapping) {
+        foreach ($metadata->associationMappings as $association) {
             $cascade = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+
             foreach ($cascade as $key => $value) {
-                if ( ! in_array($value, $associationMapping['cascade'])) {
+                if ( ! in_array($value, $association->getCascade())) {
                     unset($cascade[$key]);
                 }
             }
@@ -189,57 +195,70 @@ class PhpExporter extends AbstractExporter
                 $cascade = ['all'];
             }
 
-            switch (true) {
-                case ($associationMapping['type'] & ClassMetadata::TO_ONE):
-                    $method = $associationMapping['type'] === ClassMetadata::ONE_TO_ONE
-                        ? 'mapOneToOne'
-                        : 'mapManyToOne';
+            $method = null;
 
-                    $this->exportJoinColumns($associationMapping['joinColumns'] ?? [], $lines, 'joinColumns');
+            if ($association instanceof OneToOneAssociationMetadata) {
+                $method = 'mapOneToOne';
 
-                    $lines[] = null;
-                    $lines[] = '$metadata->' . $method . '(array(';
-                    $lines[] = '    "fieldName"     => "' . $associationMapping['fieldName'] . '",';
-                    $lines[] = '    "targetEntity"  => "' . $associationMapping['targetEntity'] . '",';
-                    $lines[] = '    "fetch"         => "' . $associationMapping['fetch'] . '",';
-                    $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
-                    $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
-                    $lines[] = '    "joinColumns"   => $joinColumns,';
-                    $lines[] = '    "cascade"       => ' . $this->varExport($cascade) . ',';
-                    $lines[] = '    "orphanRemoval" => ' . $this->varExport($associationMapping['orphanRemoval']) . ',';
-                    $lines[] = '));';
-                    break;
+                $this->exportJoinColumns($association->getJoinColumns(), $lines, 'joinColumns');
 
-                case ($associationMapping['type'] & ClassMetadata::TO_MANY):
-                    if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
-                        $method = 'mapManyToMany';
+                $lines[] = '$association = new Mapping\OneToOneAssociationMetadata("' . $association->getName() . '");';
+                $lines[] = null;
+                $lines[] = '$association->setJoinColumns($joinColumns);';
+            } else if ($association instanceof ManyToOneAssociationMetadata) {
+                $method = 'mapManyToOne';
 
-                        $this->exportJoinTable($associationMapping['joinTable'], $lines);
-                    } else {
-                        $method = 'mapOneToMany';
-                    }
+                $this->exportJoinColumns($association->getJoinColumns(), $lines, 'joinColumns');
 
-                    $lines[] = null;
-                    $lines[] = '$metadata->' . $method . '(array(';
-                    $lines[] = '    "fieldName"     => "' . $associationMapping['fieldName'] . '",';
-                    $lines[] = '    "targetEntity"  => "' . $associationMapping['targetEntity'] . '",';
-                    $lines[] = '    "fetch"         => "' . $associationMapping['fetch'] . '",';
-                    $lines[] = '    "mappedBy"      => "' . $associationMapping['mappedBy'] . '",';
-                    $lines[] = '    "inversedBy"    => "' . $associationMapping['inversedBy'] . '",';
-                    $lines[] = '    "orderBy"       => ' . $this->varExport($associationMapping['orderBy']) . ',';
+                $lines[] = '$association = new Mapping\ManyToOneAssociationMetadata("' . $association->getName() . '");';
+                $lines[] = null;
+                $lines[] = '$association->setJoinColumns($joinColumns);';
+            } else if ($association instanceof OneToManyAssociationMetadata) {
+                $method = 'mapOneToMany';
 
-                    if ($associationMapping['type'] === ClassMetadata::MANY_TO_MANY) {
-                        $lines[] = '    "joinTable"     => $joinTable,';
-                    }
+                $lines[] = '$association = new Mapping\OneToManyAssociationMetadata("' . $association->getName() . '");';
+                $lines[] = null;
+                $lines[] = '$association->setOrderBy(' . $this->varExport($association->getOrderBy()) . ');';
+            } else if ($association instanceof ManyToManyAssociationMetadata) {
+                $method = 'mapManyToMany';
 
-                    $lines[] = '    "cascade"       => ' . $this->varExport($cascade) . ',';
-                    $lines[] = '    "orphanRemoval" => ' . $this->varExport($associationMapping['orphanRemoval']) . ',';
-                    $lines[] = '));';
-                    break;
+                if ($association->getJoinTable()) {
+                    $this->exportJoinTable($association->getJoinTable(), $lines);
+                }
+
+                $lines[] = '$association = new Mapping\ManyToManyAssociationMetadata("' . $association->getName() . '");';
+                $lines[] = null;
+
+                if ($association->getJoinTable()) {
+                    $lines[] = '$association->setJoinTable($joinTable);';
+                }
+
+                if ($association->getIndexedBy()) {
+                    $lines[] = '$association->setIndexedBy("' . $association->getIndexedBy() . '");';
+                }
+
+                $lines[] = '$association->setOrderBy(' . $this->varExport($association->getOrderBy()) . ');';
             }
+
+            $lines[] = '$association->setTargetEntity("' . $association->getTargetEntity() . '");';
+            $lines[] = '$association->setFetchMode("' . $association->getFetchMode() . '");';
+
+            if ($association->getMappedBy()) {
+                $lines[] = '$association->setMappedBy("' . $association->getMappedBy() . '");';
+            }
+
+            if ($association->getInversedBy()) {
+                $lines[] = '$association->setInversedBy("' . $association->getInversedBy() . '");';
+            }
+
+            $lines[] = '$association->setCascade(' . $this->varExport($cascade) . ');';
+            $lines[] = '$association->setOrphanRemoval(' . $this->varExport($association->isOrphanRemoval()) . ');';
+            $lines[] = '$association->setPrimaryKey(' . $this->varExport($association->isPrimaryKey()) . ');';
+            $lines[] = null;
+            $lines[] = '$metadata->' . $method . '($association);';
         }
 
-        return implode("\n", $lines);
+        return implode(PHP_EOL, $lines);
     }
 
     private function exportJoinTable(JoinTableMetadata $joinTable, array &$lines)

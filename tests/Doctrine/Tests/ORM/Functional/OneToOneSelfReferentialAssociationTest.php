@@ -76,7 +76,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->createFixture();
 
         $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
-        $metadata->associationMappings['mentor']['fetch'] = FetchMode::LAZY;
+        $metadata->associationMappings['mentor']->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
         $result = $query->getResult();

@@ -21,6 +21,7 @@
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -62,8 +63,9 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
      */
     public function delete(PersistentCollection $collection)
     {
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $fieldName = $this->association->getName();
+        $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key       = new CollectionCacheKey($this->sourceEntity->rootEntityName, $fieldName, $ownerId);
 
         $this->persister->delete($collection);
 
@@ -82,11 +84,13 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
             return;
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $fieldName = $this->association->getName();
+        $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key       = new CollectionCacheKey($this->sourceEntity->rootEntityName, $fieldName, $ownerId);
 
        // Invalidate non initialized collections OR ordered collection
-        if ($isDirty && ! $isInitialized || isset($this->association['orderBy'])) {
+        if (($isDirty && ! $isInitialized) ||
+            ($this->association instanceof ToManyAssociationMetadata && $this->association->getOrderBy())) {
             $this->persister->update($collection);
 
             $this->queuedCache['delete'][spl_object_hash($collection)] = $key;

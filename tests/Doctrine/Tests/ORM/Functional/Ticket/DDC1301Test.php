@@ -24,9 +24,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->em->getClassMetadata(Models\Legacy\LegacyUser::class);
         
-        $class->associationMappings['articles']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['references']['fetch'] = FetchMode::EXTRA_LAZY;
-        $class->associationMappings['cars']['fetch'] = FetchMode::EXTRA_LAZY;
+        $class->associationMappings['articles']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->associationMappings['references']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->associationMappings['cars']->setFetchMode(FetchMode::EXTRA_LAZY);
 
         $this->loadFixture();
     }
@@ -37,9 +37,9 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $class = $this->em->getClassMetadata(Models\Legacy\LegacyUser::class);
         
-        $class->associationMappings['articles']['fetch'] = FetchMode::LAZY;
-        $class->associationMappings['references']['fetch'] = FetchMode::LAZY;
-        $class->associationMappings['cars']['fetch'] = FetchMode::LAZY;
+        $class->associationMappings['articles']->setFetchMode(FetchMode::LAZY);
+        $class->associationMappings['references']->setFetchMode(FetchMode::LAZY);
+        $class->associationMappings['cars']->setFetchMode(FetchMode::LAZY);
     }
 
     public function testCountNotInitializesLegacyCollection()

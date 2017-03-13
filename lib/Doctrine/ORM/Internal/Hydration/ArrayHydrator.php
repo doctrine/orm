@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -134,7 +135,7 @@ class ArrayHydrator extends AbstractHydrator
                 $relation      = $parentClass->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
-                if ( ! ($relation['type'] & ClassMetadata::TO_ONE)) {
+                if (! $relation instanceof ToOneAssociationMetadata) {
                     $oneToOne = false;
 
                     if ( ! isset($baseElement[$relationAlias])) {

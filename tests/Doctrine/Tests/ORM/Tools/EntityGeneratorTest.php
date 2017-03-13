@@ -88,6 +88,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->setPrimaryTable($tableMetadata);
 
+        // Property: "name"
         $fieldMetadata = new Mapping\FieldMetadata('name');
 
         $fieldMetadata->setType(Type::getType('string'));
@@ -96,6 +97,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
+        // Property: "status"
         $fieldMetadata = new Mapping\FieldMetadata('status');
 
         $fieldMetadata->setType(Type::getType('string'));
@@ -107,6 +109,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
+        // Property: "id"
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
         $fieldMetadata->setType(Type::getType('integer'));
@@ -116,6 +119,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
+        // Property: "author"
         $joinColumns = [];
 
         $joinColumn = new Mapping\JoinColumnMetadata();
@@ -124,15 +128,15 @@ class EntityGeneratorTest extends OrmTestCase
 
         $joinColumns[] = $joinColumn;
 
-        $metadata->mapOneToOne(
-            [
-                'fieldName'    => 'author',
-                'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor',
-                'mappedBy'     => 'book',
-                'joinColumns'  => $joinColumns,
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('author');
 
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity(EntityGeneratorAuthor::class);
+        $association->setMappedBy('book');
+
+        $metadata->mapOneToOne($association);
+
+        // Property: "comments"
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('book_comment');
 
@@ -148,14 +152,13 @@ class EntityGeneratorTest extends OrmTestCase
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $metadata->mapManyToMany(
-            [
-                'fieldName'    => 'comments',
-                'targetEntity' => 'Doctrine\Tests\ORM\Tools\EntityGeneratorComment',
-                'fetch'        => Mapping\FetchMode::EXTRA_LAZY,
-                'joinTable'    => $joinTable,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('comments');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity(EntityGeneratorComment::class);
+        $association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
+
+        $metadata->mapManyToMany($association);
 
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
@@ -526,7 +529,7 @@ class EntityGeneratorTest extends OrmTestCase
 //        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
-        self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->associationMappings['comments']['fetch']);
+        self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->associationMappings['comments']->getFetchMode());
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //
@@ -691,13 +694,12 @@ class EntityGeneratorTest extends OrmTestCase
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $metadata->mapManyToMany(
-            [
-                'fieldName'     => 'centroCustos',
-                'targetEntity'  => 'DDC2079CentroCusto',
-                'joinTable'     => $joinTable,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('centroCustos');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity('DDC2079CentroCusto');
+
+        $metadata->mapManyToMany($association);
 
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 

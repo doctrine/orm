@@ -20,7 +20,10 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
@@ -41,20 +44,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function delete(PersistentCollection $collection)
     {
-        $mapping = $collection->getMapping();
+        $association = $collection->getMapping();
 
-        if ( ! $mapping['isOwningSide']) {
+        if (! $association->isOwningSide()) {
             return; // ignore inverse side
         }
 
-        $types = [];
-        $class = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $class     = $this->em->getClassMetadata($association->getSourceEntity());
+        $joinTable = $association->getJoinTable();
+        $types     = [];
 
-        foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
             $types[] = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em);
         }
 
-        $this->conn->executeUpdate($this->getDeleteSQL($collection), $this->getDeleteSQLParameters($collection), $types);
+        $sql    = $this->getDeleteSQL($collection);
+        $params = $this->getDeleteSQLParameters($collection);
+
+        $this->conn->executeUpdate($sql, $params, $types);
     }
 
     /**
@@ -62,9 +69,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function update(PersistentCollection $collection)
     {
-        $mapping = $collection->getMapping();
+        $association = $collection->getMapping();
 
-        if ( ! $mapping['isOwningSide']) {
+        if (! $association->isOwningSide()) {
             return; // ignore inverse side
         }
 
@@ -93,18 +100,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function get(PersistentCollection $collection, $index)
     {
-        $mapping = $collection->getMapping();
+        $association = $collection->getMapping();
 
-        if ( ! isset($mapping['indexBy'])) {
+        if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
-        $mappedKey = $mapping['isOwningSide']
-            ? $mapping['inversedBy']
-            : $mapping['mappedBy'];
+        $persister = $this->uow->getEntityPersister($association->getTargetEntity());
+        $mappedKey = $association->isOwningSide()
+            ? $association->getInversedBy()
+            : $association->getMappedBy()
+        ;
 
-        return $persister->load([$mappedKey => $collection->getOwner(), $mapping['indexBy'] => $index], null, $mapping, [], 0, 1);
+        $criteria  = [
+            $mappedKey                   => $collection->getOwner(),
+            $association->getIndexedBy() => $index,
+        ];
+
+        return $persister->load($criteria, null, $association, [], 0, 1);
     }
 
     /**
@@ -112,31 +125,39 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function count(PersistentCollection $collection)
     {
-        $conditions     = [];
-        $params         = [];
-        $types          = [];
-        $mapping        = $collection->getMapping();
-        $id             = $this->uow->getEntityIdentifier($collection->getOwner());
-        $sourceClass    = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass    = $this->em->getClassMetadata($mapping['targetEntity']);
-        $association    = ( ! $mapping['isOwningSide'])
-            ? $targetClass->associationMappings[$mapping['mappedBy']]
-            : $mapping;
+        $conditions        = [];
+        $params            = [];
+        $types             = [];
+        $association       = $collection->getMapping();
+        $id                = $this->uow->getEntityIdentifier($collection->getOwner());
+        $sourceClass       = $this->em->getClassMetadata($association->getSourceEntity());
+        $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
+        $owningAssociation = ! $association->isOwningSide()
+            ? $targetClass->associationMappings[$association->getMappedBy()]
+            : $association
+        ;
 
-        $joinTable      = $association['joinTable'];
+        $joinTable      = $owningAssociation->getJoinTable();
         $joinTableName  = $joinTable->getQuotedQualifiedName($this->platform);
-        $joinColumns    = ( ! $mapping['isOwningSide']) ? $joinTable->getInverseJoinColumns() : $joinTable->getJoinColumns();
+        $joinColumns    = $association->isOwningSide()
+            ? $joinTable->getJoinColumns()
+            : $joinTable->getInverseJoinColumns()
+        ;
 
         foreach ($joinColumns as $joinColumn) {
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedName   = $joinColumn->getReferencedColumnName();
 
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em));
+            }
+
             $conditions[]   = 't.' . $quotedColumnName . ' = ?';
             $params[]       = $id[$sourceClass->fieldNames[$referencedName]];
-            $types[]        = PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em);
+            $types[]        = $joinColumn->getType();
         }
 
-        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($mapping);
+        list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($association);
 
         if ($filterSql) {
             $conditions[] = $filterSql;
@@ -172,19 +193,19 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function slice(PersistentCollection $collection, $offset, $length = null)
     {
-        $mapping   = $collection->getMapping();
-        $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
+        $association = $collection->getMapping();
+        $persister   = $this->uow->getEntityPersister($association->getTargetEntity());
 
-        return $persister->getManyToManyCollection($mapping, $collection->getOwner(), $offset, $length);
+        return $persister->getManyToManyCollection($association, $collection->getOwner(), $offset, $length);
     }
     /**
      * {@inheritdoc}
      */
     public function containsKey(PersistentCollection $collection, $key)
     {
-        $mapping = $collection->getMapping();
+        $association = $collection->getMapping();
 
-        if ( ! isset($mapping['indexBy'])) {
+        if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
             throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
         }
 
@@ -232,19 +253,19 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
-        $mapping       = $collection->getMapping();
+        $association   = $collection->getMapping();
         $owner         = $collection->getOwner();
         $ownerMetadata = $this->em->getClassMetadata(get_class($owner));
-        $id            = $this->uow->getEntityIdentifier($owner);
-        $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
-        $onConditions  = $this->getOnConditionSQL($mapping);
+        $identifier    = $this->uow->getEntityIdentifier($owner);
+        $targetClass   = $this->em->getClassMetadata($association->getTargetEntity());
+        $onConditions  = $this->getOnConditionSQL($association);
         $whereClauses  = $params = $types = [];
 
-        if ( ! $mapping['isOwningSide']) {
-            $mapping = $targetClass->associationMappings[$mapping['mappedBy']];
-            $joinColumns = $mapping['joinTable']->getInverseJoinColumns();
+        if (! $association->isOwningSide()) {
+            $association = $targetClass->associationMappings[$association->getMappedBy()];
+            $joinColumns = $association->getJoinTable()->getInverseJoinColumns();
         } else {
-            $joinColumns = $mapping['joinTable']->getJoinColumns();
+            $joinColumns = $association->getJoinTable()->getJoinColumns();
         }
 
         foreach ($joinColumns as $joinColumn) {
@@ -258,7 +279,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
 
             $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
-            $params[] = $id[$ownerMetadata->fieldNames[$referencedName]];
+            $params[] = $identifier[$ownerMetadata->fieldNames[$referencedName]];
             $types[] = $joinColumn->getType();
         }
 
@@ -276,7 +297,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
-        $joinTableName    = $mapping['joinTable']->getQuotedQualifiedName($this->platform);
+        $joinTableName    = $association->getJoinTable()->getQuotedQualifiedName($this->platform);
         $resultSetMapping = new Query\ResultSetMappingBuilder($this->em);
 
         $resultSetMapping->addRootEntityFromClassMetadata($targetClass->name, 'te');
@@ -304,15 +325,15 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @param array $mapping Array containing mapping information.
+     * @param ManyToManyAssociationMetadata $association
      *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
      */
-    public function getFilterSql($mapping)
+    public function getFilterSql(ManyToManyAssociationMetadata $association)
     {
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
         $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
 
@@ -323,7 +344,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         // A join is needed if there is filtering on the target entity
         $tableName = $rootClass->table->getQuotedQualifiedName($this->platform);
         $joinSql   = ' JOIN ' . $tableName . ' te'
-            . ' ON' . implode(' AND ', $this->getOnConditionSQL($mapping));
+            . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
 
         return [$joinSql, $filterSql];
     }
@@ -345,29 +366,38 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
+        
+        if (! $filterClauses) {
+            return '';
+        }
 
-        return $filterClauses
-            ? '(' . implode(' AND ', $filterClauses) . ')'
-            : '';
+        $filterSql = implode(' AND ', $filterClauses);
+
+        return count($filterClauses) > 1
+            ? '(' . $filterSql . ')'
+            : $filterSql
+        ;
     }
 
     /**
      * Generate ON condition
      *
-     * @param  array $mapping
+     * @param ManyToManyAssociationMetadata $association
      *
      * @return array
      */
-    protected function getOnConditionSQL($mapping)
+    protected function getOnConditionSQL(ManyToManyAssociationMetadata $association)
     {
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-        $association = ( ! $mapping['isOwningSide'])
-            ? $targetClass->associationMappings[$mapping['mappedBy']]
-            : $mapping;
+        $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
+        $owningAssociation = ! $association->isOwningSide()
+            ? $targetClass->associationMappings[$association->getMappedBy()]
+            : $association;
 
-        $joinColumns = $mapping['isOwningSide']
-            ? $association['joinTable']->getInverseJoinColumns()
-            : $association['joinTable']->getJoinColumns();
+        $joinTable   = $owningAssociation->getJoinTable();
+        $joinColumns = $association->isOwningSide()
+            ? $joinTable->getInverseJoinColumns()
+            : $joinTable->getJoinColumns()
+        ;
 
         $conditions = [];
 
@@ -388,12 +418,12 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteSQL(PersistentCollection $collection)
     {
-        $mapping       = $collection->getMapping();
-        $joinTable     = $mapping['joinTable'];
+        $association   = $collection->getMapping();
+        $joinTable     = $association->getJoinTable();
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
         $columns       = [];
 
-        foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
             $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
         }
 
@@ -408,9 +438,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteSQLParameters(PersistentCollection $collection)
     {
-        $mapping     = $collection->getMapping();
+        $association = $collection->getMapping();
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
-        $joinColumns = $mapping['joinTable']->getJoinColumns();
+        $joinTable   = $association->getJoinTable();
+        $joinColumns = $joinTable->getJoinColumns();
 
         // Optimization for single column identifier
         if (count($joinColumns) === 1) {
@@ -418,7 +449,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         // Composite identifier
-        $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
         $params      = [];
 
         foreach ($joinColumns as $joinColumn) {
@@ -438,13 +469,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getDeleteRowSQL(PersistentCollection $collection)
     {
-        $mapping     = $collection->getMapping();
-        $class       = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $association = $collection->getMapping();
+        $class       = $this->em->getClassMetadata($association->getSourceEntity());
+        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
         $columns     = [];
         $types       = [];
 
-        $joinTable     = $mapping['joinTable'];
+        $joinTable     = $association->getJoinTable();
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
@@ -458,7 +489,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         return [
-            'DELETE FROM ' . $joinTableName . ' WHERE ' . implode(' = ? AND ', $columns) . ' = ?',
+            sprintf('DELETE FROM %s WHERE %s = ?', $joinTableName, implode(' = ? AND ', $columns)),
             $types,
         ];
     }
@@ -489,13 +520,13 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     protected function getInsertRowSQL(PersistentCollection $collection)
     {
-        $mapping     = $collection->getMapping();
-        $class       = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+        $association = $collection->getMapping();
+        $class       = $this->em->getClassMetadata($association->getSourceEntity());
+        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
         $columns     = [];
         $types       = [];
 
-        $joinTable     = $mapping['joinTable'];
+        $joinTable     = $association->getJoinTable();
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
@@ -545,19 +576,20 @@ class ManyToManyPersister extends AbstractCollectionPersister
     private function collectJoinTableColumnParameters(PersistentCollection $collection, $element)
     {
         $params           = [];
-        $mapping          = $collection->getMapping();
+        $association      = $collection->getMapping();
         $owningClass      = $this->em->getClassMetadata(get_class($collection->getOwner()));
         $targetClass      = $collection->getTypeClass();
         $owningIdentifier = $this->uow->getEntityIdentifier($collection->getOwner());
         $targetIdentifier = $this->uow->getEntityIdentifier($element);
+        $joinTable        = $association->getJoinTable();
 
-        foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
             $fieldName = $owningClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
             $params[] = $owningIdentifier[$fieldName];
         }
 
-        foreach ($mapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
+        foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
             $fieldName = $targetClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
             $params[] = $targetIdentifier[$fieldName];
@@ -579,23 +611,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, $key, $addFilters)
     {
-        $filterMapping = $collection->getMapping();
-        $mapping       = $filterMapping;
-        $indexBy       = $mapping['indexBy'];
-        $id            = $this->uow->getEntityIdentifier($collection->getOwner());
-        $sourceClass   = $this->em->getClassMetadata($mapping['sourceEntity']);
-        $targetClass   = $this->em->getClassMetadata($mapping['targetEntity']);
+        $association       = $collection->getMapping();
+        $owningAssociation = $association;
+        $indexBy           = $owningAssociation->getIndexedBy();
+        $id                = $this->uow->getEntityIdentifier($collection->getOwner());
+        $sourceClass       = $this->em->getClassMetadata($owningAssociation->getSourceEntity());
+        $targetClass       = $this->em->getClassMetadata($owningAssociation->getTargetEntity());
 
-        if (! $mapping['isOwningSide']) {
-            $mapping            = $targetClass->associationMappings[$mapping['mappedBy']];
-            $joinColumns        = $mapping['joinTable']->getJoinColumns();
-            $inverseJoinColumns = $mapping['joinTable']->getInverseJoinColumns();
+        if (! $owningAssociation->isOwningSide()) {
+            $owningAssociation  = $targetClass->associationMappings[$owningAssociation->getMappedBy()];
+            $joinTable          = $owningAssociation->getJoinTable();
+            $joinColumns        = $joinTable->getJoinColumns();
+            $inverseJoinColumns = $joinTable->getInverseJoinColumns();
         } else {
-            $joinColumns        = $mapping['joinTable']->getInverseJoinColumns();
-            $inverseJoinColumns = $mapping['joinTable']->getJoinColumns();
+            $joinTable          = $owningAssociation->getJoinTable();
+            $joinColumns        = $joinTable->getInverseJoinColumns();
+            $inverseJoinColumns = $joinTable->getJoinColumns();
         }
 
-        $joinTable       = $mapping['joinTable'];
         $joinTableName   = $joinTable->getQuotedQualifiedName($this->platform);
         $quotedJoinTable = $joinTableName . ' t';
         $whereClauses    = [];
@@ -649,7 +682,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         if ($addFilters) {
-            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
+            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($association);
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
@@ -673,24 +706,24 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters)
     {
-        $filterMapping  = $collection->getMapping();
-        $mapping        = $filterMapping;
+        $association       = $collection->getMapping();
+        $owningAssociation = $association;
 
-        if ( ! $mapping['isOwningSide']) {
-            $sourceClass = $this->em->getClassMetadata($mapping['targetEntity']);
-            $targetClass = $this->em->getClassMetadata($mapping['sourceEntity']);
+        if (! $association->isOwningSide()) {
+            $sourceClass = $this->em->getClassMetadata($association->getTargetEntity());
+            $targetClass = $this->em->getClassMetadata($association->getSourceEntity());
             $sourceId = $this->uow->getEntityIdentifier($element);
             $targetId = $this->uow->getEntityIdentifier($collection->getOwner());
 
-            $mapping = $sourceClass->associationMappings[$mapping['mappedBy']];
+            $owningAssociation = $sourceClass->associationMappings[$association->getMappedBy()];
         } else {
-            $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);
-            $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
+            $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
+            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
             $sourceId = $this->uow->getEntityIdentifier($collection->getOwner());
             $targetId = $this->uow->getEntityIdentifier($element);
         }
 
-        $joinTable       = $mapping['joinTable'];
+        $joinTable       = $owningAssociation->getJoinTable();
         $joinTableName   = $joinTable->getQuotedQualifiedName($this->platform);
         $quotedJoinTable = $joinTableName;
         $whereClauses    = [];
@@ -701,24 +734,36 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(
+                    PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em)
+                );
+            }
+
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
             $params[]       = $sourceId[$sourceClass->fieldNames[$referencedColumnName]];
-            $types[]        = PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em);
+            $types[]        = $joinColumn->getType();
         }
 
         foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(
+                    PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
+                );
+            }
+
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
             $params[]       = $targetId[$targetClass->fieldNames[$referencedColumnName]];
-            $types[]        = PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em);
+            $types[]        = $joinColumn->getType();
         }
 
         if ($addFilters) {
             $quotedJoinTable .= ' t';
 
-            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($filterMapping);
+            list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($association);
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;

@@ -19,11 +19,18 @@
 
 namespace Doctrine\ORM\Tools\Export\Driver;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
  * ClassMetadata exporter for Doctrine XML mapping files.
@@ -178,29 +185,30 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        /*foreach ($metadata->associationMappings as $name => $assoc) {
-            if (isset($assoc['id']) && $assoc['id']) {
-                $id[$name] = [
-                    'fieldName'      => $name,
-                    'associationKey' => true,
-                ];
+        foreach ($metadata->associationMappings as $name => $association) {
+            if ($association->isPrimaryKey()) {
+                $id[$name] = $association;
             }
-        }*/
+        }
 
         if ($id) {
             foreach ($id as $property) {
-                $idXml    = $root->addChild('id');
+                $idXml = $root->addChild('id');
+
                 $idXml->addAttribute('name', $property->getName());
+
+                if ($property instanceof AssociationMetadata) {
+                    $idXml->addAttribute('association-key', 'true');
+
+                    continue;
+                }
+
                 $idXml->addAttribute('type', $property->getTypeName());
                 $idXml->addAttribute('column', $property->getColumnName());
 
                 if (is_int($property->getLength())) {
                     $idXml->addAttribute('length', $property->getLength());
                 }
-
-                /*if (isset($property['associationKey']) && $property['associationKey']) {
-                    $idXml->addAttribute('association-key', 'true');
-                }*/
 
                 if ($metadata->generatorType) {
                     $generatorXml = $idXml->addChild('generator');
@@ -261,179 +269,78 @@ class XmlExporter extends AbstractExporter
         }
 
         $orderMap = [
-            ClassMetadata::ONE_TO_ONE,
-            ClassMetadata::ONE_TO_MANY,
-            ClassMetadata::MANY_TO_ONE,
-            ClassMetadata::MANY_TO_MANY,
+            OneToOneAssociationMetadata::class,
+            OneToManyAssociationMetadata::class,
+            ManyToOneAssociationMetadata::class,
+            ManyToManyAssociationMetadata::class,
         ];
 
         uasort($metadata->associationMappings, function($m1, $m2) use (&$orderMap){
-            $a1 = array_search($m1['type'], $orderMap);
-            $a2 = array_search($m2['type'], $orderMap);
+            $a1 = array_search(get_class($m1), $orderMap);
+            $a2 = array_search(get_class($m2), $orderMap);
 
             return strcmp($a1, $a2);
         });
 
-        foreach ($metadata->associationMappings as $associationMapping) {
-            if ($associationMapping['type'] == ClassMetadata::ONE_TO_ONE) {
+        foreach ($metadata->associationMappings as $association) {
+            if ($association instanceof OneToOneAssociationMetadata) {
                 $associationMappingXml = $root->addChild('one-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_ONE) {
-                $associationMappingXml = $root->addChild('many-to-one');
-            } elseif ($associationMapping['type'] == ClassMetadata::ONE_TO_MANY) {
+            } elseif ($association instanceof OneToManyAssociationMetadata) {
                 $associationMappingXml = $root->addChild('one-to-many');
-            } elseif ($associationMapping['type'] == ClassMetadata::MANY_TO_MANY) {
+            } elseif ($association instanceof ManyToOneAssociationMetadata) {
+                $associationMappingXml = $root->addChild('many-to-one');
+            } elseif ($association instanceof ManyToManyAssociationMetadata) {
                 $associationMappingXml = $root->addChild('many-to-many');
             }
 
-            $associationMappingXml->addAttribute('field', $associationMapping['fieldName']);
-            $associationMappingXml->addAttribute('target-entity', $associationMapping['targetEntity']);
+            $associationMappingXml->addAttribute('field', $association->getName());
+            $associationMappingXml->addAttribute('target-entity', $association->getTargetEntity());
+            $associationMappingXml->addAttribute('fetch', $association->getFetchMode());
 
-            if (isset($associationMapping['mappedBy'])) {
-                $associationMappingXml->addAttribute('mapped-by', $associationMapping['mappedBy']);
+            $this->exportCascade($associationMappingXml, $association->getCascade());
+
+            if ($association->getMappedBy()) {
+                $associationMappingXml->addAttribute('mapped-by', $association->getMappedBy());
             }
 
-            if (isset($associationMapping['inversedBy'])) {
-                $associationMappingXml->addAttribute('inversed-by', $associationMapping['inversedBy']);
+            if ($association->getInversedBy()) {
+                $associationMappingXml->addAttribute('inversed-by', $association->getInversedBy());
             }
 
-            if (isset($associationMapping['indexBy'])) {
-                $associationMappingXml->addAttribute('index-by', $associationMapping['indexBy']);
-            }
-
-            if (isset($associationMapping['orphanRemoval']) && $associationMapping['orphanRemoval'] !== false) {
+            if ($association->isOrphanRemoval()) {
                 $associationMappingXml->addAttribute('orphan-removal', 'true');
             }
 
-            if (isset($associationMapping['fetch'])) {
-                $associationMappingXml->addAttribute('fetch', $associationMapping['fetch']);
-            }
+            if ($association instanceof ToManyAssociationMetadata) {
+                if ($association instanceof ManyToManyAssociationMetadata && $association->getJoinTable()) {
+                    $joinTableXml = $associationMappingXml->addChild('join-table');
+                    $joinTable    = $association->getJoinTable();
 
-            $cascades = [];
+                    $joinTableXml->addAttribute('name', $joinTable->getName());
 
-            foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $type) {
-                if (in_array($type, $associationMapping['cascade'])) {
-                    $cascades[] = 'cascade-' . $type;
-                }
-            }
-
-            if (count($cascades) === 5) {
-                $cascades = ['cascade-all'];
-            }
-
-            if ($cascades) {
-                $cascadeXml = $associationMappingXml->addChild('cascade');
-
-                foreach ($cascades as $type) {
-                    $cascadeXml->addChild($type);
-                }
-            }
-
-            if (isset($associationMapping['joinTable'])) {
-                $joinTableXml = $associationMappingXml->addChild('join-table');
-
-                $joinTableXml->addAttribute('name', $associationMapping['joinTable']->getName());
-
-                $joinColumnsXml = $joinTableXml->addChild('join-columns');
-
-                foreach ($associationMapping['joinTable']->getJoinColumns() as $joinColumn) {
-                    /** @var JoinColumnMetadata $joinColumn */
-                    $joinColumnXml = $joinColumnsXml->addChild('join-column');
-
-                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
-                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
-
-                    if (! empty($joinColumn->getAliasedName())) {
-                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
-                    }
-
-                    if (! empty($joinColumn->getOnDelete())) {
-                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
-                    }
-
-                    if (! empty($joinColumn->getColumnDefinition())) {
-                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
-                    }
-
-                    if ($joinColumn->isNullable()) {
-                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
-                    }
-
-                    if ($joinColumn->isUnique()) {
-                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
-                    }
+                    $this->exportJoinColumns($joinTableXml, $joinTable->getJoinColumns(), 'join-columns');
+                    $this->exportJoinColumns($joinTableXml, $joinTable->getInverseJoinColumns(), 'inverse-join-columns');
                 }
 
-                $inverseJoinColumnsXml = $joinTableXml->addChild('inverse-join-columns');
+                if ($association->getIndexedBy()) {
+                    $associationMappingXml->addAttribute('index-by', $association->getIndexedBy());
+                }
 
-                foreach ($associationMapping['joinTable']->getInverseJoinColumns() as $joinColumn) {
-                    /** @var JoinColumnMetadata $joinColumn */
-                    $joinColumnXml = $inverseJoinColumnsXml->addChild('join-column');
+                if ($association->getOrderBy()) {
+                    $orderByXml = $associationMappingXml->addChild('order-by');
 
-                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
-                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
+                    foreach ($association->getOrderBy() as $name => $direction) {
+                        $orderByFieldXml = $orderByXml->addChild('order-by-field');
 
-                    if (! empty($joinColumn->getAliasedName())) {
-                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
-                    }
-
-                    if (! empty($joinColumn->getOnDelete())) {
-                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
-                    }
-
-                    if (! empty($joinColumn->getColumnDefinition())) {
-                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
-                    }
-
-                    if ($joinColumn->isNullable()) {
-                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
-                    }
-
-                    if ($joinColumn->isUnique()) {
-                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
+                        $orderByFieldXml->addAttribute('name', $name);
+                        $orderByFieldXml->addAttribute('direction', $direction);
                     }
                 }
             }
 
-            if (isset($associationMapping['joinColumns'])) {
-                $joinColumnsXml = $associationMappingXml->addChild('join-columns');
-
-                foreach ($associationMapping['joinColumns'] as $joinColumn) {
-                    /** @var JoinColumnMetadata $joinColumn */
-                    $joinColumnXml = $joinColumnsXml->addChild('join-column');
-
-                    $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
-                    $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
-
-                    if (! empty($joinColumn->getAliasedName())) {
-                        $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
-                    }
-
-                    if (! empty($joinColumn->getOnDelete())) {
-                        $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
-                    }
-
-                    if (! empty($joinColumn->getColumnDefinition())) {
-                        $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
-                    }
-
-                    if ($joinColumn->isNullable()) {
-                        $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
-                    }
-
-                    if ($joinColumn->isUnique()) {
-                        $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
-                    }
-                }
-            }
-
-            if (isset($associationMapping['orderBy'])) {
-                $orderByXml = $associationMappingXml->addChild('order-by');
-
-                foreach ($associationMapping['orderBy'] as $name => $direction) {
-                    $orderByFieldXml = $orderByXml->addChild('order-by-field');
-
-                    $orderByFieldXml->addAttribute('name', $name);
-                    $orderByFieldXml->addAttribute('direction', $direction);
+            if ($association instanceof ToOneAssociationMetadata) {
+                if ($association->getJoinColumns()) {
+                    $this->exportJoinColumns($associationMappingXml, $association->getJoinColumns());
                 }
             }
         }
@@ -452,6 +359,85 @@ class XmlExporter extends AbstractExporter
         }
 
         return $this->asXml($xml);
+    }
+
+    /**
+     * @param \SimpleXMLElement $associationXml
+     * @param array             $joinColumns
+     * @param string            $joinColumnsName
+     */
+    private function exportJoinColumns(
+        \SimpleXMLElement $associationXml,
+        array $joinColumns,
+        $joinColumnsName = 'join-columns'
+    )
+    {
+        $joinColumnsXml = $associationXml->addChild($joinColumnsName);
+
+        foreach ($joinColumns as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
+            $joinColumnXml = $joinColumnsXml->addChild('join-column');
+
+            $joinColumnXml->addAttribute('name', $joinColumn->getColumnName());
+            $joinColumnXml->addAttribute('referenced-column-name', $joinColumn->getReferencedColumnName());
+
+            if (! empty($joinColumn->getAliasedName())) {
+                $joinColumnXml->addAttribute('field-name', $joinColumn->getAliasedName());
+            }
+
+            if (! empty($joinColumn->getOnDelete())) {
+                $joinColumnXml->addAttribute('on-delete', $joinColumn->getOnDelete());
+            }
+
+            if (! empty($joinColumn->getColumnDefinition())) {
+                $joinColumnXml->addAttribute('column-definition', $joinColumn->getColumnDefinition());
+            }
+
+            if ($joinColumn->isNullable()) {
+                $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
+            }
+
+            if ($joinColumn->isUnique()) {
+                $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
+            }
+
+            if ($joinColumn->getOptions()) {
+                $optionsXml = $joinColumnXml->addChild('options');
+
+                foreach ($joinColumn->getOptions() as $key => $value) {
+                    $optionXml = $optionsXml->addChild('option', $value);
+
+                    $optionXml->addAttribute('name', $key);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param \SimpleXMLElement $associationXml
+     * @param array             $associationCascades
+     */
+    private function exportCascade(\SimpleXMLElement $associationXml, array $associationCascades)
+    {
+        $cascades = [];
+
+        foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $type) {
+            if (in_array($type, $associationCascades)) {
+                $cascades[] = 'cascade-' . $type;
+            }
+        }
+
+        if (count($cascades) === 5) {
+            $cascades = ['cascade-all'];
+        }
+
+        if ($cascades) {
+            $cascadeXml = $associationXml->addChild('cascade');
+
+            foreach ($cascades as $type) {
+                $cascadeXml->addChild($type);
+            }
+        }
     }
 
     /**

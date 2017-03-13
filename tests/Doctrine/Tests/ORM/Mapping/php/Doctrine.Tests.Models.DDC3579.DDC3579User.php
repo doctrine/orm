@@ -21,11 +21,10 @@ $fieldMetadata->setUnique(false);
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->mapManyToMany(
-    [
-        'fieldName'      => 'groups',
-        'targetEntity'   => 'DDC3579Group'
-    ]
-);
+$association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+$association->setTargetEntity('DDC3579Group');
+
+$metadata->mapManyToMany($association);
 
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
