@@ -333,7 +333,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->mapOneToOne($assocMetadata);
+                    $metadata->addAssociation($assocMetadata);
 
                     break;
 
@@ -344,7 +344,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->mapManyToOne($assocMetadata);
+                    $metadata->addAssociation($assocMetadata);
 
                     break;
 
@@ -355,7 +355,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->mapOneToMany($assocMetadata);
+                    $metadata->addAssociation($assocMetadata);
 
                     break;
 
@@ -366,7 +366,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->mapManyToMany($assocMetadata);
+                    $metadata->addAssociation($assocMetadata);
 
                     break;
 

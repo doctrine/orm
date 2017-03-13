@@ -42,7 +42,7 @@ $association = new Mapping\OneToOneAssociationMetadata('user');
 $association->setJoinColumns($joinColumns);
 $association->setTargetEntity('CmsUser');
 
-$metadata->mapOneToOne($association);
+$metadata->addAssociation($association);
 
 $metadata->addNamedNativeQuery(
     [

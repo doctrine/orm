@@ -55,36 +55,6 @@ use RuntimeException;
 class ClassMetadata implements ClassMetadataInterface
 {
     /**
-     * Identifies a one-to-one association.
-     */
-    const ONE_TO_ONE = 1;
-
-    /**
-     * Identifies a many-to-one association.
-     */
-    const MANY_TO_ONE = 2;
-
-    /**
-     * Identifies a one-to-many association.
-     */
-    const ONE_TO_MANY = 4;
-
-    /**
-     * Identifies a many-to-many association.
-     */
-    const MANY_TO_MANY = 8;
-
-    /**
-     * Combined bitmask for to-one (single-valued) associations.
-     */
-    const TO_ONE = 3;
-
-    /**
-     * Combined bitmask for to-many (collection-valued) associations.
-     */
-    const TO_MANY = 12;
-
-    /**
      * READ-ONLY: The name of the entity class.
      *
      * @var string
@@ -324,76 +294,16 @@ class ClassMetadata implements ClassMetadataInterface
     public $fieldNames = [];
 
     /**
-     * @var array
+     * READ-ONLY: The property mappings of this class.
+     *
+     * @var array<Property>
      */
     protected $properties = [];
 
     /**
      * READ-ONLY: The association mappings of this class.
      *
-     * The mapping definition array supports the following keys:
-     * 
-     * - <b>type</b> (integer)
-     * Association type: ONE_TO_ONE, ONE_TO_MANY, MANY_TO_ONE, MANY_TO_MANY
-     *
-     * - <b>fieldName</b> (string)
-     * The name of the field in the entity the association is mapped to.
-     *
-     * - <b>fetch</b> (integer, optional)
-     * The fetching strategy to use for the association, usually defaults to LAZY.
-     * Possible values are: FetchMode::EAGER, FetchMode::LAZY, FetchMode::EXTRA_LAZY.
-     *
-     * - <b>targetEntity</b> (string)
-     * The class name of the target entity. If it is fully-qualified it is used as is.
-     * If it is a simple, unqualified class name the namespace is assumed to be the same
-     * as the namespace of the source entity.
-     * 
-     * - <b>sourceEntity</b> (string)
-     * The class name of the source entity. If it is fully-qualified it is used as is.
-     * If it is a simple, unqualified class name the namespace is assumed to be the same
-     * as the namespace of the source entity.
-     * 
-     * - <b>isOwningSide</b> (boolean)
-     * Whether the association is the owning side or the inverse side.
-     *
-     * - <b>mappedBy</b> (string, required for bidirectional associations)
-     * The name of the field that completes the bidirectional association on the owning side.
-     * This key must be specified on the inverse side of a bidirectional association.
-     *
-     * - <b>inversedBy</b> (string, required for bidirectional associations)
-     * The name of the field that completes the bidirectional association on the inverse side.
-     * This key must be specified on the owning side of a bidirectional association.
-     *
-     * - <b>cascade</b> (array<string>, optional)
-     * The names of persistence operations to cascade on the association. The set of possible
-     * values are: "persist", "remove", "detach", "merge", "refresh", "all" (implies all others).
-     *
-     * - <b>orderBy</b> (array<string, string>, one-to-many/many-to-many only)
-     * A map of field names (of the target entity) to sorting directions (ASC/DESC).
-     * Example: array('priority' => 'desc')
-     * 
-     * - <b>indexBy</b> (string, optional, to-many only)
-     * Specification of a field on target-entity that is used to index the collection by.
-     * This field HAS to be either the primary key or a unique column. Otherwise the collection
-     * does not contain all the entities that are actually related.
-     *
-     * - <b>joinTable</b> (JoinTableMetadata, optional, many-to-many only)
-     * Specification of the join table and its join columns (foreign keys).
-     * Only valid for many-to-many mappings. Note that one-to-many associations can be mapped
-     * through a join table by simply mapping the association as many-to-many with a unique
-     * constraint on the join table.
-     * 
-     * - <b>joinColumns</b> (array<JoinColumnMetadata>, optional, to-one only)
-     * Specification of the join columns (foreign keys).
-     * 
-     * - <b>id</b> (boolean, optional)
-     * Whether the association is the entity identifier
-     * 
-     * - <b>orphanRemoval</b> (boolean, optional, all association types, except many-to-one)
-     *
-     * - <b>cache</b> (CacheMetadata, optional)
-     * 
-     * @var array
+     * @var array<AssociationMetadata>
      */
     public $associationMappings = [];
 
@@ -1159,8 +1069,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
     {
-        $this->validateAndCompleteAssociationMapping($property);
-
         $fieldName = $property->getName();
 
         if ($property->getJoinColumns()) {
@@ -1246,8 +1154,6 @@ class ClassMetadata implements ClassMetadataInterface
      */
     protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
     {
-        $this->validateAndCompleteAssociationMapping($property);
-
         if ($property->isPrimaryKey()) {
             throw MappingException::illegalToManyIdentifierAssociation($this->name, $property->getName());
         }
@@ -1263,7 +1169,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     protected function validateAndCompleteOneToOneMapping(OneToOneAssociationMetadata $property)
     {
-        $this->validateAndCompleteToOneAssociationMetadata($property);
+        // Do nothing
     }
 
     /**
@@ -1277,8 +1183,6 @@ class ClassMetadata implements ClassMetadataInterface
     protected function validateAndCompleteManyToOneMapping(ManyToOneAssociationMetadata $property)
     {
         // A many-to-one mapping is essentially a one-one backreference
-        $this->validateAndCompleteToOneAssociationMetadata($property);
-
         if ($property->isOrphanRemoval()) {
             throw MappingException::illegalOrphanRemoval($this->name, $property->getName());
         }
@@ -1291,12 +1195,9 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws \RuntimeException
      * @throws MappingException
-     * @throws InvalidArgumentException
      */
     protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
     {
-        $this->validateAndCompleteToManyAssociationMetadata($property);
-
         // OneToMany MUST be inverse side
         $property->setOwningSide(false);
 
@@ -1322,12 +1223,10 @@ class ClassMetadata implements ClassMetadataInterface
      * @param ManyToManyAssociationMetadata $property The association mapping to validate & complete.
      *
      * @throws \RuntimeException
-     * @throws \InvalidArgumentException
+     * @throws MappingException
      */
     protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
     {
-        $this->validateAndCompleteAssociationMapping($property);
-
         if ($property->isOwningSide()) {
             // owning side MUST have a join table
             $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
@@ -1662,16 +1561,7 @@ class ClassMetadata implements ClassMetadataInterface
             $originalAssociation->setJoinTable($associationMetadata->getJoinTable());
         }
 
-        // @todo guilhermeblanco Unify all mapXtoY methods
-        if ($originalAssociation instanceof OneToOneAssociationMetadata) {
-            $this->mapOneToOne($originalAssociation);
-        } else if ($originalAssociation instanceof OneToManyAssociationMetadata) {
-            $this->mapOneToMany($originalAssociation);
-        } else if ($originalAssociation instanceof ManyToOneAssociationMetadata) {
-            $this->mapManyToOne($originalAssociation);
-        } else if ($originalAssociation instanceof ManyToManyAssociationMetadata) {
-            $this->mapManyToMany($originalAssociation);
-        }
+        $this->addAssociation($originalAssociation);
     }
 
     /**
@@ -1794,6 +1684,8 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
+     * Add a property mapping.
+     *
      * @param FieldMetadata $property
      *
      * @throws MappingException
@@ -1811,9 +1703,7 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         // Check for duplicated property
-        if (isset($this->properties[$fieldName]) || isset($this->associationMappings[$fieldName])) {
-            throw MappingException::duplicateProperty($property);
-        }
+        $this->assertPropertyNotMapped($fieldName);
 
         if (empty($columnName)) {
             $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->name);
@@ -1884,6 +1774,8 @@ class ClassMetadata implements ClassMetadataInterface
             $inheritedProperty->setTableName($property->getTableName());
         }
 
+        $this->assertPropertyNotMapped($property->getName());
+
         $this->fieldNames[$property->getColumnName()] = $property->getName();
         $this->properties[$property->getName()] = $inheritedProperty;
     }
@@ -1909,9 +1801,7 @@ class ClassMetadata implements ClassMetadataInterface
             $inheritedAssociation->setSourceEntity($this->name);
         }
 
-        if (isset($this->associationMappings[$association->getName()])) {
-            throw MappingException::duplicateAssociationMapping($this->name, $association->getName());
-        }
+        $this->assertPropertyNotMapped($association->getName());
 
         $this->associationMappings[$association->getName()] = $inheritedAssociation;
     }
@@ -2058,75 +1948,34 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Adds a one-to-one mapping.
+     * Adds an association mapping.
      *
-     * @param OneToOneAssociationMetadata $property
-     *
-     * @throws \RuntimeException
-     * @throws MappingException
-     */
-    public function mapOneToOne(OneToOneAssociationMetadata $property)
-    {
-        $this->validateAndCompleteOneToOneMapping($property);
-        $this->storeAssociationMapping($property);
-    }
-
-    /**
-     * Adds a one-to-many mapping.
-     *
-     * @param OneToManyAssociationMetadata $property
+     * @param AssociationMetadata $property
      *
      * @throws \RuntimeException
      * @throws MappingException
      */
-    public function mapOneToMany(OneToManyAssociationMetadata $property)
+    public function addAssociation(AssociationMetadata $property)
     {
-        $this->validateAndCompleteOneToManyMapping($property);
-        $this->storeAssociationMapping($property);
-    }
+        $this->validateAndCompleteAssociationMapping($property);
 
-    /**
-     * Adds a many-to-one mapping.
-     *
-     * @param ManyToOneAssociationMetadata $property
-     *
-     * @throws \RuntimeException
-     * @throws MappingException
-     */
-    public function mapManyToOne(ManyToOneAssociationMetadata $property)
-    {
-        $this->validateAndCompleteManyToOneMapping($property);
-        $this->storeAssociationMapping($property);
-    }
+        if ($property instanceof OneToOneAssociationMetadata) {
+            $this->validateAndCompleteToOneAssociationMetadata($property);
+            $this->validateAndCompleteOneToOneMapping($property);
+        } else if ($property instanceof OneToManyAssociationMetadata) {
+            $this->validateAndCompleteToManyAssociationMetadata($property);
+            $this->validateAndCompleteOneToManyMapping($property);
+        } else if ($property instanceof ManyToOneAssociationMetadata) {
+            $this->validateAndCompleteToOneAssociationMetadata($property);
+            $this->validateAndCompleteManyToOneMapping($property);
+        } else if ($property instanceof ManyToManyAssociationMetadata) {
+            $this->validateAndCompleteToManyAssociationMetadata($property);
+            $this->validateAndCompleteManyToManyMapping($property);
+        }
 
-    /**
-     * Adds a many-to-many mapping.
-     *
-     * @param ManyToManyAssociationMetadata $property
-     *
-     * @throws \RuntimeException
-     * @throws MappingException
-     */
-    public function mapManyToMany(ManyToManyAssociationMetadata $property)
-    {
-        $this->validateAndCompleteManyToManyMapping($property);
-        $this->storeAssociationMapping($property);
-    }
-
-    /**
-     * Stores the association mapping.
-     *
-     * @param array $assocMapping
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    protected function storeAssociationMapping(AssociationMetadata $property)
-    {
         $sourceFieldName = $property->getName();
 
-        $this->assertFieldNotMapped($sourceFieldName);
+        $this->assertPropertyNotMapped($sourceFieldName);
 
         $this->associationMappings[$sourceFieldName] = $property;
     }
@@ -2348,7 +2197,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function hasAssociation($fieldName)
     {
@@ -2358,7 +2207,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function isSingleValuedAssociation($fieldName)
     {
@@ -2369,7 +2218,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function isCollectionValuedAssociation($fieldName)
     {
@@ -2604,7 +2453,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function mapEmbedded(array $mapping)
     {
-        /*$this->assertFieldNotMapped($mapping['fieldName']);
+        /*$this->assertPropertyNotMapped($mapping['fieldName']);
 
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class'          => $this->fullyQualifiedClassName($mapping['class']),
@@ -2651,13 +2500,19 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    private function assertFieldNotMapped($fieldName)
+    private function assertPropertyNotMapped(string $fieldName)
     {
-        if (isset($this->properties[$fieldName])
-            || isset($this->associationMappings[$fieldName])
-            /*|| isset($this->embeddedClasses[$fieldName])*/) {
-            throw MappingException::duplicateFieldMapping($this->name, $fieldName);
+        if (isset($this->properties[$fieldName])) {
+            throw MappingException::duplicateProperty($this, $this->properties[$fieldName]);
         }
+
+        if (isset($this->associationMappings[$fieldName])) {
+            throw MappingException::duplicateProperty($this, $this->associationMappings[$fieldName]);
+        }
+
+//        if (isset($this->embeddedClasses[$fieldName])) {
+//            throw MappingException::duplicateProperty($this, $this->embeddedClasses[$fieldName]);
+//        }
     }
 
     /**
