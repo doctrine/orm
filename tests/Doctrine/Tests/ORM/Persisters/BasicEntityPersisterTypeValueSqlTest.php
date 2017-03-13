@@ -105,7 +105,7 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
         $method     = new \ReflectionMethod($persister, 'getSelectColumnsSQL');
         $method->setAccessible(true);
 
-        self::assertEquals('t1."simple-entity-id" AS simpleentityid_0, t1."simple-entity-value" AS simpleentityvalue_2', $method->invoke($persister));
+        self::assertEquals('t1."simple-entity-id" AS c0, t1."simple-entity-value" AS c2', $method->invoke($persister));
     }
 
     /**

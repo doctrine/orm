@@ -173,13 +173,6 @@ class SqlWalker implements TreeWalker
     private $platform;
 
     /**
-     * The quote strategy.
-     *
-     * @var \Doctrine\ORM\Mapping\QuoteStrategy
-     */
-    private $quoteStrategy;
-
-    /**
      * {@inheritDoc}
      */
     public function __construct($query, $parserResult, array $queryComponents)
@@ -191,7 +184,6 @@ class SqlWalker implements TreeWalker
         $this->em               = $query->getEntityManager();
         $this->conn             = $this->em->getConnection();
         $this->platform         = $this->conn->getDatabasePlatform();
-        $this->quoteStrategy    = $this->em->getConfiguration()->getQuoteStrategy();
     }
 
     /**
@@ -295,10 +287,8 @@ class SqlWalker implements TreeWalker
     {
         $tableName .= ($dqlAlias) ? '@[' . $dqlAlias . ']' : '';
 
-        if ( ! isset($this->tableAliasMap[$tableName])) {
-            $char = preg_match('/[a-z]/i', $tableName[0]) ? strtolower($tableName[0]) : 't';
-
-            $this->tableAliasMap[$tableName] = $char . $this->tableAliasCounter++ . '_';
+        if (! isset($this->tableAliasMap[$tableName])) {
+            $this->tableAliasMap[$tableName] = 't' . $this->tableAliasCounter++;
         }
 
         return $this->tableAliasMap[$tableName];
@@ -326,13 +316,12 @@ class SqlWalker implements TreeWalker
     /**
      * Gets an SQL column alias for a column name.
      *
-     * @param string $columnName
-     *
      * @return string
      */
-    public function getSQLColumnAlias($columnName)
+    public function getSQLColumnAlias()
     {
-        return $this->quoteStrategy->getColumnAlias($columnName, $this->aliasCounter++, $this->platform);
+        return $this->platform->getSQLResultCasing('c' . $this->aliasCounter++);
+
     }
 
     /**
@@ -362,8 +351,10 @@ class SqlWalker implements TreeWalker
 
             $sqlParts = [];
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($class, $this->platform) as $columnName) {
-                $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
+            foreach ($class->getIdentifierColumns($this->em) as $column) {
+                $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
+
+                $sqlParts[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
             // Add filters on the root class
@@ -389,8 +380,10 @@ class SqlWalker implements TreeWalker
 
             $sqlParts = [];
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($subClass, $this->platform) as $columnName) {
-                $sqlParts[] = $baseTableAlias . '.' . $columnName . ' = ' . $tableAlias . '.' . $columnName;
+            foreach ($subClass->getIdentifierColumns($this->em) as $column) {
+                $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
+
+                $sqlParts[] = $baseTableAlias . '.' . $quotedColumnName . ' = ' . $tableAlias . '.' . $quotedColumnName;
             }
 
             $sql .= implode(' AND ', $sqlParts);
@@ -625,8 +618,10 @@ class SqlWalker implements TreeWalker
         $tableAlias = $this->getSQLTableAlias($class->getTableName(), $identVariable);
         $sqlParts   = [];
 
-        foreach ($this->quoteStrategy->getIdentifierColumnNames($class, $this->platform) as $columnName) {
-            $sqlParts[] = $tableAlias . '.' . $columnName;
+        foreach ($class->getIdentifierColumns($this->em) as $column) {
+            $quotedColumnName = $this->platform->quoteIdentifier($column->getColumnName());
+
+            $sqlParts[] = $tableAlias . '.' . $quotedColumnName;
         }
 
         return implode(', ', $sqlParts);
@@ -756,7 +751,7 @@ class SqlWalker implements TreeWalker
                 $discrColumnType  = $discrColumn->getType();
                 $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
                 $sqlTableAlias    = $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias);
-                $sqlColumnAlias   = $this->getSQLColumnAlias($discrColumnName);
+                $sqlColumnAlias   = $this->getSQLColumnAlias();
 
                 $sqlSelectExpressions[] = sprintf(
                     '%s AS %s',
@@ -781,7 +776,7 @@ class SqlWalker implements TreeWalker
                 foreach ($association->getJoinColumns() as $joinColumn) {
                     $columnName       = $joinColumn->getColumnName();
                     $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-                    $columnAlias      = $this->getSQLColumnAlias($columnName);
+                    $columnAlias      = $this->getSQLColumnAlias();
                     $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
                     $sqlTableAlias    = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
 
@@ -821,7 +816,7 @@ class SqlWalker implements TreeWalker
                     foreach ($association->getJoinColumns() as $joinColumn) {
                         $columnName       = $joinColumn->getColumnName();
                         $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-                        $columnAlias      = $this->getSQLColumnAlias($columnName);
+                        $columnAlias      = $this->getSQLColumnAlias();
                         $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
 
                         $sqlSelectExpressions[] = sprintf(
@@ -1336,7 +1331,7 @@ class SqlWalker implements TreeWalker
                 $qComp        = $this->queryComponents[$dqlAlias];
                 $class        = $qComp['metadata'];
                 $property     = $class->getProperty($fieldName);
-                $columnAlias  = $this->getSQLColumnAlias($property->getColumnName());
+                $columnAlias  = $this->getSQLColumnAlias();
                 $resultAlias  = $selectExpression->fieldIdentificationVariable ?: $fieldName;
                 $col          = sprintf(
                     '%s.%s',
@@ -1370,7 +1365,7 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\CoalesceExpression):
             case ($expr instanceof AST\GeneralCaseExpression):
             case ($expr instanceof AST\SimpleCaseExpression):
-                $columnAlias = $this->getSQLColumnAlias('sclr');
+                $columnAlias = $this->getSQLColumnAlias();
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
 
                 $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
@@ -1385,7 +1380,7 @@ class SqlWalker implements TreeWalker
                 break;
 
             case ($expr instanceof AST\Subselect):
-                $columnAlias = $this->getSQLColumnAlias('sclr');
+                $columnAlias = $this->getSQLColumnAlias();
                 $resultAlias = $selectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
 
                 $sql .= '(' . $this->walkSubselect($expr) . ') AS ' . $columnAlias;
@@ -1432,7 +1427,7 @@ class SqlWalker implements TreeWalker
                         continue;
                     }
 
-                    $columnAlias = $this->getSQLColumnAlias($property->getColumnName());
+                    $columnAlias = $this->getSQLColumnAlias();
                     $col         = sprintf(
                         '%s.%s',
                         $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
@@ -1463,7 +1458,7 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            $columnAlias = $this->getSQLColumnAlias($property->getColumnName());
+                            $columnAlias = $this->getSQLColumnAlias();
                             $col         = sprintf(
                                 '%s.%s',
                                 $this->getSQLTableAlias($property->getTableName(), $dqlAlias),
@@ -1568,7 +1563,7 @@ class SqlWalker implements TreeWalker
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
-            $columnAlias = $this->getSQLColumnAlias('sclr');
+            $columnAlias = $this->getSQLColumnAlias();
             $fieldType   = Type::getType('string');
 
             switch (true) {
@@ -1654,7 +1649,7 @@ class SqlWalker implements TreeWalker
             case ($expr instanceof AST\SimpleCaseExpression):
                 $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
 
-                $columnAlias = $this->getSQLColumnAlias('sclr');
+                $columnAlias = $this->getSQLColumnAlias();
                 $this->scalarResultAliasMap[$alias] = $columnAlias;
 
                 $sql .= $expr->dispatch($this) . ' AS ' . $columnAlias;
@@ -1967,12 +1962,14 @@ class SqlWalker implements TreeWalker
                 );
             }
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {
+            foreach ($targetClass->getIdentifierColumns($this->em) as $targetColumn) {
+                $quotedTargetColumnName = $this->platform->quoteIdentifier($targetColumn->getColumnName());
+
                 if (isset($dqlParamKey)) {
                     $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
                 }
 
-                $sqlParts[] = $targetTableAlias . '.'  . $targetColumnName . ' = ' . $entitySql;
+                $sqlParts[] = $targetTableAlias . '.'  . $quotedTargetColumnName . ' = ' . $entitySql;
             }
 
             $sql .= implode(' AND ', $sqlParts);
@@ -2030,12 +2027,14 @@ class SqlWalker implements TreeWalker
                 );
             }
 
-            foreach ($this->quoteStrategy->getIdentifierColumnNames($targetClass, $this->platform) as $targetColumnName) {
+            foreach ($targetClass->getIdentifierColumns($this->em) as $targetColumn) {
+                $quotedTargetColumnName = $this->platform->quoteIdentifier($targetColumn->getColumnName());
+
                 if (isset($dqlParamKey)) {
                     $this->parserResult->addParameterMapping($dqlParamKey, $this->sqlParamIndex++);
                 }
 
-                $sqlParts[] = $targetTableAlias . '.' . $targetColumnName . ' = ' . $entitySql;
+                $sqlParts[] = $targetTableAlias . '.' . $quotedTargetColumnName . ' = ' . $entitySql;
             }
 
             $sql .= implode(' AND ', $sqlParts);

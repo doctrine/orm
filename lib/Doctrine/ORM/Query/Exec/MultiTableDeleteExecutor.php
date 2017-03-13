@@ -64,7 +64,6 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $em             = $sqlWalker->getEntityManager();
         $conn           = $em->getConnection();
         $platform       = $conn->getDatabasePlatform();
-        $quoteStrategy  = $em->getConfiguration()->getQuoteStrategy();
 
         $primaryClass    = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
@@ -75,10 +74,10 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $idColumnNameList = implode(', ', array_keys($idColumns));
 
         // 1. Create an INSERT INTO temptable ... SELECT identifiers WHERE $AST->getWhereClause()
-        $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 't0', $primaryDqlAlias);
+        $sqlWalker->setSQLTableAlias($primaryClass->getTableName(), 'i0', $primaryDqlAlias);
 
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
-                . ' SELECT t0.' . implode(', t0.', array_keys($idColumns));
+                . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
 
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);

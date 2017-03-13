@@ -54,9 +54,9 @@ class SqlWalkerTest extends OrmTestCase
     public function getColumnNamesAndSqlAliases()
     {
         return [
-            ['aaaaa', 'a0_'],
-            ['table', 't0_'],
-            ['çtable', 't0_'],
+            ['aaaaa', 't0'],
+            ['table', 't0'],
+            ['çtable', 't0'],
         ];
     }
 }

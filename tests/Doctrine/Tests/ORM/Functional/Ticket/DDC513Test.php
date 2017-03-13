@@ -23,7 +23,7 @@ class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->em->createQuery("select u from ".__NAMESPACE__."\\DDC513OfferItem u left join u.price p");
 
         self::assertSQLEquals(
-            'SELECT d0_."id" AS id_0, d0_."discr" AS discr_1, d0_."price" AS price_2 FROM "DDC513OfferItem" d1_ INNER JOIN "DDC513Item" d0_ ON d1_."id" = d0_."id" LEFT JOIN "DDC513Price" d2_ ON d0_."price" = d2_."id"',
+            'SELECT t0."id" AS c0, t0."discr" AS c1, t0."price" AS c2 FROM "DDC513OfferItem" t1 INNER JOIN "DDC513Item" t0 ON t1."id" = t0."id" LEFT JOIN "DDC513Price" t2 ON t0."price" = t2."id"',
             $q->getSQL()
         );
     }

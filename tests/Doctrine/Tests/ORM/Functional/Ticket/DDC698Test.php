@@ -29,7 +29,7 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 		   ->leftJoin('p.roles', 'r');
 
         self::assertSQLEquals(
-            'SELECT p0_."privilegeID" AS privilegeID_0, p0_."name" AS name_1, r1_."roleID" AS roleID_2, r1_."name" AS name_3, r1_."shortName" AS shortName_4 FROM "Privileges" p0_ LEFT JOIN "RolePrivileges" r2_ ON p0_."privilegeID" = r2_."privilegeID" LEFT JOIN "Roles" r1_ ON r1_."roleID" = r2_."roleID"',
+            'SELECT t0."privilegeID" AS c0, t0."name" AS c1, t1."roleID" AS c2, t1."name" AS c3, t1."shortName" AS c4 FROM "Privileges" t0 LEFT JOIN "RolePrivileges" t2 ON t0."privilegeID" = t2."privilegeID" LEFT JOIN "Roles" t1 ON t1."roleID" = t2."roleID"',
             $qb->getQuery()->getSQL()
         );
     }
