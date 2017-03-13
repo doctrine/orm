@@ -334,7 +334,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapManyToOne($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -363,7 +363,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapManyToOne($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -390,7 +390,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapOneToOne($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -417,7 +417,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapOneToOne($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -439,7 +439,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->withPrimaryKey(true)
             ->build();
 
-        $this->cm->mapOneToOne($association);
+        $this->cm->addAssociation($association);
     }
 
     public function testCreateManyToMany()
@@ -468,7 +468,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapManyToMany($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -507,7 +507,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapManyToMany($association);
+        $this->cm->addAssociation($association);
     }
 
     public function testCreateOneToMany()
@@ -519,7 +519,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapOneToMany($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -540,7 +540,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->withIndexedBy('test')
             ->build();
 
-        $this->cm->mapOneToMany($association);
+        $this->cm->addAssociation($association);
     }
 
     public function testOrphanRemovalOnCreateOneToOne()
@@ -560,7 +560,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapOneToOne($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -579,7 +579,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->build()
         ;
 
-        $this->cm->mapOneToMany($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [
@@ -607,7 +607,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->withOrphanRemoval(true)
             ->build();
 
-        $this->cm->mapManyToOne($association);
+        $this->cm->addAssociation($association);
     }
 
     public function testOrphanRemovalOnManyToMany()
@@ -636,7 +636,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->withOrphanRemoval(true)
             ->build();
 
-        $this->cm->mapManyToMany($association);
+        $this->cm->addAssociation($association);
 
         self::assertEquals(
             [

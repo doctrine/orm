@@ -257,7 +257,7 @@ class DatabaseDriver implements MappingDriver
                     $associationMapping['mappedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
                 }
 
-                $metadata->mapManyToMany($associationMapping);
+                $metadata->addAssociation($associationMapping);
 
                 break;
             }
@@ -492,9 +492,9 @@ class DatabaseDriver implements MappingDriver
 
             // Here we need to check if $fkColumns are the same as $primaryKeys
             if ( ! array_diff($fkColumns, $primaryKeys)) {
-                $metadata->mapOneToOne($associationMapping);
+                $metadata->addAssociation($associationMapping);
             } else {
-                $metadata->mapManyToOne($associationMapping);
+                $metadata->addAssociation($associationMapping);
             }
         }
     }

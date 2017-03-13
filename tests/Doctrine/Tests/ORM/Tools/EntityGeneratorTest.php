@@ -134,7 +134,7 @@ class EntityGeneratorTest extends OrmTestCase
         $association->setTargetEntity(EntityGeneratorAuthor::class);
         $association->setMappedBy('book');
 
-        $metadata->mapOneToOne($association);
+        $metadata->addAssociation($association);
 
         // Property: "comments"
         $joinTable = new Mapping\JoinTableMetadata();
@@ -158,7 +158,7 @@ class EntityGeneratorTest extends OrmTestCase
         $association->setTargetEntity(EntityGeneratorComment::class);
         $association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
 
-        $metadata->mapManyToMany($association);
+        $metadata->addAssociation($association);
 
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
@@ -699,7 +699,7 @@ class EntityGeneratorTest extends OrmTestCase
         $association->setJoinTable($joinTable);
         $association->setTargetEntity('DDC2079CentroCusto');
 
-        $metadata->mapManyToMany($association);
+        $metadata->addAssociation($association);
 
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
