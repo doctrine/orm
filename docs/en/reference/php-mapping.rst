@@ -227,11 +227,8 @@ Field Mapping Setters
 ~~~~~~~~~~~~~~~~~~~~~
 
 
--  ``mapField(array $mapping)``
--  ``mapOneToOne(array $mapping)``
--  ``mapOneToMany(array $mapping)``
--  ``mapManyToOne(array $mapping)``
--  ``mapManyToMany(array $mapping)``
+-  ``addProperty(Property $property)``
+-  ``addAssociation(AssociationMetadata $property)``
 
 Lifecycle Callback Setters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
