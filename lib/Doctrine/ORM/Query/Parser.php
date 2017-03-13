@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
 
@@ -675,8 +676,8 @@ class Parser
                 }
 
                 if (isset($class->associationMappings[$field]) &&
-                    $class->associationMappings[$field]['isOwningSide'] &&
-                    $class->associationMappings[$field]['type'] & ClassMetadata::TO_ONE) {
+                    $class->associationMappings[$field]->isOwningSide() &&
+                    $class->associationMappings[$field] instanceof ToOneAssociationMetadata) {
                     continue;
                 }
 
@@ -764,9 +765,9 @@ class Parser
             $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
 
             if (isset($class->associationMappings[$field])) {
-                $assoc = $class->associationMappings[$field];
+                $association = $class->associationMappings[$field];
 
-                $fieldType = ($assoc['type'] & ClassMetadata::TO_ONE)
+                $fieldType = $association instanceof ToOneAssociationMetadata
                     ? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
                     : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
             }
@@ -1631,7 +1632,8 @@ class Parser
             $field                       = $associationPathExpression->associationField;
 
             $class       = $this->queryComponents[$identificationVariable]['metadata'];
-            $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+            $association = $class->associationMappings[$field];
+            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
             // Building queryComponent
             $joinQueryComponent = array(
@@ -1770,13 +1772,14 @@ class Parser
         $field                  = $joinAssociationPathExpression->associationField;
 
         $class       = $this->queryComponents[$identificationVariable]['metadata'];
-        $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+        $association = $class->associationMappings[$field];
+        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
         // Building queryComponent
         $joinQueryComponent = [
             'metadata'     => $targetClass,
             'parent'       => $joinAssociationPathExpression->identificationVariable,
-            'relation'     => $class->getAssociationMapping($field),
+            'relation'     => $association,
             'map'          => null,
             'nestingLevel' => $this->nestingLevel,
             'token'        => $this->lexer->lookahead

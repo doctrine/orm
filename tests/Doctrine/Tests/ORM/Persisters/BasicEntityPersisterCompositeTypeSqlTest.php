@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Persisters;
 
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
@@ -32,19 +33,19 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 
     public function testSelectConditionStatementEq()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('admin1', 1, [], Comparison::EQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', 1, new OneToOneAssociationMetadata('admin1'), Comparison::EQ);
         self::assertEquals('t0."admin1" = ? AND t0."country" = ?', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::IS);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, new OneToOneAssociationMetadata('admin1'), Comparison::IS);
         self::assertEquals('t0."admin1" IS NULL AND t0."country" IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
-        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::NEQ);
+        $statement = $this->persister->getSelectConditionStatementSQL('admin1', null, new OneToOneAssociationMetadata('admin1'), Comparison::NEQ);
         self::assertEquals('t0."admin1" IS NOT NULL AND t0."country" IS NOT NULL', $statement);
     }
 
@@ -53,6 +54,6 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
      */
     public function testSelectConditionStatementIn()
     {
-        $this->persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
+        $this->persister->getSelectConditionStatementSQL('admin1', [], new OneToOneAssociationMetadata('admin1'), Comparison::IN);
     }
 }

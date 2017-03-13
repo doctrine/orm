@@ -39,14 +39,6 @@ class OneToOneTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_onetoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetoone');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->em->getConnection();
@@ -57,69 +49,37 @@ class OneToOneTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_onetoone LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
 
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
-            'def'
-        );
-
-        self::assertInstanceOf(Models\ValueConversionType\InversedOneToOneEntity::class, $inversed);
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneEntity::class, $owning);
+        self::assertInstanceOf(Entity\InversedOneToOneEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningOneToOneEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
-            'abc'
-        );
-
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
-            'def'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
 
         self::assertEquals('abc', $inversed->id1);
         self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheProxyFromOwningToInversedIsLoaded()
     {
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningOneToOneEntity::class,
-            'def'
-        );
+        $owning = $this->em->find(Entity\OwningOneToOneEntity::class, 'def');
 
         $inversedProxy = $owning->associatedEntity;
 
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheEntityFromInversedToOwningIsEagerLoaded()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToOneEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToOneEntity::class, 'abc');
 
-        self::assertInstanceOf(Models\ValueConversionType\OwningOneToOneEntity::class, $inversed->associatedEntity);
+        self::assertInstanceOf(Entity\OwningOneToOneEntity::class, $inversed->associatedEntity);
     }
 }

@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Utility;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Query\QueryException;
 
 /**
@@ -54,17 +55,18 @@ class PersisterHelper
             return [];
         }
 
-        $assoc = $class->associationMappings[$fieldName];
+        $association  = $class->associationMappings[$fieldName];
+        $targetEntity = $association->getTargetEntity();
+        $targetClass  = $em->getClassMetadata($targetEntity);
 
-        if (! $assoc['isOwningSide']) {
-            return self::getTypeOfField($assoc['mappedBy'], $em->getClassMetadata($assoc['targetEntity']), $em);
+        if (! $association->isOwningSide()) {
+            return self::getTypeOfField($association->getMappedBy(), $targetClass, $em);
         }
 
         $types       = [];
-        $targetClass = $em->getClassMetadata($assoc['targetEntity']);
-        $joinColumns = ($assoc['type'] & ClassMetadata::MANY_TO_MANY)
-            ? $assoc['joinTable']->getJoinColumns()
-            : $assoc['joinColumns'];
+        $joinColumns = $association instanceof ManyToManyAssociationMetadata
+            ? $association->getJoinTable()->getJoinColumns()
+            : $association->getJoinColumns();
 
         foreach ($joinColumns as $joinColumn) {
             $types[] = self::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em);
@@ -93,12 +95,19 @@ class PersisterHelper
         }
 
         // iterate over association mappings
-        foreach ($class->associationMappings as $assoc) {
+        foreach ($class->associationMappings as $association) {
             // resolve join columns over to-one or to-many
-            $targetClass = $em->getClassMetadata($assoc['targetEntity']);
-            $joinColumns = ($assoc['type'] & ClassMetadata::MANY_TO_MANY)
-                ? $assoc['joinTable']->getJoinColumns()
-                : ($assoc['joinColumns'] ?? []);
+            $targetClass  = $em->getClassMetadata($association->getTargetEntity());
+
+            if (! $association->isOwningSide()) {
+                $association = $targetClass->associationMappings[$association->getMappedBy()];
+                $targetClass = $em->getClassMetadata($association->getTargetEntity());
+            }
+
+            $joinColumns = $association instanceof ManyToManyAssociationMetadata
+                ? $association->getJoinTable()->getInverseJoinColumns()
+                : $association->getJoinColumns()
+            ;
 
             foreach ($joinColumns as $joinColumn) {
                 if ($joinColumn->getColumnName() !== $columnName) {

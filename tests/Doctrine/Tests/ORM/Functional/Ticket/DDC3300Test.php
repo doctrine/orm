@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
 /**
@@ -16,23 +17,19 @@ class DDC3300Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300BossInterface::class,
-            DDC3300Boss::class,
-            []
+            DDC3300Boss::class
         );
 
         $resolveTargetEntity->addResolveTargetEntity(
             DDC3300EmployeeInterface::class,
-            DDC3300Employee::class,
-            []
+            DDC3300Employee::class
         );
 
         $this->em->getEventManager()->addEventSubscriber($resolveTargetEntity);
 
-        $this->schemaTool->createSchema(
-            [
+        $this->schemaTool->createSchema([
             $this->em->getClassMetadata(DDC3300Person::class),
-            ]
-        );
+        ]);
 
         $boss     = new DDC3300Boss();
         $employee = new DDC3300Employee();

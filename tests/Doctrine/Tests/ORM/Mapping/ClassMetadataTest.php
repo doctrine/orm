@@ -54,9 +54,15 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setParentClasses(["UserParent"]);
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorColumn($discrColumn);
-        $cm->mapOneToOne(['fieldName' => 'phonenumbers', 'targetEntity' => 'CmsAddress', 'mappedBy' => 'foo']);
         $cm->markReadOnly();
         $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
+
+        $association = new Mapping\OneToOneAssociationMetadata('phonenumbers');
+
+        $association->setTargetEntity('CmsAddress');
+        $association->setMappedBy('foo');
+
+        $cm->mapOneToOne($association);
 
         self::assertEquals(1, count($cm->associationMappings));
 
@@ -83,16 +89,15 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(['UserParent'], $cm->parentClasses);
         self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
-        self::assertTrue($cm->associationMappings['phonenumbers']['type'] == ClassMetadata::ONE_TO_ONE);
-        self::assertEquals(1, count($cm->associationMappings));
-
-        $oneOneMapping = $cm->getAssociationMapping('phonenumbers');
-
-        self::assertTrue($oneOneMapping['fetch'] == Mapping\FetchMode::LAZY);
-        self::assertEquals('phonenumbers', $oneOneMapping['fieldName']);
-        self::assertEquals(CMS\CmsAddress::class, $oneOneMapping['targetEntity']);
         self::assertTrue($cm->isReadOnly);
         self::assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);
+        self::assertEquals(1, count($cm->associationMappings));
+        self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->associationMappings['phonenumbers']);
+
+        $oneOneMapping = $cm->associationMappings['phonenumbers'];
+
+        self::assertEquals(Mapping\FetchMode::LAZY, $oneOneMapping->getFetchMode());
+        self::assertEquals(CMS\CmsAddress::class, $oneOneMapping->getTargetEntity());
     }
 
     public function testFieldIsNullable()
@@ -165,29 +170,28 @@ class ClassMetadataTest extends OrmTestCase
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $cm->mapManyToMany(
-            [
-                'fieldName'    => 'author',
-                'targetEntity' => 'DoctrineGlobal_User',
-                'joinTable'    => $joinTable,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('author');
 
-        self::assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']['targetEntity']);
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity('DoctrineGlobal_User');
+
+        $cm->mapManyToMany($association);
+
+        self::assertEquals("DoctrineGlobal_User", $cm->associationMappings['author']->getTargetEntity());
     }
 
     public function testMapManyToManyJoinTableDefaults()
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapManyToMany(
-            [
-                'fieldName' => 'groups',
-                'targetEntity' => 'CmsGroup'
-            ]
-        );
 
-        $assoc = $cm->associationMappings['groups'];
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+        $association->setTargetEntity('CmsGroup');
+
+        $cm->mapManyToMany($association);
+
+        $association = $cm->associationMappings['groups'];
 
         $joinColumns = [];
 
@@ -209,26 +213,30 @@ class ClassMetadataTest extends OrmTestCase
 
         $inverseJoinColumns[] = $joinColumn;
 
-        self::assertEquals('cmsuser_cmsgroup', $assoc['joinTable']->getName());
-        self::assertEquals($joinColumns, $assoc['joinTable']->getJoinColumns());
-        self::assertEquals($inverseJoinColumns, $assoc['joinTable']->getInverseJoinColumns());
+        $joinTable = $association->getJoinTable();
+
+        self::assertEquals('cmsuser_cmsgroup', $joinTable->getName());
+        self::assertEquals($joinColumns, $joinTable->getJoinColumns());
+        self::assertEquals($inverseJoinColumns, $joinTable->getInverseJoinColumns());
     }
 
     public function testSerializeManyToManyJoinTableCascade()
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapManyToMany(
-            [
-                'fieldName' => 'groups',
-                'targetEntity' => 'CmsGroup'
-            ]
-        );
 
-        $assoc = $cm->associationMappings['groups'];
-        $assoc = unserialize(serialize($assoc));
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
-        foreach ($assoc['joinTable']->getJoinColumns() as $joinColumn) {
+        $association->setTargetEntity('CmsGroup');
+
+        $cm->mapManyToMany($association);
+
+        $association = $cm->associationMappings['groups'];
+        $association = unserialize(serialize($association));
+
+        $joinTable = $association->getJoinTable();
+
+        foreach ($joinTable->getJoinColumns() as $joinColumn) {
             self::assertEquals('CASCADE', $joinColumn->getOnDelete());
         }
     }
@@ -276,7 +284,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $metadata->initializeReflection(new RuntimeReflectionService());
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $metadata->setVersionProperty($property);
     }
@@ -287,7 +295,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->isIdentifierComposite  = true;
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
         $cm->getSingleIdentifierFieldName();
     }
 
@@ -305,12 +313,25 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $a1 = ['fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'];
-        $a2 = ['fieldName' => 'foo', 'sourceEntity' => 'stdClass', 'targetEntity' => 'stdClass', 'mappedBy' => 'foo'];
+        $association = new Mapping\OneToOneAssociationMetadata('foo');
 
-        $cm->addInheritedAssociationMapping($a1);
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-        $cm->addInheritedAssociationMapping($a2);
+        $association->setDeclaringClass($cm);
+        $association->setSourceEntity('stdClass');
+        $association->setTargetEntity('stdClass');
+        $association->setMappedBy('foo');
+
+        $cm->addInheritedAssociation($association);
+
+        $this->expectException(MappingException::class);
+
+        $association = new Mapping\OneToOneAssociationMetadata('foo');
+
+        $association->setDeclaringClass($cm);
+        $association->setSourceEntity('stdClass');
+        $association->setTargetEntity('stdClass');
+        $association->setMappedBy('foo');
+
+        $cm->addInheritedAssociation($association);
     }
 
     public function testDuplicateColumnName_ThrowsMappingException()
@@ -324,7 +345,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $metadata->addProperty($fieldMetadata);
 
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $this->expectException(MappingException::class);
 
         $fieldMetadata = new Mapping\FieldMetadata('username');
 
@@ -390,7 +411,12 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->addProperty($fieldMetadata);
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-        $metadata->mapOneToOne(['fieldName' => 'name', 'targetEntity' => 'CmsUser']);
+
+        $association = new Mapping\OneToOneAssociationMetadata('name');
+
+        $association->setTargetEntity('CmsUser');
+
+        $metadata->mapOneToOne($association);
     }
 
     public function testDuplicateFieldAndAssociationMapping2_ThrowsException()
@@ -398,7 +424,11 @@ class ClassMetadataTest extends OrmTestCase
         $metadata = new ClassMetadata(CMS\CmsUser::class);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
-        $metadata->mapOneToOne(['fieldName' => 'name', 'targetEntity' => 'CmsUser']);
+        $association = new Mapping\OneToOneAssociationMetadata('name');
+
+        $association->setTargetEntity('CmsUser');
+
+        $metadata->mapOneToOne($association);
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
 
@@ -452,16 +482,17 @@ class ClassMetadataTest extends OrmTestCase
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $cm->mapManyToMany(
-            [
-                'fieldName'    => 'user',
-                'targetEntity' => 'CmsUser',
-                'inversedBy'   => 'users',
-                'joinTable'    => $joinTable,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('user');
 
-        self::assertEquals('cmsaddress_cmsuser', $cm->associationMappings['user']['joinTable']->getName());
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity('CmsUser');
+        $association->setInversedBy('users');
+
+        $cm->mapManyToMany($association);
+
+        $association = $cm->associationMappings['user'];
+
+        self::assertEquals('cmsaddress_cmsuser', $association->getJoinTable()->getName());
     }
 
     public function testDefaultJoinColumnName()
@@ -479,16 +510,16 @@ class ClassMetadataTest extends OrmTestCase
 
         $joinColumns[] = $joinColumn;
 
-        $cm->mapOneToOne(
-            [
-                'fieldName'    => 'user',
-                'targetEntity' => 'CmsUser',
-                'joinColumns'  => $joinColumns,
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('user');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity('CmsUser');
+
+        $cm->mapOneToOne($association);
 
         $association = $cm->associationMappings['user'];
-        $joinColumn  = reset($association['joinColumns']);
+        $joinColumns = $association->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
 
         self::assertEquals('user_id', $joinColumn->getColumnName());
 
@@ -508,19 +539,19 @@ class ClassMetadataTest extends OrmTestCase
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $cm->mapManyToMany(
-            [
-            'fieldName'    => 'user',
-            'targetEntity' => 'CmsUser',
-            'inversedBy'   => 'users',
-            'joinTable'    => $joinTable,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('user');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity('CmsUser');
+        $association->setInversedBy('users');
+
+        $cm->mapManyToMany($association);
 
         $association        = $cm->associationMappings['user'];
-        $joinColumns        = $association['joinTable']->getJoinColumns();
+        $joinTable          = $association->getJoinTable();
+        $joinColumns        = $joinTable->getJoinColumns();
         $joinColumn         = reset($joinColumns);
-        $inverseJoinColumns = $association['joinTable']->getInverseJoinColumns();
+        $inverseJoinColumns = $joinTable->getInverseJoinColumns();
         $inverseJoinColumn  = reset($inverseJoinColumns);
 
         self::assertEquals('cmsaddress_id', $joinColumn->getColumnName());
@@ -535,15 +566,15 @@ class ClassMetadataTest extends OrmTestCase
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
         $metadata       = new ClassMetadata(CMS\CmsAddress::class, $namingStrategy);
 
-        $metadata->mapOneToOne(
-            [
-            'fieldName'     => 'user',
-            'targetEntity'  => 'CmsUser'
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('user');
+
+        $association->setTargetEntity('CmsUser');
+
+        $metadata->mapOneToOne($association);
 
         $association = $metadata->associationMappings['user'];
-        $joinColumn  = reset($association['joinColumns']);
+        $joinColumns = $association->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
 
         self::assertEquals('USER_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());
@@ -557,20 +588,20 @@ class ClassMetadataTest extends OrmTestCase
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
         $metadata       = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
 
-        $metadata->mapManyToMany(
-            [
-            'fieldName'    => 'user',
-            'targetEntity' => 'CmsUser'
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('user');
+
+        $association->setTargetEntity('CmsUser');
+
+        $metadata->mapManyToMany($association);
 
         $association        = $metadata->associationMappings['user'];
-        $joinColumns        = $association['joinTable']->getJoinColumns();
+        $joinTable          = $association->getJoinTable();
+        $joinColumns        = $joinTable->getJoinColumns();
         $joinColumn         = reset($joinColumns);
-        $inverseJoinColumns = $association['joinTable']->getInverseJoinColumns();
+        $inverseJoinColumns = $joinTable->getInverseJoinColumns();
         $inverseJoinColumn  = reset($inverseJoinColumns);
 
-        self::assertEquals('CMS_ADDRESS_CMS_USER', $association['joinTable']->getName());
+        self::assertEquals('CMS_ADDRESS_CMS_USER', $joinTable->getName());
 
         self::assertEquals('CMS_ADDRESS_ID', $joinColumn->getColumnName());
         self::assertEquals('ID', $joinColumn->getReferencedColumnName());
@@ -580,14 +611,15 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
 
-        $cm->mapManyToMany(
-            [
-                'fieldName'    => 'author',
-                'targetEntity' => CMS\CmsUser::class
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('author');
 
-        self::assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $cm->associationMappings['author']['joinTable']->getName());
+        $association->setTargetEntity(CMS\CmsUser::class);
+
+        $cm->mapManyToMany($association);
+
+        $association = $cm->associationMappings['author'];
+
+        self::assertEquals('DOCTRINE_GLOBAL_ARTICLE_CMS_USER', $association->getJoinTable()->getName());
     }
 
     /**
@@ -617,13 +649,18 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testJoinTableMappingDefaults()
     {
-        $cm = new ClassMetadata('DoctrineGlobal_Article');
+        $metadata = new ClassMetadata('DoctrineGlobal_Article');
+        $metadata->initializeReflection(new RuntimeReflectionService());
 
-        $cm->initializeReflection(new RuntimeReflectionService());
+        $association = new Mapping\ManyToManyAssociationMetadata('author');
 
-        $cm->mapManyToMany(['fieldName' => 'author', 'targetEntity' => CMS\CmsUser::class]);
+        $association->setTargetEntity(CMS\CmsUser::class);
 
-        self::assertEquals('doctrineglobal_article_cmsuser', $cm->associationMappings['author']['joinTable']->getName());
+        $metadata->mapManyToMany($association);
+
+        $association = $metadata->associationMappings['author'];
+
+        self::assertEquals('doctrineglobal_article_cmsuser', $association->getJoinTable()->getName());
     }
 
     /**
@@ -634,14 +671,12 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(DDC117ArticleDetails::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->mapOneToOne(
-            [
-                'fieldName'    => 'article',
-                'id'           => true,
-                'targetEntity' => DDC117Article::class,
-                'joinColumns'  => [],
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('article');
+
+        $association->setTargetEntity(DDC117Article::class);
+        $association->setPrimaryKey(true);
+
+        $cm->mapOneToOne($association);
 
         self::assertEquals(["article"], $cm->identifier);
     }
@@ -657,15 +692,13 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('The orphan removal option is not allowed on an association that');
 
-        $cm->mapOneToOne(
-            [
-                'fieldName'     => 'article',
-                'id'            => true,
-                'targetEntity'  => DDC117Article::class,
-                'orphanRemoval' => true,
-                'joinColumns'   => [],
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('article');
+
+        $association->setTargetEntity(DDC117Article::class);
+        $association->setPrimaryKey(true);
+        $association->setOrphanRemoval(true);
+
+        $cm->mapOneToOne($association);
     }
 
     /**
@@ -679,15 +712,13 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('An inverse association is not allowed to be identifier in');
 
-        $cm->mapOneToOne(
-            [
-                'fieldName'    => 'article',
-                'id'           => true,
-                'mappedBy'     => 'details', // INVERSE!
-                'targetEntity' => DDC117Article::class,
-                'joinColumns'  => [],
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('article');
+
+        $association->setTargetEntity(DDC117Article::class);
+        $association->setPrimaryKey(true);
+        $association->setMappedBy('details');
+
+        $cm->mapOneToOne($association);
     }
 
     /**
@@ -701,14 +732,12 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('Many-to-many or one-to-many associations are not allowed to be identifier in');
 
-        $cm->mapManyToMany(
-            [
-                'fieldName'    => 'article',
-                'id'           => true,
-                'targetEntity' => DDC117Article::class,
-                'joinColumns'  => [],
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('article');
+
+        $association->setTargetEntity(DDC117Article::class);
+        $association->setPrimaryKey(true);
+
+        $cm->mapManyToMany($association);
     }
 
     /**
@@ -912,7 +941,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-
         $cm->addNamedNativeQuery(
             [
                 'name'              => 'find-all',
@@ -1103,7 +1131,12 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'UnknownClass']);
+
+        $association = new Mapping\ManyToOneAssociationMetadata('address');
+
+        $association->setTargetEntity('UnknownClass');
+
+        $cm->mapManyToOne($association);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CMS\CmsUser::class . "#address'.");
@@ -1121,6 +1154,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
+
         $cm->addNamedQuery(
             [
             'query' => 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u',
@@ -1138,6 +1172,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
+
         $cm->addNamedQuery(
             [
             'query'             => 'SELECT * FROM cms_users',
@@ -1157,6 +1192,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
+
         $cm->addSqlResultSetMapping(
             [
             'name'      => 'find-all',
@@ -1185,23 +1221,21 @@ class ClassMetadataTest extends OrmTestCase
         $articleMetadata->initializeReflection(new RuntimeReflectionService());
         $routingMetadata->initializeReflection(new RuntimeReflectionService());
 
-        $addressMetadata->mapManyToMany(
-            [
-                'fieldName'    => 'user',
-                'targetEntity' => 'CmsUser'
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('user');
 
-        $articleMetadata->mapManyToMany(
-            [
-                'fieldName'    => 'author',
-                'targetEntity' => CMS\CmsUser::class
-            ]
-        );
+        $association->setTargetEntity('CmsUser');
+
+        $addressMetadata->mapManyToMany($association);
+
+        $association = new Mapping\ManyToManyAssociationMetadata('author');
+
+        $association->setTargetEntity(CMS\CmsUser::class);
+
+        $articleMetadata->mapManyToMany($association);
 
         self::assertEquals('routing_routingleg', $routingMetadata->table->getName());
-        self::assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']['joinTable']->getName());
-        self::assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']['joinTable']->getName());
+        self::assertEquals('cms_cmsaddress_cms_cmsuser', $addressMetadata->associationMappings['user']->getJoinTable()->getName());
+        self::assertEquals('doctrineglobal_article_cms_cmsuser', $articleMetadata->associationMappings['author']->getJoinTable()->getName());
     }
 
     /**
@@ -1238,30 +1272,39 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-1746
+     * @expectedException        \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage You have specified invalid cascade options for Doctrine\Tests\Models\CMS\CmsUser::$address: 'invalid'; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'
      */
     public function testInvalidCascade()
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("You have specified invalid cascade options for " . CMS\CmsUser::class . "::\$address: 'invalid'; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'");
+        $association = new Mapping\ManyToOneAssociationMetadata('address');
 
-        $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'UnknownClass', 'cascade' => ['invalid']]);
+        $association->setTargetEntity('UnknownClass');
+        $association->setCascade(['invalid']);
+
+        $cm->mapManyToOne($association);
      }
 
     /**
      * @group DDC-964
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin
+     * @expectedExceptionMessage Invalid field override named 'invalidPropertyName' for class 'Doctrine\Tests\Models\DDC964\DDC964Admin'
      */
     public function testInvalidPropertyAssociationOverrideNameException()
     {
         $cm = new ClassMetadata(DDC964Admin::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapManyToOne(['fieldName' => 'address', 'targetEntity' => 'DDC964Address']);
 
-        $cm->setAssociationOverride('invalidPropertyName', []);
+        $association = new Mapping\ManyToOneAssociationMetadata('address');
+
+        $association->setTargetEntity('DDC964Address');
+
+        $cm->mapManyToOne($association);
+
+        $cm->setAssociationOverride(new Mapping\ManyToOneAssociationMetadata('invalidPropertyName'));
     }
 
     /**
@@ -1317,12 +1360,12 @@ class ClassMetadataTest extends OrmTestCase
     {
         $cm = new ClassMetadata(CustomTypeParent::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->mapManyToMany(
-            [
-                'fieldName' => 'friendsWithMe',
-                'targetEntity' => 'CustomTypeParent'
-            ]
-        );
+
+        $association = new Mapping\ManyToManyAssociationMetadata('friendsWithMe');
+
+        $association->setTargetEntity('CustomTypeParent');
+
+        $cm->mapManyToMany($association);
 
         $association = $cm->associationMappings['friendsWithMe'];
 
@@ -1346,9 +1389,11 @@ class ClassMetadataTest extends OrmTestCase
 
         $inverseJoinColumns[] = $joinColumn;
 
-        self::assertEquals('customtypeparent_customtypeparent', $association['joinTable']->getName());
-        self::assertEquals($joinColumns, $association['joinTable']->getJoinColumns());
-        self::assertEquals($inverseJoinColumns, $association['joinTable']->getInverseJoinColumns());
+        $joinTable = $association->getJoinTable();
+
+        self::assertEquals('customtypeparent_customtypeparent', $joinTable->getName());
+        self::assertEquals($joinColumns, $joinTable->getJoinColumns());
+        self::assertEquals($inverseJoinColumns, $joinTable->getInverseJoinColumns());
     }
 
     /**

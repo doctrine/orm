@@ -56,9 +56,10 @@ class IdentityFunction extends FunctionNode
         $assocField     = $this->pathExpression->field;
         $qComp          = $sqlWalker->getQueryComponent($dqlAlias);
         $class          = $qComp['metadata'];
-        $assoc          = $class->associationMappings[$assocField];
-        $targetEntity   = $sqlWalker->getEntityManager()->getClassMetadata($assoc['targetEntity']);
-        $joinColumn     = reset($assoc['joinColumns']);
+        $association    = $class->associationMappings[$assocField];
+        $targetEntity   = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
+        $joinColumns    = $association->getJoinColumns();
+        $joinColumn     = reset($joinColumns);
 
         if ($this->fieldMapping !== null) {
             if (($property = $targetEntity->getProperty($this->fieldMapping)) === null) {
@@ -67,7 +68,7 @@ class IdentityFunction extends FunctionNode
 
             $joinColumn = null;
 
-            foreach ($assoc['joinColumns'] as $mapping) {
+            foreach ($joinColumns as $mapping) {
                 if ($mapping->getReferencedColumnName() === $property->getColumnName()) {
                     $joinColumn = $mapping;
 
@@ -81,7 +82,8 @@ class IdentityFunction extends FunctionNode
         }
 
         // The table with the relation may be a subclass, so get the table name from the association definition
-        $tableName = $sqlWalker->getEntityManager()->getClassMetadata($assoc['sourceEntity'])->getTableName();
+        $sourceClass = $sqlWalker->getEntityManager()->getClassMetadata($association->getSourceEntity());
+        $tableName   = $sourceClass->getTableName();
 
         $tableAlias       = $sqlWalker->getSQLTableAlias($tableName, $dqlAlias);
         $quotedColumnName = $platform->quoteIdentifier($joinColumn->getColumnName());

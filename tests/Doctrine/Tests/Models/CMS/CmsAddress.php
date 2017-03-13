@@ -163,13 +163,12 @@ class CmsAddress
 
         $joinColumns[] = $joinColumn;
 
-        $metadata->mapOneToOne(
-            [
-                'fieldName'     => 'user',
-                'targetEntity'  => 'CmsUser',
-                'joinColumns'   => $joinColumns,
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('user');
+
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity('CmsUser');
+
+        $metadata->mapOneToOne($association);
 
         $metadata->addNamedNativeQuery(
             [

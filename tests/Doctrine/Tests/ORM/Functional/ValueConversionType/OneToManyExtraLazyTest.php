@@ -51,55 +51,31 @@ class OneToManyExtraLazyTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone_extralazy');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany_extralazy');
-    }
-
     public function testThatExtraLazyCollectionIsCounted()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyExtraLazyEntity::class, 'abc');
 
         self::assertEquals(3, $inversed->associatedEntities->count());
     }
 
     public function testThatExtraLazyCollectionContainsAnEntity()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
-        );
-
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneExtraLazyEntity::class,
-            'def'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyExtraLazyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToOneExtraLazyEntity::class, 'def');
 
         self::assertTrue($inversed->associatedEntities->contains($owning));
     }
 
     public function testThatExtraLazyCollectionContainsAnIndexbyKey()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyExtraLazyEntity::class, 'abc');
 
         self::assertTrue($inversed->associatedEntities->containsKey('def'));
     }
 
     public function testThatASliceOfTheExtraLazyCollectionIsLoaded()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyExtraLazyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyExtraLazyEntity::class, 'abc');
 
         self::assertCount(2, $inversed->associatedEntities->slice(0, 2));
     }

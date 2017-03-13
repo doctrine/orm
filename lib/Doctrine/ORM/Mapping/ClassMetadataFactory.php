@@ -127,8 +127,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setPrimaryTable($parent->table);
             }
 
-            $this->addInheritedFields($class, $parent);
-            $this->addInheritedRelations($class, $parent);
+            $this->addInheritedProperties($class, $parent);
+            $this->addInheritedAssociations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
 
             $class->setInheritanceType($parent->inheritanceType);
@@ -275,11 +275,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         // Resolve association join column table names
-        foreach ($class->associationMappings as $mapping) {
-            if (isset($mapping['joinColumns'])) {
-                foreach ($mapping['joinColumns'] as $joinColumn) {
-                    $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
-                }
+        foreach ($class->associationMappings as $association) {
+            if (! ($association instanceof ToOneAssociationMetadata)) {
+                continue;
+            }
+
+            foreach ($association->getJoinColumns() as $joinColumn) {
+                $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
             }
         }
 
@@ -441,7 +443,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return void
      */
-    private function addInheritedFields(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedProperties(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
         foreach ($parentClass->getProperties() as $property) {
             $subClass->addInheritedProperty($property);
@@ -462,33 +464,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    private function addInheritedRelations(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedAssociations(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        $tableName = $subClass->getTableName();
+        $isAbstract = $parentClass->isMappedSuperclass;
 
-        foreach ($parentClass->associationMappings as $field => $mapping) {
-            if ($parentClass->isMappedSuperclass) {
-                if ($mapping['type'] & ClassMetadata::TO_MANY && !$mapping['isOwningSide']) {
-                    throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $field);
-                }
-
-                $mapping['sourceEntity'] = $subClass->name;
+        foreach ($parentClass->associationMappings as $association) {
+            if ($isAbstract && ! $association->isOwningSide() && $association instanceof ToManyAssociationMetadata) {
+                throw MappingException::illegalToManyAssociationOnMappedSuperclass(
+                    $parentClass->name,
+                    $association->getName()
+                );
             }
 
-            // Resolve which table owns the join columns in a to-one mapping
-            if (isset($mapping['joinColumns'])) {
-                foreach ($mapping['joinColumns'] as $joinColumn) {
-                    if ( ! $joinColumn->getTableName()) {
-                        $joinColumn->setTableName(! $parentClass->isMappedSuperclass ? $tableName : null);
-                    }
-                }
-            }
-
-            if ( ! isset($mapping['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $mapping['inherited'] = $parentClass->name;
-            }
-
-            $subClass->addInheritedAssociationMapping($mapping);
+            $subClass->addInheritedAssociation($association);
         }
     }
 

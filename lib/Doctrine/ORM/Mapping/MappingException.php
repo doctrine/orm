@@ -140,6 +140,19 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * Exception for invalid association type override.
+     *
+     * @param string $className The entity's name.
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function invalidOverrideAssociationType($className, $fieldName)
+    {
+        return new self("Invalid association override named '$fieldName' for class '$className'.");
+    }
+
+    /**
      * Exception for invalid version property override.
      *
      * @param string $className The entity's name.

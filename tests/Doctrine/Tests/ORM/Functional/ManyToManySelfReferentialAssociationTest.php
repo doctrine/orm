@@ -25,12 +25,17 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     protected function setUp()
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->firstProduct = new ECommerceProduct();
         $this->secondProduct = new ECommerceProduct();
         $this->firstRelated = new ECommerceProduct();
+
         $this->firstRelated->setName("Business");
+
         $this->secondRelated = new ECommerceProduct();
+
         $this->secondRelated->setName("Home");
     }
 
@@ -38,34 +43,35 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
+
         $this->em->persist($this->firstProduct);
         $this->em->flush();
 
-        self::assertForeignKeysContain($this->firstProduct->getId(),
-                                   $this->firstRelated->getId());
-        self::assertForeignKeysContain($this->firstProduct->getId(),
-                                   $this->secondRelated->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->firstRelated->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
     public function testRemovesAManyToManyAssociation()
     {
         $this->firstProduct->addRelated($this->firstRelated);
         $this->firstProduct->addRelated($this->secondRelated);
+
         $this->em->persist($this->firstProduct);
+
         $this->firstProduct->removeRelated($this->firstRelated);
 
         $this->em->flush();
 
-        self::assertForeignKeysNotContain($this->firstProduct->getId(),
-                                   $this->firstRelated->getId());
-        self::assertForeignKeysContain($this->firstProduct->getId(),
-                                   $this->secondRelated->getId());
+        self::assertForeignKeysNotContain($this->firstProduct->getId(), $this->firstRelated->getId());
+        self::assertForeignKeysContain($this->firstProduct->getId(), $this->secondRelated->getId());
     }
 
     public function testEagerLoadsOwningSide()
     {
         $this->createLoadingFixture();
+
         $products = $this->findProducts();
+
         self::assertLoadingOfOwningSide($products);
     }
 
@@ -74,10 +80,11 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->createLoadingFixture();
 
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['related']['fetch'] = FetchMode::LAZY;
+        $metadata->associationMappings['related']->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();
+
         self::assertLoadingOfOwningSide($products);
     }
 

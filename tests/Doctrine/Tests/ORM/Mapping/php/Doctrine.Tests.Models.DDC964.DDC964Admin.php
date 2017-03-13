@@ -12,7 +12,11 @@ $joinColumn->setOnDelete('');
 
 $joinColumns[] = $joinColumn;
 
-$metadata->setAssociationOverride('address', ['joinColumns' => $joinColumns]);
+$association = new Mapping\ManyToOneAssociationMetadata('address');
+
+$association->setJoinColumns($joinColumns);
+
+$metadata->setAssociationOverride($association);
 
 $joinTable = new Mapping\JoinTableMetadata();
 $joinTable->setName('ddc964_users_admingroups');
@@ -27,4 +31,8 @@ $joinColumn->setColumnName('admingroup_id');
 
 $joinTable->addInverseJoinColumn($joinColumn);
 
-$metadata->setAssociationOverride('groups', ['joinTable' => $joinTable]);
+$association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+$association->setJoinTable($joinTable);
+
+$metadata->setAssociationOverride($association);

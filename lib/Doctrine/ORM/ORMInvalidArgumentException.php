@@ -18,7 +18,9 @@
  */
 
 namespace Doctrine\ORM;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork
@@ -82,8 +84,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array
- *                                                              of [array $associationMapping, object $entity] pairs
+     * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array of [$associationMetadata, $entity] pairs
      *
      * @return ORMInvalidArgumentException
      */
@@ -91,9 +92,9 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     {
         $errorMessages = array_map(
             function (array $newEntityWithAssociation) : string {
-                [$associationMapping, $entity] = $newEntityWithAssociation;
+                [$associationMetadata, $entity] = $newEntityWithAssociation;
 
-                return self::newEntityFoundThroughRelationshipMessage($associationMapping, $entity);
+                return self::newEntityFoundThroughRelationshipMessage($associationMetadata, $entity);
             },
             $newEntitiesWithAssociations
         );
@@ -110,27 +111,49 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array  $associationMapping
-     * @param object $entry
+     * @param AssociationMetadata $association
+     * @param object              $entry
      *
      * @return ORMInvalidArgumentException
      */
-    static public function newEntityFoundThroughRelationship(array $associationMapping, $entry)
+    static public function newEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
-        return new self(self::newEntityFoundThroughRelationshipMessage($associationMapping, $entry));
+        $message = "A new entity was found through the relationship '%s#%s' that was not configured to cascade "
+            . "persist operations for entity: %s. To solve this issue: Either explicitly call EntityManager#persist() "
+            . "on this unknown entity or configure cascade persist this association in the mapping for example "
+            . "@ManyToOne(..,cascade={\"persist\"}).%s";
+
+        $messageAppend = method_exists($entry, '__toString')
+            ? ""
+            : " If you cannot find out which entity causes the problem implement '%s#__toString()' to get a clue."
+        ;
+
+        return new self(sprintf(
+            $message,
+            $association->getSourceEntity(),
+            $association->getName(),
+            self::objToStr($entry),
+            sprintf($messageAppend, $association->getTargetEntity())
+        ));
     }
 
     /**
-     * @param array  $assoc
-     * @param object $entry
+     * @param AssociationMetadata $association
+     * @param object              $entry
      *
      * @return ORMInvalidArgumentException
      */
-    static public function detachedEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function detachedEntityFoundThroughRelationship(AssociationMetadata $association, $entry)
     {
-        return new self("A detached entity of type " . $assoc['targetEntity'] . " (" . self::objToStr($entry) . ") "
-            . " was found through the relationship '" . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' "
-            . "during cascading a persist operation.");
+        $messsage = "A detached entity of type %s (%s) was found through the relationship '%s#%s' during cascading a persist operation.";
+
+        return new self(sprintf(
+            $messsage,
+            $association->getTargetEntity(),
+            self::objToStr($entry),
+            $association->getSourceEntity(),
+            $association->getName()
+        ));
     }
 
     /**
@@ -214,15 +237,15 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return self
      */
-    public static function invalidAssociation(ClassMetadata $targetClass, $assoc, $actualValue)
+    public static function invalidAssociation(ClassMetadata $targetClass, AssociationMetadata $association, $actualValue)
     {
         $expectedType = $targetClass->getName();
 
         return new self(sprintf(
             'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',
             $expectedType,
-            $assoc['sourceEntity'],
-            $assoc['fieldName'],
+            $association->getSourceEntity(),
+            $association->getName(),
             is_object($actualValue) ? get_class($actualValue) : gettype($actualValue)
         ));
     }
