@@ -25,11 +25,17 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     protected function setUp()
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->firstProduct = new ECommerceProduct();
+
         $this->firstProduct->setName('Doctrine 1.x Manual');
+
         $this->secondProduct = new ECommerceProduct();
+
         $this->secondProduct->setName('Doctrine 2.x Manual');
+
         $this->firstCart = new ECommerceCart();
         $this->secondCart = new ECommerceCart();
     }
@@ -38,6 +44,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
+
         $this->em->persist($this->firstCart);
         $this->em->flush();
 
@@ -79,7 +86,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['products']['fetch'] = FetchMode::LAZY;
+        $metadata->associationMappings['products']->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();

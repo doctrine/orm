@@ -113,28 +113,25 @@ $joinColumn->setOnDelete('CASCADE');
 
 $joinColumns[] = $joinColumn;
 
-$metadata->mapOneToOne(
-    [
-        'fieldName'     => 'address',
-        'targetEntity'  => Group::class,
-        'cascade'       => ['remove'],
-        'mappedBy'      => NULL,
-        'inversedBy'    => 'user',
-        'joinColumns'   => $joinColumns,
-        'orphanRemoval' => false,
-    ]
-);
+$association = new Mapping\OneToOneAssociationMetadata('address');
 
-$metadata->mapOneToMany(
-    [
-        'fieldName'     => 'phonenumbers',
-        'targetEntity'  => Phonenumber::class,
-        'cascade'       => ['persist'],
-        'mappedBy'      => 'user',
-        'orphanRemoval' => true,
-        'orderBy'       => ['number' => 'ASC'],
-    ]
-);
+$association->setJoinColumns($joinColumns);
+$association->setTargetEntity(Address::class);
+$association->setInversedBy('user');
+$association->setCascade(['remove']);
+$association->setOrphanRemoval(false);
+
+$metadata->mapOneToOne($association);
+
+$association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
+
+$association->setTargetEntity(Phonenumber::class);
+$association->setMappedBy('user');
+$association->setCascade(['persist']);
+$association->setOrphanRemoval(true);
+$association->setOrderBy(['number' => 'ASC']);
+
+$metadata->mapOneToMany($association);
 
 $joinTable = new Mapping\JoinTableMetadata();
 $joinTable->setName('cms_users_groups');
@@ -155,13 +152,10 @@ $joinColumn->setColumnDefinition("INT NULL");
 
 $joinTable->addInverseJoinColumn($joinColumn);
 
-$metadata->mapManyToMany(
-    [
-        'fieldName'    => 'groups',
-        'targetEntity' => Group::class,
-        'cascade'      => ['remove', 'persist', 'refresh', 'merge', 'detach'],
-        'mappedBy'     => null,
-        'joinTable'    => $joinTable,
-        'orderBy'      => null,
-    ]
-);
+$association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+$association->setJoinTable($joinTable);
+$association->setTargetEntity(Group::class);
+$association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
+
+$metadata->mapManyToMany($association);

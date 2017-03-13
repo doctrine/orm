@@ -20,6 +20,7 @@
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,18 +44,26 @@ interface CacheFactory
      *
      * @return \Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister
      */
-    public function buildCachedEntityPersister(EntityManagerInterface $em, EntityPersister $persister, ClassMetadata $metadata);
+    public function buildCachedEntityPersister(
+        EntityManagerInterface $em,
+        EntityPersister $persister,
+        ClassMetadata $metadata
+    );
 
     /**
      * Build a collection persister for the given relation mapping.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface                    $em        The entity manager.
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister The collection persister that will be cached.
-     * @param array                                                   $mapping   The association mapping.
+     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
+     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
+     * @param \Doctrine\ORM\Mapping\AssociationMetadata               $association The association mapping.
      *
      * @return \Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister
      */
-    public function buildCachedCollectionPersister(EntityManagerInterface $em, CollectionPersister $persister, array $mapping);
+    public function buildCachedCollectionPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        AssociationMetadata $association
+    );
 
     /**
      * Build a query cache based on the given region name
@@ -79,12 +88,12 @@ interface CacheFactory
     /**
      * Build a collection hydrator
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em      The Entity manager.
-     * @param array                                $mapping The association mapping.
+     * @param \Doctrine\ORM\EntityManagerInterface      $em          The Entity manager.
+     * @param \Doctrine\ORM\Mapping\AssociationMetadata $association The association mapping.
      *
      * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hydrator.
      */
-    public function buildCollectionHydrator(EntityManagerInterface $em, array $mapping);
+    public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMetadata $association);
 
     /**
      * Build a cache region

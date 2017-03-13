@@ -35,6 +35,9 @@ class AssociationMetadata implements Property
     /** @var string */
     private $name;
 
+    /** @var boolean */
+    protected $primaryKey = false;
+
     /** @var string */
     private $fetchMode = FetchMode::LAZY;
 
@@ -61,6 +64,16 @@ class AssociationMetadata implements Property
     
     /** @var null|CacheMetadata */
     private $cache = null;
+
+    /**
+     * AssociationMetadata constructor.
+     *
+     * @param string $name
+     */
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
 
     /**
      * {@inheritdoc}
@@ -95,6 +108,22 @@ class AssociationMetadata implements Property
     }
 
     /**
+     * @param bool $isPrimaryKey
+     */
+    public function setPrimaryKey(bool $isPrimaryKey)
+    {
+        $this->primaryKey = $isPrimaryKey;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
+    /**
      * @return string
      */
     public function getTargetEntity()
@@ -105,7 +134,7 @@ class AssociationMetadata implements Property
     /**
      * @param string $targetEntity
      */
-    public function setTargetEntity($targetEntity)
+    public function setTargetEntity(string $targetEntity)
     {
         $this->targetEntity = $targetEntity;
     }
@@ -121,7 +150,7 @@ class AssociationMetadata implements Property
     /**
      * @param string $sourceEntity
      */
-    public function setSourceEntity($sourceEntity)
+    public function setSourceEntity(string $sourceEntity)
     {
         $this->sourceEntity = $sourceEntity;
     }
@@ -201,7 +230,7 @@ class AssociationMetadata implements Property
     /**
      * @param null|string $inversedBy
      */
-    public function setInversedBy($inversedBy)
+    public function setInversedBy(string $inversedBy = null)
     {
         $this->inversedBy = $inversedBy;
     }
@@ -276,5 +305,12 @@ class AssociationMetadata implements Property
     public function wakeupReflection(ReflectionService $reflectionService)
     {
         $this->reflection = $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name);
+    }
+
+    public function __clone()
+    {
+        if ($this->cache) {
+            $this->cache = clone $this->cache;
+        }
     }
 }

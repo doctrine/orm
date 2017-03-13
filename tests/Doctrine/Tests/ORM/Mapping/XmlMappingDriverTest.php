@@ -65,8 +65,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         self::assertEquals(['language', 'article'], $class->identifier);
         self::assertArrayHasKey('article', $class->associationMappings);
 
-        self::assertArrayHasKey('id', $class->associationMappings['article']);
-        self::assertTrue($class->associationMappings['article']['id']);
+        $association = $class->associationMappings['article'];
+        
+        self::assertTrue($association->isPrimaryKey());
     }
 
     /**

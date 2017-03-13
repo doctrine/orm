@@ -18,9 +18,10 @@ class DDC3579Admin extends DDC3579User
 {
     public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
-        $metadata->setAssociationOverride('groups', [
-            'inversedBy' => 'admins'
-        ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+        $association->setInversedBy('admins');
+
+        $metadata->setAssociationOverride($association);
     }
 }

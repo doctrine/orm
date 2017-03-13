@@ -69,4 +69,15 @@ final class JoinTableMetadata extends TableMetadata
     {
         $this->inverseJoinColumns[] = $joinColumn;
     }
+
+    public function __clone()
+    {
+        foreach ($this->joinColumns as $index => $joinColumn) {
+            $this->joinColumns[$index] = clone $joinColumn;
+        }
+
+        foreach ($this->inverseJoinColumns as $index => $inverseJoinColumn) {
+            $this->inverseJoinColumns[$index] = clone $inverseJoinColumn;
+        }
+    }
 }

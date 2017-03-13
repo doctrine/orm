@@ -358,11 +358,14 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testOwningOneToOneAssociation($class)
     {
-        self::assertTrue(isset($class->associationMappings['address']));
-        self::assertTrue($class->associationMappings['address']['isOwningSide']);
-        self::assertEquals('user', $class->associationMappings['address']['inversedBy']);
+        self::assertArrayHasKey('address', $class->associationMappings);
+
+        $association = $class->associationMappings['address'];
+
+        self::assertTrue($association->isOwningSide());
+        self::assertEquals('user', $association->getInversedBy());
         // Check cascading
-        self::assertEquals(['remove'], $class->associationMappings['address']['cascade']);
+        self::assertEquals(['remove'], $association->getCascade());
 
         return $class;
     }
@@ -373,14 +376,18 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInverseOneToManyAssociation($class)
     {
-        self::assertTrue(isset($class->associationMappings['phonenumbers']));
-        self::assertFalse($class->associationMappings['phonenumbers']['isOwningSide']);
-        self::assertTrue($class->associationMappings['phonenumbers']['orphanRemoval']);
+        self::assertArrayHasKey('phonenumbers', $class->associationMappings);
+
+        $association = $class->associationMappings['phonenumbers'];
+
+        self::assertFalse($association->isOwningSide());
+        self::assertTrue($association->isOrphanRemoval());
+
         // Check cascading
-        self::assertEquals(['persist', 'remove'], $class->associationMappings['phonenumbers']['cascade']);
+        self::assertEquals(['persist', 'remove'], $association->getCascade());
 
         // Test Order By
-        self::assertEquals(['number' => 'ASC'], $class->associationMappings['phonenumbers']['orderBy']);
+        self::assertEquals(['number' => 'ASC'], $association->getOrderBy());
 
         return $class;
     }
@@ -391,12 +398,17 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testManyToManyAssociationWithCascadeAll($class)
     {
-        self::assertTrue(isset($class->associationMappings['groups']));
-        self::assertTrue($class->associationMappings['groups']['isOwningSide']);
-        // Make sure that cascade-all works as expected
-        self::assertEquals(['remove', 'persist', 'refresh', 'merge', 'detach'], $class->associationMappings['groups']['cascade']);
+        self::assertArrayHasKey('groups', $class->associationMappings);
 
-        self::assertFalse(isset($class->associationMappings['groups']['orderBy']));
+        $association = $class->associationMappings['groups'];
+
+        self::assertTrue($association->isOwningSide());
+
+        // Make sure that cascade-all works as expected
+        self::assertEquals(['remove', 'persist', 'refresh', 'merge', 'detach'], $association->getCascade());
+
+        // Test Order By
+        self::assertEquals([], $association->getOrderBy());
 
         return $class;
     }
@@ -434,7 +446,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         // Non-Nullability of Join Column
         $association = $class->associationMappings['groups'];
-        $joinColumns = $association['joinTable']->getJoinColumns();
+        $joinTable   = $association->getJoinTable();
+        $joinColumns = $joinTable->getJoinColumns();
         $joinColumn  = reset($joinColumns);
 
         self::assertFalse($joinColumn->isNullable());
@@ -453,7 +466,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $property           = $class->getProperty('email');
         $association        = $class->associationMappings['groups'];
-        $inverseJoinColumns = $association['joinTable']->getInverseJoinColumns();
+        $joinTable          = $association->getJoinTable();
+        $inverseJoinColumns = $joinTable->getInverseJoinColumns();
         $inverseJoinColumn  = reset($inverseJoinColumns);
 
         self::assertEquals("CHAR(32) NOT NULL", $property->getColumnDefinition());
@@ -469,7 +483,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     public function testJoinColumnOnDelete($class)
     {
         $association = $class->associationMappings['address'];
-        $joinColumn  = reset($association['joinColumns']);
+        $joinColumns = $association->getJoinColumns();
+        $joinColumn  = reset($joinColumns);
 
         self::assertEquals('CASCADE', $joinColumn->getOnDelete());
 
@@ -773,30 +788,32 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminGroups = $adminMetadata->associationMappings['groups'];
 
         // assert not override attributes
-        self::assertEquals($guestGroups['fieldName'], $adminGroups['fieldName']);
-        self::assertEquals($guestGroups['type'], $adminGroups['type']);
-        self::assertEquals($guestGroups['mappedBy'], $adminGroups['mappedBy']);
-        self::assertEquals($guestGroups['inversedBy'], $adminGroups['inversedBy']);
-        self::assertEquals($guestGroups['isOwningSide'], $adminGroups['isOwningSide']);
-        self::assertEquals($guestGroups['fetch'], $adminGroups['fetch']);
-        self::assertEquals($guestGroups['cascade'], $adminGroups['cascade']);
+        self::assertEquals($guestGroups->getName(), $adminGroups->getName());
+        self::assertEquals(get_class($guestGroups), get_class($adminGroups));
+        self::assertEquals($guestGroups->getMappedBy(), $adminGroups->getMappedBy());
+        self::assertEquals($guestGroups->getInversedBy(), $adminGroups->getInversedBy());
+        self::assertEquals($guestGroups->isOwningSide(), $adminGroups->isOwningSide());
+        self::assertEquals($guestGroups->getFetchMode(), $adminGroups->getFetchMode());
+        self::assertEquals($guestGroups->getCascade(), $adminGroups->getCascade());
 
          // assert not override attributes
-        $guestGroupsJoinColumns        = $guestGroups['joinTable']->getJoinColumns();
+        $guestGroupsJoinTable          = $guestGroups->getJoinTable();
+        $guestGroupsJoinColumns        = $guestGroupsJoinTable->getJoinColumns();
         $guestGroupsJoinColumn         = reset($guestGroupsJoinColumns);
-        $guestGroupsInverseJoinColumns = $guestGroups['joinTable']->getInverseJoinColumns();
+        $guestGroupsInverseJoinColumns = $guestGroupsJoinTable->getInverseJoinColumns();
         $guestGroupsInverseJoinColumn  = reset($guestGroupsInverseJoinColumns);
 
-        self::assertEquals('ddc964_users_groups', $guestGroups['joinTable']->getName());
+        self::assertEquals('ddc964_users_groups', $guestGroupsJoinTable->getName());
         self::assertEquals('user_id', $guestGroupsJoinColumn->getColumnName());
         self::assertEquals('group_id', $guestGroupsInverseJoinColumn->getColumnName());
 
-        $adminGroupsJoinColumns        = $adminGroups['joinTable']->getJoinColumns();
+        $adminGroupsJoinTable          = $adminGroups->getJoinTable();
+        $adminGroupsJoinColumns        = $adminGroupsJoinTable->getJoinColumns();
         $adminGroupsJoinColumn         = reset($adminGroupsJoinColumns);
-        $adminGroupsInverseJoinColumns = $adminGroups['joinTable']->getInverseJoinColumns();
+        $adminGroupsInverseJoinColumns = $adminGroupsJoinTable->getInverseJoinColumns();
         $adminGroupsInverseJoinColumn  = reset($adminGroupsInverseJoinColumns);
 
-        self::assertEquals('ddc964_users_admingroups', $adminGroups['joinTable']->getName());
+        self::assertEquals('ddc964_users_admingroups', $adminGroupsJoinTable->getName());
         self::assertEquals('adminuser_id', $adminGroupsJoinColumn->getColumnName());
         self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
 
@@ -808,20 +825,22 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminAddress = $adminMetadata->associationMappings['address'];
 
         // assert not override attributes
-        self::assertEquals($guestAddress['fieldName'], $adminAddress['fieldName']);
-        self::assertEquals($guestAddress['type'], $adminAddress['type']);
-        self::assertEquals($guestAddress['mappedBy'], $adminAddress['mappedBy']);
-        self::assertEquals($guestAddress['inversedBy'], $adminAddress['inversedBy']);
-        self::assertEquals($guestAddress['isOwningSide'], $adminAddress['isOwningSide']);
-        self::assertEquals($guestAddress['fetch'], $adminAddress['fetch']);
-        self::assertEquals($guestAddress['cascade'], $adminAddress['cascade']);
+        self::assertEquals($guestAddress->getName(), $adminAddress->getName());
+        self::assertEquals(get_class($guestAddress), get_class($adminAddress));
+        self::assertEquals($guestAddress->getMappedBy(), $adminAddress->getMappedBy());
+        self::assertEquals($guestAddress->getInversedBy(), $adminAddress->getInversedBy());
+        self::assertEquals($guestAddress->isOwningSide(), $adminAddress->isOwningSide());
+        self::assertEquals($guestAddress->getFetchMode(), $adminAddress->getFetchMode());
+        self::assertEquals($guestAddress->getCascade(), $adminAddress->getCascade());
 
         // assert override
-        $guestAddressJoinColumn = reset($guestAddress['joinColumns']);
+        $guestAddressJoinColumns = $guestAddress->getJoinColumns();
+        $guestAddressJoinColumn  = reset($guestAddressJoinColumns);
 
         self::assertEquals('address_id', $guestAddressJoinColumn->getColumnName());
 
-        $adminAddressJoinColumn = reset($adminAddress['joinColumns']);
+        $adminAddressJoinColumns = $adminAddress->getJoinColumns();
+        $adminAddressJoinColumn  = reset($adminAddressJoinColumns);
 
         self::assertEquals('adminaddress_id', $adminAddressJoinColumn->getColumnName());
     }
@@ -840,7 +859,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminGroups = $adminMetadata->associationMappings['groups'];
 
         // assert override
-        self::assertEquals('admins', $adminGroups['inversedBy']);
+        self::assertEquals('admins', $adminGroups->getInversedBy());
     }
 
     /**
@@ -1048,16 +1067,20 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('doctrine_tests_models_cache_city', $class->cache->getRegion());
 
         self::assertArrayHasKey('state', $class->associationMappings);
-        self::assertArrayHasKey('cache', $class->associationMappings['state']);
-        self::assertNotNull($class->associationMappings['state']['cache']);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['state']['cache']->getUsage());
-        self::assertEquals('doctrine_tests_models_cache_city__state', $class->associationMappings['state']['cache']->getRegion());
+
+        $stateAssociation = $class->associationMappings['state'];
+
+        self::assertNotNull($stateAssociation->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $stateAssociation->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__state', $stateAssociation->getCache()->getRegion());
 
         self::assertArrayHasKey('attractions', $class->associationMappings);
-        self::assertArrayHasKey('cache', $class->associationMappings['attractions']);
-        self::assertNotNull($class->associationMappings['attractions']['cache']);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->associationMappings['attractions']['cache']->getUsage());
-        self::assertEquals('doctrine_tests_models_cache_city__attractions', $class->associationMappings['attractions']['cache']->getRegion());
+
+        $attractionsAssociation = $class->associationMappings['attractions'];
+
+        self::assertNotNull($attractionsAssociation->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $attractionsAssociation->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city__attractions', $attractionsAssociation->getCache()->getRegion());
     }
 
     /**
@@ -1332,27 +1355,25 @@ class User
 
         $joinColumns[] = $joinColumn;
 
-        $metadata->mapOneToOne(
-            [
-                'fieldName'     => 'address',
-                'targetEntity'  => Address::class,
-                'cascade'       => ['remove'],
-                'inversedBy'    => 'user',
-                'joinColumns'   => $joinColumns,
-                'orphanRemoval' => false,
-            ]
-        );
+        $association = new Mapping\OneToOneAssociationMetadata('address');
 
-        $metadata->mapOneToMany(
-            [
-                'fieldName'     => 'phonenumbers',
-                'targetEntity'  => Phonenumber::class,
-                'cascade'       => ['persist'],
-                'mappedBy'      => 'user',
-                'orphanRemoval' => true,
-                'orderBy'       => ['number' => 'ASC'],
-            ]
-        );
+        $association->setJoinColumns($joinColumns);
+        $association->setTargetEntity(Address::class);
+        $association->setInversedBy('user');
+        $association->setCascade(['remove']);
+        $association->setOrphanRemoval(false);
+
+        $metadata->mapOneToOne($association);
+
+        $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
+
+        $association->setTargetEntity(Phonenumber::class);
+        $association->setMappedBy('user');
+        $association->setCascade(['persist']);
+        $association->setOrderBy(['number' => 'ASC']);
+        $association->setOrphanRemoval(true);
+
+        $metadata->mapOneToMany($association);
 
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('cms_users_groups');
@@ -1374,15 +1395,13 @@ class User
 
         $joinTable->addInverseJoinColumn($joinColumn);
 
-        $metadata->mapManyToMany(
-            [
-                'fieldName'    => 'groups',
-                'targetEntity' => Group::class,
-                'cascade'      => ['remove', 'persist', 'refresh', 'merge', 'detach'],
-                'joinTable'    => $joinTable,
-                'orderBy'      => NULL,
-            ]
-        );
+        $association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+        $association->setJoinTable($joinTable);
+        $association->setTargetEntity(Group::class);
+        $association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
+
+        $metadata->mapManyToMany($association);
     }
 }
 

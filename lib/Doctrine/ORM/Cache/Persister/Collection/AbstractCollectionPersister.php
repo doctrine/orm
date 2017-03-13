@@ -24,6 +24,8 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -63,7 +65,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $targetEntity;
 
     /**
-     * @var array
+     * @var \Doctrine\ORM\Mapping\AssociationMetadata
      */
     protected $association;
 
@@ -93,12 +95,17 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $cacheLogger;
 
     /**
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
-     * @param \Doctrine\ORM\Cache\Region                              $region      The collection region.
-     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
-     * @param array                                                   $association The association mapping.
+     * @param CollectionPersister    $persister   The collection persister that will be cached.
+     * @param Region                 $region      The collection region.
+     * @param EntityManagerInterface $em          The entity manager.
+     * @param AssociationMetadata    $association The association mapping.
      */
-    public function __construct(CollectionPersister $persister, Region $region, EntityManagerInterface $em, array $association)
+    public function __construct(
+        CollectionPersister $persister,
+        Region $region,
+        EntityManagerInterface $em,
+        AssociationMetadata $association
+    )
     {
         $configuration  = $em->getConfiguration();
         $cacheConfig    = $configuration->getSecondLevelCacheConfiguration();
@@ -112,8 +119,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
         $this->hydrator         = $cacheFactory->buildCollectionHydrator($em, $association);
-        $this->sourceEntity     = $em->getClassMetadata($association['sourceEntity']);
-        $this->targetEntity     = $em->getClassMetadata($association['targetEntity']);
+        $this->sourceEntity     = $em->getClassMetadata($association->getSourceEntity());
+        $this->targetEntity     = $em->getClassMetadata($association->getTargetEntity());
     }
 
     /**
@@ -165,13 +172,13 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
         /* @var $targetPersister CachedEntityPersister */
-        $associationMapping = $this->sourceEntity->associationMappings[$key->association];
-        $targetPersister    = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
-        $targetRegion       = $targetPersister->getCacheRegion();
-        $targetHydrator     = $targetPersister->getEntityHydrator();
+        $association     = $this->sourceEntity->associationMappings[$key->association];
+        $targetPersister = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
+        $targetRegion    = $targetPersister->getCacheRegion();
+        $targetHydrator  = $targetPersister->getEntityHydrator();
 
         // Only preserve ordering if association configured it
-        if ( ! (isset($associationMapping['indexBy']) && $associationMapping['indexBy'])) {
+        if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
             // Elements may be an array or a Collection
             $elements = array_values(is_array($elements) ? $elements : $elements->getValues());
         }
@@ -224,9 +231,10 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function count(PersistentCollection $collection)
     {
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
-        $entry   = $this->region->get($key);
+        $fieldName = $this->association->getName();
+        $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key       = new CollectionCacheKey($this->sourceEntity->rootEntityName, $fieldName, $ownerId);
+        $entry     = $this->region->get($key);
 
         if ($entry !== null) {
             return count($entry->identifiers);
@@ -282,7 +290,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         $key = new CollectionCacheKey(
             $this->sourceEntity->rootEntityName,
-            $this->association['fieldName'],
+            $this->association->getName(),
             $this->uow->getEntityIdentifier($collection->getOwner())
         );
 

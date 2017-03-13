@@ -559,6 +559,14 @@ class ClassMetadata implements ClassMetadataInterface
         if ($this->cache) {
             $this->cache = clone $this->cache;
         }
+
+        foreach ($this->properties as $name => $property) {
+            $this->properties[$name] = clone $property;
+        }
+
+        foreach ($this->associationMappings as $name => $association) {
+            $this->associationMappings[$name] = clone $association;
+        }
     }
 
     /**
@@ -734,8 +742,10 @@ class ClassMetadata implements ClassMetadataInterface
             $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
 
-        foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($mapping['declaringClass']->name, $field);
+        foreach ($this->associationMappings as $field => $property) {
+            $property->wakeupReflection($reflService);
+
+            $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
     }
 
@@ -792,9 +802,11 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function validateAssociations()
     {
-        foreach ($this->associationMappings as $mapping) {
-            if ( ! class_exists($mapping['targetEntity'], true)) {
-                throw MappingException::invalidTargetEntityClass($mapping['targetEntity'], $this->name, $mapping['fieldName']);
+        foreach ($this->associationMappings as $fieldName => $property) {
+            $targetEntity = $property->getTargetEntity();
+
+            if ( ! class_exists($targetEntity, true)) {
+                throw MappingException::invalidTargetEntityClass($targetEntity, $this->name, $fieldName);
             }
         }
     }
@@ -841,20 +853,20 @@ class ClassMetadata implements ClassMetadataInterface
      * @param string $fieldName
      * @param array  $cache
      * 
-     * @todo Remove me once Association is OOed
+     * @todo guilhermeblanco Remove me once Association is OOed
      *
      * @return void
      */
     public function enableAssociationCache($fieldName, array $cache)
     {
-        $this->associationMappings[$fieldName]['cache'] = $this->getAssociationCacheDefaults($fieldName, $cache);
+        $this->associationMappings[$fieldName]->setCache($this->getAssociationCacheDefaults($fieldName, $cache));
     }
 
     /**
      * @param string $fieldName
      * @param array  $cache
      * 
-     * @todo Remove me once Association is OOed
+     * @todo guilhermeblanco Remove me once Association is OOed
      *
      * @return array
      */
@@ -1056,57 +1068,54 @@ class ClassMetadata implements ClassMetadataInterface
      * Validates & completes the basic mapping information that is common to all
      * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
      *
-     * @param array $mapping The mapping.
+     * @param AssociationMetadata $property
      *
      * @return array The updated mapping.
      *
      * @throws MappingException If something is wrong with the mapping.
      */
-    protected function validateAndCompleteAssociationMapping(array $mapping)
+    protected function validateAndCompleteAssociationMapping(AssociationMetadata $property)
     {
-        $mapping['declaringClass'] = $this;
+        // Mandatory attributes for both sides: fieldName, targetEntity
+        $fieldName    = $property->getName();
+        $targetEntity = $property->getTargetEntity();
 
-        if ( ! isset($mapping['mappedBy'])) {
-            $mapping['mappedBy'] = null;
+        if (! $fieldName) {
+            throw MappingException::missingFieldName($this->name);
         }
 
-        if ( ! isset($mapping['inversedBy'])) {
-            $mapping['inversedBy'] = null;
+        if (! $targetEntity) {
+            throw MappingException::missingTargetEntity($fieldName);
         }
 
-        $mapping['isOwningSide'] = true; // assume owning side until we hit mappedBy
+        $targetEntity = ltrim($this->fullyQualifiedClassName($targetEntity), '\\');
 
-        if (empty($mapping['indexBy'])) {
-            unset($mapping['indexBy']);
-        }
+        $property->setDeclaringClass($this);
+        $property->setSourceEntity($this->name);
+        $property->setOwningSide($property->getMappedBy() === null);
+        $property->setTargetEntity($targetEntity);
 
-        // If targetEntity is unqualified, assume it is in the same namespace as
-        // the sourceEntity.
-        $mapping['sourceEntity'] = $this->name;
-
-        if (isset($mapping['targetEntity'])) {
-            $mapping['targetEntity'] = $this->fullyQualifiedClassName($mapping['targetEntity']);
-            $mapping['targetEntity'] = ltrim($mapping['targetEntity'], '\\');
-        }
-
-        if (($mapping['type'] & self::MANY_TO_ONE) > 0 && isset($mapping['orphanRemoval']) && $mapping['orphanRemoval']) {
-            throw MappingException::illegalOrphanRemoval($this->name, $mapping['fieldName']);
+        // Mandatory and optional attributes for either side
+        if ($property->getMappedBy()) {
+            $property->setOwningSide(false);
         }
 
         // Complete id mapping
-        if (isset($mapping['id']) && true === $mapping['id']) {
-            if (isset($mapping['orphanRemoval']) && $mapping['orphanRemoval']) {
-                throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->name, $mapping['fieldName']);
+        if ($property->isPrimaryKey()) {
+            if ($property->isOrphanRemoval()) {
+                throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->name, $fieldName);
             }
 
-            if ( ! in_array($mapping['fieldName'], $this->identifier)) {
-                if (isset($mapping['joinColumns']) && count($mapping['joinColumns']) >= 2) {
+            if ( ! in_array($property->getName(), $this->identifier)) {
+                if ($property instanceof ToOneAssociationMetadata && count($property->getJoinColumns()) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
-                        $mapping['targetEntity'], $this->name, $mapping['fieldName']
+                        $property->getTargetEntity(),
+                        $this->name,
+                        $fieldName
                     );
                 }
 
-                $this->identifier[] = $mapping['fieldName'];
+                $this->identifier[] = $property->getName();
             }
 
             // Check for composite key
@@ -1114,86 +1123,62 @@ class ClassMetadata implements ClassMetadataInterface
                 $this->isIdentifierComposite = true;
             }
 
-            if ($this->cache && !isset($mapping['cache'])) {
-                throw CacheException::nonCacheableEntityAssociation($this->name, $mapping['fieldName']);
+            if ($this->cache && !$property->getCache()) {
+                throw CacheException::nonCacheableEntityAssociation($this->name, $fieldName);
             }
-        }
 
-        // Mandatory attributes for both sides
-        // Mandatory: fieldName, targetEntity
-        if ( ! isset($mapping['fieldName']) || ! $mapping['fieldName']) {
-            throw MappingException::missingFieldName($this->name);
-        }
-
-        if ( ! isset($mapping['targetEntity'])) {
-            throw MappingException::missingTargetEntity($mapping['fieldName']);
-        }
-
-        // Mandatory and optional attributes for either side
-        if ($mapping['mappedBy']) {
-            $mapping['isOwningSide'] = false;
-        }
-
-        if (isset($mapping['id']) && true === $mapping['id'] && $mapping['type'] & self::TO_MANY) {
-            throw MappingException::illegalToManyIdentifierAssociation($this->name, $mapping['fieldName']);
-        }
-
-        // Fetch mode. Default fetch mode to LAZY, if not set.
-        if ( ! isset($mapping['fetch'])) {
-            $mapping['fetch'] = FetchMode::LAZY;
+            if ($property instanceof ToManyAssociationMetadata) {
+                throw MappingException::illegalToManyIdentifierAssociation($this->name, $property->getName());
+            }
         }
 
         // Cascades
         $cascadeTypes = ['remove', 'persist', 'refresh', 'merge', 'detach'];
-        $cascades     = isset($mapping['cascade']) ? array_map('strtolower', $mapping['cascade']) : [];
+        $cascades     = array_map('strtolower', $property->getCascade());
 
         if (in_array('all', $cascades)) {
             $cascades = $cascadeTypes;
         }
 
         if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
-            throw MappingException::invalidCascadeOption(
-                array_diff($cascades, array_intersect($cascades, $cascadeTypes)),
-                $this->name,
-                $mapping['fieldName']
-            );
+            $diffCascades = array_diff($cascades, array_intersect($cascades, $cascadeTypes));
+
+            throw MappingException::invalidCascadeOption($diffCascades, $this->name, $fieldName);
         }
 
-        $mapping['cascade'] = $cascades;
-
-        return $mapping;
+        $property->setCascade($cascades);
     }
 
     /**
-     * Validates & completes a one-to-one association mapping.
+     * Validates & completes a to-one association mapping.
      *
-     * @param array $mapping The mapping to validate & complete.
+     * @param ToOneAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
-     *
-     * @throws RuntimeException
+     * @throws \RuntimeException
      * @throws MappingException
      */
-    protected function validateAndCompleteOneToOneMapping(array $mapping)
+    protected function validateAndCompleteToOneAssociationMetadata(ToOneAssociationMetadata $property)
     {
-        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
+        $this->validateAndCompleteAssociationMapping($property);
 
-        if (isset($mapping['joinColumns']) && $mapping['joinColumns']) {
-            $mapping['isOwningSide'] = true;
+        $fieldName = $property->getName();
+
+        if ($property->getJoinColumns()) {
+            $property->setOwningSide(true);
         }
 
-        if ($mapping['isOwningSide']) {
-            if (empty($mapping['joinColumns'])) {
+        if ($property->isOwningSide()) {
+            if (empty($property->getJoinColumns())) {
                 // Apply default join column
-                $mapping['joinColumns'][] = new JoinColumnMetadata();
+                $property->addJoinColumn(new JoinColumnMetadata());
             }
 
             $uniqueConstraintColumns = [];
 
-            foreach ($mapping['joinColumns'] as $joinColumn) {
-                if ($mapping['type'] === self::ONE_TO_ONE && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
-                    if (1 === count($mapping['joinColumns'])) {
-                        if (empty($mapping['id'])) {
+            foreach ($property->getJoinColumns() as $joinColumn) {
+                if ($property instanceof OneToOneAssociationMetadata && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
+                    if (1 === count($property->getJoinColumns())) {
+                        if (! $property->isPrimaryKey()) {
                             $joinColumn->setUnique(true);
                         }
                     } else {
@@ -1204,14 +1189,14 @@ class ClassMetadata implements ClassMetadataInterface
                 $joinColumn->setTableName(! $this->isMappedSuperclass ? $this->getTableName() : null);
 
                 if (! $joinColumn->getColumnName()) {
-                    $joinColumn->setColumnName($this->namingStrategy->joinColumnName($mapping['fieldName'], $this->name));
+                    $joinColumn->setColumnName($this->namingStrategy->joinColumnName($fieldName, $this->name));
                 }
 
                 if (! $joinColumn->getReferencedColumnName()) {
                     $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
 
-                $this->fieldNames[$joinColumn->getColumnName()] = $mapping['fieldName'];
+                $this->fieldNames[$joinColumn->getColumnName()] = $fieldName;
             }
 
             if ($uniqueConstraintColumns) {
@@ -1223,7 +1208,7 @@ class ClassMetadata implements ClassMetadataInterface
 
                 $this->table->addUniqueConstraint(
                     [
-                        'name'    => sprintf('%s_uniq', $mapping['fieldName']),
+                        'name'    => sprintf('%s_uniq', $fieldName),
                         'columns' => $uniqueConstraintColumns,
                         'options' => [],
                         'flags'   => [],
@@ -1232,107 +1217,162 @@ class ClassMetadata implements ClassMetadataInterface
             }
         }
 
-        $mapping['orphanRemoval']   = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        if ($property->isOrphanRemoval()) {
+            $cascades = $property->getCascade();
 
-        if ($mapping['orphanRemoval']) {
-            if (! in_array('remove', $mapping['cascade'])) {
-                $mapping['cascade'][] = 'remove';
+            if (! in_array('remove', $cascades)) {
+                $cascades[] = 'remove';
+
+                $property->setCascade($cascades);
             }
 
-            unset($mapping['unique']);
+            // @todo guilhermeblanco where is this used?
+            // @todo guilhermeblanco Shouldn￿'t we iterate through JoinColumns to set non-uniqueness?
+            //$property->setUnique(false);
         }
 
-        if (isset($mapping['id']) && $mapping['id'] === true && !$mapping['isOwningSide']) {
-            throw MappingException::illegalInverseIdentifierAssociation($this->name, $mapping['fieldName']);
+        if ($property->isPrimaryKey() && ! $property->isOwningSide()) {
+            throw MappingException::illegalInverseIdentifierAssociation($this->name, $fieldName);
         }
+    }
 
-        return $mapping;
+    /**
+     * Validates & completes a to-many association mapping.
+     *
+     * @param ToManyAssociationMetadata $property The association mapping to validate & complete.
+     *
+     * @throws RuntimeException
+     * @throws MappingException
+     */
+    protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
+    {
+        $this->validateAndCompleteAssociationMapping($property);
+
+        if ($property->isPrimaryKey()) {
+            throw MappingException::illegalToManyIdentifierAssociation($this->name, $property->getName());
+        }
+    }
+
+    /**
+     * Validates & completes a one-to-one association mapping.
+     *
+     * @param OneToOneAssociationMetadata $property The association mapping to validate & complete.
+     *
+     * @throws \RuntimeException
+     * @throws MappingException
+     */
+    protected function validateAndCompleteOneToOneMapping(OneToOneAssociationMetadata $property)
+    {
+        $this->validateAndCompleteToOneAssociationMetadata($property);
+    }
+
+    /**
+     * Validates & completes a many-to-one association mapping.
+     *
+     * @param ManyToOneAssociationMetadata $property The association mapping to validate & complete.
+     *
+     * @throws \RuntimeException
+     * @throws MappingException
+     */
+    protected function validateAndCompleteManyToOneMapping(ManyToOneAssociationMetadata $property)
+    {
+        // A many-to-one mapping is essentially a one-one backreference
+        $this->validateAndCompleteToOneAssociationMetadata($property);
+
+        if ($property->isOrphanRemoval()) {
+            throw MappingException::illegalOrphanRemoval($this->name, $property->getName());
+        }
     }
 
     /**
      * Validates & completes a one-to-many association mapping.
      *
-     * @param array $mapping The mapping to validate and complete.
+     * @param OneToManyAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @return array The validated and completed mapping.
-     *
+     * @throws \RuntimeException
      * @throws MappingException
      * @throws InvalidArgumentException
      */
-    protected function validateAndCompleteOneToManyMapping(array $mapping)
+    protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
     {
-        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
+        $this->validateAndCompleteToManyAssociationMetadata($property);
 
-        // OneToMany-side MUST be inverse (must have mappedBy)
-        if ( ! isset($mapping['mappedBy'])) {
-            throw MappingException::oneToManyRequiresMappedBy($mapping['fieldName']);
+        // OneToMany MUST be inverse side
+        $property->setOwningSide(false);
+
+        // OneToMany MUST have mappedBy
+        if (! $property->getMappedBy()) {
+            throw MappingException::oneToManyRequiresMappedBy($property->getName());
         }
 
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
+        if ($property->isOrphanRemoval()) {
+            $cascades = $property->getCascade();
 
-        if ($mapping['orphanRemoval'] && ! in_array('remove', $mapping['cascade'])) {
-            $mapping['cascade'][] = 'remove';
+            if (! in_array('remove', $cascades)) {
+                $cascades[] = 'remove';
+
+                $property->setCascade($cascades);
+            }
         }
-
-        $this->assertMappingOrderBy($mapping);
-
-        return $mapping;
     }
 
     /**
      * Validates & completes a many-to-many association mapping.
      *
-     * @param array $mapping The mapping to validate & complete.
+     * @param ManyToManyAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @return array The validated & completed mapping.
-     *
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    protected function validateAndCompleteManyToManyMapping(array $mapping)
+    protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
     {
-        $mapping = $this->validateAndCompleteAssociationMapping($mapping);
+        $this->validateAndCompleteAssociationMapping($property);
 
-        if ($mapping['isOwningSide']) {
+        if ($property->isOwningSide()) {
             // owning side MUST have a join table
-            if (! isset($mapping['joinTable'])) {
-                $mapping['joinTable'] = new JoinTableMetadata();
+            $joinTable = $property->getJoinTable() ?: new JoinTableMetadata();
+
+            $property->setJoinTable($joinTable);
+
+            if (! $joinTable->getName()) {
+                $joinTableName = $this->namingStrategy->joinTableName(
+                    $property->getSourceEntity(),
+                    $property->getTargetEntity(),
+                    $property->getName()
+                );
+
+                $joinTable->setName($joinTableName);
             }
 
-            if (empty($mapping['joinTable']->getName())) {
-                $joinTableName = $this->namingStrategy->joinTableName($mapping['sourceEntity'], $mapping['targetEntity'], $mapping['fieldName']);
+            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() == $property->getTargetEntity() && ! $joinTable->hasColumns();
 
-                $mapping['joinTable']->setName($joinTableName);
-            }
-
-            $selfReferencingEntityWithoutJoinColumns = $mapping['sourceEntity'] == $mapping['targetEntity'] && ! $mapping['joinTable']->hasColumns();
-
-            if (! $mapping['joinTable']->getJoinColumns()) {
+            if (! $joinTable->getJoinColumns()) {
                 $referencedColumnName = $this->namingStrategy->referenceColumnName();
                 $sourceReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'source' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $sourceReferenceName);
+                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getSourceEntity(), $sourceReferenceName);
                 $joinColumn           = new JoinColumnMetadata();
 
                 $joinColumn->setColumnName($columnName);
                 $joinColumn->setReferencedColumnName($referencedColumnName);
                 $joinColumn->setOnDelete('CASCADE');
 
-                $mapping['joinTable']->addJoinColumn($joinColumn);
+                $joinTable->addJoinColumn($joinColumn);
             }
 
-            if (! $mapping['joinTable']->getInverseJoinColumns()) {
+            if (! $joinTable->getInverseJoinColumns()) {
                 $referencedColumnName = $this->namingStrategy->referenceColumnName();
                 $targetReferenceName  = $selfReferencingEntityWithoutJoinColumns ? 'target' : $referencedColumnName;
-                $columnName           = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $targetReferenceName);
+                $columnName           = $this->namingStrategy->joinKeyColumnName($property->getTargetEntity(), $targetReferenceName);
                 $joinColumn           = new JoinColumnMetadata();
 
                 $joinColumn->setColumnName($columnName);
                 $joinColumn->setReferencedColumnName($referencedColumnName);
                 $joinColumn->setOnDelete('CASCADE');
 
-                $mapping['joinTable']->addInverseJoinColumn($joinColumn);
+                $joinTable->addInverseJoinColumn($joinColumn);
             }
 
-            foreach ($mapping['joinTable']->getJoinColumns() as $joinColumn) {
+            foreach ($joinTable->getJoinColumns() as $joinColumn) {
                 if (! $joinColumn->getReferencedColumnName()) {
                     $joinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
@@ -1340,13 +1380,16 @@ class ClassMetadata implements ClassMetadataInterface
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
 
                 if (! $joinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName($mapping['sourceEntity'], $referencedColumnName);
+                    $columnName = $this->namingStrategy->joinKeyColumnName(
+                        $property->getSourceEntity(),
+                        $referencedColumnName
+                    );
 
                     $joinColumn->setColumnName($columnName);
                 }
             }
 
-            foreach ($mapping['joinTable']->getInverseJoinColumns() as $inverseJoinColumn) {
+            foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
                 if (! $inverseJoinColumn->getReferencedColumnName()) {
                     $inverseJoinColumn->setReferencedColumnName($this->namingStrategy->referenceColumnName());
                 }
@@ -1354,18 +1397,15 @@ class ClassMetadata implements ClassMetadataInterface
                 $referencedColumnName = $inverseJoinColumn->getReferencedColumnName();
 
                 if (! $inverseJoinColumn->getColumnName()) {
-                    $columnName = $this->namingStrategy->joinKeyColumnName($mapping['targetEntity'], $referencedColumnName);
+                    $columnName = $this->namingStrategy->joinKeyColumnName(
+                        $property->getTargetEntity(),
+                        $referencedColumnName
+                    );
 
                     $inverseJoinColumn->setColumnName($columnName);
                 }
             }
         }
-
-        $mapping['orphanRemoval'] = isset($mapping['orphanRemoval']) && $mapping['orphanRemoval'];
-
-        $this->assertMappingOrderBy($mapping);
-
-        return $mapping;
     }
 
     /**
@@ -1454,17 +1494,17 @@ class ClassMetadata implements ClassMetadataInterface
             }
 
             // Association defined as Id field
-            $assoc       = $this->associationMappings[$idProperty];
-            $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+            $association  = $this->associationMappings[$idProperty];
+            $targetClass  = $em->getClassMetadata($association->getTargetEntity());
 
-            if (! $assoc['isOwningSide']) {
-                $assoc       = $targetClass->associationMappings[$assoc['mappedBy']];
-                $targetClass = $em->getClassMetadata($assoc['targetEntity']);
+            if (! $association->isOwningSide()) {
+                $association = $targetClass->associationMappings[$association->getMappedBy()];
+                $targetClass = $em->getClassMetadata($association->getTargetEntity());
             }
 
-            $joinColumns = $assoc['type'] === ClassMetadata::MANY_TO_MANY
-                ? $assoc['joinTable']->getInverseJoinColumns()
-                : $assoc['joinColumns']
+            $joinColumns = $association instanceof ManyToManyAssociationMetadata
+                ? $association->getJoinTable()->getInverseJoinColumns()
+                : $association->getJoinColumns()
             ;
 
             foreach ($joinColumns as $joinColumn) {
@@ -1580,56 +1620,58 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Sets the association to override association mapping of property for an entity relationship.
      *
-     * @param string $fieldName
-     * @param array  $overrideMapping
+     * @param AssociationMetadata $associationMetadata
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function setAssociationOverride($fieldName, array $overrideMapping)
+    public function setAssociationOverride(AssociationMetadata $associationMetadata)
     {
+        $fieldName = $associationMetadata->getName();
+
         if ( ! isset($this->associationMappings[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
-        $mapping = $this->associationMappings[$fieldName];
+        /** @var AssociationMetadata $originalAssociation */
+        $originalAssociation = $this->associationMappings[$fieldName];
+
+        // Do not allow to change association type
+        if (get_class($originalAssociation) !== get_class($associationMetadata)) {
+            throw MappingException::invalidOverrideAssociationType($this->name, $fieldName);
+        }
+
+        unset($this->associationMappings[$originalAssociation->getName()]);
 
         // Unset all defined fieldNames prior to override
-        if (isset($mapping['joinColumns'])) {
-            foreach ($mapping['joinColumns'] as $joinColumn) {
+        if ($originalAssociation instanceof ToOneAssociationMetadata && $originalAssociation->isOwningSide()) {
+            foreach ($originalAssociation->getJoinColumns() as $joinColumn) {
                 unset($this->fieldNames[$joinColumn->getColumnName()]);
             }
         }
 
-        if (isset($overrideMapping['joinColumns'])) {
-            $mapping['joinColumns'] = $overrideMapping['joinColumns'];
+        // Override what it should be allowed
+        if ($associationMetadata->getInversedBy()) {
+            $originalAssociation->setInversedBy($associationMetadata->getInversedBy());
         }
 
-        if (isset($overrideMapping['inversedBy'])) {
-            $mapping['inversedBy'] = $overrideMapping['inversedBy'];
+        if ($originalAssociation instanceof ToOneAssociationMetadata && $associationMetadata->getJoinColumns()) {
+            $originalAssociation->setJoinColumns($associationMetadata->getJoinColumns());
+        } else if ($originalAssociation instanceof ManyToManyAssociationMetadata && $associationMetadata->getJoinTable()) {
+            $originalAssociation->setJoinTable($associationMetadata->getJoinTable());
         }
 
-        if (isset($overrideMapping['joinTable'])) {
-            $mapping['joinTable'] = $overrideMapping['joinTable'];
+        // @todo guilhermeblanco Unify all mapXtoY methods
+        if ($originalAssociation instanceof OneToOneAssociationMetadata) {
+            $this->mapOneToOne($originalAssociation);
+        } else if ($originalAssociation instanceof OneToManyAssociationMetadata) {
+            $this->mapOneToMany($originalAssociation);
+        } else if ($originalAssociation instanceof ManyToOneAssociationMetadata) {
+            $this->mapManyToOne($originalAssociation);
+        } else if ($originalAssociation instanceof ManyToManyAssociationMetadata) {
+            $this->mapManyToMany($originalAssociation);
         }
-
-        switch ($mapping['type']) {
-            case self::ONE_TO_ONE:
-                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
-                break;
-            case self::ONE_TO_MANY:
-                $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
-                break;
-            case self::MANY_TO_ONE:
-                $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
-                break;
-            case self::MANY_TO_MANY:
-                $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
-                break;
-        }
-
-        $this->associationMappings[$fieldName] = $mapping;
     }
 
     /**
@@ -1653,6 +1695,7 @@ class ClassMetadata implements ClassMetadataInterface
             throw MappingException::invalidOverrideVersionField($this->name, $fieldMetadata->getName());
         }
 
+        $fieldMetadata->setDeclaringClass($originalProperty->getDeclaringClass());
         $fieldMetadata->setPrimaryKey($originalProperty->isPrimaryKey());
 
         unset($this->properties[$originalProperty->getName()]);
@@ -1697,6 +1740,20 @@ class ClassMetadata implements ClassMetadataInterface
     public function isInheritedProperty($fieldName)
     {
         $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
+
+        return ! ($declaringClass->name === $this->name);
+    }
+
+    /**
+     * Checks whether a mapped association is inherited from a superclass.
+     *
+     * @param string $fieldName
+     *
+     * @return boolean TRUE if the association is inherited, FALSE otherwise.
+     */
+    public function isInheritedAssociation($fieldName)
+    {
+        $declaringClass = $this->associationMappings[$fieldName]->getDeclaringClass();
 
         return ! ($declaringClass->name === $this->name);
     }
@@ -1820,37 +1877,12 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function addInheritedProperty(Property $property)
     {
-        $inheritedProperty = new FieldMetadata($property->getName());
+        $inheritedProperty = clone $property;
         $declaringClass    = $property->getDeclaringClass();
 
         if (! $declaringClass->isMappedSuperclass) {
             $inheritedProperty->setTableName($property->getTableName());
         }
-
-        $inheritedProperty->setDeclaringClass($declaringClass);
-
-        if ($property->getColumnDefinition()) {
-            $inheritedProperty->setColumnDefinition($property->getColumnDefinition());
-        }
-
-        if ($property->getLength()) {
-            $inheritedProperty->setLength($property->getLength());
-        }
-
-        if ($property->getScale()) {
-            $inheritedProperty->setScale($property->getScale());
-        }
-
-        if ($property->getPrecision()) {
-            $inheritedProperty->setPrecision($property->getPrecision());
-        }
-
-        $inheritedProperty->setColumnName($property->getColumnName());
-        $inheritedProperty->setType($property->getType());
-        $inheritedProperty->setOptions($property->getOptions());
-        $inheritedProperty->setPrimaryKey($property->isPrimaryKey());
-        $inheritedProperty->setNullable($property->isNullable());
-        $inheritedProperty->setUnique($property->isUnique());
 
         $this->fieldNames[$property->getColumnName()] = $property->getName();
         $this->properties[$property->getName()] = $inheritedProperty;
@@ -1861,19 +1893,27 @@ class ClassMetadata implements ClassMetadataInterface
      * Adds an association mapping without completing/validating it.
      * This is mainly used to add inherited association mappings to derived classes.
      *
-     * @param array $mapping
+     * @param AssociationMetadata $association
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function addInheritedAssociationMapping(array $mapping/*, $owningClassName = null*/)
+    public function addInheritedAssociation(AssociationMetadata $association)
     {
-        if (isset($this->associationMappings[$mapping['fieldName']])) {
-            throw MappingException::duplicateAssociationMapping($this->name, $mapping['fieldName']);
+        /* @var AssociationMetadata $inheritedAssociation */
+        $inheritedAssociation = clone $association;
+        $declaringClass       = $association->getDeclaringClass();
+
+        if ($declaringClass->isMappedSuperclass) {
+            $inheritedAssociation->setSourceEntity($this->name);
         }
 
-        $this->associationMappings[$mapping['fieldName']] = $mapping;
+        if (isset($this->associationMappings[$association->getName()])) {
+            throw MappingException::duplicateAssociationMapping($this->name, $association->getName());
+        }
+
+        $this->associationMappings[$association->getName()] = $inheritedAssociation;
     }
 
     /**
@@ -2020,66 +2060,57 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * Adds a one-to-one mapping.
      *
-     * @param array $mapping The mapping.
+     * @param OneToOneAssociationMetadata $property
      *
-     * @return void
+     * @throws \RuntimeException
+     * @throws MappingException
      */
-    public function mapOneToOne(array $mapping)
+    public function mapOneToOne(OneToOneAssociationMetadata $property)
     {
-        $mapping['type'] = self::ONE_TO_ONE;
-
-        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
-
-        $this->storeAssociationMapping($mapping);
+        $this->validateAndCompleteOneToOneMapping($property);
+        $this->storeAssociationMapping($property);
     }
 
     /**
      * Adds a one-to-many mapping.
      *
-     * @param array $mapping The mapping.
+     * @param OneToManyAssociationMetadata $property
      *
-     * @return void
+     * @throws \RuntimeException
+     * @throws MappingException
      */
-    public function mapOneToMany(array $mapping)
+    public function mapOneToMany(OneToManyAssociationMetadata $property)
     {
-        $mapping['type'] = self::ONE_TO_MANY;
-
-        $mapping = $this->validateAndCompleteOneToManyMapping($mapping);
-
-        $this->storeAssociationMapping($mapping);
+        $this->validateAndCompleteOneToManyMapping($property);
+        $this->storeAssociationMapping($property);
     }
 
     /**
      * Adds a many-to-one mapping.
      *
-     * @param array $mapping The mapping.
+     * @param ManyToOneAssociationMetadata $property
      *
-     * @return void
+     * @throws \RuntimeException
+     * @throws MappingException
      */
-    public function mapManyToOne(array $mapping)
+    public function mapManyToOne(ManyToOneAssociationMetadata $property)
     {
-        $mapping['type'] = self::MANY_TO_ONE;
-
-        // A many-to-one mapping is essentially a one-one backreference
-        $mapping = $this->validateAndCompleteOneToOneMapping($mapping);
-
-        $this->storeAssociationMapping($mapping);
+        $this->validateAndCompleteManyToOneMapping($property);
+        $this->storeAssociationMapping($property);
     }
 
     /**
      * Adds a many-to-many mapping.
      *
-     * @param array $mapping The mapping.
+     * @param ManyToManyAssociationMetadata $property
      *
-     * @return void
+     * @throws \RuntimeException
+     * @throws MappingException
      */
-    public function mapManyToMany(array $mapping)
+    public function mapManyToMany(ManyToManyAssociationMetadata $property)
     {
-        $mapping['type'] = self::MANY_TO_MANY;
-
-        $mapping = $this->validateAndCompleteManyToManyMapping($mapping);
-
-        $this->storeAssociationMapping($mapping);
+        $this->validateAndCompleteManyToManyMapping($property);
+        $this->storeAssociationMapping($property);
     }
 
     /**
@@ -2091,13 +2122,13 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @throws MappingException
      */
-    protected function storeAssociationMapping(array $assocMapping)
+    protected function storeAssociationMapping(AssociationMetadata $property)
     {
-        $sourceFieldName = $assocMapping['fieldName'];
+        $sourceFieldName = $property->getName();
 
         $this->assertFieldNotMapped($sourceFieldName);
 
-        $this->associationMappings[$sourceFieldName] = $assocMapping;
+        $this->associationMappings[$sourceFieldName] = $property;
     }
 
     /**
@@ -2316,6 +2347,8 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method
      */
     public function hasAssociation($fieldName)
     {
@@ -2324,20 +2357,24 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method
      */
     public function isSingleValuedAssociation($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-            && ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && $this->associationMappings[$fieldName] instanceof ToOneAssociationMetadata;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method
      */
     public function isCollectionValuedAssociation($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-            && ! ($this->associationMappings[$fieldName]['type'] & self::TO_ONE);
+            && $this->associationMappings[$fieldName] instanceof ToManyAssociationMetadata;
     }
 
     /**
@@ -2450,6 +2487,8 @@ class ClassMetadata implements ClassMetadataInterface
      * {@inheritDoc}
      *
      * @throws InvalidArgumentException
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function getAssociationTargetClass($assocName)
     {
@@ -2457,7 +2496,7 @@ class ClassMetadata implements ClassMetadataInterface
             throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
 
-        return $this->associationMappings[$assocName]['targetEntity'];
+        return $this->associationMappings[$assocName]->getTargetEntity();
     }
 
     /**
@@ -2478,37 +2517,45 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function isAssociationInverseSide($fieldName)
     {
         return isset($this->associationMappings[$fieldName])
-            && ! $this->associationMappings[$fieldName]['isOwningSide'];
+            && ! $this->associationMappings[$fieldName]->isOwningSide();
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
-        return $this->associationMappings[$fieldName]['mappedBy'];
+        return $this->associationMappings[$fieldName]->getMappedBy();
     }
 
     /**
      * @param string $targetClass
      *
      * @return array
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo). One usage left.
      */
     public function getAssociationsByTargetClass($targetClass)
     {
-        $relations = [];
+        $associations = [];
 
-        foreach ($this->associationMappings as $mapping) {
-            if ($mapping['targetEntity'] == $targetClass) {
-                $relations[$mapping['fieldName']] = $mapping;
+        foreach ($this->associationMappings as $association) {
+            if ($association->getTargetEntity() !== $targetClass) {
+                continue;
             }
+
+            $associations[$association->getName()] = $association;
         }
 
-        return $relations;
+        return $associations;
     }
 
     /**
@@ -2535,6 +2582,8 @@ class ClassMetadata implements ClassMetadataInterface
      * @param string $name
      *
      * @return mixed
+     *
+     * @todo guilhermeblanco Consider removing this method somehow
      */
     public function getMetadataValue($name)
     {
@@ -2599,6 +2648,7 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * @param string $fieldName
+     *
      * @throws MappingException
      */
     private function assertFieldNotMapped($fieldName)
@@ -2616,7 +2666,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @param AbstractPlatform $platform
      * @return string
      *
-     * @todo Sequence names should be computed in DBAL depending on the platform
+     * @todo guilhermeblanco Sequence names should be computed in DBAL depending on the platform
      */
     public function getSequenceName(AbstractPlatform $platform)
     {
@@ -2629,7 +2679,7 @@ class ClassMetadata implements ClassMetadataInterface
      * @param AbstractPlatform $platform
      * @return string
      *
-     * @todo Sequence names should be computed in DBAL depending on the platform
+     * @todo guilhermeblanco Sequence names should be computed in DBAL depending on the platform
      */
     public function getSequencePrefix(AbstractPlatform $platform)
     {
@@ -2646,15 +2696,5 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         return $sequencePrefix;
-    }
-
-    /**
-     * @param array $mapping
-     */
-    private function assertMappingOrderBy(array $mapping)
-    {
-        if (isset($mapping['orderBy']) && !is_array($mapping['orderBy'])) {
-            throw new InvalidArgumentException("'orderBy' is expected to be an array, not " . gettype($mapping['orderBy']));
-        }
     }
 }

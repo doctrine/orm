@@ -84,10 +84,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         );
 
         $metadata->setCache(
-            new CacheMetadata(
-                CacheUsage::READ_ONLY,
-                'doctrine_tests_models_cache_state'
-            )
+            new CacheMetadata(CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_state')
         );
 
         $this->factory->expects($this->once())
@@ -111,10 +108,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         );
 
         $metadata->setCache(
-            new CacheMetadata(
-                CacheUsage::READ_WRITE,
-                'doctrine_tests_models_cache_state'
-            )
+            new CacheMetadata(CacheUsage::READ_WRITE, 'doctrine_tests_models_cache_state')
         );
 
         $this->factory->expects($this->once())
@@ -138,10 +132,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         );
 
         $metadata->setCache(
-            new CacheMetadata(
-                CacheUsage::NONSTRICT_READ_WRITE,
-                'doctrine_tests_models_cache_state'
-            )
+            new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, 'doctrine_tests_models_cache_state')
         );
 
         $this->factory->expects($this->once())
@@ -157,26 +148,25 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testBuildCachedCollectionPersisterReadOnly()
     {
-        $em         = $this->em;
-        $metadata   = clone $em->getClassMetadata(State::class);
-        $mapping    = $metadata->associationMappings['cities'];
-        $persister  = new OneToManyPersister($em);
-        $region     = new ConcurrentRegionMock(
+        $em          = $this->em;
+        $metadata    = clone $em->getClassMetadata(State::class);
+        $association = $metadata->associationMappings['cities'];
+        $persister   = new OneToManyPersister($em);
+        $region      = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
         );
-        
-        $mapping['cache'] = new CacheMetadata(
-            CacheUsage::READ_ONLY,
-            'doctrine_tests_models_cache_state__cities'
+
+        $association->setCache(
+            new CacheMetadata(CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_state__cities')
         );
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
+            ->with($this->equalTo($association->getCache()))
             ->will($this->returnValue($region));
 
 
-        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
+        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $association);
 
         self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
         self::assertInstanceOf(ReadOnlyCachedCollectionPersister::class, $cachedPersister);
@@ -186,23 +176,22 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $em         = $this->em;
         $metadata   = clone $em->getClassMetadata(State::class);
-        $mapping    = $metadata->associationMappings['cities'];
+        $association    = $metadata->associationMappings['cities'];
         $persister  = new OneToManyPersister($em);
         $region     = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
         );
 
-        $mapping['cache'] = new CacheMetadata(
-            CacheUsage::READ_WRITE,
-            'doctrine_tests_models_cache_state__cities'
+        $association->setCache(
+            new CacheMetadata(CacheUsage::READ_WRITE, 'doctrine_tests_models_cache_state__cities')
         );
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
+            ->with($this->equalTo($association->getCache()))
             ->will($this->returnValue($region));
 
-        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
+        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $association);
 
         self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
         self::assertInstanceOf(ReadWriteCachedCollectionPersister::class, $cachedPersister);
@@ -210,25 +199,24 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
     public function testBuildCachedCollectionPersisterNonStrictReadWrite()
     {
-        $em         = $this->em;
-        $metadata   = clone $em->getClassMetadata(State::class);
-        $mapping    = $metadata->associationMappings['cities'];
-        $persister  = new OneToManyPersister($em);
-        $region     = new ConcurrentRegionMock(
+        $em          = $this->em;
+        $metadata    = clone $em->getClassMetadata(State::class);
+        $association = $metadata->associationMappings['cities'];
+        $persister   = new OneToManyPersister($em);
+        $region      = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
         );
 
-        $mapping['cache'] = new CacheMetadata(
-            CacheUsage::NONSTRICT_READ_WRITE,
-            'doctrine_tests_models_cache_state__cities'
+        $association->setCache(
+            new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, 'doctrine_tests_models_cache_state__cities')
         );
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($mapping['cache']))
+            ->with($this->equalTo($association->getCache()))
             ->will($this->returnValue($region));
 
-        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
+        $cachedPersister = $this->factory->buildCachedCollectionPersister($em, $persister, $association);
 
         self::assertInstanceOf(CachedCollectionPersister::class, $cachedPersister);
         self::assertInstanceOf(NonStrictReadWriteCachedCollectionPersister::class, $cachedPersister);
@@ -283,10 +271,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister  = new BasicEntityPersister($em, $metadata);
         
         $metadata->setCache(
-            new CacheMetadata(
-                -1,
-                'doctrine_tests_models_cache_state'
-            )
+            new CacheMetadata(-1, 'doctrine_tests_models_cache_state')
         );
 
         $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
@@ -298,17 +283,16 @@ class DefaultCacheFactoryTest extends OrmTestCase
      */
     public function testBuildCachedCollectionPersisterException()
     {
-        $em         = $this->em;
-        $metadata   = clone $em->getClassMetadata(State::class);
-        $mapping    = $metadata->getAssociationMapping('cities');
-        $persister  = new OneToManyPersister($em);
+        $em          = $this->em;
+        $metadata    = clone $em->getClassMetadata(State::class);
+        $association = $metadata->associationMappings['cities'];
+        $persister   = new OneToManyPersister($em);
 
-        $mapping['cache'] = new CacheMetadata(
-            -1,
-            'doctrine_tests_models_cache_state__cities'
+        $association->setCache(
+            new CacheMetadata(-1, 'doctrine_tests_models_cache_state__cities')
         );
 
-        $this->factory->buildCachedCollectionPersister($em, $persister, $mapping);
+        $this->factory->buildCachedCollectionPersister($em, $persister, $association);
     }
 
     /**

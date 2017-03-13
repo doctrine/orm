@@ -18,7 +18,6 @@
  */
 
 namespace Doctrine\ORM\Annotation;
-use Doctrine\ORM\Mapping\FetchMode;
 
 /**
  * @Annotation
@@ -39,7 +38,7 @@ final class OneToMany implements Annotation
     /**
      * @var array<string>
      */
-    public $cascade;
+    public $cascade = [];
 
     /**
      * The fetching strategy to use for the association.
@@ -48,7 +47,7 @@ final class OneToMany implements Annotation
      *
      * @Enum({"LAZY", "EAGER", "EXTRA_LAZY"})
      */
-    public $fetch = FetchMode::LAZY;
+    public $fetch = 'LAZY';
 
     /**
      * @var boolean

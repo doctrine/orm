@@ -31,14 +31,13 @@ $joinColumn->setReferencedColumnName('id');
 
 $joinColumns[] = $joinColumn;
 
-$metadata->mapManyToOne(
-    [
-       'fieldName'    => 'address',
-       'targetEntity' => 'DDC964Address',
-       'cascade'      => ['persist','merge'],
-       'joinColumns'  => $joinColumns,
-    ]
-);
+$association = new Mapping\ManyToOneAssociationMetadata('address');
+
+$association->setJoinColumns($joinColumns);
+$association->setTargetEntity('DDC964Address');
+$association->setCascade(['persist', 'merge']);
+
+$metadata->mapManyToOne($association);
 
 $joinTable = new Mapping\JoinTableMetadata();
 $joinTable->setName('ddc964_users_groups');
@@ -57,14 +56,13 @@ $joinColumn->setReferencedColumnName("id");
 
 $joinTable->addInverseJoinColumn($joinColumn);
 
-$metadata->mapManyToMany(
-    [
-       'fieldName'    => 'groups',
-       'targetEntity' => 'DDC964Group',
-       'inversedBy'   => 'users',
-       'cascade'      => ['persist','merge','detach'],
-       'joinTable'    => $joinTable,
-    ]
-);
+$association = new Mapping\ManyToManyAssociationMetadata('groups');
+
+$association->setJoinTable($joinTable);
+$association->setTargetEntity('DDC964Group');
+$association->setInversedBy('user');
+$association->setCascade(['persist','merge','detach']);
+
+$metadata->mapManyToMany($association);
 
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

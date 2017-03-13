@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\NonStrictReadWriteCachedCollectionPersister;
 
@@ -15,9 +16,14 @@ class NonStrictReadWriteCachedCollectionPersisterTest extends AbstractCollection
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(
+        EntityManager $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMetadata $association
+    )
     {
-        return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+        return new NonStrictReadWriteCachedCollectionPersister($persister, $region, $em, $association);
     }
 
 }

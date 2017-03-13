@@ -1,6 +1,7 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Util\Debug;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
@@ -15,6 +16,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $user1 = new CmsUser();

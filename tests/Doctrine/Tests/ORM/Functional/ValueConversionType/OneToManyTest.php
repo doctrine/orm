@@ -39,14 +39,6 @@ class OneToManyTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public static function tearDownAfterClass()
-    {
-        $conn = static::$sharedConn;
-
-        $conn->executeUpdate('DROP TABLE vct_owning_manytoone');
-        $conn->executeUpdate('DROP TABLE vct_inversed_onetomany');
-    }
-
     public function testThatTheValueOfIdentifiersAreConvertedInTheDatabase()
     {
         $conn = $this->em->getConnection();
@@ -57,68 +49,36 @@ class OneToManyTest extends OrmFunctionalTestCase
         self::assertEquals('nop', $conn->fetchColumn('SELECT associated_id FROM vct_owning_manytoone LIMIT 1'));
     }
 
-    /**
-     * @depends testThatTheValueOfIdentifiersAreConvertedInTheDatabase
-     */
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
-
-        self::assertInstanceOf(Models\ValueConversionType\InversedOneToManyEntity::class, $inversed);
-        self::assertInstanceOf(Models\ValueConversionType\OwningManyToOneEntity::class, $owning);
+        self::assertInstanceOf(Entity\InversedOneToManyEntity::class, $inversed);
+        self::assertInstanceOf(Entity\OwningManyToOneEntity::class, $owning);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
-
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
+        $owning   = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
         self::assertEquals('abc', $inversed->id1);
         self::assertEquals('def', $owning->id2);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheProxyFromOwningToInversedIsLoaded()
     {
-        $owning = $this->em->find(
-            Models\ValueConversionType\OwningManyToOneEntity::class,
-            'def'
-        );
+        $owning = $this->em->find(Entity\OwningManyToOneEntity::class, 'def');
 
         $inversedProxy = $owning->associatedEntity;
 
         self::assertEquals('some value to be loaded', $inversedProxy->someProperty);
     }
 
-    /**
-     * @depends testThatEntitiesAreFetchedFromTheDatabase
-     */
     public function testThatTheCollectionFromInversedToOwningIsLoaded()
     {
-        $inversed = $this->em->find(
-            Models\ValueConversionType\InversedOneToManyEntity::class,
-            'abc'
-        );
+        $inversed = $this->em->find(Entity\InversedOneToManyEntity::class, 'abc');
 
         self::assertCount(1, $inversed->associatedEntities);
     }
