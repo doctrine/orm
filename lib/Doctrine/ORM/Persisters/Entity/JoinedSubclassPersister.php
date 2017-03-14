@@ -25,6 +25,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
@@ -518,26 +519,21 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
-        // @todo guilhermeblanco Why can't we use:
-        // - array_unique(array_values($this->class->fieldNames))
-        // - array_merge($this->class->properties, $this->class->associationMappings)
-        foreach ($this->class->reflFields as $name => $field) {
-            $property = $this->class->getProperty($name);
-            $association = isset($this->class->associationMappings[$name])
-                ? $this->class->associationMappings[$name]
-                : null;
+        // @todo guilhermeblanco Remove the array_merge once properties and associationMappings get merged
+        $properties = array_merge($this->class->getProperties(), $this->class->associationMappings);
 
-            if (($property && ($property instanceof VersionFieldMetadata || $this->class->isInheritedProperty($name)))
-                || ($association && $this->class->isInheritedAssociation($name))
+        foreach ($properties as $name => $property) {
+            if (($property instanceof FieldMetadata && ($property instanceof VersionFieldMetadata || $this->class->isInheritedProperty($name)))
+                || ($property instanceof AssociationMetadata && $this->class->isInheritedAssociation($name))
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;
             }
 
-            if ($association) {
-                if ($association->isOwningSide() && $association instanceof ToOneAssociationMetadata) {
-                    $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
+            if ($property instanceof AssociationMetadata) {
+                if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
+                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
-                    foreach ($association->getJoinColumns() as $joinColumn) {
+                    foreach ($property->getJoinColumns() as $joinColumn) {
                         $columnName           = $joinColumn->getColumnName();
                         $referencedColumnName = $joinColumn->getReferencedColumnName();
 

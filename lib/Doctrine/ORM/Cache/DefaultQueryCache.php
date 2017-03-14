@@ -422,7 +422,7 @@ class DefaultQueryCache implements QueryCache
         $mapping     = array_shift($path);
         $metadata    = $this->em->getClassMetadata($mapping['class']);
         $association = $metadata->associationMappings[$mapping['field']];
-        $value       = $metadata->getFieldValue($value, $mapping['field']);
+        $value       = $association->getValue($value);
 
         if ($value === null) {
             return null;

@@ -805,19 +805,20 @@ class BasicEntityPersister implements EntityPersister
 
             // Complete bidirectional association, if necessary
             if ($entity !== null && $isInverseSingleValued) {
-                $targetClass->reflFields[$inversedBy]->setValue($entity, $sourceEntity);
+                $inversedAssociation = $targetClass->associationMappings[$inversedBy];
+
+                $inversedAssociation->setValue($entity, $sourceEntity);
             }
 
             return $entity;
         }
 
-        // @todo guilhermeblanco $association->getDeclaringClass()???
-        $mappedBy         = $association->getMappedBy();
-        $sourceClass      = $this->em->getClassMetadata($association->getSourceEntity());
-        $owningAssoc      = $targetClass->getAssociationMapping($mappedBy);
-        $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName());
+        $mappedBy          = $association->getMappedBy();
+        $sourceClass       = $association->getDeclaringClass();
+        $owningAssociation = $targetClass->getAssociationMapping($mappedBy);
+        $targetTableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
 
-        foreach ($owningAssoc->getJoinColumns() as $joinColumn) {
+        foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
             $sourceKeyColumn = $joinColumn->getReferencedColumnName();
             $targetKeyColumn = $joinColumn->getColumnName();
 
@@ -827,8 +828,8 @@ class BasicEntityPersister implements EntityPersister
                 );
             }
 
-            $field = $sourceClass->fieldNames[$sourceKeyColumn];
-            $value = $sourceClass->reflFields[$field]->getValue($sourceEntity);
+            $property = $sourceClass->getProperty($sourceClass->fieldNames[$sourceKeyColumn]);
+            $value    = $property->getValue($sourceEntity);
 
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
@@ -840,7 +841,7 @@ class BasicEntityPersister implements EntityPersister
         $entity = $this->load($identifier, null, $association);
 
         if ($entity !== null) {
-            $targetClass->reflFields[$mappedBy]->setValue($entity, $sourceEntity);
+            $owningAssociation->setValue($entity, $sourceEntity);
         }
 
         return $entity;
@@ -1067,17 +1068,18 @@ class BasicEntityPersister implements EntityPersister
         foreach ($joinColumns as $joinColumn) {
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
-            $value            = $sourceClass->reflFields[$fieldName]->getValue($sourceEntity);
 
-            if (isset($sourceClass->associationMappings[$fieldName])) {
-                $targetMapping = $sourceClass->associationMappings[$fieldName];
-                $targetClass   = $this->em->getClassMetadata($targetMapping->getTargetEntity());
+            if (($property = $sourceClass->getProperty($fieldName)) !== null) {
+                $value = $property->getValue($sourceEntity);
+            } else if (isset($sourceClass->associationMappings[$fieldName])) {
+                $property    = $sourceClass->associationMappings[$fieldName];
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                $value       = $property->getValue($sourceEntity);
 
-                $id    = $this->em->getUnitOfWork()->getEntityIdentifier($value);
-                $value = $id[$targetClass->identifier[0]];
+                $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
+                $value = $value[$targetClass->identifier[0]];
             }
 
-            // @todo guilhermeblanco How could we handle composite primary keys here?
             $criteria[$joinTableName . '.' . $quotedColumnName] = $value;
             $parameters[] = [
                 'value' => $value,
@@ -1505,7 +1507,10 @@ class BasicEntityPersister implements EntityPersister
             : null
         ;
 
-        foreach ($this->class->reflFields as $name => $field) {
+        // @todo guilhermeblanco Remove the array_merge once properties and associationMappings get merged
+        $properties = array_merge($this->class->getProperties(), $this->class->associationMappings);
+
+        foreach ($properties as $name => $property) {
             if ($versionPropertyName === $name) {
                 continue;
             }
@@ -1514,13 +1519,11 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }*/
 
-            if (isset($this->class->associationMappings[$name])) {
-                $association = $this->class->associationMappings[$name];
+            if ($property instanceof AssociationMetadata) {
+                if ($property->isOwningSide() && $property instanceof ToOneAssociationMetadata) {
+                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
-                if ($association->isOwningSide() && $association instanceof ToOneAssociationMetadata) {
-                    $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-
-                    foreach ($association->getJoinColumns() as $joinColumn) {
+                    foreach ($property->getJoinColumns() as $joinColumn) {
                         $columnName           = $joinColumn->getColumnName();
                         $referencedColumnName = $joinColumn->getReferencedColumnName();
 
@@ -1540,7 +1543,6 @@ class BasicEntityPersister implements EntityPersister
             }
 
             if ($this->class->generatorType !== GeneratorType::IDENTITY || $this->class->identifier[0] !== $name) {
-                $property   = $this->class->getProperty($name);
                 $columnName = $property->getColumnName();
 
                 $columns[] = $columnName;
@@ -1897,17 +1899,18 @@ class BasicEntityPersister implements EntityPersister
         foreach ($owningAssoc->getJoinColumns() as $joinColumn) {
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
-            $value            = $sourceClass->reflFields[$fieldName]->getValue($sourceEntity);
 
-            if (isset($sourceClass->associationMappings[$fieldName])) {
-                $targetMapping = $sourceClass->associationMappings[$fieldName];
-                $targetClass   = $this->em->getClassMetadata($targetMapping->getTargetEntity());
+            if (($property = $sourceClass->getProperty($fieldName)) !== null) {
+                $value = $property->getValue($sourceEntity);
+            } else if (isset($sourceClass->associationMappings[$fieldName])) {
+                $property    = $sourceClass->associationMappings[$fieldName];
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                $value       = $property->getValue($sourceEntity);
 
                 $value = $this->em->getUnitOfWork()->getEntityIdentifier($value);
                 $value = $value[$targetClass->identifier[0]];
             }
 
-            // @todo guilhermeblanco How could we handle composite primary keys here?
             $criteria[$tableAlias . "." . $quotedColumnName] = $value;
             $parameters[] = [
                 'value' => $value,
