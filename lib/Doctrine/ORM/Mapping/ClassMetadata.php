@@ -334,13 +334,6 @@ class ClassMetadata implements ClassMetadataInterface
     protected $namingStrategy;
 
     /**
-     * The ReflectionProperty instances of the mapped class.
-     *
-     * @var \ReflectionProperty[]
-     */
-    public $reflFields = [];
-
-    /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
     private $instantiator;
@@ -362,28 +355,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the ReflectionProperties of the mapped class.
-     *
-     * @return array An array of ReflectionProperty instances.
-     */
-    public function getReflectionProperties()
-    {
-        return $this->reflFields;
-    }
-
-    /**
-     * Gets a ReflectionProperty for a specific field of the mapped class.
-     *
-     * @param string $name
-     *
-     * @return \ReflectionProperty
-     */
-    public function getReflectionProperty($name)
-    {
-        return $this->reflFields[$name];
-    }
-
-    /**
      * Extracts the identifier values of an entity of this class.
      *
      * For composite identifiers, the identifier values are returned as an array
@@ -399,7 +370,11 @@ class ClassMetadata implements ClassMetadataInterface
             $id = [];
 
             foreach ($this->identifier as $idField) {
-                $value = $this->reflFields[$idField]->getValue($entity);
+                if (($property = $this->getProperty($idField)) === null) {
+                    $property = $this->associationMappings[$idField];
+                }
+
+                $value = $property->getValue($entity);
 
                 if (null !== $value) {
                     $id[$idField] = $value;
@@ -409,14 +384,19 @@ class ClassMetadata implements ClassMetadataInterface
             return $id;
         }
 
-        $id = $this->identifier[0];
-        $value = $this->reflFields[$id]->getValue($entity);
+        $idField = $this->identifier[0];
+
+        if (($property = $this->getProperty($idField)) === null) {
+            $property = $this->associationMappings[$idField];
+        }
+
+        $value = $property->getValue($entity);
 
         if (null === $value) {
             return [];
         }
 
-        return [$id => $value];
+        return [$idField => $value];
     }
 
     /**
@@ -430,35 +410,12 @@ class ClassMetadata implements ClassMetadataInterface
     public function assignIdentifier($entity, array $id)
     {
         foreach ($id as $idField => $idValue) {
-            $this->reflFields[$idField]->setValue($entity, $idValue);
+            if (($property = $this->getProperty($idField)) === null) {
+                $property = $this->associationMappings[$idField];
+            }
+
+            $property->setValue($entity, $idValue);
         }
-    }
-
-    /**
-     * Sets the specified field to the specified value on the given entity.
-     *
-     * @param object $entity
-     * @param string $field
-     * @param mixed  $value
-     *
-     * @return void
-     */
-    public function setFieldValue($entity, $field, $value)
-    {
-        $this->reflFields[$field]->setValue($entity, $value);
-    }
-
-    /**
-     * Gets the specified field's value off the given entity.
-     *
-     * @param object $entity
-     * @param string $field
-     *
-     * @return mixed
-     */
-    public function getFieldValue($entity, $field)
-    {
-        return $this->reflFields[$field]->getValue($entity);
     }
     
     /**
@@ -633,13 +590,14 @@ class ClassMetadata implements ClassMetadataInterface
                 $property
             );
 
+            // @todo guilhermeblanco Handle reflection initialization once embeddables are back.
             $parentReflFields[$property] = $fieldRefl;
-            $this->reflFields[$property] = $fieldRefl;
         }*/
 
         foreach ($this->properties as $field => $property) {
             /*if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
-                $this->reflFields[$field] = new ReflectionEmbeddedProperty(
+                // @todo guilhermeblanco Handle reflection initialization once embeddables are back.
+                $this->reflection[$field] = new ReflectionEmbeddedProperty(
                     $parentReflFields[$mapping['declaredField']],
                     $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
                     $mapping['originalClass']
@@ -648,14 +606,10 @@ class ClassMetadata implements ClassMetadataInterface
             }*/
 
             $property->wakeupReflection($reflService);
-
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
 
         foreach ($this->associationMappings as $field => $property) {
             $property->wakeupReflection($reflService);
-
-            $this->reflFields[$field] = $reflService->getAccessibleProperty($property->getDeclaringClass()->name, $field);
         }
     }
 

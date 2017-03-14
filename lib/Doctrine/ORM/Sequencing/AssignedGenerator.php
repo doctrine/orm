@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\ORMException;
 
 /**
@@ -47,13 +48,17 @@ class AssignedGenerator implements Generator
         $identifier = [];
 
         foreach ($idFields as $idField) {
-            $value = $class->getFieldValue($entity, $idField);
+            if (($property = $class->getProperty($idField)) === null) {
+                $property = $class->associationMappings[$idField];
+            }
+
+            $value = $property->getValue($entity);
 
             if ( ! isset($value)) {
                 throw ORMException::entityMissingAssignedIdForField($entity, $idField);
             }
 
-            if (isset($class->associationMappings[$idField])) {
+            if ($property instanceof AssociationMetadata) {
                 // NOTE: Single Columns as associated identifiers only allowed - this constraint it is enforced.
                 $value = $em->getUnitOfWork()->getSingleIdentifierValue($value);
             }

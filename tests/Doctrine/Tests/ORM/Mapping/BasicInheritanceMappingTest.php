@@ -101,21 +101,6 @@ class BasicInheritanceMappingTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-388
-     */
-    public function testSerializationWithPrivateFieldsFromMappedSuperclass()
-    {
-        $class  = $this->cmf->getMetadataFor(EntitySubClass2::class);
-        $class2 = unserialize(serialize($class));
-
-        $class2->wakeupReflection(new RuntimeReflectionService);
-
-        self::assertArrayHasKey('mapped1', $class2->reflFields);
-        self::assertArrayHasKey('mapped2', $class2->reflFields);
-        self::assertArrayHasKey('mappedRelated1', $class2->reflFields);
-    }
-
-    /**
      * @group DDC-1203
      */
     public function testUnmappedSuperclassInHierarchy()
