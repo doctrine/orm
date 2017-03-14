@@ -448,10 +448,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         foreach ($parentClass->getProperties() as $property) {
             $subClass->addInheritedProperty($property);
         }
-
-        foreach ($parentClass->reflFields as $name => $field) {
-            $subClass->reflFields[$name] = $field;
-        }
     }
 
     /**

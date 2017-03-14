@@ -169,10 +169,10 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         // If _backRefFieldName is set and its a one-to-many association,
         // we need to set the back reference.
         if ($this->backRefFieldName && $this->association instanceof OneToManyAssociationMetadata) {
+            $inversedAssociation = $this->typeClass->associationMappings[$this->backRefFieldName];
+
             // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
-                $element, $this->owner
-            );
+            $inversedAssociation->setValue($element, $this->owner);
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
                 spl_object_hash($element), $this->backRefFieldName, $this->owner
@@ -196,9 +196,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         // If _backRefFieldName is set, then the association is bidirectional
         // and we need to set the back reference.
         if ($this->backRefFieldName && $this->association instanceof OneToManyAssociationMetadata) {
+            $inversedAssociation = $this->typeClass->associationMappings[$this->backRefFieldName];
+
             // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
-                $element, $this->owner
+            $inversedAssociation->setValue($element, $this->owner);
+
+            $this->em->getUnitOfWork()->setOriginalEntityProperty(
+                spl_object_hash($element), $this->backRefFieldName, $this->owner
             );
         }
     }

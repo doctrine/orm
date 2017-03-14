@@ -87,6 +87,7 @@ class WhereInWalker extends TreeWalkerAdapter
         $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
 
         $pathType = PathExpression::TYPE_STATE_FIELD;
+
         if (isset($rootClass->associationMappings[$identifierFieldName])) {
             $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
         }
