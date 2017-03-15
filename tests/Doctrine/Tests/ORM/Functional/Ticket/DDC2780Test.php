@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2780
@@ -16,10 +17,10 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setup();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(DDC2780User::class),
-                $this->_em->getClassMetadata(DDC2780Project::class)
+                $this->em->getClassMetadata(DDC2780User::class),
+                $this->em->getClassMetadata(DDC2780Project::class)
             ]
         );
     }
@@ -34,12 +35,12 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user->project = $project;
 
-        $this->_em->persist($project);
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($project);
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $result = $this->_em->createQueryBuilder()
+        $result = $this->em->createQueryBuilder()
             ->select('user')
             ->from(DDC2780User::class, 'user')
             ->leftJoin('user.project', 'project')
@@ -52,29 +53,35 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2780User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC2780Project")
+     * @ORM\ManyToOne(targetEntity="DDC2780Project")
      *
      * @var DDC2780Project
      */
     public $project;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2780Project
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC2780User", mappedBy="project")
+     * @ORM\OneToMany(targetEntity="DDC2780User", mappedBy="project")
      *
      * @var DDC2780User[]
      */
