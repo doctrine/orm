@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2780
@@ -52,29 +53,35 @@ class DDC2780Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2780User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC2780Project")
+     * @ORM\ManyToOne(targetEntity="DDC2780Project")
      *
      * @var DDC2780Project
      */
     public $project;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2780Project
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /**
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC2780User", mappedBy="project")
+     * @ORM\OneToMany(targetEntity="DDC2780User", mappedBy="project")
      *
      * @var DDC2780User[]
      */
