@@ -93,7 +93,7 @@ class ClassMetadata implements ClassMetadataInterface
     public $isEmbeddedClass = false;
 
     /**
-     * READ-ONLY: Whether this class describes the mapping of a read-only class.
+     * Whether this class describes the mapping of a read-only class.
      * That means it is never considered for change-tracking in the UnitOfWork.
      * It is a very helpful performance optimization for entities that are immutable,
      * either in your domain or through the relation database (coming from a view,
@@ -101,7 +101,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @var boolean
      */
-    public $isReadOnly = false;
+    private $readOnly = false;
 
     /**
      * READ-ONLY: The names of the parent classes (ancestors).
@@ -535,8 +535,8 @@ class ClassMetadata implements ClassMetadataInterface
             $serialized[] = 'sqlResultSetMappings';
         }
 
-        if ($this->isReadOnly) {
-            $serialized[] = 'isReadOnly';
+        if ($this->readOnly) {
+            $serialized[] = 'readOnly';
         }
 
         if ($this->cache) {
@@ -2205,7 +2205,17 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function markReadOnly()
     {
-        $this->isReadOnly = true;
+        $this->readOnly = true;
+    }
+
+    /**
+     * Whether this class is read only or not.
+     *
+     * @return bool
+     */
+    public function isReadOnly()
+    {
+        return $this->readOnly;
     }
 
     /**

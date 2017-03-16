@@ -155,7 +155,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testSetReadOnly()
     {
         self::assertIsFluent($this->builder->setReadOnly());
-        self::assertTrue($this->cm->isReadOnly);
+        self::assertTrue($this->cm->isReadOnly());
     }
 
     public function testSetInheritanceJoined()
