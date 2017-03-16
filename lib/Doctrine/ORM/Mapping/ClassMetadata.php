@@ -808,37 +808,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets the mapping of an association.
-     *
-     * @see ClassMetadata::$associationMappings
-     *
-     * @param string $fieldName The field name that represents the association in
-     *                          the object model.
-     *
-     * @return array The mapping.
-     *
-     * @throws MappingException
-     */
-    public function getAssociationMapping($fieldName)
-    {
-        if ( ! isset($this->associationMappings[$fieldName])) {
-            throw MappingException::mappingNotFound($this->name, $fieldName);
-        }
-
-        return $this->associationMappings[$fieldName];
-    }
-
-    /**
-     * Gets all association mappings of the class.
-     *
-     * @return array
-     */
-    public function getAssociationMappings()
-    {
-        return $this->associationMappings;
-    }
-
-    /**
      * Gets the named query.
      *
      * @see ClassMetadata::$namedQueries
