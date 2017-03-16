@@ -2328,22 +2328,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * @param string $name
-     *
-     * @return mixed
-     *
-     * @todo guilhermeblanco Consider removing this method somehow
-     */
-    public function getMetadataValue($name)
-    {
-        if (isset($this->$name)) {
-            return $this->$name;
-        }
-
-        return null;
-    }
-
-    /**
      * Map Embedded Class
      *
      * @param array $mapping
