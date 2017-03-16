@@ -3299,6 +3299,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::onFlush)) {
             $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
         }
+        $subscribedSystems = [];
         foreach ($this->entityChangeSets as $oid => $entityChangeSet) {
             foreach ($this->identityMap as $className => $entities) {
                 $hash = (isset($this->entityIdentifiers[$oid]) && isset($this->entityIdentifiers[$oid]['id'])) ? $this->entityIdentifiers[$oid]['id'] : null;
@@ -3307,8 +3308,12 @@ class UnitOfWork implements PropertyChangedListener
                     if (isset($this->identityMap[$className][$hash])) {
                         $entity = $this->identityMap[$className][$hash];
                         if ($oid == spl_object_hash($entity)) {
-                            $class = $this->em->getClassMetadata(get_class($entity));
-                            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::onFlush) & ~ListenersInvoker::INVOKE_MANAGER;
+                            $entityClass = get_class($entity);
+                            $class = $this->em->getClassMetadata($entityClass);
+                            if (!isset($subscribedSystems[$entityClass])) {
+                                $subscribedSystems[$entityClass] = $this->listenersInvoker->getSubscribedSystems($class, Events::onFlush) & ~ListenersInvoker::INVOKE_MANAGER;
+                            }
+                            $invoke = $subscribedSystems[$entityClass];
                             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                                 $this->listenersInvoker->invoke($class, Events::onFlush, $entity, new OnFlushEventArgs($this->em), $invoke);
                             }
@@ -3324,6 +3329,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
         }
+        $subscribedSystems = [];
         foreach ($this->entityChangeSets as $oid => $entityChangeSet) {
             foreach ($this->identityMap as $className => $entities) {
                 $hash = (isset($this->entityIdentifiers[$oid]) && isset($this->entityIdentifiers[$oid]['id'])) ? $this->entityIdentifiers[$oid]['id'] : null;
@@ -3332,8 +3338,12 @@ class UnitOfWork implements PropertyChangedListener
                     if (isset($this->identityMap[$className][$hash])) {
                         $entity = $this->identityMap[$className][$hash];
                         if ($oid == spl_object_hash($entity)) {
-                            $class = $this->em->getClassMetadata(get_class($entity));
-                            $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postFlush) & ~ListenersInvoker::INVOKE_MANAGER;
+                            $entityClass = get_class($entity);
+                            $class = $this->em->getClassMetadata($entityClass);
+                            if (!isset($subscribedSystems[$entityClass])) {
+                                $subscribedSystems[$entityClass] = $this->listenersInvoker->getSubscribedSystems($class, Events::postFlush) & ~ListenersInvoker::INVOKE_MANAGER;
+                            }
+                            $invoke = $subscribedSystems[$entityClass];
                             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
                                 $this->listenersInvoker->invoke($class, Events::postFlush, $entity, new PostFlushEventArgs($this->em), $invoke);
                             }
