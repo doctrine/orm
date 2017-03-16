@@ -2110,8 +2110,6 @@ class SqlWalker implements TreeWalker
 
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
-
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
 
                 continue;

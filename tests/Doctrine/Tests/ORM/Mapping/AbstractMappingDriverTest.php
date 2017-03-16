@@ -594,10 +594,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $em->getConfiguration()->setNamingStrategy(new UnderscoreNamingStrategy(CASE_UPPER));
         self::assertInstanceOf(UnderscoreNamingStrategy::class, $em->getConfiguration()->getNamingStrategy());
 
-        $class = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
+        $class        = $factory->getMetadataFor(DDC1476EntityWithDefaultFieldType::class);
+        $idProperty   = $class->getProperty('id');
+        $nameProperty = $class->getProperty('name');
 
-        self::assertEquals('ID', $class->getColumnName('id'));
-        self::assertEquals('NAME', $class->getColumnName('name'));
+        self::assertEquals('ID', $idProperty->getColumnName());
+        self::assertEquals('NAME', $nameProperty->getColumnName());
         self::assertEquals('DDC1476ENTITY_WITH_DEFAULT_FIELD_TYPE', $class->table->getName());
     }
 
