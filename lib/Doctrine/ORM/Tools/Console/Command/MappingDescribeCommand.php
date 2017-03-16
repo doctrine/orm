@@ -120,7 +120,7 @@ EOT
                     $this->formatField('Change tracking policy', $metadata->changeTrackingPolicy),
                     $this->formatField('Versioned?', $metadata->isVersioned()),
                     $this->formatField('Version field', ($metadata->isVersioned() ? $metadata->versionProperty->getName() : '')),
-                    $this->formatField('Read only?', $metadata->isReadOnly),
+                    $this->formatField('Read only?', $metadata->isReadOnly()),
 
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],

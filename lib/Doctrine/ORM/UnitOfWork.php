@@ -487,7 +487,7 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes for INSERTed entities first. This must always happen even in this case.
         $this->computeScheduleInsertsChangeSets();
 
-        if ($class->isReadOnly) {
+        if ($class->isReadOnly()) {
             return;
         }
 
@@ -783,7 +783,7 @@ class UnitOfWork implements PropertyChangedListener
             $class = $this->em->getClassMetadata($className);
 
             // Skip class if instances are read-only
-            if ($class->isReadOnly) {
+            if ($class->isReadOnly()) {
                 continue;
             }
 

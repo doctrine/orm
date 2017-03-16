@@ -87,7 +87,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(['UserParent'], $cm->parentClasses);
         self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
-        self::assertTrue($cm->isReadOnly);
+        self::assertTrue($cm->isReadOnly());
         self::assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);
         self::assertEquals(1, count($cm->associationMappings));
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->associationMappings['phonenumbers']);
