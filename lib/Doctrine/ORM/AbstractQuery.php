@@ -21,8 +21,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
-
+use Doctrine\Common\Collections\ArrayCollection;;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
@@ -404,6 +403,13 @@ abstract class AbstractQuery
             return $value;
         }
 
+        if ($value instanceof Mapping\ClassMetadata) {
+            return $value->discriminatorValue
+                ? $value->discriminatorValue
+                : $value->name
+            ;
+        }
+
         if ($value instanceof Collection) {
             $value = $value->toArray();
         }
@@ -423,10 +429,6 @@ abstract class AbstractQuery
             if ($value === null) {
                 throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
             }
-        }
-
-        if ($value instanceof Mapping\ClassMetadata) {
-            return $value->name;
         }
 
         return $value;
@@ -528,7 +530,7 @@ abstract class AbstractQuery
      */
     public function setResultCacheProfile(QueryCacheProfile $profile = null)
     {
-        if ( ! $profile->getResultCacheDriver()) {
+        if (! $profile->getResultCacheDriver()) {
             $resultCacheDriver = $this->em->getConfiguration()->getResultCacheImpl();
             $profile = $profile->setResultCacheDriver($resultCacheDriver);
         }
@@ -1106,9 +1108,7 @@ abstract class AbstractQuery
     public function __clone()
     {
         $this->parameters = new ArrayCollection();
-
-        $this->hints = [];
-        $this->hints = $this->em->getConfiguration()->getDefaultQueryHints();
+        $this->hints      = $this->em->getConfiguration()->getDefaultQueryHints();
     }
 
     /**

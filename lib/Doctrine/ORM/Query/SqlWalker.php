@@ -2379,8 +2379,6 @@ class SqlWalker implements TreeWalker
 
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
-
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
 
                 continue;
@@ -2389,7 +2387,6 @@ class SqlWalker implements TreeWalker
             // Get name from ClassMetadata to resolve aliases.
             $entityClass        = $this->em->getClassMetadata($parameter);
             $entityClassName    = $entityClass->name;
-            $discriminatorValue = $class->discriminatorValue;
 
             if ($entityClassName !== $rootClass->name) {
                 if (! $entityClass->getReflectionClass()->isSubclassOf($rootClass->name)) {

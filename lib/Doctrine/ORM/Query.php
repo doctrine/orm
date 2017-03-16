@@ -387,21 +387,20 @@ final class Query extends AbstractQuery
         $types     = [];
 
         foreach ($this->parameters as $parameter) {
-            $key    = $parameter->getName();
-            $value  = $parameter->getValue();
-            $rsm    = $this->getResultSetMapping();
+            $key   = $parameter->getName();
+            $value = $parameter->getValue();
+            $rsm   = $this->getResultSetMapping();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
             }
 
-            // @todo guilhermeblanco Why is this needed?
             if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
                 $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }
 
             if (isset($rsm->discriminatorParameters[$key]) && $value instanceof ClassMetadata) {
-                $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->_em));
+                $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->em));
             }
 
             $value = $this->processParameterValue($value);
