@@ -790,24 +790,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Gets a column name for a field name.
-     * If the column name for the field cannot be found, the given field name
-     * is returned.
-     *
-     * @todo remove
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return string The column name.
-     */
-    public function getColumnName($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            ? $this->properties[$fieldName]->getColumnName()
-            : $fieldName;
-    }
-
-    /**
      * Gets the named query.
      *
      * @see ClassMetadata::$namedQueries
@@ -1253,19 +1235,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         return $this->identifier[0];
-    }
-
-    /**
-     * Gets the column name of the single id column. Note that this only works on
-     * entity classes that have a single-field pk.
-     *
-     * @return string
-     *
-     * @throws MappingException If the class has a composite primary key.
-     */
-    public function getSingleIdentifierColumnName()
-    {
-        return $this->getColumnName($this->getSingleIdentifierFieldName());
     }
 
     /**
@@ -2448,7 +2417,9 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getSequenceName(AbstractPlatform $platform)
     {
-        return sprintf('%s_%s_seq', $this->getSequencePrefix($platform), $this->getSingleIdentifierColumnName());
+        $property = $this->properties[$this->getSingleIdentifierFieldName()];
+
+        return sprintf('%s_%s_seq', $this->getSequencePrefix($platform), $property->getColumnName());
     }
 
     /**

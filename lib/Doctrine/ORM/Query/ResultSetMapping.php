@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Query;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
@@ -161,13 +162,6 @@ class ResultSetMapping
      * @var array
      */
     public $newObjectMappings = [];
-
-    /**
-     * Maps metadata parameter names to the metadata attribute.
-     *
-     * @var array
-     */
-    public $metadataParameterMapping = [];
 
     /**
      * Adds an entity result to this ResultSetMapping.
@@ -388,17 +382,6 @@ class ResultSetMapping
     }
 
     /**
-     * Adds a metadata parameter mappings.
-     *
-     * @param mixed  $parameter The parameter name in the SQL result set.
-     * @param string $attribute The metadata attribute.
-     */
-    public function addMetadataParameterMapping($parameter, $attribute)
-    {
-        $this->metadataParameterMapping[$parameter] = $attribute;
-    }
-
-    /**
      * Checks whether a column with a given name is mapped as a scalar result.
      *
      * @param string $columnName The name of the column in the SQL result set.
@@ -452,7 +435,7 @@ class ResultSetMapping
     /**
      * @param string $alias
      *
-     * @return AssociationMapping
+     * @return AssociationMetadata
      */
     public function getRelation($alias)
     {

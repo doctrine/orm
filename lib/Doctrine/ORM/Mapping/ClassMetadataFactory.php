@@ -683,17 +683,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         switch ($class->generatorType) {
             case GeneratorType::IDENTITY:
                 $sequenceName = null;
-                $fieldName    = $class->identifier ? $class->getSingleIdentifierFieldName() : null;
+                $property     = $class->identifier
+                    ? $class->getProperty($class->getSingleIdentifierFieldName())
+                    : null
+                ;
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($platform->usesSequenceEmulatedIdentityColumns()) {
-                    $columnName     = $class->getSingleIdentifierColumnName();
+                if ($property && $platform->usesSequenceEmulatedIdentityColumns()) {
                     $sequencePrefix = $class->getSequencePrefix($platform);
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $columnName);
+                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
                     $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
                 }
 
-                $generator = ($fieldName && $class->getProperty($fieldName)->getTypeName() === 'bigint')
+                $generator = ($property && $property->getTypeName() === 'bigint')
                     ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
                     : new Sequencing\IdentityGenerator($sequenceName)
                 ;
@@ -707,10 +709,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $definition = $class->generatorDefinition;
 
                 if ( ! $definition) {
-                    $sequenceName   = $class->getSequenceName($platform);
+                    // @todo guilhermeblanco Move sequence generation to DBAL
+                    $idSequenceName = $class->getSequenceName($platform);
+                    $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
 
                     $definition = [
-                        'sequenceName'   => $platform->fixSchemaElementName($sequenceName),
+                        'sequenceName'   => $sequenceName,
                         'allocationSize' => 1,
                     ];
 

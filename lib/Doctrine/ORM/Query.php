@@ -386,17 +386,11 @@ final class Query extends AbstractQuery
         $types     = [];
 
         foreach ($this->parameters as $parameter) {
-            $key    = $parameter->getName();
-            $value  = $parameter->getValue();
-            $rsm    = $this->getResultSetMapping();
+            $key   = $parameter->getName();
+            $value = $parameter->getValue();
 
             if ( ! isset($paramMappings[$key])) {
                 throw QueryException::unknownParameter($key);
-            }
-
-            // @todo guilhermeblanco Why is this needed?
-            if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
-                $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
             }
 
             $value = $this->processParameterValue($value);

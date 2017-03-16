@@ -648,7 +648,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
             $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
-            $columnName       = $targetClass->getColumnName($indexBy);
+            $columnName       = $targetClass->getProperty($indexBy)->getColumnName();
 
             $whereClauses[] = 'tr.' . $this->platform->quoteIdentifier($columnName) . ' = ?';
             $params[]       = $key;
