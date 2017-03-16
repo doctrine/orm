@@ -278,8 +278,6 @@ Field & Association Getters
 -  ``isNullable($fieldName)``
 -  ``getColumnName($fieldName)``
 -  ``getFieldMapping($fieldName)``
--  ``getAssociationMapping($fieldName)``
--  ``getAssociationMappings()``
 -  ``getFieldName($columnName)``
 -  ``hasField($fieldName)``
 -  ``getTypeOfField($fieldName)``

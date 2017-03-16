@@ -47,7 +47,7 @@ appropriate autoloaders.
                 $classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
             }
 
-            foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
+            foreach ($classMetadata->associationMappings as $fieldName => $mapping) {
                 if ($mapping['type'] == Mapping\ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                     $mappedTableName = $mapping['joinTable']['name'];
                     $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
