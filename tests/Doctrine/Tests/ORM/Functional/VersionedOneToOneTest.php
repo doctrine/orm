@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity;
 use Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity;
 use Doctrine\ORM\ORMException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests that an entity with a OneToOne relationship defined as the id, with a version field can be created.
@@ -13,7 +14,7 @@ use Doctrine\ORM\ORMException;
  *
  * @group VersionedOneToOne
  */
-class VersionedOneToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class VersionedOneToOneTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -21,10 +22,10 @@ class VersionedOneToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema(
-                array(
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
-                )
+                [
+                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
+                    $this->_em->getClassMetadata(SecondRelatedEntity::class)
+                ]
             );
         } catch (ORMException $e) {
         }
@@ -49,11 +50,11 @@ class VersionedOneToOneTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($firstRelatedEntity);
         $this->_em->flush();
 
-        $firstEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity')
-            ->findOneBy(array('name' => 'Fred'));
+        $firstEntity = $this->_em->getRepository(FirstRelatedEntity::class)
+            ->findOneBy(['name' => 'Fred']);
 
-        $secondEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity')
-            ->findOneBy(array('name' => 'Bob'));
+        $secondEntity = $this->_em->getRepository(SecondRelatedEntity::class)
+            ->findOneBy(['name' => 'Bob']);
 
         $this->assertSame($firstRelatedEntity, $firstEntity);
         $this->assertSame($secondRelatedEntity, $secondEntity);

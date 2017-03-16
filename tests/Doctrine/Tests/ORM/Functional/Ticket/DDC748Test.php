@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsUser;
 
 class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -31,10 +31,10 @@ class DDC748Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($article);
         $this->_em->flush();
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $user->articles);
+        $this->assertInstanceOf(Collection::class, $user->articles);
         $this->_em->refresh($article);
         $this->assertTrue($article !== $user->articles, "The article should not be replaced on the inverse side of the relation.");
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $user->articles);
+        $this->assertInstanceOf(Collection::class, $user->articles);
     }
 
     public function testRefreshOneToOne()

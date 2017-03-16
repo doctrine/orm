@@ -78,7 +78,7 @@ class DebugUnitOfWorkListener
         $uow = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
 
-        $fh = fopen($this->file, "x+");
+        $fh = fopen($this->file, 'xb+');
         if (count($identityMap) == 0) {
             fwrite($fh, "Flush Operation [".$this->context."] - Empty identity map.\n");
 

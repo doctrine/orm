@@ -2,15 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC211Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC211User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC211Group')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC211User::class),
+            $this->_em->getClassMetadata(DDC211Group::class)
+            ]
+        );
     }
 
     public function testIssue()
@@ -23,7 +27,7 @@ class DDC211Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $groupNames = array('group 1', 'group 2', 'group 3', 'group 4');
+        $groupNames = ['group 1', 'group 2', 'group 3', 'group 4'];
         foreach ($groupNames as $name) {
 
             $group = new DDC211Group;

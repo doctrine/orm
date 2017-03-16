@@ -3,11 +3,12 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Base class for testing a many-to-many association mapping (without inheritance).
  */
-class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctionalTestCase
+class AbstractManyToManyAssociationTestCase extends OrmFunctionalTestCase
 {
     protected $_firstField;
     protected $_secondField;
@@ -30,7 +31,8 @@ class AbstractManyToManyAssociationTestCase extends \Doctrine\Tests\OrmFunctiona
               FROM {$this->_table}
              WHERE {$this->_firstField} = ?
                AND {$this->_secondField} = ?
-        ", array($firstId, $secondId))->fetchAll());
+        ", [$firstId, $secondId]
+        )->fetchAll());
     }
 
     public function assertCollectionEquals(Collection $first, Collection $second)

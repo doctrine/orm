@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
-
 class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testPassColumnOptionsToJoinColumns()
@@ -12,10 +10,12 @@ class DDC2182Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped("This test is useful for all databases, but designed only for mysql.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSql(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2182OptionParent'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2182OptionChild'),
-        ));
+        $sql = $this->_schemaTool->getCreateSchemaSql(
+            [
+            $this->_em->getClassMetadata(DDC2182OptionParent::class),
+            $this->_em->getClassMetadata(DDC2182OptionChild::class),
+            ]
+        );
 
         $this->assertEquals("CREATE TABLE DDC2182OptionParent (id INT UNSIGNED NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB", $sql[0]);
         $this->assertEquals("CREATE TABLE DDC2182OptionChild (id VARCHAR(255) NOT NULL, parent_id INT UNSIGNED DEFAULT NULL, INDEX IDX_B314D4AD727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB", $sql[1]);

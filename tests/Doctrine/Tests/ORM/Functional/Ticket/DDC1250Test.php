@@ -2,9 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsEmployee;
-
 /**
  * @group DDC-1250
  */
@@ -14,9 +11,11 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1250ClientHistory'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1250ClientHistory::class),
+                ]
+            );
         } catch(\PDOException $e) {
 
         }
@@ -39,7 +38,7 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $history = $this->_em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
                   ->setParameter(1, $c2->id)->getSingleResult();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC1250ClientHistory', $history);
+        $this->assertInstanceOf(DDC1250ClientHistory::class, $history);
     }
 }
 

@@ -6,17 +6,17 @@ class CompanyContractListener
 {
     public $postPersistCalls;
     public $prePersistCalls;
-    
+
     public $postUpdateCalls;
     public $preUpdateCalls;
-    
+
     public $postRemoveCalls;
     public $preRemoveCalls;
 
     public $preFlushCalls;
-    
+
     public $postLoadCalls;
-    
+
     /**
      * @PostPersist
      */
@@ -80,5 +80,4 @@ class CompanyContractListener
     {
         $this->postLoadCalls[] = func_get_args();
     }
-
 }

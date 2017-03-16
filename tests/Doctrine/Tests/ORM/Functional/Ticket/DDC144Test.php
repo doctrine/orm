@@ -2,17 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC144Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC144Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144FlowElement'),
-        //    $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Expression'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC144Operand'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC144FlowElement::class),
+            $this->_em->getClassMetadata(DDC144Operand::class),
+            ]
+        );
 
     }
 

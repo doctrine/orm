@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
-
 /**
  * @group DDC-618
  */
@@ -13,10 +11,12 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC618Author'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC618Book')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC618Author::class),
+                $this->_em->getClassMetadata(DDC618Book::class)
+                ]
+            );
 
             // Create author 10/Joe with two books 22/JoeA and 20/JoeB
             $author = new DDC618Author();
@@ -46,8 +46,8 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $joe    = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 10);
-        $alice  = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 11);
+        $joe    = $this->_em->find(DDC618Author::class, 10);
+        $alice  = $this->_em->find(DDC618Author::class, 11);
 
         $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
         $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
@@ -58,8 +58,8 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = 'SELECT A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
-        $joe    = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 10);
-        $alice  = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', 11);
+        $joe    = $this->_em->find(DDC618Author::class, 10);
+        $alice  = $this->_em->find(DDC618Author::class, 11);
 
         $this->assertArrayHasKey('Joe', $result, "INDEX BY A.name should return an index by the name of 'Joe'.");
         $this->assertArrayHasKey('Alice', $result, "INDEX BY A.name should return an index by the name of 'Alice'.");
@@ -98,8 +98,8 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';
         $result = $this->_em->createQuery($dql)->getResult(\Doctrine\ORM\Query::HYDRATE_OBJECT);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Book', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC618Author', $result[0]->author);
+        $this->assertInstanceOf(DDC618Book::class, $result[0]);
+        $this->assertInstanceOf(DDC618Author::class, $result[0]->author);
 
         $dql = 'SELECT B, A FROM Doctrine\Tests\ORM\Functional\Ticket\DDC618Book B '.
                'INNER JOIN B.author A INDEX BY A.name ORDER BY A.name ASC';

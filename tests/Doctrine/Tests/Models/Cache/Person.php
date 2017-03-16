@@ -9,8 +9,6 @@ namespace Doctrine\Tests\Models\Cache;
  */
 class Person
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

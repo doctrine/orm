@@ -2,15 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceCart;
-use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\Models\ECommerce\ECommerceCart;
+use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     private $customer;
     private $cart;
@@ -60,27 +62,27 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $result = $query->getResult();
         $customer = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
+        $this->assertInstanceOf(ECommerceCart::class, $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
     public function testLazyLoadsObjectsOnTheOwningSide() {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $metadata = $this->_em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['customer']['fetchMode'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();
         $cart = $result[0];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart->getCustomer());
+        $this->assertInstanceOf(ECommerceCustomer::class, $cart->getCustomer());
         $this->assertEquals('Giorgio', $cart->getCustomer()->getName());
     }
 
     public function testInverseSideIsNeverLazy()
     {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
+        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_EAGER;
 
         $query = $this->_em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
@@ -88,8 +90,8 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $customer = $result[0];
 
         $this->assertNull($customer->getMentor());
-        $this->assertInstanceOF('Doctrine\Tests\Models\ECommerce\ECommerceCart', $customer->getCart());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getCart());
+        $this->assertInstanceOf(ECommerceCart::class, $customer->getCart());
+        $this->assertNotInstanceOf(Proxy::class, $customer->getCart());
         $this->assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
@@ -105,7 +107,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCart', $cust->getCart());
+        $this->assertInstanceOf(ECommerceCart::class, $cust->getCart());
         $this->assertEquals('Roman', $cust->getName());
         $this->assertSame($cust, $cart->getCustomer());
 
@@ -124,7 +126,7 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
 
         $cart3 = $query2->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $cart3->getCustomer());
+        $this->assertInstanceOf(ECommerceCustomer::class, $cart3->getCustomer());
         $this->assertEquals('Roman', $cart3->getCustomer()->getName());
     }
 
@@ -143,7 +145,8 @@ class OneToOneBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctional
     }
 
     public function assertCartForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', array($this->cart->getId()))->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', [$this->cart->getId()]
+        )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
 }

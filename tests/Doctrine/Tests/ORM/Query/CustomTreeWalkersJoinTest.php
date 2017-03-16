@@ -1,25 +1,11 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for custom AST walking and adding new joins.
@@ -28,7 +14,7 @@ use Doctrine\ORM\Query;
  * @license     MIT
  * @link        http://www.doctrine-project.org
  */
-class CustomTreeWalkersJoinTest extends \Doctrine\Tests\OrmTestCase
+class CustomTreeWalkersJoinTest extends OrmTestCase
 {
     private $em;
 
@@ -41,7 +27,7 @@ class CustomTreeWalkersJoinTest extends \Doctrine\Tests\OrmTestCase
     {
         try {
             $query = $this->em->createQuery($dqlToBeTested);
-            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Query\CustomTreeWalkerJoin'))
+            $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomTreeWalkerJoin::class])
                   ->useQueryCache(false);
 
             $this->assertEquals($sqlToBeConfirmed, $query->getSql());
@@ -75,15 +61,15 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
     {
         foreach ($selectStatement->fromClause->identificationVariableDeclarations as $identificationVariableDeclaration) {
             $rangeVariableDecl = $identificationVariableDeclaration->rangeVariableDeclaration;
-            
-            if ($rangeVariableDecl->abstractSchemaName !== 'Doctrine\Tests\Models\CMS\CmsUser') {
+
+            if ($rangeVariableDecl->abstractSchemaName !== CmsUser::class) {
                 continue;
             }
-            
+
             $this->modifySelectStatement($selectStatement, $identificationVariableDeclaration);
         }
     }
-    
+
     private function modifySelectStatement(Query\AST\SelectStatement $selectStatement, $identificationVariableDecl)
     {
         $rangeVariableDecl       = $identificationVariableDecl->rangeVariableDeclaration;
@@ -91,23 +77,23 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
         $joinAssocDeclaration    = new Query\AST\JoinAssociationDeclaration($joinAssocPathExpression, $rangeVariableDecl->aliasIdentificationVariable . 'a', null);
         $join                    = new Query\AST\Join(Query\AST\Join::JOIN_TYPE_LEFT, $joinAssocDeclaration);
         $selectExpression        = new Query\AST\SelectExpression($rangeVariableDecl->aliasIdentificationVariable . 'a', null, false);
-        
+
         $identificationVariableDecl->joins[]                = $join;
         $selectStatement->selectClause->selectExpressions[] = $selectExpression;
 
         $entityManager   = $this->_getQuery()->getEntityManager();
-        $userMetadata    = $entityManager->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser');
-        $addressMetadata = $entityManager->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress');
+        $userMetadata    = $entityManager->getClassMetadata(CmsUser::class);
+        $addressMetadata = $entityManager->getClassMetadata(CmsAddress::class);
 
         $this->setQueryComponent($rangeVariableDecl->aliasIdentificationVariable . 'a',
-            array(
+            [
                 'metadata'     => $addressMetadata,
                 'parent'       => $rangeVariableDecl->aliasIdentificationVariable,
                 'relation'     => $userMetadata->getAssociationMapping('address'),
                 'map'          => null,
                 'nestingLevel' => 0,
                 'token'        => null,
-            )
+            ]
         );
     }
 }

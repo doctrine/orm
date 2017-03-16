@@ -1,35 +1,18 @@
 <?php
-/*
- *  $Id$
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
 use Doctrine\ORM\Tools\ConvertDoctrine1Schema;
 use Doctrine\Tests\Mocks\MetadataDriverMock;
-use Doctrine\Tests\Mocks\DatabasePlatformMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for converting a Doctrine 1 style schema to Doctrine 2 mapping files
@@ -41,17 +24,16 @@ use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
  * @since       2.0
  * @version     $Revision$
  */
-class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
+class ConvertDoctrine1SchemaTest extends OrmTestCase
 {
     protected function _createEntityManager($metadataDriver)
     {
         $driverMock = new DriverMock();
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
         $eventManager = new EventManager();
-        $conn = new ConnectionMock(array(), $driverMock, $config, $eventManager);
-        $mockDriver = new MetadataDriverMock();
+        $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
@@ -74,7 +56,7 @@ class ConvertDoctrine1SchemaTest extends \Doctrine\Tests\OrmTestCase
         $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
         $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
 
-        $metadataDriver = new \Doctrine\ORM\Mapping\Driver\YamlDriver(__DIR__ . '/convert');
+        $metadataDriver = new YamlDriver(__DIR__ . '/convert');
         $em = $this->_createEntityManager($metadataDriver);
         $cmf = new DisconnectedClassMetadataFactory();
         $cmf->setEntityManager($em);

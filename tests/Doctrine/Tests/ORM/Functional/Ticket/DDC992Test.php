@@ -13,11 +13,13 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Role'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Parent'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Child'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC992Role::class),
+                $this->_em->getClassMetadata(DDC992Parent::class),
+                $this->_em->getClassMetadata(DDC992Child::class),
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -65,7 +67,7 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(1, count($parent->childs));
         $this->assertEquals(0, count($parent->childs[0]->childs()));
 
-        $child = $parentRepository->findOneBy(array("id" => $child->id));
+        $child = $parentRepository->findOneBy(["id" => $child->id]);
         $this->assertSame($parent->childs[0], $child);
 
         $this->_em->clear();

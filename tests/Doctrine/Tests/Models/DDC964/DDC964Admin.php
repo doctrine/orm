@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @AssociationOverrides({
@@ -25,23 +23,31 @@ class DDC964Admin extends DDC964User
 {
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->setAssociationOverride('address',array(
-            'joinColumns'=>array(array(
+        $metadata->setAssociationOverride('address',
+            [
+            'joinColumns'=> [
+                [
                 'name' => 'adminaddress_id',
                 'referencedColumnName' => 'id',
-            ))
-        ));
+                ]
+            ]
+            ]
+        );
 
-        $metadata->setAssociationOverride('groups',array(
-            'joinTable' => array(
+        $metadata->setAssociationOverride('groups',
+            [
+            'joinTable' => [
                 'name'      => 'ddc964_users_admingroups',
-                'joinColumns' => array(array(
+                'joinColumns' => [
+                    [
                     'name' => 'adminuser_id',
-                )),
-                'inverseJoinColumns' =>array (array (
+                    ]
+                ],
+                'inverseJoinColumns' => [[
                     'name'      => 'admingroup_id',
-                ))
-            )
-        ));
+                ]]
+            ]
+            ]
+        );
     }
 }

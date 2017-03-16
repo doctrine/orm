@@ -1,6 +1,7 @@
-<?php namespace Doctrine\Tests\ORM\Functional\Ticket;
+<?php
 
-use Doctrine\ORM\Cache\Persister\CachedPersister;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Tests\Models\Cache\Bar;
 use Doctrine\Tests\ORM\Functional\SecondLevelCacheAbstractTest;
 
@@ -16,7 +17,7 @@ class DDC4003Test extends SecondLevelCacheAbstractTest
         // Get the id of the first bar
         $id = $this->attractions[0]->getId();
 
-        $repository = $this->_em->getRepository(Bar::CLASSNAME);
+        $repository = $this->_em->getRepository(Bar::class);
 
         /**
          * This instance is fresh new, no QueryCache, so the full entity gets loaded from DB.

@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\Models\DDC964;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @AttributeOverrides({
@@ -28,17 +26,20 @@ class DDC964Guest extends DDC964User
 {
     public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
     {
-        $metadata->setAttributeOverride('id', array(
+        $metadata->setAttributeOverride('id', [
             'columnName'    => 'guest_id',
             'type'          => 'integer',
             'length'        => 140,
-        ));
+        ]
+        );
 
-        $metadata->setAttributeOverride('name',array(
+        $metadata->setAttributeOverride('name',
+            [
             'columnName'    => 'guest_name',
             'nullable'      => false,
             'unique'        => true,
             'length'        => 240,
-        ));
+            ]
+        );
     }
 }

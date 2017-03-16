@@ -5,8 +5,6 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * ----------------- !! NOTE !! --------------------
@@ -48,7 +46,7 @@ class DDC501Test extends OrmFunctionalTestCase
 
         // freeze and unfreeze
         $userClone = unserialize(serialize($userReloaded));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $userClone);
+        $this->assertInstanceOf(CmsUser::class, $userClone);
 
         // detached user can't know about his phonenumbers
         $this->assertEquals(0, count($userClone->getPhonenumbers()));
@@ -91,13 +89,13 @@ class DDC501Test extends OrmFunctionalTestCase
         $user->username = 'lukacho';
         $user->status = 'developer';
 
-        foreach(array(1111,2222,3333,4444) as $number) {
+        foreach([1111,2222,3333,4444] as $number) {
             $phone = new CmsPhonenumber;
             $phone->phonenumber = $number;
             $user->addPhonenumber($phone);
         }
 
-        foreach(array('Moshers', 'Headbangers') as $groupName) {
+        foreach(['Moshers', 'Headbangers'] as $groupName) {
             $group = new CmsGroup;
             $group->setName($groupName);
             $user->addGroup($group);

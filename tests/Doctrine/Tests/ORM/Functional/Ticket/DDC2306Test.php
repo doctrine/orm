@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Proxy\Proxy;
 
 /**
  * @group DDC-2306
@@ -12,16 +13,18 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306Zone'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306Address'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2306UserAddress'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2306Zone::class),
+            $this->_em->getClassMetadata(DDC2306User::class),
+            $this->_em->getClassMetadata(DDC2306Address::class),
+            $this->_em->getClassMetadata(DDC2306UserAddress::class),
+            ]
+        );
     }
 
     /**
@@ -53,12 +56,12 @@ class DDC2306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         /* @var $address DDC2306Address */
-        $address = $this->_em->find(__NAMESPACE__ . '\\DDC2306Address', $address->id);
-        /* @var $user DDC2306User|\Doctrine\ORM\Proxy\Proxy */
+        $address = $this->_em->find(DDC2306Address::class, $address->id);
+        /* @var $user DDC2306User|Proxy */
         $user    = $address->users->first()->user;
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $user);
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC2306User', $user);
+        $this->assertInstanceOf(Proxy::class, $user);
+        $this->assertInstanceOf(DDC2306User::class, $user);
 
         $userId = $user->id;
 

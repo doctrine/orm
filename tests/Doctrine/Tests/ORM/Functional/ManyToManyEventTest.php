@@ -5,13 +5,14 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * ManyToManyEventTest
  *
  * @author Francisco Facioni <fran6co@gmail.com>
  */
-class ManyToManyEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ManyToManyEventTest extends OrmFunctionalTestCase
 {
     /**
      * @var PostUpdateListener

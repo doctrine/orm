@@ -1,19 +1,22 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime, Doctrine\DBAL\Types\Type;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1193Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1193Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Company'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Person'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Account')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1193Company::class),
+            $this->_em->getClassMetadata(DDC1193Person::class),
+            $this->_em->getClassMetadata(DDC1193Account::class)
+            ]
+        );
     }
 
     /**

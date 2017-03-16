@@ -1,5 +1,20 @@
 # Upgrade to 2.5
 
+## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`
+
+Method `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()` was unused and part
+of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/doctrine2/pull/5600).
+
+## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
+
+As `$className` parameter was not used in the method, it was safely removed.
+
+## Minor BC BREAK: query cache key time is now a float
+
+As of 2.5.5, the `QueryCacheEntry#time` property will contain a float value
+instead of an integer in order to have more precision and also to be consistent
+with the `TimestampCacheEntry#time`.
+
 ## Minor BC BREAK: discriminator map must now include all non-transient classes
 
 It is now required that you declare the root of an inheritance in the

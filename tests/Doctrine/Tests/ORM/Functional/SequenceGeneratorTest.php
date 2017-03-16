@@ -1,13 +1,14 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Description of SequenceGeneratorTest
  *
  * @author robo
  */
-class SequenceGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SequenceGeneratorTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -18,9 +19,11 @@ class SequenceGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\SequenceEntity'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(SequenceEntity::class),
+                ]
+            );
         } catch(\Exception $e) {
 
         }

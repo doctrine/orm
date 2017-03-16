@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
@@ -49,7 +48,7 @@ class DDC767Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertNotNull($pUser, "User not retrieved from database.");
 
-        $groups = array($group2->id, $group3->id);
+        $groups = [$group2->id, $group3->id];
 
         try {
             $this->_em->beginTransaction();

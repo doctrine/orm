@@ -412,7 +412,7 @@
     <xs:sequence>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="class" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="class" type="xs:string" use="required" />
   </xs:complexType>
 
   <xs:complexType name="inverse-join-columns">

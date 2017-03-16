@@ -2,11 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\EntityRepositoryGenerator;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
+use Doctrine\Tests\Models\DDC3231\DDC3231User1;
+use Doctrine\Tests\Models\DDC3231\DDC3231User2;
+use Doctrine\Tests\OrmTestCase;
 
-class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class EntityRepositoryGeneratorTest extends OrmTestCase
 {
     /**
      * @var EntityGenerator
@@ -37,7 +42,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $this->_generator->setRegenerateEntityIfExists(false);
         $this->_generator->setUpdateEntityIfExists(true);
         $this->_generator->setFieldVisibility(EntityGenerator::FIELD_VISIBLE_PROTECTED);
-        
+
         $this->_repositoryGenerator = new EntityRepositoryGenerator();
     }
 
@@ -46,7 +51,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
      */
     public function tearDown()
     {
-        $dirs = array();
+        $dirs = [];
 
         $ri = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->_tmpDir));
         foreach ($ri AS $file) {
@@ -54,7 +59,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
             if ($file->isFile()) {
                 \unlink($file->getPathname());
             } elseif ($file->getBasename() === '.') {
-                $dirs[] = $file->getRealpath();
+                $dirs[] = $file->getRealPath();
             }
         }
 
@@ -73,11 +78,8 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-
-        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1.php';
-
         $className = $ns . '\DDC3231User1Tmp';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User1', $className);
+        $this->writeEntityClass(DDC3231User1::class, $className);
 
         $rpath = $this->writeRepositoryClass($className);
 
@@ -89,13 +91,12 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertTrue($repo->inNamespace());
         $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo->getParentClass()->getName());
-
+        $this->assertSame(EntityRepository::class, $repo->getParentClass()->getName());
 
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User1NoNamespace.php';
 
         $className2 = 'DDC3231User1NoNamespaceTmp';
-        $this->writeEntityClass('DDC3231User1NoNamespace', $className2);
+        $this->writeEntityClass(\DDC3231User1NoNamespace::class, $className2);
 
         $rpath2 = $this->writeRepositoryClass($className2);
 
@@ -107,7 +108,7 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertFalse($repo2->inNamespace());
         $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame('Doctrine\ORM\EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
@@ -118,32 +119,29 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $em = $this->_getTestEntityManager();
         $ns = $this->_namespace;
 
-        
-        require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2.php';
-        
         $className = $ns . '\DDC3231User2Tmp';
-        $this->writeEntityClass('Doctrine\Tests\Models\DDC3231\DDC3231User2', $className);
+        $this->writeEntityClass(DDC3231User2::class, $className);
 
-        $rpath = $this->writeRepositoryClass($className, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        $rpath = $this->writeRepositoryClass($className, DDC3231EntityRepository::class);
 
         $this->assertNotNull($rpath);
         $this->assertFileExists($rpath);
 
         require $rpath;
-        
+
         $repo = new \ReflectionClass($em->getRepository($className));
 
         $this->assertTrue($repo->inNamespace());
         $this->assertSame($className . 'Repository', $repo->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo->getParentClass()->getName());
 
-        
+
         require_once __DIR__ . '/../../Models/DDC3231/DDC3231User2NoNamespace.php';
 
         $className2 = 'DDC3231User2NoNamespaceTmp';
         $this->writeEntityClass('DDC3231User2NoNamespace', $className2);
 
-        $rpath2 = $this->writeRepositoryClass($className2, 'Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository');
+        $rpath2 = $this->writeRepositoryClass($className2, DDC3231EntityRepository::class);
 
         $this->assertNotNull($rpath2);
         $this->assertFileExists($rpath2);
@@ -154,13 +152,12 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertFalse($repo2->inNamespace());
         $this->assertSame($className2 . 'Repository', $repo2->getName());
-        $this->assertSame('Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository', $repo2->getParentClass()->getName());
+        $this->assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
      * @param string $className
      * @param string $newClassName
-     * @return string
      */
     private function writeEntityClass($className, $newClassName)
     {
@@ -187,10 +184,10 @@ class EntityRepositoryGeneratorTest extends \Doctrine\Tests\OrmTestCase
     private function writeRepositoryClass($className, $defaultRepository = null)
     {
         $this->_repositoryGenerator->setDefaultRepositoryName($defaultRepository);
-        
+
         $this->_repositoryGenerator->writeEntityRepositoryClass($className . 'Repository', $this->_tmpDir);
 
         return $this->_tmpDir . DIRECTORY_SEPARATOR . str_replace('\\', DIRECTORY_SEPARATOR, $className) . 'Repository.php';
     }
-    
+
 }

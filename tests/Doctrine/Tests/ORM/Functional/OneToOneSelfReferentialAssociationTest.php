@@ -2,9 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -13,7 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * for receiving support.
  * Inverse side is not present.
  */
-class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 {
     private $customer;
     private $mentor;
@@ -51,8 +53,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     {
         $id = $this->_createFixture();
 
-        $customer = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $id);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $customer->getMentor());
+        $customer = $this->_em->find(ECommerceCustomer::class, $id);
+        $this->assertNotInstanceOf(Proxy::class, $customer->getMentor());
     }
 
     public function testEagerLoadsAssociation()
@@ -73,7 +75,7 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     {
         $this->_createFixture();
 
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCustomer');
+        $metadata = $this->_em->getClassMetadata(ECommerceCustomer::class);
         $metadata->associationMappings['mentor']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery("select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c where c.name='Luke Skywalker'");
@@ -85,9 +87,11 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
     public function testMultiSelfReference()
     {
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\MultiSelfReference')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(MultiSelfReference::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -102,8 +106,8 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 
         $entity2 = $this->_em->find(get_class($entity1), $entity1->getId());
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther1());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\MultiSelfReference', $entity2->getOther2());
+        $this->assertInstanceOf(MultiSelfReference::class, $entity2->getOther1());
+        $this->assertInstanceOf(MultiSelfReference::class, $entity2->getOther2());
         $this->assertNull($entity2->getOther1()->getOther1());
         $this->assertNull($entity2->getOther1()->getOther2());
         $this->assertNull($entity2->getOther2()->getOther1());
@@ -112,12 +116,13 @@ class OneToOneSelfReferentialAssociationTest extends \Doctrine\Tests\OrmFunction
 
     public function assertLoadingOfAssociation($customer)
     {
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceCustomer', $customer->getMentor());
+        $this->assertInstanceOf(ECommerceCustomer::class, $customer->getMentor());
         $this->assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
     public function assertForeignKeyIs($value) {
-        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', array($this->customer->getId()))->fetchColumn();
+        $foreignKey = $this->_em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()]
+        )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }
 

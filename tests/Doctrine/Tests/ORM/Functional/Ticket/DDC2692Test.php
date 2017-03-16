@@ -13,14 +13,16 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2692Foo'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC2692Foo::class),
+                ]
+            );
         } catch(\Exception $e) {
             return;
         }
@@ -29,7 +31,10 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIsListenerCalledOnlyOnceOnPreFlush()
     {
-        $listener = $this->getMock('Doctrine\Tests\ORM\Functional\Ticket\DDC2692Listener', array('preFlush'));
+        $listener = $this->getMockBuilder(DDC2692Listener::class)
+                         ->setMethods(['preFlush'])
+                         ->getMock();
+
         $listener->expects($this->once())->method('preFlush');
 
         $this->_em->getEventManager()->addEventSubscriber($listener);
@@ -53,7 +58,7 @@ class DDC2692Foo
 class DDC2692Listener implements EventSubscriber {
 
     public function getSubscribedEvents() {
-        return array(\Doctrine\ORM\Events::preFlush);
+        return [\Doctrine\ORM\Events::preFlush];
     }
 
     public function preFlush(PreFlushEventArgs $args) {

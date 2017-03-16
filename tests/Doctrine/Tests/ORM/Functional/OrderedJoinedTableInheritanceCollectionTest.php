@@ -3,22 +3,26 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class OrderedJoinedTableInheritanceCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Pet'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Cat'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\OJTIC_Dog'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(OJTIC_Pet::class),
+                $this->_em->getClassMetadata(OJTIC_Cat::class),
+                $this->_em->getClassMetadata(OJTIC_Dog::class),
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }

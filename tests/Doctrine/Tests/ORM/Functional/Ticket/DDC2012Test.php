@@ -15,20 +15,22 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType(DDC2012TsVectorType::MYTYPE, __NAMESPACE__ . '\DDC2012TsVectorType');
+        Type::addType(DDC2012TsVectorType::MYTYPE, DDC2012TsVectorType::class);
 
-        DDC2012TsVectorType::$calls = array();
+        DDC2012TsVectorType::$calls = [];
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2012Item'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2012ItemPerson'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2012Item::class),
+            $this->_em->getClassMetadata(DDC2012ItemPerson::class),
+            ]
+        );
     }
 
     public function testIssue()
     {
         $item       = new DDC2012ItemPerson();
-        $item->tsv  = array('word1', 'word2', 'word3');
+        $item->tsv  = ['word1', 'word2', 'word3'];
 
         $this->_em->persist($item);
         $this->_em->flush();
@@ -44,11 +46,11 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
         $this->assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2012Item', $item);
-        $this->assertEquals(array('word1', 'word2', 'word3'), $item->tsv);
+        $this->assertInstanceOf(DDC2012Item::class, $item);
+        $this->assertEquals(['word1', 'word2', 'word3'], $item->tsv);
 
 
-        $item->tsv = array('word1', 'word2');
+        $item->tsv = ['word1', 'word2'];
 
         $this->_em->persist($item);
         $this->_em->flush();
@@ -60,8 +62,8 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
         $this->assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2012Item', $item);
-        $this->assertEquals(array('word1', 'word2'), $item->tsv);
+        $this->assertInstanceOf(DDC2012Item::class, $item);
+        $this->assertEquals(['word1', 'word2'], $item->tsv);
     }
 }
 
@@ -103,7 +105,7 @@ class DDC2012TsVectorType extends Type
 {
     const MYTYPE = 'tsvector';
 
-    public static $calls = array();
+    public static $calls = [];
 
     /**
      * {@inheritdoc}
@@ -122,10 +124,10 @@ class DDC2012TsVectorType extends Type
             $value = implode(" ", $value);
         }
 
-        self::$calls[__FUNCTION__][] = array(
+        self::$calls[__FUNCTION__][] = [
             'value'     => $value,
             'platform'  => $platform,
-        );
+        ];
 
         return $value;
     }
@@ -135,10 +137,10 @@ class DDC2012TsVectorType extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        self::$calls[__FUNCTION__][] = array(
+        self::$calls[__FUNCTION__][] = [
             'value'     => $value,
             'platform'  => $platform,
-        );
+        ];
 
         return explode(" ", strtolower($value));
     }
@@ -148,14 +150,14 @@ class DDC2012TsVectorType extends Type
      */
     public function convertToDatabaseValueSQL($sqlExpr, AbstractPlatform $platform)
     {
-        self::$calls[__FUNCTION__][] = array(
+        self::$calls[__FUNCTION__][] = [
             'sqlExpr'   => $sqlExpr,
             'platform'  => $platform,
-        );
+        ];
 
         // changed to upper expression to keep the test compatible with other Databases
         //sprintf('to_tsvector(%s)', $sqlExpr);
-        
+
         return $platform->getUpperExpression($sqlExpr);
     }
 

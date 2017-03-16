@@ -2,18 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Proxy\ProxyClassGenerator;
+use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
-use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests the generation of a proxy object for lazy loading.
  * @author Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ReferenceProxyTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -55,7 +57,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        $productProxy = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct', array('id' => $id));
+        $productProxy = $this->_em->getReference(ECommerceProduct::class, ['id' => $id]);
         $this->assertEquals('Doctrine Cookbook', $productProxy->getName());
     }
 
@@ -66,10 +68,10 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $class = $this->_em->getClassMetadata(get_class($entity));
 
-        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $class->name);
+        $this->assertEquals(ECommerceProduct::class, $class->name);
     }
 
     /**
@@ -79,8 +81,8 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
-        $entity2 = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
+        $entity2 = $this->_em->find(ECommerceProduct::class , $id);
 
         $this->assertSame($entity, $entity2);
         $this->assertEquals('Doctrine Cookbook', $entity2->getName());
@@ -93,10 +95,10 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
-        /* @var $clone Doctrine\Tests\Models\ECommerce\ECommerceProduct */
+        /* @var $clone ECommerceProduct */
         $clone = clone $entity;
 
         $this->assertEquals($id, $entity->getId());
@@ -118,8 +120,8 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->_em->getUnitOfWork()->initializeObject($entity);
@@ -133,14 +135,14 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $entity->setName('Doctrine 2 Cookbook');
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
         $this->assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
@@ -151,8 +153,8 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
         $this->assertFalse($entity->wakeUp);
 
@@ -165,8 +167,8 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
@@ -180,14 +182,14 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createAuction();
 
-        /* @var $entity Doctrine\Tests\Models\Company\CompanyAuction */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\Company\CompanyAuction' , $id);
+        /* @var $entity CompanyAuction */
+        $entity = $this->_em->getReference(CompanyAuction::class , $id);
 
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals($id, $entity->getId());
         $this->assertFalse($entity->__isInitialized__, "Getting the identifier doesn't initialize the proxy when extending.");
     }
-    
+
     public function testDoNotInitializeProxyOnGettingTheIdentifierAndReturnTheRightType()
     {
         $product = new ECommerceProduct();
@@ -202,7 +204,7 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $id = $shipping->getId();
 
-        $product = $this->_em->getRepository('Doctrine\Tests\Models\ECommerce\ECommerceProduct')->find($product->getId());
+        $product = $this->_em->getRepository(ECommerceProduct::class)->find($product->getId());
 
         $entity = $product->getShipping();
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
@@ -215,8 +217,8 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
 
         $this->assertFalse($entity->__isInitialized__, "Pre-Condition: Object is unitialized proxy.");
         $this->assertEquals('Doctrine Cookbook', $entity->getName());
@@ -230,13 +232,13 @@ class ReferenceProxyTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $id = $this->createProduct();
 
-        /* @var $entity Doctrine\Tests\Models\ECommerce\ECommerceProduct */
-        $entity = $this->_em->getReference('Doctrine\Tests\Models\ECommerce\ECommerceProduct' , $id);
-        $className = \Doctrine\Common\Util\ClassUtils::getClass($entity);
+        /* @var $entity ECommerceProduct */
+        $entity = $this->_em->getReference(ECommerceProduct::class , $id);
+        $className = ClassUtils::getClass($entity);
 
-        $this->assertInstanceOf('Doctrine\Common\Persistence\Proxy', $entity);
+        $this->assertInstanceOf(Proxy::class, $entity);
         $this->assertFalse($entity->__isInitialized());
-        $this->assertEquals('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $className);
+        $this->assertEquals(ECommerceProduct::class, $className);
 
         $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
         $restName = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) +1);

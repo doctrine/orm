@@ -2,15 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Mapping\ClassMetaData,
-    Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for FilterCollection
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
+class FilterCollectionTest extends OrmTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -20,8 +21,7 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
     protected function setUp()
     {
         $this->em = $this->_getTestEntityManager();
-
-        $this->em->getConfiguration()->addFilter('testFilter', 'Doctrine\Tests\ORM\Query\MyFilter');
+        $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
     }
 
     public function testEnable()
@@ -35,7 +35,7 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
         $enabledFilters = $filterCollection->getEnabledFilters();
 
         $this->assertCount(1, $enabledFilters);
-        $this->assertContainsOnly('Doctrine\Tests\ORM\Query\MyFilter', $enabledFilters);
+        $this->assertContainsOnly(MyFilter::class, $enabledFilters);
 
         $filterCollection->disable('testFilter');
         $this->assertCount(0, $filterCollection->getEnabledFilters());
@@ -69,17 +69,15 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
     public function testGetFilterInvalidArgument()
     {
         $filterCollection = $this->em->getFilters();
-
         $filterCollection->getFilter('testFilter');
     }
 
     public function testGetFilter()
     {
         $filterCollection = $this->em->getFilters();
-
         $filterCollection->enable('testFilter');
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Query\MyFilter', $filterCollection->getFilter('testFilter'));
+        $this->assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
     }
 }
 

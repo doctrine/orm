@@ -15,7 +15,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Tools;
 
@@ -63,7 +63,7 @@ class SchemaValidator
      */
     public function validateMapping()
     {
-        $errors = array();
+        $errors = [];
         $cmf = $this->em->getMetadataFactory();
         $classes = $cmf->getAllMetadata();
 
@@ -85,7 +85,7 @@ class SchemaValidator
      */
     public function validateClass(ClassMetadataInfo $class)
     {
-        $ce = array();
+        $ce = [];
         $cmf = $this->em->getMetadataFactory();
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
@@ -212,7 +212,7 @@ class SchemaValidator
                     }
 
                     if (count($identifierColumns) != count($assoc['joinColumns'])) {
-                        $ids = array();
+                        $ids = [];
 
                         foreach ($assoc['joinColumns'] as $joinColumn) {
                             $ids[] = $joinColumn['name'];

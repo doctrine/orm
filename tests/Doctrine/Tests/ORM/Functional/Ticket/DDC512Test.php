@@ -1,16 +1,21 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC512Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC512Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512Customer'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512OfferItem'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC512Item'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC512Customer::class),
+            $this->_em->getClassMetadata(DDC512OfferItem::class),
+            $this->_em->getClassMetadata(DDC512Item::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -30,14 +35,14 @@ class DDC512Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $q->getResult();
 
         $this->assertEquals(2, count($result));
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[0]);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC512Customer', $result[1]);
+        $this->assertInstanceOf(DDC512Customer::class, $result[0]);
+        $this->assertInstanceOf(DDC512Customer::class, $result[1]);
         if ($result[0]->id == $customer1->id) {
-            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[0]->item);
+            $this->assertInstanceOf(DDC512OfferItem::class, $result[0]->item);
             $this->assertEquals($item->id, $result[0]->item->id);
             $this->assertNull($result[1]->item);
         } else {
-            $this->assertInstanceOf(__NAMESPACE__ . '\DDC512OfferItem', $result[1]->item);
+            $this->assertInstanceOf(DDC512OfferItem::class, $result[1]->item);
             $this->assertNull($result[0]->item);
         }
     }

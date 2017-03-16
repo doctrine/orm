@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SequenceEmulatedIdentityStrategyTest extends OrmFunctionalTestCase
 {
     /**
      * {@inheritdoc}
@@ -20,7 +21,7 @@ class SequenceEmulatedIdentityStrategyTest extends \Doctrine\Tests\OrmFunctional
         } else {
             try {
                 $this->_schemaTool->createSchema(
-                    array($this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\SequenceEmulatedIdentityEntity'))
+                    [$this->_em->getClassMetadata(SequenceEmulatedIdentityEntity::class)]
                 );
             } catch (\Exception $e) {
                 // Swallow all exceptions. We do not test the schema tool here.

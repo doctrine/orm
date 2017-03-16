@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use PHPUnit_Framework_TestCase;
 
@@ -15,7 +17,7 @@ class OnClassMetadataNotFoundEventArgsTest extends PHPUnit_Framework_TestCase
     public function testEventArgsMutability()
     {
         /* @var $objectManager \Doctrine\Common\Persistence\ObjectManager */
-        $objectManager = $this->getMock('Doctrine\Common\Persistence\ObjectManager');
+        $objectManager = $this->createMock(ObjectManager::class);
 
         $args = new OnClassMetadataNotFoundEventArgs('foo', $objectManager);
 
@@ -25,7 +27,7 @@ class OnClassMetadataNotFoundEventArgsTest extends PHPUnit_Framework_TestCase
         $this->assertNull($args->getFoundMetadata());
 
         /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\Common\Persistence\Mapping\ClassMetadata');
+        $metadata = $this->createMock(ClassMetadata::class);
 
         $args->setFoundMetadata($metadata);
 

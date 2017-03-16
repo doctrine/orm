@@ -101,7 +101,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         $this->findEntityOneToMany($em, __FUNCTION__);
 
-        $this->assertEquals(487, $this->countQuery($em));
+        $this->assertEquals(472, $this->countQuery($em));
     }
 
     public function testQueryEntityWithoutCache()
@@ -159,8 +159,8 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     {
         $times        = 50;
         $size         = 30;
-        $states       = array();
-        $cities       = array();
+        $states       = [];
+        $cities       = [];
         $startPersist = microtime(true);
         $country      = new Country("Country");
 
@@ -202,7 +202,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
             foreach ($states as $state) {
 
-                $state = $em->find(State::CLASSNAME, $state->getId());
+                $state = $em->find(State::class, $state->getId());
 
                 foreach ($state->getCities() as $city) {
                     $city->getName();
@@ -218,7 +218,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
     {
         $times        = 10;
         $size         = 500;
-        $countries    = array();
+        $countries    = [];
         $startPersist = microtime(true);
 
         echo PHP_EOL . $label;
@@ -240,7 +240,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
 
         for ($i = 0; $i <= $times; $i++) {
             foreach ($countries as $country) {
-                $em->find(Country::CLASSNAME, $country->getId());
+                $em->find(Country::class, $country->getId());
                 $em->clear();
             }
         }
@@ -254,7 +254,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $times        = 100;
         $size         = 50;
         $startPersist = microtime(true);
-        $rep          = $em->getRepository(Country::CLASSNAME);
+        $rep          = $em->getRepository(Country::class);
 
         echo PHP_EOL . $label;
 

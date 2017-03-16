@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -65,17 +65,17 @@ class ManyToManyTest extends OrmFunctionalTestCase
     public function testThatEntitiesAreFetchedFromTheDatabase()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
+            Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity',
+            Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity', $inversed);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity', $owning);
+        $this->assertInstanceOf(Models\ValueConversionType\InversedManyToManyEntity::class, $inversed);
+        $this->assertInstanceOf(Models\ValueConversionType\OwningManyToManyEntity::class, $owning);
     }
 
     /**
@@ -84,12 +84,12 @@ class ManyToManyTest extends OrmFunctionalTestCase
     public function testThatTheValueOfIdentifiersAreConvertedBackAfterBeingFetchedFromTheDatabase()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
+            Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity',
+            Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
 
@@ -103,7 +103,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     public function testThatTheCollectionFromOwningToInversedIsLoaded()
     {
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyEntity',
+            Models\ValueConversionType\OwningManyToManyEntity::class,
             'def'
         );
 
@@ -116,7 +116,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
     public function testThatTheCollectionFromInversedToOwningIsLoaded()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
+            Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 
@@ -134,7 +134,7 @@ class ManyToManyTest extends OrmFunctionalTestCase
         // remove association
 
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyEntity',
+            Models\ValueConversionType\InversedManyToManyEntity::class,
             'abc'
         );
 

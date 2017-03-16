@@ -19,9 +19,11 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Mapping\MappingException;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -289,7 +291,7 @@ use Doctrine\Common\Util\ClassUtils;
         $query = new Query($this);
 
         if ( ! empty($dql)) {
-            $query->setDql($dql);
+            $query->setDQL($dql);
         }
 
         return $query;
@@ -310,7 +312,7 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $query = new NativeQuery($this);
 
-        $query->setSql($sql);
+        $query->setSQL($sql);
         $query->setResultSetMapping($rsm);
 
         return $query;
@@ -384,7 +386,7 @@ use Doctrine\Common\Util\ClassUtils;
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
         foreach ($id as $i => $value) {
@@ -397,7 +399,7 @@ use Doctrine\Common\Util\ClassUtils;
             }
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -456,7 +458,7 @@ use Doctrine\Common\Util\ClassUtils;
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $persister->load($sortedId, null, null, array(), $lockMode);
+                return $persister->load($sortedId, null, null, [], $lockMode);
 
             default:
                 return $persister->loadById($sortedId);
@@ -471,10 +473,10 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -500,7 +502,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, array());
+        $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
         return $entity;
     }
@@ -518,14 +520,14 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+            $identifier = [$class->identifier[0] => $identifier];
         }
 
         $entity = $class->newInstance();
 
         $class->setIdentifierValues($entity, $identifier);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->registerManaged($entity, $identifier, []);
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
@@ -538,10 +540,22 @@ use Doctrine\Common\Util\ClassUtils;
      * @param string|null $entityName if given, only entities of this type will get detached
      *
      * @return void
+     *
+     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
+     *                                                               found in the mappings
      */
     public function clear($entityName = null)
     {
-        $this->unitOfWork->clear($entityName);
+        if (null !== $entityName && ! is_string($entityName)) {
+            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        $this->unitOfWork->clear(
+            null === $entityName
+                ? null
+                : $this->metadataFactory->getMetadataFor($entityName)->getName()
+        );
     }
 
     /**
@@ -820,39 +834,59 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create EntityManager instances.
      *
-     * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
-     * @param Configuration $config       The Configuration instance to use.
-     * @param EventManager  $eventManager The EventManager instance to use.
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($conn, Configuration $config, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, EventManager $eventManager = null)
     {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
         }
 
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
+        $connection = static::createConnection($connection, $config, $eventManager);
 
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
+        return new EntityManager($connection, $config, $connection->getEventManager());
+    }
 
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
+    /**
+     * Factory method to create Connection instances.
+     *
+     * @param array|Connection $connection   An array with the connection parameters or an existing Connection instance.
+     * @param Configuration    $config       The Configuration instance to use.
+     * @param EventManager     $eventManager The EventManager instance to use.
+     *
+     * @return Connection
+     *
+     * @throws \InvalidArgumentException
+     * @throws ORMException
+     */
+    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
+    {
+        if (is_array($connection)) {
+            return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());
         }
 
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        if ( ! $connection instanceof Connection) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Invalid $connection argument of type %s given%s.',
+                    is_object($connection) ? get_class($connection) : gettype($connection),
+                    is_object($connection) ? '' : ': "' . $connection . '"'
+                )
+            );
+        }
+
+        if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
+            throw ORMException::mismatchedEventManager();
+        }
+
+        return $connection;
     }
 
     /**

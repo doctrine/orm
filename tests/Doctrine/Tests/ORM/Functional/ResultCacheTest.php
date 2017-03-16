@@ -2,16 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * ResultCacheTest
  *
  * @author robo
  */
-class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ResultCacheTest extends OrmFunctionalTestCase
 {
    /**
      * @var \ReflectionProperty
@@ -19,7 +22,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     private $cacheDataReflection;
 
     protected function setUp() {
-        $this->cacheDataReflection = new \ReflectionProperty("Doctrine\Common\Cache\ArrayCache", "data");
+        $this->cacheDataReflection = new \ReflectionProperty(ArrayCache::class, "data");
         $this->cacheDataReflection->setAccessible(true);
         $this->useModelSet('cms');
         parent::setUp();
@@ -133,7 +136,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testNativeQueryResultCaching()
     {
         $cache = new ArrayCache();
-        $rsm   = new \Doctrine\ORM\Query\ResultSetMapping();
+        $rsm   = new ResultSetMapping();
 
         $rsm->addScalarResult('id', 'u', 'integer');
 
@@ -190,7 +193,7 @@ class ResultCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $cache = $query->getResultCacheDriver();
         $cacheCount = $this->getCacheSize($cache);
 
-        $this->assertNotEquals(\Doctrine\ORM\Query::HYDRATE_ARRAY, $query->getHydrationMode());
+        $this->assertNotEquals(Query::HYDRATE_ARRAY, $query->getHydrationMode());
         $query->getArrayResult();
 
         $this->assertEquals($cacheCount, $this->getCacheSize($cache));

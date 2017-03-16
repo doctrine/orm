@@ -9,8 +9,10 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\OrmTestCase;
 
-class QueryTest extends \Doctrine\Tests\OrmTestCase
+class QueryTest extends OrmTestCase
 {
     /** @var EntityManager */
     protected $_em = null;
@@ -73,7 +75,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $cloned = clone $query;
 
-        $this->assertEquals($dql, $cloned->getDql());
+        $this->assertEquals($dql, $cloned->getDQL());
         $this->assertEquals(0, count($cloned->getParameters()));
         $this->assertFalse($cloned->getHint('foo'));
     }
@@ -88,10 +90,10 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
-          ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
+          ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
-          ->setDql('foo')
+          ->setDQL('foo')
           ->setFirstResult(10)
           ->setMaxResults(10);
 
@@ -108,7 +110,7 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $this->assertEquals('bar', $q->getHint('foo'));
         $this->assertEquals('baz', $q->getHint('bar'));
-        $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+        $this->assertEquals(['foo' => 'bar', 'bar' => 'baz'], $q->getHints());
         $this->assertTrue($q->hasHint('foo'));
         $this->assertFalse($q->hasHint('barFooBaz'));
     }
@@ -153,11 +155,11 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCollectionParameters()
     {
-        $cities = array(
+        $cities = [
             0 => "Paris",
             3 => "Canne",
             9 => "St Julien"
-        );
+        ];
 
         $query  = $this->_em
                 ->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)")
@@ -177,19 +179,19 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
     {
         $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
         $this->assertEquals(
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+            CmsAddress::class,
+            $query->processParameterValue($this->_em->getClassMetadata(CmsAddress::class))
         );
     }
 
     public function testDefaultQueryHints()
     {
         $config = $this->_em->getConfiguration();
-        $defaultHints = array(
+        $defaultHints = [
             'hint_name_1' => 'hint_value_1',
             'hint_name_2' => 'hint_value_2',
             'hint_name_3' => 'hint_value_3',
-        );
+        ];
 
         $config->setDefaultQueryHints($defaultHints);
         $query = $this->_em->createQuery();

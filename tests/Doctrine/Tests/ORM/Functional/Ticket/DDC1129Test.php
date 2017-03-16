@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\Models\CMS\CmsArticle;
 
 /**
  * @group DDC-1129
@@ -17,7 +17,7 @@ class DDC1129Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testVersionFieldIgnoredInChangesetComputation()
     {
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->text = "I don't know.";
         $article->topic = "Who is John Galt?";
 
@@ -26,7 +26,7 @@ class DDC1129Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertEquals(1, $article->version);
 
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle');
+        $class = $this->_em->getClassMetadata(CmsArticle::class);
         $uow = $this->_em->getUnitOfWork();
 
         $uow->computeChangeSet($class, $article);

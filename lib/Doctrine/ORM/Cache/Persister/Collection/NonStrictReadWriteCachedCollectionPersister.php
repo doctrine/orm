@@ -46,7 +46,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
             }
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -54,7 +54,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
      */
     public function afterTransactionRolledBack()
     {
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -96,9 +96,9 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
 
         $this->persister->update($collection);
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = array(
+        $this->queuedCache['update'][spl_object_hash($collection)] = [
             'key'   => $key,
             'list'  => $collection
-        );
+        ];
     }
 }

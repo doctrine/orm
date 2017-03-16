@@ -2,12 +2,13 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1050
  */
-class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1050Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -21,9 +22,9 @@ class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPerformance()
     {
         for ($i = 2; $i < 10000; ++$i) {
-            $user = new \Doctrine\Tests\Models\CMS\CmsUser();
+            $user = new CmsUser();
             $user->status = 'developer';
-            $user->username = 'jwage'+$i;
+            $user->username = 'jwage'.$i;
             $user->name = 'Jonathan';
             $this->_em->persist($user);
         }
@@ -31,7 +32,7 @@ class DDC1050Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $s = microtime(true);
-        $users = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $users = $this->_em->getRepository(CmsUser::class)->findAll();
         $e = microtime(true);
         echo __FUNCTION__ . " - " . ($e - $s) . " seconds" . PHP_EOL;
     }

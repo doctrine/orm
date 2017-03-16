@@ -2,9 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
-
 /**
  * @group DDC-2996
  */
@@ -12,10 +9,12 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996UserPreference'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC2996User::class),
+            $this->_em->getClassMetadata(DDC2996UserPreference::class),
+            ]
+        );
 
         $pref = new DDC2996UserPreference();
         $pref->user = new DDC2996User();
@@ -32,7 +31,7 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $pref = $this->_em->find(__NAMESPACE__ . '\\DDC2996UserPreference', $pref->id);
+        $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
         $this->assertEquals(1, $pref->user->counter);
     }
 }

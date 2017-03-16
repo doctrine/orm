@@ -1,10 +1,11 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-451
  */
-class UUIDGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class UUIDGeneratorTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -14,9 +15,11 @@ class UUIDGeneratorTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestSkipped('Currently restricted to MySQL platform.');
         }
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\UUIDEntity')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(UUIDEntity::class)
+            ]
+        );
     }
 
     public function testGenerateUUID()

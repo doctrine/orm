@@ -8,11 +8,13 @@ class DDC345Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC345User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC345Group'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC345Membership'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC345User::class),
+            $this->_em->getClassMetadata(DDC345Group::class),
+            $this->_em->getClassMetadata(DDC345Membership::class),
+            ]
+        );
     }
 
     public function testTwoIterateHydrations()

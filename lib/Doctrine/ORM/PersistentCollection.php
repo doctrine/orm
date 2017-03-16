@@ -49,7 +49,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @var array
      */
-    private $snapshot = array();
+    private $snapshot = [];
 
     /**
      * The entity that owns this collection.
@@ -542,6 +542,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function clear()
     {
         if ($this->initialized && $this->isEmpty()) {
+            $this->collection->clear();
+
             return;
         }
 
@@ -583,7 +585,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function __sleep()
     {
-        return array('collection', 'initialized');
+        return ['collection', 'initialized'];
     }
 
     /**
@@ -631,7 +633,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->initialize();
 
         $this->owner    = null;
-        $this->snapshot = array();
+        $this->snapshot = [];
 
         $this->changed();
     }
@@ -693,7 +695,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     protected function doInitialize()
     {
         // Has NEW objects added through add(). Remember them.
-        $newObjects = array();
+        $newObjects = [];
 
         if ($this->isDirty) {
             $newObjects = $this->collection->toArray();

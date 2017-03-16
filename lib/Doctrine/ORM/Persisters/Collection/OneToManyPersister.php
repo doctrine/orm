@@ -20,7 +20,6 @@
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -84,13 +83,13 @@ class OneToManyPersister extends AbstractCollectionPersister
         $persister = $this->uow->getEntityPersister($mapping['targetEntity']);
 
         return $persister->load(
-            array(
+            [
                 $mapping['mappedBy'] => $collection->getOwner(),
                 $mapping['indexBy']  => $index
-            ),
+            ],
             null,
             $mapping,
-            array(),
+            [],
             null,
             1
         );
@@ -250,10 +249,10 @@ class OneToManyPersister extends AbstractCollectionPersister
         $columnDefinitions = [];
 
         foreach ($idColumnNames as $idColumnName) {
-            $columnDefinitions[$idColumnName] = array(
+            $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
                 'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $this->em)),
-            );
+            ];
         }
 
         $statement = $this->platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable
@@ -272,7 +271,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge($targetClass->parentClasses, array($targetClass->name), $targetClass->subClasses);
+        $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
 
         foreach (array_reverse($classNames) as $className) {
             $tableName = $this->quoteStrategy->getTableName($this->em->getClassMetadata($className), $this->platform);

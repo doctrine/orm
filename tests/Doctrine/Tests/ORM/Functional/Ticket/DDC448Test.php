@@ -1,16 +1,21 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC448Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC448Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC448MainTable'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC448ConnectedClass'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC448SubTable'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC448MainTable::class),
+            $this->_em->getClassMetadata(DDC448ConnectedClass::class),
+            $this->_em->getClassMetadata(DDC448SubTable::class),
+            ]
+        );
     }
 
     public function testIssue()

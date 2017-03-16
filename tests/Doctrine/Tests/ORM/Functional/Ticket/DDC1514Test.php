@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\UnitOfWork;
 
 /**
  * @group DDC-1514
@@ -15,11 +14,13 @@ class DDC1514Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityA'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityB'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1514EntityC'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1514EntityA::class),
+                $this->_em->getClassMetadata(DDC1514EntityB::class),
+                $this->_em->getClassMetadata(DDC1514EntityC::class),
+                ]
+            );
         } catch (\Exception $ignored) {
         }
     }

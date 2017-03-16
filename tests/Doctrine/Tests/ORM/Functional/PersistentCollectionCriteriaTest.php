@@ -1,33 +1,20 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license.
- */
 
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\LazyCriteriaCollection;
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\User as QuoteUser;
 use Doctrine\Tests\Models\Tweet\Tweet;
+use Doctrine\Tests\Models\Tweet\User;
 use Doctrine\Tests\Models\Tweet\User as TweetUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @author Michaël Gallego <mic.gallego@gmail.com>
  */
-class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -39,7 +26,7 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
     public function tearDown()
     {
         if ($this->_em) {
-            $this->_em->getConfiguration()->setEntityNamespaces(array());
+            $this->_em->getConfiguration()->setEntityNamespaces([]);
         }
         parent::tearDown();
     }
@@ -88,12 +75,12 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
     {
         $this->loadTweetFixture();
 
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Tweet\User');
+        $repository = $this->_em->getRepository(User::class);
 
-        $user   = $repository->findOneBy(array('name' => 'ngal'));
+        $user   = $repository->findOneBy(['name' => 'ngal']);
         $tweets = $user->tweets->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
         $this->assertCount(2, $tweets);
         $this->assertFalse($tweets->isInitialized());
@@ -103,33 +90,9 @@ class PersistentCollectionCriteriaTest extends \Doctrine\Tests\OrmFunctionalTest
             Criteria::expr()->eq('content', 'Foo')
         ));
 
-        $this->assertInstanceOf('Doctrine\ORM\LazyCriteriaCollection', $tweets);
+        $this->assertInstanceOf(LazyCriteriaCollection::class, $tweets);
         $this->assertFalse($tweets->isInitialized());
         $this->assertCount(1, $tweets);
         $this->assertFalse($tweets->isInitialized());
     }
-
-    /*public function testCanCountWithoutLoadingManyToManyPersistentCollection()
-    {
-        $this->loadQuoteFixture();
-
-        $repository = $this->_em->getRepository('Doctrine\Tests\Models\Quote\User');
-
-        $user   = $repository->findOneBy(array('name' => 'mgal'));
-        $groups = $user->groups->matching(new Criteria());
-
-        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
-        $this->assertFalse($groups->isInitialized());
-        $this->assertCount(2, $groups);
-        $this->assertFalse($groups->isInitialized());
-
-        // Make sure it works with constraints
-        $criteria = new Criteria(Criteria::expr()->eq('name', 'quote1'));
-        $groups   = $user->groups->matching($criteria);
-
-        $this->assertInstanceOf('Doctrine\ORM\LazyManyToManyCriteriaCollection', $groups);
-        $this->assertFalse($groups->isInitialized());
-        $this->assertCount(1, $groups);
-        $this->assertFalse($groups->isInitialized());
-    }*/
 }

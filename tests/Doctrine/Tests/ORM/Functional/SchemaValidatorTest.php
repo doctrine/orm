@@ -2,24 +2,24 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Tools\SchemaValidator;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Test the validity of all modelsets
  *
  * @group DDC-1601
  */
-class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class SchemaValidatorTest extends OrmFunctionalTestCase
 {
     static public function dataValidateModelSets()
     {
-        $modelSets = array();
+        $modelSets = [];
         foreach (self::$_modelSets as $modelSet => $classes) {
             if ($modelSet == "customtype") {
                 continue;
             }
-            $modelSets[] = array($modelSet);
+            $modelSets[] = [$modelSet];
         }
         return $modelSets;
     }
@@ -31,7 +31,7 @@ class SchemaValidatorTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $validator = new SchemaValidator($this->_em);
 
-        $classes = array();
+        $classes = [];
         foreach (self::$_modelSets[$modelSet] as $className) {
             $classes[] = $this->_em->getClassMetadata($className);
         }

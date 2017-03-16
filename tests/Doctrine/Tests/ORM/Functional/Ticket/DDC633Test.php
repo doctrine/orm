@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
+use Doctrine\ORM\Proxy\Proxy;
 
 class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -10,10 +10,12 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC633Patient'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC633Appointment'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC633Patient::class),
+                $this->_em->getClassMetadata(DDC633Appointment::class),
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -36,10 +38,10 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $eagerAppointment = $this->_em->find(__NAMESPACE__ . '\DDC633Appointment', $app->id);
+        $eagerAppointment = $this->_em->find(DDC633Appointment::class, $app->id);
 
         // Eager loading of one to one leads to fetch-join
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+        $this->assertNotInstanceOf(Proxy::class, $eagerAppointment->patient);
         $this->assertTrue($this->_em->contains($eagerAppointment->patient));
     }
 
@@ -64,7 +66,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $appointments = $this->_em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
 
         foreach ($appointments AS $eagerAppointment) {
-            $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $eagerAppointment->patient);
+            $this->assertInstanceOf(Proxy::class, $eagerAppointment->patient);
             $this->assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
         }
     }

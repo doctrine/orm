@@ -3,20 +3,23 @@
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\ConvertDoctrine1SchemaCommand;
+use Doctrine\ORM\Tools\EntityGenerator;
+use Doctrine\Tests\OrmTestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 
-class ConvertDoctrine1SchemaCommandTest extends \Doctrine\Tests\OrmTestCase
+class ConvertDoctrine1SchemaCommandTest extends OrmTestCase
 {
     public function testExecution()
     {
-        $entityGenerator = $this->getMock('Doctrine\ORM\Tools\EntityGenerator');
+        $entityGenerator = $this->createMock(EntityGenerator::class);
         $command = new ConvertDoctrine1SchemaCommand();
         $command->setEntityGenerator($entityGenerator);
 
-        $output = $this->getMock('Symfony\Component\Console\Output\OutputInterface');
+        $output = $this->createMock(OutputInterface::class);
         $output->expects($this->once())
                ->method('writeln')
                ->with($this->equalTo('No Metadata Classes to process.'));
 
-        $command->convertDoctrine1Schema(array(), sys_get_temp_dir(), 'annotation', 4, null, $output);
+        $command->convertDoctrine1Schema([], sys_get_temp_dir(), 'annotation', 4, null, $output);
     }
 }

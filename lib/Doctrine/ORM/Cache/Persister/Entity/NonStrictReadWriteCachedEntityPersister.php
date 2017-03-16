@@ -62,7 +62,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
             $this->timestampRegion->update($this->timestampKey);
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -70,7 +70,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function afterTransactionRolledBack()
     {
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**

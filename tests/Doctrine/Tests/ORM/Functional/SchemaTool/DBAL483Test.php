@@ -3,14 +3,15 @@
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\ORM\Tools;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DBAL483Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $this->_em->getConnection();
 
         $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
@@ -20,11 +21,11 @@ class DBAL483Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testDefaultValueIsComparedCorrectly()
     {
-        $class = $this->_em->getClassMetadata(__NAMESPACE__ . '\\DBAL483Default');
+        $class = $this->_em->getClassMetadata(DBAL483Default::class);
 
-        $this->schemaTool->createSchema(array($class));
+        $this->schemaTool->createSchema([$class]);
 
-        $updateSql = $this->schemaTool->getUpdateSchemaSql(array($class));
+        $updateSql = $this->schemaTool->getUpdateSchemaSql([$class]);
 
         $updateSql = array_filter($updateSql, function ($sql) {
             return strpos($sql, 'DBAL483') !== false;

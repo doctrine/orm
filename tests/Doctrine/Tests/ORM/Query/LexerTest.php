@@ -3,8 +3,9 @@
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\Lexer;
+use Doctrine\Tests\OrmTestCase;
 
-class LexerTest extends \Doctrine\Tests\OrmTestCase
+class LexerTest extends OrmTestCase
 {
     //private $_lexer;
 
@@ -160,63 +161,63 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
         $dql = "SELECT u FROM My\Namespace\User u WHERE u.name = 'Jack O''Neil'";
         $lexer = new Lexer($dql);
 
-        $tokens = array(
-            array(
+        $tokens = [
+            [
                 'value' => 'SELECT',
                 'type'  => Lexer::T_SELECT,
                 'position' => 0
-            ),
-            array(
+            ],
+            [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
                 'position' => 7
-            ),
-            array(
+            ],
+            [
                 'value' => 'FROM',
                 'type'  => Lexer::T_FROM,
                 'position' => 9
-            ),
-            array(
+            ],
+            [
                 'value' => 'My\Namespace\User',
                 'type'  => Lexer::T_FULLY_QUALIFIED_NAME,
                 'position' => 14
-            ),
-            array(
+            ],
+            [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
                 'position' => 32
-            ),
-            array(
+            ],
+            [
                 'value' => 'WHERE',
                 'type'  => Lexer::T_WHERE,
                 'position' => 34
-            ),
-            array(
+            ],
+            [
                 'value' => 'u',
                 'type'  => Lexer::T_IDENTIFIER,
                 'position' => 40
-            ),
-            array(
+            ],
+            [
                 'value' => '.',
                 'type'  => Lexer::T_DOT,
                 'position' => 41
-            ),
-            array(
+            ],
+            [
                 'value' => 'name',
                 'type'  => Lexer::T_IDENTIFIER,
                 'position' => 42
-            ),
-            array(
+            ],
+            [
                 'value' => '=',
                 'type'  => Lexer::T_EQUALS,
                 'position' => 47
-            ),
-            array(
+            ],
+            [
                 'value' => "Jack O'Neil",
                 'type'  => Lexer::T_STRING,
                 'position' => 49
-            )
-        );
+            ]
+        ];
 
         foreach ($tokens as $expected) {
             $lexer->moveNext();
@@ -231,16 +232,16 @@ class LexerTest extends \Doctrine\Tests\OrmTestCase
 
     public function provideTokens()
     {
-        return array(
-            array(Lexer::T_IDENTIFIER, 'u'), // one char
-            array(Lexer::T_IDENTIFIER, 'someIdentifier'),
-            array(Lexer::T_IDENTIFIER, 's0m31d3nt1f13r'), // including digits
-            array(Lexer::T_IDENTIFIER, 'some_identifier'), // including underscore
-            array(Lexer::T_IDENTIFIER, '_some_identifier'), // starts with underscore
-            array(Lexer::T_IDENTIFIER, 'comma'), // name of a token class with value < 100 (whitebox test)
-            array(Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'), // DQL class reference
-            array(Lexer::T_ALIASED_NAME, 'Some:Name'),
-            array(Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name')
-        );
+        return [
+            [Lexer::T_IDENTIFIER, 'u'], // one char
+            [Lexer::T_IDENTIFIER, 'someIdentifier'],
+            [Lexer::T_IDENTIFIER, 's0m31d3nt1f13r'], // including digits
+            [Lexer::T_IDENTIFIER, 'some_identifier'], // including underscore
+            [Lexer::T_IDENTIFIER, '_some_identifier'], // starts with underscore
+            [Lexer::T_IDENTIFIER, 'comma'], // name of a token class with value < 100 (whitebox test)
+            [Lexer::T_FULLY_QUALIFIED_NAME, 'Some\Class'], // DQL class reference
+            [Lexer::T_ALIASED_NAME, 'Some:Name'],
+            [Lexer::T_ALIASED_NAME, 'Some:Subclassed\Name']
+        ];
     }
 }

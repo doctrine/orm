@@ -1,35 +1,42 @@
 <?php
 
 namespace Doctrine\Tests\ORM\Functional;
+use Doctrine\Common\Reflection\RuntimePublicReflectionProperty;
+use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-93
  */
-class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class ValueObjectsTest extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Address'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Vehicle'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Car'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Animal'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC93Person::class),
+                $this->_em->getClassMetadata(DDC93Address::class),
+                $this->_em->getClassMetadata(DDC93Vehicle::class),
+                $this->_em->getClassMetadata(DDC93Car::class),
+                $this->_em->getClassMetadata(DDC3027Animal::class),
+                $this->_em->getClassMetadata(DDC3027Dog::class),
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
 
     public function testMetadataHasReflectionEmbeddablesAccessible()
     {
-        $classMetadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC93Person');
+        $classMetadata = $this->_em->getClassMetadata(DDC93Person::class);
 
-        $this->assertInstanceOf('Doctrine\Common\Reflection\RuntimePublicReflectionProperty', $classMetadata->getReflectionProperty('address'));
-        $this->assertInstanceOf('Doctrine\ORM\Mapping\ReflectionEmbeddedProperty', $classMetadata->getReflectionProperty('address.street'));
+        $this->assertInstanceOf(RuntimePublicReflectionProperty::class, $classMetadata->getReflectionProperty('address'));
+        $this->assertInstanceOf(ReflectionEmbeddedProperty::class, $classMetadata->getReflectionProperty('address.street'));
     }
 
     public function testCRUD()
@@ -49,13 +56,13 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         // 2. check loading value objects works
-        $person = $this->_em->find(DDC93Person::CLASSNAME, $person->id);
+        $person = $this->_em->find(DDC93Person::class, $person->id);
 
-        $this->assertInstanceOf(DDC93Address::CLASSNAME, $person->address);
+        $this->assertInstanceOf(DDC93Address::class, $person->address);
         $this->assertEquals('United States of Tara Street', $person->address->street);
         $this->assertEquals('12345', $person->address->zip);
         $this->assertEquals('funkytown', $person->address->city);
-        $this->assertInstanceOf(DDC93Country::CLASSNAME, $person->address->country);
+        $this->assertInstanceOf(DDC93Country::class, $person->address->country);
         $this->assertEquals('Germany', $person->address->country->name);
 
         // 3. check changing value objects works
@@ -67,7 +74,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $person = $this->_em->find(DDC93Person::CLASSNAME, $person->id);
+        $person = $this->_em->find(DDC93Person::class, $person->id);
 
         $this->assertEquals('Street', $person->address->street);
         $this->assertEquals('54321', $person->address->zip);
@@ -79,7 +86,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($person);
         $this->_em->flush();
 
-        $this->assertNull($this->_em->find(DDC93Person::CLASSNAME, $personId));
+        $this->assertNull($this->_em->find(DDC93Person::class, $personId));
     }
 
     public function testLoadDql()
@@ -104,11 +111,11 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->assertCount(3, $persons);
         foreach ($persons as $person) {
-            $this->assertInstanceOf(DDC93Address::CLASSNAME, $person->address);
+            $this->assertInstanceOf(DDC93Address::class, $person->address);
             $this->assertEquals('Tree', $person->address->street);
             $this->assertEquals('12345', $person->address->zip);
             $this->assertEquals('funkytown', $person->address->city);
-            $this->assertInstanceOf(DDC93Country::CLASSNAME, $person->address->country);
+            $this->assertInstanceOf(DDC93Country::class, $person->address->country);
             $this->assertEquals('United States of America', $person->address->country->name);
         }
 
@@ -170,37 +177,37 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             ->execute();
 
         $this->_em->clear();
-        $this->assertNull($this->_em->find(__NAMESPACE__.'\\DDC93Person', $person->id));
+        $this->assertNull($this->_em->find(DDC93Person::class, $person->id));
     }
-    
+
     public function testPartialDqlOnEmbeddedObjectsField()
     {
         $person = new DDC93Person('Karl', new DDC93Address('Foo', '12345', 'Gosport', new DDC93Country('England')));
         $this->_em->persist($person);
         $this->_em->flush($person);
         $this->_em->clear();
-        
+
         // Prove that the entity was persisted correctly.
         $dql = "SELECT p FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-    
+
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertEquals('Foo', $person->address->street);
         $this->assertEquals('12345', $person->address->zip);
         $this->assertEquals('England', $person->address->country->name);
-        
+
         // Clear the EM and prove that the embeddable can be the subject of a partial query.
         $this->_em->clear();
-    
+
         $dql = "SELECT PARTIAL p.{id,address.city} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-        
+
         // Selected field must be equal, all other fields must be null.
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertNull($person->address->street);
@@ -210,13 +217,13 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Clear the EM and prove that the embeddable can be the subject of a partial query regardless of attributes positions.
         $this->_em->clear();
-    
+
         $dql = "SELECT PARTIAL p.{address.city, id} FROM " . __NAMESPACE__ ."\\DDC93Person p WHERE p.name = :name";
-    
+
         $person = $this->_em->createQuery($dql)
             ->setParameter('name', 'Karl')
             ->getSingleResult();
-        
+
         // Selected field must be equal, all other fields must be null.
         $this->assertEquals('Gosport', $person->address->city);
         $this->assertNull($person->address->street);
@@ -227,16 +234,18 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testDqlWithNonExistentEmbeddableField()
     {
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException', 'no field or association named address.asdfasdf');
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('no field or association named address.asdfasdf');
 
         $this->_em->createQuery("SELECT p FROM " . __NAMESPACE__ . "\\DDC93Person p WHERE p.address.asdfasdf IS NULL")
             ->execute();
     }
-    
+
     public function testPartialDqlWithNonExistentEmbeddableField()
     {
-        $this->setExpectedException('Doctrine\ORM\Query\QueryException', "no mapped field named 'address.asdfasdf'");
-        
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage("no mapped field named 'address.asdfasdf'");
+
         $this->_em->createQuery("SELECT PARTIAL p.{id,address.asdfasdf} FROM " . __NAMESPACE__ . "\\DDC93Person p")
             ->execute();
     }
@@ -247,13 +256,13 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($car);
         $this->_em->flush($car);
 
-        $reloadedCar = $this->_em->find(__NAMESPACE__.'\\DDC93Car', $car->id);
+        $reloadedCar = $this->_em->find(DDC93Car::class, $car->id);
         $this->assertEquals($car, $reloadedCar);
     }
 
     public function testInlineEmbeddableWithPrefix()
     {
-        $metadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonWithPrefix');
+        $metadata = $this->_em->getClassMetadata(DDC3028PersonWithPrefix::class);
 
         $this->assertEquals('foobar_id', $metadata->getColumnName('id.id'));
         $this->assertEquals('bloo_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
@@ -263,7 +272,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testInlineEmbeddableEmptyPrefix()
     {
-        $metadata = $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonEmptyPrefix');
+        $metadata = $this->_em->getClassMetadata(DDC3028PersonEmptyPrefix::class);
 
         $this->assertEquals('id_id', $metadata->getColumnName('id.id'));
         $this->assertEquals('nested_foo_id', $metadata->getColumnName('nested.nestedWithPrefix.id'));
@@ -276,7 +285,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $expectedColumnName = 'id';
 
         $actualColumnName = $this->_em
-            ->getClassMetadata(__NAMESPACE__ . '\DDC3028PersonPrefixFalse')
+            ->getClassMetadata(DDC3028PersonPrefixFalse::class)
             ->getColumnName('id.id');
 
         $this->assertEquals($expectedColumnName, $actualColumnName);
@@ -285,7 +294,7 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testInlineEmbeddableInMappedSuperClass()
     {
         $isFieldMapped = $this->_em
-            ->getClassMetadata(__NAMESPACE__ . '\DDC3027Dog')
+            ->getClassMetadata(DDC3027Dog::class)
             ->hasField('address.street');
 
         $this->assertTrue($isFieldMapped);
@@ -296,8 +305,8 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testThrowsExceptionOnInfiniteEmbeddableNesting($embeddableClassName, $declaredEmbeddableClassName)
     {
-        $this->setExpectedException(
-            'Doctrine\ORM\Mapping\MappingException',
+        $this->expectException(MappingException::class);
+        $this->expectExceptionMessage(
             sprintf(
                 'Infinite nesting detected for embedded property %s::nested. ' .
                 'You cannot embed an embeddable from the same type inside an embeddable.',
@@ -305,17 +314,19 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
             )
         );
 
-        $this->_schemaTool->createSchema(array(
+        $this->_schemaTool->createSchema(
+            [
             $this->_em->getClassMetadata(__NAMESPACE__ . '\\' . $embeddableClassName),
-        ));
+            ]
+        );
     }
 
     public function getInfiniteEmbeddableNestingData()
     {
-        return array(
-            array('DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'),
-            array('DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'),
-        );
+        return [
+            ['DDCInfiniteNestingEmbeddable', 'DDCInfiniteNestingEmbeddable'],
+            ['DDCNestingEmbeddable1', 'DDCNestingEmbeddable4'],
+        ];
     }
 }
 
@@ -325,8 +336,6 @@ class ValueObjectsTest extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC93Person
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @GeneratedValue @Column(type="integer") */
     public $id;
 
@@ -396,8 +405,6 @@ class DDC93Car extends DDC93Vehicle
  */
 class DDC93Country
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string", nullable=true)
      */
@@ -414,8 +421,6 @@ class DDC93Country
  */
 class DDC93Address
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string")
      */
@@ -453,8 +458,6 @@ class DDC93Customer
 /** @Embeddable */
 class DDC93ContactInfo
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column(type="string")
      */
@@ -468,8 +471,6 @@ class DDC93ContactInfo
  */
 class DDC3028PersonWithPrefix
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "foobar_") */
     public $id;
 
@@ -488,8 +489,6 @@ class DDC3028PersonWithPrefix
  */
 class DDC3028PersonEmptyPrefix
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "") */
     public $id;
 
@@ -508,8 +507,6 @@ class DDC3028PersonEmptyPrefix
  */
 class DDC3028PersonPrefixFalse
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = false) */
     public $id;
 
@@ -524,8 +521,6 @@ class DDC3028PersonPrefixFalse
  */
 class DDC3028Id
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id @Column(type="string")
      */
@@ -542,8 +537,6 @@ class DDC3028Id
  */
 class DDC3028NestedEmbeddable
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Embedded(class="DDC3028Id", columnPrefix = "foo_") */
     public $nestedWithPrefix;
 

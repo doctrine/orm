@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\ValueConversionType;
 
-use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\Models;
 use Doctrine\Tests\Models\ValueConversionType as Entity;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -65,7 +65,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromOwningToInversedIsCounted()
     {
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
             'ghi'
         );
 
@@ -75,7 +75,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromInversedToOwningIsCounted()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
             'abc'
         );
 
@@ -85,12 +85,12 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnEntity()
     {
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
             'ghi'
         );
 
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
             'abc'
         );
 
@@ -100,12 +100,12 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnEntity()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
             'abc'
         );
 
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
             'ghi'
         );
 
@@ -115,7 +115,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromOwningToInversedContainsAnIndexByKey()
     {
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
             'ghi'
         );
 
@@ -125,7 +125,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatTheExtraLazyCollectionFromInversedToOwningContainsAnIndexByKey()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
             'abc'
         );
 
@@ -135,7 +135,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatASliceOfTheExtraLazyCollectionFromOwningToInversedIsLoaded()
     {
         $owning = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\OwningManyToManyExtraLazyEntity',
+            Models\ValueConversionType\OwningManyToManyExtraLazyEntity::class,
             'ghi'
         );
 
@@ -145,7 +145,7 @@ class ManyToManyExtraLazyTest extends OrmFunctionalTestCase
     public function testThatASliceOfTheExtraLazyCollectionFromInversedToOwningIsLoaded()
     {
         $inversed = $this->_em->find(
-            'Doctrine\Tests\Models\ValueConversionType\InversedManyToManyExtraLazyEntity',
+            Models\ValueConversionType\InversedManyToManyExtraLazyEntity::class,
             'abc'
         );
 

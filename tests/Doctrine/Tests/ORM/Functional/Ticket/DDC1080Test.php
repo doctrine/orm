@@ -2,18 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
  * @group DDC-1080
  */
-class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080Bar'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080FooBar'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1080Foo::class),
+            $this->_em->getClassMetadata(DDC1080Bar::class),
+            $this->_em->getClassMetadata(DDC1080FooBar::class),
+            ]
+        );
 
         $foo1 = new DDC1080Foo();
         $foo1->setFooTitle('foo title 1');
@@ -55,7 +59,7 @@ class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooId());
+        $foo = $this->_em->find(DDC1080Foo::class, $foo1->getFooID());
         $fooBars = $foo->getFooBars();
 
         $this->assertEquals(3, count($fooBars), "Should return three foobars.");

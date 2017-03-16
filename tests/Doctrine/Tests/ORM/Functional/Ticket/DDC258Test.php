@@ -1,17 +1,22 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC258Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Super'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class2'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class3'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC258Super::class),
+            $this->_em->getClassMetadata(DDC258Class1::class),
+            $this->_em->getClassMetadata(DDC258Class2::class),
+            $this->_em->getClassMetadata(DDC258Class3::class),
+            ]
+        );
     }
 
     /**
@@ -40,14 +45,14 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC258Super', $c2->id);
+        $e2 = $this->_em->find(DDC258Super::class, $c2->id);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC258Class2', $e2);
+        $this->assertInstanceOf(DDC258Class2::class, $e2);
         $this->assertEquals('Bar', $e2->title);
         $this->assertEquals('Bar', $e2->description);
         $this->assertEquals('Bar', $e2->text);
 
-        $all = $this->_em->getRepository(__NAMESPACE__.'\DDC258Super')->findAll();
+        $all = $this->_em->getRepository(DDC258Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC258Class1) {

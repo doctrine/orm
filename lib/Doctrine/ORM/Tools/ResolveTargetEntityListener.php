@@ -39,17 +39,17 @@ class ResolveTargetEntityListener implements EventSubscriber
     /**
      * @var array[] indexed by original entity name
      */
-    private $resolveTargetEntities = array();
+    private $resolveTargetEntities = [];
 
     /**
      * {@inheritDoc}
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::loadClassMetadata,
             Events::onClassMetadataNotFound
-        );
+        ];
     }
 
     /**

@@ -2,14 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
 {
     private $product;
     private $firstFeature;
@@ -75,13 +78,13 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
 
         $features = $product->getFeatures();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[0]);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $features[0]->getProduct());
+        $this->assertInstanceOf(ECommerceFeature::class, $features[0]);
+        $this->assertNotInstanceOf(Proxy::class, $features[0]->getProduct());
         $this->assertSame($product, $features[0]->getProduct());
         $this->assertEquals('Model writing tutorial', $features[0]->getDescription());
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[1]);
+        $this->assertInstanceOf(ECommerceFeature::class, $features[1]);
         $this->assertSame($product, $features[1]->getProduct());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $features[1]->getProduct());
+        $this->assertNotInstanceOf(Proxy::class, $features[1]->getProduct());
         $this->assertEquals('Annotations examples', $features[1]->getDescription());
     }
 
@@ -95,11 +98,11 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $features = $product->getFeatures();
 
         $this->assertFalse($features->isInitialized());
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[0]);
+        $this->assertInstanceOf(ECommerceFeature::class, $features[0]);
         $this->assertTrue($features->isInitialized());
         $this->assertSame($product, $features[0]->getProduct());
         $this->assertEquals('Model writing tutorial', $features[0]->getDescription());
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceFeature', $features[1]);
+        $this->assertInstanceOf(ECommerceFeature::class, $features[1]);
         $this->assertSame($product, $features[1]->getProduct());
         $this->assertEquals('Annotations examples', $features[1]->getDescription());
     }
@@ -112,8 +115,8 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $product);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $product);
+        $this->assertInstanceOf(Proxy::class, $product);
+        $this->assertInstanceOf(ECommerceProduct::class, $product);
         $this->assertFalse($product->__isInitialized__);
         $this->assertSame('Doctrine Cookbook', $product->getName());
         $this->assertTrue($product->__isInitialized__);
@@ -128,8 +131,8 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
         $features = $query->getResult();
 
         $product = $features[0]->getProduct();
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $product);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $product);
+        $this->assertNotInstanceOf(Proxy::class, $product);
+        $this->assertInstanceOf(ECommerceProduct::class, $product);
         $this->assertSame('Doctrine Cookbook', $product->getName());
 
         $this->assertFalse($product->getFeatures()->isInitialized());
@@ -156,19 +159,19 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->_createFixture();
 
-        $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
+        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
         $features = $product->getFeatures();
 
         $results = $features->matching(new Criteria(
             Criteria::expr()->eq('description', 'Model writing tutorial')
         ));
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
+        $this->assertInstanceOf(Collection::class, $results);
         $this->assertEquals(1, count($results));
 
         $results = $features->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
+        $this->assertInstanceOf(Collection::class, $results);
         $this->assertEquals(2, count($results));
     }
 
@@ -179,7 +182,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->_createFixture();
 
-        $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
+        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
 
         $thirdFeature = new ECommerceFeature();
         $thirdFeature->setDescription('Model writing tutorial');
@@ -198,7 +201,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     {
         $this->_createFixture();
 
-        $product  = $this->_em->find('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $this->product->getId());
+        $product  = $this->_em->find(ECommerceProduct::class, $this->product->getId());
         $features = $product->getFeatures();
 
         $thirdFeature = new ECommerceFeature();
@@ -209,12 +212,12 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
             Criteria::expr()->eq('description', 'Third feature')
         ));
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
+        $this->assertInstanceOf(Collection::class, $results);
         $this->assertCount(1, $results);
 
         $results = $features->matching(new Criteria());
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results);
+        $this->assertInstanceOf(Collection::class, $results);
         $this->assertCount(3, $results);
     }
 
@@ -231,7 +234,7 @@ class OneToManyBidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctiona
     public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature) {
         $foreignKey = $this->_em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
-            array($feature->getId())
+            [$feature->getId()]
         )->fetchColumn();
         $this->assertEquals($value, $foreignKey);
     }

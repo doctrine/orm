@@ -3,13 +3,15 @@
 namespace Doctrine\Tests\ORM\Id;
 
 use Doctrine\ORM\Id\AssignedGenerator;
+use Doctrine\ORM\ORMException;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * AssignedGeneratorTest
  *
  * @author robo
  */
-class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
+class AssignedGeneratorTest extends OrmTestCase
 {
     private $_em;
     private $_assignedGen;
@@ -26,13 +28,13 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
             $entity = new AssignedSingleIdEntity;
             $this->_assignedGen->generate($this->_em, $entity);
             $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (\Doctrine\ORM\ORMException $expected) {}
+        } catch (ORMException $expected) {}
 
         try {
             $entity = new AssignedCompositeIdEntity;
             $this->_assignedGen->generate($this->_em, $entity);
             $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (\Doctrine\ORM\ORMException $expected) {}
+        } catch (ORMException $expected) {}
     }
 
     public function testCorrectIdGeneration()
@@ -40,13 +42,13 @@ class AssignedGeneratorTest extends \Doctrine\Tests\OrmTestCase
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId' => 1), $id);
+        $this->assertEquals(['myId' => 1], $id);
 
         $entity = new AssignedCompositeIdEntity;
         $entity->myId2 = 2;
         $entity->myId1 = 4;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId1' => 4, 'myId2' => 2), $id);
+        $this->assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }
 

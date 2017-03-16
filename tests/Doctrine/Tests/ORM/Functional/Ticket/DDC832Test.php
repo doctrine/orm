@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsGroup;
-
 class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
@@ -18,11 +14,13 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedIndex'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832JoinedTreeIndex'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC832Like'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC832JoinedIndex::class),
+                $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
+                $this->_em->getClassMetadata(DDC832Like::class),
+                ]
+            );
         } catch(\Exception $e) {
 
         }

@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsUser;
-
 /**
  * @group DDC-1461
  */
@@ -16,10 +12,12 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1461TwitterAccount'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1461User')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1461TwitterAccount::class),
+                $this->_em->getClassMetadata(DDC1461User::class)
+                ]
+            );
         } catch(\Exception $e) {
 
         }

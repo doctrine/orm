@@ -2,6 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
+use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Logging\EchoSQLLogger;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManager;
+
 class LockAgentWorker
 {
     private $em;
@@ -11,10 +16,13 @@ class LockAgentWorker
         $lockAgent = new LockAgentWorker();
 
         $worker = new \GearmanWorker();
-        $worker->addServer();
-        $worker->addFunction("findWithLock", array($lockAgent, "findWithLock"));
-        $worker->addFunction("dqlWithLock", array($lockAgent, "dqlWithLock"));
-        $worker->addFunction('lock', array($lockAgent, 'lock'));
+        $worker->addServer(
+            isset($_SERVER['GEARMAN_HOST']) ? $_SERVER['GEARMAN_HOST'] : null,
+            isset($_SERVER['GEARMAN_PORT']) ? $_SERVER['GEARMAN_PORT'] : 4730
+        );
+        $worker->addFunction("findWithLock", [$lockAgent, "findWithLock"]);
+        $worker->addFunction("dqlWithLock", [$lockAgent, "dqlWithLock"]);
+        $worker->addFunction('lock', [$lockAgent, 'lock']);
 
         while($worker->work()) {
             if ($worker->returnCode() != GEARMAN_SUCCESS) {
@@ -88,20 +96,20 @@ class LockAgentWorker
 
     protected function createEntityManager($conn)
     {
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
         $config->setProxyDir(__DIR__ . '/../../../Proxies');
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver(array(__DIR__ . '/../../../Models/'), true);
+        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
         $config->setMetadataDriverImpl($annotDriver);
 
-        $cache = new \Doctrine\Common\Cache\ArrayCache();
+        $cache = new ArrayCache();
         $config->setMetadataCacheImpl($cache);
         $config->setQueryCacheImpl($cache);
-        $config->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        $config->setSQLLogger(new EchoSQLLogger());
 
-        $em = \Doctrine\ORM\EntityManager::create($conn, $config);
+        $em = EntityManager::create($conn, $config);
 
         return $em;
     }

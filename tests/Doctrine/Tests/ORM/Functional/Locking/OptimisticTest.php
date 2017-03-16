@@ -2,27 +2,26 @@
 
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\Common\EventManager;
-use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\Tests\TestUtil;
-use Doctrine\DBAL\LockMode;
 use DateTime;
+use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OptimisticTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedParent'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticJoinedChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Locking\OptimisticTimestamp')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(OptimisticJoinedParent::class),
+                $this->_em->getClassMetadata(OptimisticJoinedChild::class),
+                $this->_em->getClassMetadata(OptimisticStandard::class),
+                $this->_em->getClassMetadata(OptimisticTimestamp::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -58,7 +57,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
-        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', [2, $test->id]);
 
         // Now lets change a property and try and save it again
         $test->whatever = 'ok';
@@ -98,7 +97,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
-        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_joined_parent SET version = ? WHERE id = ?', [2, $test->id]);
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
@@ -154,7 +153,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually update/increment the version so we can try and save the same
         // $test and make sure the exception is thrown saying the record was
         // changed or updated since you read it
-        $this->_conn->executeQuery('UPDATE optimistic_standard SET version = ? WHERE id = ?', array(2, $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_standard SET version = ? WHERE id = ?', [2, $test->id]);
 
         // Now lets change a property and try and save it again
         $test->name = 'WHATT???';
@@ -176,7 +175,7 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $proxy = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Locking\OptimisticStandard', $test->id);
+        $proxy = $this->_em->getReference(OptimisticStandard::class, $test->id);
 
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
     }
@@ -213,7 +212,8 @@ class OptimisticTest extends \Doctrine\Tests\OrmFunctionalTestCase
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
 
-        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', array(date($format, strtotime($test->version->format($format)) + 3600), $test->id));
+        $this->_conn->executeQuery('UPDATE optimistic_timestamp SET version = ? WHERE id = ?', [date($format, strtotime($test->version->format($format)) + 3600), $test->id]
+        );
 
         // Try and update the record and it should throw an exception
         $caughtException = null;

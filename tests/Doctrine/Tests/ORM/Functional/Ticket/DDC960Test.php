@@ -2,18 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC960Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC960Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC960Root'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC960Child')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC960Root::class),
+                $this->_em->getClassMetadata(DDC960Child::class)
+                ]
+            );
         } catch(\Exception $e) {
 
         }

@@ -67,8 +67,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
         //$this->assertEquals("Doctrine 1.x Manual", $products[0]->getName());
         //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
@@ -77,7 +77,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     public function testLazyLoadsCollection()
     {
         $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata('Doctrine\Tests\Models\ECommerce\ECommerceCart');
+        $metadata = $this->_em->getClassMetadata(ECommerceCart::class);
         $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
 
         $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
@@ -86,8 +86,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\ECommerce\ECommerceProduct', $products[1]);
+        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
+        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
         $this->assertCollectionEquals($products, $secondCart->getProducts());
     }
 

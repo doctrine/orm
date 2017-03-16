@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
+use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -12,15 +13,17 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC2230Test extends OrmFunctionalTestCase
 {
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2230User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2230Address'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC2230User::class),
+                $this->_em->getClassMetadata(DDC2230Address::class),
+                ]
+            );
         } catch (ToolsException $e) {}
     }
 
@@ -34,16 +37,16 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(__NAMESPACE__ . '\\DDC2230User', $insertedUser->id);
+        $user = $this->_em->find(DDC2230User::class, $insertedUser->id);
 
         $this->_em->clear();
 
         $mergedUser = $this->_em->merge($user);
 
-        /* @var $address \Doctrine\Common\Proxy\Proxy */
+        /* @var $address Proxy */
         $address = $mergedUser->address;
 
-        $this->assertInstanceOf('Doctrine\\ORM\\Proxy\\Proxy', $address);
+        $this->assertInstanceOf(Proxy::class, $address);
         $this->assertFalse($address->__isInitialized());
     }
 
@@ -55,9 +58,9 @@ class DDC2230Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $addressProxy = $this->_em->getReference(__NAMESPACE__ . '\\DDC2230Address', $insertedAddress->id);
+        $addressProxy = $this->_em->getReference(DDC2230Address::class, $insertedAddress->id);
 
-        /* @var $addressProxy \Doctrine\Common\Proxy\Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
+        /* @var $addressProxy Proxy|\Doctrine\Tests\ORM\Functional\Ticket\DDC2230Address */
         $this->assertFalse($addressProxy->__isInitialized());
         $this->assertNull($addressProxy->listener);
 

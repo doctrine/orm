@@ -46,20 +46,22 @@ class DropCommand extends AbstractCommand
         ->setDescription(
             'Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output.'
         )
-        ->setDefinition(array(
-            new InputOption(
-                'dump-sql', null, InputOption::VALUE_NONE,
-                'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
-            ),
-            new InputOption(
-                'force', 'f', InputOption::VALUE_NONE,
-                "Don't ask for the deletion of the database, but force the operation to run."
-            ),
-            new InputOption(
-                'full-database', null, InputOption::VALUE_NONE,
-                'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.'
-            ),
-        ))
+        ->setDefinition(
+            [
+                new InputOption(
+                    'dump-sql', null, InputOption::VALUE_NONE,
+                    'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
+                ),
+                new InputOption(
+                    'force', 'f', InputOption::VALUE_NONE,
+                    "Don't ask for the deletion of the database, but force the operation to run."
+                ),
+                new InputOption(
+                    'full-database', null, InputOption::VALUE_NONE,
+                    'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.'
+                ),
+            ]
+        )
         ->setHelp(<<<EOT
 Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
 Beware that the complete database is dropped by this command, even tables that are not relevant to your metadata model.

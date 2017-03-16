@@ -2,17 +2,17 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
-
 class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC656Entity')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC656Entity::class)
+                ]
+            );
         } catch(\Exception $e) {
 
         }
@@ -26,10 +26,10 @@ class DDC656Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
 
         $this->_em->getUnitOfWork()->computeChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
-        $data1 = $this->_em->getUnitOfWork()->getEntityChangeset($entity);
+        $data1 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
         $entity->setType('type2');
         $this->_em->getUnitOfWork()->recomputeSingleEntityChangeSet($this->_em->getClassMetadata(get_class($entity)), $entity);
-        $data2 = $this->_em->getUnitOfWork()->getEntityChangeset($entity);
+        $data2 = $this->_em->getUnitOfWork()->getEntityChangeSet($entity);
 
         $this->assertEquals(array_keys($data1), array_keys($data2));
 

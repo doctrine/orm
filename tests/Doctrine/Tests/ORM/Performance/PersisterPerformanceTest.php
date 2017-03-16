@@ -2,19 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Performance;
 
-use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
-use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group performance
  */
-class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PersisterPerformanceTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -30,7 +27,7 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $author->username = "beberlei";
         $this->_em->persist($author);
 
-        $ids = array();
+        $ids = [];
         for ($i = 0; $i < 100; $i++) {
             $article = new CmsArticle();
             $article->text = "foo";
@@ -43,20 +40,20 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->findAll();
+        $articles = $this->_em->getRepository(CmsArticle::class)->findAll();
         echo "100 CmsArticle findAll(): " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->findAll();
+        $articles = $this->_em->getRepository(CmsArticle::class)->findAll();
         echo "100 CmsArticle findAll(): " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
         for ($i = 0; $i < 100; $i++) {
-            $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->find($ids[$i]->id);
+            $articles = $this->_em->getRepository(CmsArticle::class)->find($ids[$i]->id);
         }
         echo "100 CmsArticle find(): " . number_format(microtime(true) - $start, 6) . "\n";
 
@@ -64,7 +61,7 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $start = microtime(true);
         for ($i = 0; $i < 100; $i++) {
-            $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsArticle')->find($ids[$i]->id);
+            $articles = $this->_em->getRepository(CmsArticle::class)->find($ids[$i]->id);
         }
         echo "100 CmsArticle find(): " . number_format(microtime(true) - $start, 6) . "\n";
     }
@@ -80,13 +77,13 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $articles = $this->_em->getRepository(CmsGroup::class)->findAll();
         echo "100 CmsGroup: " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $articles = $this->_em->getRepository(CmsGroup::class)->findAll();
         echo "100 CmsGroup: " . number_format(microtime(true) - $start, 6) . "\n";
     }
 
@@ -104,13 +101,13 @@ class PersisterPerformanceTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $articles = $this->_em->getRepository(CmsUser::class)->findAll();
         echo "100 CmsUser: " . number_format(microtime(true) - $start, 6) . "\n";
 
         $this->_em->clear();
 
         $start = microtime(true);
-        $articles = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
+        $articles = $this->_em->getRepository(CmsUser::class)->findAll();
         echo "100 CmsUser: " . number_format(microtime(true) - $start, 6) . "\n";
     }
 }

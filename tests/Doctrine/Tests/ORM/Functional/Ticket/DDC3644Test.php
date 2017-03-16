@@ -16,12 +16,14 @@ class DDC3644Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3644User',
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Address',
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Animal',
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3644Pet',
-        ));
+        $this->setUpEntitySchema(
+            [
+            DDC3644User::class,
+            DDC3644Address::class,
+            DDC3644Animal::class,
+            DDC3644Pet::class,
+            ]
+        );
     }
 
     /**
@@ -33,7 +35,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
         $previous  = new DDC3644Address('Rio de Janeiro, RJ, Brazil');
         $initial   = new DDC3644Address('Sao Carlos, SP, Brazil');
-        $addresses = new ArrayCollection(array($current, $previous, $initial));
+        $addresses = new ArrayCollection([$current, $previous, $initial]);
         $user      = new DDC3644User();
 
         $user->name = 'Guilherme Blanco';
@@ -53,8 +55,8 @@ class DDC3644Test extends OrmFunctionalTestCase
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $current   = new DDC3644Address('Toronto, ON, Canada');
-        $addresses = new ArrayCollection(array($current));
-        $user      = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
+        $addresses = new ArrayCollection([$current]);
+        $user      = $this->_em->find(DDC3644User::class, $userId);
 
         $user->setAddresses($addresses);
 
@@ -65,12 +67,12 @@ class DDC3644Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // We should only have 1 item in the collection list now
-        $user = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
+        $user = $this->_em->find(DDC3644User::class, $userId);
 
         $this->assertCount(1, $user->addresses);
 
         // We should only have 1 item in the addresses table too
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC3644Address');
+        $repository = $this->_em->getRepository(DDC3644Address::class);
         $addresses  = $repository->findAll();
 
         $this->assertCount(1, $addresses);
@@ -84,7 +86,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');
         $past   = new DDC3644Pet('Nanny');
-        $pets   = new ArrayCollection(array($actual, $past));
+        $pets   = new ArrayCollection([$actual, $past]);
         $user   = new DDC3644User();
 
         $user->name = 'Guilherme Blanco';
@@ -103,8 +105,8 @@ class DDC3644Test extends OrmFunctionalTestCase
 
         // Replace entire collection (this should trigger OneToManyPersister::remove())
         $actual = new DDC3644Pet('Valentina');
-        $pets   = new ArrayCollection(array($actual));
-        $user   = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
+        $pets   = new ArrayCollection([$actual]);
+        $user   = $this->_em->find(DDC3644User::class, $userId);
 
         $user->setPets($pets);
 
@@ -115,12 +117,12 @@ class DDC3644Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // We should only have 1 item in the collection list now
-        $user = $this->_em->find(__NAMESPACE__ . '\DDC3644User', $userId);
+        $user = $this->_em->find(DDC3644User::class, $userId);
 
         $this->assertCount(1, $user->pets);
 
         // We should only have 1 item in the pets table too
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC3644Pet');
+        $repository = $this->_em->getRepository(DDC3644Pet::class);
         $pets       = $repository->findAll();
 
         $this->assertCount(1, $pets);

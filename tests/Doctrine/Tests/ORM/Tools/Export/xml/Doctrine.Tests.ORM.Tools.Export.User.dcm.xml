@@ -35,6 +35,12 @@
             <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" on-update="CASCADE"/>
         </one-to-one>
 
+        <one-to-one field="cart" target-entity="Doctrine\Tests\ORM\Tools\Export\Cart" mapped-by="user">
+            <cascade>
+                <cascade-remove/>
+            </cascade>
+        </one-to-one>
+
         <many-to-one field="mainGroup" target-entity="Doctrine\Tests\ORM\Tools\Export\Group" />
 
         <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Tools\Export\Phonenumber" mapped-by="user" orphan-removal="true" fetch="LAZY">

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Logging\CacheLoggerChain;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
@@ -29,7 +30,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
         parent::setUp();
 
         $this->logger = new CacheLoggerChain();
-        $this->mock   = $this->getMock('Doctrine\ORM\Cache\Logging\CacheLogger');
+        $this->mock   = $this->createMock(CacheLogger::class);
     }
 
     public function testGetAndSetLogger()
@@ -41,13 +42,13 @@ class CacheLoggerChainTest extends DoctrineTestCase
         $this->logger->setLogger('mock', $this->mock);
 
         $this->assertSame($this->mock, $this->logger->getLogger('mock'));
-        $this->assertEquals(array('mock' => $this->mock), $this->logger->getLoggers());
+        $this->assertEquals(['mock' => $this->mock], $this->logger->getLoggers());
     }
 
     public function testEntityCacheChain()
     {
         $name = 'my_entity_region';
-        $key  = new EntityCacheKey(State::CLASSNAME, array('id' => 1));
+        $key  = new EntityCacheKey(State::class, ['id' => 1]);
 
         $this->logger->setLogger('mock', $this->mock);
 
@@ -71,7 +72,7 @@ class CacheLoggerChainTest extends DoctrineTestCase
     public function testCollectionCacheChain()
     {
         $name = 'my_collection_region';
-        $key  = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id' => 1));
+        $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->logger->setLogger('mock', $this->mock);
 

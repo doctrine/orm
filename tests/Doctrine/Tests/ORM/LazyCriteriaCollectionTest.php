@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\LazyCriteriaCollection;
-use Doctrine\Tests\Mocks\ConnectionMock;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use stdClass;
-use PHPUnit_Framework_TestCase;
 
 /**
  * @author Marco Pivetta <ocramius@gmail.com>
  *
  * @covers \Doctrine\ORM\LazyCriteriaCollection
  */
-class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
+class LazyCriteriaCollectionTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Doctrine\ORM\Persisters\Entity\EntityPersister|\PHPUnit_Framework_MockObject_MockObject
@@ -35,7 +35,7 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->persister              = $this->getMock('Doctrine\ORM\Persisters\Entity\EntityPersister');
+        $this->persister              = $this->createMock(EntityPersister::class);
         $this->criteria               = new Criteria();
         $this->lazyCriteriaCollection = new LazyCriteriaCollection($this->persister, $this->criteria);
     }
@@ -65,12 +65,12 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will($this->returnValue(array('foo', 'bar', 'baz')));
+            ->will($this->returnValue(['foo', 'bar', 'baz']));
 
         // should never call the persister's count
         $this->persister->expects($this->never())->method('count');
 
-        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+        $this->assertSame(['foo', 'bar', 'baz'], $this->lazyCriteriaCollection->toArray());
 
         $this->assertSame(3, $this->lazyCriteriaCollection->count());
     }
@@ -90,7 +90,7 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will($this->returnValue(array($foo, $bar, $baz)));
+            ->will($this->returnValue([$foo, $bar, $baz]));
 
         $criteria = new Criteria();
 
@@ -98,10 +98,10 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
 
         $filtered = $this->lazyCriteriaCollection->matching($criteria);
 
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $filtered);
-        $this->assertEquals(array($foo), $filtered->toArray());
+        $this->assertInstanceOf(Collection::class, $filtered);
+        $this->assertEquals([$foo], $filtered->toArray());
 
-        $this->assertEquals(array($foo), $this->lazyCriteriaCollection->matching($criteria)->toArray());
+        $this->assertEquals([$foo], $this->lazyCriteriaCollection->matching($criteria)->toArray());
     }
 
     public function testIsEmptyUsesCountWhenNotInitialized()
@@ -125,12 +125,12 @@ class LazyCriteriaCollectionTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('loadCriteria')
             ->with($this->criteria)
-            ->will($this->returnValue(array('foo', 'bar', 'baz')));
+            ->will($this->returnValue(['foo', 'bar', 'baz']));
 
         // should never call the persister's count
         $this->persister->expects($this->never())->method('count');
 
-        $this->assertSame(array('foo', 'bar', 'baz'), $this->lazyCriteriaCollection->toArray());
+        $this->assertSame(['foo', 'bar', 'baz'], $this->lazyCriteriaCollection->toArray());
 
         $this->assertFalse($this->lazyCriteriaCollection->isEmpty());
     }

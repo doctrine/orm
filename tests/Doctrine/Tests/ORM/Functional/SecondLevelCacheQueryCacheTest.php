@@ -2,15 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\City;
-use Doctrine\ORM\Cache\QueryCacheKey;
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\EntityCacheEntry;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\EntityCacheEntry;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\Models\Cache\Attraction;
+use Doctrine\Tests\Models\Cache\City;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\Models\Cache\State;
 
 /**
  * @group DDC-2183
@@ -25,8 +28,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
@@ -61,8 +64,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[1]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[1]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[1]->getId(), $result2[1]->getId());
@@ -88,8 +91,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
@@ -111,8 +114,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertCount(2, $result);
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         // MODE_GET should read items if exists.
         $this->assertCount(2, $queryGet->getResult());
@@ -128,8 +131,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
@@ -137,8 +140,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->assertCount(2, $result);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
@@ -150,13 +153,13 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         // MODE_PUT should never read itens from cache.
         $this->assertCount(2, $queryPut->getResult());
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->assertCount(2, $queryPut->getResult());
         $this->assertEquals($queryCount + 3, $this->getCurrentQueryCount());
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
     public function testQueryCacheModeRefresh()
@@ -168,18 +171,18 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
-        $region     = $this->cache->getEntityCacheRegion(Country::CLASSNAME);
+        $region     = $this->cache->getEntityCacheRegion(Country::class);
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
         $result     = $this->_em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->assertCount(2, $result);
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
@@ -188,11 +191,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $countryId2     = $this->countries[1]->getId();
         $countryName1   = $this->countries[0]->getName();
         $countryName2   = $this->countries[1]->getName();
-        
-        $key1           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId1));
-        $key2           = new EntityCacheKey(Country::CLASSNAME, array('id'=>$countryId2));
-        $entry1         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId1, 'name'=>'outdated'));
-        $entry2         = new EntityCacheEntry(Country::CLASSNAME, array('id'=>$countryId2, 'name'=>'outdated'));
+
+        $key1           = new EntityCacheKey(Country::class, ['id'=>$countryId1]);
+        $key2           = new EntityCacheKey(Country::class, ['id'=>$countryId2]);
+        $entry1         = new EntityCacheEntry(Country::class, ['id'=>$countryId1, 'name'=>'outdated']);
+        $entry2         = new EntityCacheEntry(Country::class, ['id'=>$countryId2, 'name'=>'outdated']);
 
         $region->put($key1, $entry1);
         $region->put($key2, $entry2);
@@ -238,14 +241,14 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
         $this->assertEquals($this->countries[1]->getName(), $result1[1]->getName());
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
-        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::CLASSNAME)));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(Country::class)));
 
         $this->_em->clear();
 
@@ -264,8 +267,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[1]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[1]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[1]->getId(), $result2[1]->getId());
@@ -282,6 +285,89 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
     }
 
+    /**
+     * @group 5854
+     */
+    public function testMultipleNestedDQLAliases()
+    {
+        $this->loadFixturesCountries();
+        $this->loadFixturesStates();
+        $this->loadFixturesCities();
+        $this->loadFixturesAttractions();
+
+        $queryRegionName      = $this->getDefaultQueryRegionName();
+        $cityRegionName       = $this->getEntityRegion(City::class);
+        $stateRegionName      = $this->getEntityRegion(State::class);
+        $attractionRegionName = $this->getEntityRegion(Attraction::class);
+
+        $this->secondLevelCacheLogger->clearStats();
+        $this->evictRegions();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT s, c, a FROM Doctrine\Tests\Models\Cache\State s JOIN s.cities c JOIN c.attractions a';
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(2, $result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->assertTrue($this->cache->containsEntity(State::class, $this->states[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
+
+        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[2]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
+
+        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[2]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[3]->getId()));
+
+        $this->assertInstanceOf(State::class, $result1[0]);
+        $this->assertInstanceOf(State::class, $result1[1]);
+
+        $this->assertCount(2, $result1[0]->getCities());
+        $this->assertCount(2, $result1[1]->getCities());
+
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(1));
+
+        $this->assertCount(2, $result1[0]->getCities()->get(0)->getAttractions());
+        $this->assertCount(2, $result1[0]->getCities()->get(1)->getAttractions());
+        $this->assertCount(2, $result1[1]->getCities()->get(0)->getAttractions());
+        $this->assertCount(1, $result1[1]->getCities()->get(1)->getAttractions());
+
+        $this->_em->clear();
+
+        $result2  = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(2, $result2);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->assertInstanceOf(State::class, $result2[0]);
+        $this->assertInstanceOf(State::class, $result2[1]);
+
+        $this->assertCount(2, $result2[0]->getCities());
+        $this->assertCount(2, $result2[1]->getCities());
+
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
+
+        $this->assertCount(2, $result2[0]->getCities()->get(0)->getAttractions());
+        $this->assertCount(2, $result2[0]->getCities()->get(1)->getAttractions());
+        $this->assertCount(2, $result2[1]->getCities()->get(0)->getAttractions());
+        $this->assertCount(1, $result2[1]->getCities()->get(1)->getAttractions());
+    }
+
     public function testBasicQueryParams()
     {
         $this->evictRegions();
@@ -289,8 +375,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $name       = $this->countries[0]->getName();
@@ -313,7 +399,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertCount(1, $result2);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
@@ -326,8 +412,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT c FROM Doctrine\Tests\Models\Cache\Country c';
@@ -339,14 +425,14 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
         $this->assertEquals($this->countries[1]->getName(), $result1[1]->getName());
-        
+
         $this->assertEquals(3, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
-        $this->cache->evictEntity(Country::CLASSNAME, $result1[0]->getId());
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $result1[0]->getId()));
+        $this->cache->evictEntity(Country::class, $result1[0]->getId());
+        $this->assertFalse($this->cache->containsEntity(Country::class, $result1[0]->getId()));
 
         $this->_em->clear();
 
@@ -362,8 +448,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[1]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[1]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[1]->getId(), $result2[1]->getId());
@@ -390,15 +476,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->getResult();
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf(State::CLASSNAME, $result1[0]);
-        $this->assertInstanceOf(State::CLASSNAME, $result1[1]);
+        $this->assertInstanceOf(State::class, $result1[0]);
+        $this->assertInstanceOf(State::class, $result1[1]);
         $this->assertCount(2, $result1[0]->getCities());
         $this->assertCount(2, $result1[1]->getCities());
 
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(1));
 
         $this->assertNotNull($result1[0]->getCities()->get(0)->getId());
         $this->assertNotNull($result1[0]->getCities()->get(1)->getId());
@@ -416,15 +502,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->setCacheable(true)
                 ->getResult();
 
-        $this->assertInstanceOf(State::CLASSNAME, $result2[0]);
-        $this->assertInstanceOf(State::CLASSNAME, $result2[1]);
+        $this->assertInstanceOf(State::class, $result2[0]);
+        $this->assertInstanceOf(State::class, $result2[1]);
         $this->assertCount(2, $result2[0]->getCities());
         $this->assertCount(2, $result2[1]->getCities());
 
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
 
         $this->assertNotNull($result2[0]->getCities()->get(0)->getId());
         $this->assertNotNull($result2[0]->getCities()->get(1)->getId());
@@ -456,22 +542,22 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->getResult();
 
         $this->assertCount(4, $result1);
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]);
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]);
-        $this->assertInstanceOf(State::CLASSNAME, $result1[0]->getState());
-        $this->assertInstanceOf(State::CLASSNAME, $result1[1]->getState());
+        $this->assertInstanceOf(City::class, $result1[0]);
+        $this->assertInstanceOf(City::class, $result1[1]);
+        $this->assertInstanceOf(State::class, $result1[0]->getState());
+        $this->assertInstanceOf(State::class, $result1[1]->getState());
 
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[0]->getState()->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[1]->getState()->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $result1[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $result1[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::class, $result1[0]->getState()->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::class, $result1[1]->getState()->getId()));
 
         $this->assertEquals(7, $this->secondLevelCacheLogger->getPutCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getMissCount());
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionPutCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
-        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::CLASSNAME)));
-        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(City::CLASSNAME)));
+        $this->assertEquals(2, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(State::class)));
+        $this->assertEquals(4, $this->secondLevelCacheLogger->getRegionPutCount($this->getEntityRegion(City::class)));
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
@@ -483,10 +569,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->getResult();
 
         $this->assertCount(4, $result1);
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]);
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]);
-        $this->assertInstanceOf(State::CLASSNAME, $result2[0]->getState());
-        $this->assertInstanceOf(State::CLASSNAME, $result2[1]->getState());
+        $this->assertInstanceOf(City::class, $result2[0]);
+        $this->assertInstanceOf(City::class, $result2[1]);
+        $this->assertInstanceOf(State::class, $result2[0]->getState());
+        $this->assertInstanceOf(State::class, $result2[1]->getState());
 
         $this->assertNotNull($result2[0]->getId());
         $this->assertNotNull($result2[0]->getId());
@@ -523,30 +609,30 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->getResult();
 
         $this->assertCount(4, $result1);
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]);
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]);
-        $this->assertInstanceOf(State::CLASSNAME, $result1[0]->getState());
-        $this->assertInstanceOf(State::CLASSNAME, $result1[1]->getState());
+        $this->assertInstanceOf(City::class, $result1[0]);
+        $this->assertInstanceOf(City::class, $result1[1]);
+        $this->assertInstanceOf(State::class, $result1[0]->getState());
+        $this->assertInstanceOf(State::class, $result1[1]->getState());
 
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::CLASSNAME, $result1[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[0]->getState()->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::CLASSNAME, $result1[1]->getState()->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $result1[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(City::class, $result1[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::class, $result1[0]->getState()->getId()));
+        $this->assertTrue($this->cache->containsEntity(State::class, $result1[1]->getState()->getId()));
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->_em->clear();
 
-        $this->cache->evictEntityRegion(State::CLASSNAME);
+        $this->cache->evictEntityRegion(State::class);
 
         $result2  = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
         $this->assertCount(4, $result1);
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]);
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]);
-        $this->assertInstanceOf(State::CLASSNAME, $result2[0]->getState());
-        $this->assertInstanceOf(State::CLASSNAME, $result2[1]->getState());
+        $this->assertInstanceOf(City::class, $result2[0]);
+        $this->assertInstanceOf(City::class, $result2[1]);
+        $this->assertInstanceOf(State::class, $result2[0]->getState());
+        $this->assertInstanceOf(State::class, $result2[1]->getState());
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
@@ -567,33 +653,33 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
                 ->getResult();
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf(State::CLASSNAME, $result1[0]);
-        $this->assertInstanceOf(State::CLASSNAME, $result1[1]);
+        $this->assertInstanceOf(State::class, $result1[0]);
+        $this->assertInstanceOf(State::class, $result1[1]);
         $this->assertCount(2, $result1[0]->getCities());
         $this->assertCount(2, $result1[1]->getCities());
 
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result1[1]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(1));
 
         $this->_em->clear();
 
-        $this->cache->evictEntityRegion(City::CLASSNAME);
+        $this->cache->evictEntityRegion(City::class);
 
         $result2  = $this->_em->createQuery($dql)
                 ->setCacheable(true)
                 ->getResult();
 
-        $this->assertInstanceOf(State::CLASSNAME, $result2[0]);
-        $this->assertInstanceOf(State::CLASSNAME, $result2[1]);
+        $this->assertInstanceOf(State::class, $result2[0]);
+        $this->assertInstanceOf(State::class, $result2[1]);
         $this->assertCount(2, $result2[0]->getCities());
         $this->assertCount(2, $result2[1]->getCities());
 
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::CLASSNAME, $result2[1]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(1));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
+        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
 
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
@@ -606,11 +692,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult(Country::CLASSNAME, 'c');
+        $rsm->addEntityResult(Country::class, 'c');
         $rsm->addFieldResult('c', 'name', 'name');
         $rsm->addFieldResult('c', 'id', 'id');
 
@@ -647,8 +733,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionHitCount($this->getDefaultQueryRegionName()));
         $this->assertEquals(1, $this->secondLevelCacheLogger->getRegionMissCount($this->getDefaultQueryRegionName()));
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[1]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[1]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[1]->getId(), $result2[1]->getId());
@@ -716,7 +802,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->_em->clear();
 
-        $getHash = function(\Doctrine\ORM\AbstractQuery $query){
+        $getHash = function(AbstractQuery $query){
             $method = new \ReflectionMethod($query, 'getHash');
             $method->setAccessible(true);
 
@@ -742,7 +828,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getRegion()
             ->get($key);
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\QueryCacheEntry', $entry);
+        $this->assertInstanceOf(Cache\QueryCacheEntry::class, $entry);
         $entry->time = $entry->time / 2;
 
         $this->cache->getQueryCache()
@@ -851,8 +937,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertNotNull($state1);
         $this->assertNotNull($state1->getCountry());
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
+        $this->assertInstanceOf(State::class, $state1);
+        $this->assertInstanceOf(Proxy::class, $state1->getCountry());
         $this->assertEquals($countryName, $state1->getCountry()->getName());
         $this->assertEquals($stateId, $state1->getId());
 
@@ -869,8 +955,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->assertNotNull($state2);
         $this->assertNotNull($state2->getCountry());
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
+        $this->assertInstanceOf(State::class, $state2);
+        $this->assertInstanceOf(Proxy::class, $state2->getCountry());
         $this->assertEquals($countryName, $state2->getCountry()->getName());
         $this->assertEquals($stateId, $state2->getId());
     }
@@ -898,10 +984,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getSingleResult();
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city1);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city1->getState());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city1->getState()->getCities()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city1->getState()->getCities()->get(0)->getState());
+        $this->assertInstanceOf(City::class, $city1);
+        $this->assertInstanceOf(State::class, $city1->getState());
+        $this->assertInstanceOf(City::class, $city1->getState()->getCities()->get(0));
+        $this->assertInstanceOf(State::class, $city1->getState()->getCities()->get(0)->getState());
 
         $this->_em->clear();
 
@@ -914,10 +1000,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getSingleResult();
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city2);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city2->getState());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $city2->getState()->getCities()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $city2->getState()->getCities()->get(0)->getState());
+        $this->assertInstanceOf(City::class, $city2);
+        $this->assertInstanceOf(State::class, $city2->getState());
+        $this->assertInstanceOf(City::class, $city2->getState()->getCities()->get(0));
+        $this->assertInstanceOf(State::class, $city2->getState()->getCities()->get(0)->getState());
     }
 
     public function testResolveToManyAssociationCacheEntry()
@@ -943,10 +1029,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getSingleResult();
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state1->getCountry());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state1->getCities()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state1->getCities()->get(0)->getState());
+        $this->assertInstanceOf(State::class, $state1);
+        $this->assertInstanceOf(Proxy::class, $state1->getCountry());
+        $this->assertInstanceOf(City::class, $state1->getCities()->get(0));
+        $this->assertInstanceOf(State::class, $state1->getCities()->get(0)->getState());
         $this->assertSame($state1, $state1->getCities()->get(0)->getState());
 
         $this->_em->clear();
@@ -960,10 +1046,10 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->getSingleResult();
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $state2->getCountry());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\City', $state2->getCities()->get(0));
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\State', $state2->getCities()->get(0)->getState());
+        $this->assertInstanceOf(State::class, $state2);
+        $this->assertInstanceOf(Proxy::class, $state2->getCountry());
+        $this->assertInstanceOf(City::class, $state2->getCities()->get(0));
+        $this->assertInstanceOf(State::class, $state2->getCities()->get(0)->getState());
         $this->assertSame($state2, $state2->getCities()->get(0)->getState());
     }
 
@@ -972,15 +1058,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->loadFixturesCountries();
 
-        $this->assertTrue($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->_em->createQuery('DELETE Doctrine\Tests\Models\Cache\Country u WHERE u.id = 4')
             ->setHint(Query::HINT_CACHE_EVICT, true)
             ->execute();
 
-        $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[0]->getId()));
-        $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[1]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
     public function testHintClearEntityRegionDeleteStatement()
@@ -988,15 +1074,15 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->loadFixturesCountries();
 
-        $this->assertTrue($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[1]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
 
         $this->_em->createQuery("UPDATE Doctrine\Tests\Models\Cache\Country u SET u.name = 'foo' WHERE u.id = 1")
             ->setHint(Query::HINT_CACHE_EVICT, true)
             ->execute();
 
-        $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[0]->getId()));
-        $this->assertFalse($this->cache->containsEntity('Doctrine\Tests\Models\Cache\Country', $this->countries[1]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[1]->getId()));
     }
 
     /**
@@ -1034,5 +1120,38 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->_em->createQuery("UPDATE Doctrine\Tests\Models\Cache\Country u SET u.name = 'foo' WHERE u.id = 4")
             ->setCacheable(true)
             ->getResult();
+    }
+
+    public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
+    {
+        $this->loadFixturesCountries();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+        $dql        = 'SELECT country FROM Doctrine\Tests\Models\Cache\Country country';
+
+        $result1    = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(2, $result1);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        $this->_em->persist(new Country('France'));
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $queryCount = $this->getCurrentQueryCount();
+
+        $result2 = $this->_em->createQuery($dql)
+            ->setCacheable(true)
+            ->getResult();
+
+        $this->assertCount(3, $result2);
+        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+
+        foreach ($result2 as $entity) {
+            $this->assertInstanceOf(Country::class, $entity);
+        }
     }
 }

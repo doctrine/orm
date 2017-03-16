@@ -5,14 +5,15 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\Models\StockExchange\Market;
 use Doctrine\Tests\Models\StockExchange\Bond;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-250
  */
-class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class IndexByAssociationTest extends OrmFunctionalTestCase
 {
     /**
-     * @var Doctrine\Tests\Models\StockExchange\Market
+     * @var Market
      */
     private $market;
 
@@ -45,8 +46,8 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToOneFinder()
     {
-        /* @var $market Doctrine\Tests\Models\StockExchange\Market */
-        $market = $this->_em->find('Doctrine\Tests\Models\StockExchange\Market', $this->market->getId());
+        /* @var $market Market */
+        $market = $this->_em->find(Market::class, $this->market->getId());
 
         $this->assertEquals(2, count($market->stocks));
         $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
@@ -69,7 +70,7 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToMany()
     {
-        $bond = $this->_em->find('Doctrine\Tests\Models\StockExchange\Bond', $this->bond->getId());
+        $bond = $this->_em->find(Bond::class, $this->bond->getId());
 
         $this->assertEquals(2, count($bond->stocks));
         $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");

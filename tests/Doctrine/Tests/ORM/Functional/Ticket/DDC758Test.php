@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
 class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -23,7 +22,7 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private function setCascadeMergeFor($class)
     {
-        $metadata = $this->_em->getMetadataFactory()->getMetaDataFor($class);
+        $metadata = $this->_em->getMetadataFactory()->getMetadataFor($class);
         foreach ($metadata->associationMappings as $key => $associationMapping) {
             $metadata->associationMappings[$key]["isCascadePersist"] = false;
             $metadata->associationMappings[$key]["isCascadeMerge"] = true;
@@ -39,8 +38,8 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testManyToManyMergeAssociationAdds()
     {
-        $this->setCascadeMergeFor('Doctrine\Tests\Models\CMS\CmsUser');
-        $this->setCascadeMergeFor('Doctrine\Tests\Models\CMS\CmsGroup');
+        $this->setCascadeMergeFor(CmsUser::class);
+        $this->setCascadeMergeFor(CmsGroup::class);
 
         // Put entities in the database
         $cmsUser = new CmsUser();
@@ -92,8 +91,8 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $cmsUsers = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
-        $cmsGroups = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $cmsUsers = $this->_em->getRepository(CmsUser::class)->findAll();
+        $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
         $this->assertEquals(1, sizeof($cmsUsers));
@@ -116,8 +115,8 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testManyToManyMergeAssociationRemoves()
     {
-        $this->setCascadeMergeFor('Doctrine\Tests\Models\CMS\CmsUser');
-        $this->setCascadeMergeFor('Doctrine\Tests\Models\CMS\CmsGroup');
+        $this->setCascadeMergeFor(CmsUser::class);
+        $this->setCascadeMergeFor(CmsGroup::class);
 
         $cmsUser = new CmsUser();
         $cmsUser->username = "dave";
@@ -168,8 +167,8 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $cmsUsers = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsUser')->findAll();
-        $cmsGroups = $this->_em->getRepository('Doctrine\Tests\Models\CMS\CmsGroup')->findAll();
+        $cmsUsers = $this->_em->getRepository(CmsUser::class)->findAll();
+        $cmsGroups = $this->_em->getRepository(CmsGroup::class)->findAll();
 
         // Check the entities are in the database
         $this->assertEquals(1, sizeof($cmsUsers));

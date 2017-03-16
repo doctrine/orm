@@ -76,7 +76,7 @@ class ProxyFactory extends AbstractProxyFactory
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
-        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
         $this->em                  = $em;
@@ -196,7 +196,7 @@ class ProxyFactory extends AbstractProxyFactory
                 );
             }
 
-            foreach ($class->getReflectionClass()->getProperties() as $property) {
+            foreach ($class->getReflectionProperties() as $property) {
                 if ( ! $class->hasField($property->name) && ! $class->hasAssociation($property->name)) {
                     continue;
                 }

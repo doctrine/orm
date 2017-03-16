@@ -1,10 +1,10 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Taxi\Car,
-    Doctrine\Tests\Models\Taxi\Driver,
-    Doctrine\Tests\Models\Taxi\Ride,
-    Doctrine\Tests\Models\Taxi\PaidRide;
+use Doctrine\Tests\Models\Taxi\Car;
+use Doctrine\Tests\Models\Taxi\Driver;
+use Doctrine\Tests\Models\Taxi\Ride;
+use Doctrine\Tests\Models\Taxi\PaidRide;
 
 /**
  * @group DDC-1884
@@ -17,8 +17,8 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('taxi');
         parent::setUp();
 
-        list($bimmer, $crysler, $merc, $volvo) = $this->createCars('Doctrine\Tests\Models\Taxi\Car');
-        list($john, $foo) = $this->createDrivers('Doctrine\Tests\Models\Taxi\Driver');
+        list($bimmer, $crysler, $merc, $volvo) = $this->createCars(Car::class);
+        list($john, $foo) = $this->createDrivers(Driver::class);
         $this->_em->flush();
 
         $ride1 = new Ride($john, $bimmer);
@@ -74,7 +74,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($merc);
         $this->_em->persist($volvo);
 
-        return array($bimmer, $crysler, $merc, $volvo);
+        return [$bimmer, $crysler, $merc, $volvo];
     }
 
     private function createDrivers($class)
@@ -88,7 +88,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($foo);
         $this->_em->persist($john);
 
-        return array($john, $foo);
+        return [$john, $foo];
     }
 
     /**
@@ -100,7 +100,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $qb = $this->_em->createQueryBuilder();
 
         $result = $qb->select('d, dr, c')
-            ->from('Doctrine\Tests\Models\Taxi\Driver', 'd')
+            ->from(Driver::class, 'd')
             ->leftJoin('d.freeDriverRides', 'dr')
             ->leftJoin('dr.car', 'c')
             ->where('d.name = ?1')
@@ -122,7 +122,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $qb = $this->_em->createQueryBuilder();
 
         $result = $qb->select('d, dr, c')
-            ->from('Doctrine\Tests\Models\Taxi\Driver', 'd')
+            ->from(Driver::class, 'd')
             ->leftJoin('d.driverRides', 'dr')
             ->leftJoin('dr.car', 'c')
             ->where('d.name = ?1')
@@ -142,7 +142,7 @@ class DDC1884Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $qb = $this->_em->createQueryBuilder();
 
         $result =  $qb->select('r, d, c')
-            ->from('Doctrine\Tests\Models\Taxi\PaidRide', 'r')
+            ->from(PaidRide::class, 'r')
             ->leftJoin('r.driver', 'd')
             ->leftJoin('r.car', 'c')
             ->where('d.name = ?1')

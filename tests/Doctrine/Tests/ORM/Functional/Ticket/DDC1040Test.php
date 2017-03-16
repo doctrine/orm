@@ -2,14 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1040
  */
-class DDC1040Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1040Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {

@@ -2,16 +2,22 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsAddress;
-use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class BasicFunctionalTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -34,7 +40,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($this->_em->contains($user));
 
         // Read
-        $user2 = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
+        $user2 = $this->_em->find(CmsUser::class, $user->id);
         $this->assertTrue($user === $user2);
 
         // Add a phonenumber
@@ -44,7 +50,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->assertTrue($this->_em->contains($ph));
         $this->assertTrue($this->_em->contains($user));
-        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Update name
         $user->name = 'guilherme';
@@ -67,9 +72,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($user));
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph));
         $this->assertFalse($this->_em->getUnitOfWork()->isScheduledForDelete($ph2));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph2));
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user));
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph));
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($ph2));
     }
 
     public function testOneToManyAssociationModification()
@@ -89,8 +94,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($user);
         $this->_em->flush();
-
-        //$this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $user->phonenumbers);
 
         // Remove the first element from the collection
         unset($user->phonenumbers[0]);
@@ -123,7 +126,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Check that the foreign key has been set
         $userId = $this->_em->getConnection()->executeQuery(
-            "SELECT user_id FROM cms_addresses WHERE id=?", array($address->id)
+            "SELECT user_id FROM cms_addresses WHERE id=?", [$address->id]
         )->fetchColumn();
         $this->assertTrue(is_numeric($userId));
 
@@ -134,8 +137,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getSingleResult();
 
         // Address has been eager-loaded because it cant be lazy
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $user2->address);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $user2->address);
+        $this->assertInstanceOf(CmsAddress::class, $user2->address);
+        $this->assertNotInstanceOf(Proxy::class, $user2->address);
     }
 
     /**
@@ -148,15 +151,15 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'gblanco';
         $user->status = 'developer';
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
 
         $this->_em->persist($user);
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_MANAGED");
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_MANAGED");
 
         $this->_em->remove($user);
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
 
         $this->_em->persist($user);
         $this->_em->flush();
@@ -164,12 +167,12 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->remove($user);
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_REMOVED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_REMOVED");
+        $this->assertEquals(UnitOfWork::STATE_REMOVED, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_REMOVED");
         $this->_em->flush();
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
+        $this->assertEquals(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($user), "State should be UnitOfWork::STATE_NEW");
 
-        $this->assertNull($this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $id));
+        $this->assertNull($this->_em->find(CmsUser::class, $id));
     }
 
     public function testOneToManyOrphanRemoval()
@@ -274,10 +277,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals('Guilherme', $users[0]->name);
         $this->assertEquals('gblanco', $users[0]->username);
         $this->assertEquals('developer', $users[0]->status);
-        $this->assertInstanceOf('Doctrine\ORM\PersistentCollection', $users[0]->phonenumbers);
+        $this->assertInstanceOf(PersistentCollection::class, $users[0]->phonenumbers);
         $this->assertTrue($users[0]->phonenumbers->isInitialized());
         $this->assertEquals(0, $users[0]->phonenumbers->count());
-        //$this->assertNull($users[0]->articles);
     }
 
     public function testBasicRefresh()
@@ -391,7 +393,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $userId = $user->id;
-        $user = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->id);
+        $user = $this->_em->getReference(CmsUser::class, $user->id);
 
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
         $user = $this->_em->createQuery($dql)
@@ -504,10 +506,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // Assume we only got the identifier of the address and now want to attach
         // that address to the user without actually loading it, using getReference().
-        $addressRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsAddress', $address->getId());
-
-        //$addressRef->getId();
-        //\Doctrine\Common\Util\Debug::dump($addressRef);
+        $addressRef = $this->_em->getReference(CmsAddress::class, $address->getId());
 
         $user->setAddress($addressRef); // Ugh! Initializes address 'cause of $address->setUser($user)!
 
@@ -518,8 +517,8 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $query = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u join u.address a where u.username='gblanco'");
         $gblanco = $query->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $gblanco);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $gblanco->getAddress());
+        $this->assertInstanceOf(CmsUser::class, $gblanco);
+        $this->assertInstanceOf(CmsAddress::class, $gblanco->getAddress());
         $this->assertEquals('Berlin', $gblanco->getAddress()->getCity());
 
     }
@@ -567,7 +566,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($user);
 
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->text = "Lorem ipsum dolor sunt.";
         $article->topic = "A Test Article!";
         $article->setAuthor($user);
@@ -590,7 +589,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $articleNew = $this->_em->find('Doctrine\Tests\Models\CMS\CmsArticle', $articleId);
+        $articleNew = $this->_em->find(CmsArticle::class, $articleId);
         $this->assertEquals("Lorem ipsum dolor sunt. And stuff!", $articleNew->text);
         $this->assertTrue($this->_em->contains($articleNew));
     }
@@ -610,7 +609,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->user = $user;
         $user->address = $address;
 
-        $article = new \Doctrine\Tests\Models\CMS\CmsArticle();
+        $article = new CmsArticle();
         $article->text = "Lorem ipsum dolor sunt.";
         $article->topic = "A Test Article!";
         $article->setAuthor($user);
@@ -627,10 +626,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2 = $query->getSingleResult();
 
         $this->assertEquals(1, count($user2->articles));
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsAddress', $user2->address);
+        $this->assertInstanceOf(CmsAddress::class, $user2->address);
 
         $oldLogger = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-        $debugStack = new \Doctrine\DBAL\Logging\DebugStack;
+        $debugStack = new DebugStack();
         $this->_em->getConnection()->getConfiguration()->setSQLLogger($debugStack);
 
         $this->_em->flush();
@@ -652,7 +651,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $userRef = $this->_em->getReference(CmsUser::class, $user->getId());
         $this->_em->remove($userRef);
         $this->_em->flush();
         $this->_em->clear();
@@ -683,12 +682,12 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
-        $userRef = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $user->getId());
+        $userRef = $this->_em->getReference(CmsUser::class, $user->getId());
         $address2 = $this->_em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsAddress a where a.user = :user')
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $address2->getUser());
+        $this->assertInstanceOf(Proxy::class, $address2->getUser());
         $this->assertTrue($userRef === $address2->getUser());
         $this->assertFalse($userRef->__isInitialized__);
         $this->assertEquals('Germany', $address2->country);
@@ -755,7 +754,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException2()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -790,7 +788,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException3()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $art = new CmsArticle();
         $art->topic = 'topic';
         $art->text = 'the text';
@@ -868,7 +865,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $user->id;
         $this->_em->clear();
 
-        $user = $this->_em->getPartialReference('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+        $user = $this->_em->getPartialReference(CmsUser::class, $userId);
         $this->assertTrue($this->_em->contains($user));
         $this->assertNull($user->getName());
         $this->assertEquals($userId, $user->id);
@@ -900,7 +897,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $user2 = $this->_em->find(get_class($managedUser), $userId);
-        $this->assertInstanceOf('Doctrine\Tests\Models\CMS\CmsUser', $user2);
+        $this->assertInstanceOf(CmsUser::class, $user2);
     }
 
     public function testMergeNonPersistedProperties()
@@ -940,7 +937,7 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_em->merge($user);
             $this->fail();
-        } catch (\Doctrine\ORM\EntityNotFoundException $enfe) {}
+        } catch (EntityNotFoundException $enfe) {}
     }
 
     /**
@@ -948,7 +945,6 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOneToOneMergeSetNull()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -997,9 +993,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1";
         $article = $this->_em->createQuery($dql)
                              ->setParameter(1, $article->id)
-                             ->setFetchMode('Doctrine\Tests\Models\CMS\CmsArticle', 'user', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER)
+                             ->setFetchMode(CmsArticle::class, 'user', ClassMetadata::FETCH_EAGER)
                              ->getSingleResult();
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $article->user, "It IS a proxy, ...");
+        $this->assertInstanceOf(Proxy::class, $article->user, "It IS a proxy, ...");
         $this->assertTrue($article->user->__isInitialized__, "...but its initialized!");
         $this->assertEquals($qc+2, $this->getCurrentQueryCount());
     }
@@ -1041,16 +1037,16 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $unitOfWork = $this->_em->getUnitOfWork();
 
-        $this->_em->clear('Doctrine\Tests\Models\CMS\CmsUser');
+        $this->_em->clear(CmsUser::class);
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article1));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article2));
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($user));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article1));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($article2));
+        $this->assertEquals(UnitOfWork::STATE_MANAGED, $unitOfWork->getEntityState($address));
 
         $this->_em->clear();
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
+        $this->assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 
     public function testFlushManyExplicitEntities()
@@ -1071,11 +1067,11 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($userB);
         $this->_em->persist($userC);
 
-        $this->_em->flush(array($userA, $userB, $userB));
+        $this->_em->flush([$userA, $userB, $userB]);
 
         $userC->name = 'changed name';
 
-        $this->_em->flush(array($userA, $userB));
+        $this->_em->flush([$userA, $userB]);
         $this->_em->refresh($userC);
 
         $this->assertTrue($userA->id > 0, 'user a has an id');
@@ -1115,7 +1111,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->username = 'domnikl';
         $user->status = 'developer';
 
-        $this->setExpectedException('InvalidArgumentException', 'Entity has to be managed or scheduled for removal for single computation');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity has to be managed or scheduled for removal for single computation');
+
         $this->_em->flush($user);
     }
 
@@ -1192,7 +1190,9 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $article1->author = $user;
         $user->articles[] = $article1;
 
-        $this->setExpectedException('InvalidArgumentException', "A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage("A new entity was found through the relationship 'Doctrine\Tests\Models\CMS\CmsUser#articles'");
+
         $this->_em->flush($user);
     }
 
@@ -1288,10 +1288,10 @@ class BasicFunctionalTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->status = 'developer';
         $user->address = $user;
 
-        $this->setExpectedException(
-            'Doctrine\ORM\ORMInvalidArgumentException',
-            'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field '
-            . '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
+        $this->expectException(ORMInvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'Expected value of type "Doctrine\Tests\Models\CMS\CmsAddress" for association field ' .
+            '"Doctrine\Tests\Models\CMS\CmsUser#$address", got "Doctrine\Tests\Models\CMS\CmsUser" instead.'
         );
 
         $this->_em->persist($user);

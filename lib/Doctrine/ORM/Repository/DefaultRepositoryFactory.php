@@ -34,7 +34,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      *
      * @var \Doctrine\Common\Persistence\ObjectRepository[]
      */
-    private $repositoryList = array();
+    private $repositoryList = [];
 
     /**
      * {@inheritdoc}

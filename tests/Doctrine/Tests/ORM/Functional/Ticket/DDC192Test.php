@@ -2,14 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC192Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC192User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC192Phonenumber')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC192User::class),
+            $this->_em->getClassMetadata(DDC192Phonenumber::class)
+            ]
+        );
     }
 }
 

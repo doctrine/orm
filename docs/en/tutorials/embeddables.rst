@@ -1,7 +1,7 @@
 Separating Concerns using Embeddables
 -------------------------------------
 
-Embeddables are classes which are not entities themself, but are embedded
+Embeddables are classes which are not entities themselves, but are embedded
 in entities and can also be queried in DQL. You'll mostly want to use them
 to reduce duplication or separating concerns. Value objects such as date range
 or address are the primary use case for this feature. Embeddables can only

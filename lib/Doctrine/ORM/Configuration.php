@@ -25,9 +25,11 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DefaultQuoteStrategy;
@@ -149,7 +151,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = true)
+    public function newDefaultAnnotationDriver($paths = [], $useSimpleAnnotationReader = true)
     {
         AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
 
@@ -349,7 +351,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
     {
-        $this->_attributes['namedNativeQueries'][$name] = array($sql, $rsm);
+        $this->_attributes['namedNativeQueries'][$name] = [$sql, $rsm];
     }
 
     /**
@@ -590,7 +592,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setCustomHydrationModes($modes)
     {
-        $this->_attributes['customHydrationModes'] = array();
+        $this->_attributes['customHydrationModes'] = [];
 
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
@@ -642,7 +644,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function getClassMetadataFactoryName()
     {
         if ( ! isset($this->_attributes['classMetadataFactoryName'])) {
-            $this->_attributes['classMetadataFactoryName'] = 'Doctrine\ORM\Mapping\ClassMetadataFactory';
+            $this->_attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
         }
 
         return $this->_attributes['classMetadataFactoryName'];
@@ -689,7 +691,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         $reflectionClass = new \ReflectionClass($className);
 
-        if ( ! $reflectionClass->implementsInterface('Doctrine\Common\Persistence\ObjectRepository')) {
+        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw ORMException::invalidEntityRepository($className);
         }
 
@@ -707,7 +709,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     {
         return isset($this->_attributes['defaultRepositoryClassName'])
             ? $this->_attributes['defaultRepositoryClassName']
-            : 'Doctrine\ORM\EntityRepository';
+            : EntityRepository::class;
     }
 
     /**
@@ -881,7 +883,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getDefaultQueryHints()
     {
-        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : array();
+        return isset($this->_attributes['defaultQueryHints']) ? $this->_attributes['defaultQueryHints'] : [];
     }
 
     /**

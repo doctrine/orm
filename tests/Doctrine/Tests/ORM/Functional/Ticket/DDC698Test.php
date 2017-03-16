@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use DateTime;
-
 class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC698Role'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC698Privilege')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC698Role::class),
+                $this->_em->getClassMetadata(DDC698Privilege::class)
+                ]
+            );
         } catch(\Exception $e) {
 
         }

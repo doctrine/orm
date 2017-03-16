@@ -1,6 +1,7 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 
 /**
@@ -12,10 +13,12 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC371Parent'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC371Child')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC371Parent::class),
+            $this->_em->getClassMetadata(DDC371Child::class)
+            ]
+        );
     }
 
     public function testIssue()
@@ -42,7 +45,7 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getResult();
 
         $this->assertEquals(1, count($children));
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $children[0]->parent);
+        $this->assertNotInstanceOf(Proxy::class, $children[0]->parent);
         $this->assertFalse($children[0]->parent->children->isInitialized());
         $this->assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }

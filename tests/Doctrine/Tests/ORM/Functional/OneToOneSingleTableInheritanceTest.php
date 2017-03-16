@@ -2,10 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
@@ -19,9 +15,9 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(Pet::CLASSNAME),
-            $this->_em->getClassMetadata(Cat::CLASSNAME),
-            $this->_em->getClassMetadata(LitterBox::CLASSNAME),
+            $this->_em->getClassMetadata(Pet::class),
+            $this->_em->getClassMetadata(Cat::class),
+            $this->_em->getClassMetadata(LitterBox::class),
         ]);
     }
 
@@ -42,11 +38,11 @@ class OneToOneSingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         /* @var $foundCat Cat */
-        $foundCat = $this->_em->find(Pet::CLASSNAME, $cat->id);
+        $foundCat = $this->_em->find(Pet::class, $cat->id);
 
-        $this->assertInstanceOf(Cat::CLASSNAME, $foundCat);
+        $this->assertInstanceOf(Cat::class, $foundCat);
         $this->assertSame($cat->id, $foundCat->id);
-        $this->assertInstanceOf(LitterBox::CLASSNAME, $foundCat->litterBox);
+        $this->assertInstanceOf(LitterBox::class, $foundCat->litterBox);
         $this->assertSame($cat->litterBox->id, $foundCat->litterBox->id);
     }
 }

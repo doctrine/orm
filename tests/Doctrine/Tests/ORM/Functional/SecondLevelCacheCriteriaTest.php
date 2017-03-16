@@ -2,9 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Cache\State;
-use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\Models\Cache\Country;
+use Doctrine\Tests\Models\Cache\State;
 
 /**
  * @group DDC-2183
@@ -19,9 +20,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->evictRegions();
         $this->_em->clear();
 
-        $this->assertFalse($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertFalse($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $repository = $this->_em->getRepository(Country::CLASSNAME);
+        $repository = $this->_em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
         $name       = $this->countries[0]->getName();
         $result1    = $repository->matching(new Criteria(
@@ -35,7 +36,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         $this->assertEquals($this->countries[0]->getName(), $result1[0]->getName());
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
         $this->_em->clear();
 
@@ -46,7 +47,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertCount(1, $result2);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
 
         $this->assertEquals($result1[0]->getId(), $result2[0]->getId());
         $this->assertEquals($result1[0]->getName(), $result2[0]->getName());
@@ -59,9 +60,9 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->_em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(Country::CLASSNAME, $this->countries[0]->getId()));
+        $this->assertTrue($this->cache->containsEntity(Country::class, $this->countries[0]->getId()));
 
-        $repository = $this->_em->getRepository(Country::CLASSNAME);
+        $repository = $this->_em->getRepository(Country::class);
         $queryCount = $this->getCurrentQueryCount();
         $result1    = $repository->matching(new Criteria(
             Criteria::expr()->eq('name', $this->countries[0]->getName())
@@ -87,7 +88,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         $this->assertCount(1, $result2);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result2[0]);
+        $this->assertInstanceOf(Country::class, $result2[0]);
 
         $this->assertEquals($this->countries[0]->getId(), $result2[0]->getId());
         $this->assertEquals($this->countries[0]->getName(), $result2[0]->getName());
@@ -102,7 +103,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
         $this->assertCount(1, $result3);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result3[0]);
+        $this->assertInstanceOf(Country::class, $result3[0]);
 
         $this->assertEquals($this->countries[1]->getId(), $result3[0]->getId());
         $this->assertEquals($this->countries[1]->getName(), $result3[0]->getName());
@@ -114,7 +115,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->assertEquals($queryCount + 2, $this->getCurrentQueryCount());
         $this->assertCount(1, $result4);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Cache\Country', $result4[0]);
+        $this->assertInstanceOf(Country::class, $result4[0]);
 
         $this->assertEquals($this->countries[1]->getId(), $result4[0]->getId());
         $this->assertEquals($this->countries[1]->getName(), $result4[0]->getName());
@@ -128,7 +129,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         $this->_em->clear();
         $this->secondLevelCacheLogger->clearStats();
 
-        $entity     = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+        $entity     = $this->_em->find(State::class, $this->states[0]->getId());
         $itemName   = $this->states[0]->getCities()->get(0)->getName();
         $queryCount = $this->getCurrentQueryCount();
         $collection = $entity->getCities();
@@ -137,12 +138,12 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         ));
 
         $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $matching);
+        $this->assertInstanceOf(Collection::class, $matching);
         $this->assertCount(1, $matching);
 
         $this->_em->clear();
 
-        $entity     = $this->_em->find(State::CLASSNAME, $this->states[0]->getId());
+        $entity     = $this->_em->find(State::class, $this->states[0]->getId());
         $queryCount = $this->getCurrentQueryCount();
         $collection = $entity->getCities();
         $matching   = $collection->matching(new Criteria(
@@ -150,7 +151,7 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         ));
 
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $matching);
+        $this->assertInstanceOf(Collection::class, $matching);
         $this->assertCount(1, $matching);
     }
 

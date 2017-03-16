@@ -101,7 +101,7 @@ class ORMException extends Exception
         return new self("Unrecognized field: $field");
     }
 
-     /**
+    /**
      *
      * @param string $class
      * @param string $association
@@ -180,6 +180,21 @@ class ORMException extends Exception
      * @return ORMException
      */
     public static function invalidFindByCall($entityName, $fieldName, $method)
+    {
+        return new self(
+            "Entity '".$entityName."' has no field '".$fieldName."'. ".
+            "You can therefore not call '".$method."' on the entities' repository"
+        );
+    }
+
+    /**
+     * @param string $entityName
+     * @param string $fieldName
+     * @param string $method
+     *
+     * @return ORMException
+     */
+    public static function invalidMagicCall($entityName, $fieldName, $method)
     {
         return new self(
             "Entity '".$entityName."' has no field '".$fieldName."'. ".

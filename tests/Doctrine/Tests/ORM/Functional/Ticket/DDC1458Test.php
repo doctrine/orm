@@ -2,19 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsUser;
-use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1258Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1258Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\TestEntity'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\TestAdditionalEntity')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(TestEntity::class),
+            $this->_em->getClassMetadata(TestAdditionalEntity::class)
+            ]
+        );
     }
 
     public function testIssue()
@@ -29,7 +29,7 @@ class DDC1258Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // So here the value is 3
         $this->assertEquals(3, $testEntity->getValue());
 
-        $test = $this->_em->getRepository(__NAMESPACE__ . '\TestEntity')->find(1);
+        $test = $this->_em->getRepository(TestEntity::class)->find(1);
 
         // New value is set
         $test->setValue(5);

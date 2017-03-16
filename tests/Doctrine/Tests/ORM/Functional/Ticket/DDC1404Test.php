@@ -13,10 +13,12 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1404ParentEntity'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1404ChildEntity'),
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DDC1404ParentEntity::class),
+                $this->_em->getClassMetadata(DDC1404ChildEntity::class),
+                ]
+            );
 
             $this->loadFixtures();
 
@@ -26,7 +28,7 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $repository     = $this->_em->getRepository(__NAMESPACE__ . '\DDC1404ChildEntity');
+        $repository     = $this->_em->getRepository(DDC1404ChildEntity::class);
         $queryAll       = $repository->createNamedQuery('all');
         $queryFirst     = $repository->createNamedQuery('first');
         $querySecond    = $repository->createNamedQuery('second');

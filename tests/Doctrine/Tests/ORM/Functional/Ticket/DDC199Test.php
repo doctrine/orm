@@ -2,16 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC199Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC199Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199ParentClass'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199ChildClass'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC199RelatedClass')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC199ParentClass::class),
+            $this->_em->getClassMetadata(DDC199ChildClass::class),
+            $this->_em->getClassMetadata(DDC199RelatedClass::class)
+            ]
+        );
     }
 
     public function testPolymorphicLoading()
@@ -38,11 +42,11 @@ class DDC199Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199ParentClass', $result[0]);
+        $this->assertInstanceOf(DDC199ParentClass::class, $result[0]);
         $this->assertTrue($result[0]->relatedEntities->isInitialized());
         $this->assertEquals(2, $result[0]->relatedEntities->count());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[0]);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC199RelatedClass', $result[0]->relatedEntities[1]);
+        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[0]);
+        $this->assertInstanceOf(DDC199RelatedClass::class, $result[0]->relatedEntities[1]);
     }
 }
 

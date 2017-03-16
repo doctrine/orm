@@ -2,15 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Persisters;
 
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\Types\Type as DBALType;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\Tests\Models\CustomType\CustomTypeParent;
-use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Common\Collections\Expr\Comparison;
+use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
+use Doctrine\Tests\OrmTestCase;
 
-class BasicEntityPersisterCompositeTypeSqlTest extends \Doctrine\Tests\OrmTestCase
+class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 {
     /**
      * @var BasicEntityPersister
@@ -30,25 +27,24 @@ class BasicEntityPersisterCompositeTypeSqlTest extends \Doctrine\Tests\OrmTestCa
         parent::setUp();
 
         $this->_em = $this->_getTestEntityManager();
-
-        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata('Doctrine\Tests\Models\GeoNames\Admin1AlternateName'));
+        $this->_persister = new BasicEntityPersister($this->_em, $this->_em->getClassMetadata(Admin1AlternateName::class));
     }
 
     public function testSelectConditionStatementEq()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', 1, array(), Comparison::EQ);
+        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', 1, [], Comparison::EQ);
         $this->assertEquals('t0.admin1 = ? AND t0.country = ?', $statement);
     }
 
     public function testSelectConditionStatementEqNull()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, array(), Comparison::IS);
+        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::IS);
         $this->assertEquals('t0.admin1 IS NULL AND t0.country IS NULL', $statement);
     }
 
     public function testSelectConditionStatementNeqNull()
     {
-        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, array(), Comparison::NEQ);
+        $statement = $this->_persister->getSelectConditionStatementSQL('admin1', null, [], Comparison::NEQ);
         $this->assertEquals('t0.admin1 IS NOT NULL AND t0.country IS NOT NULL', $statement);
     }
 
@@ -57,6 +53,6 @@ class BasicEntityPersisterCompositeTypeSqlTest extends \Doctrine\Tests\OrmTestCa
      */
     public function testSelectConditionStatementIn()
     {
-        $this->_persister->getSelectConditionStatementSQL('admin1', array(), array(), Comparison::IN);
+        $this->_persister->getSelectConditionStatementSQL('admin1', [], [], Comparison::IN);
     }
 }

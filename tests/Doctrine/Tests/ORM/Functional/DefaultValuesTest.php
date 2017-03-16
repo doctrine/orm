@@ -2,20 +2,25 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
  * Tests basic operations on entities with default values.
  *
  * @author robo
  */
-class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueUser'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueAddress')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                $this->_em->getClassMetadata(DefaultValueUser::class),
+                $this->_em->getClassMetadata(DefaultValueAddress::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -51,7 +56,7 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $a2 = $this->_em->find(get_class($a), $a->id);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
+        $this->assertInstanceOf(DefaultValueUser::class, $a2->getUser());
         $this->assertEquals($userId, $a2->getUser()->getId());
         $this->assertEquals('Poweruser', $a2->getUser()->type);
     }
@@ -69,13 +74,13 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->getPartialReference('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
+        $user = $this->_em->getPartialReference(DefaultValueUser::class, $user->id);
         $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
 
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
+        $user = $this->_em->find(DefaultValueUser::class, $user->id);
 
         $this->assertEquals('Normaluser', $user->type);
     }

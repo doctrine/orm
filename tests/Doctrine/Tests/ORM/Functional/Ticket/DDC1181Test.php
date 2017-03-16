@@ -2,16 +2,20 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC1181Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Hotel'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Booking'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Room'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1181Hotel::class),
+            $this->_em->getClassMetadata(DDC1181Booking::class),
+            $this->_em->getClassMetadata(DDC1181Room::class),
+            ]
+        );
     }
 
     /**

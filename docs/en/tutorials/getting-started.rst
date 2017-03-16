@@ -17,7 +17,7 @@ This guide is designed for beginners that haven't worked with Doctrine ORM
 before. There are some prerequesites for the tutorial that have to be
 installed:
 
-- PHP 5.4 or above
+- PHP (latest stable version)
 - Composer Package Manager (`Install Composer
   <http://getcomposer.org/doc/00-intro.md>`_)
 
@@ -616,12 +616,12 @@ domain model to match the requirements:
         }
     }
 
-Whenever an entity is recreated from the database, an Collection
-implementation of the type Doctrine is injected into your entity
-instead of an array. Compared to the ArrayCollection this
-implementation helps the Doctrine ORM understand the changes that
-have happened to the collection which are noteworthy for
-persistence.
+You use Doctrine's ArrayCollections in your Doctrine models, rather
+than plain PHP arrays, so that Doctrine can watch what happens with
+them and act appropriately.  Note that if you dump your entities,
+you'll see a "PersistentCollection" in place of your ArrayCollection,
+which is just an
+internal Doctrine class with the same interface.
 
 .. warning::
 
@@ -717,8 +717,8 @@ the bi-directional reference:
     {
         // ... (previous code)
 
-        private $reportedBugs = null;
-        private $assignedBugs = null;
+        protected $reportedBugs = null;
+        protected $assignedBugs = null;
 
         public function addReportedBug($bug)
         {
@@ -969,7 +969,7 @@ The last missing definition is that of the User entity:
 
     .. code-block:: yaml
 
-        # config/xml/User.dcm.yml
+        # config/yaml/User.dcm.yml
         User:
           type: entity
           table: users
@@ -1008,7 +1008,7 @@ Update your database running:
 Implementing more Requirements
 ------------------------------
 
-For starters we need a create user entities:
+For starters we need to create user entities:
 
 .. code-block:: php
 
@@ -1084,7 +1084,7 @@ database.
 
 See how simple relating Bug, Reporter, Engineer and Products is
 done by using the discussed methods in the "A first prototype"
-section. The UnitOfWork will detect this relations when flush is
+section. The UnitOfWork will detect this relationship when flush is
 called and relate them in the database appropriately.
 
 Queries for Application Use-Cases
@@ -1150,7 +1150,7 @@ The console output of this script is then:
 
     An important reason why DQL is favourable to the Query API of most
     ORMs is its similarity to SQL. The DQL language allows query
-    constructs that most ORMs don't, GROUP BY even with HAVING,
+    constructs that most ORMs don't: GROUP BY even with HAVING,
     Sub-selects, Fetch-Joins of nested classes, mixed results with
     entities and scalar data such as COUNT() results and much more.
     Using DQL you should seldom come to the point where you want to
@@ -1534,6 +1534,16 @@ As an example here is the code of the first use case "List of Bugs":
 
 Using EntityRepositories you can avoid coupling your model with specific query logic.
 You can also re-use query logic easily throughout your application.
+
+The method ``count()`` takes an array of fields or association keys and the values to match against.
+This provides you with a convenient and lightweight way to count a resultset when you don't need to
+deal with it:
+
+.. code-block:: php
+
+    <?php
+    $productCount = $entityManager->getRepository(Product::class)
+                             ->count(['name' => $productName]);
 
 Conclusion
 ----------

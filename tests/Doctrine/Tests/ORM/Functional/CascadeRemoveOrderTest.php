@@ -3,30 +3,35 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group CascadeRemoveOrderTest
  */
-class CascadeRemoveOrderTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class CascadeRemoveOrderTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
+            $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
+            ]
+        );
     }
 
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+        $this->_schemaTool->dropSchema(
+            [
+            $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
+            $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
+            ]
+        );
     }
 
     public function testSingle()
@@ -38,7 +43,7 @@ class CascadeRemoveOrderTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $eOloaded = $this->_em->find('Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', $eO->getId());
+        $eOloaded = $this->_em->find(CascadeRemoveOrderEntityO::class, $eO->getId());
 
         $this->_em->remove($eOloaded);
         $this->_em->flush();
@@ -57,7 +62,7 @@ class CascadeRemoveOrderTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $eOloaded = $this->_em->find('Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', $eO->getId());
+        $eOloaded = $this->_em->find(CascadeRemoveOrderEntityO::class, $eO->getId());
 
         $this->_em->remove($eOloaded);
         $this->_em->flush();

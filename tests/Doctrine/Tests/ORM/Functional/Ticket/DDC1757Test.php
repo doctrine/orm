@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1757Test extends OrmFunctionalTestCase
 {
     public function testFailingCase()
     {
@@ -12,8 +12,8 @@ class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
         /* @var $qb \Doctrine\ORM\QueryBuilder */
 
         $qb->select('_a')
-            ->from(__NAMESPACE__ . '\DDC1757A', '_a')
-            ->from(__NAMESPACE__ . '\DDC1757B', '_b')
+            ->from(DDC1757A::class, '_a')
+            ->from(DDC1757B::class, '_b')
             ->join('_b.c', '_c')
             ->join('_c.d', '_d');
 

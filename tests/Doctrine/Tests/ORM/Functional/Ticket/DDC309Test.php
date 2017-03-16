@@ -1,15 +1,20 @@
 <?php
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC309Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC309Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC309Country'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC309User'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC309Country::class),
+            $this->_em->getClassMetadata(DDC309User::class),
+            ]
+        );
     }
 
     public function testTwoIterateHydrations()

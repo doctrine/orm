@@ -3,22 +3,23 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionMethod;
 
 /**
  * @group DDC-1613
  */
-class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PaginationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -73,10 +74,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(false);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
+
         $this->assertCount(3, $paginator);
     }
 
@@ -494,7 +494,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
         $dqlAsc = $dql . " ASC, d.name";
         $dqlDesc = $dql . " DESC, d.name";
@@ -551,7 +553,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
 
         $this->iterateWithOrderAscWithLimit(false, true, $dql, "name");
@@ -591,13 +595,11 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // If the Paginator detects the custom output walker it should fall back to using the
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
         $paginator = new Paginator($query);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
         count($paginator);
     }
@@ -631,14 +633,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
         $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker'));
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomPaginationTestTreeWalker::class]);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
         $this->assertCount(1, $paginator->getIterator());
         $this->assertEquals(1, $paginator->count());
     }
-    
+
     public function testCountQueryStripsParametersInSelect()
     {
         $query = $this->_em->createQuery(
@@ -659,7 +661,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
         $this->assertCount(9, $paginator);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
 
         $paginator = new Paginator($query);
 
@@ -693,7 +695,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function populate()
     {
-        $groups = array();
+        $groups = [];
         for ($j = 0; $j < 3; $j++) {;
             $group = new CmsGroup();
             $group->name = "group$j";
@@ -760,28 +762,28 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function useOutputWalkers()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function fetchJoinCollection()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function useOutputWalkersAndFetchJoinCollection()
     {
-        return array(
-            array(true, false),
-            array(true, true),
-            array(false, false),
-            array(false, true),
-        );
+        return [
+            [true, false],
+            [true, true],
+            [false, false],
+            [false, true],
+        ];
     }
 }
 

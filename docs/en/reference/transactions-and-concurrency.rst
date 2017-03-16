@@ -187,30 +187,68 @@ has been modified by someone else already.
 You designate a version field in an entity as follows. In this
 example we'll use an integer.
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class User
-    {
-        // ...
-        /** @Version @Column(type="integer") */
-        private $version;
-        // ...
-    }
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            // ...
+            /** @Version @Column(type="integer") */
+            private $version;
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="User">
+            <field name="version" type="integer" version="true" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          fields:
+            version:
+              version:
+                type: integer
 
 Alternatively a datetime type can be used (which maps to a SQL
 timestamp or datetime):
 
-.. code-block:: php
+.. configuration-block::
 
-    <?php
-    class User
-    {
-        // ...
-        /** @Version @Column(type="datetime") */
-        private $version;
-        // ...
-    }
+    .. code-block:: php
+
+        <?php
+        class User
+        {
+            // ...
+            /** @Version @Column(type="datetime") */
+            private $version;
+            // ...
+        }
+
+    .. code-block:: xml
+
+        <doctrine-mapping>
+          <entity name="User">
+            <field name="version" type="datetime" version="true" />
+          </entity>
+        </doctrine-mapping>
+
+    .. code-block:: yaml
+
+        User:
+          type: entity
+          fields:
+            version:
+              version:
+                type: datetime
 
 Version numbers (not timestamps) should however be preferred as
 they can not potentially conflict in a highly concurrent

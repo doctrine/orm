@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\Models\StockExchange;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
 /**
  * @Entity
  * @Table(name="exchange_stocks")

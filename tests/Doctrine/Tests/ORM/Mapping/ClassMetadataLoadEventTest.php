@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmTestCase;
 
-class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
+class ClassMetadataLoadEventTest extends OrmTestCase
 {
     /**
      * @group DDC-1610
@@ -16,20 +17,20 @@ class ClassMetadataLoadEventTest extends \Doctrine\Tests\OrmTestCase
         $metadataFactory = $em->getMetadataFactory();
         $evm = $em->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
-        $classMetadata = $metadataFactory->getMetadataFor('Doctrine\Tests\ORM\Mapping\LoadEventTestEntity');
+        $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
         $this->assertTrue($classMetadata->hasField('about'));
         $this->assertArrayHasKey('about', $classMetadata->reflFields);
         $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
     }
 
-    public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
         $classMetadata = $eventArgs->getClassMetadata();
-        $field = array(
+        $field = [
             'fieldName' => 'about',
             'type' => 'string',
             'length' => 255
-        );
+        ];
         $classMetadata->mapField($field);
     }
 }

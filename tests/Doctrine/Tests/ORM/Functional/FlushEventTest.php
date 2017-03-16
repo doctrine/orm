@@ -6,15 +6,17 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * FlushEventTest
  *
  * @author robo
  */
-class FlushEventTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class FlushEventTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }

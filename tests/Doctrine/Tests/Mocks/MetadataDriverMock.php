@@ -2,15 +2,18 @@
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+
 /**
  * Mock class for MappingDriver.
  */
-class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+class MetadataDriverMock implements MappingDriver
 {
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
     }
 
@@ -27,6 +30,6 @@ class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\
      */
     public function getAllClassNames()
     {
-        return array();
+        return [];
     }
 }

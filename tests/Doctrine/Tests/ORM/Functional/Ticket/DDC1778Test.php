@@ -23,17 +23,17 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->user->name = "Benjamin";
         $this->user->status = "active";
 
-        $this->phone = new CmsPhoneNumber();
+        $this->phone = new CmsPhonenumber();
         $this->phone->phonenumber = '0123456789';
-        $this->user->addPhoneNumber($this->phone);
+        $this->user->addPhonenumber($this->phone);
 
         $this->_em->persist($this->user);
         $this->_em->persist($this->phone);
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find('Doctrine\\Tests\\Models\\CMS\\CmsUser', $this->user->getId());
-        $this->phone = $this->_em->find('Doctrine\\Tests\\Models\\CMS\\CmsPhonenumber', $this->phone->phonenumber);
+        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
+        $this->phone = $this->_em->find(CmsPhonenumber::class, $this->phone->phonenumber);
     }
 
     public function testClear()
@@ -43,7 +43,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find('Doctrine\\Tests\\Models\\CMS\\CmsUser', $this->user->getId());
+        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
         $this->assertCount(1, $this->user->getPhonenumbers());
     }
@@ -55,7 +55,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find('Doctrine\\Tests\\Models\\CMS\\CmsUser', $this->user->getId());
+        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
         $this->assertCount(1, $this->user->getPhonenumbers());
     }
@@ -67,7 +67,7 @@ class DDC1778Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->user = $this->_em->find('Doctrine\\Tests\\Models\\CMS\\CmsUser', $this->user->getId());
+        $this->user = $this->_em->find(CmsUser::class, $this->user->getId());
 
         $this->assertCount(1, $this->user->getPhonenumbers());
     }

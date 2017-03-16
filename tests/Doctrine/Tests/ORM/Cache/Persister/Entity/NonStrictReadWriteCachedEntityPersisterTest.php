@@ -2,14 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
+use Doctrine\ORM\Cache\EntityCacheEntry;
+use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManager;
-use Doctrine\Tests\Models\Cache\Country;
-use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
+use Doctrine\Tests\Models\Cache\Country;
 
 /**
  * @group DDC-2183
@@ -28,11 +28,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->update($entity);
         $persister->delete($entity);
@@ -48,9 +48,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
-        $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -64,12 +64,12 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $this->entityPersister->expects($this->once())
             ->method('getInserts')
-            ->will($this->returnValue(array($entity)));
+            ->will($this->returnValue([$entity]));
 
         $this->entityPersister->expects($this->once())
             ->method('executeInserts');
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->addInsert($entity);
         $persister->executeInserts();
@@ -85,9 +85,9 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
-        $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $entry     = new EntityCacheEntry(Country::class, ['id'=>1, 'name'=>'Foo']);
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -99,7 +99,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->method('update')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->update($entity);
 
@@ -114,8 +114,8 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $key       = new EntityCacheKey(Country::class, ['id'=>1]);
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -127,7 +127,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->method('delete')
             ->with($this->equalTo($entity));
 
-        $this->em->getUnitOfWork()->registerManaged($entity, array('id'=>1), array('id'=>1, 'name'=>'Foo'));
+        $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->delete($entity);
 

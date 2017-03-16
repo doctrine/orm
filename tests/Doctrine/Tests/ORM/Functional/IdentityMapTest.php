@@ -2,10 +2,11 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsAddress,
-    Doctrine\Tests\Models\CMS\CmsPhonenumber,
-    Doctrine\ORM\Query;
+use Doctrine\ORM\Query;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * IdentityMapTest
@@ -15,9 +16,10 @@ use Doctrine\Tests\Models\CMS\CmsUser,
  *
  * @author Roman Borschel <roman@code-factory.org>
  */
-class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class IdentityMapTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('cms');
         parent::setUp();
     }
@@ -80,7 +82,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', array($user2->getId()));
+        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         // But we want to have this external change!
         // Solution 1: refresh(), broken atm!
@@ -123,7 +125,7 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertSame($user1, $address->user);
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', array($user2->getId()));
+        $this->_em->getConnection()->executeUpdate('update cms_addresses set user_id = ?', [$user2->getId()]);
 
         //select
         $q = $this->_em->createQuery('select a, u from Doctrine\Tests\Models\CMS\CmsAddress a join a.user u');
@@ -179,7 +181,8 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertFalse($user->getPhonenumbers()->isDirty());
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', array(999, $user->getId()));
+        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]
+        );
 
         //select
         $q = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
@@ -230,7 +233,8 @@ class IdentityMapTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(3, count($user->getPhonenumbers()));
 
         //external update to CmsAddress
-        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', array(999, $user->getId()));
+        $this->_em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]
+        );
 
         //select
         $q = $this->_em->createQuery('select u, p from Doctrine\Tests\Models\CMS\CmsUser u join u.phonenumbers p');
