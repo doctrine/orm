@@ -94,7 +94,7 @@ class DefaultCache implements Cache
     public function getCollectionCacheRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return null;
@@ -172,7 +172,7 @@ class DefaultCache implements Cache
     public function containsCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return false;
@@ -187,7 +187,7 @@ class DefaultCache implements Cache
     public function evictCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
@@ -202,7 +202,7 @@ class DefaultCache implements Cache
     public function evictCollectionRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;

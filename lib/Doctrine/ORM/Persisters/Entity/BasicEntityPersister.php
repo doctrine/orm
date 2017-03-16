@@ -833,7 +833,7 @@ class BasicEntityPersister implements EntityPersister
 
         $mappedBy          = $association->getMappedBy();
         $sourceClass       = $association->getDeclaringClass();
-        $owningAssociation = $targetClass->getAssociationMapping($mappedBy);
+        $owningAssociation = $targetClass->associationMappings[$mappedBy];
         $targetTableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
 
         foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
@@ -1352,7 +1352,7 @@ class BasicEntityPersister implements EntityPersister
 
             if (! $association->isOwningSide()) {
                 $eagerEntity       = $this->em->getClassMetadata($association->getTargetEntity());
-                $owningAssociation = $eagerEntity->getAssociationMapping($association->getMappedBy());
+                $owningAssociation = $eagerEntity->associationMappings[$association->getMappedBy()];
             }
 
             $joinTableAlias = $this->getSQLTableAlias($eagerEntity->getTableName(), $assocAlias);
