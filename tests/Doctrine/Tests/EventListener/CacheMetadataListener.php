@@ -68,24 +68,26 @@ class CacheMetadataListener
             return;
         }
 
-        $metadata->setCache(
-            new CacheMetadata(
-                CacheUsage::NONSTRICT_READ_WRITE,
-                strtolower(str_replace('\\', '_', $metadata->rootEntityName))
-            )
-        );
+        $region = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+
+        $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region));
 
         $this->recordVisit($metadata);
 
         // only enable association-caching when the target has already been
         // given caching settings
-        foreach ($metadata->associationMappings as $mapping) {
-            $targetMeta = $em->getClassMetadata($mapping['targetEntity']);
+        foreach ($metadata->associationMappings as $association) {
+            $targetMeta = $em->getClassMetadata($association->getTargetEntity());
             
             $this->enableCaching($targetMeta, $em);
 
             if ($this->isVisited($targetMeta)) {
-                $metadata->enableAssociationCache($mapping['fieldName'], []);
+                $association->setCache(
+                    new CacheMetadata(
+                        CacheUsage::NONSTRICT_READ_WRITE,
+                        sprintf('%s__%s', $region, $association->getName())
+                    )
+                );
             }
         }
     }

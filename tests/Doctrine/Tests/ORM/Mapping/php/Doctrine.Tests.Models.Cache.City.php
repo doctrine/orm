@@ -47,10 +47,11 @@ $association = new Mapping\OneToOneAssociationMetadata('state');
 $association->setJoinColumns($joinColumns);
 $association->setTargetEntity(State::class);
 $association->setInversedBy('cities');
+$association->setCache(
+    new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_city__state')
+);
 
 $metadata->addAssociation($association);
-
-$metadata->enableAssociationCache('state', ['usage' => Mapping\CacheUsage::READ_ONLY]);
 
 $association = new Mapping\ManyToManyAssociationMetadata('travels');
 
@@ -64,7 +65,8 @@ $association = new Mapping\OneToManyAssociationMetadata('attractions');
 $association->setTargetEntity(Attraction::class);
 $association->setMappedBy('city');
 $association->setOrderBy(['name' => 'ASC']);
+$association->setCache(
+    new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_city__attractions')
+);
 
 $metadata->addAssociation($association);
-
-$metadata->enableAssociationCache('attractions', ['usage' => Mapping\CacheUsage::READ_ONLY]);

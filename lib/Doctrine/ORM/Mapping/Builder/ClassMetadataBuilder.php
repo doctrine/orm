@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
@@ -65,7 +66,7 @@ class ClassMetadataBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function setMappedSuperClass()
+    public function asMappedSuperClass()
     {
         $this->cm->isMappedSuperclass = true;
         $this->cm->isEmbeddedClass = false;
@@ -78,10 +79,22 @@ class ClassMetadataBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function setEmbeddable()
+    public function asEmbeddable()
     {
         $this->cm->isEmbeddedClass = true;
         $this->cm->isMappedSuperclass = false;
+
+        return $this;
+    }
+
+    /**
+     * Marks class read only.
+     *
+     * @return ClassMetadataBuilder
+     */
+    public function asReadOnly()
+    {
+        $this->cm->asReadOnly();
 
         return $this;
     }
@@ -123,18 +136,6 @@ class ClassMetadataBuilder
     }
 
     /**
-     * Marks class read only.
-     *
-     * @return ClassMetadataBuilder
-     */
-    public function setReadOnly()
-    {
-        $this->cm->markReadOnly();
-
-        return $this;
-    }
-
-    /**
      * Sets the table metadata.
      *
      * @param TableMetadata $tableMetadata
@@ -149,19 +150,15 @@ class ClassMetadataBuilder
     }
 
     /**
-     * @param string $usage
-     * @param string $region
+     * @param null|CacheMetadata $cache
+     *
+     * @return self
      */
-    public function withCache(string $usage, string $region)
+    public function withCache(CacheMetadata $cache = null)
     {
-        $cacheBuilder = new CacheMetadataBuilder();
+        $this->cm->setCache($cache);
 
-        $cacheBuilder
-            ->withUsage(strtoupper($usage))
-            ->withRegion($region)
-        ;
-
-        $this->cm->setCache($cacheBuilder->build());
+        return $this;
     }
 
     /**

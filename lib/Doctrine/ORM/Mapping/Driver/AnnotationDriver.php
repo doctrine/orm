@@ -84,7 +84,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 }
 
                 if ($entityAnnot->readOnly) {
-                    $builder->setReadOnly();
+                    $builder->asReadOnly();
                 }
 
                 break;
@@ -93,11 +93,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
                 $builder->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
-                $builder->setMappedSuperClass();
+                $builder->asMappedSuperClass();
                 break;
 
             case isset($classAnnotations[Annotation\Embeddable::class]):
-                $builder->setEmbeddable();
+                $builder->asEmbeddable();
                 break;
 
             default:
@@ -145,7 +145,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
             $cache      = $this->convertCacheAnnotationToCacheMetadata($cacheAnnot, $metadata);
 
-            $metadata->setCache($cache);
+            $builder->withCache($cache);
         }
 
         // Evaluate NamedNativeQueries annotation

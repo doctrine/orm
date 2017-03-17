@@ -42,9 +42,9 @@ class ClassMetadataBuilderTest extends OrmTestCase
     /**
      * @group embedded
      */
-    public function testSetMappedSuperClass()
+    public function testAsMappedSuperClass()
     {
-        self::assertIsFluent($this->builder->setMappedSuperClass());
+        self::assertIsFluent($this->builder->asMappedSuperClass());
         self::assertTrue($this->cm->isMappedSuperclass);
         self::assertFalse($this->cm->isEmbeddedClass);
     }
@@ -52,11 +52,17 @@ class ClassMetadataBuilderTest extends OrmTestCase
     /**
      * @group embedded
      */
-    public function testSetEmbedable()
+    public function testAsEmbeddable()
     {
-        self::assertIsFluent($this->builder->setEmbeddable());
+        self::assertIsFluent($this->builder->asEmbeddable());
         self::assertTrue($this->cm->isEmbeddedClass);
         self::assertFalse($this->cm->isMappedSuperclass);
+    }
+
+    public function testAsReadOnly()
+    {
+        self::assertIsFluent($this->builder->asReadOnly());
+        self::assertTrue($this->cm->isReadOnly());
     }
 
     /**
@@ -150,12 +156,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         self::assertIsFluent($this->builder->setCustomRepositoryClass(CmsGroup::class));
         self::assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
-    }
-
-    public function testSetReadOnly()
-    {
-        self::assertIsFluent($this->builder->setReadOnly());
-        self::assertTrue($this->cm->isReadOnly());
     }
 
     public function testSetInheritanceJoined()

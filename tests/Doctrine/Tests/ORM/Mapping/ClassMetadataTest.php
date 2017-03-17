@@ -53,7 +53,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setParentClasses(["UserParent"]);
         $cm->setCustomRepositoryClass("UserRepository");
         $cm->setDiscriminatorColumn($discrColumn);
-        $cm->markReadOnly();
+        $cm->asReadOnly();
         $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
 
         $association = new Mapping\OneToOneAssociationMetadata('phonenumbers');
