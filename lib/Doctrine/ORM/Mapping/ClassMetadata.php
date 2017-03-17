@@ -366,37 +366,21 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getIdentifierValues($entity)
     {
-        if ($this->isIdentifierComposite) {
-            $id = [];
+        $id = [];
 
-            foreach ($this->identifier as $idField) {
-                if (($property = $this->getProperty($idField)) === null) {
-                    $property = $this->associationMappings[$idField];
-                }
-
-                $value = $property->getValue($entity);
-
-                if (null !== $value) {
-                    $id[$idField] = $value;
-                }
+        foreach ($this->identifier as $idField) {
+            if (($property = $this->getProperty($idField)) === null) {
+                $property = $this->associationMappings[$idField];
             }
 
-            return $id;
+            $value = $property->getValue($entity);
+
+            if (null !== $value) {
+                $id[$idField] = $value;
+            }
         }
 
-        $idField = $this->identifier[0];
-
-        if (($property = $this->getProperty($idField)) === null) {
-            $property = $this->associationMappings[$idField];
-        }
-
-        $value = $property->getValue($entity);
-
-        if (null === $value) {
-            return [];
-        }
-
-        return [$idField => $value];
+        return $id;
     }
 
     /**
@@ -711,49 +695,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function setCache(CacheMetadata $cache = null)
     {
         $this->cache = $cache;
-    }
-
-    /**
-     * @param string $fieldName
-     * @param array  $cache
-     * 
-     * @todo guilhermeblanco Remove me once Association is OOed
-     *
-     * @return void
-     */
-    public function enableAssociationCache($fieldName, array $cache)
-    {
-        $this->associationMappings[$fieldName]->setCache($this->getAssociationCacheDefaults($fieldName, $cache));
-    }
-
-    /**
-     * @param string $fieldName
-     * @param array  $cache
-     * 
-     * @todo guilhermeblanco Remove me once Association is OOed
-     *
-     * @return array
-     */
-    public function getAssociationCacheDefaults($fieldName, array $cache)
-    {
-        $region = $cache['region'] ?? strtolower(str_replace('\\', '_', $this->rootEntityName)) . '__' . $fieldName;
-        $usage  = $cache['usage'] ?? null;
-        
-        if (! $usage) {
-            $usage = $this->cache->getUsage() !== null
-                ? $this->cache->getUsage()
-                : CacheUsage::READ_ONLY
-            ;
-        }
-        
-        $builder = new Builder\CacheMetadataBuilder();
-        
-        $builder
-            ->withRegion($region)
-            ->withUsage($usage)
-        ;
-        
-        return $builder->build();
     }
 
     /**
@@ -2203,7 +2144,7 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @return void
      */
-    public function markReadOnly()
+    public function asReadOnly()
     {
         $this->readOnly = true;
     }
