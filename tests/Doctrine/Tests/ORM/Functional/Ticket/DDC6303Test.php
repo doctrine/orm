@@ -28,6 +28,7 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $contractA->originalData = $contractAData;
 
         $contractB = new DDC6303ContractB();
+        //contractA and contractB have an inheritance from Contract, but one has a string originalData and the second has an array
         $contractBData = ['accepted', 'authorized'];
         $contractB->originalData = $contractBData;
 
@@ -61,7 +62,6 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $contractStringEmptyData = '';
         $contractStringZeroData = 0;
-
         $contractArrayEmptyData = [];        
 
         $contractStringEmpty = new DDC6303ContractA();
