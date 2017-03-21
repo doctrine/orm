@@ -80,7 +80,7 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
         $this->createLoadingFixture();
 
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['related']->setFetchMode(FetchMode::LAZY);
+        $metadata->getProperty('related')->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $products = $query->getResult();

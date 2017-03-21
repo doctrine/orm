@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Query;
@@ -82,21 +83,21 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
             }
         }
 
-        $identifier = $rootClass->getSingleIdentifierFieldName();
+        $property = $rootClass->getProperty($rootClass->getSingleIdentifierFieldName());
 
-        if (isset($rootClass->associationMappings[$identifier])) {
+        if ($property instanceof AssociationMetadata) {
             throw new \RuntimeException(
                 "Paginating an entity with foreign key as identifier only works when using the Output Walkers. " .
                 "Call Paginator#setUseOutputWalkers(true) before iterating the paginator."
             );
         }
 
-        $this->getQuery()->setHint(self::IDENTIFIER_TYPE, $rootClass->getProperty($identifier)->getType());
+        $this->getQuery()->setHint(self::IDENTIFIER_TYPE, $property->getType());
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
-            $identifier
+            $property->getName()
         );
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;

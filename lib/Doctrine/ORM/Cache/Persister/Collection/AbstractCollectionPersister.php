@@ -172,7 +172,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     public function storeCollectionCache(CollectionCacheKey $key, $elements)
     {
         /* @var $targetPersister CachedEntityPersister */
-        $association     = $this->sourceEntity->associationMappings[$key->association];
+        $association     = $this->sourceEntity->getProperty($key->association);
         $targetPersister = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
         $targetRegion    = $targetPersister->getCacheRegion();
         $targetHydrator  = $targetPersister->getEntityHydrator();

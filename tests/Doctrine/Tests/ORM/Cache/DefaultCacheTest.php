@@ -64,7 +64,7 @@ class DefaultCacheTest extends OrmTestCase
         $metadata   = $this->em->getClassMetadata($className);
         $cacheKey   = new CollectionCacheKey($metadata->name, $association, $ownerIdentifier);
         $cacheEntry = new CollectionCacheEntry($data);
-        $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->associationMappings[$association]);
+        $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getProperty($association));
 
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }

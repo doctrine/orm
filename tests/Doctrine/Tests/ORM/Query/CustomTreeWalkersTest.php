@@ -218,7 +218,7 @@ class CustomTreeWalkerJoin extends Query\TreeWalkerAdapter
             [
                 'metadata'     => $addressMetadata,
                 'parent'       => $rangeVariableDecl->aliasIdentificationVariable,
-                'relation'     => $userMetadata->associationMappings['address'],
+                'relation'     => $userMetadata->getProperty('address'),
                 'map'          => null,
                 'nestingLevel' => 0,
                 'token'        => null,

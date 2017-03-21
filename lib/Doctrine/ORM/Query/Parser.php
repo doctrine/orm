@@ -19,7 +19,9 @@
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
@@ -671,13 +673,10 @@ class Parser
             $class = $this->queryComponents[$expr->identificationVariable]['metadata'];
 
             foreach ($expr->partialFieldSet as $field) {
-                if ($class->getProperty($field)) {
-                    continue;
-                }
+                $property = $class->getProperty($field);
 
-                if (isset($class->associationMappings[$field]) &&
-                    $class->associationMappings[$field]->isOwningSide() &&
-                    $class->associationMappings[$field] instanceof ToOneAssociationMetadata) {
+                if ($property instanceof FieldMetadata ||
+                    ($property instanceof ToOneAssociationMetadata && $property->isOwningSide())) {
                     continue;
                 }
 
@@ -754,8 +753,10 @@ class Parser
                 $field = $pathExpression->field = $class->identifier[0];
             }
 
+            $property = $class->getProperty($field);
+
             // Check if field or association exists
-            if ( ! isset($class->associationMappings[$field]) && ! $class->getProperty($field)) {
+            if (! $property) {
                 $this->semanticalError(
                     'Class ' . $class->name . ' has no field or association named ' . $field,
                     $deferredItem['token']
@@ -764,12 +765,11 @@ class Parser
 
             $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
 
-            if (isset($class->associationMappings[$field])) {
-                $association = $class->associationMappings[$field];
-
-                $fieldType = $association instanceof ToOneAssociationMetadata
+            if ($property instanceof AssociationMetadata) {
+                $fieldType = $property instanceof ToOneAssociationMetadata
                     ? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-                    : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
+                    : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
+                ;
             }
 
             // Validate if PathExpression is one of the expected types
@@ -1630,7 +1630,7 @@ class Parser
             $field                       = $associationPathExpression->associationField;
 
             $class       = $this->queryComponents[$identificationVariable]['metadata'];
-            $association = $class->associationMappings[$field];
+            $association = $class->getProperty($field);
             $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
             // Building queryComponent
@@ -1770,7 +1770,7 @@ class Parser
         $field                  = $joinAssociationPathExpression->associationField;
 
         $class       = $this->queryComponents[$identificationVariable]['metadata'];
-        $association = $class->associationMappings[$field];
+        $association = $class->getProperty($field);
         $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
         // Building queryComponent

@@ -94,7 +94,7 @@ class DefaultCache implements Cache
     public function getCollectionCacheRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if ( ! ($persister instanceof CachedPersister)) {
             return null;
@@ -172,7 +172,7 @@ class DefaultCache implements Cache
     public function containsCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if ( ! ($persister instanceof CachedPersister)) {
             return false;
@@ -187,7 +187,7 @@ class DefaultCache implements Cache
     public function evictCollection($className, $association, $ownerIdentifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
@@ -202,7 +202,7 @@ class DefaultCache implements Cache
     public function evictCollectionRegion($className, $association)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getCollectionPersister($metadata->associationMappings[$association]);
+        $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
@@ -219,7 +219,7 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-            foreach ($metadata->associationMappings as $association) {
+            foreach ($metadata->getProperties() as $association) {
                 if (! $association instanceof ToManyAssociationMetadata) {
                     continue;
                 }

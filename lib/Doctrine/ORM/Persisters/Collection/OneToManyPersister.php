@@ -207,7 +207,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $identifier   = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass  = $this->em->getClassMetadata($association->getSourceEntity());
         $targetClass  = $this->em->getClassMetadata($association->getTargetEntity());
-        $inverseAssoc = $targetClass->associationMappings[$association->getMappedBy()];
+        $inverseAssoc = $targetClass->getProperty($association->getMappedBy());
         $columns      = [];
         $parameters   = [];
 

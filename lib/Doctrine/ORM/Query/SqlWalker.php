@@ -21,7 +21,9 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
@@ -671,6 +673,10 @@ class SqlWalker implements TreeWalker
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
+                if ($property instanceof AssociationMetadata) {
+                    var_dump($property);
+                }
+
                 $sql .= $this->platform->quoteIdentifier($property->getColumnName());
                 break;
 
@@ -680,7 +686,7 @@ class SqlWalker implements TreeWalker
                 $fieldName   = $pathExpr->field;
                 $dqlAlias    = $pathExpr->identificationVariable;
                 $class       = $this->queryComponents[$dqlAlias]['metadata'];
-                $association = $class->associationMappings[$fieldName];
+                $association = $class->getProperty($fieldName);
 
                 if (! $association->isOwningSide()) {
                     throw QueryException::associationPathInverseSideNotSupported($pathExpr);
@@ -766,8 +772,8 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of class and also parent classes
-            foreach ($class->associationMappings as $association) {
-                if (! ($association->isOwningSide() && $association instanceof ToOneAssociationMetadata)
+            foreach ($class->getProperties() as $association) {
+                if (! ($association instanceof ToOneAssociationMetadata && $association->isOwningSide())
                     || ( ! $addMetaColumns && ! $association->isPrimaryKey())) {
                     continue;
                 }
@@ -802,13 +808,13 @@ class SqlWalker implements TreeWalker
                 $subClass      = $this->em->getClassMetadata($subClassName);
                 $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
-                foreach ($subClass->associationMappings as $association) {
+                foreach ($subClass->getProperties() as $association) {
                     // Skip if association is inherited
-                    if ($subClass->isInheritedAssociation($association->getName())) {
+                    if ($subClass->isInheritedProperty($association->getName())) {
                         continue;
                     }
 
-                    if (! ($association->isOwningSide() && $association instanceof ToOneAssociationMetadata)) {
+                    if (! ($association instanceof ToOneAssociationMetadata && $association->isOwningSide())) {
                         continue;
                     }
 
@@ -974,7 +980,7 @@ class SqlWalker implements TreeWalker
 
         // Ensure we got the owning side, since it has all mapping info
         $owningAssociation = ! $association->isOwningSide()
-            ? $targetClass->associationMappings[$association->getMappedBy()]
+            ? $targetClass->getProperty($association->getMappedBy())
             : $association
         ;
 
@@ -1442,6 +1448,10 @@ class SqlWalker implements TreeWalker
 
                 // Select all fields from the queried class
                 foreach ($class->getProperties() as $fieldName => $property) {
+                    if (! ($property instanceof FieldMetadata)) {
+                        continue;
+                    }
+
                     if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet)) {
                         continue;
                     }
@@ -1473,6 +1483,10 @@ class SqlWalker implements TreeWalker
                         $subClass = $this->em->getClassMetadata($subClassName);
 
                         foreach ($subClass->getProperties() as $fieldName => $property) {
+                            if (! ($property instanceof FieldMetadata)) {
+                                continue;
+                            }
+
                             if ($subClass->isInheritedProperty($fieldName) || ($partialFieldSet && !in_array($fieldName, $partialFieldSet))) {
                                 continue;
                             }
@@ -1955,11 +1969,11 @@ class SqlWalker implements TreeWalker
                 throw new \BadMethodCallException("Not implemented");
         }
 
-        $association       = $class->associationMappings[$fieldName];
+        $association       = $class->getProperty($fieldName);
         $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
         $owningAssociation = $association->isOwningSide()
             ? $association
-            : $targetClass->associationMappings[$association->getMappedBy()]
+            : $targetClass->getProperty($association->getMappedBy())
         ;
 
         if ($association instanceof OneToManyAssociationMetadata) {

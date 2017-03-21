@@ -23,6 +23,7 @@ namespace Doctrine\ORM\Cache;
 use Doctrine\Common\Util\ClassUtils;
 
 use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
@@ -78,8 +79,8 @@ class DefaultEntityHydrator implements EntityHydrator
         $data = $this->uow->getOriginalEntityData($entity);
         $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
 
-        foreach ($metadata->associationMappings as $name => $association) {
-            if ( ! isset($data[$name])) {
+        foreach ($metadata->getProperties() as $name => $association) {
+            if (! isset($data[$name]) || $association instanceof FieldMetadata) {
                 continue;
             }
 
@@ -94,7 +95,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             if (! $association->getCache()) {
                 $owningAssociation   = ! $association->isOwningSide()
-                    ? $targetClassMetadata->associationMappings[$association->getMappedBy()]
+                    ? $targetClassMetadata->getProperty($association->getMappedBy())
                     : $association;
                 $associationIds      = $this->identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
@@ -106,7 +107,9 @@ class DefaultEntityHydrator implements EntityHydrator
                 foreach ($associationIds as $fieldName => $fieldValue) {
                     // $fieldName = "name"
                     // $fieldColumnName = "custom_name"
-                    if (($property = $targetClassMetadata->getProperty($fieldName)) !== null) {
+                    $property = $targetClassMetadata->getProperty($fieldName);
+
+                    if ($property instanceof FieldMetadata) {
                         foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
                             // $joinColumnName = "custom_name"
                             // $joinColumnReferencedColumnName = "other_side_of_assoc_column_name"
@@ -122,7 +125,7 @@ class DefaultEntityHydrator implements EntityHydrator
                         continue;
                     }
 
-                    $targetAssociation = $targetClassMetadata->associationMappings[$fieldName];
+                    $targetAssociation = $targetClassMetadata->getProperty($fieldName);
 
                     foreach ($association->getJoinColumns() as $assocJoinColumn) {
                         foreach ($targetAssociation->getJoinColumns() as $targetAssocJoinColumn) {
@@ -187,8 +190,8 @@ class DefaultEntityHydrator implements EntityHydrator
             $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
         }
 
-        foreach ($metadata->associationMappings as $name => $association) {
-            if (! $association->getCache() || ! isset($data[$name])) {
+        foreach ($metadata->getProperties() as $name => $association) {
+            if ($association instanceof FieldMetadata || ! isset($data[$name]) || ! $association->getCache()) {
                 continue;
             }
 
@@ -199,7 +202,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 ($association instanceof OneToOneAssociationMetadata && ! $association->isOwningSide())
             );
 
-            if ( ! $isEagerLoad) {
+            if (! $isEagerLoad) {
                 $data[$name] = $this->em->getReference($assocClass, $assocId);
 
                 continue;

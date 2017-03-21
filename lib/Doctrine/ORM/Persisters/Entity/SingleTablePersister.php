@@ -22,6 +22,8 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
@@ -68,26 +70,25 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         foreach ($this->class->subClasses as $subClassName) {
             $subClass = $this->em->getClassMetadata($subClassName);
 
-            // Regular columns
+            // Subclass columns
             foreach ($subClass->getProperties() as $fieldName => $property) {
-                if ($subClass->isInheritedProperty($property->getName())) {
+                if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
 
-                $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
-            }
+                if ($property instanceof FieldMetadata) {
+                    $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
 
-            // Foreign key columns
-            foreach ($subClass->associationMappings as $association) {
-                if (! $association->isOwningSide() ||
-                    ! ($association instanceof ToOneAssociationMetadata) ||
-                    $subClass->isInheritedAssociation($association->getName())) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
+                if ($property instanceof ToManyAssociationMetadata || ! $property->isOwningSide()) {
+                    continue;
+                }
 
-                foreach ($association->getJoinColumns() as $joinColumn) {
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                foreach ($property->getJoinColumns() as $joinColumn) {
                     if (! $joinColumn->getType()) {
                         $joinColumn->setType(
                             PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)

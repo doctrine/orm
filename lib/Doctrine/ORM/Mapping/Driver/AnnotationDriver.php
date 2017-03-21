@@ -389,12 +389,13 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             foreach ($associationOverridesAnnot->value as $associationOverride) {
                 $fieldName = $associationOverride->name;
+                $property  = $metadata->getProperty($fieldName);
 
-                if (! isset($metadata->associationMappings[$fieldName])) {
+                if (! $property) {
                     throw Mapping\MappingException::invalidOverrideFieldName($metadata->name, $fieldName);
                 }
 
-                $existingClass = get_class($metadata->associationMappings[$fieldName]);
+                $existingClass = get_class($property);
                 $override      = new $existingClass($fieldName);
 
                 // Check for JoinColumn/JoinColumns annotations

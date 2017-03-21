@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
@@ -94,7 +95,11 @@ class SchemaValidator
     {
         $ce = [];
 
-        foreach ($class->associationMappings as $fieldName => $association) {
+        foreach ($class->getProperties() as $fieldName => $association) {
+            if (! ($association instanceof AssociationMetadata)) {
+                continue;
+            }
+
             $ce = array_merge($ce, $this->validateAssociation($class, $association));
         }
 
@@ -143,7 +148,7 @@ class SchemaValidator
         /** @var ClassMetadata $targetMetadata */
         $targetMetadata    = $metadataFactory->getMetadataFor($targetEntity);
         $containsForeignId = array_filter($targetMetadata->identifier, function ($identifier) use ($targetMetadata) {
-            return isset($targetMetadata->associationMappings[$identifier]);
+            return $targetMetadata->hasAssociation($identifier);
         });
 
         if ($association->isPrimaryKey() && count($containsForeignId)) {
@@ -153,20 +158,23 @@ class SchemaValidator
         }
 
         if ($mappedBy) {
-            if ($targetMetadata->hasField($mappedBy)) {
-                $message = "The association %s#%s refers to the owning side property %s#%s which is not defined as association, but as field.";
+            /** @var AssociationMetadata $targetAssociation */
+            $targetAssociation = $targetMetadata->getProperty($mappedBy);
 
-                $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy);
-            } else if (! $targetMetadata->hasAssociation($mappedBy)) {
+            if (! $targetAssociation) {
                 $message = "The association %s#%s refers to the owning side property %s#%s which does not exist.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy);
-            } else if ($targetMetadata->associationMappings[$mappedBy]->getInversedBy() === null) {
+            } else if ($targetAssociation instanceof FieldMetadata) {
+                $message = "The association %s#%s refers to the owning side property %s#%s which is not defined as association, but as field.";
+
+                $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy);
+            } else if ($targetAssociation->getInversedBy() === null) {
                 $message = "The property %s#%s is on the inverse side of a bi-directional relationship, but the "
                     . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy, $fieldName);
-            } else if ($targetMetadata->associationMappings[$mappedBy]->getInversedBy() !== $fieldName) {
+            } else if ($targetAssociation->getInversedBy() !== $fieldName) {
                 $message = "The mapping between %s#%s and %s#%s are inconsistent with each other.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy);
@@ -174,29 +182,30 @@ class SchemaValidator
         }
 
         if ($inversedBy) {
-            if ($targetMetadata->hasField($inversedBy)) {
-                $message = "The association %s#%s refers to the inverse side property %s#%s which is not defined as association, but as field.";
+            /** @var AssociationMetadata $targetAssociation */
+            $targetAssociation = $targetMetadata->getProperty($inversedBy);
 
-                $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $inversedBy);
-            } else if (!$targetMetadata->hasAssociation($inversedBy)) {
+            if (! $targetAssociation) {
                 $message = "The association %s#%s refers to the inverse side property %s#%s which does not exist.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $inversedBy);
-            } elseif ($targetMetadata->associationMappings[$inversedBy]->getMappedBy() === null) {
+            } else if ($targetAssociation instanceof FieldMetadata) {
+                $message = "The association %s#%s refers to the inverse side property %s#%s which is not defined as association, but as field.";
+
+                $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $inversedBy);
+            } else if ($targetAssociation->getMappedBy() === null) {
                 $message = "The property %s#%s is on the owning side of a bi-directional relationship, but the "
                     . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $mappedBy, $fieldName);
-            } elseif ($targetMetadata->associationMappings[$inversedBy]->getMappedBy() !== $fieldName) {
+            } else if ($targetAssociation->getMappedBy() !== $fieldName) {
                 $message = "The mapping between %s#%s and %s#%s are inconsistent with each other.";
 
                 $ce[] = sprintf($message, $class->name, $fieldName, $targetEntity, $inversedBy);
             }
 
             // Verify inverse side/owning side match each other
-            if (array_key_exists($inversedBy, $targetMetadata->associationMappings)) {
-                $targetAssociation = $targetMetadata->associationMappings[$inversedBy];
-
+            if ($targetAssociation) {
                 if ($association instanceof OneToOneAssociationMetadata && ! $targetAssociation instanceof OneToOneAssociationMetadata) {
                     $message = "If association %s#%s is one-to-one, then the inversed side %s#%s has to be one-to-one as well.";
 
@@ -307,7 +316,7 @@ class SchemaValidator
                     continue;
                 }
 
-                $targetAssociation = $targetMetadata->associationMappings[$orderField];
+                $targetAssociation = $targetMetadata->getProperty($orderField);
 
                 if ($targetAssociation instanceof ToManyAssociationMetadata) {
                     $message = "The association %s#%s is ordered by a property '%s' on '%s' that is a collection-valued association.";
@@ -316,7 +325,7 @@ class SchemaValidator
                     continue;
                 }
 
-                if (! $targetAssociation->isOwningSide()) {
+                if ($targetAssociation instanceof AssociationMetadata && ! $targetAssociation->isOwningSide()) {
                     $message = "The association %s#%s is ordered by a property '%s' on '%s' that is the inverse side of an association.";
 
                     $ce[] = sprintf($message, $class->name, $fieldName, $orderField, $targetMetadata->name);

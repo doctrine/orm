@@ -74,10 +74,15 @@ class DefaultCollectionHydrator implements CollectionHydrator
     /**
      * {@inheritdoc}
      */
-    public function loadCacheEntry(ClassMetadata $metadata, CollectionCacheKey $key, CollectionCacheEntry $entry, PersistentCollection $collection)
+    public function loadCacheEntry(
+        ClassMetadata $metadata,
+        CollectionCacheKey $key,
+        CollectionCacheEntry $entry,
+        PersistentCollection $collection
+    )
     {
         /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
-        $association     = $metadata->associationMappings[$key->association];
+        $association     = $metadata->getProperty($key->association);
         $targetPersister = $this->uow->getEntityPersister($association->getTargetEntity());
         $targetRegion    = $targetPersister->getCacheRegion();
         $list            = [];
@@ -90,7 +95,9 @@ class DefaultCollectionHydrator implements CollectionHydrator
 
         /* @var $entityEntries \Doctrine\ORM\Cache\EntityCacheEntry[] */
         foreach ($entityEntries as $index => $entityEntry) {
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
+            $data = $entityEntry->resolveAssociationEntries($this->em);
+
+            $list[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
         }
 
         array_walk($list, function($entity, $index) use ($collection) {

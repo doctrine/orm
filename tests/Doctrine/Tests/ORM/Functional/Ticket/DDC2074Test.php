@@ -24,7 +24,7 @@ class DDC2074Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $product = new ECommerceProduct();
         $category = new ECommerceCategory();
         $collection = new PersistentCollection($this->em, $class, new ArrayCollection([$category]));
-        $collection->setOwner($product, $class->associationMappings['categories']);
+        $collection->setOwner($product, $class->getProperty('categories'));
 
         $uow = $this->em->getUnitOfWork();
         $clonedCollection = clone $collection;

@@ -52,8 +52,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['groups']->setFetchMode(FetchMode::LAZY);
-        $class->associationMappings['articles']->setFetchMode(FetchMode::LAZY);
+        $class->getProperty('groups')->setFetchMode(FetchMode::LAZY);
+        $class->getProperty('articles')->setFetchMode(FetchMode::LAZY);
     }
 
     public function testConfigureFilter()
@@ -524,8 +524,8 @@ class SQLFilterTest extends OrmFunctionalTestCase
     private function loadLazyFixtureData()
     {
         $class = $this->em->getClassMetadata(CmsUser::class);
-        $class->associationMappings['articles']->setFetchMode(FetchMode::EXTRA_LAZY);
-        $class->associationMappings['groups']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->getProperty('articles')->setFetchMode(FetchMode::EXTRA_LAZY);
+        $class->getProperty('groups')->setFetchMode(FetchMode::EXTRA_LAZY);
         $this->loadFixtureData();
     }
 

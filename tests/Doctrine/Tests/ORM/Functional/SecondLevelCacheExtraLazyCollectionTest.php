@@ -20,8 +20,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $sourceEntity = $this->em->getClassMetadata(Travel::class);
         $targetEntity = $this->em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']->setFetchMode(FetchMode::EXTRA_LAZY);
-        $targetEntity->associationMappings['travels']->setFetchMode(FetchMode::EXTRA_LAZY);
+        $sourceEntity->getProperty('visitedCities')->setFetchMode(FetchMode::EXTRA_LAZY);
+        $targetEntity->getProperty('travels')->setFetchMode(FetchMode::EXTRA_LAZY);
     }
 
     public function tearDown()
@@ -31,8 +31,8 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $sourceEntity = $this->em->getClassMetadata(Travel::class);
         $targetEntity = $this->em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']->setFetchMode(FetchMode::LAZY);
-        $targetEntity->associationMappings['travels']->setFetchMode(FetchMode::LAZY);
+        $sourceEntity->getProperty('visitedCities')->setFetchMode(FetchMode::LAZY);
+        $targetEntity->getProperty('travels')->setFetchMode(FetchMode::LAZY);
     }
 
     public function testCacheCountAfterAddThenFlush()

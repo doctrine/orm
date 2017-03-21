@@ -63,7 +63,7 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testLazyLoadsObjects() {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
-        $metadata->associationMappings['shipping']->setFetchMode(FetchMode::LAZY);
+        $metadata->getProperty('shipping')->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
         $result = $query->getResult();
