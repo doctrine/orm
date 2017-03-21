@@ -56,7 +56,7 @@ class IdentityFunction extends FunctionNode
         $assocField     = $this->pathExpression->field;
         $qComp          = $sqlWalker->getQueryComponent($dqlAlias);
         $class          = $qComp['metadata'];
-        $association    = $class->associationMappings[$assocField];
+        $association    = $class->getProperty($assocField);
         $targetEntity   = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
         $joinColumns    = $association->getJoinColumns();
         $joinColumn     = reset($joinColumns);

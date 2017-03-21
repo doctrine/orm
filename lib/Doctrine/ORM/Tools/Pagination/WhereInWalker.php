@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query\AST\ArithmeticExpression;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
@@ -81,18 +83,25 @@ class WhereInWalker extends TreeWalkerAdapter
             throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
         }
 
-        $fromRoot            = reset($from);
-        $rootAlias           = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
-        $rootClass           = $queryComponents[$rootAlias]['metadata'];
-        $identifierFieldName = $rootClass->getSingleIdentifierFieldName();
+        $fromRoot  = reset($from);
+        $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
+        $rootClass = $queryComponents[$rootAlias]['metadata'];
+        $property  = $rootClass->getProperty($rootClass->getSingleIdentifierFieldName());
+        $pathType  = PathExpression::TYPE_STATE_FIELD;
 
-        $pathType = PathExpression::TYPE_STATE_FIELD;
-
-        if (isset($rootClass->associationMappings[$identifierFieldName])) {
-            $pathType = PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+        if ($property instanceof AssociationMetadata) {
+            $pathType = $property instanceof ToOneAssociationMetadata
+                ? PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
+                : PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
+            ;
         }
 
-        $pathExpression       = new PathExpression(PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $rootAlias, $identifierFieldName);
+        $pathExpression = new PathExpression(
+            PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
+            $rootAlias,
+            $property->getName()
+        );
+
         $pathExpression->type = $pathType;
 
         $count = $this->getQuery()->getHint(self::HINT_PAGINATOR_ID_COUNT);

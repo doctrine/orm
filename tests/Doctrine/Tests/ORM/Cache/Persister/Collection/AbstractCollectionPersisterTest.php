@@ -109,7 +109,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     {
         $em    = $this->em;
         $class = $class ?: $this->em->getClassMetadata(State::class);
-        $assoc = $assoc ?: $class->associationMappings['cities'];
+        $assoc = $assoc ?: $class->getProperty('cities');
         $coll  = new PersistentCollection($em, $class, $elements ?: new ArrayCollection);
 
         $coll->setOwner($owner, $assoc);
@@ -120,7 +120,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
 
     protected function createPersisterDefault()
     {
-        $assoc = $this->em->getClassMetadata(State::class)->associationMappings['cities'];
+        $assoc = $this->em->getClassMetadata(State::class)->getProperty('cities');
 
         return $this->createPersister($this->em, $this->collectionPersister, $this->region, $assoc);
     }

@@ -70,7 +70,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     public function testLazyLoadsObjectsOnTheOwningSide() {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['customer']->setFetchMode(FetchMode::LAZY);
+        $metadata->getProperty('customer')->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();
@@ -84,7 +84,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCustomer::class);
-        $metadata->associationMappings['mentor']->setFetchMode(FetchMode::EAGER);
+        $metadata->getProperty('mentor')->setFetchMode(FetchMode::EAGER);
 
         $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCustomer c');
         $result = $query->getResult();

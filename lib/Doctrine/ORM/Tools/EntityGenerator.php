@@ -619,24 +619,19 @@ public function __construct(<params>)
      */
     protected function generateEntityBody(ClassMetadata $metadata)
     {
-        $fieldMappingProperties = $this->generateEntityFieldMappingProperties($metadata);
+        $properties = $this->generateEntityProperties($metadata);
         $embeddedProperties = $this->generateEntityEmbeddedProperties($metadata);
-        $associationMappingProperties = $this->generateEntityAssociationMappingProperties($metadata);
         $stubMethods = $this->generateEntityStubMethods ? $this->generateEntityStubMethods($metadata) : null;
         $lifecycleCallbackMethods = $this->generateEntityLifecycleCallbackMethods($metadata);
 
         $code = [];
 
-        if ($fieldMappingProperties) {
-            $code[] = $fieldMappingProperties;
+        if ($properties) {
+            $code[] = $properties;
         }
 
         if ($embeddedProperties) {
             $code[] = $embeddedProperties;
-        }
-
-        if ($associationMappingProperties) {
-            $code[] = $associationMappingProperties;
         }
 
         $code[] = $this->generateEntityConstructor($metadata);
@@ -669,7 +664,7 @@ public function __construct(<params>)
 
         $collections = [];
 
-        foreach ($metadata->associationMappings as $association) {
+        foreach ($metadata->getProperties() as $association) {
             if ($association instanceof ToManyAssociationMetadata) {
                 $collections[] = sprintf('$this->%s = new \%s();', $association->getName(), ArrayCollection::class);
             }
@@ -844,6 +839,7 @@ public function __construct(<params>)
         if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->name))) {
             // don't generate property if its already on the base class.
             $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
+
             if ($reflClass->hasProperty($property)) {
                 return true;
             }
@@ -1162,25 +1158,6 @@ public function __construct(<params>)
     {
         $methods = [];
 
-        foreach ($metadata->getProperties() as $fieldName => $property) {
-            /*if (isset($property['declaredField'], $metadata->embeddedClasses[$property['declaredField']])) {
-                continue;
-            }*/
-
-            $fieldType = $property->getTypeName();
-            $nullable  = $property->isNullable() ? 'null' : null;
-
-            if (( ! $property->isPrimaryKey() || $metadata->generatorType == GeneratorType::NONE) &&
-                ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
-                $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $fieldType, $nullable)) {
-                $methods[] = $code;
-            }
-
-            if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $fieldType, $nullable)) {
-                $methods[] = $code;
-            }
-        }
-
         /*foreach ($metadata->embeddedClasses as $fieldName => $embeddedClass) {
             if (isset($embeddedClass['declaredField'])) {
                 continue;
@@ -1197,24 +1174,39 @@ public function __construct(<params>)
             }
         }*/
 
-        foreach ($metadata->associationMappings as $association) {
-            if ($association instanceof ToOneAssociationMetadata) {
-                $nullable = $this->isAssociationIsNullable($association) ? 'null' : null;
+        foreach ($metadata->getProperties() as $fieldName => $property) {
+            if ($property instanceof FieldMetadata) {
+                $nullable  = $property->isNullable() ? 'null' : null;
 
-                if ($code = $this->generateEntityStubMethod($metadata, 'set', $association->getName(), $association->getTargetEntity(), $nullable)) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $property->getTypeName(), $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $association->getName(), $association->getTargetEntity(), $nullable)) {
+
+                if (( ! $property->isPrimaryKey() || $metadata->generatorType == GeneratorType::NONE) &&
+                    ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
+                    $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $property->getTypeName(), $nullable)) {
                     $methods[] = $code;
                 }
-            } else if ($association instanceof ToManyAssociationMetadata) {
-                if ($code = $this->generateEntityStubMethod($metadata, 'add', $association->getName(), $association->getTargetEntity())) {
+            } else if ($property instanceof ToOneAssociationMetadata) {
+                $nullable = $this->isAssociationIsNullable($property) ? 'null' : null;
+
+                if ($code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $property->getTargetEntity(), $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'remove', $association->getName(), $association->getTargetEntity())) {
+
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, $property->getTargetEntity(), $nullable)) {
                     $methods[] = $code;
                 }
-                if ($code = $this->generateEntityStubMethod($metadata, 'get', $association->getName(), Collection::class)) {
+            } else if ($property instanceof ToManyAssociationMetadata) {
+                if ($code = $this->generateEntityStubMethod($metadata, 'add', $fieldName, $property->getTargetEntity())) {
+                    $methods[] = $code;
+                }
+
+                if ($code = $this->generateEntityStubMethod($metadata, 'remove', $fieldName, $property->getTargetEntity())) {
+                    $methods[] = $code;
+                }
+
+                if ($code = $this->generateEntityStubMethod($metadata, 'get', $fieldName, Collection::class)) {
                     $methods[] = $code;
                 }
             }
@@ -1275,29 +1267,7 @@ public function __construct(<params>)
      *
      * @return string
      */
-    protected function generateEntityAssociationMappingProperties(ClassMetadata $metadata)
-    {
-        $lines = [];
-
-        foreach ($metadata->associationMappings as $association) {
-            if ($this->hasProperty($association->getName(), $metadata)) {
-                continue;
-            }
-
-            $lines[] = $this->generateAssociationMappingPropertyDocBlock($association, $metadata);
-            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $association->getName()
-                     . ($association instanceof ManyToManyAssociationMetadata ? ' = array()' : null) . ";\n";
-        }
-
-        return implode("\n", $lines);
-    }
-
-    /**
-     * @param ClassMetadata $metadata
-     *
-     * @return string
-     */
-    protected function generateEntityFieldMappingProperties(ClassMetadata $metadata)
+    protected function generateEntityProperties(ClassMetadata $metadata)
     {
         $lines = [];
 
@@ -1309,11 +1279,18 @@ public function __construct(<params>)
                 continue;
             }
 
-            $options = $property->getOptions();
+            if ($property instanceof FieldMetadata) {
+                $options      = $property->getOptions();
+                $defaultValue = isset($options['default']) ? ' = ' . var_export($options['default'], true) : null;
 
-            $lines[] = $this->generateFieldMappingPropertyDocBlock($property, $metadata);
-            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName
-                     . (isset($options['default']) ? ' = ' . var_export($options['default'], true) : null) . ";\n";
+                $lines[] = $this->generateFieldMappingPropertyDocBlock($property, $metadata);
+            } else {
+                $defaultValue = ($property instanceof ManyToManyAssociationMetadata ? ' = array()' : null);
+
+                $lines[] = $this->generateAssociationMappingPropertyDocBlock($property, $metadata);
+            }
+
+            $lines[] = $this->spaces . $this->fieldVisibility . ' $' . $fieldName . $defaultValue . ";\n";
         }
 
         return implode("\n", $lines);

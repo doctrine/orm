@@ -150,12 +150,12 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor(File::class);
-        self::assertArrayHasKey('parentDirectory', $classPage->associationMappings);
-        self::assertEquals(File::class, $classPage->associationMappings['parentDirectory']->getSourceEntity());
+        self::assertArrayHasKey('parentDirectory', $classPage->getProperties());
+        self::assertEquals(File::class, $classPage->getProperty('parentDirectory')->getSourceEntity());
 
         $classDirectory = $factory->getMetadataFor(Directory::class);
-        self::assertArrayHasKey('parentDirectory', $classDirectory->associationMappings);
-        self::assertEquals(Directory::class, $classDirectory->associationMappings['parentDirectory']->getSourceEntity());
+        self::assertArrayHasKey('parentDirectory', $classDirectory->getProperties());
+        self::assertEquals(Directory::class, $classDirectory->getProperty('parentDirectory')->getSourceEntity());
     }
 
     /**
@@ -266,8 +266,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         self::assertEquals('trait_foo', $fooPropertyWithoutOverride->getColumnName());
         self::assertEquals('foo_overridden', $fooPropertyWithOverride->getColumnName());
 
-        $barPropertyWithoutOverride = $metadataWithoutOverride->associationMappings['bar'];
-        $barPropertyWithOverride    = $metadataWithOverride->associationMappings['bar'];
+        $barPropertyWithoutOverride = $metadataWithoutOverride->getProperty('bar');
+        $barPropertyWithOverride    = $metadataWithOverride->getProperty('bar');
 
         $barPropertyWithoutOverrideFirstJoinColumn = $barPropertyWithoutOverride->getJoinColumns()[0];
         $barPropertyWithOverrideFirstJoinColumn    = $barPropertyWithOverride->getJoinColumns()[0];

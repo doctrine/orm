@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
@@ -24,8 +25,12 @@ class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $metadata = $this->em->getMetadataFactory()->getMetaDataFor($class);
 
-        foreach ($metadata->associationMappings as $key => &$associationMapping) {
-            $associationMapping['cascade'] = ['merge'];
+        foreach ($metadata->getProperties() as $association) {
+            if (! ($association instanceof AssociationMetadata)) {
+                continue;
+            }
+
+            $association->setCascade(['merge']);
         }
     }
 
