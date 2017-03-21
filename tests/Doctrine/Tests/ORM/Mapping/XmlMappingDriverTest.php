@@ -63,9 +63,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
         self::assertEquals(['language', 'article'], $class->identifier);
-        self::assertArrayHasKey('article', $class->associationMappings);
+        self::assertArrayHasKey('article', $class->getProperties());
 
-        $association = $class->associationMappings['article'];
+        $association = $class->getProperty('article');
         
         self::assertTrue($association->isPrimaryKey());
     }

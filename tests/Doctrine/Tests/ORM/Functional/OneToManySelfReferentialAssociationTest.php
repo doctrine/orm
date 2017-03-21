@@ -91,7 +91,7 @@ class OneToManySelfReferentialAssociationTest extends OrmFunctionalTestCase
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCategory::class);
-        $metadata->associationMappings['children']->setFetchMode(FetchMode::LAZY);
+        $metadata->getProperty('children')->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('select c from Doctrine\Tests\Models\ECommerce\ECommerceCategory c order by c.id asc');
         $result = $query->getResult();

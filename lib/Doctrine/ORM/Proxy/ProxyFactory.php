@@ -105,7 +105,7 @@ class ProxyFactory extends AbstractProxyFactory
         return new ProxyDefinition(
             ClassUtils::generateProxyClassName($className, $this->proxyNs),
             $classMetadata->getIdentifierFieldNames(),
-            array_merge($classMetadata->getProperties(), $classMetadata->associationMappings),
+            $classMetadata->getProperties(),
             $this->createInitializer($classMetadata, $entityPersister),
             $this->createCloner($classMetadata, $entityPersister)
         );
@@ -196,9 +196,7 @@ class ProxyFactory extends AbstractProxyFactory
                 );
             }
             
-            $properties = array_merge($class->getProperties(), $class->associationMappings);
-
-            foreach ($properties as $property) {
+            foreach ($class->getProperties() as $property) {
                 $property->setValue($proxy, $property->getValue($original));
             }
         };

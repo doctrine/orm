@@ -133,7 +133,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sourceClass       = $this->em->getClassMetadata($association->getSourceEntity());
         $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
         $owningAssociation = ! $association->isOwningSide()
-            ? $targetClass->associationMappings[$association->getMappedBy()]
+            ? $targetClass->getProperty($association->getMappedBy())
             : $association
         ;
 
@@ -262,7 +262,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $whereClauses  = $params = $types = [];
 
         if (! $association->isOwningSide()) {
-            $association = $targetClass->associationMappings[$association->getMappedBy()];
+            $association = $targetClass->getProperty($association->getMappedBy());
             $joinColumns = $association->getJoinTable()->getInverseJoinColumns();
         } else {
             $joinColumns = $association->getJoinTable()->getJoinColumns();
@@ -390,7 +390,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     {
         $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
         $owningAssociation = ! $association->isOwningSide()
-            ? $targetClass->associationMappings[$association->getMappedBy()]
+            ? $targetClass->getProperty($association->getMappedBy())
             : $association;
 
         $joinTable   = $owningAssociation->getJoinTable();
@@ -619,7 +619,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $targetClass       = $this->em->getClassMetadata($owningAssociation->getTargetEntity());
 
         if (! $owningAssociation->isOwningSide()) {
-            $owningAssociation  = $targetClass->associationMappings[$owningAssociation->getMappedBy()];
+            $owningAssociation  = $targetClass->getProperty($owningAssociation->getMappedBy());
             $joinTable          = $owningAssociation->getJoinTable();
             $joinColumns        = $joinTable->getJoinColumns();
             $inverseJoinColumns = $joinTable->getInverseJoinColumns();
@@ -715,7 +715,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $sourceId = $this->uow->getEntityIdentifier($element);
             $targetId = $this->uow->getEntityIdentifier($collection->getOwner());
 
-            $owningAssociation = $sourceClass->associationMappings[$association->getMappedBy()];
+            $owningAssociation = $sourceClass->getProperty($association->getMappedBy());
         } else {
             $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
             $targetClass = $this->em->getClassMetadata($association->getTargetEntity());

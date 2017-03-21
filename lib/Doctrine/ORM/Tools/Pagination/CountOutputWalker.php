@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
 
@@ -118,17 +120,16 @@ class CountOutputWalker extends SqlWalker
         // For every identifier, find out the SQL alias by combing through the ResultSetMapping
         $sqlIdentifier = [];
         foreach ($rootIdentifier as $identifier) {
-            if (($property = $rootClass->getProperty($identifier)) !== null) {
+            $property = $rootClass->getProperty($identifier);
+
+            if ($property instanceof FieldMetadata) {
                 foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
                 }
-            }
-
-            if (isset($rootClass->associationMappings[$identifier])) {
-                $association = $rootClass->associationMappings[$identifier];
-                $joinColumns = $association->getJoinColumns();
+            } else if ($property instanceof AssociationMetadata) {
+                $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {

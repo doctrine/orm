@@ -86,7 +86,7 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['products']->setFetchMode(FetchMode::LAZY);
+        $metadata->getProperty('products')->setFetchMode(FetchMode::LAZY);
 
         $query = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();

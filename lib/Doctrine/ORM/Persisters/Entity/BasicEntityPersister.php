@@ -408,20 +408,18 @@ class BasicEntityPersister implements EntityPersister
         $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
 
         foreach ($this->class->identifier as $idField) {
-            $params[] = $identifier[$idField];
+            $property = $this->class->getProperty($idField);
 
-            if ( ! isset($this->class->associationMappings[$idField])) {
-                $property = $this->class->getProperty($idField);
-
+            if ($property instanceof FieldMetadata) {
+                $params[] = $identifier[$idField];
                 $types[] = $property->getType();
                 $where[] = $this->platform->quoteIdentifier($property->getColumnName());
 
                 continue;
             }
 
-            $association = $this->class->associationMappings[$idField];
-            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-            $joinColumns = $association->getJoinColumns();
+            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+            $joinColumns = $property->getJoinColumns();
             $joinColumn  = reset($joinColumns);
 
             if (! $joinColumn->getType()) {
@@ -430,6 +428,7 @@ class BasicEntityPersister implements EntityPersister
                 );
             }
 
+            $params[] = $identifier[$idField];
             $where[] = $joinColumn->getColumnName();
             $types[] = $joinColumn->getType();
         }
@@ -476,7 +475,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function deleteJoinTableRecords($identifier)
     {
-        foreach ($this->class->associationMappings as $association) {
+        foreach ($this->class->getProperties() as $association) {
             if (! ($association instanceof ManyToManyAssociationMetadata)) {
                 continue;
             }
@@ -491,7 +490,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ( ! $owningAssociation->isOwningSide()) {
                 $class       = $this->em->getClassMetadata($association->getTargetEntity());
-                $owningAssociation = $class->associationMappings[$association->getMappedBy()];
+                $owningAssociation = $class->getProperty($association->getMappedBy());
             }
 
             $joinTable     = $owningAssociation->getJoinTable();
@@ -552,7 +551,9 @@ class BasicEntityPersister implements EntityPersister
         $id = [];
 
         foreach ($class->identifier as $field) {
-            if (($property = $class->getProperty($field)) !== null) {
+            $property = $class->getProperty($field);
+
+            if ($property instanceof FieldMetadata) {
                 $columnName       = $property->getColumnName();
                 $quotedColumnName = $this->platform->quoteIdentifier($columnName);
 
@@ -562,11 +563,10 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $association = $class->associationMappings[$field];
-            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-            $joinColumns = $association instanceof ManyToManyAssociationMetadata
-                ? $association->getTable()->getJoinColumns()
-                : $association->getJoinColumns()
+            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+            $joinColumns = $property instanceof ManyToManyAssociationMetadata
+                ? $property->getTable()->getJoinColumns()
+                : $property->getJoinColumns()
             ;
 
             $associationValue = null;
@@ -637,6 +637,8 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
+            $property = $this->class->getProperty($field);
+
             /*if (isset($this->class->embeddedClasses[$field])) {
                 continue;
             }*/
@@ -644,7 +646,7 @@ class BasicEntityPersister implements EntityPersister
             $owningTable = $this->getOwningTable($field);
             $newVal      = $change[1];
 
-            if (($property = $this->class->getProperty($field)) !== null) {
+            if ($property instanceof FieldMetadata) {
                 // @todo this should be used instead
                 //$tableName  = $property->getTableName();
                 $columnName = $property->getColumnName();
@@ -656,10 +658,8 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $association = $this->class->associationMappings[$field];
-
             // Only owning side of x-1 associations can have a FK column.
-            if (! $association->isOwningSide() || ! $association instanceof ToOneAssociationMetadata) {
+            if (! $property instanceof ToOneAssociationMetadata || ! $property->isOwningSide()) {
                 continue;
             }
 
@@ -682,9 +682,9 @@ class BasicEntityPersister implements EntityPersister
                 $newValId = $uow->getEntityIdentifier($newVal);
             }
 
-            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
+            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
-            foreach ($association->getJoinColumns() as $joinColumn) {
+            foreach ($property->getJoinColumns() as $joinColumn) {
                 $columnName           = $joinColumn->getColumnName();
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
                 $targetField          = $targetClass->fieldNames[$referencedColumnName];
@@ -805,7 +805,7 @@ class BasicEntityPersister implements EntityPersister
 
             // Complete bidirectional association, if necessary
             if ($entity !== null && $isInverseSingleValued) {
-                $inversedAssociation = $targetClass->associationMappings[$inversedBy];
+                $inversedAssociation = $targetClass->getProperty($inversedBy);
 
                 $inversedAssociation->setValue($entity, $sourceEntity);
             }
@@ -813,9 +813,8 @@ class BasicEntityPersister implements EntityPersister
             return $entity;
         }
 
-        $mappedBy          = $association->getMappedBy();
         $sourceClass       = $association->getDeclaringClass();
-        $owningAssociation = $targetClass->associationMappings[$mappedBy];
+        $owningAssociation = $targetClass->getProperty($association->getMappedBy());
         $targetTableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
 
         foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
@@ -1055,7 +1054,7 @@ class BasicEntityPersister implements EntityPersister
 
         if (! $association->isOwningSide()) {
             $class       = $this->em->getClassMetadata($association->getTargetEntity());
-            $owningAssoc = $class->associationMappings[$association->getMappedBy()];
+            $owningAssoc = $class->getProperty($association->getMappedBy());
         }
 
         $joinTable     = $owningAssoc->getJoinTable();
@@ -1068,11 +1067,12 @@ class BasicEntityPersister implements EntityPersister
         foreach ($joinColumns as $joinColumn) {
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
+            $property         = $sourceClass->getProperty($fieldName);
 
-            if (($property = $sourceClass->getProperty($fieldName)) !== null) {
+            if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);
-            } else if (isset($sourceClass->associationMappings[$fieldName])) {
-                $property    = $sourceClass->associationMappings[$fieldName];
+            } else if ($property instanceof AssociationMetadata) {
+                $property    = $sourceClass->getProperty($fieldName);
                 $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
                 $value       = $property->getValue($sourceEntity);
 
@@ -1216,28 +1216,26 @@ class BasicEntityPersister implements EntityPersister
                 throw ORMException::invalidOrientation($this->class->name, $fieldName);
             }
 
-            if (($property = $this->class->getProperty($fieldName)) !== null) {
+            $property = $this->class->getProperty($fieldName);
+
+            if ($property instanceof FieldMetadata) {
                 $tableAlias = $this->getSQLTableAlias($property->getTableName());
                 $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
                 $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
                 continue;
-            }
-
-            if (isset($this->class->associationMappings[$fieldName])) {
-                $association = $this->class->associationMappings[$fieldName];
-
-                if ( ! $association->isOwningSide()) {
+            } else if ($property instanceof AssociationMetadata) {
+                if (! $property->isOwningSide()) {
                     throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
                 }
 
-                $class      = $this->class->isInheritedAssociation($fieldName)
-                    ? $association->getDeclaringClass()
+                $class      = $this->class->isInheritedProperty($fieldName)
+                    ? $property->getDeclaringClass()
                     : $this->class;
                 $tableAlias = $this->getSQLTableAlias($class->getTableName());
 
-                foreach ($association->getJoinColumns() as $joinColumn) {
+                foreach ($property->getJoinColumns() as $joinColumn) {
                     /* @var JoinColumnMetadata $joinColumn */
                     $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
 
@@ -1277,46 +1275,46 @@ class BasicEntityPersister implements EntityPersister
         $eagerAliasCounter = 0;
         $columnList        = [];
 
-        foreach ($this->class->fieldNames as $field) {
-            if (! $this->class->hasField($field)) {
+        foreach ($this->class->getProperties() as $fieldName => $property) {
+            if ($property instanceof FieldMetadata) {
+                $columnList[] = $this->getSelectColumnSQL($fieldName, $this->class);
+
                 continue;
             }
 
-            $columnList[] = $this->getSelectColumnSQL($field, $this->class);
-        }
-
-        foreach ($this->class->associationMappings as $assocField => $association) {
-            $assocColumnSQL = $this->getSelectColumnAssociationSQL($assocField, $association, $this->class);
+            $assocColumnSQL = $this->getSelectColumnAssociationSQL($fieldName, $property, $this->class);
 
             if ($assocColumnSQL) {
                 $columnList[] = $assocColumnSQL;
             }
 
-            $isAssocToOneInverseSide = $association instanceof ToOneAssociationMetadata && ! $association->isOwningSide();
-            $isAssocFromOneEager     = ! $association instanceof ManyToManyAssociationMetadata && $association->getFetchMode() === FetchMode::EAGER;
+            $isAssocToOneInverseSide = $property instanceof ToOneAssociationMetadata && ! $property->isOwningSide();
+            $isAssocFromOneEager     = ! $property instanceof ManyToManyAssociationMetadata && $property->getFetchMode() === FetchMode::EAGER;
 
             if ( ! ($isAssocFromOneEager || $isAssocToOneInverseSide)) {
                 continue;
             }
 
-            if ($association instanceof ToManyAssociationMetadata && $this->currentPersisterContext->handlesLimits) {
+            if ($property instanceof ToManyAssociationMetadata && $this->currentPersisterContext->handlesLimits) {
                 continue;
             }
 
-            $eagerEntity = $this->em->getClassMetadata($association->getTargetEntity());
+            $targetEntity = $property->getTargetEntity();
+            $eagerEntity  = $this->em->getClassMetadata($targetEntity);
 
             if ($eagerEntity->inheritanceType !== InheritanceType::NONE) {
                 continue; // now this is why you shouldn't use inheritance
             }
 
             $assocAlias = 'e' . ($eagerAliasCounter++);
-            $this->currentPersisterContext->rsm->addJoinedEntityResult($association->getTargetEntity(), $assocAlias, 'r', $assocField);
+
+            $this->currentPersisterContext->rsm->addJoinedEntityResult($targetEntity, $assocAlias, 'r', $fieldName);
 
             foreach ($eagerEntity->fieldNames as $field) {
                 $columnSQL = $eagerEntity->hasField($field)
                     ? $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias)
                     : $this->getSelectColumnAssociationSQL(
-                        $field, $eagerEntity->associationMappings[$field], $eagerEntity, $assocAlias
+                        $field, $eagerEntity->getProperty($field), $eagerEntity, $assocAlias
                     )
                 ;
 
@@ -1325,27 +1323,26 @@ class BasicEntityPersister implements EntityPersister
                 }
             }
 
-            $owningAssociation = $association;
+            $owningAssociation = $property;
             $joinCondition     = [];
 
-            if ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy()) {
-                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $association->getIndexedBy());
+            if ($property instanceof ToManyAssociationMetadata && $property->getIndexedBy()) {
+                $this->currentPersisterContext->rsm->addIndexBy($assocAlias, $property->getIndexedBy());
             }
 
-            if (! $association->isOwningSide()) {
-                $eagerEntity       = $this->em->getClassMetadata($association->getTargetEntity());
-                $owningAssociation = $eagerEntity->associationMappings[$association->getMappedBy()];
+            if (! $property->isOwningSide()) {
+                $owningAssociation = $eagerEntity->getProperty($property->getMappedBy());
             }
 
             $joinTableAlias = $this->getSQLTableAlias($eagerEntity->getTableName(), $assocAlias);
             $joinTableName  = $eagerEntity->table->getQuotedQualifiedName($this->platform);
 
-            $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForAssociation($association);
+            $this->currentPersisterContext->selectJoinSql .= ' ' . $this->getJoinSQLForAssociation($property);
 
             $sourceClass      = $this->em->getClassMetadata($owningAssociation->getSourceEntity());
             $targetClass      = $this->em->getClassMetadata($owningAssociation->getTargetEntity());
-            $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $association->isOwningSide() ? $assocAlias : '');
-            $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $association->isOwningSide() ? '' : $assocAlias);
+            $targetTableAlias = $this->getSQLTableAlias($targetClass->getTableName(), $property->isOwningSide() ? $assocAlias : '');
+            $sourceTableAlias = $this->getSQLTableAlias($sourceClass->getTableName(), $property->isOwningSide() ? '' : $assocAlias);
 
             foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
                 $joinCondition[] = sprintf(
@@ -1432,12 +1429,15 @@ class BasicEntityPersister implements EntityPersister
 
         if (! $association->isOwningSide()) {
             $targetEntity      = $this->em->getClassMetadata($association->getTargetEntity());
-            $owningAssociation = $targetEntity->associationMappings[$association->getMappedBy()];
+            $owningAssociation = $targetEntity->getProperty($association->getMappedBy());
         }
 
         $joinTable     = $owningAssociation->getJoinTable();
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
-        $joinColumns   = $association->isOwningSide() ? $joinTable->getInverseJoinColumns() : $joinTable->getJoinColumns();
+        $joinColumns   = $association->isOwningSide()
+            ? $joinTable->getInverseJoinColumns()
+            : $joinTable->getJoinColumns()
+        ;
 
         foreach ($joinColumns as $joinColumn) {
             $conditions[] = sprintf(
@@ -1507,10 +1507,7 @@ class BasicEntityPersister implements EntityPersister
             : null
         ;
 
-        // @todo guilhermeblanco Remove the array_merge once properties and associationMappings get merged
-        $properties = array_merge($this->class->getProperties(), $this->class->associationMappings);
-
-        foreach ($properties as $name => $property) {
+        foreach ($this->class->getProperties() as $name => $property) {
             if ($versionPropertyName === $name) {
                 continue;
             }
@@ -1691,9 +1688,10 @@ class BasicEntityPersister implements EntityPersister
         }
 
         foreach ($columns as $column) {
+            $property    = $this->class->getProperty($field);
             $placeholder = '?';
 
-            if (($property = $this->class->getProperty($field)) !== null) {
+            if ($property instanceof FieldMetadata) {
                 $placeholder = $property->getType()->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
@@ -1754,15 +1752,17 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL($field, AssociationMetadata $association = null)
     {
-        if (($property = $this->class->getProperty($field)) !== null) {
+        $property = $this->class->getProperty($field);
+        
+        if ($property instanceof FieldMetadata) {
             $tableAlias = $this->getSQLTableAlias($property->getTableName());
             $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
             return [$tableAlias . '.' . $columnName];
         }
 
-        if (isset($this->class->associationMappings[$field])) {
-            $owningAssociation = $this->class->associationMappings[$field];
+        if ($property instanceof AssociationMetadata) {
+            $owningAssociation = $property;
             $columns = [];
 
             // Many-To-Many requires join table check for joinColumn
@@ -1789,7 +1789,7 @@ class BasicEntityPersister implements EntityPersister
                     throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
                 }
 
-                $class      = $this->class->isInheritedAssociation($field)
+                $class      = $this->class->isInheritedProperty($field)
                     ? $owningAssociation->getDeclaringClass()
                     : $this->class
                 ;
@@ -1891,7 +1891,7 @@ class BasicEntityPersister implements EntityPersister
 
         $criteria    = [];
         $parameters  = [];
-        $owningAssoc = $this->class->associationMappings[$association->getMappedBy()];
+        $owningAssoc = $this->class->getProperty($association->getMappedBy());
         $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
         $class       = $owningAssoc->getDeclaringClass();
         $tableAlias  = $this->getSQLTableAlias($class->getTableName());
@@ -1899,11 +1899,11 @@ class BasicEntityPersister implements EntityPersister
         foreach ($owningAssoc->getJoinColumns() as $joinColumn) {
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
+            $property         = $sourceClass->getProperty($fieldName);
 
-            if (($property = $sourceClass->getProperty($fieldName)) !== null) {
+            if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);
-            } else if (isset($sourceClass->associationMappings[$fieldName])) {
-                $property    = $sourceClass->associationMappings[$fieldName];
+            } else if ($property instanceof AssociationMetadata) {
                 $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
                 $value       = $property->getValue($sourceEntity);
 
@@ -1987,27 +1987,25 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getTypes($field, $value, ClassMetadata $class)
     {
-        $property    = $class->getProperty($field);
-        $hasProperty = $property !== null;
-        $types       = [];
+        $property = $class->getProperty($field);
+        $types    = [];
 
         switch (true) {
-            case $hasProperty:
+            case ($property instanceof FieldMetadata):
                 $types = array_merge($types, [$property->getType()]);
                 break;
 
-            case (isset($class->associationMappings[$field])):
-                $association = $class->associationMappings[$field];
-                $class       = $this->em->getClassMetadata($association->getTargetEntity());
+            case ($property instanceof AssociationMetadata):
+                $class = $this->em->getClassMetadata($property->getTargetEntity());
 
-                if (! $association->isOwningSide()) {
-                    $association = $class->associationMappings[$association->getMappedBy()];
-                    $class       = $this->em->getClassMetadata($association->getTargetEntity());
+                if (! $property->isOwningSide()) {
+                    $property = $class->getProperty($property->getMappedBy());
+                    $class    = $this->em->getClassMetadata($property->getTargetEntity());
                 }
 
-                $joinColumns = $association instanceof ManyToManyAssociationMetadata
-                    ? $association->getJoinTable()->getInverseJoinColumns()
-                    : $association->getJoinColumns()
+                $joinColumns = $property instanceof ManyToManyAssociationMetadata
+                    ? $property->getJoinTable()->getInverseJoinColumns()
+                    : $property->getJoinColumns()
                 ;
 
                 foreach ($joinColumns as $joinColumn) {

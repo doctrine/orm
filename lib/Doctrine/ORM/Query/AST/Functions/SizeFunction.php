@@ -53,11 +53,11 @@ class SizeFunction extends FunctionNode
         $sql               = 'SELECT COUNT(*) FROM ';
         $qComp             = $sqlWalker->getQueryComponent($dqlAlias);
         $class             = $qComp['metadata'];
-        $association       = $class->associationMappings[$assocField];
+        $association       = $class->getProperty($assocField);
         $targetClass       = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
         $owningAssociation = $association->isOwningSide()
             ? $association
-            : $targetClass->associationMappings[$association->getMappedBy()]
+            : $targetClass->getProperty($association->getMappedBy())
         ;
 
         if ($association instanceof OneToManyAssociationMetadata) {
@@ -67,7 +67,7 @@ class SizeFunction extends FunctionNode
 
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' WHERE ';
 
-            $owningAssociation = $targetClass->associationMappings[$association->getMappedBy()];
+            $owningAssociation = $targetClass->getProperty($association->getMappedBy());
             $first             = true;
 
             foreach ($owningAssociation->getJoinColumns() as $joinColumn) {

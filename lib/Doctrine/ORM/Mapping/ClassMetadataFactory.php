@@ -128,7 +128,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $this->addInheritedProperties($class, $parent);
-            $this->addInheritedAssociations($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
 
             $class->setInheritanceType($parent->inheritanceType);
@@ -271,16 +270,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         // Resolve column table names
         foreach ($class->getProperties() as $property) {
-            $property->setTableName($property->getTableName() ?? $tableName);
-        }
+            if ($property instanceof FieldMetadata) {
+                $property->setTableName($property->getTableName() ?? $tableName);
 
-        // Resolve association join column table names
-        foreach ($class->associationMappings as $association) {
-            if (! ($association instanceof ToOneAssociationMetadata)) {
                 continue;
             }
 
-            foreach ($association->getJoinColumns() as $joinColumn) {
+            if (! ($property instanceof ToOneAssociationMetadata)) {
+                continue;
+            }
+
+            // Resolve association join column table names
+            foreach ($property->getJoinColumns() as $joinColumn) {
                 $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
             }
         }
@@ -445,34 +446,20 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedProperties(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->getProperties() as $property) {
-            $subClass->addInheritedProperty($property);
-        }
-    }
-
-    /**
-     * Adds inherited association mappings to the subclass mapping.
-     *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    private function addInheritedAssociations(ClassMetadata $subClass, ClassMetadata $parentClass)
-    {
         $isAbstract = $parentClass->isMappedSuperclass;
 
-        foreach ($parentClass->associationMappings as $association) {
-            if ($isAbstract && ! $association->isOwningSide() && $association instanceof ToManyAssociationMetadata) {
-                throw MappingException::illegalToManyAssociationOnMappedSuperclass(
-                    $parentClass->name,
-                    $association->getName()
-                );
+        foreach ($parentClass->getProperties() as $fieldName => $property) {
+            if ($property instanceof FieldMetadata) {
+                $subClass->addInheritedProperty($property);
+
+                continue;
             }
 
-            $subClass->addInheritedAssociation($association);
+            if ($isAbstract && $property instanceof ToManyAssociationMetadata && ! $property->isOwningSide()) {
+                throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $fieldName);
+            }
+
+            $subClass->addInheritedAssociation($property);
         }
     }
 

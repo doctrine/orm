@@ -48,11 +48,8 @@ class AssignedGenerator implements Generator
         $identifier = [];
 
         foreach ($idFields as $idField) {
-            if (($property = $class->getProperty($idField)) === null) {
-                $property = $class->associationMappings[$idField];
-            }
-
-            $value = $property->getValue($entity);
+            $property = $class->getProperty($idField);
+            $value    = $property->getValue($entity);
 
             if ( ! isset($value)) {
                 throw ORMException::entityMissingAssignedIdForField($entity, $idField);

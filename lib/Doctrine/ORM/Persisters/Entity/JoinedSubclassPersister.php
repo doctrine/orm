@@ -66,11 +66,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $property = $this->class->getProperty($fieldName);
 
         switch (true) {
-            case (isset($this->class->associationMappings[$fieldName]) && $this->class->isInheritedAssociation($fieldName)):
-                $association = $this->class->associationMappings[$fieldName];
-                $cm          = $association->getDeclaringClass();
-                break;
-
             case ($property && $this->class->isInheritedProperty($fieldName)):
                 $cm = $property->getDeclaringClass();
                 break;
@@ -416,20 +411,21 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $columnList = [];
 
-        // Add regular columns
+        // Add columns
         foreach ($this->class->getProperties() as $fieldName => $property) {
-            $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
-        }
+            if ($property instanceof FieldMetadata) {
+                $columnList[] = $this->getSelectColumnSQL($fieldName, $property->getDeclaringClass());
 
-        // Add foreign key columns
-        foreach ($this->class->associationMappings as $fieldName => $association) {
-            if (! $association->isOwningSide() || $association instanceof ToManyAssociationMetadata) {
                 continue;
             }
 
-            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
+            if (! ($property instanceof ToOneAssociationMetadata) || ! $property->isOwningSide()) {
+                continue;
+            }
 
-            foreach ($association->getJoinColumns() as $joinColumn) {
+            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+            foreach ($property->getJoinColumns() as $joinColumn) {
                 if (! $joinColumn->getType()) {
                     $joinColumn->setType(
                         PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
@@ -460,28 +456,27 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         // sub tables
         foreach ($this->class->subClasses as $subClassName) {
-            $subClass   = $this->em->getClassMetadata($subClassName);
+            $subClass = $this->em->getClassMetadata($subClassName);
 
-            // Add subclass columns
+            // Add columns
             foreach ($subClass->getProperties() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
 
-                $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
-            }
+                if ($property instanceof FieldMetadata) {
+                    $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
 
-            // Add join columns (foreign keys)
-            foreach ($subClass->associationMappings as $fieldName => $association) {
-                if (! $association->isOwningSide() ||
-                    $subClass->isInheritedAssociation($fieldName) ||
-                    $association instanceof ToManyAssociationMetadata) {
                     continue;
                 }
 
-                $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
+                if ($property instanceof ToManyAssociationMetadata || ! $property->isOwningSide()) {
+                    continue;
+                }
 
-                foreach ($association->getJoinColumns() as $joinColumn) {
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                foreach ($property->getJoinColumns() as $joinColumn) {
                     if (! $joinColumn->getType()) {
                         $joinColumn->setType(
                             PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
@@ -519,12 +514,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $this->columns[$columnName] = $column;
         }
 
-        // @todo guilhermeblanco Remove the array_merge once properties and associationMappings get merged
-        $properties = array_merge($this->class->getProperties(), $this->class->associationMappings);
-
-        foreach ($properties as $name => $property) {
+        foreach ($this->class->getProperties() as $name => $property) {
             if (($property instanceof FieldMetadata && ($property instanceof VersionFieldMetadata || $this->class->isInheritedProperty($name)))
-                || ($property instanceof AssociationMetadata && $this->class->isInheritedAssociation($name))
+                || ($property instanceof AssociationMetadata && $this->class->isInheritedProperty($name))
                 /*|| isset($this->class->embeddedClasses[$name])*/) {
                 continue;
             }

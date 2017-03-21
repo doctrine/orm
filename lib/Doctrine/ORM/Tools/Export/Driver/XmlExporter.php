@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -185,12 +186,6 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        foreach ($metadata->associationMappings as $name => $association) {
-            if ($association->isPrimaryKey()) {
-                $id[$name] = $association;
-            }
-        }
-
         if ($id) {
             foreach ($id as $property) {
                 $idXml = $root->addChild('id');
@@ -220,128 +215,26 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ($properties) {
-            foreach ($properties as $property) {
-                $fieldXml = $root->addChild('field');
-
-                $fieldXml->addAttribute('name', $property->getName());
-                $fieldXml->addAttribute('type', $property->getTypeName());
-                $fieldXml->addAttribute('column', $property->getColumnName());
-
-                if ($property->isNullable()) {
-                    $fieldXml->addAttribute('nullable', 'true');
-                }
-
-                if ($property->isUnique()) {
-                    $fieldXml->addAttribute('unique', 'true');
-                }
-
-                if (is_int($property->getLength())) {
-                    $fieldXml->addAttribute('length', $property->getLength());
-                }
-
-                if (is_int($property->getPrecision())) {
-                    $fieldXml->addAttribute('precision', $property->getPrecision());
-                }
-
-                if (is_int($property->getScale())) {
-                    $fieldXml->addAttribute('scale', $property->getScale());
-                }
-
-                if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $property->getName()) {
-                    $fieldXml->addAttribute('version', 'true');
-                }
-
-                if ($property->getColumnDefinition()) {
-                    $fieldXml->addAttribute('column-definition', $property->getColumnDefinition());
-                }
-
-                if ($property->getOptions()) {
-                    $optionsXml = $fieldXml->addChild('options');
-
-                    foreach ($property->getOptions() as $key => $value) {
-                        $optionXml = $optionsXml->addChild('option', $value);
-
-                        $optionXml->addAttribute('name', $key);
-                    }
-                }
-            }
-        }
-
         $orderMap = [
+            FieldMetadata::class,
             OneToOneAssociationMetadata::class,
             OneToManyAssociationMetadata::class,
             ManyToOneAssociationMetadata::class,
             ManyToManyAssociationMetadata::class,
         ];
 
-        uasort($metadata->associationMappings, function($m1, $m2) use (&$orderMap){
+        uasort($properties, function($m1, $m2) use (&$orderMap) {
             $a1 = array_search(get_class($m1), $orderMap);
             $a2 = array_search(get_class($m2), $orderMap);
 
             return strcmp($a1, $a2);
         });
 
-        foreach ($metadata->associationMappings as $association) {
-            if ($association instanceof OneToOneAssociationMetadata) {
-                $associationMappingXml = $root->addChild('one-to-one');
-            } elseif ($association instanceof OneToManyAssociationMetadata) {
-                $associationMappingXml = $root->addChild('one-to-many');
-            } elseif ($association instanceof ManyToOneAssociationMetadata) {
-                $associationMappingXml = $root->addChild('many-to-one');
-            } elseif ($association instanceof ManyToManyAssociationMetadata) {
-                $associationMappingXml = $root->addChild('many-to-many');
-            }
-
-            $associationMappingXml->addAttribute('field', $association->getName());
-            $associationMappingXml->addAttribute('target-entity', $association->getTargetEntity());
-            $associationMappingXml->addAttribute('fetch', $association->getFetchMode());
-
-            $this->exportCascade($associationMappingXml, $association->getCascade());
-
-            if ($association->getMappedBy()) {
-                $associationMappingXml->addAttribute('mapped-by', $association->getMappedBy());
-            }
-
-            if ($association->getInversedBy()) {
-                $associationMappingXml->addAttribute('inversed-by', $association->getInversedBy());
-            }
-
-            if ($association->isOrphanRemoval()) {
-                $associationMappingXml->addAttribute('orphan-removal', 'true');
-            }
-
-            if ($association instanceof ToManyAssociationMetadata) {
-                if ($association instanceof ManyToManyAssociationMetadata && $association->getJoinTable()) {
-                    $joinTableXml = $associationMappingXml->addChild('join-table');
-                    $joinTable    = $association->getJoinTable();
-
-                    $joinTableXml->addAttribute('name', $joinTable->getName());
-
-                    $this->exportJoinColumns($joinTableXml, $joinTable->getJoinColumns(), 'join-columns');
-                    $this->exportJoinColumns($joinTableXml, $joinTable->getInverseJoinColumns(), 'inverse-join-columns');
-                }
-
-                if ($association->getIndexedBy()) {
-                    $associationMappingXml->addAttribute('index-by', $association->getIndexedBy());
-                }
-
-                if ($association->getOrderBy()) {
-                    $orderByXml = $associationMappingXml->addChild('order-by');
-
-                    foreach ($association->getOrderBy() as $name => $direction) {
-                        $orderByFieldXml = $orderByXml->addChild('order-by-field');
-
-                        $orderByFieldXml->addAttribute('name', $name);
-                        $orderByFieldXml->addAttribute('direction', $direction);
-                    }
-                }
-            }
-
-            if ($association instanceof ToOneAssociationMetadata) {
-                if ($association->getJoinColumns()) {
-                    $this->exportJoinColumns($associationMappingXml, $association->getJoinColumns());
-                }
+        foreach ($properties as $property) {
+            if ($property instanceof FieldMetadata) {
+                $this->exportFieldMetadata($root, $metadata, $property);
+            } else if ($property instanceof AssociationMetadata) {
+                $this->exportAssociationMetadata($root, $metadata, $property);
             }
         }
 
@@ -359,6 +252,135 @@ class XmlExporter extends AbstractExporter
         }
 
         return $this->asXml($xml);
+    }
+
+    /**
+     * @param \SimpleXMLElement $root
+     * @param ClassMetadata     $metadata
+     * @param FieldMetadata     $property
+     */
+    private function exportFieldMetadata(
+        \SimpleXMLElement $root,
+        ClassMetadata $metadata,
+        FieldMetadata $property
+    )
+    {
+        $fieldXml = $root->addChild('field');
+
+        $fieldXml->addAttribute('name', $property->getName());
+        $fieldXml->addAttribute('type', $property->getTypeName());
+        $fieldXml->addAttribute('column', $property->getColumnName());
+
+        if ($property->isNullable()) {
+            $fieldXml->addAttribute('nullable', 'true');
+        }
+
+        if ($property->isUnique()) {
+            $fieldXml->addAttribute('unique', 'true');
+        }
+
+        if (is_int($property->getLength())) {
+            $fieldXml->addAttribute('length', $property->getLength());
+        }
+
+        if (is_int($property->getPrecision())) {
+            $fieldXml->addAttribute('precision', $property->getPrecision());
+        }
+
+        if (is_int($property->getScale())) {
+            $fieldXml->addAttribute('scale', $property->getScale());
+        }
+
+        if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $property->getName()) {
+            $fieldXml->addAttribute('version', 'true');
+        }
+
+        if ($property->getColumnDefinition()) {
+            $fieldXml->addAttribute('column-definition', $property->getColumnDefinition());
+        }
+
+        if ($property->getOptions()) {
+            $optionsXml = $fieldXml->addChild('options');
+
+            foreach ($property->getOptions() as $key => $value) {
+                $optionXml = $optionsXml->addChild('option', $value);
+
+                $optionXml->addAttribute('name', $key);
+            }
+        }
+    }
+
+    /**
+     * @param \SimpleXMLElement   $root
+     * @param ClassMetadata       $metadata
+     * @param AssociationMetadata $association
+     */
+    private function exportAssociationMetadata(
+        \SimpleXMLElement $root,
+        ClassMetadata $metadata,
+        AssociationMetadata $association
+    )
+    {
+        if ($association instanceof OneToOneAssociationMetadata) {
+            $associationMappingXml = $root->addChild('one-to-one');
+        } elseif ($association instanceof OneToManyAssociationMetadata) {
+            $associationMappingXml = $root->addChild('one-to-many');
+        } elseif ($association instanceof ManyToOneAssociationMetadata) {
+            $associationMappingXml = $root->addChild('many-to-one');
+        } else {
+            $associationMappingXml = $root->addChild('many-to-many');
+        }
+
+        $associationMappingXml->addAttribute('field', $association->getName());
+        $associationMappingXml->addAttribute('target-entity', $association->getTargetEntity());
+        $associationMappingXml->addAttribute('fetch', $association->getFetchMode());
+
+        $this->exportCascade($associationMappingXml, $association->getCascade());
+
+        if ($association->getMappedBy()) {
+            $associationMappingXml->addAttribute('mapped-by', $association->getMappedBy());
+        }
+
+        if ($association->getInversedBy()) {
+            $associationMappingXml->addAttribute('inversed-by', $association->getInversedBy());
+        }
+
+        if ($association->isOrphanRemoval()) {
+            $associationMappingXml->addAttribute('orphan-removal', 'true');
+        }
+
+        if ($association instanceof ToManyAssociationMetadata) {
+            if ($association instanceof ManyToManyAssociationMetadata && $association->getJoinTable()) {
+                $joinTableXml = $associationMappingXml->addChild('join-table');
+                $joinTable    = $association->getJoinTable();
+
+                $joinTableXml->addAttribute('name', $joinTable->getName());
+
+                $this->exportJoinColumns($joinTableXml, $joinTable->getJoinColumns(), 'join-columns');
+                $this->exportJoinColumns($joinTableXml, $joinTable->getInverseJoinColumns(), 'inverse-join-columns');
+            }
+
+            if ($association->getIndexedBy()) {
+                $associationMappingXml->addAttribute('index-by', $association->getIndexedBy());
+            }
+
+            if ($association->getOrderBy()) {
+                $orderByXml = $associationMappingXml->addChild('order-by');
+
+                foreach ($association->getOrderBy() as $name => $direction) {
+                    $orderByFieldXml = $orderByXml->addChild('order-by-field');
+
+                    $orderByFieldXml->addAttribute('name', $name);
+                    $orderByFieldXml->addAttribute('direction', $direction);
+                }
+            }
+        }
+
+        if ($association instanceof ToOneAssociationMetadata) {
+            if ($association->getJoinColumns()) {
+                $this->exportJoinColumns($associationMappingXml, $association->getJoinColumns());
+            }
+        }
     }
 
     /**

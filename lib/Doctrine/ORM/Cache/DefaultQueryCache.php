@@ -286,7 +286,7 @@ class DefaultQueryCache implements QueryCache
                 $parentAlias  = $rsm->parentAliasMap[$alias];
                 $parentClass  = $rsm->aliasMap[$parentAlias];
                 $metadata     = $this->em->getClassMetadata($parentClass);
-                $assoc        = $metadata->associationMappings[$name];
+                $association  = $metadata->getProperty($name);
                 $assocValue   = $this->getAssociationValue($rsm, $alias, $entity);
 
                 if ($assocValue === null) {
@@ -296,7 +296,7 @@ class DefaultQueryCache implements QueryCache
                 // root entity association
                 if ($rootAlias === $parentAlias) {
                     // Cancel put result if association put fail
-                    if (($assocInfo = $this->storeAssociationCache($key, $assoc, $assocValue)) === null) {
+                    if (($assocInfo = $this->storeAssociationCache($key, $association, $assocValue)) === null) {
                         return false;
                     }
 
@@ -308,7 +308,7 @@ class DefaultQueryCache implements QueryCache
                 // store single nested association
                 if ( ! is_array($assocValue)) {
                     // Cancel put result if association put fail
-                    if ($this->storeAssociationCache($key, $assoc, $assocValue) === null) {
+                    if ($this->storeAssociationCache($key, $association, $assocValue) === null) {
                         return false;
                     }
 
@@ -318,7 +318,7 @@ class DefaultQueryCache implements QueryCache
                 // store array of nested association
                 foreach ($assocValue as $aVal) {
                     // Cancel put result if association put fail
-                    if ($this->storeAssociationCache($key, $assoc, $aVal) === null) {
+                    if ($this->storeAssociationCache($key, $association, $aVal) === null) {
                         return false;
                     }
                 }
@@ -421,7 +421,7 @@ class DefaultQueryCache implements QueryCache
     {
         $mapping     = array_shift($path);
         $metadata    = $this->em->getClassMetadata($mapping['class']);
-        $association = $metadata->associationMappings[$mapping['field']];
+        $association = $metadata->getProperty($mapping['field']);
         $value       = $association->getValue($value);
 
         if ($value === null) {

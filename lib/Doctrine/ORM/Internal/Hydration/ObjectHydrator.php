@@ -104,7 +104,7 @@ class ObjectHydrator extends AbstractHydrator
 
             $sourceClassName = $this->rsm->aliasMap[$parent];
             $sourceClass     = $this->getClassMetadata($sourceClassName);
-            $association     = $sourceClass->associationMappings[$this->rsm->relationMap[$dqlAlias]];
+            $association     = $sourceClass->getProperty($this->rsm->relationMap[$dqlAlias]);
 
             $this->hints['fetched'][$parent][$association->getName()] = true;
 
@@ -122,7 +122,7 @@ class ObjectHydrator extends AbstractHydrator
             // handle fetch-joined owning side bi-directional one-to-one associations
             if ($association->getInversedBy()) {
                 $class        = $this->getClassMetadata($className);
-                $inverseAssoc = $class->associationMappings[$association->getInversedBy()];
+                $inverseAssoc = $class->getProperty($association->getInversedBy());
 
                 if (! ($inverseAssoc instanceof ToOneAssociationMetadata)) {
                     continue;
@@ -186,7 +186,7 @@ class ObjectHydrator extends AbstractHydrator
     private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
     {
         $oid         = spl_object_hash($entity);
-        $association = $class->associationMappings[$fieldName];
+        $association = $class->getProperty($fieldName);
         $value       = $association->getValue($entity);
 
         if ($value === null || is_array($value)) {
@@ -290,14 +290,15 @@ class ObjectHydrator extends AbstractHydrator
         $id    = [];
 
         foreach ($class->identifier as $fieldName) {
-            if (!isset($class->associationMappings[$fieldName])) {
+            $property = $class->getProperty($fieldName);
+
+            if (! ($property instanceof ToOneAssociationMetadata)) {
                 $id[$fieldName] = $data[$fieldName];
 
                 continue;
             }
 
-            $association = $class->associationMappings[$fieldName];
-            $joinColumns = $association->getJoinColumns();
+            $joinColumns = $property->getJoinColumns();
             $joinColumn  = reset($joinColumns);
 
             $id[$fieldName] = $data[$joinColumn->getColumnName()];
@@ -359,7 +360,7 @@ class ObjectHydrator extends AbstractHydrator
 
                 $parentClass   = $this->metadataCache[$this->rsm->aliasMap[$parentAlias]];
                 $relationField = $this->rsm->relationMap[$dqlAlias];
-                $association   = $parentClass->associationMappings[$relationField];
+                $association   = $parentClass->getProperty($relationField);
 
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
@@ -452,7 +453,7 @@ class ObjectHydrator extends AbstractHydrator
                                 // TODO: Just check hints['fetched'] here?
                                 // If there is an inverse mapping on the target class its bidirectional
                                 if ($association->getInversedBy()) {
-                                    $inverseAssociation = $targetClass->associationMappings[$association->getInversedBy()];
+                                    $inverseAssociation = $targetClass->getProperty($association->getInversedBy());
 
                                     if ($inverseAssociation instanceof ToOneAssociationMetadata) {
                                         $inverseAssociation->setValue($element, $parentObject);
@@ -466,7 +467,7 @@ class ObjectHydrator extends AbstractHydrator
                                 }
                             } else {
                                 // For sure bidirectional, as there is no inverse side in unidirectional mappings
-                                $inverseAssociation = $targetClass->associationMappings[$mappedBy];
+                                $inverseAssociation = $targetClass->getProperty($mappedBy);
 
                                 $inverseAssociation->setValue($element, $parentObject);
 

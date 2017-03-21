@@ -269,9 +269,9 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         if ($this->joinedAssociations === null) {
             $associations = [];
 
-            foreach ($this->class->associationMappings as $association) {
-                if ($association->getCache() &&
-                    $association instanceof ToOneAssociationMetadata &&
+            foreach ($this->class->getProperties() as $association) {
+                if ($association instanceof ToOneAssociationMetadata &&
+                    $association->getCache() &&
                     ($association->getFetchMode() === FetchMode::EAGER || ! $association->isOwningSide())) {
                     $associations[] = $association->getName();
                 }
@@ -281,7 +281,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         foreach ($this->joinedAssociations as $name) {
-            $association  = $this->class->associationMappings[$name];
+            $association  = $this->class->getProperty($name);
             $assocEntity  = $association->getValue($entity);
             $targetEntity = $association->getTargetEntity();
 

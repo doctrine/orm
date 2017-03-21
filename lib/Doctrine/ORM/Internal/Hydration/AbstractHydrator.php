@@ -22,7 +22,9 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use PDO;
 
@@ -461,14 +463,15 @@ abstract class AbstractHydrator
         $id = [];
 
         foreach ($class->identifier as $fieldName) {
-            if (!isset($class->associationMappings[$fieldName])) {
+            $property = $class->getProperty($fieldName);
+
+            if (! ($property instanceof ToOneAssociationMetadata)) {
                 $id[$fieldName] = $data[$fieldName];
 
                 continue;
             }
 
-            $association = $class->associationMappings[$fieldName];
-            $joinColumns = $association->getJoinColumns();
+            $joinColumns = $property->getJoinColumns();
             $joinColumn  = reset($joinColumns);
 
             $id[$fieldName] = $data[$joinColumn->getColumnName()];

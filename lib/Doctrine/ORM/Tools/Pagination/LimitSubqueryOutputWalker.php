@@ -25,6 +25,8 @@ use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
@@ -507,7 +509,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
         $sqlIdentifier = [];
 
         foreach ($rootIdentifier as $identifier) {
-            if (($property = $rootClass->getProperty($identifier)) !== null) {
+            $property = $rootClass->getProperty($identifier);
+
+            if ($property instanceof FieldMetadata) {
                 foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = [
@@ -516,16 +520,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
                         ];
                     }
                 }
-            }
-
-            if (isset($rootClass->associationMappings[$identifier])) {
-                $association = $rootClass->associationMappings[$identifier];
-                $joinColumns = $association->getJoinColumns();
+            } else if ($property instanceof AssociationMetadata) {
+                $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
                 foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
-                        $sqlIdentifier[$property] = [
+                        $sqlIdentifier[$identifier] = [
                             'type'  => $this->rsm->typeMappings[$alias],
                             'alias' => $alias,
                         ];
