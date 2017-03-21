@@ -150,7 +150,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $em          = $this->em;
         $metadata    = clone $em->getClassMetadata(State::class);
-        $association = $metadata->associationMappings['cities'];
+        $association = $metadata->getProperty('cities');
         $persister   = new OneToManyPersister($em);
         $region      = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
@@ -176,7 +176,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $em         = $this->em;
         $metadata   = clone $em->getClassMetadata(State::class);
-        $association    = $metadata->associationMappings['cities'];
+        $association    = $metadata->getProperty('cities');
         $persister  = new OneToManyPersister($em);
         $region     = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
@@ -201,7 +201,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $em          = $this->em;
         $metadata    = clone $em->getClassMetadata(State::class);
-        $association = $metadata->associationMappings['cities'];
+        $association = $metadata->getProperty('cities');
         $persister   = new OneToManyPersister($em);
         $region      = new ConcurrentRegionMock(
             new DefaultRegion('regionName', $this->getSharedSecondLevelCacheDriverImpl())
@@ -285,7 +285,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     {
         $em          = $this->em;
         $metadata    = clone $em->getClassMetadata(State::class);
-        $association = $metadata->associationMappings['cities'];
+        $association = $metadata->getProperty('cities');
         $persister   = new OneToManyPersister($em);
 
         $association->setCache(

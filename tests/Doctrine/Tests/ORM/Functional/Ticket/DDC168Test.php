@@ -14,9 +14,10 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->oldMetadata = $this->em->getClassMetadata(CompanyEmployee::class);
 
-        $metadata = clone $this->oldMetadata;
+        $metadata   = clone $this->oldMetadata;
+        $properties = $metadata->getProperties();
         
-        ksort($metadata->associationMappings);
+        ksort($properties);
         
         $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
@@ -24,6 +25,7 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function tearDown()
     {
         $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $this->oldMetadata);
+
         parent::tearDown();
     }
 

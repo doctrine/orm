@@ -66,7 +66,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         self::assertNull($class->getProperty('transient'));
 
-        self::assertArrayHasKey('mappedRelated1', $class->associationMappings);
+        self::assertArrayHasKey('mappedRelated1', $class->getProperties());
     }
 
     /**

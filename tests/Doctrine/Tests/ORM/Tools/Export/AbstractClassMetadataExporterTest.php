@@ -228,24 +228,25 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testOneToOneAssociationsAreExported($class)
     {
-        self::assertTrue(isset($class->associationMappings['address']));
+        $property = $class->getProperty('address');
 
-        $association = $class->associationMappings['address'];
-        $joinColumns = $association->getJoinColumns();
+        self::assertNotNull($property);
+
+        $joinColumns = $property->getJoinColumns();
         $joinColumn  = reset($joinColumns);
 
-        self::assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $association->getTargetEntity());
+        self::assertEquals('Doctrine\Tests\ORM\Tools\Export\Address', $property->getTargetEntity());
         self::assertEquals('address_id', $joinColumn->getColumnName());
         self::assertEquals('id', $joinColumn->getReferencedColumnName());
         self::assertEquals('CASCADE', $joinColumn->getOnDelete());
 
-        self::assertContains('remove', $association->getCascade());
-        self::assertContains('persist', $association->getCascade());
-        self::assertNotContains('refresh', $association->getCascade());
-        self::assertNotContains('merge', $association->getCascade());
-        self::assertNotContains('detach', $association->getCascade());
-        self::assertTrue($association->isOrphanRemoval());
-        self::assertEquals(FetchMode::EAGER, $association->getFetchMode());
+        self::assertContains('remove', $property->getCascade());
+        self::assertContains('persist', $property->getCascade());
+        self::assertNotContains('refresh', $property->getCascade());
+        self::assertNotContains('merge', $property->getCascade());
+        self::assertNotContains('detach', $property->getCascade());
+        self::assertTrue($property->isOrphanRemoval());
+        self::assertEquals(FetchMode::EAGER, $property->getFetchMode());
 
         return $class;
     }
@@ -255,8 +256,10 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testManyToOneAssociationsAreExported($class)
     {
-        self::assertTrue(isset($class->associationMappings['mainGroup']));
-        self::assertEquals(Group::class, $class->associationMappings['mainGroup']->getTargetEntity());
+        $property = $class->getProperty('mainGroup');
+
+        self::assertNotNull($property);
+        self::assertEquals(Group::class, $property->getTargetEntity());
     }
 
     /**
@@ -265,23 +268,23 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testOneToManyAssociationsAreExported($class)
     {
-        self::assertTrue(isset($class->associationMappings['phonenumbers']));
+        /** @var OneToManyAssociationMetadata $property */
+        $property = $class->getProperty('phonenumbers');
 
-        /** @var OneToManyAssociationMetadata $association */
-        $association = $class->associationMappings['phonenumbers'];
+        self::assertNotNull($property);
 
-        self::assertInstanceOf(OneToManyAssociationMetadata::class, $association);
-        self::assertEquals(Phonenumber::class, $association->getTargetEntity());
-        self::assertEquals('user', $association->getMappedBy());
-        self::assertEquals(['number' => 'ASC'], $association->getOrderBy());
+        self::assertInstanceOf(OneToManyAssociationMetadata::class, $property);
+        self::assertEquals(Phonenumber::class, $property->getTargetEntity());
+        self::assertEquals('user', $property->getMappedBy());
+        self::assertEquals(['number' => 'ASC'], $property->getOrderBy());
 
-        self::assertContains('remove', $association->getCascade());
-        self::assertContains('persist', $association->getCascade());
-        self::assertNotContains('refresh', $association->getCascade());
-        self::assertContains('merge', $association->getCascade());
-        self::assertNotContains('detach', $association->getCascade());
-        self::assertTrue($association->isOrphanRemoval());
-        self::assertEquals(FetchMode::LAZY, $association->getFetchMode());
+        self::assertContains('remove', $property->getCascade());
+        self::assertContains('persist', $property->getCascade());
+        self::assertNotContains('refresh', $property->getCascade());
+        self::assertContains('merge', $property->getCascade());
+        self::assertNotContains('detach', $property->getCascade());
+        self::assertTrue($property->isOrphanRemoval());
+        self::assertEquals(FetchMode::LAZY, $property->getFetchMode());
 
         return $class;
     }
@@ -292,17 +295,18 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testManyToManyAssociationsAreExported($class)
     {
-        self::assertTrue(isset($class->associationMappings['groups']));
+        $property = $class->getProperty('groups');
 
-        $association        = $class->associationMappings['groups'];
-        $joinTable          = $association->getJoinTable();
+        self::assertNotNull($property);
+
+        $joinTable          = $property->getJoinTable();
         $joinColumns        = $joinTable->getJoinColumns();
         $joinColumn         = reset($joinColumns);
         $inverseJoinColumns = $joinTable->getInverseJoinColumns();
         $inverseJoinColumn  = reset($inverseJoinColumns);
 
-        self::assertInstanceOf(ManyToManyAssociationMetadata::class, $association);
-        self::assertEquals(Group::class, $association->getTargetEntity());
+        self::assertInstanceOf(ManyToManyAssociationMetadata::class, $property);
+        self::assertEquals(Group::class, $property->getTargetEntity());
         self::assertEquals('cms_users_groups', $joinTable->getName());
 
         self::assertEquals('user_id', $joinColumn->getColumnName());
@@ -312,13 +316,13 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertEquals('id', $inverseJoinColumn->getReferencedColumnName());
         self::assertEquals('INT NULL', $inverseJoinColumn->getColumnDefinition());
 
-        self::assertContains('remove', $association->getCascade());
-        self::assertContains('persist', $association->getCascade());
-        self::assertContains('refresh', $association->getCascade());
-        self::assertContains('merge', $association->getCascade());
-        self::assertContains('detach', $association->getCascade());
+        self::assertContains('remove', $property->getCascade());
+        self::assertContains('persist', $property->getCascade());
+        self::assertContains('refresh', $property->getCascade());
+        self::assertContains('merge', $property->getCascade());
+        self::assertContains('detach', $property->getCascade());
 
-        self::assertEquals(FetchMode::EXTRA_LAZY, $association->getFetchMode());
+        self::assertEquals(FetchMode::EXTRA_LAZY, $property->getFetchMode());
 
         return $class;
     }
@@ -347,14 +351,17 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testCascadeIsExported($class)
     {
-        $association = $class->associationMappings['phonenumbers'];
+        $property = $class->getProperty('phonenumbers');
 
-        self::assertContains('persist', $association->getCascade());
-        self::assertContains('merge', $association->getCascade());
-        self::assertContains('remove', $association->getCascade());
-        self::assertNotContains('refresh', $association->getCascade());
-        self::assertNotContains('detach', $association->getCascade());
-        self::assertTrue($association->isOrphanRemoval());
+        self::assertNotNull($property);
+
+        self::assertContains('persist', $property->getCascade());
+        self::assertContains('merge', $property->getCascade());
+        self::assertContains('remove', $property->getCascade());
+        self::assertNotContains('refresh', $property->getCascade());
+        self::assertNotContains('detach', $property->getCascade());
+
+        self::assertTrue($property->isOrphanRemoval());
 
         return $class;
     }
@@ -365,9 +372,11 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testInversedByIsExported($class)
     {
-        $association = $class->associationMappings['address'];
+        $property = $class->getProperty('address');
 
-        self::assertEquals('user', $association->getInversedBy());
+        self::assertNotNull($property);
+
+        self::assertEquals('user', $property->getInversedBy());
     }
 	/**
      * @depends testExportDirectoryAndFilesAreCreated

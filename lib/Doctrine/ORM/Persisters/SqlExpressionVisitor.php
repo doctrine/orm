@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Persisters;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
@@ -64,10 +65,11 @@ class SqlExpressionVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        $field = $comparison->getField();
-        $value = $comparison->getValue()->getValue(); // shortcut for walkValue()
+        $field    = $comparison->getField();
+        $value    = $comparison->getValue()->getValue(); // shortcut for walkValue()
+        $property = $this->classMetadata->getProperty($field);
 
-        if (isset($this->classMetadata->associationMappings[$field]) &&
+        if ($property instanceof AssociationMetadata &&
             $value !== null &&
             ! is_object($value) &&
             ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])) {

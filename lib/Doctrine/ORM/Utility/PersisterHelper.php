@@ -22,7 +22,9 @@ namespace Doctrine\ORM\Utility;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Query\QueryException;
 
@@ -47,26 +49,27 @@ class PersisterHelper
      */
     public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
     {
-        if (($property = $class->getProperty($fieldName)) !== null) {
-            return [$property->getType()];
-        }
+        $property = $class->getProperty($fieldName);
 
-        if ( ! isset($class->associationMappings[$fieldName])) {
+        if (! $property) {
             return [];
         }
 
-        $association  = $class->associationMappings[$fieldName];
-        $targetEntity = $association->getTargetEntity();
+        if ($property instanceof FieldMetadata) {
+            return [$property->getType()];
+        }
+
+        $targetEntity = $property->getTargetEntity();
         $targetClass  = $em->getClassMetadata($targetEntity);
 
-        if (! $association->isOwningSide()) {
-            return self::getTypeOfField($association->getMappedBy(), $targetClass, $em);
+        if (! $property->isOwningSide()) {
+            return self::getTypeOfField($property->getMappedBy(), $targetClass, $em);
         }
 
         $types       = [];
-        $joinColumns = $association instanceof ManyToManyAssociationMetadata
-            ? $association->getJoinTable()->getJoinColumns()
-            : $association->getJoinColumns();
+        $joinColumns = $property instanceof ManyToManyAssociationMetadata
+            ? $property->getJoinTable()->getJoinColumns()
+            : $property->getJoinColumns();
 
         foreach ($joinColumns as $joinColumn) {
             $types[] = self::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em);
@@ -88,19 +91,24 @@ class PersisterHelper
     {
         if (isset($class->fieldNames[$columnName])) {
             $fieldName = $class->fieldNames[$columnName];
+            $property  = $class->getProperty($fieldName);
 
-            if (($property = $class->getProperty($fieldName)) !== null) {
+            if ($property instanceof FieldMetadata) {
                 return $property->getType();
             }
         }
 
         // iterate over association mappings
-        foreach ($class->associationMappings as $association) {
+        foreach ($class->getProperties() as $association) {
+            if (! ($association instanceof AssociationMetadata)) {
+                continue;
+            }
+
             // resolve join columns over to-one or to-many
-            $targetClass  = $em->getClassMetadata($association->getTargetEntity());
+            $targetClass = $em->getClassMetadata($association->getTargetEntity());
 
             if (! $association->isOwningSide()) {
-                $association = $targetClass->associationMappings[$association->getMappedBy()];
+                $association = $targetClass->getProperty($association->getMappedBy());
                 $targetClass = $em->getClassMetadata($association->getTargetEntity());
             }
 

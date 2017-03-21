@@ -564,7 +564,7 @@ class EntityGeneratorTest extends OrmTestCase
 //        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
-        self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->associationMappings['comments']->getFetchMode());
+        self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->getProperty('comments')->getFetchMode());
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //

@@ -340,7 +340,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -369,7 +369,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -396,7 +396,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -423,7 +423,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -474,7 +474,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -525,7 +525,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -566,7 +566,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -585,7 +585,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 
@@ -642,7 +642,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             [
                 'groups' => $association
             ],
-            $this->cm->associationMappings
+            $this->cm->getProperties()
         );
     }
 

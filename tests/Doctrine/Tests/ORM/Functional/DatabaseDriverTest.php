@@ -6,6 +6,7 @@ use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
@@ -45,7 +46,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $metadata = $this->convertToClassMetadata([$project, $user], []);
 
         self::assertNotNull($metadata['Ddc2059Project']->getProperty('user'));
-        self::assertTrue(isset($metadata['Ddc2059Project']->associationMappings['user2']));
+        self::assertNotNull($metadata['Ddc2059Project']->getProperty('user2'));
     }
 
     public function testLoadMetadataFromDatabase()
@@ -115,10 +116,8 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertNull($bazMetadata->getProperty('barId'), "The foreign Key field should not be inflected, as 'barId' field is an association.");
         self::assertNotNull($bazMetadata->getProperty('id'));
 
-        $bazMetadata->associationMappings = \array_change_key_case($bazMetadata->associationMappings, \CASE_LOWER);
-
-        self::assertArrayHasKey('bar', $bazMetadata->associationMappings);
-        self::assertEquals(ClassMetadata::MANY_TO_ONE, $bazMetadata->associationMappings['bar']['type']);
+        self::assertArrayHasKey('bar', $bazMetadata->getProperties());
+        self::assertInstanceOf(ManyToOneAssociationMetadata::class, $bazMetadata->getProperty('bar'));
     }
 
     public function testDetectManyToManyTables()
@@ -133,12 +132,12 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertArrayHasKey('CmsGroups', $metadatas, 'CmsGroups entity was not detected.');
         self::assertArrayHasKey('CmsTags', $metadatas, 'CmsTags entity was not detected.');
 
-        self::assertEquals(3, count($metadatas['CmsUsers']->associationMappings));
-        self::assertArrayHasKey('group', $metadatas['CmsUsers']->associationMappings);
-        self::assertEquals(1, count($metadatas['CmsGroups']->associationMappings));
-        self::assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
-        self::assertEquals(1, count($metadatas['CmsTags']->associationMappings));
-        self::assertArrayHasKey('user', $metadatas['CmsGroups']->associationMappings);
+        self::assertCount(3, $metadatas['CmsUsers']->getProperties());
+        self::assertArrayHasKey('group', $metadatas['CmsUsers']->getProperties());
+        self::assertCount(1, $metadatas['CmsGroups']->getProperties());
+        self::assertArrayHasKey('user', $metadatas['CmsGroups']->getProperties());
+        self::assertCount(1, $metadatas['CmsTags']->getProperties());
+        self::assertArrayHasKey('user', $metadatas['CmsGroups']->getProperties());
     }
 
     public function testIgnoreManyToManyTableWithoutFurtherForeignKeyDetails()
@@ -158,7 +157,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         $metadatas = $this->convertToClassMetadata([$tableA, $tableB], [$tableMany]);
 
-        self::assertEquals(0, count($metadatas['DbdriverBaz']->associationMappings), "no association mappings should be detected.");
+        self::assertCount(1, $metadatas['DbdriverBaz']->getProperties(), "no association mappings should be detected.");
     }
 
     public function testLoadMetadataFromDatabaseDetail()

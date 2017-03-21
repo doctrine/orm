@@ -301,13 +301,6 @@ class ClassMetadata implements ClassMetadataInterface
     protected $properties = [];
 
     /**
-     * READ-ONLY: The association mappings of this class.
-     *
-     * @var array<AssociationMetadata>
-     */
-    public $associationMappings = [];
-
-    /**
      * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
      *
      * @var FieldMetadata|null
@@ -369,11 +362,8 @@ class ClassMetadata implements ClassMetadataInterface
         $id = [];
 
         foreach ($this->identifier as $idField) {
-            if (($property = $this->getProperty($idField)) === null) {
-                $property = $this->associationMappings[$idField];
-            }
-
-            $value = $property->getValue($entity);
+            $property = $this->getProperty($idField);
+            $value    = $property->getValue($entity);
 
             if (null !== $value) {
                 $id[$idField] = $value;
@@ -394,9 +384,7 @@ class ClassMetadata implements ClassMetadataInterface
     public function assignIdentifier($entity, array $id)
     {
         foreach ($id as $idField => $idValue) {
-            if (($property = $this->getProperty($idField)) === null) {
-                $property = $this->associationMappings[$idField];
-            }
+            $property = $this->getProperty($idField);
 
             $property->setValue($entity, $idValue);
         }
@@ -413,10 +401,6 @@ class ClassMetadata implements ClassMetadataInterface
 
         foreach ($this->properties as $name => $property) {
             $this->properties[$name] = clone $property;
-        }
-
-        foreach ($this->associationMappings as $name => $association) {
-            $this->associationMappings[$name] = clone $association;
         }
     }
 
@@ -449,7 +433,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         // This metadata is always serialized/cached.
         $serialized = [
-            'associationMappings',
             'properties',
             'fieldNames',
             //'embeddedClasses',
@@ -591,10 +574,6 @@ class ClassMetadata implements ClassMetadataInterface
 
             $property->wakeupReflection($reflService);
         }
-
-        foreach ($this->associationMappings as $field => $property) {
-            $property->wakeupReflection($reflService);
-        }
     }
 
     /**
@@ -650,7 +629,11 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function validateAssociations()
     {
-        foreach ($this->associationMappings as $fieldName => $property) {
+        foreach ($this->properties as $fieldName => $property) {
+            if (! ($property instanceof AssociationMetadata)) {
+                continue;
+            }
+
             $targetEntity = $property->getTargetEntity();
 
             if ( ! class_exists($targetEntity, true)) {
@@ -1206,7 +1189,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function hasField($fieldName)
     {
-        return isset($this->properties[$fieldName]);
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof FieldMetadata;
     }
 
     /**
@@ -1219,24 +1203,25 @@ class ClassMetadata implements ClassMetadataInterface
         $columns = [];
 
         foreach ($this->identifier as $idProperty) {
-            if (($property = $this->getProperty($idProperty)) !== null) {
+            $property = $this->getProperty($idProperty);
+
+            if ($property instanceof FieldMetadata) {
                 $columns[$property->getColumnName()] = $property;
 
                 continue;
             }
 
             // Association defined as Id field
-            $association  = $this->associationMappings[$idProperty];
-            $targetClass  = $em->getClassMetadata($association->getTargetEntity());
+            $targetClass = $em->getClassMetadata($property->getTargetEntity());
 
-            if (! $association->isOwningSide()) {
-                $association = $targetClass->associationMappings[$association->getMappedBy()];
-                $targetClass = $em->getClassMetadata($association->getTargetEntity());
+            if (! $property->isOwningSide()) {
+                $property    = $targetClass->getProperty($property->getMappedBy());
+                $targetClass = $em->getClassMetadata($property->getTargetEntity());
             }
 
-            $joinColumns = $association instanceof ManyToManyAssociationMetadata
-                ? $association->getJoinTable()->getInverseJoinColumns()
-                : $association->getJoinColumns()
+            $joinColumns = $property instanceof ManyToManyAssociationMetadata
+                ? $property->getJoinTable()->getInverseJoinColumns()
+                : $property->getJoinColumns()
             ;
 
             foreach ($joinColumns as $joinColumn) {
@@ -1362,19 +1347,19 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $fieldName = $associationMetadata->getName();
 
-        if ( ! isset($this->associationMappings[$fieldName])) {
+        if (! isset($this->properties[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
         /** @var AssociationMetadata $originalAssociation */
-        $originalAssociation = $this->associationMappings[$fieldName];
+        $originalAssociation = $this->properties[$fieldName];
 
         // Do not allow to change association type
         if (get_class($originalAssociation) !== get_class($associationMetadata)) {
             throw MappingException::invalidOverrideAssociationType($this->name, $fieldName);
         }
 
-        unset($this->associationMappings[$originalAssociation->getName()]);
+        unset($this->properties[$originalAssociation->getName()]);
 
         // Unset all defined fieldNames prior to override
         if ($originalAssociation instanceof ToOneAssociationMetadata && $originalAssociation->isOwningSide()) {
@@ -1463,20 +1448,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isInheritedProperty($fieldName)
     {
         $declaringClass = $this->properties[$fieldName]->getDeclaringClass();
-
-        return ! ($declaringClass->name === $this->name);
-    }
-
-    /**
-     * Checks whether a mapped association is inherited from a superclass.
-     *
-     * @param string $fieldName
-     *
-     * @return boolean TRUE if the association is inherited, FALSE otherwise.
-     */
-    public function isInheritedAssociation($fieldName)
-    {
-        $declaringClass = $this->associationMappings[$fieldName]->getDeclaringClass();
 
         return ! ($declaringClass->name === $this->name);
     }
@@ -1636,7 +1607,7 @@ class ClassMetadata implements ClassMetadataInterface
 
         $this->assertPropertyNotMapped($association->getName());
 
-        $this->associationMappings[$association->getName()] = $inheritedAssociation;
+        $this->properties[$association->getName()] = $inheritedAssociation;
     }
 
     /**
@@ -1810,7 +1781,7 @@ class ClassMetadata implements ClassMetadataInterface
 
         $this->assertPropertyNotMapped($sourceFieldName);
 
-        $this->associationMappings[$sourceFieldName] = $property;
+        $this->properties[$sourceFieldName] = $property;
     }
 
     /**
@@ -2034,7 +2005,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function hasAssociation($fieldName)
     {
-        return isset($this->associationMappings[$fieldName]);
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof AssociationMetadata;
     }
 
     /**
@@ -2044,8 +2016,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isSingleValuedAssociation($fieldName)
     {
-        return isset($this->associationMappings[$fieldName])
-            && $this->associationMappings[$fieldName] instanceof ToOneAssociationMetadata;
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof ToOneAssociationMetadata;
     }
 
     /**
@@ -2055,8 +2027,8 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isCollectionValuedAssociation($fieldName)
     {
-        return isset($this->associationMappings[$fieldName])
-            && $this->associationMappings[$fieldName] instanceof ToManyAssociationMetadata;
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof ToManyAssociationMetadata;
     }
 
     /**
@@ -2164,7 +2136,12 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getFieldNames()
     {
-        return array_keys($this->properties);
+        $fields = array_filter(
+            $this->properties,
+            function (Property $property) { return $property instanceof FieldMetadata; }
+        );
+
+        return array_keys($fields);
     }
 
     /**
@@ -2172,7 +2149,12 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getAssociationNames()
     {
-        return array_keys($this->associationMappings);
+        $associations = array_filter(
+            $this->properties,
+            function (Property $property) { return $property instanceof AssociationMetadata; }
+        );
+        
+        return array_keys($associations);
     }
 
     /**
@@ -2184,11 +2166,13 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getAssociationTargetClass($assocName)
     {
-        if ( ! isset($this->associationMappings[$assocName])) {
+        $property = $this->properties[$assocName];
+
+        if (! ($property instanceof AssociationMetadata)) {
             throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
 
-        return $this->associationMappings[$assocName]->getTargetEntity();
+        return $property->getTargetEntity();
     }
 
     /**
@@ -2214,8 +2198,9 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function isAssociationInverseSide($fieldName)
     {
-        return isset($this->associationMappings[$fieldName])
-            && ! $this->associationMappings[$fieldName]->isOwningSide();
+        return isset($this->properties[$fieldName])
+            && $this->properties instanceof AssociationMetadata
+            && ! $this->properties[$fieldName]->isOwningSide();
     }
 
     /**
@@ -2225,7 +2210,7 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
-        return $this->associationMappings[$fieldName]->getMappedBy();
+        return $this->properties[$fieldName]->getMappedBy();
     }
 
     /**
@@ -2239,7 +2224,11 @@ class ClassMetadata implements ClassMetadataInterface
     {
         $associations = [];
 
-        foreach ($this->associationMappings as $association) {
+        foreach ($this->properties as $association) {
+            if (! ($association instanceof AssociationMetadata)) {
+                continue;
+            }
+
             if ($association->getTargetEntity() !== $targetClass) {
                 continue;
             }
@@ -2331,10 +2320,6 @@ class ClassMetadata implements ClassMetadataInterface
     {
         if (isset($this->properties[$fieldName])) {
             throw MappingException::duplicateProperty($this, $this->properties[$fieldName]);
-        }
-
-        if (isset($this->associationMappings[$fieldName])) {
-            throw MappingException::duplicateProperty($this, $this->associationMappings[$fieldName]);
         }
 
 //        if (isset($this->embeddedClasses[$fieldName])) {

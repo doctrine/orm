@@ -21,7 +21,9 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -154,13 +156,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
+            $property    = $classMetadata->getProperty($propertyName);
             $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
 
-            if ($classMetadata->hasField($propertyName)) {
+            if ($property instanceof FieldMetadata) {
                 if (isset($this->fieldMappings[$columnAlias])) {
-                    throw new \InvalidArgumentException(
-                        "The column '$columnName' conflicts with another column in the mapper."
-                    );
+                    throw new \InvalidArgumentException(sprintf(
+                        "The column '%s' conflicts with another column in the mapper.",
+                        $columnName
+                    ));
                 }
 
                 $this->addFieldResult($alias, $columnAlias, $propertyName);
@@ -169,13 +173,15 @@ class ResultSetMappingBuilder extends ResultSetMapping
             }
 
             if (isset($this->metaMappings[$columnAlias])) {
-                throw new \InvalidArgumentException("The column '$columnAlias' conflicts with another column in the mapper.");
+                throw new \InvalidArgumentException(sprintf(
+                    "The column '%s' conflicts with another column in the mapper.",
+                    $columnAlias
+                ));
             }
 
-            $association = $classMetadata->associationMappings[$propertyName];
-            $columnType  = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
+            $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
 
-            $this->addMetaResult($alias, $columnAlias, $columnName, $association->isPrimaryKey(), $columnType);
+            $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
         }
     }
 
@@ -275,9 +281,10 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadata $class, $resultClassName)
     {
-        $classMetadata  = $this->em->getClassMetadata($resultClassName);
-        $shortName      = $classMetadata->reflClass->getShortName();
-        $alias          = strtolower($shortName[0]).'0';
+        $classMetadata = $this->em->getClassMetadata($resultClassName);
+        $platform      = $this->em->getConnection()->getDatabasePlatform();
+        $shortName     = $classMetadata->reflClass->getShortName();
+        $alias         = strtolower($shortName[0]).'0';
 
         $this->addEntityResult($class->name, $alias);
 
@@ -291,16 +298,18 @@ class ResultSetMappingBuilder extends ResultSetMapping
         }
 
         foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-            if ($classMetadata->hasField($propertyName)) {
-                $this->addFieldResult($alias, $columnName, $propertyName);
+            $property    = $classMetadata->getProperty($propertyName);
+            $columnAlias = $platform->getSQLResultCasing($columnName);
+
+            if ($property instanceof FieldMetadata) {
+                $this->addFieldResult($alias, $columnAlias, $propertyName);
 
                 continue;
             }
 
-            $association = $classMetadata->associationMappings[$propertyName];
-            $columnType  = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
+            $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
 
-            $this->addMetaResult($alias, $columnName, $columnName, $association->isPrimaryKey(), $columnType);
+            $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
         }
 
         return $this;
@@ -325,7 +334,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
 
-                if ($class->reflClass->name == $classMetadata->reflClass->name) {
+                if ($class->reflClass->name === $classMetadata->reflClass->name) {
                     $this->addEntityResult($classMetadata->name, $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
@@ -388,28 +397,41 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     list($relation, $fieldName) = explode('.', $fieldName);
                 }
 
-                if (isset($classMetadata->associationMappings[$relation])) {
-                    if ($relation) {
-                        $association = $classMetadata->associationMappings[$relation];
-                        $joinAlias   = $alias.$relation;
-                        $parentAlias = $alias;
+                $property = $classMetadata->getProperty($fieldName);
 
-                        $this->addJoinedEntityResult($association->getTargetEntity(), $joinAlias, $parentAlias, $relation);
-                        $this->addFieldResult($joinAlias, $field['column'], $fieldName);
-                    } else {
-                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
-                    }
-                } else {
-                    if ( ! $classMetadata->getProperty($fieldName)) {
-                        throw new \InvalidArgumentException("Entity '".$classMetadata->name."' has no field '".$fieldName."'. ");
-                    }
-
+                if (! $relation && $property instanceof FieldMetadata) {
                     $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+
+                    continue;
+                }
+
+                $property = $classMetadata->getProperty($relation);
+
+                if (! $property) {
+                    throw new \InvalidArgumentException(
+                        "Entity '".$classMetadata->name."' has no field '".$relation."'. "
+                    );
+                }
+
+                if ($property instanceof AssociationMetadata) {
+                    if (! $relation) {
+                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+
+                        continue;
+                    }
+
+                    $joinAlias   = $alias.$relation;
+                    $parentAlias = $alias;
+
+                    $this->addJoinedEntityResult($property->getTargetEntity(), $joinAlias, $parentAlias, $relation);
+                    $this->addFieldResult($joinAlias, $field['column'], $fieldName);
                 }
             }
         } else {
             foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-                if (! $classMetadata->hasField($propertyName)) {
+                $property = $classMetadata->getProperty($propertyName);
+
+                if (! ($property instanceof FieldMetadata)) {
                     continue;
                 }
 

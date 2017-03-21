@@ -910,10 +910,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->nonPersistedPropertyObject = new CmsPhonenumber();
 
         $managedUser = $this->em->merge($user);
+
         self::assertEquals('test', $managedUser->nonPersistedProperty);
         self::assertSame($user->nonPersistedProperty, $managedUser->nonPersistedProperty);
         self::assertSame($user->nonPersistedPropertyObject, $managedUser->nonPersistedPropertyObject);
-
         self::assertTrue($user !== $managedUser);
         self::assertTrue($this->em->contains($managedUser));
 
@@ -922,6 +922,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $user2 = $this->em->find(get_class($managedUser), $userId);
+
         self::assertNull($user2->nonPersistedProperty);
         self::assertNull($user2->nonPersistedPropertyObject);
         self::assertEquals('active', $user2->status);

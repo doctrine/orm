@@ -636,12 +636,13 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'association-overrides'})) {
             foreach ($xmlRoot->{'association-overrides'}->{'association-override'} as $overrideElement) {
                 $fieldName = (string) $overrideElement['name'];
+                $property  = $metadata->getProperty($fieldName);
 
-                if (! isset($metadata->associationMappings[$fieldName])) {
+                if (! $property) {
                     throw MappingException::invalidOverrideFieldName($metadata->name, $fieldName);
                 }
 
-                $existingClass = get_class($metadata->associationMappings[$fieldName]);
+                $existingClass = get_class($property);
                 $override      = new $existingClass($fieldName);
 
                 // Check for join-columns

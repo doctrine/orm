@@ -21,7 +21,9 @@ namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\TableMetadata;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -124,9 +126,7 @@ EOT
 
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
-                [$this->formatField('Association mappings:', '')],
-                $this->formatAssociationMappings($metadata->associationMappings),
-                [$this->formatField('Field mappings:', '')],
+                [$this->formatField('Property mappings:', '')],
                 $this->formatPropertyMappings($metadata->getProperties())
             )
         );
@@ -296,7 +296,15 @@ EOT
         foreach ($propertyMappings as $propertyName => $property) {
             $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
 
-            $output = array_merge($output, $this->formatColumn($property));
+            if ($property instanceof FieldMetadata) {
+                $output = array_merge($output, $this->formatColumn($property));
+            }  else if ($property instanceof AssociationMetadata) {
+                // @todo guilhermeblanco Fix me! We are trying to iterate through an AssociationMetadata instance
+                foreach ($property as $field => $value) {
+                    $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
+                }
+
+            }
         }
 
         return $output;

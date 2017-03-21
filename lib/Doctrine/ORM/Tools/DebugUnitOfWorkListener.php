@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
@@ -80,13 +81,15 @@ class DebugUnitOfWorkListener
         $identityMap = $uow->getIdentityMap();
 
         $fh = fopen($this->file, 'xb+');
-        if (count($identityMap) == 0) {
+
+        if (count($identityMap) === 0) {
             fwrite($fh, "Flush Operation [".$this->context."] - Empty identity map.\n");
 
             return;
         }
 
         fwrite($fh, "Flush Operation [".$this->context."] - Dumping identity map:\n");
+
         foreach ($identityMap as $className => $map) {
             fwrite($fh, "Class: ". $className . "\n");
 
@@ -96,27 +99,31 @@ class DebugUnitOfWorkListener
 
                 $cm = $em->getClassMetadata($className);
 
-                foreach ($cm->associationMappings as $field => $association) {
+                foreach ($cm->getProperties() as $field => $association) {
+                    if (! ($association instanceof AssociationMetadata)) {
+                        continue;
+                    }
+
                     fwrite($fh, "   " . $field . " ");
 
                     $value = $association->getValue($entity);
 
-                    if ($association instanceof ToOneAssociationMetadata) {
-                        if ($value === null) {
-                            fwrite($fh, " NULL\n");
-                        } else {
-                            if ($value instanceof Proxy && !$value->__isInitialized()) {
-                                fwrite($fh, "[PROXY] ");
-                            }
+                    if ($value === null) {
+                        fwrite($fh, " NULL\n");
 
-                            fwrite($fh, $this->getIdString($value, $uow) . " " . spl_object_hash($value) . "\n");
+                        continue;
+                    }
+
+                    if ($association instanceof ToOneAssociationMetadata) {
+                        if ($value instanceof Proxy && !$value->__isInitialized()) {
+                            fwrite($fh, "[PROXY] ");
                         }
+
+                        fwrite($fh, $this->getIdString($value, $uow) . " " . spl_object_hash($value) . "\n");
                     } else {
                         $initialized = !($value instanceof PersistentCollection) || $value->isInitialized();
 
-                        if ($value === null) {
-                            fwrite($fh, " NULL\n");
-                        } elseif ($initialized) {
+                        if ($initialized) {
                             fwrite($fh, "[INITIALIZED] " . $this->getType($value). " " . count($value) . " elements\n");
 
                             foreach ($value as $obj) {

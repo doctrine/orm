@@ -27,6 +27,7 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Visitor\DropSchemaSqlCollector;
 use Doctrine\DBAL\Schema\Visitor\RemoveNamespacedAssets;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -191,6 +192,10 @@ class SchemaTool
                     $pkColumns = [];
 
                     foreach ($class->getProperties() as $fieldName => $property) {
+                        if (! ($property instanceof FieldMetadata)) {
+                            continue;
+                        }
+
                         if (! $class->isInheritedProperty($fieldName)) {
                             $columnName = $this->platform->quoteIdentifier($property->getColumnName());
 
@@ -257,17 +262,16 @@ class SchemaTool
             $pkColumns = [];
 
             foreach ($class->identifier as $identifierField) {
-                if (($property = $class->getProperty($identifierField)) !== null) {
+                $property = $class->getProperty($identifierField);
+
+                if ($property instanceof FieldMetadata) {
                     $pkColumns[] = $this->platform->quoteIdentifier($property->getColumnName());
 
                     continue;
                 }
 
-                if (isset($class->associationMappings[$identifierField])) {
-                    /** @var array $assoc */
-                    $association = $class->associationMappings[$identifierField];
-
-                    foreach ($association->getJoinColumns() as $joinColumn) {
+                if ($property instanceof ToOneAssociationMetadata) {
+                    foreach ($property->getJoinColumns() as $joinColumn) {
                         $pkColumns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                     }
                 }
@@ -413,6 +417,10 @@ class SchemaTool
         $pkColumns = [];
 
         foreach ($class->getProperties() as $fieldName => $property) {
+            if (! ($property instanceof FieldMetadata)) {
+                continue;
+            }
+
             if ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->isInheritedProperty($fieldName)) {
                 continue;
             }
@@ -526,8 +534,12 @@ class SchemaTool
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
-        foreach ($class->associationMappings as $fieldName => $property) {
-            if ($class->isInheritedAssociation($fieldName) && ! $property->getDeclaringClass()->isMappedSuperclass) {
+        foreach ($class->getProperties() as $fieldName => $property) {
+            if (! ($property instanceof AssociationMetadata)) {
+                continue;
+            }
+
+            if ($class->isInheritedProperty($fieldName) && ! $property->getDeclaringClass()->isMappedSuperclass) {
                 continue;
             }
 
@@ -631,7 +643,7 @@ class SchemaTool
                 continue;
             }
 
-            $association = $class->associationMappings[$fieldName];
+            $association = $class->getProperty($fieldName);
             $joinColumns = $association->getJoinColumns();
 
             if (count($joinColumns) > 1) {

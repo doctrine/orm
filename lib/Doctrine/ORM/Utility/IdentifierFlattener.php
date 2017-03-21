@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM\Utility;
 
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
@@ -71,17 +72,17 @@ final class IdentifierFlattener
         $flatId = [];
 
         foreach ($class->identifier as $field) {
-            if (!isset($class->associationMappings[$field])) {
+            $property = $class->getProperty($field);
+
+            if ($property instanceof FieldMetadata) {
                 $flatId[$field] = $id[$field];
 
                 continue;
             }
 
-            $association = $class->associationMappings[$field];
-
             if (isset($id[$field]) && is_object($id[$field])) {
                 /* @var $targetClassMetadata ClassMetadata */
-                $targetClassMetadata = $this->metadataFactory->getMetadataFor($association->getTargetEntity());
+                $targetClassMetadata = $this->metadataFactory->getMetadataFor($property->getTargetEntity());
                 $identifiers         = $this->unitOfWork->isInIdentityMap($id[$field])
                     ? $this->unitOfWork->getEntityIdentifier($id[$field])
                     : $targetClassMetadata->getIdentifierValues($id[$field]);
@@ -94,7 +95,7 @@ final class IdentifierFlattener
 
             $associatedId = [];
 
-            foreach ($association->getJoinColumns() as $joinColumn) {
+            foreach ($property->getJoinColumns() as $joinColumn) {
                 $associatedId[] = $id[$joinColumn->getColumnName()];
             }
 
