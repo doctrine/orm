@@ -449,17 +449,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $isAbstract = $parentClass->isMappedSuperclass;
 
         foreach ($parentClass->getProperties() as $fieldName => $property) {
-            if ($property instanceof FieldMetadata) {
-                $subClass->addInheritedProperty($property);
-
-                continue;
-            }
-
             if ($isAbstract && $property instanceof ToManyAssociationMetadata && ! $property->isOwningSide()) {
                 throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->name, $fieldName);
             }
 
-            $subClass->addInheritedAssociation($property);
+            $subClass->addInheritedProperty($property);
         }
     }
 
