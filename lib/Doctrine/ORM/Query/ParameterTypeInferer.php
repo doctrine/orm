@@ -58,9 +58,7 @@ class ParameterTypeInferer
         }
 
         if (is_array($value)) {
-            return is_int(current($value))
-                ? Connection::PARAM_INT_ARRAY
-                : Connection::PARAM_STR_ARRAY;
+            return '[' . static::inferType(current($value)) . ']';
         }
 
         return \PDO::PARAM_STR;
