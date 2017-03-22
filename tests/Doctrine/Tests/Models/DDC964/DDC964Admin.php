@@ -40,7 +40,7 @@ class DDC964Admin extends DDC964User
 
         $association->setJoinColumns($joinColumns);
 
-        $metadata->setAssociationOverride($association);
+        $metadata->setPropertyOverride($association);
 
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('ddc964_users_admingroups');
@@ -59,6 +59,6 @@ class DDC964Admin extends DDC964User
 
         $association->setJoinTable($joinTable);
 
-        $metadata->setAssociationOverride($association);
+        $metadata->setPropertyOverride($association);
     }
 }

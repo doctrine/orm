@@ -6,4 +6,4 @@ $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
 $association->setInversedBy('admins');
 
-$metadata->setAssociationOverride($association);
+$metadata->setPropertyOverride($association);
