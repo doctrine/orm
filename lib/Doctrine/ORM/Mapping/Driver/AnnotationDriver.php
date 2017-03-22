@@ -333,7 +333,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->addAssociation($assocMetadata);
+                    $metadata->addProperty($assocMetadata);
 
                     break;
 
@@ -344,7 +344,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->addAssociation($assocMetadata);
+                    $metadata->addProperty($assocMetadata);
 
                     break;
 
@@ -355,7 +355,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->addAssociation($assocMetadata);
+                    $metadata->addProperty($assocMetadata);
 
                     break;
 
@@ -366,7 +366,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                         $metadata
                     );
 
-                    $metadata->addAssociation($assocMetadata);
+                    $metadata->addProperty($assocMetadata);
 
                     break;
 

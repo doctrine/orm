@@ -168,7 +168,7 @@ class CmsAddress
         $association->setJoinColumns($joinColumns);
         $association->setTargetEntity('CmsUser');
 
-        $metadata->addAssociation($association);
+        $metadata->addProperty($association);
 
         $metadata->addNamedNativeQuery(
             [

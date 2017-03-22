@@ -382,7 +382,7 @@ class ClassMetadataBuilder
             $builder->inversedBy($inversedBy);
         }
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
@@ -444,7 +444,7 @@ class ClassMetadataBuilder
 
         $builder->withMappedBy($mappedBy);
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
@@ -466,7 +466,7 @@ class ClassMetadataBuilder
             $builder->withInversedBy($inversedBy);
         }
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
@@ -508,7 +508,7 @@ class ClassMetadataBuilder
             $builder->withInversedBy($inversedBy);
         }
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
@@ -528,7 +528,7 @@ class ClassMetadataBuilder
 
         $builder->withMappedBy($mappedBy);
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
@@ -568,7 +568,7 @@ class ClassMetadataBuilder
 
         $builder->withMappedBy($mappedBy);
 
-        $this->cm->addAssociation($builder->build());
+        $this->cm->addProperty($builder->build());
 
         return $this;
     }
