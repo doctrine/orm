@@ -318,7 +318,7 @@ class ClassMetadataTest extends OrmTestCase
         $association->setTargetEntity('stdClass');
         $association->setMappedBy('foo');
 
-        $cm->addInheritedAssociation($association);
+        $cm->addInheritedProperty($association);
 
         $this->expectException(MappingException::class);
 
@@ -329,7 +329,7 @@ class ClassMetadataTest extends OrmTestCase
         $association->setTargetEntity('stdClass');
         $association->setMappedBy('foo');
 
-        $cm->addInheritedAssociation($association);
+        $cm->addInheritedProperty($association);
     }
 
     public function testDuplicateColumnName_ThrowsMappingException()

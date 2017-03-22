@@ -629,17 +629,20 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function validateAssociations()
     {
-        foreach ($this->properties as $fieldName => $property) {
-            if (! ($property instanceof AssociationMetadata)) {
-                continue;
-            }
+        array_map(
+            function (Property $property) {
+                if (! ($property instanceof AssociationMetadata)) {
+                    return;
+                }
 
-            $targetEntity = $property->getTargetEntity();
+                $targetEntity = $property->getTargetEntity();
 
-            if ( ! class_exists($targetEntity, true)) {
-                throw MappingException::invalidTargetEntityClass($targetEntity, $this->name, $fieldName);
-            }
-        }
+                if ( ! class_exists($targetEntity, true)) {
+                    throw MappingException::invalidTargetEntityClass($targetEntity, $this->name, $property->getName());
+                }
+            },
+            $this->properties
+        );
     }
 
     /**
@@ -1603,8 +1606,8 @@ class ClassMetadata implements ClassMetadataInterface
 
     /**
      * INTERNAL:
-     * Adds a field mapping without completing/validating it.
-     * This is mainly used to add inherited field mappings to derived classes.
+     * Adds a property mapping without completing/validating it.
+     * This is mainly used to add inherited property mappings to derived classes.
      *
      * @param Property $property
      *
@@ -1615,40 +1618,21 @@ class ClassMetadata implements ClassMetadataInterface
         $inheritedProperty = clone $property;
         $declaringClass    = $property->getDeclaringClass();
 
-        if (! $declaringClass->isMappedSuperclass) {
-            $inheritedProperty->setTableName($property->getTableName());
+        if ($inheritedProperty instanceof FieldMetadata) {
+            if (! $declaringClass->isMappedSuperclass) {
+                $inheritedProperty->setTableName($property->getTableName());
+            }
+
+            $this->fieldNames[$property->getColumnName()] = $property->getName();
+        } else if ($inheritedProperty instanceof AssociationMetadata) {
+            if ($declaringClass->isMappedSuperclass) {
+                $inheritedProperty->setSourceEntity($this->name);
+            }
         }
 
         $this->assertPropertyNotMapped($property->getName());
 
-        $this->fieldNames[$property->getColumnName()] = $property->getName();
         $this->properties[$property->getName()] = $inheritedProperty;
-    }
-
-    /**
-     * INTERNAL:
-     * Adds an association mapping without completing/validating it.
-     * This is mainly used to add inherited association mappings to derived classes.
-     *
-     * @param AssociationMetadata $association
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function addInheritedAssociation(AssociationMetadata $association)
-    {
-        /* @var AssociationMetadata $inheritedAssociation */
-        $inheritedAssociation = clone $association;
-        $declaringClass       = $association->getDeclaringClass();
-
-        if ($declaringClass->isMappedSuperclass) {
-            $inheritedAssociation->setSourceEntity($this->name);
-        }
-
-        $this->assertPropertyNotMapped($association->getName());
-
-        $this->properties[$association->getName()] = $inheritedAssociation;
     }
 
     /**
