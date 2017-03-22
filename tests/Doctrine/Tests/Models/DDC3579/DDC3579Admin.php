@@ -22,6 +22,6 @@ class DDC3579Admin extends DDC3579User
 
         $association->setInversedBy('admins');
 
-        $metadata->setAssociationOverride($association);
+        $metadata->setPropertyOverride($association);
     }
 }

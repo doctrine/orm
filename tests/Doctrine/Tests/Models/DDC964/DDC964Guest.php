@@ -38,7 +38,7 @@ class DDC964Guest extends DDC964User
         $fieldMetadata->setColumnName('guest_id');
         $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->setAttributeOverride($fieldMetadata);
+        $metadata->setPropertyOverride($fieldMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
 
@@ -48,6 +48,6 @@ class DDC964Guest extends DDC964User
         $fieldMetadata->setNullable(false);
         $fieldMetadata->setUnique(true);
 
-        $metadata->setAttributeOverride($fieldMetadata);
+        $metadata->setPropertyOverride($fieldMetadata);
     }
 }
