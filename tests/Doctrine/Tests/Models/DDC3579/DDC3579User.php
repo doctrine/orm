@@ -105,7 +105,7 @@ class DDC3579User
 
         $association->setTargetEntity('DDC3579Group');
 
-        $metadata->addAssociation($association);
+        $metadata->addProperty($association);
 
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }

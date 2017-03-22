@@ -59,7 +59,7 @@ $association = new Mapping\ManyToOneAssociationMetadata('mainGroup');
 
 $association->setTargetEntity(Export\Group::class);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 // Property: "address"
 $joinColumns = [];
@@ -81,7 +81,7 @@ $association->setCascade(['persist']);
 $association->setFetchMode(Mapping\FetchMode::EAGER);
 $association->setOrphanRemoval(true);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 // Property: "cart"
 $association = new Mapping\OneToOneAssociationMetadata('cart');
@@ -92,7 +92,7 @@ $association->setCascade(['persist']);
 $association->setFetchMode(Mapping\FetchMode::EAGER);
 $association->setOrphanRemoval(false);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 // Property: "phonenumbers"
 $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
@@ -104,7 +104,7 @@ $association->setFetchMode(Mapping\FetchMode::LAZY);
 $association->setOrphanRemoval(true);
 $association->setOrderBy(['number' => 'ASC']);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 // Property: "groups"
 $joinTable = new Mapping\JoinTableMetadata();
@@ -132,4 +132,4 @@ $association->setTargetEntity(Export\Group::class);
 $association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
 $association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);

@@ -306,7 +306,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $association->setTargetEntity('TestEntity1');
         $association->setMappedBy('this');
 
-        $cm1->addAssociation($association);
+        $cm1->addProperty($association);
 
         // and an association on the owning side
         $joinColumns = [];
@@ -323,7 +323,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $association->setJoinColumns($joinColumns);
         $association->setTargetEntity('TestEntity1');
 
-        $cm1->addAssociation($association);
+        $cm1->addProperty($association);
 
         // and an id generator type
         $cm1->setIdGeneratorType(Mapping\GeneratorType::AUTO);
