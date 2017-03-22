@@ -429,7 +429,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
                 }
 
-                $metadata->setAssociationOverride($override);
+                $metadata->setPropertyOverride($override);
             }
         }
 
@@ -444,7 +444,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     false
                 );
 
-                $metadata->setAttributeOverride($fieldMetadata);
+                $metadata->setPropertyOverride($fieldMetadata);
             }
         }
     }

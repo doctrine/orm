@@ -1388,81 +1388,68 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Sets the association to override association mapping of property for an entity relationship.
+     * Sets the override property mapping for an entity relationship.
      *
-     * @param AssociationMetadata $associationMetadata
+     * @param Property $property
      *
      * @return void
      *
+     * @throws \RuntimeException
      * @throws MappingException
+     * @throws CacheException
      */
-    public function setAssociationOverride(AssociationMetadata $associationMetadata)
+    public function setPropertyOverride(Property $property)
     {
-        $fieldName = $associationMetadata->getName();
+        $fieldName = $property->getName();
 
         if (! isset($this->properties[$fieldName])) {
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
-        /** @var AssociationMetadata $originalAssociation */
-        $originalAssociation = $this->properties[$fieldName];
+        $originalProperty = $this->getProperty($fieldName);
 
-        // Do not allow to change association type
-        if (get_class($originalAssociation) !== get_class($associationMetadata)) {
-            throw MappingException::invalidOverrideAssociationType($this->name, $fieldName);
+        // Do not allow to change property type
+        if (get_class($originalProperty) !== get_class($property)) {
+            throw MappingException::invalidOverridePropertyType($this->name, $fieldName);
         }
 
-        unset($this->properties[$originalAssociation->getName()]);
-
-        // Unset all defined fieldNames prior to override
-        if ($originalAssociation instanceof ToOneAssociationMetadata && $originalAssociation->isOwningSide()) {
-            foreach ($originalAssociation->getJoinColumns() as $joinColumn) {
-                unset($this->fieldNames[$joinColumn->getColumnName()]);
-            }
-        }
-
-        // Override what it should be allowed
-        if ($associationMetadata->getInversedBy()) {
-            $originalAssociation->setInversedBy($associationMetadata->getInversedBy());
-        }
-
-        if ($originalAssociation instanceof ToOneAssociationMetadata && $associationMetadata->getJoinColumns()) {
-            $originalAssociation->setJoinColumns($associationMetadata->getJoinColumns());
-        } else if ($originalAssociation instanceof ManyToManyAssociationMetadata && $associationMetadata->getJoinTable()) {
-            $originalAssociation->setJoinTable($associationMetadata->getJoinTable());
-        }
-
-        $this->addProperty($originalAssociation);
-    }
-
-    /**
-     * Sets the override for a mapped field.
-     *
-     * @param FieldMetadata $fieldMetadata
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function setAttributeOverride(FieldMetadata $fieldMetadata)
-    {
-        $originalProperty = $this->getProperty($fieldMetadata->getName());
-
-        if ( ! $originalProperty) {
-            throw MappingException::invalidOverrideFieldName($this->name, $fieldMetadata->getName());
-        }
-
+        // Do not allow to change version property
         if ($originalProperty instanceof VersionFieldMetadata) {
-            throw MappingException::invalidOverrideVersionField($this->name, $fieldMetadata->getName());
+            throw MappingException::invalidOverrideVersionField($this->name, $fieldName);
         }
 
-        $fieldMetadata->setDeclaringClass($originalProperty->getDeclaringClass());
-        $fieldMetadata->setPrimaryKey($originalProperty->isPrimaryKey());
+        unset($this->properties[$fieldName]);
 
-        unset($this->fieldNames[$originalProperty->getColumnName()]);
-        unset($this->properties[$originalProperty->getName()]);
+        if ($property instanceof FieldMetadata) {
+            // Unset defined fieldName prior to override
+            unset($this->fieldNames[$originalProperty->getColumnName()]);
 
-        $this->addProperty($fieldMetadata);
+            // Revert what should not be allowed to change
+            $property->setDeclaringClass($originalProperty->getDeclaringClass());
+            $property->setPrimaryKey($originalProperty->isPrimaryKey());
+        } else if ($property instanceof AssociationMetadata) {
+            // Unset all defined fieldNames prior to override
+            if ($originalProperty instanceof ToOneAssociationMetadata && $originalProperty->isOwningSide()) {
+                foreach ($originalProperty->getJoinColumns() as $joinColumn) {
+                    unset($this->fieldNames[$joinColumn->getColumnName()]);
+                }
+            }
+
+            // Override what it should be allowed to change
+            if ($property->getInversedBy()) {
+                $originalProperty->setInversedBy($property->getInversedBy());
+            }
+
+            if ($originalProperty instanceof ToOneAssociationMetadata && $property->getJoinColumns()) {
+                $originalProperty->setJoinColumns($property->getJoinColumns());
+            } else if ($originalProperty instanceof ManyToManyAssociationMetadata && $property->getJoinTable()) {
+                $originalProperty->setJoinTable($property->getJoinTable());
+            }
+
+            $property = $originalProperty;
+        }
+
+        $this->addProperty($property);
     }
 
     /**
@@ -1991,39 +1978,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * {@inheritDoc}
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function hasAssociation($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties[$fieldName] instanceof AssociationMetadata;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function isSingleValuedAssociation($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties[$fieldName] instanceof ToOneAssociationMetadata;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function isCollectionValuedAssociation($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties[$fieldName] instanceof ToManyAssociationMetadata;
-    }
-
-    /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
      * @param \Doctrine\ORM\Sequencing\Generator $generator
@@ -2126,50 +2080,6 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritDoc}
      */
-    public function getFieldNames()
-    {
-        $fields = array_filter(
-            $this->properties,
-            function (Property $property) { return $property instanceof FieldMetadata; }
-        );
-
-        return array_keys($fields);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getAssociationNames()
-    {
-        $associations = array_filter(
-            $this->properties,
-            function (Property $property) { return $property instanceof AssociationMetadata; }
-        );
-        
-        return array_keys($associations);
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @throws InvalidArgumentException
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function getAssociationTargetClass($assocName)
-    {
-        $property = $this->properties[$assocName];
-
-        if (! ($property instanceof AssociationMetadata)) {
-            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
-        }
-
-        return $property->getTargetEntity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function getName()
     {
         return $this->name;
@@ -2181,54 +2091,6 @@ class ClassMetadata implements ClassMetadataInterface
     public function isVersioned()
     {
         return $this->versionProperty !== null;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function isAssociationInverseSide($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            && $this->properties instanceof AssociationMetadata
-            && ! $this->properties[$fieldName]->isOwningSide();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
-     */
-    public function getAssociationMappedByTargetField($fieldName)
-    {
-        return $this->properties[$fieldName]->getMappedBy();
-    }
-
-    /**
-     * @param string $targetClass
-     *
-     * @return array
-     *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo). One usage left.
-     */
-    public function getAssociationsByTargetClass($targetClass)
-    {
-        $associations = [];
-
-        foreach ($this->properties as $association) {
-            if (! ($association instanceof AssociationMetadata)) {
-                continue;
-            }
-
-            if ($association->getTargetEntity() !== $targetClass) {
-                continue;
-            }
-
-            $associations[$association->getName()] = $association;
-        }
-
-        return $associations;
     }
 
     /**
@@ -2357,5 +2219,134 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         return $sequencePrefix;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function hasAssociation($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof AssociationMetadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function isSingleValuedAssociation($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof ToOneAssociationMetadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function isCollectionValuedAssociation($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            && $this->properties[$fieldName] instanceof ToManyAssociationMetadata;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function getFieldNames()
+    {
+        $fields = array_filter(
+            $this->properties,
+            function (Property $property) { return $property instanceof FieldMetadata; }
+        );
+
+        return array_keys($fields);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function getAssociationNames()
+    {
+        $associations = array_filter(
+            $this->properties,
+            function (Property $property) { return $property instanceof AssociationMetadata; }
+        );
+
+        return array_keys($associations);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws InvalidArgumentException
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function getAssociationTargetClass($assocName)
+    {
+        $property = $this->properties[$assocName];
+
+        if (! ($property instanceof AssociationMetadata)) {
+            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+        }
+
+        return $property->getTargetEntity();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function isAssociationInverseSide($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            && $this->properties instanceof AssociationMetadata
+            && ! $this->properties[$fieldName]->isOwningSide();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     */
+    public function getAssociationMappedByTargetField($fieldName)
+    {
+        return $this->properties[$fieldName]->getMappedBy();
+    }
+
+    /**
+     * @param string $targetClass
+     *
+     * @return array
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo).
+     */
+    public function getAssociationsByTargetClass($targetClass)
+    {
+        $associations = [];
+
+        foreach ($this->properties as $association) {
+            if (! ($association instanceof AssociationMetadata)) {
+                continue;
+            }
+
+            if ($association->getTargetEntity() !== $targetClass) {
+                continue;
+            }
+
+            $associations[$association->getName()] = $association;
+        }
+
+        return $associations;
     }
 }

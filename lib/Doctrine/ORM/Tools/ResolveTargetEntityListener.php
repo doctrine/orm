@@ -120,17 +120,4 @@ class ResolveTargetEntityListener implements EventSubscriber
             }
         }
     }
-
-    /**
-     * @param ClassMetadata       $classMetadata
-     * @param AssociationMetadata $association
-     *
-     * @return void
-     */
-    private function remapAssociation(ClassMetadata $classMetadata, AssociationMetadata $association)
-    {
-        $associationOverride = $this->resolveTargetEntities[$association->getTargetEntity()];
-
-        $classMetadata->setAssociationOverride($associationOverride);
-    }
 }
