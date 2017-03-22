@@ -1847,8 +1847,7 @@ class BasicEntityPersister
         }
 
         if (is_array($value)) {
-            $type = Type::getType($type)->getBindingType();
-            $type += Connection::ARRAY_PARAM_OFFSET;
+            $type = '[' . $type . ']';
         }
 
         return $type;
