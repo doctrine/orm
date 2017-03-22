@@ -421,7 +421,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->addAssociation($association);
+                $metadata->addProperty($association);
             }
         }
 
@@ -474,7 +474,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->addAssociation($association);
+                $metadata->addProperty($association);
             }
         }
 
@@ -526,7 +526,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->addAssociation($association);
+                $metadata->addProperty($association);
             }
         }
 
@@ -615,7 +615,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->addAssociation($association);
+                $metadata->addProperty($association);
             }
         }
 

@@ -258,7 +258,7 @@ class PhpExporter extends AbstractExporter
         $lines[] = '$association->setOrphanRemoval(' . $this->varExport($association->isOrphanRemoval()) . ');';
         $lines[] = '$association->setPrimaryKey(' . $this->varExport($association->isPrimaryKey()) . ');';
         $lines[] = null;
-        $lines[] = '$metadata->addAssociation($association);';
+        $lines[] = '$metadata->addProperty($association);';
     }
 
     private function exportJoinTable(JoinTableMetadata $joinTable, array &$lines)

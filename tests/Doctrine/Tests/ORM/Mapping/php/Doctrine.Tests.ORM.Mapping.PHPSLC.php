@@ -14,4 +14,4 @@ $association = new Mapping\ManyToOneAssociationMetadata('foo');
 $association->setTargetEntity('PHPSLCFoo');
 $association->setPrimaryKey(true);
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
