@@ -51,14 +51,14 @@ $association->setCache(
     new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_city__state')
 );
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 $association = new Mapping\ManyToManyAssociationMetadata('travels');
 
 $association->setTargetEntity(Travel::class);
 $association->setMappedBy('visitedCities');
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);
 
 $association = new Mapping\OneToManyAssociationMetadata('attractions');
 
@@ -69,4 +69,4 @@ $association->setCache(
     new Mapping\CacheMetadata(Mapping\CacheUsage::READ_ONLY, 'doctrine_tests_models_cache_city__attractions')
 );
 
-$metadata->addAssociation($association);
+$metadata->addProperty($association);

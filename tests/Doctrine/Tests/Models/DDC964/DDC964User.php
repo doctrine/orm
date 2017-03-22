@@ -142,7 +142,7 @@ class DDC964User
         $association->setTargetEntity('DDC964Address');
         $association->setCascade(['persist', 'merge']);
 
-        $metadata->addAssociation($association);
+        $metadata->addProperty($association);
 
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('ddc964_users_groups');
@@ -168,7 +168,7 @@ class DDC964User
         $association->setInversedBy('users');
         $association->setCascade(['persist', 'merge', 'detach']);
 
-        $metadata->addAssociation($association);
+        $metadata->addProperty($association);
 
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }

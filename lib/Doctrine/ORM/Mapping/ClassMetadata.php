@@ -804,24 +804,74 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Validates & completes the basic mapping information that is common to all
-     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
+     * Validates & completes the basic mapping information for field mapping.
      *
-     * @param AssociationMetadata $property
+     * @param FieldMetadata $property
      *
      * @return array The updated mapping.
      *
      * @throws MappingException If something is wrong with the mapping.
      */
+    protected function validateAndCompleteFieldMapping(FieldMetadata $property)
+    {
+        $fieldName  = $property->getName();
+        $columnName = $property->getColumnName();
+
+        $property->setDeclaringClass($this);
+
+        if (empty($columnName)) {
+            $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->name);
+
+            $property->setColumnName($columnName);
+        }
+
+        if (! $this->isMappedSuperclass) {
+            $property->setTableName($this->getTableName());
+        }
+
+        // Check for already declared column
+        if (isset($this->fieldNames[$columnName]) ||
+            ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName)) {
+            throw MappingException::duplicateColumnName($this->name, $columnName);
+        }
+
+        // Complete id mapping
+        if ($property->isPrimaryKey()) {
+            if ($this->versionProperty !== null && $this->versionProperty->getName() === $fieldName) {
+                throw MappingException::cannotVersionIdField($this->name, $fieldName);
+            }
+
+            assert(
+                ! $property->getType()->canRequireSQLConversion(),
+                MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property)
+            );
+
+            if (! in_array($fieldName, $this->identifier)) {
+                $this->identifier[] = $fieldName;
+            }
+
+            // Check for composite key
+            if (! $this->isIdentifierComposite && count($this->identifier) > 1) {
+                $this->isIdentifierComposite = true;
+            }
+        }
+
+        $this->fieldNames[$columnName] = $fieldName;
+    }
+
+    /**
+     * Validates & completes the basic mapping information that is common to all
+     * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
+     *
+     * @param AssociationMetadata $property
+     *
+     * @throws MappingException If something is wrong with the mapping.
+     * @throws CacheException   If entity is not cacheable.
+     */
     protected function validateAndCompleteAssociationMapping(AssociationMetadata $property)
     {
-        // Mandatory attributes for both sides: fieldName, targetEntity
         $fieldName    = $property->getName();
         $targetEntity = $property->getTargetEntity();
-
-        if (! $fieldName) {
-            throw MappingException::missingFieldName($this->name);
-        }
 
         if (! $targetEntity) {
             throw MappingException::missingTargetEntity($fieldName);
@@ -1379,7 +1429,7 @@ class ClassMetadata implements ClassMetadataInterface
             $originalAssociation->setJoinTable($associationMetadata->getJoinTable());
         }
 
-        $this->addAssociation($originalAssociation);
+        $this->addProperty($originalAssociation);
     }
 
     /**
@@ -1406,8 +1456,8 @@ class ClassMetadata implements ClassMetadataInterface
         $fieldMetadata->setDeclaringClass($originalProperty->getDeclaringClass());
         $fieldMetadata->setPrimaryKey($originalProperty->isPrimaryKey());
 
-        unset($this->properties[$originalProperty->getName()]);
         unset($this->fieldNames[$originalProperty->getColumnName()]);
+        unset($this->properties[$originalProperty->getName()]);
 
         $this->addProperty($fieldMetadata);
     }
@@ -1488,69 +1538,6 @@ class ClassMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Add a property mapping.
-     *
-     * @param FieldMetadata $property
-     *
-     * @throws MappingException
-     */
-    public function addProperty(FieldMetadata $property)
-    {
-        $fieldName  = $property->getName();
-        $columnName = $property->getColumnName();
-
-        $property->setDeclaringClass($this);
-
-        // Check for empty field name
-        if (empty($fieldName)) {
-            throw MappingException::missingFieldName($this->name);
-        }
-
-        // Check for duplicated property
-        $this->assertPropertyNotMapped($fieldName);
-
-        if (empty($columnName)) {
-            $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->name);
-
-            $property->setColumnName($columnName);
-        }
-
-        if (! $this->isMappedSuperclass) {
-            $property->setTableName($this->getTableName());
-        }
-
-        // Check for already declared column
-        if (isset($this->fieldNames[$columnName]) ||
-            ($this->discriminatorColumn !== null && $this->discriminatorColumn->getColumnName() === $columnName)) {
-            throw MappingException::duplicateColumnName($this->name, $columnName);
-        }
-
-        // Complete id mapping
-        if ($property->isPrimaryKey()) {
-            if ($this->versionProperty !== null && $this->versionProperty->getName() === $fieldName) {
-                throw MappingException::cannotVersionIdField($this->name, $fieldName);
-            }
-
-            assert(
-                ! $property->getType()->canRequireSQLConversion(),
-                MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property)
-            );
-
-            if (! in_array($fieldName, $this->identifier)) {
-                $this->identifier[] = $fieldName;
-            }
-
-            // Check for composite key
-            if (! $this->isIdentifierComposite && count($this->identifier) > 1) {
-                $this->isIdentifierComposite = true;
-            }
-        }
-
-        $this->fieldNames[$columnName] = $fieldName;
-        $this->properties[$fieldName] = $property;
-    }
-
-    /**
      * @param string $fieldName
      *
      * @return Property|null
@@ -1558,6 +1545,60 @@ class ClassMetadata implements ClassMetadataInterface
     public function getProperty($fieldName)
     {
         return $this->properties[$fieldName] ?? null;
+    }
+
+    /**
+     * Add a property mapping.
+     *
+     * @param Property $property
+     *
+     * @throws \RuntimeException
+     * @throws MappingException
+     * @throws CacheException
+     */
+    public function addProperty(Property $property)
+    {
+        $fieldName = $property->getName();
+
+        // Check for empty field name
+        if (empty($fieldName)) {
+            throw MappingException::missingFieldName($this->name);
+        }
+
+        switch (true) {
+            case ($property instanceof FieldMetadata):
+                $this->validateAndCompleteFieldMapping($property);
+                break;
+
+            case ($property instanceof OneToOneAssociationMetadata):
+                $this->validateAndCompleteAssociationMapping($property);
+                $this->validateAndCompleteToOneAssociationMetadata($property);
+                $this->validateAndCompleteOneToOneMapping($property);
+                break;
+
+            case ($property instanceof OneToManyAssociationMetadata):
+                $this->validateAndCompleteAssociationMapping($property);
+                $this->validateAndCompleteToManyAssociationMetadata($property);
+                $this->validateAndCompleteOneToManyMapping($property);
+                break;
+
+            case ($property instanceof ManyToOneAssociationMetadata):
+                $this->validateAndCompleteAssociationMapping($property);
+                $this->validateAndCompleteToOneAssociationMetadata($property);
+                $this->validateAndCompleteManyToOneMapping($property);
+                break;
+
+            case ($property instanceof ManyToManyAssociationMetadata):
+                $this->validateAndCompleteAssociationMapping($property);
+                $this->validateAndCompleteToManyAssociationMetadata($property);
+                $this->validateAndCompleteManyToManyMapping($property);
+                break;
+        }
+
+        // Check for duplicated property
+        $this->assertPropertyNotMapped($fieldName);
+
+        $this->properties[$fieldName] = $property;
     }
 
     /**
@@ -1749,39 +1790,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $this->sqlResultSetMappings[$resultMapping['name']] = $resultMapping;
-    }
-
-    /**
-     * Adds an association mapping.
-     *
-     * @param AssociationMetadata $property
-     *
-     * @throws \RuntimeException
-     * @throws MappingException
-     */
-    public function addAssociation(AssociationMetadata $property)
-    {
-        $this->validateAndCompleteAssociationMapping($property);
-
-        if ($property instanceof OneToOneAssociationMetadata) {
-            $this->validateAndCompleteToOneAssociationMetadata($property);
-            $this->validateAndCompleteOneToOneMapping($property);
-        } else if ($property instanceof OneToManyAssociationMetadata) {
-            $this->validateAndCompleteToManyAssociationMetadata($property);
-            $this->validateAndCompleteOneToManyMapping($property);
-        } else if ($property instanceof ManyToOneAssociationMetadata) {
-            $this->validateAndCompleteToOneAssociationMetadata($property);
-            $this->validateAndCompleteManyToOneMapping($property);
-        } else if ($property instanceof ManyToManyAssociationMetadata) {
-            $this->validateAndCompleteToManyAssociationMetadata($property);
-            $this->validateAndCompleteManyToManyMapping($property);
-        }
-
-        $sourceFieldName = $property->getName();
-
-        $this->assertPropertyNotMapped($sourceFieldName);
-
-        $this->properties[$sourceFieldName] = $property;
     }
 
     /**
