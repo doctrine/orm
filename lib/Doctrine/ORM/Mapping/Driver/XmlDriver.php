@@ -627,7 +627,7 @@ class XmlDriver extends FileDriver
                 foreach ($overrideElement->field as $fieldElement) {
                     $fieldMetadata = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, false);
 
-                    $metadata->setAttributeOverride($fieldMetadata);
+                    $metadata->setPropertyOverride($fieldMetadata);
                 }
             }
         }
@@ -700,7 +700,7 @@ class XmlDriver extends FileDriver
                     );
                 }
 
-                $metadata->setAssociationOverride($override);
+                $metadata->setPropertyOverride($override);
             }
         }
 

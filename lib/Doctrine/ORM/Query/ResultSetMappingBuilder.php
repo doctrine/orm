@@ -340,12 +340,19 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 } else {
                     $shortName    = $classMetadata->reflClass->getShortName();
                     $joinAlias    = strtolower($shortName[0]) . ++ $counter;
-                    $associations = $class->getAssociationsByTargetClass($classMetadata->name);
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
-                    foreach ($associations as $relation => $association) {
-                        $this->addJoinedEntityResult($association->getTargetEntity(), $joinAlias, $rootAlias, $relation);
+                    foreach ($class->getProperties() as $fieldName => $association) {
+                        if (! ($association instanceof AssociationMetadata)) {
+                            continue;
+                        }
+
+                        if ($association->getTargetEntity() !== $classMetadata->name) {
+                            continue;
+                        }
+
+                        $this->addJoinedEntityResult($association->getTargetEntity(), $joinAlias, $rootAlias, $fieldName);
                     }
                 }
 
