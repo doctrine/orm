@@ -516,8 +516,13 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups;
         self::assertFalse($user->groups->isInitialized(), "Pre-condition: lazy collection");
 
-        $criteria = Criteria::create()->setFirstResult(1)->setMaxResults(3);
-        $result   = $groups->matching($criteria);
+        $criteria = Criteria::create()
+            ->orderBy(['id' => Criteria::ASC])
+            ->setFirstResult(1)
+            ->setMaxResults(3)
+        ;
+
+        $result = $groups->matching($criteria);
 
         self::assertCount(3, $result);
 
