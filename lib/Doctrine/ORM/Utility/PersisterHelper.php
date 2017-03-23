@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query\QueryException;
 
 /**
@@ -38,46 +39,6 @@ use Doctrine\ORM\Query\QueryException;
  */
 class PersisterHelper
 {
-    /**
-     * @param string                 $fieldName
-     * @param ClassMetadata          $class
-     * @param EntityManagerInterface $em
-     *
-     * @return array
-     *
-     * @throws QueryException
-     */
-    public static function getTypeOfField($fieldName, ClassMetadata $class, EntityManagerInterface $em)
-    {
-        $property = $class->getProperty($fieldName);
-
-        if (! $property) {
-            return [];
-        }
-
-        if ($property instanceof FieldMetadata) {
-            return [$property->getType()];
-        }
-
-        $targetEntity = $property->getTargetEntity();
-        $targetClass  = $em->getClassMetadata($targetEntity);
-
-        if (! $property->isOwningSide()) {
-            return self::getTypeOfField($property->getMappedBy(), $targetClass, $em);
-        }
-
-        $types       = [];
-        $joinColumns = $property instanceof ManyToManyAssociationMetadata
-            ? $property->getJoinTable()->getJoinColumns()
-            : $property->getJoinColumns();
-
-        foreach ($joinColumns as $joinColumn) {
-            $types[] = self::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em);
-        }
-
-        return $types;
-    }
-
     /**
      * @param string                 $columnName
      * @param ClassMetadata          $class
@@ -93,8 +54,24 @@ class PersisterHelper
             $fieldName = $class->fieldNames[$columnName];
             $property  = $class->getProperty($fieldName);
 
-            if ($property instanceof FieldMetadata) {
-                return $property->getType();
+            switch (true) {
+                case ($property instanceof FieldMetadata):
+                    return $property->getType();
+
+                // Optimization: Do not loop through all properties later since we can recognize to-one owning scenario
+                case ($property instanceof ToOneAssociationMetadata):
+                    // We know this is the owning side of a to-one because we found columns in the class (join columns)
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        if ($joinColumn->getColumnName() !== $columnName) {
+                            continue;
+                        }
+
+                        $targetClass = $em->getClassMetadata($property->getTargetEntity());
+
+                        return self::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $em);
+                    }
+
+                    break;
             }
         }
 

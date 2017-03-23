@@ -55,7 +55,6 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\ORM\Query\AST\Join;
 use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
@@ -955,11 +954,15 @@ class UnitOfWork implements PropertyChangedListener
 
         $idGen = $class->idGenerator;
 
-        if ( ! $idGen->isPostInsertGenerator()) {
+        if (! $idGen->isPostInsertGenerator()) {
             $idValue = $idGen->generate($this->em, $entity);
 
-            if ( ! $idGen instanceof AssignedGenerator) {
-                $idValue = [$class->getSingleIdentifierFieldName() => $this->convertSingleFieldIdentifierToPHPValue($class, $idValue)];
+            if (! $idGen instanceof AssignedGenerator) {
+                $idField  = $class->getSingleIdentifierFieldName();
+                $property = $class->getProperty($idField);
+                $platform = $this->em->getConnection()->getDatabasePlatform();
+                $idValue  = $property->getType()->convertToPHPValue($idValue, $platform);
+                $idValue  = [$idField => $idValue];
 
                 $class->assignIdentifier($entity, $idValue);
             }
@@ -1078,11 +1081,11 @@ class UnitOfWork implements PropertyChangedListener
             // Persister returned post-insert IDs
             foreach ($postInsertIds as $postInsertId) {
                 $idField  = $class->getSingleIdentifierFieldName();
-                $idValue  = $this->convertSingleFieldIdentifierToPHPValue($class, $postInsertId['generatedId']);
                 $property = $class->getProperty($idField);
-
-                $entity  = $postInsertId['entity'];
-                $oid     = spl_object_hash($entity);
+                $platform = $this->em->getConnection()->getDatabasePlatform();
+                $idValue  = $property->getType()->convertToPHPValue($postInsertId['generatedId'], $platform);
+                $entity   = $postInsertId['entity'];
+                $oid      = spl_object_hash($entity);
 
                 $property->setValue($entity, $idValue);
 
@@ -1095,7 +1098,9 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($entities as $entity) {
-            $this->listenersInvoker->invoke($class, Events::postPersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
+            $eventArgs = new LifecycleEventArgs($entity, $this->em);
+
+            $this->listenersInvoker->invoke($class, Events::postPersist, $entity, $eventArgs, $invoke);
         }
     }
 
@@ -3558,21 +3563,5 @@ class UnitOfWork implements PropertyChangedListener
     public function hydrationComplete()
     {
         $this->hydrationCompleteHandler->hydrationComplete();
-    }
-
-    /**
-     * @param ClassMetadata $class
-     * @param mixed         $identifierValue
-     *
-     * @return mixed the identifier after type conversion
-     *
-     * @throws \Doctrine\ORM\Mapping\MappingException if the entity has more than a single identifier
-     */
-    private function convertSingleFieldIdentifierToPHPValue(ClassMetadata $class, $identifierValue)
-    {
-        $platform = $this->em->getConnection()->getDatabasePlatform();
-        $type     = $class->getTypeOfField($class->getSingleIdentifierFieldName());
-
-        return $type->convertToPHPValue($identifierValue, $platform);
     }
 }

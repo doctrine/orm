@@ -19,19 +19,12 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use BadMethodCallException;
-use Doctrine\Common\ClassLoader;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Utility\PersisterHelper;
-use InvalidArgumentException;
-use ReflectionClass;
-use RuntimeException;
 
 /**
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
@@ -315,7 +308,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * The ReflectionClass instance of the mapped class.
      *
-     * @var ReflectionClass
+     * @var \ReflectionClass
      */
     public $reflClass;
 
@@ -991,7 +984,7 @@ class ClassMetadata implements ClassMetadataInterface
 
             if ($uniqueConstraintColumns) {
                 if ( ! $this->table) {
-                    throw new RuntimeException(
+                    throw new \RuntimeException(
                         "ClassMetadata::setTable() has to be called before defining a one to one relationship."
                     );
                 }
@@ -1031,7 +1024,6 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param ToManyAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @throws RuntimeException
      * @throws MappingException
      */
     protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
@@ -1045,9 +1037,6 @@ class ClassMetadata implements ClassMetadataInterface
      * Validates & completes a one-to-one association mapping.
      *
      * @param OneToOneAssociationMetadata $property The association mapping to validate & complete.
-     *
-     * @throws \RuntimeException
-     * @throws MappingException
      */
     protected function validateAndCompleteOneToOneMapping(OneToOneAssociationMetadata $property)
     {
@@ -1059,7 +1048,6 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param ManyToOneAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @throws \RuntimeException
      * @throws MappingException
      */
     protected function validateAndCompleteManyToOneMapping(ManyToOneAssociationMetadata $property)
@@ -1075,7 +1063,6 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param OneToManyAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @throws \RuntimeException
      * @throws MappingException
      */
     protected function validateAndCompleteOneToManyMapping(OneToManyAssociationMetadata $property)
@@ -1104,7 +1091,6 @@ class ClassMetadata implements ClassMetadataInterface
      *
      * @param ManyToManyAssociationMetadata $property The association mapping to validate & complete.
      *
-     * @throws \RuntimeException
      * @throws MappingException
      */
     protected function validateAndCompleteManyToManyMapping(ManyToManyAssociationMetadata $property)
@@ -1450,22 +1436,6 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         $this->addProperty($property);
-    }
-
-    /**
-     * Gets the type of a field.
-     *
-     * @param string $fieldName
-     *
-     * @return \Doctrine\DBAL\Types\Type|string|null
-     *
-     * @todo 3.0 Remove this. PersisterHelper should fix it somehow
-     */
-    public function getTypeOfField($fieldName)
-    {
-        return isset($this->properties[$fieldName])
-            ? $this->properties[$fieldName]->getType()
-            : null;
     }
 
     /**
@@ -2287,7 +2257,7 @@ class ClassMetadata implements ClassMetadataInterface
     /**
      * {@inheritDoc}
      *
-     * @throws InvalidArgumentException
+     * @throws \InvalidArgumentException
      *
      * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
      */
@@ -2296,7 +2266,7 @@ class ClassMetadata implements ClassMetadataInterface
         $property = $this->properties[$assocName];
 
         if (! ($property instanceof AssociationMetadata)) {
-            throw new InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
+            throw new \InvalidArgumentException("Association name expected, '" . $assocName ."' is not an association.");
         }
 
         return $property->getTargetEntity();
@@ -2348,5 +2318,21 @@ class ClassMetadata implements ClassMetadataInterface
         }
 
         return $associations;
+    }
+
+    /**
+     * Gets the type of a field.
+     *
+     * @param string $fieldName
+     *
+     * @return \Doctrine\DBAL\Types\Type|string|null
+     *
+     * @todo guilhermeblanco Remove this method (it exists in Persistence repo).
+     */
+    public function getTypeOfField($fieldName)
+    {
+        return isset($this->properties[$fieldName])
+            ? $this->properties[$fieldName]->getType()
+            : null;
     }
 }
