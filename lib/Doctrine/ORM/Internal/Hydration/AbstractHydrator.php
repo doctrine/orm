@@ -445,38 +445,4 @@ abstract class AbstractHydrator
 
         return $this->metadataCache[$className];
     }
-
-    /**
-     * Register entity as managed in UnitOfWork.
-     *
-     * @param ClassMetadata $class
-     * @param object        $entity
-     * @param array         $data
-     *
-     * @return void
-     */
-    protected function registerManaged(ClassMetadata $class, $entity, array $data)
-    {
-        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
-        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
-        // $id = $this->identifierFlattener->flattenIdentifier($class, $data);
-        $id = [];
-
-        foreach ($class->identifier as $fieldName) {
-            $property = $class->getProperty($fieldName);
-
-            if (! ($property instanceof ToOneAssociationMetadata)) {
-                $id[$fieldName] = $data[$fieldName];
-
-                continue;
-            }
-
-            $joinColumns = $property->getJoinColumns();
-            $joinColumn  = reset($joinColumns);
-
-            $id[$fieldName] = $data[$joinColumn->getColumnName()];
-        }
-
-        $this->em->getUnitOfWork()->registerManaged($entity, $id, $data);
-    }
 }

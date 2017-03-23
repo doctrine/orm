@@ -2547,13 +2547,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function createEntity($className, array $data, &$hints = [])
     {
-        $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
-
-        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
-        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
-        $id = $this->identifierFlattener->flattenIdentifier($class, $data);
+        $class  = $this->em->getClassMetadata($className);
+        $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
+        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         if (isset($this->identityMap[$class->rootEntityName][$idHash])) {
             $entity = $this->identityMap[$class->rootEntityName][$idHash];

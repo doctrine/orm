@@ -266,7 +266,9 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         if (isset($this->hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
-            $this->registerManaged($this->metadataCache[$className], $this->hints[Query::HINT_REFRESH_ENTITY], $data);
+            $id = $this->identifierFlattener->flattenIdentifier($this->metadataCache[$className], $data);
+
+            $this->em->getUnitOfWork()->registerManaged($this->hints[Query::HINT_REFRESH_ENTITY], $id, $data);
         }
 
         $this->hints['fetchAlias'] = $dqlAlias;
@@ -282,27 +284,9 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function getEntityFromIdentityMap($className, array $data)
     {
-        // TODO: All of the following share similar logic, consider refactoring: AbstractHydrator::registerManaged,
-        // ObjectHydrator::getEntityFromIdentityMap and UnitOfWork::createEntity().
-        // $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         /* @var ClassMetadata $class */
         $class = $this->metadataCache[$className];
-        $id    = [];
-
-        foreach ($class->identifier as $fieldName) {
-            $property = $class->getProperty($fieldName);
-
-            if (! ($property instanceof ToOneAssociationMetadata)) {
-                $id[$fieldName] = $data[$fieldName];
-
-                continue;
-            }
-
-            $joinColumns = $property->getJoinColumns();
-            $joinColumn  = reset($joinColumns);
-
-            $id[$fieldName] = $data[$joinColumn->getColumnName()];
-        }
+        $id    = $this->identifierFlattener->flattenIdentifier($class, $data);
 
         return $this->uow->tryGetByIdHash(implode(' ', $id), $class->rootEntityName);
     }
