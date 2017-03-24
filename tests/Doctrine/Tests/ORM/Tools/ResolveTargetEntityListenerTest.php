@@ -41,8 +41,10 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
     public function testResolveTargetEntityListenerCanResolveTargetEntity()
     {
         $evm = $this->em->getEventManager();
+
         $this->listener->addResolveTargetEntity(ResolveTargetInterface::class, ResolveTargetEntity::class);
         $this->listener->addResolveTargetEntity(TargetInterface::class, TargetEntity::class);
+
         $evm->addEventSubscriber($this->listener);
 
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);

@@ -20,8 +20,8 @@
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\Persistence\Event\ManagerEventArgs;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Class that holds event arguments for a `onClassMetadataNotFound` event.

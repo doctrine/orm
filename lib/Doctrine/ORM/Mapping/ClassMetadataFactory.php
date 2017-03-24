@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\EntityManagerInterface;
@@ -118,7 +116,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function doLoadMetadata($class, $parent, $rootEntityFound, array $nonSuperclassParents)
+    protected function doLoadMetadata(
+        ClassMetadata $class,
+        ClassMetadata $parent = null,
+        bool $rootEntityFound,
+        array $nonSuperclassParents
+    )
     {
         /* @var $class ClassMetadata */
         /* @var $parent ClassMetadata */
@@ -247,12 +250,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * @param ClassMetadata               $class
-     * @param ClassMetadataInterface|null $parent
+     * @param ClassMetadata      $class
+     * @param ClassMetadata|null $parent
      *
      * @return void
      */
-    protected function completeRuntimeMetadata($class, $parent)
+    protected function completeRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null)
     {
         if ( ! $parent) {
             return;
@@ -297,14 +300,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Validate runtime metadata is correctly defined.
      *
-     * @param ClassMetadata               $class
-     * @param ClassMetadataInterface|null $parent
+     * @param ClassMetadata      $class
+     * @param ClassMetadata|null $parent
      *
      * @return void
      *
      * @throws MappingException
      */
-    protected function validateRuntimeMetadata($class, $parent)
+    protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null)
     {
         if (! $class->getReflectionClass()) {
             // only validate if there is a reflection class instance
@@ -759,18 +762,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function wakeupReflection(ClassMetadataInterface $class, ReflectionService $reflService)
+    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService)
     {
-        /* @var $class ClassMetadata */
         $class->wakeupReflection($reflService);
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function initializeReflection(ClassMetadataInterface $class, ReflectionService $reflService)
+    protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService)
     {
-        /* @var $class ClassMetadata */
         $class->initializeReflection($reflService);
     }
 
@@ -793,7 +794,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function isEntity(ClassMetadataInterface $class)
+    protected function isEntity(ClassMetadata $class)
     {
         return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }

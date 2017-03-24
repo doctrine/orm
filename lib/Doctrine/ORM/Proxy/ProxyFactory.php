@@ -77,6 +77,7 @@ class ProxyFactory extends AbstractProxyFactory
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
         $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
+
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
         $this->em                  = $em;
@@ -114,8 +115,8 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of initializing a proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $classMetadata
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $entityPersister
      *
      * @return \Closure
      *
@@ -168,8 +169,8 @@ class ProxyFactory extends AbstractProxyFactory
     /**
      * Creates a closure capable of finalizing state a cloned proxy
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ClassMetadata $classMetadata
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister    $entityPersister
+     * @param \Doctrine\ORM\Mapping\ClassMetadata             $classMetadata
+     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $entityPersister
      *
      * @return \Closure
      *
