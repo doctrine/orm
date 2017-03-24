@@ -1054,9 +1054,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory = $this->createClassMetadataFactory();
         $class   = $factory->getMetadataFor(City::class);
 
-        self::assertNotNull($class->cache);
-        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->cache->getUsage());
-        self::assertEquals('doctrine_tests_models_cache_city', $class->cache->getRegion());
+        self::assertNotNull($class->getCache());
+        self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->getCache()->getUsage());
+        self::assertEquals('doctrine_tests_models_cache_city', $class->getCache()->getRegion());
 
         self::assertArrayHasKey('state', $class->getProperties());
 
