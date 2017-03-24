@@ -1111,7 +1111,7 @@ class MyLocaleFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if (!in_array("LocaleAware", $targetEntity->reflClass->getInterfaceNames())) {
+        if (!in_array("LocaleAware", $targetEntity->getReflectionClass()->getInterfaceNames())) {
             return "";
         }
 

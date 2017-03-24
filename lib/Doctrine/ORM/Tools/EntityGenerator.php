@@ -889,15 +889,12 @@ public function __construct(<params>)
      */
     protected function getTraits(ClassMetadata $metadata)
     {
-        if (! ($metadata->reflClass !== null || class_exists($metadata->name))) {
+        if (! ($metadata->getReflectionClass() !== null || class_exists($metadata->name))) {
             return [];
         }
 
-        $reflClass = $metadata->reflClass === null
-            ? new \ReflectionClass($metadata->name)
-            : $metadata->reflClass;
-
-        $traits = [];
+        $reflClass = $metadata->getReflectionClass() ?? new \ReflectionClass($metadata->name);
+        $traits    = [];
 
         while ($reflClass !== false) {
             $traits = array_merge($traits, $reflClass->getTraits());

@@ -306,7 +306,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function validateRuntimeMetadata($class, $parent)
     {
-        if ( ! $class->reflClass ) {
+        if (! $class->getReflectionClass()) {
             // only validate if there is a reflection class instance
             return;
         }
@@ -352,8 +352,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function resolveDiscriminatorValue(ClassMetadata $metadata)
     {
-        if ($metadata->discriminatorValue || ! $metadata->discriminatorMap ||
-            $metadata->isMappedSuperclass || ! $metadata->reflClass || $metadata->reflClass->isAbstract()) {
+        if ($metadata->discriminatorValue || ! $metadata->discriminatorMap || $metadata->isMappedSuperclass ||
+            ! $metadata->getReflectionClass() || $metadata->getReflectionClass()->isAbstract()) {
             return;
         }
 

@@ -177,16 +177,16 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 
         self::assertEquals('scalarColumn', $rsm->getScalarAlias('scalarColumn'));
 
-        self::assertEquals('c0', $rsm->getEntityAlias('user_id'));
-        self::assertEquals('c0', $rsm->getEntityAlias('name'));
-        self::assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        self::assertEquals('e0', $rsm->getEntityAlias('user_id'));
+        self::assertEquals('e0', $rsm->getEntityAlias('name'));
+        self::assertEquals(CmsUser::class, $rsm->getClassName('e0'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('user_id'));
 
 
-        self::assertEquals('c1', $rsm->getEntityAlias('email_id'));
-        self::assertEquals('c1', $rsm->getEntityAlias('email'));
-        self::assertEquals(CmsEmail::class, $rsm->getClassName('c1'));
+        self::assertEquals('e1', $rsm->getEntityAlias('email_id'));
+        self::assertEquals('e1', $rsm->getEntityAlias('email'));
+        self::assertEquals(CmsEmail::class, $rsm->getClassName('e1'));
         self::assertEquals(CmsEmail::class, $rsm->getDeclaringClass('email'));
         self::assertEquals(CmsEmail::class, $rsm->getDeclaringClass('email_id'));
     }
@@ -229,11 +229,11 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 
         self::assertEquals('scalarColumn', $rsm->getScalarAlias('scalarColumn'));
-        self::assertEquals('c0', $rsm->getEntityAlias('id'));
-        self::assertEquals('c0', $rsm->getEntityAlias('name'));
-        self::assertEquals('c0', $rsm->getEntityAlias('status'));
-        self::assertEquals('c0', $rsm->getEntityAlias('username'));
-        self::assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        self::assertEquals('e0', $rsm->getEntityAlias('id'));
+        self::assertEquals('e0', $rsm->getEntityAlias('name'));
+        self::assertEquals('e0', $rsm->getEntityAlias('status'));
+        self::assertEquals('e0', $rsm->getEntityAlias('username'));
+        self::assertEquals(CmsUser::class, $rsm->getClassName('e0'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('id'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));
@@ -262,11 +262,11 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 
         $rsm->addNamedNativeQueryMapping($cm, $queryMapping);
 
-        self::assertEquals('c0', $rsm->getEntityAlias('id'));
-        self::assertEquals('c0', $rsm->getEntityAlias('name'));
-        self::assertEquals('c0', $rsm->getEntityAlias('status'));
-        self::assertEquals('c0', $rsm->getEntityAlias('username'));
-        self::assertEquals(CmsUser::class, $rsm->getClassName('c0'));
+        self::assertEquals('e0', $rsm->getEntityAlias('id'));
+        self::assertEquals('e0', $rsm->getEntityAlias('name'));
+        self::assertEquals('e0', $rsm->getEntityAlias('status'));
+        self::assertEquals('e0', $rsm->getEntityAlias('username'));
+        self::assertEquals(CmsUser::class, $rsm->getClassName('e0'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('id'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('name'));
         self::assertEquals(CmsUser::class, $rsm->getDeclaringClass('status'));

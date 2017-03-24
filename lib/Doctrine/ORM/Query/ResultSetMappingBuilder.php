@@ -283,8 +283,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     {
         $classMetadata = $this->em->getClassMetadata($resultClassName);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
-        $shortName     = $classMetadata->reflClass->getShortName();
-        $alias         = strtolower($shortName[0]).'0';
+        $alias         = 'e0';
 
         $this->addEntityResult($class->name, $alias);
 
@@ -327,19 +326,17 @@ class ResultSetMappingBuilder extends ResultSetMapping
     {
         $counter        = 0;
         $resultMapping  = $class->getSqlResultSetMapping($resultSetMappingName);
-        $rootShortName  = $class->reflClass->getShortName();
-        $rootAlias      = strtolower($rootShortName[0]) . $counter;
+        $rootAlias      = 'e' . $counter;
 
         if (isset($resultMapping['entities'])) {
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
 
-                if ($class->reflClass->name === $classMetadata->reflClass->name) {
+                if ($class->name === $classMetadata->name) {
                     $this->addEntityResult($classMetadata->name, $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
-                    $shortName    = $classMetadata->reflClass->getShortName();
-                    $joinAlias    = strtolower($shortName[0]) . ++ $counter;
+                    $joinAlias = 'e' . ++ $counter;
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
