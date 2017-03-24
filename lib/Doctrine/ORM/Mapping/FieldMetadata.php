@@ -26,7 +26,7 @@ use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Sequencing\Generator;
 
-class FieldMetadata extends ColumnMetadata implements Property
+class FieldMetadata extends LocalColumnMetadata implements Property
 {
     /** @var ClassMetadata */
     protected $declaringClass;

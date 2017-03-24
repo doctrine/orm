@@ -20,26 +20,70 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Builder;
+namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
-
-class VersionFieldMetadataExporter extends FieldMetadataExporter
+abstract class LocalColumnMetadata extends ColumnMetadata
 {
-    const VARIABLE = '$versionField';
+    /**
+     * @var integer
+     */
+    protected $length;
 
     /**
-     * @param VersionFieldMetadata $metadata
-     *
-     * @return string
+     * @var integer
      */
-    protected function exportInstantiation(VersionFieldMetadata $metadata) : string
+    protected $scale;
+
+    /**
+     * @var integer
+     */
+    protected $precision;
+
+    /**
+     * @return int
+     */
+    public function getLength()
     {
-        return sprintf(
-            'new Mapping\VersionFieldMetadata("%s", "%s", Type::getType("%s"));',
-            $metadata->getName(),
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
-        );
+        return $this->length;
+    }
+
+    /**
+     * @param int $length
+     */
+    public function setLength(int $length)
+    {
+        $this->length = $length;
+    }
+
+    /**
+     * @return int
+     */
+    public function getScale()
+    {
+        return $this->scale;
+    }
+
+    /**
+     * @param int $scale
+     */
+    public function setScale(int $scale)
+    {
+        $this->scale = $scale;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPrecision()
+    {
+        return $this->precision;
+    }
+
+    /**
+     * @param int $precision
+     */
+    public function setPrecision(int $precision)
+    {
+        $this->precision = $precision;
     }
 }
