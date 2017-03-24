@@ -28,6 +28,11 @@ namespace Doctrine\ORM\Mapping;
 abstract class ComponentMetadata
 {
     /**
+     * @var CacheMetadata|null
+     */
+    protected $cache = null;
+
+    /**
      * The ReflectionClass instance of the component class.
      *
      * @var \ReflectionClass|null
@@ -35,10 +40,58 @@ abstract class ComponentMetadata
     protected $reflectionClass;
 
     /**
+     * @param CacheMetadata|null $cache
+     *
+     * @return void
+     */
+    public function setCache(?CacheMetadata $cache = null)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @return CacheMetadata|null
+     */
+    public function getCache(): ?CacheMetadata
+    {
+        return $this->cache;
+    }
+
+    /**
      * @return \ReflectionClass|null
      */
     public function getReflectionClass() : ?\ReflectionClass
     {
         return $this->reflectionClass;
+    }
+
+    /**
+     * Handles metadata cloning nicely.
+     */
+    public function __clone()
+    {
+        if ($this->cache) {
+            $this->cache = clone $this->cache;
+        }
+    }
+
+    /**
+     * Determines which fields get serialized.
+     *
+     * It is only serialized what is necessary for best unserialization performance.
+     * That means any metadata properties that are not set or empty or simply have
+     * their default value are NOT serialized.
+     *
+     * @return array The names of all the fields that should be serialized.
+     */
+    public function __sleep()
+    {
+        $serialized = [];
+
+        if ($this->cache) {
+            $serialized[] = 'cache';
+        }
+
+        return $serialized;
     }
 }

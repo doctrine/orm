@@ -3066,7 +3066,7 @@ class UnitOfWork implements PropertyChangedListener
                 throw new \RuntimeException('No persister found for entity.');
         }
 
-        if ($this->hasCache && $class->cache !== null) {
+        if ($this->hasCache && $class->getCache()) {
             $persister = $this->em->getConfiguration()
                 ->getSecondLevelCacheConfiguration()
                 ->getCacheFactory()

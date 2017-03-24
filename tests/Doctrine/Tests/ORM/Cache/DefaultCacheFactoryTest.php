@@ -89,7 +89,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
+            ->with($this->equalTo($metadata->getCache()))
             ->will($this->returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
@@ -113,7 +113,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
+            ->with($this->equalTo($metadata->getCache()))
             ->will($this->returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
@@ -137,7 +137,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $this->factory->expects($this->once())
             ->method('getRegion')
-            ->with($this->equalTo($metadata->cache))
+            ->with($this->equalTo($metadata->getCache()))
             ->will($this->returnValue($region));
 
         $cachedPersister = $this->factory->buildCachedEntityPersister($em, $persister, $metadata);
