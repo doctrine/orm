@@ -47,7 +47,7 @@ proper quoting of parameters.
         public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
         {
             // Check if the entity implements the LocalAware interface
-            if (!$targetEntity->reflClass->implementsInterface('LocaleAware')) {
+            if (!$targetEntity->getReflectionClass()->implementsInterface('LocaleAware')) {
                 return "";
             }
 

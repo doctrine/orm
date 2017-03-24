@@ -45,7 +45,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class ClassMetadata implements ClassMetadataInterface
+class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
 {
     /**
      * READ-ONLY: The name of the entity class.
@@ -306,13 +306,6 @@ class ClassMetadata implements ClassMetadataInterface
     public $cache = null;
 
     /**
-     * The ReflectionClass instance of the mapped class.
-     *
-     * @var \ReflectionClass
-     */
-    public $reflClass;
-
-    /**
      * NamingStrategy determining the default column and table names.
      *
      * @var \Doctrine\ORM\Mapping\NamingStrategy
@@ -417,8 +410,7 @@ class ClassMetadata implements ClassMetadataInterface
      * their default value are NOT serialized.
      *
      * Parts that are also NOT serialized because they can not be properly unserialized:
-     *      - reflClass (ReflectionClass)
-     *      - reflFields (ReflectionProperty array)
+     * - reflectionClass
      *
      * @return array The names of all the fields that should be serialized.
      */
@@ -526,8 +518,8 @@ class ClassMetadata implements ClassMetadataInterface
     public function wakeupReflection($reflService)
     {
         // Restore ReflectionClass and properties
-        $this->reflClass    = $reflService->getClass($this->name);
-        $this->instantiator = $this->instantiator ?: new Instantiator();
+        $this->reflectionClass = $reflService->getClass($this->name);
+        $this->instantiator    = $this->instantiator ?: new Instantiator();
 
         $parentReflFields = [];
 
@@ -579,10 +571,10 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function initializeReflection($reflService)
     {
-        $this->reflClass = $reflService->getClass($this->name);
+        $this->reflectionClass = $reflService->getClass($this->name);
 
-        if ($this->reflClass) {
-            $this->name = $this->rootEntityName = $this->reflClass->getName();
+        if ($this->reflectionClass) {
+            $this->name = $this->rootEntityName = $this->reflectionClass->getName();
         }
 
         if (empty($this->table->getName())) {
@@ -656,14 +648,6 @@ class ClassMetadata implements ClassMetadataInterface
                 }
             }
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getReflectionClass()
-    {
-        return $this->reflClass;
     }
 
     /**
@@ -2070,11 +2054,11 @@ class ClassMetadata implements ClassMetadataInterface
      */
     public function fullyQualifiedClassName($className)
     {
-        if (empty($className) || ! $this->reflClass) {
+        if (empty($className) || ! $this->reflectionClass) {
             return $className;
         }
 
-        $namespace = $this->reflClass->getNamespaceName();
+        $namespace = $this->reflectionClass->getNamespaceName();
 
         if ($className !== null && strpos($className, '\\') === false && $namespace) {
             return $namespace . '\\' . $className;
@@ -2126,8 +2110,8 @@ class ClassMetadata implements ClassMetadataInterface
                 $fieldMapping['columnName'] = $this->namingStrategy->embeddedFieldToColumnName(
                     $property,
                     $fieldMapping['columnName'],
-                    $this->reflClass->name,
-                    $embeddable->reflClass->name
+                    $this->reflectionClass->getName(),
+                    $embeddable->reflectionClass->getName()
                 );
             }
 

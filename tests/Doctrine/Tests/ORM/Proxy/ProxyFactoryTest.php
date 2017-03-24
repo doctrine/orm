@@ -82,7 +82,7 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $cm = new ClassMetadata(AbstractClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
-        self::assertNotNull($cm->reflClass);
+        self::assertNotNull($cm->getReflectionClass());
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
