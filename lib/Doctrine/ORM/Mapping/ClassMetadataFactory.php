@@ -208,8 +208,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             $this->addInheritedIndexes($class, $parent);
 
-            if ($parent->cache) {
-                $class->cache = clone $parent->cache;
+            if ($parent->getCache()) {
+                $class->setCache(clone $parent->getCache());
             }
 
             if ( ! empty($parent->namedQueries)) {

@@ -301,11 +301,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
     public $versionProperty = null;
 
     /**
-     * @var null|CacheMetadata
-     */
-    public $cache = null;
-
-    /**
      * NamingStrategy determining the default column and table names.
      *
      * @var \Doctrine\ORM\Mapping\NamingStrategy
@@ -381,9 +376,7 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
      */
     public function __clone()
     {
-        if ($this->cache) {
-            $this->cache = clone $this->cache;
-        }
+        parent::__clone();
 
         foreach ($this->properties as $name => $property) {
             $this->properties[$name] = clone $property;
@@ -416,8 +409,10 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
      */
     public function __sleep()
     {
+        $serialized = parent::__sleep();
+
         // This metadata is always serialized/cached.
-        $serialized = [
+        $serialized = array_merge($serialized, [
             'properties',
             'fieldNames',
             //'embeddedClasses',
@@ -427,7 +422,7 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
             'table',
             'rootEntityName',
             'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
-        ];
+        ]);
 
         // The rest of the metadata is only serialized if necessary.
         if ($this->changeTrackingPolicy != ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
@@ -489,10 +484,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
 
         if ($this->readOnly) {
             $serialized[] = 'readOnly';
-        }
-
-        if ($this->cache) {
-            $serialized[] = 'cache';
         }
 
         return $serialized;
