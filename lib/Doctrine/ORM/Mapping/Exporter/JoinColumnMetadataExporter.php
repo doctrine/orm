@@ -22,22 +22,37 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
-class VersionFieldMetadataExporter extends FieldMetadataExporter
+class JoinColumnMetadataExporter extends ColumnMetadataExporter
 {
-    const VARIABLE = '$versionField';
+    const VARIABLE = '$joinColumn';
 
     /**
-     * @param VersionFieldMetadata $metadata
+     * {@inheritdoc}
+     */
+    public function export($value, int $indentationLevel = 0) : string
+    {
+        /** @var JoinColumnMetadata $value */
+        $variableExporter = new VariableExporter();
+        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference  = $indentation . static::VARIABLE;
+        $lines            = [];
+
+        $lines[] = parent::export($value, $indentationLevel);
+
+        return implode(PHP_EOL, $lines);
+    }
+
+    /**
+     * @param JoinColumnMetadata $metadata
      *
      * @return string
      */
-    protected function exportInstantiation(VersionFieldMetadata $metadata) : string
+    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
     {
         return sprintf(
-            'new Mapping\VersionFieldMetadata("%s", "%s", Type::getType("%s"));',
-            $metadata->getName(),
+            'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
             $metadata->getColumnName(),
             $metadata->getTypeName()
         );

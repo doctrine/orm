@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\FieldMetadata;
 
-class FieldMetadataExporter extends ColumnMetadataExporter
+class FieldMetadataExporter extends LocalColumnMetadataExporter
 {
     const VARIABLE = '$field';
 
@@ -33,7 +33,7 @@ class FieldMetadataExporter extends ColumnMetadataExporter
      *
      * @return string
      */
-    protected function exportInstantiation(FieldMetadata $metadata)
+    protected function exportInstantiation(FieldMetadata $metadata) : string
     {
         return sprintf(
             'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',
