@@ -271,7 +271,7 @@ Extending on the locale example of the documentation:
     {
         public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
         {
-            if (!$targetEntity->reflClass->implementsInterface('LocaleAware')) {
+            if (!$targetEntity->getReflectionClass()->implementsInterface('LocaleAware')) {
                 return "";
             }
 
