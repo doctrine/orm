@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 
-class DiscriminatorColumnMetadataExporter extends ColumnMetadataExporter
+class DiscriminatorColumnMetadataExporter extends LocalColumnMetadataExporter
 {
     const VARIABLE = '$discriminatorColumn';
 
@@ -33,7 +33,7 @@ class DiscriminatorColumnMetadataExporter extends ColumnMetadataExporter
      *
      * @return string
      */
-    protected function exportInstantiation(DiscriminatorColumnMetadata $metadata)
+    protected function exportInstantiation(DiscriminatorColumnMetadata $metadata) : string
     {
         return sprintf(
             'new Mapping\DiscriminatorColumnMetadata("%s", Type::getType("%s"));',

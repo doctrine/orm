@@ -22,24 +22,26 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use Doctrine\ORM\Mapping\LocalColumnMetadata;
 
-class VersionFieldMetadataExporter extends FieldMetadataExporter
+abstract class LocalColumnMetadataExporter extends ColumnMetadataExporter
 {
-    const VARIABLE = '$versionField';
-
     /**
-     * @param VersionFieldMetadata $metadata
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function exportInstantiation(VersionFieldMetadata $metadata) : string
+    public function export($value, int $indentationLevel = 0) : string
     {
-        return sprintf(
-            'new Mapping\VersionFieldMetadata("%s", "%s", Type::getType("%s"));',
-            $metadata->getName(),
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
-        );
+        /** @var LocalColumnMetadata $value */
+        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference  = $indentation . static::VARIABLE;
+        $lines            = [];
+
+        $lines[] = parent::export($value, $indentationLevel);
+
+        $lines[] = $objectReference . '->setLength(' . $value->getLength() . ');';
+        $lines[] = $objectReference . '->setScale(' . $value->getScale() . ');';
+        $lines[] = $objectReference . '->setPrecision(' . $value->getPrecision() . ');';
+
+        return implode(PHP_EOL, $lines);
     }
 }

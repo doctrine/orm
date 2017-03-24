@@ -22,6 +22,6 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-final class DiscriminatorColumnMetadata extends ColumnMetadata
+final class DiscriminatorColumnMetadata extends LocalColumnMetadata
 {
 }

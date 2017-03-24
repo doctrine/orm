@@ -22,21 +22,35 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
-class VersionFieldMetadataExporter extends FieldMetadataExporter
+class ClassMetadataExporter implements Exporter
 {
-    const VARIABLE = '$versionField';
+    /**
+     * {@inheritdoc}
+     */
+    public function export($value, int $indentationLevel = 0) : string
+    {
+        /** @var ClassMetadata $value */
+        $variableExporter = new VariableExporter();
+        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference  = $indentation . static::VARIABLE;
+        $lines            = [];
+
+        $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
+
+        return implode(PHP_EOL, $lines);
+    }
 
     /**
-     * @param VersionFieldMetadata $metadata
+     * @param ClassMetadata $metadata
      *
      * @return string
      */
-    protected function exportInstantiation(VersionFieldMetadata $metadata) : string
+    protected function exportInstantiation(ClassMetadata $metadata) : string
     {
         return sprintf(
-            'new Mapping\VersionFieldMetadata("%s", "%s", Type::getType("%s"));',
+            'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',
             $metadata->getName(),
             $metadata->getColumnName(),
             $metadata->getTypeName()

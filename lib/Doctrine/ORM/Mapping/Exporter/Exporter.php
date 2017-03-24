@@ -24,11 +24,13 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 interface Exporter
 {
+    const INDENTATION = '    ';
+
     /**
      * @param mixed $value
      * @param int   $indentationLevel
      *
      * @return string
      */
-    public function export($value, int $indentationLevel = 0);
+    public function export($value, int $indentationLevel = 0) : string;
 }
