@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\DoctrineTestCase;
 
 /**
@@ -26,7 +26,7 @@ class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 
         self::assertNull($args->getFoundMetadata());
 
-        /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $this->createMock(ClassMetadata::class);
 
         $args->setFoundMetadata($metadata);
