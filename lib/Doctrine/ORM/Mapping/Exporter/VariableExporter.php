@@ -29,7 +29,7 @@ class VariableExporter implements Exporter
     /**
      * {@inheritdoc}
      */
-    public function export($value, int $indentationLevel = 0)
+    public function export($value, int $indentationLevel = 0) : string
     {
         if (! is_array($value)) {
             return var_export($value, true);

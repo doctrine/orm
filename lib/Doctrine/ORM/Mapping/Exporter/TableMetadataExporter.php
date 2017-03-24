@@ -22,42 +22,52 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\TableMetadata;
 
-abstract class ColumnMetadataExporter implements Exporter
+class TableMetadataExporter implements Exporter
 {
-    const VARIABLE = '$column';
+    const VARIABLE = '$table';
 
     /**
      * {@inheritdoc}
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var ColumnMetadata $value */
+        /** @var TableMetadata $value */
         $variableExporter = new VariableExporter();
         $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . static::VARIABLE;
-        $lines            = [];
+        $lines = [];
 
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
 
-        if (! empty($value->getColumnDefinition())) {
-            $lines[] = $objectReference. '->setColumnDefinition("' . $value->getColumnDefinition() . '");';
+        if (! empty($value->getSchema())) {
+            $lines[] = $objectReference . '->setSchema("' . $value->getSchema() . '");';
         }
 
-        $lines[] = $objectReference . '->setTableName("' . $value->getTableName() . '");';
+        foreach ($value->getIndexes() as $index) {
+            $lines[] = $objectReference . '->addIndex(' . ltrim($variableExporter->export($index, $indentationLevel + 1)) . ');';
+        }
+
+        foreach ($value->getUniqueConstraints() as $uniqueConstraint) {
+            $lines[] = $objectReference . '->addUniqueConstraint(' . ltrim($variableExporter->export($uniqueConstraint, $indentationLevel + 1)) . ');';
+        }
+
         $lines[] = $objectReference . '->setOptions(' . ltrim($variableExporter->export($value->getOptions(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setPrimaryKey(' . ltrim($variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setNullable(' . ltrim($variableExporter->export($value->isNullable(), $indentationLevel + 1)) . ');';
-        $lines[] = $objectReference . '->setUnique(' . ltrim($variableExporter->export($value->isUnique(), $indentationLevel + 1)) . ');';
 
         return implode(PHP_EOL, $lines);
     }
 
     /**
-     * @param ColumnMetadata $metadata
+     * @param TableMetadata $metadata
      *
      * @return string
      */
-    abstract protected function exportInstantiation(ColumnMetadata $metadata) : string;
+    protected function exportInstantiation(TableMetadata $metadata) : string
+    {
+        return sprintf(
+            'new Mapping\TableMetadata("%s");',
+            $metadata->getName()
+        );
+    }
 }

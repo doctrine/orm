@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 
-class ColumnMetadata
+abstract class ColumnMetadata
 {
     /**
      * @var string
@@ -45,21 +45,6 @@ class ColumnMetadata
      * @var string
      */
     protected $columnDefinition;
-
-    /**
-     * @var integer
-     */
-    protected $length;
-
-    /**
-     * @var integer
-     */
-    protected $scale;
-
-    /**
-     * @var integer
-     */
-    protected $precision;
 
     /**
      * @var array
@@ -167,54 +152,6 @@ class ColumnMetadata
     public function setColumnDefinition(string $columnDefinition)
     {
         $this->columnDefinition = $columnDefinition;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLength()
-    {
-        return $this->length;
-    }
-
-    /**
-     * @param int $length
-     */
-    public function setLength(int $length)
-    {
-        $this->length = $length;
-    }
-
-    /**
-     * @return int
-     */
-    public function getScale()
-    {
-        return $this->scale;
-    }
-
-    /**
-     * @param int $scale
-     */
-    public function setScale(int $scale)
-    {
-        $this->scale = $scale;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPrecision()
-    {
-        return $this->precision;
-    }
-
-    /**
-     * @param int $precision
-     */
-    public function setPrecision(int $precision)
-    {
-        $this->precision = $precision;
     }
 
     /**
