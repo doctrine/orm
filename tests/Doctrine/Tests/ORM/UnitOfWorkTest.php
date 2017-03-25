@@ -175,7 +175,13 @@ class UnitOfWorkTest extends OrmTestCase
 
         self::assertTrue($this->unitOfWork->isScheduledForDirtyCheck($entity));
 
-        self::assertEquals(['data' => ['thedata', 'newdata']], $this->unitOfWork->getEntityChangeSet($entity));
+        self::assertEquals(
+            [
+                'data' => ['thedata', 'newdata'],
+                'transient' => [null, 'newtransientvalue'],
+            ],
+            $this->unitOfWork->getEntityChangeSet($entity)
+        );
 
         $item = new NotifyChangedRelatedItem();
         $entity->getItems()->add($item);
