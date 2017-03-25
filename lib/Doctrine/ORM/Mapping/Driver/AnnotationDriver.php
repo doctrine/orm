@@ -380,6 +380,12 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $metadata->mapEmbedded($mapping);
 
                     break;
+
+                default:
+                    $property = new Mapping\TransientMetadata($reflProperty->getName());
+
+                    $metadata->addProperty($property);
+                    break;
             }
         }
 

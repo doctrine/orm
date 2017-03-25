@@ -76,30 +76,29 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
-                if ($property instanceof FieldMetadata) {
-                    $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
+                switch (true) {
+                    case ($property instanceof FieldMetadata):
+                        $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
+                        break;
 
-                    continue;
-                }
+                    case ($property instanceof ToOneAssociationMetadata):
+                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
-                if ($property instanceof ToManyAssociationMetadata || ! $property->isOwningSide()) {
-                    continue;
-                }
+                        foreach ($property->getJoinColumns() as $joinColumn) {
+                            if (! $joinColumn->getType()) {
+                                $joinColumn->setType(
+                                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
+                                );
+                            }
 
-                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                            $columnList[] = $this->getSelectJoinColumnSQL(
+                                $joinColumn->getTableName(),
+                                $joinColumn->getColumnName(),
+                                $joinColumn->getType()
+                            );
+                        }
 
-                foreach ($property->getJoinColumns() as $joinColumn) {
-                    if (! $joinColumn->getType()) {
-                        $joinColumn->setType(
-                            PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
-                        );
-                    }
-
-                    $columnList[] = $this->getSelectJoinColumnSQL(
-                        $joinColumn->getTableName(),
-                        $joinColumn->getColumnName(),
-                        $joinColumn->getType()
-                    );
+                        break;
                 }
             }
         }

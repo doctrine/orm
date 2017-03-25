@@ -788,8 +788,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
         $fieldName  = $property->getName();
         $columnName = $property->getColumnName();
 
-        $property->setDeclaringClass($this);
-
         if (empty($columnName)) {
             $columnName = $this->namingStrategy->propertyToColumnName($fieldName, $this->name);
 
@@ -850,7 +848,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
 
         $targetEntity = ltrim($this->fullyQualifiedClassName($targetEntity), '\\');
 
-        $property->setDeclaringClass($this);
         $property->setSourceEntity($this->name);
         $property->setOwningSide($property->getMappedBy() === null);
         $property->setTargetEntity($targetEntity);
@@ -1367,10 +1364,20 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
             throw MappingException::invalidOverrideFieldName($this->name, $fieldName);
         }
 
-        $originalProperty = $this->getProperty($fieldName);
+        $originalProperty          = $this->getProperty($fieldName);
+        $originalPropertyClassName = get_class($originalProperty);
+
+        // If moving from transient to persistent, assume it's a new property
+        if ($originalPropertyClassName === TransientMetadata::class) {
+            unset($this->properties[$fieldName]);
+
+            $this->addProperty($property);
+
+            return;
+        }
 
         // Do not allow to change property type
-        if (get_class($originalProperty) !== get_class($property)) {
+        if ($originalPropertyClassName !== get_class($property)) {
             throw MappingException::invalidOverridePropertyType($this->name, $fieldName);
         }
 
@@ -1500,6 +1507,8 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
             throw MappingException::missingFieldName($this->name);
         }
 
+        $property->setDeclaringClass($this);
+
         switch (true) {
             case ($property instanceof FieldMetadata):
                 $this->validateAndCompleteFieldMapping($property);
@@ -1528,6 +1537,8 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
                 $this->validateAndCompleteToManyAssociationMetadata($property);
                 $this->validateAndCompleteManyToManyMapping($property);
                 break;
+
+            // Transient properties are ignored on purpose here! =)
         }
 
         // Check for duplicated property
