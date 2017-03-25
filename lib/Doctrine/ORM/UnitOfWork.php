@@ -46,9 +46,9 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\Property;
-use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\Persisters\Collection\ManyToManyPersister;
 use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -295,24 +295,18 @@ class UnitOfWork implements PropertyChangedListener
     private $hydrationCompleteHandler;
 
     /**
-     * @var ReflectionPropertiesGetter
-     */
-    private $reflectionPropertiesGetter;
-
-    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em                         = $em;
-        $this->eventManager               = $em->getEventManager();
-        $this->listenersInvoker           = new ListenersInvoker($em);
-        $this->hasCache                   = $em->getConfiguration()->isSecondLevelCacheEnabled();
-        $this->identifierFlattener        = new IdentifierFlattener($this, $em->getMetadataFactory());
-        $this->hydrationCompleteHandler   = new HydrationCompleteHandler($this->listenersInvoker, $em);
-        $this->reflectionPropertiesGetter = new ReflectionPropertiesGetter(new RuntimeReflectionService());
+        $this->em                       = $em;
+        $this->eventManager             = $em->getEventManager();
+        $this->listenersInvoker         = new ListenersInvoker($em);
+        $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
+        $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
 
     /**
@@ -973,10 +967,21 @@ class UnitOfWork implements PropertyChangedListener
         $actualData = [];
 
         foreach ($class->getProperties() as $name => $property) {
-            if ((! $property->isPrimaryKey() || $class->generatorType !== GeneratorType::IDENTITY)
-                && ($class->versionProperty === null || $name !== $class->versionProperty->getName())
-                && ! $class->isCollectionValuedAssociation($name)) {
-                $actualData[$name] = $property->getValue($entity);
+            switch (true) {
+                case ($property instanceof VersionFieldMetadata):
+                    // Ignore version field
+                    break;
+
+                case ($property instanceof FieldMetadata):
+                    if (! $property->isPrimaryKey() || $class->generatorType !== GeneratorType::IDENTITY) {
+                        $actualData[$name] = $property->getValue($entity);
+                    }
+
+                    break;
+
+                case ($property instanceof ToOneAssociationMetadata):
+                    $actualData[$name] = $property->getValue($entity);
+                    break;
             }
         }
 
@@ -3406,13 +3411,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($this->reflectionPropertiesGetter->getProperties($class->name) as $reflectionProperty) {
-            $name = $reflectionProperty->name;
-
-            $reflectionProperty->setAccessible(true);
-
-            $property = $class->getProperty($name);
-
+        foreach ($class->getProperties() as $property) {
             switch (true) {
                 case ($property instanceof FieldMetadata):
                     if (! $property->isPrimaryKey()) {
@@ -3498,14 +3497,14 @@ class UnitOfWork implements PropertyChangedListener
 
                 default:
                     // Non-persistent properties are handled here. Copy them as-is
-                    $reflectionProperty->setValue($managedCopy, $reflectionProperty->getValue($entity));
+                    $property->setValue($managedCopy, $property->getValue($entity));
 
                     break;
             }
 
             if ($class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
                 // Just treat all properties as changed, there is no other choice.
-                $this->propertyChanged($managedCopy, $name, null, $property->getValue($managedCopy));
+                $this->propertyChanged($managedCopy, $property->getName(), null, $property->getValue($managedCopy));
             }
         }
     }

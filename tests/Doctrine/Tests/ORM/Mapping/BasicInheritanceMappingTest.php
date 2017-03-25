@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -64,7 +65,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertTrue($class->isInheritedProperty('mapped1'));
         self::assertTrue($class->isInheritedProperty('mapped2'));
 
-        self::assertNull($class->getProperty('transient'));
+        self::assertNotNull($class->getProperty('transient'));
+        self::assertInstanceOf(TransientMetadata::class, $class->getProperty('transient'));
 
         self::assertArrayHasKey('mappedRelated1', $class->getProperties());
     }
