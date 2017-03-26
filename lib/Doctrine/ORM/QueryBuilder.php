@@ -118,6 +118,13 @@ class QueryBuilder
      */
     private $joinRootAliases = [];
 
+    /**
+     * The map of query hints.
+     *
+     * @var array
+     */
+    private $_hints = [];
+
      /**
      * Whether to use second level cache, if available.
      *
@@ -265,6 +272,55 @@ class QueryBuilder
     }
 
     /**
+     * Sets a query hint.
+     *
+     * @param string $name  The name of the hint.
+     * @param mixed  $value The value of the hint.
+     *
+     * @return self
+     */
+    public function setHint($name, $value)
+    {
+        $this->_hints[$name] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Gets the value of a query hint. If the hint name is not recognized, FALSE is returned.
+     *
+     * @param string $name The name of the hint.
+     *
+     * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
+     */
+    public function getHint($name)
+    {
+        return $this->_hints[$name] ?? false;
+    }
+
+    /**
+     * Check if the query has a hint
+     *
+     * @param string $name The name of the hint
+     *
+     * @return bool False if the query does not have any hint
+     */
+    public function hasHint($name)
+    {
+        return isset($this->_hints[$name]);
+    }
+
+    /**
+     * Return the key value map of query hints that are currently set.
+     *
+     * @return array
+     */
+    public function getHints()
+    {
+        return $this->_hints;
+    }
+
+    /**
      * Gets the type of the currently built query.
      *
      * @return integer
@@ -368,6 +424,12 @@ class QueryBuilder
 
         if ($this->cacheRegion) {
             $query->setCacheRegion($this->cacheRegion);
+        }
+
+        if ($this->_hints) {
+            foreach ($this->_hints as $name => $value) {
+                $query->setHint($name, $value);
+            }
         }
 
         return $query;

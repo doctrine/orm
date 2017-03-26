@@ -1115,6 +1115,47 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertEquals(Cache::MODE_REFRESH, $query->getCacheMode());
     }
 
+    public function testQueryHints()
+    {
+        $defaultQueryBuilder = $this->_em->createQueryBuilder()
+            ->select('s')
+            ->from(State::class, 's');
+
+        $this->assertFalse($defaultQueryBuilder->hasHint('foo'));
+        $this->assertFalse($defaultQueryBuilder->getHint('foo'));
+        $this->assertEquals([], $defaultQueryBuilder->getHints());
+
+        $defaultQuery = $defaultQueryBuilder->getQuery();
+
+        $this->assertFalse($defaultQuery->hasHint('foo'));
+
+        $builder = $this->_em->createQueryBuilder()
+            ->select('s')
+            ->from(State::class, 's')
+            ->setHint('foo', 'bar')
+            ->setHint('foo_reg', $value = new \stdClass())
+        ;
+
+        $this->assertTrue($builder->hasHint('foo'));
+        $this->assertTrue($builder->hasHint('foo_reg'));
+        $this->assertFalse($builder->hasHint('fool'));
+        $this->assertEquals(['foo' => 'bar', 'foo_reg' => $value], $builder->getHints());
+
+        $this->assertEquals('bar', $builder->getHint('foo'));
+        $this->assertEquals($value, $builder->getHint('foo_reg'));
+        $this->assertFalse($builder->getHint('fool'));
+
+        $query = $builder->getQuery();
+
+        $this->assertTrue($query->hasHint('foo'));
+        $this->assertTrue($query->hasHint('foo_reg'));
+        $this->assertFalse($query->hasHint('fool'));
+
+        $this->assertEquals('bar', $query->getHint('foo'));
+        $this->assertEquals($value, $query->getHint('foo_reg'));
+        $this->assertFalse($query->getHint('fool'));
+    }
+
     /**
      * @group DDC-2253
      */
