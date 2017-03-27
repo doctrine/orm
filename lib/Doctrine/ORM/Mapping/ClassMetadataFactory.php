@@ -146,13 +146,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        // Invoke driver
-        try {
-            $this->driver->loadMetadataForClass($class->getName(), $class);
-        } catch (ReflectionException $e) {
-            throw MappingException::reflectionFailure($class->getName(), $e);
-        }
-
         // If this class has a parent the id generator strategy is inherited.
         // However this is only true if the hierarchy of parents contains the root entity,
         // if it consists of mapped superclasses these don't necessarily include the id field.
@@ -195,6 +188,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 unset($this->embeddablesActiveNesting[$class->name]);
             }
+        }
+
+        // Invoke driver
+        try {
+            $this->driver->loadMetadataForClass($class->getName(), $class);
+        } catch (ReflectionException $e) {
+            throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
         if ($parent) {
