@@ -100,7 +100,6 @@ $versionFieldMetadata = new Mapping\VersionFieldMetadata('version');
 $versionFieldMetadata->setType(Type::getType('integer'));
 
 $metadata->addProperty($versionFieldMetadata);
-$metadata->setVersionProperty($versionFieldMetadata);
 
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
