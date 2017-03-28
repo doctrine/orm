@@ -23,7 +23,7 @@ annotation or XML drivers instead.
 * ``ClassMetadata::getQuotedJoinTableName``
 * ``ClassMetadata::getQuotedIdentifierColumnNames``
 * ``ClassMetadata::getIdentifierColumnNames`` => Use ``ClassMetadata::getIdentifierColumns($entityManager)``
-* ``ClassMetadata::setVersionMetadata`` => Use ``ClassMetadata::setVersionProperty``
+* ``ClassMetadata::setVersionMetadata``
 * ``ClassMetadata::setVersioned``
 * ``ClassMetadata::invokeLifecycleCallbacks``
 * ``ClassMetadata::isInheritedField`` => Use ``ClassMetadata::getProperty()::isInherited()``

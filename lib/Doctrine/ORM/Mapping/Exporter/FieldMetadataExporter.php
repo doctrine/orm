@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 
 class FieldMetadataExporter extends LocalColumnMetadataExporter
 {
-    const VARIABLE = '$field';
+    const VARIABLE = '$property';
 
     /**
      * @param FieldMetadata $metadata

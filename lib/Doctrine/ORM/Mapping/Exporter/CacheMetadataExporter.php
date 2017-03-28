@@ -22,41 +22,38 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\CacheMetadata;
 
-class JoinColumnMetadataExporter extends ColumnMetadataExporter
+class CacheMetadataExporter implements Exporter
 {
-    const VARIABLE = '$joinColumn';
+    const VARIABLE = '$cache';
 
     /**
      * {@inheritdoc}
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var JoinColumnMetadata $value */
+        /** @var CacheMetadata $value */
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . static::VARIABLE;
         $lines           = [];
 
-        $lines[] = parent::export($value, $indentationLevel);
-        $lines[] = $objectReference . '->setReferencedColumnName("' . $value->getReferencedColumnName() . '");';
-        $lines[] = $objectReference . '->setAliasedName("' . $value->getAliasedName() . '");';
-        $lines[] = $objectReference . '->setOnDelete("' . $value->getOnDelete() . '");';
+        $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
 
         return implode(PHP_EOL, $lines);
     }
 
     /**
-     * @param JoinColumnMetadata $metadata
+     * @param CacheMetadata $metadata
      *
      * @return string
      */
-    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
+    protected function exportInstantiation(CacheMetadata $metadata) : string
     {
         return sprintf(
-            'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
+            'new Mapping\CacheMetadata(Mapping\CacheUsage::%s, "%s");',
+            strtoupper($metadata->getUsage()),
+            $metadata->getRegion()
         );
     }
 }

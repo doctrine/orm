@@ -1334,7 +1334,6 @@ class User
         $fieldMetadata->setType(Type::getType('integer'));
 
         $metadata->addProperty($fieldMetadata);
-        $metadata->setVersionProperty($fieldMetadata);
         $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         $joinColumns = [];
