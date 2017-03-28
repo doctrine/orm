@@ -287,10 +287,6 @@ class XmlDriver extends FileDriver
                 $fieldMetadata    = $this->convertFieldElementToFieldMetadata($fieldElement, $fieldName, $isFieldVersioned);
 
                 $metadata->addProperty($fieldMetadata);
-
-                if ($fieldMetadata instanceof VersionFieldMetadata) {
-                    $metadata->setVersionProperty($fieldMetadata);
-                }
             }
         }
 

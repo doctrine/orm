@@ -22,41 +22,30 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
-class JoinColumnMetadataExporter extends ColumnMetadataExporter
+abstract class ToOneAssociationMetadataExporter extends AssociationMetadataExporter
 {
-    const VARIABLE = '$joinColumn';
-
     /**
      * {@inheritdoc}
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var JoinColumnMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
-        $lines           = [];
+        /** @var ToOneAssociationMetadata $value */
+        $joinColumnExporter = new JoinColumnMetadataExporter();
+        $indentation        = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference    = $indentation . static::VARIABLE;
+        $lines              = [];
 
         $lines[] = parent::export($value, $indentationLevel);
-        $lines[] = $objectReference . '->setReferencedColumnName("' . $value->getReferencedColumnName() . '");';
-        $lines[] = $objectReference . '->setAliasedName("' . $value->getAliasedName() . '");';
-        $lines[] = $objectReference . '->setOnDelete("' . $value->getOnDelete() . '");';
+
+        foreach ($value->getJoinColumns() as $joinColumn) {
+            $lines[] = null;
+            $lines[] = $joinColumnExporter->export($joinColumn, $indentationLevel);
+            $lines[] = null;
+            $lines[] = $objectReference . '->addJoinColumn(' . $joinColumnExporter::VARIABLE . ');';
+        }
 
         return implode(PHP_EOL, $lines);
-    }
-
-    /**
-     * @param JoinColumnMetadata $metadata
-     *
-     * @return string
-     */
-    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
-    {
-        return sprintf(
-            'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
-        );
     }
 }

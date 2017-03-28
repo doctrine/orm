@@ -318,12 +318,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
 
                     $metadata->addProperty($fieldMetadata);
-
-                    // Check for Version
-                    if ($fieldMetadata instanceof Mapping\VersionFieldMetadata) {
-                        $metadata->setVersionProperty($fieldMetadata);
-                    }
-
                     break;
 
                 case isset($propertyAnnotations[Annotation\OneToOne::class]):
@@ -334,7 +328,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
 
                     $metadata->addProperty($assocMetadata);
-
                     break;
 
                 case isset($propertyAnnotations[Annotation\ManyToOne::class]):
@@ -345,7 +338,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
 
                     $metadata->addProperty($assocMetadata);
-
                     break;
 
                 case isset($propertyAnnotations[Annotation\OneToMany::class]):
@@ -356,7 +348,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
 
                     $metadata->addProperty($assocMetadata);
-
                     break;
 
                 case isset($propertyAnnotations[Annotation\ManyToMany::class]):
@@ -367,7 +358,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     );
 
                     $metadata->addProperty($assocMetadata);
-
                     break;
 
                 case isset($propertyAnnotations[Annotation\Embedded::class]):
@@ -378,7 +368,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
 
                     $metadata->mapEmbedded($mapping);
-
                     break;
 
                 default:
