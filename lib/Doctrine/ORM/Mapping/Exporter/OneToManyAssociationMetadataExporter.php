@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,35 +20,20 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping\Builder;
 
-class ManyToManyAssociationMetadata extends ToManyAssociationMetadata
+use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+
+class OneToManyAssociationMetadataExporter extends ToManyAssociationMetadataExporter
 {
-    /** @var null|JoinTableMetadata */
-    private $joinTable;
-
     /**
-     * @param null|JoinTableMetadata $joinTable
+     * {@inheritdoc}
      */
-    public function setJoinTable(JoinTableMetadata $joinTable = null)
+    protected function exportInstantiation(OneToManyAssociationMetadata $metadata) : string
     {
-        $this->joinTable = $joinTable;
-    }
-
-    /**
-     * @return JoinTableMetadata|null
-     */
-    public function getJoinTable()
-    {
-        return $this->joinTable;
-    }
-
-    public function __clone()
-    {
-        parent::__clone();
-
-        if ($this->joinTable) {
-            $this->joinTable = clone $this->joinTable;
-        }
+        return sprintf(
+            'new Mapping\OneToManyAssociationMetadata("%s");',
+            $metadata->getName()
+        );
     }
 }

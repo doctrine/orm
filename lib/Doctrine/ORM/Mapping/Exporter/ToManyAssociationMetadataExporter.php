@@ -22,41 +22,29 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 
-class JoinColumnMetadataExporter extends ColumnMetadataExporter
+abstract class ToManyAssociationMetadataExporter extends AssociationMetadataExporter
 {
-    const VARIABLE = '$joinColumn';
-
     /**
      * {@inheritdoc}
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var JoinColumnMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
-        $lines           = [];
+        /** @var ToManyAssociationMetadata $value */
+        $variableExporter = new VariableExporter();
+        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference  = $indentation . static::VARIABLE;
+        $lines            = [];
 
         $lines[] = parent::export($value, $indentationLevel);
-        $lines[] = $objectReference . '->setReferencedColumnName("' . $value->getReferencedColumnName() . '");';
-        $lines[] = $objectReference . '->setAliasedName("' . $value->getAliasedName() . '");';
-        $lines[] = $objectReference . '->setOnDelete("' . $value->getOnDelete() . '");';
+
+        if (! empty($value->getIndexedBy())) {
+            $lines[] = $objectReference . '->setIndexedBy("' . $value->getIndexedBy() . '"");';
+        }
+
+        $lines[] = $objectReference . '->setOderBy(' . $variableExporter->export($value->getOrderBy(), $indentationLevel + 1) . ');';
 
         return implode(PHP_EOL, $lines);
-    }
-
-    /**
-     * @param JoinColumnMetadata $metadata
-     *
-     * @return string
-     */
-    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
-    {
-        return sprintf(
-            'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
-        );
     }
 }

@@ -291,7 +291,7 @@ class FieldBuilder
         $property = $cm->getProperty($this->name);
 
         if (isset($this->mapping['version']) && $this->mapping['version']) {
-            $cm->setVersionProperty($property);
+            $cm->versionProperty = $property;
         }
 
         if ($this->generatorDefinition) {

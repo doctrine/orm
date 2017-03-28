@@ -779,8 +779,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
      *
      * @param FieldMetadata $property
      *
-     * @return array The updated mapping.
-     *
      * @throws MappingException If something is wrong with the mapping.
      */
     protected function validateAndCompleteFieldMapping(FieldMetadata $property)
@@ -826,6 +824,38 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
         }
 
         $this->fieldNames[$columnName] = $fieldName;
+    }
+
+    /**
+     * Validates & completes the basic mapping information for field mapping.
+     *
+     * @param VersionFieldMetadata $property
+     *
+     * @throws MappingException If something is wrong with the mapping.
+     */
+    protected function validateAndCompleteVersionFieldMapping(VersionFieldMetadata $property)
+    {
+        $this->versionProperty = $property;
+
+        $options = $property->getOptions();
+
+        if (isset($options['default'])) {
+            return;
+        }
+
+        if (in_array($property->getTypeName(), ['integer', 'bigint', 'smallint'])) {
+            $property->setOptions(array_merge($options, ['default' => 1]));
+
+            return;
+        }
+
+        if ($property->getTypeName() === 'datetime') {
+            $property->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
+
+            return;
+        }
+
+        throw MappingException::unsupportedOptimisticLockingType($property->getType());
     }
 
     /**
@@ -1510,6 +1540,11 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
         $property->setDeclaringClass($this);
 
         switch (true) {
+            case ($property instanceof VersionFieldMetadata):
+                $this->validateAndCompleteFieldMapping($property);
+                $this->validateAndCompleteVersionFieldMapping($property);
+                break;
+
             case ($property instanceof FieldMetadata):
                 $this->validateAndCompleteFieldMapping($property);
                 break;
@@ -1576,6 +1611,10 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
         $this->assertPropertyNotMapped($property->getName());
 
         $this->properties[$property->getName()] = $inheritedProperty;
+
+        if ($inheritedProperty instanceof VersionFieldMetadata) {
+            $this->versionProperty = $inheritedProperty;
+        }
     }
 
     /**
@@ -1976,41 +2015,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
         }
 
         $this->generatorDefinition = $definition;
-    }
-
-    /**
-     * Sets the version field mapping used for versioning. Sets the default
-     * value to use depending on the column type.
-     *
-     * @param VersionFieldMetadata $versionFieldMetadata
-     *
-     * @return void
-     *
-     * @throws MappingException
-     */
-    public function setVersionProperty(VersionFieldMetadata $versionFieldMetadata)
-    {
-        $this->versionProperty = $versionFieldMetadata;
-
-        $options = $versionFieldMetadata->getOptions();
-
-        if (isset($options['default'])) {
-            return;
-        }
-
-        if (in_array($versionFieldMetadata->getTypeName(), ['integer', 'bigint', 'smallint'])) {
-            $versionFieldMetadata->setOptions(array_merge($options, ['default' => 1]));
-
-            return;
-        }
-
-        if ($versionFieldMetadata->getTypeName() === 'datetime') {
-            $versionFieldMetadata->setOptions(array_merge($options, ['default' => 'CURRENT_TIMESTAMP']));
-
-            return;
-        }
-
-        throw MappingException::unsupportedOptimisticLockingType($versionFieldMetadata->getType());
     }
 
     /**

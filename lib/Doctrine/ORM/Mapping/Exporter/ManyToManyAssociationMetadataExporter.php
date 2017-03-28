@@ -22,41 +22,42 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 
-class JoinColumnMetadataExporter extends ColumnMetadataExporter
+class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExporter
 {
-    const VARIABLE = '$joinColumn';
-
     /**
      * {@inheritdoc}
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var JoinColumnMetadata $value */
-        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference = $indentation . static::VARIABLE;
-        $lines           = [];
+        /** @var ManyToManyAssociationMetadata $value */
+        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference  = $indentation . static::VARIABLE;
+        $lines            = [];
 
         $lines[] = parent::export($value, $indentationLevel);
-        $lines[] = $objectReference . '->setReferencedColumnName("' . $value->getReferencedColumnName() . '");';
-        $lines[] = $objectReference . '->setAliasedName("' . $value->getAliasedName() . '");';
-        $lines[] = $objectReference . '->setOnDelete("' . $value->getOnDelete() . '");';
+
+        if (null !== $value->getJoinTable()) {
+            $joinTableExporter = new JoinColumnMetadataExporter();
+
+            $lines[] = null;
+            $lines[] = $joinTableExporter->export($value->getJoinTable(), $indentationLevel);
+            $lines[] = null;
+            $lines[] = $objectReference . '->setJoinTable(' . $joinTableExporter::VARIABLE . ');';
+        }
 
         return implode(PHP_EOL, $lines);
     }
 
     /**
-     * @param JoinColumnMetadata $metadata
-     *
-     * @return string
+     * {@inheritdoc}
      */
-    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
+    protected function exportInstantiation(ManyToManyAssociationMetadata $metadata) : string
     {
         return sprintf(
-            'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
+            'new Mapping\ManyToManyAssociationMetadata("%s");',
+            $metadata->getName()
         );
     }
 }

@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\VersionFieldMetadata;
 
 class VersionFieldMetadataExporter extends FieldMetadataExporter
 {
-    const VARIABLE = '$versionField';
+    const VARIABLE = '$versionProperty';
 
     /**
      * @param VersionFieldMetadata $metadata
