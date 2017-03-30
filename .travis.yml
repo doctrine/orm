@@ -17,6 +17,8 @@ before_script:
   - if [[ $TRAVIS_PHP_VERSION -lt '7.0' && $TRAVIS_PHP_VERSION != 'hhv*' ]]; then phpenv config-rm xdebug.ini; fi
   - composer self-update
   - composer install --prefer-source
+  - if [ "$DEPENDENCIES" != "low" ]; then composer update; fi;
+  - if [ "$DEPENDENCIES" == "low" ]; then composer update --prefer-lowest; fi;
 
 script:
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
@@ -37,6 +39,10 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: 10.1
+    - php: 7.1
+      env:
+        - DB=sqlite
+        - DEPENDENCIES='low'
     - php: hhvm
       sudo: true
       dist: trusty
