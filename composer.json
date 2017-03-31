@@ -26,7 +26,7 @@
     },
     "require-dev": {
         "symfony/yaml": "~2.3|~3.0",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^6.0"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"

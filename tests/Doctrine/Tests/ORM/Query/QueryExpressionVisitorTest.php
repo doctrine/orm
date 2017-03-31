@@ -9,13 +9,14 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test for QueryExpressionVisitor
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
-class QueryExpressionVisitorTest extends \PHPUnit_Framework_TestCase
+class QueryExpressionVisitorTest extends TestCase
 {
     /**
      * @var QueryExpressionVisitor

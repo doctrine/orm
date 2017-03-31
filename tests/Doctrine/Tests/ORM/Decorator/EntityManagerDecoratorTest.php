@@ -5,8 +5,9 @@ namespace Doctrine\Tests\ORM\Decorator;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use PHPUnit\Framework\TestCase;
 
-class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
+class EntityManagerDecoratorTest extends TestCase
 {
     const VOID_METHODS = [
         'persist',
