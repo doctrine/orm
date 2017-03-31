@@ -21,6 +21,7 @@
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": "^2.7.1",
         "doctrine/cache": "~1.5",
+        "doctrine/annotations": "~1.2",
         "symfony/console": "~2.5|~3.0"
     },
     "require-dev": {
