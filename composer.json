@@ -24,7 +24,7 @@
         "symfony/console": "~2.5|~3.0"
     },
     "require-dev": {
-        "symfony/yaml": "~2.3|~3.0",
+        "symfony/yaml": "^3.2@stable",
         "phpunit/phpunit": "^5.4"
     },
     "suggest": {
