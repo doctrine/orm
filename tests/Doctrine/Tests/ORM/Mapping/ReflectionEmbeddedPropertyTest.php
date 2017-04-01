@@ -9,6 +9,7 @@ use Doctrine\Tests\Models\Mapping\Entity;
 use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
 use Doctrine\Tests\Models\Reflection\ArrayObjectExtendingClass;
 use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
+use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 /**
@@ -16,7 +17,7 @@ use ReflectionProperty;
  *
  * @covers \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty
  */
-class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
+class ReflectionEmbeddedPropertyTest extends TestCase
 {
     /**
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to

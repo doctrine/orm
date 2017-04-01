@@ -24,6 +24,7 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         try {
             $parserResult = $this->parseDql($dql);
+            $this->addToAssertionCount(1);
         } catch (QueryException $e) {
             if ($debug) {
                 echo $e->getTraceAsString() . PHP_EOL;
@@ -44,6 +45,7 @@ class LanguageRecognitionTest extends OrmTestCase
                 echo $e->getMessage() . PHP_EOL;
                 echo $e->getTraceAsString() . PHP_EOL;
             }
+            $this->addToAssertionCount(1);
         }
     }
 

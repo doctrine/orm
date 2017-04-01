@@ -16,6 +16,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\Tests\Models;
+use PHPUnit\Framework\AssertionFailedError;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -750,15 +751,15 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     }
 
     /**
-     * @param \Exception $e
+     * @param \Throwable $e
      *
      * @return void
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
-    protected function onNotSuccessfulTest($e)
+    protected function onNotSuccessfulTest(\Throwable $e)
     {
-        if ($e instanceof \PHPUnit_Framework_AssertionFailedError) {
+        if ($e instanceof AssertionFailedError) {
             throw $e;
         }
 
