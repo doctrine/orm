@@ -724,7 +724,18 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $evm->addEventListener(array('onFlush'), new \Doctrine\ORM\Tools\DebugUnitOfWorkListener());
         }
 
-        return \Doctrine\ORM\EntityManager::create($conn, $config);
+        // reset EntityManager singleton
+        // ONLY FOR TESTS, NEVER DO THIS YOURSELF
+        $reflection = new \ReflectionProperty(EntityManager::class, 'god');
+        $reflection->setAccessible(TRUE);
+        $reflection->setValue(NULL);
+
+        // rename variables to match globals
+        /** @noinspection PhpUnusedLocalVariableInspection Liar! It's global! */
+        $configuration = $config;
+        /** @noinspection PhpUnusedLocalVariableInspection Liar! It's global! */
+        $connection = $conn;
+        return \Doctrine\ORM\EntityManager::getInstance();
     }
 
     /**
