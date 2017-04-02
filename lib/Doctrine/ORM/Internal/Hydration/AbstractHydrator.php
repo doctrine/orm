@@ -290,10 +290,11 @@ abstract class AbstractHydrator
                     if(
                         isset($cacheKeyInfo['discriminatorColumn']) && 
                         isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
-                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
+                        $data[$cacheKeyInfo['discriminatorColumn']] !== $cacheKeyInfo['discriminatorValue']
                     ){
                         break;
                     }
+
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
                     // Per definition it cannot be that a field is defined several times and has several values.
