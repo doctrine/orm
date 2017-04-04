@@ -167,7 +167,7 @@
   </xs:complexType>
 
   <xs:complexType name="entity">
-    <xs:sequence>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="1"/>
       <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:element name="indexes" type="orm:indexes" minOccurs="0"/>
@@ -189,7 +189,7 @@
       <xs:element name="association-overrides" type="orm:association-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="attribute-overrides" type="orm:attribute-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:sequence>
+    </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="table" type="orm:tablename" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
