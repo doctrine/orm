@@ -20,56 +20,50 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Builder;
+namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\Factory\NamingStrategy;
-use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Proxy\Proxy;
 
-class FieldMetadataBuilder extends ColumnMetadataBuilder
+class DefaultClassMetadataResolver implements ClassMetadataResolver
 {
-    /** @var string */
-    protected $name;
-
-    /** @var  */
-    private $namingStrategy;
-
-    public function __construct(NamingStrategy $namingStrategy = null)
-    {
-        parent::__construct();
-
-        $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
-    }
+    /**
+     * @var string
+     */
+    private $namespace;
 
     /**
-     * @param string $name
+     * @var string
+     */
+    private $directory;
+
+    /**
+     * DefaultClassMetadataResolver constructor.
      *
-     * @return self
+     * @param string $namespace
+     * @param string $directory
      */
-    public function withName(string $name)
+    public function __construct(string $namespace, string $directory)
     {
-        $this->name = $name;
-
-        return $this;
+        $this->namespace = ltrim($namespace, '\\');
+        $this->directory = rtrim($this->directory, DIRECTORY_SEPARATOR);
     }
 
     /**
-     * @return FieldMetadata
+     * {@inheritdoc}
      */
-    public function build()
+    public function resolveMetadataClassName(string $className)
     {
-        if (empty($this->columnName)) {
-            $this->columnName = $this->namingStrategy->propertyToColumnName($this->name);
-        }
-
-        return parent::build();
+        // Reuse "generateProxyClassName", since its logic is the same as intended here
+        return ClassUtils::generateProxyClassName($className, $this->namespace);
     }
 
     /**
-     * @return FieldMetadata
+     * {@inheritdoc}
      */
-    protected function createMetadataObject()
+    public function resolveMetadataClassPath(string $className)
     {
-        return new FieldMetadata($this->name); // new FieldMetadata($this->name, $this->columnName, $this->type);
+        return $this->directory . DIRECTORY_SEPARATOR . Proxy::MARKER
+            . str_replace('\\', '', $className) . '.php';
     }
 }

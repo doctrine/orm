@@ -40,7 +40,7 @@ $tableMetadata->addUniqueConstraint(
 $tableMetadata->addOption('foo', 'bar');
 $tableMetadata->addOption('baz', ['key' => 'val']);
 
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 

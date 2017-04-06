@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
-use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;

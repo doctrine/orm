@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
-use Doctrine\ORM\Mapping\NamingStrategy;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\NamingStrategy;
+use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\Tests\ORM\Mapping\NamingStrategy\JoinColumnClassNamingStrategy;
 use Doctrine\Tests\OrmTestCase;
 

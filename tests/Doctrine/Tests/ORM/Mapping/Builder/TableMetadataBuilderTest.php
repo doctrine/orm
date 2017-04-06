@@ -100,7 +100,7 @@ class TableMetadataBuilderTest extends OrmTestCase
         );
     }
 
-    public function testSetPrimaryTableRelated()
+    public function testSetTableRelated()
     {
         $this->builder->withUniqueConstraint('users_idx', ['username', 'name']);
         $this->builder->withIndex('users_idx', ['username', 'name']);
