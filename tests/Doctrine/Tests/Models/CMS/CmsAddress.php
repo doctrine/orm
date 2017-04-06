@@ -132,7 +132,7 @@ class CmsAddress
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('company_person');
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 

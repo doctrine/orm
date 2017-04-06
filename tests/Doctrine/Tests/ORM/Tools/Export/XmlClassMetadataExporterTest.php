@@ -69,7 +69,7 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd"
 >
-  <entity name="entityTest">
+  <entity name="entityTest" table="entityTest">
     <id name="id" type="integer" column="id">
       <generator strategy="SEQUENCE"/>
       <sequence-generator sequence-name="seq_entity_test_id" allocation-size="5"/>
@@ -105,7 +105,7 @@ XML;
         $expectedFileContent = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-  <entity name="entityTest">
+  <entity name="entityTest" table="entityTest">
     <field name="myField" type="string" column="my_field">
       <options>
         <option name="default">default_string</option>

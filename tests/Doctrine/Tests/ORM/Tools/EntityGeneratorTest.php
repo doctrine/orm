@@ -86,7 +86,7 @@ class EntityGeneratorTest extends OrmTestCase
             ]
         );
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         // Property: "name"
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -186,7 +186,7 @@ class EntityGeneratorTest extends OrmTestCase
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('entity_type');
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));

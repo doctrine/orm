@@ -9,7 +9,7 @@ $tableMetadata->setName('cms_users');
 $tableMetadata->addOption('engine', 'MyISAM');
 $tableMetadata->addOption('foo', ['bar' => 'baz']);
 
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);

@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
 
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 
 /**
  * Stub naming strategy to verify `joinColumnName` proper behavior

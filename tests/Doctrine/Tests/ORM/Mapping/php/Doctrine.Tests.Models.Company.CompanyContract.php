@@ -8,7 +8,7 @@ $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('company_contracts');
 
 /* @var $metadata ClassMetadata */
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::JOINED);
 
 $discrColumn = new Mapping\DiscriminatorColumnMetadata();

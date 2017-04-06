@@ -8,11 +8,11 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\UnderscoreNamingStrategy;
 use Doctrine\Tests\Models\CMS;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
@@ -450,7 +450,7 @@ class ClassMetadataTest extends OrmTestCase
         $tableMetadata->setSchema('foo');
         $tableMetadata->setName('bar');
 
-        $cm->setPrimaryTable($tableMetadata);
+        $cm->setTable($tableMetadata);
 
         self::assertEquals('foo_bar_id_tmp', $cm->getTemporaryIdTableName());
     }
