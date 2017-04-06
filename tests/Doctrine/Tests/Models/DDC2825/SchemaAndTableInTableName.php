@@ -28,7 +28,7 @@ class SchemaAndTableInTableName
         $tableMetadata->setName('implicit_table');
         $tableMetadata->setSchema('implicit_schema');
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 

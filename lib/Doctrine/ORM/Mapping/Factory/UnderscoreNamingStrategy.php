@@ -18,28 +18,65 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping\Factory;
 
 /**
- * The default NamingStrategy
+ * Naming strategy implementing the underscore naming convention.
+ * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
  *
- *
+ * 
  * @link    www.doctrine-project.org
  * @since   2.3
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class DefaultNamingStrategy implements NamingStrategy
+class UnderscoreNamingStrategy implements NamingStrategy
 {
+    /**
+     * @var integer
+     */
+    private $case;
+
+    /**
+     * Underscore naming strategy construct.
+     *
+     * @param integer $case CASE_LOWER | CASE_UPPER
+     */
+    public function __construct($case = CASE_LOWER)
+    {
+        $this->case = $case;
+    }
+
+    /**
+     * @return integer CASE_LOWER | CASE_UPPER
+     */
+    public function getCase()
+    {
+        return $this->case;
+    }
+
+    /**
+     * Sets string case CASE_LOWER | CASE_UPPER.
+     * Alphabetic characters converted to lowercase or uppercase.
+     * 
+     * @param integer $case
+     *
+     * @return void
+     */
+    public function setCase($case)
+    {
+        $this->case = $case;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function classToTableName($className)
     {
         if (strpos($className, '\\') !== false) {
-            return substr($className, strrpos($className, '\\') + 1);
+            $className = substr($className, strrpos($className, '\\') + 1);
         }
 
-        return $className;
+        return $this->underscore($className);
     }
 
     /**
@@ -47,7 +84,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function propertyToColumnName($propertyName, $className = null)
     {
-        return $propertyName;
+        return $this->underscore($propertyName);
     }
 
     /**
@@ -55,7 +92,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $propertyName.'_'.$embeddedColumnName;
+        return $this->underscore($propertyName).'_'.$embeddedColumnName;
     }
 
     /**
@@ -63,7 +100,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName()
     {
-        return 'id';
+        return $this->case === CASE_UPPER ?  'ID' : 'id';
     }
 
     /**
@@ -71,7 +108,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinColumnName($propertyName, $className = null)
     {
-        return $propertyName . '_' . $this->referenceColumnName();
+        return $this->underscore($propertyName) . '_' . $this->referenceColumnName();
     }
 
     /**
@@ -79,16 +116,31 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
     {
-        return strtolower($this->classToTableName($sourceEntity) . '_' .
-            $this->classToTableName($targetEntity));
+        return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
-
+    
     /**
      * {@inheritdoc}
      */
     public function joinKeyColumnName($entityName, $referencedColumnName = null)
     {
-        return strtolower($this->classToTableName($entityName) . '_' .
-            ($referencedColumnName ?: $this->referenceColumnName()));
+        return $this->classToTableName($entityName) . '_' .
+                ($referencedColumnName ?: $this->referenceColumnName());
+    }
+    
+    /**
+     * @param string $string
+     *
+     * @return string
+     */
+    private function underscore($string)
+    {
+        $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
+
+        if ($this->case === CASE_UPPER) {
+            return strtoupper($string);
+        }
+
+        return strtolower($string);
     }
 }

@@ -9,7 +9,7 @@ $tableMetadata->setSchema('implicit_schema');
 $tableMetadata->setName('implicit_table');
 
 /* @var $metadata ClassMetadata */
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');

@@ -19,7 +19,7 @@ class ExplicitSchemaAndTable
         $tableMetadata->setSchema('explicit_schema');
         $tableMetadata->setName('explicit_table');
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
 

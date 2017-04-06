@@ -276,7 +276,7 @@ class CmsUser
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('cms_users');
 
-        $metadata->setPrimaryTable($tableMetadata);
+        $metadata->setTable($tableMetadata);
 
         $metadata->addNamedNativeQuery(
             [

@@ -283,7 +283,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('group');
 
-        $cm1->setPrimaryTable($tableMetadata);
+        $cm1->setTable($tableMetadata);
 
         // Add a mapped field
         $fieldMetadata = new Mapping\FieldMetadata('id');

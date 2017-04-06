@@ -22,9 +22,9 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Mapping\NamingStrategy;
 
 class JoinColumnMetadataBuilder extends ColumnMetadataBuilder
 {

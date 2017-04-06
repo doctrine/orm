@@ -11,7 +11,7 @@ use Doctrine\Tests\Models\Cache\Travel;
 $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('cache_city');
 
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 $metadata->setIdGeneratorType(Mapping\GeneratorType::IDENTITY);
