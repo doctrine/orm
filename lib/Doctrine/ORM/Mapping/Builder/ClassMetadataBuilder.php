@@ -144,7 +144,7 @@ class ClassMetadataBuilder
      */
     public function withTable(TableMetadata $tableMetadata)
     {
-        $this->cm->setPrimaryTable($tableMetadata);
+        $this->cm->setTable($tableMetadata);
 
         return $this;
     }

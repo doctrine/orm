@@ -91,7 +91,7 @@ class PhpExporter extends AbstractExporter
             }
 
             $lines[] = null;
-            $lines[] = '$metadata->setPrimaryTable($table);';
+            $lines[] = '$metadata->setTable($table);';
         }
 
         if ($metadata->discriminatorColumn) {

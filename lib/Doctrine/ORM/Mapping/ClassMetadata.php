@@ -24,6 +24,8 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
+use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -45,7 +47,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
+class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetadataInterface
 {
     /**
      * READ-ONLY: The name of the entity class.
@@ -303,7 +305,7 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
     /**
      * NamingStrategy determining the default column and table names.
      *
-     * @var \Doctrine\ORM\Mapping\NamingStrategy
+     * @var \Doctrine\ORM\Mapping\Factory\NamingStrategy
      */
     protected $namingStrategy;
 
@@ -323,9 +325,11 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
     {
         $this->name           = $entityName;
         $this->rootEntityName = $entityName;
-        $this->table          = new TableMetadata();
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
+        $this->table          = new TableMetadata();
         $this->instantiator   = new Instantiator();
+
+        $this->table->setName($this->namingStrategy->classToTableName($entityName));
     }
 
     /**
@@ -566,10 +570,6 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
 
         if ($this->reflectionClass) {
             $this->name = $this->rootEntityName = $this->reflectionClass->getName();
-        }
-
-        if (empty($this->table->getName())) {
-            $this->table->setName($this->namingStrategy->classToTableName($this->name));
         }
     }
 
@@ -1475,15 +1475,11 @@ class ClassMetadata extends ComponentMetadata implements ClassMetadataInterface
     }
 
     /**
-     * Sets the primary table metadata.
-     *
-     * @param TableMetadata $tableMetadata
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function setPrimaryTable(TableMetadata $tableMetadata)
+    public function setTable(TableMetadata $table)
     {
-        $this->table = $tableMetadata;
+        $this->table = $table;
     }
 
     /**

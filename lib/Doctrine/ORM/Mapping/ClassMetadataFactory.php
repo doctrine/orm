@@ -127,7 +127,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         /* @var $parent ClassMetadata */
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $class->setPrimaryTable($parent->table);
+                $class->setTable($parent->table);
             }
 
             $this->addInheritedProperties($class, $parent);
@@ -202,7 +202,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $class->setPrimaryTable($parent->table);
+                $class->setTable($parent->table);
             }
 
             $this->addInheritedIndexes($class, $parent);

@@ -7,7 +7,7 @@ $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('company_person');
 
 /* @var $metadata ClassMetadata */
-$metadata->setPrimaryTable($tableMetadata);
+$metadata->setTable($tableMetadata);
 
 $metadata->addNamedNativeQuery(
     [
