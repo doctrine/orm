@@ -8,14 +8,14 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
 use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
  *
  * @covers \Doctrine\ORM\Repository\DefaultRepositoryFactory
  */
-class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
+class DefaultRepositoryFactoryTest extends TestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject

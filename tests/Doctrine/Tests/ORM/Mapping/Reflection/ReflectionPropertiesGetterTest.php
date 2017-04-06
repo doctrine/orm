@@ -7,7 +7,7 @@ use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter;
 use Doctrine\Tests\Models\Reflection\ClassWithMixedProperties;
 use Doctrine\Tests\Models\Reflection\ParentClass;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
@@ -15,7 +15,7 @@ use ReflectionClass;
  *
  * @covers \Doctrine\ORM\Mapping\Reflection\ReflectionPropertiesGetter
  */
-class ReflectionPropertiesGetterTest extends PHPUnit_Framework_TestCase
+class ReflectionPropertiesGetterTest extends TestCase
 {
     public function testRetrievesProperties()
     {

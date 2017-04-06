@@ -8,11 +8,12 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @group DDC-2359
  */
-class DDC2359Test extends \PHPUnit_Framework_TestCase
+class DDC2359Test extends TestCase
 {
 
     /**

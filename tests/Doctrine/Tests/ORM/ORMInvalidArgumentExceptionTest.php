@@ -21,12 +21,13 @@ use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\OrmTestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
  * @covers \Doctrine\ORM\ORMInvalidArgumentException
  */
-class ORMInvalidArgumentExceptionTest extends \PHPUnit_Framework_TestCase
+class ORMInvalidArgumentExceptionTest extends TestCase
 {
     /**
      * @dataProvider invalidEntityNames
