@@ -220,7 +220,7 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 
     <?php
     /* @var $config \Doctrine\ORM\Configuration */
-    /* @var $cacheConfig \Doctrine\ORM\Configuration */
+    /* @var $cacheConfig \Doctrine\ORM\Cache\CacheConfiguration */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
