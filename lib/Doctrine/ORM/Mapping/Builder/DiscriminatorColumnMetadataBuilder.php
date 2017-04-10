@@ -26,7 +26,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 
-class DiscriminatorColumnMetadataBuilder extends ColumnMetadataBuilder
+class DiscriminatorColumnMetadataBuilder extends LocalColumnMetadataBuilder
 {
     /** @var string */
     protected $columnName = 'dtype';

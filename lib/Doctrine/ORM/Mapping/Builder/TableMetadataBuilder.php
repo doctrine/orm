@@ -24,7 +24,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\TableMetadata;
 
-class TableMetadataBuilder implements Builder
+class TableMetadataBuilder
 {
     /** @var string */
     protected $schema;

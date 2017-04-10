@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 
-abstract class AssociationMetadataBuilder implements Builder
+abstract class AssociationMetadataBuilder
 {
     /** @var string */
     protected $name;
@@ -54,10 +54,6 @@ abstract class AssociationMetadataBuilder implements Builder
 
     /** @var null|CacheMetadata */
     private $cache = null;
-
-    public function __construct()
-    {
-    }
 
     /**
      * @param string $name

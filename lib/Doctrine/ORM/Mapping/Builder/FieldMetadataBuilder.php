@@ -26,7 +26,7 @@ use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Mapping\FieldMetadata;
 
-class FieldMetadataBuilder extends ColumnMetadataBuilder
+class FieldMetadataBuilder extends LocalColumnMetadataBuilder
 {
     /** @var string */
     protected $name;

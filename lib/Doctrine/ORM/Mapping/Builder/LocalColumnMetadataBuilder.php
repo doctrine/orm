@@ -22,53 +22,77 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Builder;
 
-use Doctrine\ORM\Mapping\CacheMetadata;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\LocalColumnMetadata;
 
-class CacheMetadataBuilder
+abstract class LocalColumnMetadataBuilder extends ColumnMetadataBuilder
 {
-    /** @var string */
-    protected $usage;
+    /** @var int */
+    protected $length = 255;
 
-    /** @var string */
-    protected $region;
-    
+    /** @var int */
+    protected $scale;
+
+    /** @var int */
+    protected $precision;
+
     /**
-     * @param string $usage
+     * @param int $length
      *
      * @return self
      */
-    public function withUsage(string $usage)
+    public function withLength(int $length)
     {
-        $this->usage = $usage;
+        $this->length = $length;
 
         return $this;
     }
 
     /**
-     * @param string $region
+     * @param int $scale
      *
      * @return self
      */
-    public function withRegion(string $region)
+    public function withScale(int $scale)
     {
-        $this->region = $region;
+        $this->scale = $scale;
 
         return $this;
     }
-    
+
     /**
-     * @return CacheMetadata
+     * @param int $precision
+     *
+     * @return self
+     */
+    public function withPrecision(int $precision)
+    {
+        $this->precision = $precision;
+
+        return $this;
+    }
+
+    /**
+     * @return LocalColumnMetadata
      */
     public function build()
     {
-        return $this->createMetadataObject();
-    }
+        /** @var LocalColumnMetadata $localColumnMetadata */
+        $localColumnMetadata = parent::build();
 
-    /**
-     * @return CacheMetadata
-     */
-    protected function createMetadataObject()
-    {
-        return new CacheMetadata($this->usage, $this->region);
+        if ($this->length !== null) {
+            $localColumnMetadata->setLength($this->length);
+        }
+
+        if ($this->scale !== null) {
+            $localColumnMetadata->setScale($this->scale);
+        }
+
+        if ($this->precision !== null) {
+            $localColumnMetadata->setPrecision($this->precision);
+        }
+
+        return $localColumnMetadata;
     }
 }
