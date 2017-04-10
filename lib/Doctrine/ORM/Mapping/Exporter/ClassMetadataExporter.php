@@ -24,6 +24,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\MappedSuperClassMetadata;
 use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\TableMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
@@ -50,11 +51,16 @@ class ClassMetadataExporter implements Exporter
             $lines[] = null;
         }
 
+        $shortClassName    = $reflectionClass->getShortName();
+        $extendedClassName = ($value instanceof MappedSuperClassMetadata)
+            ? 'MappedSuperClassMetadata'
+            : 'ClassMetadata'
+        ;
+
         $lines[] = 'use Doctrine\DBAL\Types\Type;';
-        $lines[] = 'use Doctrine\ORM\Mapping\ClassMetadata;';
         $lines[] = 'use Doctrine\ORM\Mapping;';
         $lines[] = null;
-        $lines[] = 'class ' . $reflectionClass->getShortName() . 'ClassMetadata extends ClassMetadata';
+        $lines[] = sprintf('class %sClassMetadata extends Mapping\%s', $shortClassName, $extendedClassName);
         $lines[] = '{';
         $lines[] = $this->exportClassBody($value, $indentationLevel + 1);
         $lines[] = '}';
@@ -90,20 +96,11 @@ class ClassMetadataExporter implements Exporter
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
-        $objectReference = $bodyIndentation . static::VARIABLE;
         $lines           = [];
 
-        $lines[] = $indentation . 'public function __construct(NamingStrategy $namingStrategy = null)';
+        $lines[] = $indentation . 'public function __construct(?ClassMetadata $parent = null)';
         $lines[] = $indentation . '{';
-        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getName() . '", $namingStrategy);';
-
-        // @todo guilhermeblanco Defined here because this will be defined at the class declaration level
-        // @todo guilhermeblanco (through "extends MappedClassMetadata")
-        if ($metadata->isMappedSuperclass) {
-            $lines[] = null;
-            $lines[] = $objectReference . '->isMappedSuperclass = true;';
-        }
-
+        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getName() . '", $parent);';
         $lines[] = $indentation . '}';
 
         return implode(PHP_EOL, $lines);

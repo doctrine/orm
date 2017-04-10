@@ -788,7 +788,8 @@ class BasicEntityPersister implements EntityPersister
 
         if ($association->isOwningSide()) {
             $inversedBy            = $association->getInversedBy();
-            $isInverseSingleValued = $inversedBy && ! $targetClass->isCollectionValuedAssociation($inversedBy);
+            $targetProperty        = $inversedBy ? $targetClass->getProperty($inversedBy) : null;
+            $isInverseSingleValued = $targetProperty && $targetProperty instanceof ToOneAssociationMetadata;
 
             // Mark inverse side as fetched in the hints, otherwise the UoW would
             // try to load it in a separate query (remember: to-one inverse sides can not be lazy).
@@ -808,9 +809,7 @@ class BasicEntityPersister implements EntityPersister
 
             // Complete bidirectional association, if necessary
             if ($entity !== null && $isInverseSingleValued) {
-                $inversedAssociation = $targetClass->getProperty($inversedBy);
-
-                $inversedAssociation->setValue($entity, $sourceEntity);
+                $targetProperty->setValue($entity, $sourceEntity);
             }
 
             return $entity;

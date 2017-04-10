@@ -132,15 +132,18 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
         $parentClassNameList   = $this->getParentClassNameList($className);
         $parentClassNameList[] = $className;
+        $parent                = null;
 
         foreach ($parentClassNameList as $parentClassName) {
             if (isset($this->loaded[$parentClassName])) {
+                $parent = $this->loaded[$parentClassName];
+
                 continue;
             }
 
-            $definition = $this->getOrCreateClassMetadataDefinition($entityClassName);
+            $definition = $this->getOrCreateClassMetadataDefinition($entityClassName, $parent);
 
-            $this->loaded[$entityClassName] = $this->createClassMetadata($definition);
+            $parent = $this->loaded[$entityClassName] = $this->createClassMetadata($definition);
         }
 
         return $this->loaded[$entityClassName];
@@ -179,7 +182,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     {
         /** @var ClassMetadata $classMetadata */
         $metadataFqcn  = $definition->metadataClassName;
-        $classMetadata = new $metadataFqcn($this->namingStrategy);
+        $classMetadata = new $metadataFqcn($definition->parent);
 
         $classMetadata->wakeupReflection($this->getReflectionService());
 
@@ -189,14 +192,15 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Create a class metadata definition for the given class name.
      *
-     * @param string $className
+     * @param string             $className
+     * @param ClassMetadata|null $parent
      *
      * @return ClassMetadataDefinition
      */
-    private function getOrCreateClassMetadataDefinition(string $className) : ClassMetadataDefinition
+    private function getOrCreateClassMetadataDefinition(string $className, ?ClassMetadata $parent) : ClassMetadataDefinition
     {
         if (! isset($this->definitions[$className])) {
-            $this->definitions[$className] = $this->definitionFactory->build($className);
+            $this->definitions[$className] = $this->definitionFactory->build($className, $parent);
         }
 
         return $this->definitions[$className];

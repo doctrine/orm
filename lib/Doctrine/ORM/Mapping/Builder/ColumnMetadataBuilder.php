@@ -25,7 +25,7 @@ namespace Doctrine\ORM\Mapping\Builder;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 
-class ColumnMetadataBuilder implements Builder
+abstract class ColumnMetadataBuilder
 {
     /** @var string */
     protected $tableName;
@@ -118,42 +118,6 @@ class ColumnMetadataBuilder implements Builder
     }
 
     /**
-     * @param int $length
-     *
-     * @return self
-     */
-    public function withLength(int $length)
-    {
-        $this->length = $length;
-
-        return $this;
-    }
-
-    /**
-     * @param int $scale
-     *
-     * @return self
-     */
-    public function withScale(int $scale)
-    {
-        $this->scale = $scale;
-
-        return $this;
-    }
-
-    /**
-     * @param int $precision
-     *
-     * @return self
-     */
-    public function withPrecision(int $precision)
-    {
-        $this->precision = $precision;
-
-        return $this;
-    }
-
-    /**
      * @param array $options
      *
      * @return self
@@ -216,18 +180,6 @@ class ColumnMetadataBuilder implements Builder
             $columnMetadata->setColumnDefinition($this->columnDefinition);
         }
 
-        if ($this->length !== null) {
-            $columnMetadata->setLength($this->length);
-        }
-
-        if ($this->scale !== null) {
-            $columnMetadata->setScale($this->scale);
-        }
-
-        if ($this->precision !== null) {
-            $columnMetadata->setPrecision($this->precision);
-        }
-
         // @todo guilhermeblanco Remove this once constructor arguments is in place
         $columnMetadata->setColumnName($this->columnName);
         $columnMetadata->setType($this->type);
@@ -243,8 +195,5 @@ class ColumnMetadataBuilder implements Builder
     /**
      * @return ColumnMetadata
      */
-    protected function createMetadataObject()
-    {
-        return new ColumnMetadata(); // new ColumnMetadata($this->columnName, $this->type);
-    }
+    abstract protected function createMetadataObject();
 }

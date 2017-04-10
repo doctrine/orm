@@ -148,7 +148,9 @@ class SchemaValidator
         /** @var ClassMetadata $targetMetadata */
         $targetMetadata    = $metadataFactory->getMetadataFor($targetEntity);
         $containsForeignId = array_filter($targetMetadata->identifier, function ($identifier) use ($targetMetadata) {
-            return $targetMetadata->hasAssociation($identifier);
+            $targetProperty = $targetMetadata->getProperty($identifier);
+
+            return $targetProperty instanceof AssociationMetadata;
         });
 
         if ($association->isPrimaryKey() && count($containsForeignId)) {
@@ -305,27 +307,27 @@ class SchemaValidator
 
         if ($association instanceof ToManyAssociationMetadata && $association->getOrderBy()) {
             foreach ($association->getOrderBy() as $orderField => $orientation) {
-                if ($targetMetadata->hasField($orderField)) {
+                $targetProperty = $targetMetadata->getProperty($orderField);
+
+                if ($targetProperty instanceof FieldMetadata) {
                     continue;
                 }
 
-                if (! $targetMetadata->hasAssociation($orderField)) {
+                if (! ($targetProperty instanceof AssociationMetadata)) {
                     $message = "The association %s#%s is ordered by a property '%s' that is non-existing field on the target entity '%s'.";
 
                     $ce[] = sprintf($message, $class->name, $fieldName, $orderField, $targetMetadata->name);
                     continue;
                 }
 
-                $targetAssociation = $targetMetadata->getProperty($orderField);
-
-                if ($targetAssociation instanceof ToManyAssociationMetadata) {
+                if ($targetProperty instanceof ToManyAssociationMetadata) {
                     $message = "The association %s#%s is ordered by a property '%s' on '%s' that is a collection-valued association.";
 
                     $ce[] = sprintf($message, $class->name, $fieldName, $orderField, $targetMetadata->name);
                     continue;
                 }
 
-                if ($targetAssociation instanceof AssociationMetadata && ! $targetAssociation->isOwningSide()) {
+                if ($targetProperty instanceof AssociationMetadata && ! $targetProperty->isOwningSide()) {
                     $message = "The association %s#%s is ordered by a property '%s' on '%s' that is the inverse side of an association.";
 
                     $ce[] = sprintf($message, $class->name, $fieldName, $orderField, $targetMetadata->name);

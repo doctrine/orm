@@ -33,6 +33,7 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\ORMException;
@@ -639,12 +640,13 @@ class SchemaTool
 
         // it seems to be an entity as foreign key
         foreach ($class->getIdentifierFieldNames() as $fieldName) {
-            if (! $class->hasAssociation($fieldName)) {
+            $property = $class->getProperty($fieldName);
+
+            if (! ($property instanceof AssociationMetadata)) {
                 continue;
             }
 
-            $association = $class->getProperty($fieldName);
-            $joinColumns = $association->getJoinColumns();
+            $joinColumns = $property->getJoinColumns();
 
             if (count($joinColumns) > 1) {
                 throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
@@ -653,7 +655,7 @@ class SchemaTool
             $joinColumn = reset($joinColumns);
 
             if ($joinColumn->getColumnName() === $referencedColumnName) {
-                $targetEntity = $this->em->getClassMetadata($association->getTargetEntity());
+                $targetEntity = $this->em->getClassMetadata($property->getTargetEntity());
 
                 return $this->getDefiningClass($targetEntity, $joinColumn->getReferencedColumnName());
             }
