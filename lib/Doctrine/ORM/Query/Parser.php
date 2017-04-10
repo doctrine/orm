@@ -1053,7 +1053,7 @@ class Parser
         $qComp = $this->queryComponents[$identVariable];
         $class = $qComp['metadata'];
 
-        if ( ! $class->hasAssociation($field)) {
+        if (! (($property = $class->getProperty($field)) !== null && $property instanceof AssociationMetadata)) {
             $this->semanticalError('Class ' . $class->name . ' has no association named ' . $field);
         }
 

@@ -309,7 +309,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
         $fieldName = lcfirst(Inflector::classify($by));
 
-        if (! ($this->class->hasField($fieldName) || $this->class->hasAssociation($fieldName))) {
+        if (null === $this->class->getProperty($fieldName)) {
             throw ORMException::invalidMagicCall($this->entityName, $fieldName, $method . $by);
         }
 

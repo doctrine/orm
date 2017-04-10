@@ -22,6 +22,8 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+
 class ClassMetadataDefinition
 {
     /**
@@ -35,14 +37,21 @@ class ClassMetadataDefinition
     public $metadataClassName;
 
     /**
+     * @var ClassMetadata|null
+     */
+    public $parent;
+
+    /**
      * ClassMetadataDefinition constructor.
      *
-     * @param string $entityClassName
-     * @param string $metadataClassName
+     * @param string             $entityClassName
+     * @param string             $metadataClassName
+     * @param ClassMetadata|null $parent
      */
-    public function __construct(string $entityClassName, string $metadataClassName)
+    public function __construct(string $entityClassName, string $metadataClassName, ?ClassMetadata $parent = null)
     {
         $this->entityClassName   = $entityClassName;
         $this->metadataClassName = $metadataClassName;
+        $this->parent            = $parent;
     }
 }
