@@ -284,14 +284,14 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      * READ-ONLY: An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
      *
-     * @var array
+     * @var array<string, string>
      */
     public $fieldNames = [];
 
     /**
      * READ-ONLY: The property mappings of this class.
      *
-     * @var array<Property>
+     * @var array<string, Property>
      */
     protected $properties = [];
 
@@ -587,7 +587,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
         }
 
         // Verify & complete identifier mapping
-        if ( ! $this->identifier) {
+        if (! $this->identifier) {
             throw MappingException::identifierRequired($this->name);
         }
 
@@ -808,10 +808,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
                 throw MappingException::cannotVersionIdField($this->name, $fieldName);
             }
 
-            assert(
-                ! $property->getType()->canRequireSQLConversion(),
-                MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property)
-            );
+            if ($property->getType()->canRequireSQLConversion()) {
+                throw MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property);
+            };
 
             if (! in_array($fieldName, $this->identifier)) {
                 $this->identifier[] = $fieldName;
@@ -2180,7 +2179,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function hasAssociation($fieldName)
     {
@@ -2191,7 +2190,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function isSingleValuedAssociation($fieldName)
     {
@@ -2202,7 +2201,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function isCollectionValuedAssociation($fieldName)
     {
@@ -2213,7 +2212,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function getFieldNames()
     {
@@ -2228,7 +2227,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function getAssociationNames()
     {
@@ -2245,7 +2244,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      *
      * @throws \InvalidArgumentException
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function getAssociationTargetClass($assocName)
     {
@@ -2261,7 +2260,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function isAssociationInverseSide($fieldName)
     {
@@ -2273,7 +2272,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     /**
      * {@inheritDoc}
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo)
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
      */
     public function getAssociationMappedByTargetField($fieldName)
     {
@@ -2285,7 +2284,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      *
      * @return array
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo).
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo).
      */
     public function getAssociationsByTargetClass($targetClass)
     {
@@ -2313,7 +2312,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      *
      * @return \Doctrine\DBAL\Types\Type|string|null
      *
-     * @todo guilhermeblanco Remove this method (it exists in Persistence repo).
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo).
      */
     public function getTypeOfField($fieldName)
     {

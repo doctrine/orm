@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Factory\AbstractClassMetadataFactory;
 
 class ClassMetadataDefinitionFactory
@@ -49,14 +50,15 @@ class ClassMetadataDefinitionFactory
     }
 
     /**
-     * @param string $className
+     * @param string             $className
+     * @param ClassMetadata|null $parent
      *
      * @return ClassMetadataDefinition
      */
-    public function build(string $className) : ClassMetadataDefinition
+    public function build(string $className, ?ClassMetadata $parent) : ClassMetadataDefinition
     {
         $metadataClassName = $this->resolver->resolveMetadataClassName($className);
-        $definition        = new ClassMetadataDefinition($className, $metadataClassName);
+        $definition        = new ClassMetadataDefinition($className, $metadataClassName, $parent);
 
         if (! class_exists($metadataClassName, false)) {
             $metadataClassPath = $this->resolver->resolveMetadataClassPath($className);
