@@ -335,25 +335,15 @@ class BasicEntityPersister implements EntityPersister
         $fieldMapping = $versionedClass->fieldMappings[$versionField];
         $tableName    = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
         $columnName   = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
-		
-		$where = array();
-        $params = array();
-        foreach ($versionedClass->identifier as $idField) {
-            if (isset($versionedClass->associationMappings[$idField])) {
-                $where[] = $versionedClass->associationMappings[$idField]['joinColumns'][0]['name'];
-            } else {
-                $where[] = $this->quoteStrategy->getColumnName($idField, $versionedClass, $this->platform);
-            }
 
-            $params[] = $id[$idField];
-        }
+        $identifier = $this->determineIdentifierColumnsAndValues($versionedClass, $id);
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
-             . ' WHERE ' . implode(' = ? AND ', $where) . ' = ?';
+             . ' WHERE ' . implode(' = ? AND ', $identifier['columns']) . ' = ?';
 
-        $value = $this->conn->fetchColumn($sql, $params);
+        $value = $this->conn->fetchColumn($sql, $identifier['values']);
 
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
     }
@@ -2080,4 +2070,30 @@ class BasicEntityPersister implements EntityPersister
 
         $this->currentPersisterContext = $this->limitsHandlingContext;
     }
+
+    /**
+     * Determains the identifier columns and values for an entity
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param array                               $id
+     * @return array
+     */
+    private function determineIdentifierColumnsAndValues($class, array $id)
+    {
+        $identifier = [
+            'columns'  => [],
+            'values' => []
+        ];
+        foreach ($class->identifier as $idField) {
+            if (isset($class->associationMappings[$idField])) {
+                $identifier['columns'][] = $class->associationMappings[$idField]['joinColumns'][0]['name'];
+            } else {
+                $identifier['columns'][] = $this->quoteStrategy->getColumnName($idField, $class, $this->platform);
+            }
+
+            $identifier['values'][] = $id[$idField];
+        }
+        
+        return $identifier;
+	}
 }
