@@ -290,7 +290,7 @@ class BasicEntityPersister implements EntityPersister
                     'entity' => $entity,
                 ];
             } else {
-                $id = $this->class->getIdentifierValues($entity);
+                $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
             }
 
             if ($this->class->isVersioned) {
