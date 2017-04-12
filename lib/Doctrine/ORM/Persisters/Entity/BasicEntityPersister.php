@@ -334,17 +334,26 @@ class BasicEntityPersister implements EntityPersister
         $versionField = $versionedClass->versionField;
         $fieldMapping = $versionedClass->fieldMappings[$versionField];
         $tableName    = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
-        $identifier   = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
         $columnName   = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
+		
+		$where = array();
+        $params = array();
+        foreach ($versionedClass->identifier as $idField) {
+            if (isset($versionedClass->associationMappings[$idField])) {
+                $where[] = $versionedClass->associationMappings[$idField]['joinColumns'][0]['name'];
+            } else {
+                $where[] = $this->quoteStrategy->getColumnName($idField, $versionedClass, $this->platform);
+            }
+
+            $params[] = $id[$idField];
+        }
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
-             . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
+             . ' WHERE ' . implode(' = ? AND ', $where) . ' = ?';
 
-        $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
-
-        $value = $this->conn->fetchColumn($sql, array_values($flatId));
+        $value = $this->conn->fetchColumn($sql, $params);
 
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
     }
