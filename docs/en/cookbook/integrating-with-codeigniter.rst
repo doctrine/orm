@@ -111,7 +111,7 @@ APC, get rid of EchoSqlLogger, and turn off
 autoGenerateProxyClasses.
 
 For more details, consult the
-`Doctrine 2 Configuration documentation <http://www.doctrine-project.org/documentation/manual/2_0/en/configuration#configuration-options>`_.
+`Doctrine 2 Configuration documentation <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html>`_.
 
 Now to use it
 -------------

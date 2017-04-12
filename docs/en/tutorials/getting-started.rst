@@ -162,7 +162,7 @@ read up on the configuration details in the
 The third block shows the configuration options required to connect
 to a database, in my case a file-based sqlite database. All the
 configuration options for all the shipped drivers are given in the
-`DBAL Configuration section of the manual <http://www.doctrine-project.org/documentation/manual/2_0/en/dbal>`_.
+`DBAL Configuration section of the manual <http://docs.doctrine-project.org/projects/doctrine-dbal/en/latest/>`_.
 
 The last block shows how the ``EntityManager`` is obtained from a
 factory method.
