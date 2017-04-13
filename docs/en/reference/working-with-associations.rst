@@ -716,6 +716,8 @@ methods:
 * ``in($field, array $values)``
 * ``notIn($field, array $values)``
 * ``contains($field, $value)``
+* ``startsWith($field, $value)``
+* ``endsWith($field, $value)``
 
 
 .. note::

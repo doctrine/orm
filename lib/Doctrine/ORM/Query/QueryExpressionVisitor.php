@@ -186,6 +186,16 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 $this->parameters[] = $parameter;
 
                 return $this->expr->like($field, $placeholder);
+            case Comparison::STARTS_WITH:
+                $parameter->setValue($parameter->getValue() . '%', $parameter->getType());
+                $this->parameters[] = $parameter;
+
+                return $this->expr->like($field, $placeholder);
+            case Comparison::ENDS_WITH:
+                $parameter->setValue('%' . $parameter->getValue(), $parameter->getType());
+                $this->parameters[] = $parameter;
+
+                return $this->expr->like($field, $placeholder);
             default:
                 $operator = self::convertComparisonOperator($comparison->getOperator());
                 if ($operator) {
