@@ -214,8 +214,8 @@ example we'll use an integer.
           type: entity
           fields:
             version:
-              version:
-                type: integer
+              type: integer
+              version: true
 
 Alternatively a datetime type can be used (which maps to a SQL
 timestamp or datetime):
