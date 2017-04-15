@@ -247,8 +247,8 @@ timestamp or datetime):
           type: entity
           fields:
             version:
-              version:
-                type: datetime
+              type: datetime
+              version: true
 
 Version numbers (not timestamps) should however be preferred as
 they can not potentially conflict in a highly concurrent
