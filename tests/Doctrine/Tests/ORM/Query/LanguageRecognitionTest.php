@@ -100,6 +100,11 @@ class LanguageRecognitionTest extends \Doctrine\Tests\OrmTestCase
         $this->assertValidDQL('SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
     }
 
+    public function testMultipleParenthesisInSelect()
+    {
+        $this->assertValidDQL('SELECT (((u.id))) as v FROM Doctrine\Tests\Models\CMS\CmsUser u');
+    }
+
     public function testDuplicatedAliasInAggregateFunction()
     {
         $this->assertInvalidDQL('SELECT COUNT(u.id) AS num, SUM(u.id) AS num FROM Doctrine\Tests\Models\CMS\CmsUser u');

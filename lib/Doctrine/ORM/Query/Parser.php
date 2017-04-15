@@ -482,13 +482,14 @@ class Parser
      */
     private function _isFunction()
     {
+        $lookaheadType = $this->_lexer->lookahead['type'];
         $peek     = $this->_lexer->peek();
         $nextpeek = $this->_lexer->peek();
 
         $this->_lexer->resetPeek();
 
         // We deny the COUNT(SELECT * FROM User u) here. COUNT won't be considered a function
-        return ($peek['type'] === Lexer::T_OPEN_PARENTHESIS && $nextpeek['type'] !== Lexer::T_SELECT);
+        return ($lookaheadType >= Lexer::T_IDENTIFIER && $peek['type'] === Lexer::T_OPEN_PARENTHESIS && $nextpeek['type'] !== Lexer::T_SELECT);
     }
 
     /**
