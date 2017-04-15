@@ -69,6 +69,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $classAnnotations[get_class($annot)] = $annot;
             }
         }
+        
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\Persister'])) {
+            $metadata->setPersister($classAnnotations['Doctrine\ORM\Mapping\Persister']->name);
+        }
 
         // Evaluate Entity annotation
         if (isset($classAnnotations['Doctrine\ORM\Mapping\Entity'])) {

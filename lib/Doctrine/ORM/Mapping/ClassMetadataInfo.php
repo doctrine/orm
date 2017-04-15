@@ -594,6 +594,13 @@ class ClassMetadataInfo implements ClassMetadata
     private $_prototype;
 
     /**
+     * The class name of the persister to use for this entity
+     *
+     * @var string
+     */
+    private $persister = null;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -2824,5 +2831,36 @@ class ClassMetadataInfo implements ClassMetadata
             }
         }
         return $relations;
+    }
+    
+    /**
+     * Sets the persister class the entity manager will use to persist this object.
+     *
+     * @param string $persister The persister class name.
+     */
+    public function setPersister($persister)
+    {
+        $this->persister = $persister;
+    }
+    
+    /**
+     * Gets the class name of this entities persister.
+     *
+     * @return string
+     */    
+    public function getPersister()
+    {
+        return $this->persister;
+    }
+    
+    /**
+     * Checks whether the entity defines a custom Persister 
+     *
+     * @return boolean TRUE if the class has a custom persister defined,
+     *                 FALSE otherwise.
+     */
+    public function hasPersister()
+    {
+        return !is_null($this->persister);
     }
 }
