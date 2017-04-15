@@ -49,4 +49,13 @@ class ProxyException extends \Doctrine\ORM\ORMException {
         ));
     }
 
+    public static function typeHintClassReflectionFailure($paramName, $className, $methodName, $previousException)
+    {
+        return new self(sprintf(
+            "Can not get type hint class for parameter %s of %s::%s()",
+            $paramName,
+            $className,
+            $methodName
+        ), 0, $previousException);
+    }
 }
