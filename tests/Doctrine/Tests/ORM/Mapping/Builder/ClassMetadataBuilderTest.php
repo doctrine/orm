@@ -154,7 +154,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testSetCustomRepositoryClass()
     {
-        self::assertIsFluent($this->builder->setCustomRepositoryClass(CmsGroup::class));
+        self::assertIsFluent($this->builder->withCustomRepositoryClass(CmsGroup::class));
         self::assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
     }
 

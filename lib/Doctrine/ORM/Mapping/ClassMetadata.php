@@ -47,7 +47,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetadataInterface
+class ClassMetadata implements TableOwner, ClassMetadataInterface
 {
     /**
      * READ-ONLY: The name of the entity class.
@@ -64,6 +64,18 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      * @var string
      */
     public $rootEntityName;
+
+    /**
+     * @var CacheMetadata|null
+     */
+    protected $cache = null;
+
+    /**
+     * The ReflectionClass instance of the component class.
+     *
+     * @var \ReflectionClass|null
+     */
+    protected $reflectionClass;
 
     /**
      * The name of the custom repository class used for the entity class.
@@ -333,6 +345,32 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     }
 
     /**
+     * @param CacheMetadata|null $cache
+     *
+     * @return void
+     */
+    public function setCache(?CacheMetadata $cache = null)
+    {
+        $this->cache = $cache;
+    }
+
+    /**
+     * @return CacheMetadata|null
+     */
+    public function getCache(): ?CacheMetadata
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @return \ReflectionClass|null
+     */
+    public function getReflectionClass() : ?\ReflectionClass
+    {
+        return $this->reflectionClass;
+    }
+
+    /**
      * Extracts the identifier values of an entity of this class.
      *
      * For composite identifiers, the identifier values are returned as an array
@@ -380,7 +418,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      */
     public function __clone()
     {
-        parent::__clone();
+        if ($this->cache) {
+            $this->cache = clone $this->cache;
+        }
 
         foreach ($this->properties as $name => $property) {
             $this->properties[$name] = clone $property;
@@ -413,7 +453,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
      */
     public function __sleep()
     {
-        $serialized = parent::__sleep();
+        $serialized = [];
 
         // This metadata is always serialized/cached.
         $serialized = array_merge($serialized, [
@@ -484,6 +524,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
 
         if ($this->sqlResultSetMappings) {
             $serialized[] = 'sqlResultSetMappings';
+        }
+
+        if ($this->cache) {
+            $serialized[] = 'cache';
         }
 
         if ($this->readOnly) {
@@ -639,16 +683,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
                 }
             }
         }
-    }
-
-    /**
-     * @param null|CacheMetadata $cache
-     *
-     * @return void
-     */
-    public function setCache(CacheMetadata $cache = null)
-    {
-        $this->cache = $cache;
     }
 
     /**
@@ -1479,6 +1513,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetada
     public function setTable(TableMetadata $table)
     {
         $this->table = $table;
+
+        if (empty($table->getName())) {
+            $table->setName($this->namingStrategy->classToTableName($this->name));
+        }
     }
 
     /**
