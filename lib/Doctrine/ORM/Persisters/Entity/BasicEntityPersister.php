@@ -2074,11 +2074,11 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Determains the identifier columns and values for an entity
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     * @param array                               $id
+     * @param ClassMetadata $class
+     * @param array         $id
      * @return array
      */
-    private function determineIdentifierColumnsAndValues($class, array $id)
+    private function determineIdentifierColumnsAndValues(ClassMetadata $class, array $id)
     {
         $identifier = [
             'columns'  => [],

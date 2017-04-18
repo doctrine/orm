@@ -33,12 +33,12 @@ class DDC6393Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($b);        
         $this->_em->flush();
         
-        $this->assertEquals(1, $b->getVersion());
+        $this->assertSame(1, $b->getVersion());
 
         $b->setSomething('bar');
         $this->_em->flush();
         
-        $this->assertEquals(2, $b->getVersion());
+        $this->assertSame(2, $b->getVersion());
     }
 
 }
