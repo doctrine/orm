@@ -28,9 +28,9 @@ namespace Doctrine\Tests\ORM\Functional {
             $this->assertCount(1, $result);
 
             foreach ($result as $r) {
-                $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Person', $r);
-                $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Employee', $r);
-                $this->assertEquals('bar', $r->getName());
+                $this->assertInstanceOf(InstanceOfAbstractTest\Person::class, $r);
+                $this->assertInstanceOf(InstanceOfAbstractTest\Employee::class, $r);
+                $this->assertSame('bar', $r->getName());
             }
         }
 
@@ -109,5 +109,4 @@ namespace Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest {
             $this->departement = $departement;
         }
     }
-
 }

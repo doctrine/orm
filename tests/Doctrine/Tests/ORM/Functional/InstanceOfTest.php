@@ -10,10 +10,10 @@ namespace Doctrine\Tests\ORM\Functional {
         {
             parent::setUp();
 
-            $this->_schemaTool->createSchema(array(
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Person'),
                 $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Employee'),
-            ));
+            ]);
         }
 
         public function testInstanceOf()
@@ -28,7 +28,7 @@ namespace Doctrine\Tests\ORM\Functional {
             $this->assertCount(2, $result);
 
             foreach ($result as $r) {
-                $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\InstanceOfTest\Person', $r);
+                $this->assertInstanceOf(InstanceOfTest\Person::class, $r);
                 if ($r instanceof InstanceOfTest\Employee) {
                     $this->assertEquals('bar', $r->getName());
                 } else {
