@@ -917,13 +917,13 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(CmsUser::class);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'Foo')));
-        $this->assertEquals(0, count($users));
+        $this->assertCount(0, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'R')));
-        $this->assertEquals(1, count($users));
+        $this->assertCount(1, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('status', 'de')));
-        $this->assertEquals(2, count($users));
+        $this->assertCount(2, $users);
     }
 
     public function testMatchingCriteriaEndsWithComparison()
@@ -933,13 +933,13 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repository = $this->_em->getRepository(CmsUser::class);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'foo')));
-        $this->assertEquals(0, count($users));
+        $this->assertCount(0, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'oman')));
-        $this->assertEquals(1, count($users));
+        $this->assertCount(1, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('status', 'ev')));
-        $this->assertEquals(2, count($users));
+        $this->assertCount(2, $users);
     }
 
     /**
