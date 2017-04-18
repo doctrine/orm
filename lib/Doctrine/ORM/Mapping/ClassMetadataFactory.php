@@ -132,9 +132,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             $this->addInheritedProperties($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
+            $this->inheritIdGeneratorMapping($class, $parent);
 
             $class->setInheritanceType($parent->inheritanceType);
-            $class->setIdGeneratorType($parent->generatorType);
             $class->setIdentifier($parent->identifier);
 
             if ($parent->discriminatorColumn) {
@@ -149,7 +149,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $class->setCustomRepositoryClass($parent->customRepositoryClassName);
             }
 
-            $this->inheritIdGeneratorMapping($class, $parent);
         }
 
         // Invoke driver

@@ -18,6 +18,7 @@
  */
 
 namespace Doctrine\ORM\Persisters\Entity;
+
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 

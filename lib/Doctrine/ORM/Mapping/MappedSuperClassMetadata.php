@@ -33,21 +33,6 @@ namespace Doctrine\ORM\Mapping;
 class MappedSuperClassMetadata extends ComponentMetadata
 {
     /**
-     * @var string
-     */
-    protected $className;
-
-    /**
-     * @var MappedSuperClassMetadata|null
-     */
-    protected $parent;
-
-    /**
-     * @var array<Property>
-     */
-    protected $declaredProperties = [];
-
-    /**
      * @var Property
      */
     protected $declaredVersion;
@@ -55,28 +40,12 @@ class MappedSuperClassMetadata extends ComponentMetadata
     /**
      * MappedSuperClassMetadata constructor.
      *
+     * @param string                        $className
      * @param MappedSuperClassMetadata|null $parent
      */
     public function __construct(string $className, ?MappedSuperClassMetadata $parent = null)
     {
-        $this->className = $className;
-        $this->parent    = $parent;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClassName() : string
-    {
-        return $this->className;
-    }
-
-    /**
-     * @return MappedSuperClassMetadata|null
-     */
-    public function getParent() : ?MappedSuperClassMetadata
-    {
-        return $this->parent;
+        parent::__construct($className, $parent);
     }
 
     /**
@@ -100,10 +69,12 @@ class MappedSuperClassMetadata extends ComponentMetadata
      */
     public function getVersion() : ?Property
     {
+        /** @var MappedSuperClassMetadata|null $parent */
+        $parent  = $this->parent;
         $version = $this->declaredVersion;
 
-        if ($this->parent && ! $version) {
-            $version = $this->parent->getVersion();
+        if ($parent && ! $version) {
+            $version = $parent->getVersion();
         }
 
         return $version;
@@ -115,51 +86,5 @@ class MappedSuperClassMetadata extends ComponentMetadata
     public function isVersioned() : bool
     {
         return $this->getVersion() !== null;
-    }
-
-    /**
-     * @return \ArrayIterator
-     */
-    public function getDeclaredPropertiesIterator() : \ArrayIterator
-    {
-        return new \ArrayIterator($this->declaredProperties);
-    }
-
-    /**
-     * @param Property $property
-     */
-    public function addDeclaredProperty(Property $property)
-    {
-        $propertyName = $property->getName();
-
-        if (isset($this->declaredProperties[$propertyName])) {
-            return;
-        }
-
-        $this->declaredProperties[$propertyName] = $property;
-    }
-
-    /**
-     * @param string $propertyName
-     *
-     * @return bool
-     */
-    public function hasDeclaredProperty(string $propertyName) : bool
-    {
-        return isset($this->declaredProperties[$propertyName]);
-    }
-
-    /**
-     * @param string $propertyName
-     *
-     * @return bool
-     */
-    public function hasProperty(string $propertyName) : bool
-    {
-        if (isset($this->declaredProperties[$propertyName])) {
-            return true;
-        }
-
-        return $this->parent && $this->parent->hasProperty($propertyName);
     }
 }

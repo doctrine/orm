@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,43 +20,33 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping;
+namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
 
-interface Property
+/**
+ * StaticClassMetadataFactory is the ClassMetadata object creation factory that sits behind
+ * the front-door, allowing to generate entity classes in case they do not exist yet.
+ *
+ * @package Doctrine\ORM\Mapping\Factory
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
+class StaticClassMetadataFactory extends AbstractClassMetadataFactory
 {
-    /**
-     * @param ClassMetadata $declaringClass
-     */
-    public function setDeclaringClass(ClassMetadata $declaringClass);
+    /** @var StaticReflectionService */
+    private $reflectionService;
 
     /**
-     * @return ClassMetadata
+     * @return StaticReflectionService
      */
-    public function getDeclaringClass();
+    protected function getReflectionService() : StaticReflectionService
+    {
+        if (! $this->reflectionService) {
+            $this->reflectionService = new StaticReflectionService();
+        }
 
-    /**
-     * @param object $object
-     * @param mixed  $value
-     */
-    public function setValue($object, $value);
-
-    /**
-     * @param object $object
-     *
-     * @return mixed
-     */
-    public function getValue($object);
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param ReflectionService $reflectionService
-     */
-    public function wakeupReflection(ReflectionService $reflectionService);
+        return $this->reflectionService;
+    }
 }

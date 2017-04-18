@@ -61,7 +61,7 @@ class ClassMetadataDriver
      *
      * @return ClassMetadata
      */
-    public function getClassMetadata(string $className) : ClassMetadata
+    public function getClassMetadata(string $className)
     {
 
     }
