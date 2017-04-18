@@ -80,7 +80,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
                 if ($entityAnnot->repositoryClass !== null) {
-                    $builder->setCustomRepositoryClass($entityAnnot->repositoryClass);
+                    $builder->withCustomRepositoryClass($entityAnnot->repositoryClass);
                 }
 
                 if ($entityAnnot->readOnly) {
@@ -92,7 +92,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($classAnnotations[Annotation\MappedSuperclass::class]):
                 $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
-                $builder->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+                $builder->withCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
                 $builder->asMappedSuperClass();
                 break;
 
@@ -107,37 +107,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate Table annotation
         if (isset($classAnnotations[Annotation\Table::class])) {
             $tableAnnot = $classAnnotations[Annotation\Table::class];
+            $table      = $this->convertTableAnnotationToTableMetadata($tableAnnot);
 
-            if (! empty($tableAnnot->name)) {
-                $metadata->table->setName($tableAnnot->name);
-            }
-
-            if (! empty($tableAnnot->schema)) {
-                $metadata->table->setSchema($tableAnnot->schema);
-            }
-
-            foreach ($tableAnnot->options as $optionName => $optionValue) {
-                $metadata->table->addOption($optionName, $optionValue);
-            }
-
-            foreach ($tableAnnot->indexes as $indexAnnot) {
-                $metadata->table->addIndex([
-                    'name'    => $indexAnnot->name,
-                    'columns' => $indexAnnot->columns,
-                    'unique'  => $indexAnnot->unique,
-                    'options' => $indexAnnot->options,
-                    'flags'   => $indexAnnot->flags,
-                ]);
-            }
-
-            foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
-                $metadata->table->addUniqueConstraint([
-                    'name'    => $uniqueConstraintAnnot->name,
-                    'columns' => $uniqueConstraintAnnot->columns,
-                    'options' => $uniqueConstraintAnnot->options,
-                    'flags'   => $uniqueConstraintAnnot->flags,
-                ]);
-            }
+            $builder->withTable($table);
         }
 
         // Evaluate @Cache annotation
@@ -883,6 +855,51 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $fieldMetadata->setUnique($columnAnnot->unique);
 
         return $fieldMetadata;
+    }
+
+    /**
+     * Parse the given Table as TableMetadata
+     *
+     * @param Annotation\Table $tableAnnot
+     *
+     * @return Mapping\TableMetadata
+     */
+    private function convertTableAnnotationToTableMetadata(Annotation\Table $tableAnnot)
+    {
+        $table = new Mapping\TableMetadata();
+
+        if (! empty($tableAnnot->name)) {
+            $table->setName($tableAnnot->name);
+        }
+
+        if (! empty($tableAnnot->schema)) {
+            $table->setSchema($tableAnnot->schema);
+        }
+
+        foreach ($tableAnnot->options as $optionName => $optionValue) {
+            $table->addOption($optionName, $optionValue);
+        }
+
+        foreach ($tableAnnot->indexes as $indexAnnot) {
+            $table->addIndex([
+                'name'    => $indexAnnot->name,
+                'columns' => $indexAnnot->columns,
+                'unique'  => $indexAnnot->unique,
+                'options' => $indexAnnot->options,
+                'flags'   => $indexAnnot->flags,
+            ]);
+        }
+
+        foreach ($tableAnnot->uniqueConstraints as $uniqueConstraintAnnot) {
+            $table->addUniqueConstraint([
+                'name'    => $uniqueConstraintAnnot->name,
+                'columns' => $uniqueConstraintAnnot->columns,
+                'options' => $uniqueConstraintAnnot->options,
+                'flags'   => $uniqueConstraintAnnot->flags,
+            ]);
+        }
+
+        return $table;
     }
 
     /**
