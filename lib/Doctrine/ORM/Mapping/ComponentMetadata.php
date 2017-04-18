@@ -31,9 +31,14 @@ namespace Doctrine\ORM\Mapping;
 abstract class ComponentMetadata
 {
     /**
-     * @var CacheMetadata|null
+     * @var string
      */
-    protected $cache = null;
+    protected $className;
+
+    /**
+     * @var ComponentMetadata|null
+     */
+    protected $parent;
 
     /**
      * The ReflectionClass instance of the component class.
@@ -41,6 +46,52 @@ abstract class ComponentMetadata
      * @var \ReflectionClass|null
      */
     protected $reflectionClass;
+
+    /**
+     * @var CacheMetadata|null
+     */
+    protected $cache = null;
+
+    /**
+     * @var array<string, Property>
+     */
+    protected $declaredProperties = [];
+
+    /**
+     * ComponentMetadata constructor.
+     *
+     * @param string                 $className
+     * @param ComponentMetadata|null $parent
+     */
+    public function __construct(string $className, ?ComponentMetadata $parent = null)
+    {
+        $this->className = $className;
+        $this->parent    = $parent;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClassName() : string
+    {
+        return $this->className;
+    }
+
+    /**
+     * @return ComponentMetadata|null
+     */
+    public function getParent() : ?ComponentMetadata
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @return \ReflectionClass|null
+     */
+    public function getReflectionClass() : ?\ReflectionClass
+    {
+        return $this->reflectionClass;
+    }
 
     /**
      * @param CacheMetadata|null $cache
@@ -61,40 +112,87 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \ReflectionClass|null
+     * @return \Iterator
      */
-    public function getReflectionClass() : ?\ReflectionClass
+    public function getDeclaredPropertiesIterator() : \Iterator
     {
-        return $this->reflectionClass;
+        return new \ArrayIterator($this->declaredProperties);
     }
 
     /**
-     * Handles metadata cloning nicely.
+     * @param Property $property
+     */
+    public function addDeclaredProperty(Property $property)
+    {
+        $propertyName = $property->getName();
+
+        if (isset($this->declaredProperties[$propertyName])) {
+            return;
+        }
+
+        $property->setDeclaringClass($this);
+
+        if ($this->reflectionClass) {
+            $property->wakeupReflection($this->reflectionClass->getProperty($propertyName));
+        }
+
+        $this->declaredProperties[$propertyName] = $property;
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return bool
+     */
+    public function hasDeclaredProperty(string $propertyName) : bool
+    {
+        return isset($this->declaredProperties[$propertyName]);
+    }
+
+    /**
+     * @return \Iterator
+     */
+    public function getPropertiesIterator() : \Iterator
+    {
+        $declaredPropertiesIterator = $this->getDeclaredPropertiesIterator();
+
+        if (! $this->parent) {
+            return $declaredPropertiesIterator;
+        }
+
+        $iterator = new \AppendIterator();
+
+        $iterator->append($this->parent->getPropertiesIterator());
+        $iterator->append($declaredPropertiesIterator);
+
+        return $iterator;
+    }
+
+    /**
+     * @param string $propertyName
+     *
+     * @return bool
+     */
+    public function hasProperty(string $propertyName) : bool
+    {
+        if (isset($this->declaredProperties[$propertyName])) {
+            return true;
+        }
+
+        return $this->parent && $this->parent->hasProperty($propertyName);
+    }
+
+    /**
+     * Handles component metadata clone nicely.
      */
     public function __clone()
     {
         if ($this->cache) {
             $this->cache = clone $this->cache;
         }
-    }
 
-    /**
-     * Determines which fields get serialized.
-     *
-     * It is only serialized what is necessary for best unserialization performance.
-     * That means any metadata properties that are not set or empty or simply have
-     * their default value are NOT serialized.
-     *
-     * @return array The names of all the fields that should be serialized.
-     */
-    public function __sleep()
-    {
-        $serialized = [];
-
-        if ($this->cache) {
-            $serialized[] = 'cache';
+        foreach ($this->declaredProperties as $name => $property) {
+            $this->declaredProperties[$name] = clone $property;
         }
-
-        return $serialized;
     }
 }

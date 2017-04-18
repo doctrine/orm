@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,41 +22,14 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
-
-interface Property
+/**
+ * Class EmbeddedClassMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
+class EmbeddedClassMetadata extends ComponentMetadata
 {
-    /**
-     * @param ClassMetadata $declaringClass
-     */
-    public function setDeclaringClass(ClassMetadata $declaringClass);
-
-    /**
-     * @return ClassMetadata
-     */
-    public function getDeclaringClass();
-
-    /**
-     * @param object $object
-     * @param mixed  $value
-     */
-    public function setValue($object, $value);
-
-    /**
-     * @param object $object
-     *
-     * @return mixed
-     */
-    public function getValue($object);
-
-    /**
-     * @return string
-     */
-    public function getName();
-
-    /**
-     * @param ReflectionService $reflectionService
-     */
-    public function wakeupReflection(ReflectionService $reflectionService);
 }

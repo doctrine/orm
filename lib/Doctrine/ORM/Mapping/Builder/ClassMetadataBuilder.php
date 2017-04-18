@@ -40,6 +40,18 @@ use Doctrine\ORM\Mapping\VersionFieldMetadata;
  */
 class ClassMetadataBuilder
 {
+    const EMBEDDED_CLASS = 'EmbeddedClassMetadata';
+
+    const ENTITY_CLASS = 'EntityClassMetadata';
+
+    const MAPPED_SUPERCLASS = 'MappedSuperClassMetadata';
+
+    /** @var string */
+    private $type = self::ENTITY_CLASS;
+
+    /** @var bool */
+    private $readOnly = false;
+
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadata
      */
@@ -128,7 +140,7 @@ class ClassMetadataBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function setCustomRepositoryClass($repositoryClassName)
+    public function withCustomRepositoryClass($repositoryClassName)
     {
         $this->cm->setCustomRepositoryClass($repositoryClassName);
 
