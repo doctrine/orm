@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -279,23 +280,19 @@ class QueryTest extends OrmTestCase
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
 
-    /**
-     * @expectedException        Doctrine\ORM\Query\QueryException
-     * @exptectedExcepionMessage Subquery
-     */
     public function testSelectJoinSubquery()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
         $query->getResult();
     }
 
-    /**
-     * @expectedException        Doctrine\ORM\Query\QueryException
-     * @exptectedExcepionMessage Subquery
-     */
     public function testSelectFromSubquery()
     {
         $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
         $query->getResult();
     }
 }
