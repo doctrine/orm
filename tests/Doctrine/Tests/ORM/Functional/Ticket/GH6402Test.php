@@ -1,8 +1,6 @@
 <?php
 
-
-namespace Doctrine\Tests\ORM\Functional;
-
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Address;
 use Doctrine\Tests\Models\Quote\Group;
@@ -10,7 +8,10 @@ use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class QuoteTest extends OrmFunctionalTestCase
+/**
+ * @group GH-6402
+ */
+class GH6402Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
