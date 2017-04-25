@@ -1796,12 +1796,16 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
+        }
+        
+        if ( ! isset($this->identifier[0])) {
+            throw MappingException::noIdDefined($this->name);
         }
 
         return $this->identifier[0];
@@ -1813,7 +1817,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierColumnName()
     {
