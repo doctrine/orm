@@ -1803,6 +1803,10 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
+        
+        if ( ! isset($this->identifier[0])) {
+            throw MappingException::noIdDefined($this->name);
+        }
 
         return $this->identifier[0];
     }

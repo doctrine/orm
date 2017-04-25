@@ -426,6 +426,16 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     /**
      * @param string $entity
+     *
+     * @return MappingException
+     */
+    public static function noIdDefined($entity)
+    {
+        return new self('No ID defined for entity '.$entity);
+    }
+
+    /**
+     * @param string $entity
      * @param string $fieldName
      * @param string $unsupportedType
      *
