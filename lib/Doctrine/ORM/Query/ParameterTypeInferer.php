@@ -61,6 +61,6 @@ class ParameterTypeInferer
             return '[' . static::inferType(current($value)) . ']';
         }
 
-        return \PDO::PARAM_STR;
+        return Type::STRING;
     }
 }
