@@ -111,8 +111,14 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value = $comparison->getValue()->getValue();
 
-        return $comparison->getOperator() == Comparison::CONTAINS
-            ? "%{$value}%"
-            : $value;
+        // Check whether we on Comparison::CONTAINS and have no a wildcard characters
+        if ($comparison->getOperator() == Comparison::CONTAINS
+            && strpos(str_replace('\%', '', $value), '%') === false
+            && strpos(str_replace('\_', '', $value), '_') === false
+        ) {
+            return "%{$value}%";
+        } else {
+            return $value;
+        }
     }
 }
