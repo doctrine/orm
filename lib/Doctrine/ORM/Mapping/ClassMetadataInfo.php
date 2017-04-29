@@ -1796,7 +1796,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierFieldName()
     {
@@ -1817,7 +1817,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierColumnName()
     {
