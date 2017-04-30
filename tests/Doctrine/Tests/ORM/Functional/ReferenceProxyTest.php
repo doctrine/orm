@@ -3,7 +3,9 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
@@ -21,12 +23,16 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('ecommerce');
         $this->useModelSet('company');
+
         parent::setUp();
-        $this->factory = new ProxyFactory(
-                $this->em,
-                __DIR__ . '/../../Proxies',
-                'Doctrine\Tests\Proxies',
-                true);
+
+        $proxyConfiguration = new ProxyConfiguration();
+
+        $proxyConfiguration->setDirectory(__DIR__ . '/../../Proxies');
+        $proxyConfiguration->setNamespace('Doctrine\Tests\Proxies');
+        $proxyConfiguration->setAutoGenerate(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+
+        $this->factory = new ProxyFactory($this->em, $proxyConfiguration);
     }
 
     public function createProduct()

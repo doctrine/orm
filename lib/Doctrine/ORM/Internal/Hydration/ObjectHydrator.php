@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use PDO;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -185,22 +186,16 @@ class ObjectHydrator extends AbstractHydrator
      */
     private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
     {
-        $oid         = spl_object_hash($entity);
+        /** @var ToManyAssociationMetadata $association */
         $association = $class->getProperty($fieldName);
         $value       = $association->getValue($entity);
-
-        if ($value === null || is_array($value)) {
-            $value = new ArrayCollection((array) $value);
-        }
+        $oid         = spl_object_hash($entity);
 
         if (! $value instanceof PersistentCollection) {
-            $value = new PersistentCollection(
-                $this->em, $this->metadataCache[$association->getTargetEntity()], $value
-            );
-
-            $value->setOwner($entity, $association);
+            $value = $association->wrap($entity, $value, $this->em);
 
             $association->setValue($entity, $value);
+
             $this->uow->setOriginalEntityProperty($oid, $fieldName, $value);
 
             $this->initializedCollections[$oid . $fieldName] = $value;

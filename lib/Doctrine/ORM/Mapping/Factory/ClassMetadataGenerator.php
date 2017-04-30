@@ -64,7 +64,7 @@ class ClassMetadataGenerator
      */
     public function generate(string $path, ClassMetadataDefinition $definition)
     {
-        $metadata   = $this->metadataDriver->getClassMetadata($definition->entityClassName);
+        $metadata   = $this->metadataDriver->getClassMetadata($definition->entityClassName, $definition->parent);
         $sourceCode = $this->metadataExporter->export($metadata);
 
         $this->ensureDirectoryIsReady(dirname($path));

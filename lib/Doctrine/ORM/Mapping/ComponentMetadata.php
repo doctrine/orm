@@ -133,7 +133,7 @@ abstract class ComponentMetadata
         $property->setDeclaringClass($this);
 
         if ($this->reflectionClass) {
-            $property->wakeupReflection($this->reflectionClass->getProperty($propertyName));
+            $property->setReflectionProperty($this->reflectionClass->getProperty($propertyName));
         }
 
         $this->declaredProperties[$propertyName] = $property;

@@ -45,7 +45,7 @@ class ProxyConfiguration
     private $directory;
 
     /**
-     * @var bool
+     * @var int
      */
     private $autoGenerate = AbstractProxyFactory::AUTOGENERATE_ALWAYS;
 
@@ -82,17 +82,17 @@ class ProxyConfiguration
     }
 
     /**
-     * @return bool
+     * @return int
      */
-    public function isAutoGenerate() : bool
+    public function getAutoGenerate() : int
     {
         return $this->autoGenerate;
     }
 
     /**
-     * @param bool $autoGenerate
+     * @param int $autoGenerate
      */
-    public function setAutoGenerate(bool $autoGenerate)
+    public function setAutoGenerate(int $autoGenerate)
     {
         $this->autoGenerate = $autoGenerate;
     }
