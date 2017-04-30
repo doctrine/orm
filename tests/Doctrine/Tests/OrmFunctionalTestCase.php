@@ -616,14 +616,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $this->setUpDBALTypes();
 
-        $forceCreateTables = false;
-
         if ( ! isset(static::$_sharedConn)) {
             static::$_sharedConn = TestUtil::getConnection();
-
-            if (static::$_sharedConn->getDriver() instanceof SqliteDriver) {
-                $forceCreateTables = true;
-            }
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
@@ -642,7 +636,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $classes = [];
 
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if ( ! isset(static::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
+            if ( ! isset(static::$_tablesCreated[$setName])) {
                 foreach (static::$_modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }
