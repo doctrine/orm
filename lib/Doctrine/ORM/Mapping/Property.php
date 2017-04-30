@@ -53,6 +53,11 @@ interface Property
     public function getName();
 
     /**
+     * @param \ReflectionProperty $reflectionProperty
+     */
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty);
+
+    /**
      * @param ReflectionService $reflectionService
      */
     public function wakeupReflection(ReflectionService $reflectionService);

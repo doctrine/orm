@@ -19,6 +19,7 @@
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -151,20 +152,22 @@ use Throwable;
         $this->config            = $config;
         $this->eventManager      = $eventManager;
 
+        $proxyConfiguration = new ProxyConfiguration();
+
+        $proxyConfiguration->setDirectory($config->getProxyDir());
+        $proxyConfiguration->setNamespace($config->getProxyNamespace());
+        $proxyConfiguration->setAutoGenerate($config->getAutoGenerateProxyClasses());
+
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
         $this->metadataFactory = new $metadataFactoryClassName;
+
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        );
+        $this->proxyFactory      = new ProxyFactory($this, $proxyConfiguration);
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig    = $config->getSecondLevelCacheConfiguration();
@@ -271,7 +274,7 @@ use Throwable;
      *
      * @param string $className
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return Mapping\ClassMetadata
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {

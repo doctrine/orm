@@ -190,9 +190,11 @@ class DefaultQueryCache implements QueryCache
                     return new EntityCacheKey($assocMetadata->rootEntityName, $id);
                 };
 
-                $collection   = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
                 $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
+
+                // *-to-many association
+                $collection  = [];
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
                     $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
@@ -207,13 +209,11 @@ class DefaultQueryCache implements QueryCache
                         return null;
                     }
 
-                    $element = $this->uow->createEntity(
+                    $collection[$assocIndex] = $this->uow->createEntity(
                         $assocEntry->class,
                         $assocEntry->resolveAssociationEntries($this->em),
                         self::$hints
                     );
-
-                    $collection->hydrateSet($assocIndex, $element);
 
                     if ($this->cacheLogger !== null) {
                         $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKeys->identifiers[$assocIndex]);
@@ -221,8 +221,6 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 $data[$name] = $collection;
-
-                $collection->setInitialized(true);
             }
 
             foreach ($data as $fieldName => $unCachedAssociationData) {

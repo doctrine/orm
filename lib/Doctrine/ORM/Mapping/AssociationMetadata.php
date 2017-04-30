@@ -302,9 +302,19 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty)
+    {
+        $this->reflection = $reflectionProperty;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function wakeupReflection(ReflectionService $reflectionService)
     {
-        $this->reflection = $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name);
+        $this->setReflectionProperty(
+            $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name)
+        );
     }
 
     public function __clone()

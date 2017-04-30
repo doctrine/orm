@@ -560,6 +560,10 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
         $this->reflectionClass = $reflService->getClass($this->name);
         $this->instantiator    = $this->instantiator ?: new Instantiator();
 
+        if (! $this->reflectionClass) {
+            return;
+        }
+
         $parentReflFields = [];
 
         /*foreach ($this->embeddedClasses as $property => $embeddedClass) {
