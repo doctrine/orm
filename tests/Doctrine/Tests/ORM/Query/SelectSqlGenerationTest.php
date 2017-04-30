@@ -39,8 +39,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = []
-    )
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = [])
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
@@ -78,8 +77,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = []
-    )
+    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = [])
     {
         $this->expectException($expectedException);
 
@@ -892,7 +890,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedException \Doctrine\ORM\Query\QueryException
      */
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
     {
@@ -1991,7 +1989,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Quote\User u JOIN u.address a',
-            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id"'
+            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3, q1_.type AS type_4 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id" AND q1_.type IN (\'simple\', \'full\')'
         );
 
         $this->assertSqlGeneration(
@@ -2006,7 +2004,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT a, u FROM Doctrine\Tests\Models\Quote\Address a JOIN a.user u',
-            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id"'
+            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3, q0_.type AS type_4 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id" WHERE q0_.type IN (\'simple\', \'full\')'
         );
 
         $this->assertSqlGeneration(

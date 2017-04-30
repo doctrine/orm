@@ -225,6 +225,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
         'quote' => [
             Models\Quote\Address::class,
+            Models\Quote\City::class,
+            Models\Quote\FullAddress::class,
             Models\Quote\Group::class,
             Models\Quote\NumericEntity::class,
             Models\Quote\Phone::class,
@@ -480,10 +482,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['quote'])) {
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-address"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-group"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-phone"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-user"));
+            $conn->executeUpdate(
+                sprintf(
+                    'UPDATE %s SET %s = NULL',
+                    $platform->quoteIdentifier("quote-address"),
+                    $platform->quoteIdentifier('user-id')
+                )
+            );
+
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {
