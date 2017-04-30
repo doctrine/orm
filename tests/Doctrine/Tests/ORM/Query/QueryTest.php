@@ -243,4 +243,37 @@ class QueryTest extends OrmTestCase
         $query->setHydrationCacheProfile(null);
         $this->assertNull($query->getHydrationCacheProfile());
     }
+
+    /**
+     * @group 2947
+     */
+    public function testResultCacheEviction()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+                           ->useResultCache(true);
+
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->_em->getConnection()
+                                          ->getWrappedConnection();
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(1, $query->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1], ['id_0' => 2]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(1, $query->getResult());
+
+        // Performs the query and caches the result set since expire flag is true
+        self::assertCount(2, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(2, $query->expireResultCache(false)->getResult());
+    }
 }
