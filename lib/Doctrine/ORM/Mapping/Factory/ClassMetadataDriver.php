@@ -24,6 +24,7 @@ namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
@@ -43,9 +44,15 @@ class ClassMetadataDriver
      */
     private $mappingDriver;
 
-    public function __construct(MappingDriver $mappingDriver)
+    /**
+     * @var NamingStrategy
+     */
+    protected $namingStrategy;
+
+    public function __construct(MappingDriver $mappingDriver, NamingStrategy $namingStrategy)
     {
-        $this->mappingDriver = $mappingDriver;
+        $this->mappingDriver  = $mappingDriver;
+        $this->namingStrategy = $namingStrategy;
     }
 
     /**
@@ -57,13 +64,16 @@ class ClassMetadataDriver
     }
 
     /**
-     * @param string $className
+     * @param string             $className
+     * @param ClassMetadata|null $parent
      *
      * @return ClassMetadata
      */
-    public function getClassMetadata(string $className)
+    public function getClassMetadata(string $className, ?ClassMetadata $parent)
     {
+        $builder = $this->mappingDriver->loadMetadataForClass($className, $parent);
 
+        return $builder->build($this->namingStrategy);
     }
 
     /**

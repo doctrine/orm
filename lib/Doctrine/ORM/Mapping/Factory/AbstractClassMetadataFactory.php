@@ -72,11 +72,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     protected $metadataDriver;
 
     /**
-     * @var NamingStrategy
-     */
-    protected $namingStrategy;
-
-    /**
      * @var array<string, ClassMetadataDefinition>
      */
     private $definitions = [];
@@ -93,11 +88,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function __construct(MetadataConfiguration $configuration)
     {
-        $driver    = new ClassMetadataDriver($configuration->getMappingDriver(), $this->getReflectionService());
+        $driver    = new ClassMetadataDriver($configuration->getMappingDriver(), $configuration->getNamingStrategy());
         $generator = new ClassMetadataGenerator($driver);
 
         $this->metadataDriver    = $driver;
-        $this->namingStrategy    = $configuration->getNamingStrategy();
         $this->definitionFactory = new ClassMetadataDefinitionFactory(
             $configuration->getResolver(),
             $generator,
@@ -213,9 +207,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     private function getParentClassNameList(string $className) : array
     {
+        $reflectionService   = $this->getReflectionService();
         $parentClassNameList = [];
 
-        foreach (array_reverse($this->getReflectionService()->getParentClasses($className)) as $parentClassName) {
+        foreach (array_reverse($reflectionService->getParentClasses($className)) as $parentClassName) {
             if ($this->metadataDriver->hasClassMetadata($parentClassName)) {
                 continue;
             }
