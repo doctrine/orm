@@ -634,25 +634,11 @@ class UnitOfWork implements PropertyChangedListener
             $value = $property->getValue($entity);
 
             if ($property instanceof ToManyAssociationMetadata && $value !== null) {
-                if ($value instanceof PersistentCollection) {
-                    if ($value->getOwner() === $entity) {
-                        continue;
-                    }
-
-                    $value = new ArrayCollection($value->getValues());
+                if ($value instanceof PersistentCollection && $value->getOwner() === $entity) {
+                    continue;
                 }
 
-                // If $value is not a Collection then use an ArrayCollection.
-                if ( ! $value instanceof Collection) {
-                    $value = new ArrayCollection($value);
-                }
-
-                // Inject PersistentCollection
-                $value = new PersistentCollection(
-                    $this->em, $this->em->getClassMetadata($property->getTargetEntity()), $value
-                );
-                $value->setOwner($entity, $property);
-                $value->setDirty( ! $value->isEmpty());
+                $value = $property->wrap($entity, $value, $this->em);
 
                 $property->setValue($entity, $value);
 
@@ -2694,8 +2680,10 @@ class UnitOfWork implements PropertyChangedListener
                     continue;
                 }
 
+                $hasDataField = isset($data[$field]);
+
                 // use the given collection
-                if (isset($data[$field]) && $data[$field] instanceof PersistentCollection) {
+                if ($hasDataField && $data[$field] instanceof PersistentCollection) {
                     $data[$field]->setOwner($entity, $association);
 
                     $association->setValue($entity, $data[$field]);
@@ -2706,9 +2694,9 @@ class UnitOfWork implements PropertyChangedListener
                 }
 
                 // Inject collection
-                $pColl = new PersistentCollection($this->em, $targetClass, new ArrayCollection);
-                $pColl->setOwner($entity, $association);
-                $pColl->setInitialized(false);
+                $pColl = $association->wrap($entity, $hasDataField ? $data[$field] : [], $this->em);
+
+                $pColl->setInitialized($hasDataField);
 
                 $association->setValue($entity, $pColl);
 
@@ -3510,11 +3498,7 @@ class UnitOfWork implements PropertyChangedListener
                     $managedCol = $property->getValue($managedCopy);
 
                     if (! $managedCol) {
-                        $targetEntity = $property->getTargetEntity();
-                        $targetClass  = $this->em->getClassMetadata($targetEntity);
-                        $managedCol   = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
-                        
-                        $managedCol->setOwner($managedCopy, $property);
+                        $managedCol = $property->wrap($managedCopy, [], $this->em);
 
                         $property->setValue($managedCopy, $managedCol);
                     }

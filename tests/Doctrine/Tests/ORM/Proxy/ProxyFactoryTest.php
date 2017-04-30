@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Proxy;
 
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
@@ -49,11 +50,20 @@ class ProxyFactoryTest extends OrmTestCase
     protected function setUp()
     {
         parent::setUp();
+
         $this->connectionMock = new ConnectionMock([], new DriverMock());
-        $this->emMock = EntityManagerMock::create($this->connectionMock);
-        $this->uowMock = new UnitOfWorkMock($this->emMock);
+        $this->emMock         = EntityManagerMock::create($this->connectionMock);
+        $this->uowMock        = new UnitOfWorkMock($this->emMock);
+
         $this->emMock->setUnitOfWork($this->uowMock);
-        $this->proxyFactory = new ProxyFactory($this->emMock, sys_get_temp_dir(), 'Proxies', AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+
+        $proxyConfiguration = new ProxyConfiguration();
+
+        $proxyConfiguration->setDirectory(sys_get_temp_dir());
+        $proxyConfiguration->setNamespace('Proxies');
+        $proxyConfiguration->setAutoGenerate(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+
+        $this->proxyFactory = new ProxyFactory($this->emMock, $proxyConfiguration);
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister()

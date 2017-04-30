@@ -404,10 +404,7 @@ abstract class AbstractQuery
         }
 
         if ($value instanceof Mapping\ClassMetadata) {
-            return $value->discriminatorValue
-                ? $value->discriminatorValue
-                : $value->name
-            ;
+            return $value->discriminatorValue ?: $value->name;
         }
 
         if ($value instanceof Collection) {
