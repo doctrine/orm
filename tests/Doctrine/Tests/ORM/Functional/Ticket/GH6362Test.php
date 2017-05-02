@@ -15,10 +15,10 @@ final class GH6362Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6362Start::class),
-                $this->_em->getClassMetadata(GH6362Base::class),
-                $this->_em->getClassMetadata(GH6362Child::class),
-                $this->_em->getClassMetadata(GH6362Join::class),
+                $this->_em->getClassMetadata(GH6362Start::CLASSNAME),
+                $this->_em->getClassMetadata(GH6362Base::CLASSNAME),
+                $this->_em->getClassMetadata(GH6362Child::CLASSNAME),
+                $this->_em->getClassMetadata(GH6362Join::CLASSNAME),
             ]
         );
     }
@@ -35,10 +35,10 @@ final class GH6362Test extends OrmFunctionalTestCase
     public function testInheritanceJoinAlias()
     {
         $rsm = new ResultSetMapping;
-        $rsm->addEntityResult(GH6362Start::class, 'a', 'base');
-        $rsm->addJoinedEntityResult(GH6362Base::class, 'b', 'a', 'bases');
-        $rsm->addEntityResult(GH6362Child::class, 'c');
-        $rsm->addJoinedEntityResult(GH6362Join::class, 'd', 'c', 'joins');
+        $rsm->addEntityResult(GH6362Start::CLASSNAME, 'a', 'base');
+        $rsm->addJoinedEntityResult(GH6362Base::CLASSNAME, 'b', 'a', 'bases');
+        $rsm->addEntityResult(GH6362Child::CLASSNAME, 'c');
+        $rsm->addJoinedEntityResult(GH6362Join::CLASSNAME, 'd', 'c', 'joins');
 
         $rsm->addFieldResult('a', 'id_0', 'id');
         $rsm->addFieldResult('b', 'id_1', 'id');
@@ -70,8 +70,8 @@ final class GH6362Test extends OrmFunctionalTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertInstanceOf(GH6362Start::class, $result[0]['base']);
-        $this->assertInstanceOf(GH6362Child::class, $result[1][0]);
+        $this->assertInstanceOf(GH6362Start::CLASSNAME, $result[0]['base']);
+        $this->assertInstanceOf(GH6362Child::CLASSNAME, $result[1][0]);
     }
 }
 
@@ -80,6 +80,8 @@ final class GH6362Test extends OrmFunctionalTestCase
  */
 class GH6362Start
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Column(type="integer")
      * @Id
@@ -101,6 +103,8 @@ class GH6362Start
  */
 abstract class GH6362Base
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Column(type="integer")
      * @Id
@@ -119,6 +123,8 @@ abstract class GH6362Base
  */
 class GH6362Child extends GH6362Base
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
      */
@@ -130,6 +136,8 @@ class GH6362Child extends GH6362Base
  */
 class GH6362Join
 {
+    const CLASSNAME = __CLASS__;
+
     /**
      * @Column(type="integer")
      * @Id
