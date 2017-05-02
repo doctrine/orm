@@ -225,6 +225,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
         'quote' => [
             Models\Quote\Address::class,
+            Models\Quote\City::class,
+            Models\Quote\FullAddress::class,
             Models\Quote\Group::class,
             Models\Quote\NumericEntity::class,
             Models\Quote\Phone::class,
@@ -480,10 +482,20 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($this->_usedModelSets['quote'])) {
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-address"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-group"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-phone"));
-            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("quote-user"));
+            $conn->executeUpdate(
+                sprintf(
+                    'UPDATE %s SET %s = NULL',
+                    $platform->quoteIdentifier("quote-address"),
+                    $platform->quoteIdentifier('user-id')
+                )
+            );
+
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-users-groups'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-group'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-phone'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-user'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-address'));
+            $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier('quote-city'));
         }
 
         if (isset($this->_usedModelSets['vct_onetoone'])) {
@@ -616,14 +628,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     {
         $this->setUpDBALTypes();
 
-        $forceCreateTables = false;
-
         if ( ! isset(static::$_sharedConn)) {
             static::$_sharedConn = TestUtil::getConnection();
-
-            if (static::$_sharedConn->getDriver() instanceof SqliteDriver) {
-                $forceCreateTables = true;
-            }
         }
 
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
@@ -642,7 +648,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $classes = [];
 
         foreach ($this->_usedModelSets as $setName => $bool) {
-            if ( ! isset(static::$_tablesCreated[$setName])/* || $forceCreateTables*/) {
+            if ( ! isset(static::$_tablesCreated[$setName])) {
                 foreach (static::$_modelSets[$setName] as $className) {
                     $classes[] = $this->_em->getClassMetadata($className);
                 }

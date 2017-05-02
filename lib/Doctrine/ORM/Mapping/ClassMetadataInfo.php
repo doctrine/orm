@@ -1803,7 +1803,7 @@ class ClassMetadataInfo implements ClassMetadata
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
-        
+
         if ( ! isset($this->identifier[0])) {
             throw MappingException::noIdDefined($this->name);
         }
@@ -2301,6 +2301,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $this->table['name'] = $table['name'];
+        }
+
+        if (isset($table['quoted'])) {
+            $this->table['quoted'] = $table['quoted'];
         }
 
         if (isset($table['schema'])) {
