@@ -1727,6 +1727,9 @@ class Parser
      */
     public function RangeVariableDeclaration()
     {
+        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && $this->lexer->glimpse()['type'] === Lexer::T_SELECT) {
+            $this->semanticalError('Subquery is not supported here', $this->lexer->token);
+        }
         $abstractSchemaName = $this->AbstractSchemaName();
 
         $this->validateAbstractSchemaName($abstractSchemaName);
