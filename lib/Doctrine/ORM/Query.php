@@ -20,6 +20,7 @@
 namespace Doctrine\ORM;
 
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
@@ -322,7 +323,25 @@ final class Query extends AbstractQuery
 
         list($sqlParams, $types) = $this->processParameterMappings($paramMappings);
 
+        $this->evictResultSetCache($executor, $sqlParams, $types);
+
         return $executor->execute($this->_em->getConnection(), $sqlParams, $types);
+    }
+
+    private function evictResultSetCache(AbstractSqlExecutor $executor, array $sqlParams, array $types)
+    {
+        if (null === $this->_queryCacheProfile || ! $this->getExpireResultCache()) {
+            return;
+        }
+
+        $cacheDriver = $this->_queryCacheProfile->getResultCacheDriver();
+        $statements  = (array) $executor->getSqlStatements(); // Type casted since it can either be a string or an array
+
+        foreach ($statements as $statement) {
+            $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types);
+
+            $cacheDriver->delete(reset($cacheKeys));
+        }
     }
 
     /**

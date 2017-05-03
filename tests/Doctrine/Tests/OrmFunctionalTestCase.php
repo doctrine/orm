@@ -69,6 +69,13 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected $_usedModelSets = [];
 
     /**
+     * To be configured by the test that uses result set cache
+     *
+     * @var \Doctrine\Common\Cache\Cache|null
+     */
+    protected $resultCacheImpl;
+
+    /**
      * Whether the database schema has already been created.
      *
      * @var array
@@ -698,6 +705,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setQueryCacheImpl(self::$_queryCacheImpl);
         $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+
+        if (null !== $this->resultCacheImpl) {
+            $config->setResultCacheImpl($this->resultCacheImpl);
+        }
 
         $enableSecondLevelCache = getenv('ENABLE_SECOND_LEVEL_CACHE');
 
