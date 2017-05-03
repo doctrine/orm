@@ -13,8 +13,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket {
             parent::setUp();
 
             $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Person'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Employee'),
+                $this->_em->getClassMetadata(Person::class),
+                $this->_em->getClassMetadata(Employee::class),
             ]);
         }
 
