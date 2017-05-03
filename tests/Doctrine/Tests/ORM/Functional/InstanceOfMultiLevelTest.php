@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional {
 
+    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Employee;
+    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Engineer;
+    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person;
     use Doctrine\Tests\OrmFunctionalTestCase;
 
     class InstanceOfMultiLevelTest extends OrmFunctionalTestCase
@@ -10,11 +13,11 @@ namespace Doctrine\Tests\ORM\Functional {
         {
             parent::setUp();
 
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfMultiLevelTest\Person'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfMultiLevelTest\Employee'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfMultiLevelTest\Engineer'),
-            ));
+            $this->_schemaTool->createSchema([
+                $this->_em->getClassMetadata(Person::class),
+                $this->_em->getClassMetadata(Employee::class),
+                $this->_em->getClassMetadata(Engineer::class),
+            ]);
         }
 
         public function testInstanceOf()
@@ -29,11 +32,11 @@ namespace Doctrine\Tests\ORM\Functional {
             $this->assertCount(3, $result);
 
             foreach ($result as $r) {
-                $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person', $r);
+                $this->assertInstanceOf(Person::class, $r);
                 if ($r instanceof InstanceOfMultiLevelTest\Engineer) {
                     $this->assertEquals('foobar', $r->getName());
                     $this->assertEquals('doctrine', $r->getSpecialization());
-                } elseif ($r instanceof InstanceOfMultiLevelTest\Employee) {
+                } elseif ($r instanceof Employee) {
                     $this->assertEquals('bar', $r->getName());
                     $this->assertEquals('qux', $r->getDepartement());
                 } else {
@@ -44,14 +47,14 @@ namespace Doctrine\Tests\ORM\Functional {
 
         private function loadData()
         {
-            $person = new InstanceOfMultiLevelTest\Person();
+            $person = new Person();
             $person->setName('foo');
 
-            $employee = new InstanceOfMultiLevelTest\Employee();
+            $employee = new Employee();
             $employee->setName('bar');
             $employee->setDepartement('qux');
 
-            $engineer = new InstanceOfMultiLevelTest\Engineer();
+            $engineer = new Engineer();
             $engineer->setName('foobar');
             $engineer->setDepartement('dep');
             $engineer->setSpecialization('doctrine');

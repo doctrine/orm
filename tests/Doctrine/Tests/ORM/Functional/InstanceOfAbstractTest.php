@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional {
 
+    use Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Employee;
+    use Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Person;
     use Doctrine\Tests\OrmFunctionalTestCase;
 
     class InstanceOfAbstractTest extends OrmFunctionalTestCase
@@ -10,10 +12,10 @@ namespace Doctrine\Tests\ORM\Functional {
         {
             parent::setUp();
 
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfAbstractTest\Person'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfAbstractTest\Employee'),
-            ));
+            $this->_schemaTool->createSchema([
+                $this->_em->getClassMetadata(Person::class),
+                $this->_em->getClassMetadata(Employee::class),
+            ]);
         }
 
         public function testInstanceOf()
@@ -55,7 +57,7 @@ namespace Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest {
      * @InheritanceType(value="JOINED")
      * @DiscriminatorColumn(name="kind", type="string")
      * @DiscriminatorMap(value={
-     *     "employee": "Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Employee"
+     *     "employee": Employee::class
      * })
      */
     abstract class Person
