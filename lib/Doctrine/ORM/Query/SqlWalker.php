@@ -37,7 +37,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Alexander <iam.asm89@gmail.com>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since  2.0
- * @todo Rename: SQLWalker
  */
 class SqlWalker implements TreeWalker
 {
@@ -2017,6 +2016,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * {@inheritdoc}
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function walkInstanceOfExpression($instanceOfExpr)
     {
@@ -2034,48 +2034,7 @@ class SqlWalker implements TreeWalker
         }
 
         $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
-
-        $knownSubclasses = array_flip($discrClass->subClasses);
-
-        $sqlParameterList = [];
-        $discriminators = [];
-        foreach ($instanceOfExpr->value as $parameter) {
-            if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
-
-                $sqlParameterList[] = $this->walkInputParameter($parameter);
-
-                continue;
-            }
-
-            // Trim first backslash
-            $parameter = ltrim($parameter, '\\');
-
-            // Check parameter is really in the hierarchy
-            if ($parameter !== $discrClass->name && ! array_key_exists($parameter, $knownSubclasses)) {
-                throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
-            }
-
-            // Include discriminators for parameter class and its subclass
-            $metadata = $this->em->getClassMetadata($parameter);
-            $hierarchyClasses = $metadata->subClasses;
-            $hierarchyClasses[] = $metadata->name;
-
-            foreach ($hierarchyClasses as $class) {
-                $currentMetadata = $this->em->getClassMetadata($class);
-                $currentDiscriminator = $currentMetadata->discriminatorValue;
-
-                if (is_string($currentDiscriminator) && ! array_key_exists($currentDiscriminator, $discriminators)) {
-                    $discriminators[$currentDiscriminator] = true;
-                }
-            }
-        }
-
-        foreach (array_keys($discriminators) as $dis) {
-            $sqlParameterList[] = $this->conn->quote($dis);
-        }
-
-        $sql .= '(' . implode(', ', $sqlParameterList) . ')';
+        $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
 
         return $sql;
     }
@@ -2308,5 +2267,54 @@ class SqlWalker implements TreeWalker
         }
 
         return $resultAlias;
+    }
+
+    /**
+     * @param ClassMetadataInfo $discrClass
+     * @param AST\InstanceOfExpression $instanceOfExpr
+     * @return string The list in parentheses of valid child discriminators from the given class
+     * @throws QueryException
+     */
+    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $discrClass, AST\InstanceOfExpression $instanceOfExpr)
+    {
+        $knownSubclasses = array_flip($discrClass->subClasses);
+        $sqlParameterList = [];
+        $discriminators = [];
+        foreach ($instanceOfExpr->value as $parameter) {
+            if ($parameter instanceof AST\InputParameter) {
+                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
+
+                $sqlParameterList[] = $this->walkInputParameter($parameter);
+
+                continue;
+            }
+
+            // Trim first backslash
+            $parameter = ltrim($parameter, '\\');
+
+            if ($parameter !== $discrClass->name && ! array_key_exists($parameter, $knownSubclasses)) {
+                throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
+            }
+
+            // Include discriminators for parameter class and its subclass
+            $metadata = $this->em->getClassMetadata($parameter);
+            $hierarchyClasses = $metadata->subClasses;
+            $hierarchyClasses[] = $metadata->name;
+
+            foreach ($hierarchyClasses as $class) {
+                $currentMetadata = $this->em->getClassMetadata($class);
+                $currentDiscriminator = $currentMetadata->discriminatorValue;
+
+                if (is_string($currentDiscriminator) && ! array_key_exists($currentDiscriminator, $discriminators)) {
+                    $discriminators[$currentDiscriminator] = true;
+                }
+            }
+        }
+
+        foreach (array_keys($discriminators) as $dis) {
+            $sqlParameterList[] = $this->conn->quote($dis);
+        }
+
+        return '(' . implode(', ', $sqlParameterList) . ')';
     }
 }
