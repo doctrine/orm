@@ -1,18 +1,20 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional {
+namespace Doctrine\Tests\ORM\Functional\Ticket {
 
+    use Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Employee;
+    use Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Person;
     use Doctrine\Tests\OrmFunctionalTestCase;
 
-    class InstanceOfTest extends OrmFunctionalTestCase
+    class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
     {
         protected function setUp()
         {
             parent::setUp();
 
             $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Person'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\InstanceOfTest\Employee'),
+                $this->_em->getClassMetadata(Person::class),
+                $this->_em->getClassMetadata(Employee::class),
             ]);
         }
 
@@ -20,52 +22,45 @@ namespace Doctrine\Tests\ORM\Functional {
         {
             $this->loadData();
 
-            $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\InstanceOfTest\Person p
-                    WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\InstanceOfTest\Person';
+            $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Person p
+                    WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest\Person';
             $query = $this->_em->createQuery($dql);
             $result = $query->getResult();
 
-            $this->assertCount(2, $result);
+            $this->assertCount(1, $result);
 
             foreach ($result as $r) {
-                $this->assertInstanceOf(InstanceOfTest\Person::class, $r);
-                if ($r instanceof InstanceOfTest\Employee) {
-                    $this->assertEquals('bar', $r->getName());
-                } else {
-                    $this->assertEquals('foo', $r->getName());
-                }
+                $this->assertInstanceOf(Person::class, $r);
+                $this->assertInstanceOf(Employee::class, $r);
+                $this->assertSame('bar', $r->getName());
             }
         }
 
         private function loadData()
         {
-            $person = new InstanceOfTest\Person();
-            $person->setName('foo');
-
-            $employee = new InstanceOfTest\Employee();
+            $employee = new Employee();
             $employee->setName('bar');
             $employee->setDepartement('qux');
 
-            $this->_em->persist($person);
             $this->_em->persist($employee);
 
-            $this->_em->flush(array($person, $employee));
+            $this->_em->flush($employee);
         }
     }
 }
 
-namespace Doctrine\Tests\ORM\Functional\InstanceOfTest {
+namespace Doctrine\Tests\ORM\Functional\InstanceOfAbstractTest {
+
     /**
      * @Entity()
-     * @Table(name="instance_of_test_person")
+     * @Table(name="instance_of_abstract_test_person")
      * @InheritanceType(value="JOINED")
      * @DiscriminatorColumn(name="kind", type="string")
      * @DiscriminatorMap(value={
-     *     "person": "Doctrine\Tests\ORM\Functional\InstanceOfTest\Person",
-     *     "employee": "Doctrine\Tests\ORM\Functional\InstanceOfTest\Employee"
+     *     "employee": Employee::class
      * })
      */
-    class Person
+    abstract class Person
     {
         /**
          * @Id()
@@ -97,7 +92,7 @@ namespace Doctrine\Tests\ORM\Functional\InstanceOfTest {
 
     /**
      * @Entity()
-     * @Table(name="instance_of_test_employee")
+     * @Table(name="instance_of_abstract_test_employee")
      */
     class Employee extends Person
     {
