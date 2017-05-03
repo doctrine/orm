@@ -1,13 +1,13 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional {
+namespace Doctrine\Tests\ORM\Functional\Ticket {
 
     use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Employee;
     use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Engineer;
     use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person;
     use Doctrine\Tests\OrmFunctionalTestCase;
 
-    class InstanceOfMultiLevelTest extends OrmFunctionalTestCase
+    class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
     {
         protected function setUp()
         {
@@ -33,7 +33,7 @@ namespace Doctrine\Tests\ORM\Functional {
 
             foreach ($result as $r) {
                 $this->assertInstanceOf(Person::class, $r);
-                if ($r instanceof InstanceOfMultiLevelTest\Engineer) {
+                if ($r instanceof Engineer) {
                     $this->assertEquals('foobar', $r->getName());
                     $this->assertEquals('doctrine', $r->getSpecialization());
                 } elseif ($r instanceof Employee) {
