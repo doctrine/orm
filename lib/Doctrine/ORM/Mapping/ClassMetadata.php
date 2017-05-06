@@ -194,13 +194,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     public $identifier = [];
 
     /**
-     * READ-ONLY: Flag indicating whether the identifier/primary key of the class is composite.
-     *
-     * @var boolean
-     */
-    public $isIdentifierComposite = false;
-
-    /**
      * READ-ONLY: The inheritance mapping type used by the class.
      *
      * @var string
@@ -461,7 +454,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             'fieldNames',
             //'embeddedClasses',
             'identifier',
-            'isIdentifierComposite', // TODO: REMOVE
             'name',
             'table',
             'rootEntityName',
@@ -639,7 +631,7 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             throw MappingException::identifierRequired($this->name);
         }
 
-        if ($this->generatorType !== GeneratorType::NONE && $this->isIdentifierComposite) {
+        if ($this->generatorType !== GeneratorType::NONE && $this->isIdentifierComposite()) {
             throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
         }
     }
@@ -711,15 +703,23 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
      */
     public function isIdentifier($fieldName)
     {
-        if ( ! $this->identifier) {
+        if (! $this->identifier) {
             return false;
         }
 
-        if ( ! $this->isIdentifierComposite) {
+        if (! $this->isIdentifierComposite()) {
             return $fieldName === $this->identifier[0];
         }
 
         return in_array($fieldName, $this->identifier, true);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIdentifierComposite()
+    {
+        return count($this->identifier) > 1;
     }
 
     /**
@@ -853,11 +853,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             if (! in_array($fieldName, $this->identifier)) {
                 $this->identifier[] = $fieldName;
             }
-
-            // Check for composite key
-            if (! $this->isIdentifierComposite && count($this->identifier) > 1) {
-                $this->isIdentifierComposite = true;
-            }
         }
 
         $this->fieldNames[$columnName] = $fieldName;
@@ -940,11 +935,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
                 }
 
                 $this->identifier[] = $property->getName();
-            }
-
-            // Check for composite key
-            if ( ! $this->isIdentifierComposite && count($this->identifier) > 1) {
-                $this->isIdentifierComposite = true;
             }
 
             if ($this->cache && !$property->getCache()) {
@@ -1232,7 +1222,7 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
      */
     public function getSingleIdentifierFieldName()
     {
-        if ($this->isIdentifierComposite) {
+        if ($this->isIdentifierComposite()) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
 
@@ -1251,7 +1241,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     public function setIdentifier(array $identifier)
     {
         $this->identifier = $identifier;
-        $this->isIdentifierComposite = count($this->identifier) > 1;
     }
 
     /**
