@@ -23,6 +23,7 @@ declare(strict_types = 1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Configuration\MetadataConfiguration;
@@ -67,9 +68,9 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     protected $definitionFactory;
 
     /**
-     * @var ClassMetadataDriver
+     * @var MappingDriver
      */
-    protected $metadataDriver;
+    protected $mappingDriver;
 
     /**
      * @var array<string, ClassMetadataDefinition>
@@ -88,10 +89,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function __construct(MetadataConfiguration $configuration)
     {
-        $driver    = new ClassMetadataDriver($configuration->getMappingDriver(), $configuration->getNamingStrategy());
-        $generator = new ClassMetadataGenerator($driver);
+        $generator = new ClassMetadataGenerator(
+            $configuration->getMappingDriver(),
+            $configuration->getNamingStrategy()
+        );
 
-        $this->metadataDriver    = $driver;
+        $this->mappingDriver     = $configuration->getMappingDriver();
         $this->definitionFactory = new ClassMetadataDefinitionFactory(
             $configuration->getResolver(),
             $generator,
@@ -106,7 +109,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     {
         $metadata = [];
 
-        foreach ($this->metadataDriver->getAllClassMetadata() as $className) {
+        foreach ($this->mappingDriver->getAllClassNames() as $className) {
             $metadata[] = $this->getMetadataFor($className);
         }
 
@@ -164,7 +167,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function isTransient($className)
     {
-        return $this->metadataDriver->hasClassMetadata($className);
+        return $this->mappingDriver->isTransient($className);
     }
 
     /**
@@ -211,7 +214,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         $parentClassNameList = [];
 
         foreach (array_reverse($reflectionService->getParentClasses($className)) as $parentClassName) {
-            if ($this->metadataDriver->hasClassMetadata($parentClassName)) {
+            if ($this->mappingDriver->isTransient($parentClassName)) {
                 continue;
             }
 

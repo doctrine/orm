@@ -142,7 +142,7 @@ class PhpExporter extends AbstractExporter
             }
         }
 
-        if (! $metadata->isIdentifierComposite) {
+        if (! $metadata->isIdentifierComposite()) {
             $lines[] = '$metadata->setIdGeneratorType(Mapping\GeneratorType::' . $metadata->generatorType . ');';
         }
 

@@ -378,8 +378,8 @@ use Doctrine\Common\Util\ClassUtils;
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
-        if ( ! is_array($id)) {
-            if ($class->isIdentifierComposite) {
+        if (! is_array($id)) {
+            if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
@@ -470,7 +470,7 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            if ($class->isIdentifierComposite) {
+            if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
@@ -526,7 +526,7 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            if ($class->isIdentifierComposite) {
+            if ($class->isIdentifierComposite()) {
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
