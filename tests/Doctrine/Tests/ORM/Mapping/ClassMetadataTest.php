@@ -289,12 +289,24 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->isIdentifierComposite  = true;
+        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata->initializeReflection(new RuntimeReflectionService());
+
+        $fieldMetadata = new Mapping\FieldMetadata('name');
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
+
+        $fieldMetadata = new Mapping\FieldMetadata('username');
+        $fieldMetadata->setType(Type::getType('string'));
+
+        $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdentifier(['name', 'username']);
 
         $this->expectException(MappingException::class);
-        $cm->getSingleIdentifierFieldName();
+
+        $metadata->getSingleIdentifierFieldName();
     }
 
     public function testGetSingleIdentifierFieldName_NoIdEntity_ThrowsException()
@@ -639,7 +651,7 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->addProperty($fieldMetadata);
 
         $metadata->setIdentifier(['name', 'username']);
-        self::assertTrue($metadata->isIdentifierComposite);
+        self::assertTrue($metadata->isIdentifierComposite());
     }
 
     /**

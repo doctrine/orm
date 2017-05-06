@@ -2757,7 +2757,7 @@ class UnitOfWork implements PropertyChangedListener
                     // If this is an uninitialized proxy, we are deferring eager loads,
                     // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                     // then we can append this entity for eager loading!
-                    if (!$targetClass->isIdentifierComposite &&
+                    if (!$targetClass->isIdentifierComposite() &&
                         $newValue instanceof Proxy &&
                         isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                         $hints['fetchMode'][$class->name][$field] === FetchMode::EAGER &&
@@ -2788,7 +2788,7 @@ class UnitOfWork implements PropertyChangedListener
                             break;
 
                         // Deferred eager load only works for single identifier classes
-                        case (isset($hints[self::HINT_DEFEREAGERLOAD]) && !$targetClass->isIdentifierComposite):
+                        case (isset($hints[self::HINT_DEFEREAGERLOAD]) && !$targetClass->isIdentifierComposite()):
                             // TODO: Is there a faster approach?
                             $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
 
@@ -2960,7 +2960,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        if ($class->isIdentifierComposite) {
+        if ($class->isIdentifierComposite()) {
             throw ORMInvalidArgumentException::invalidCompositeIdentifier();
         }
 

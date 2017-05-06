@@ -432,14 +432,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 }
             }
         } else {
-            foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-                $property = $classMetadata->getProperty($propertyName);
-
+            foreach ($classMetadata->getProperties() as $property) {
                 if (! ($property instanceof FieldMetadata)) {
                     continue;
                 }
 
-                $this->addFieldResult($alias, $columnName, $propertyName);
+                $this->addFieldResult($alias, $property->getColumnName(), $property->getName());
             }
         }
 

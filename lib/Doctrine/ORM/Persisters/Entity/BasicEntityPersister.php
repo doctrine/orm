@@ -2065,7 +2065,7 @@ class BasicEntityPersister implements EntityPersister
         if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
             $class = $this->em->getClassMetadata(get_class($value));
 
-            if ($class->isIdentifierComposite) {
+            if ($class->isIdentifierComposite()) {
                 $newValue = [];
 
                 foreach ($class->getIdentifierValues($value) as $innerValue) {

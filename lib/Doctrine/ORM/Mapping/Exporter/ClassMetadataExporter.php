@@ -132,7 +132,7 @@ class ClassMetadataExporter implements Exporter
             $lines[] = null;
         }
 
-        if (! $metadata->isIdentifierComposite) {
+        if (! $metadata->isIdentifierComposite()) {
             $lines[] = $objectReference . '->setIdGeneratorType(Mapping\GeneratorType::' . strtoupper($metadata->generatorType) . ');';
             $lines[] = null;
         }

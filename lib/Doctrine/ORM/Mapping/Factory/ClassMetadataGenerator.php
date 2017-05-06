@@ -22,6 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Builder\ClassMetadataExporter;
 
 /**
@@ -34,9 +35,14 @@ use Doctrine\ORM\Mapping\Builder\ClassMetadataExporter;
 class ClassMetadataGenerator
 {
     /**
-     * @var ClassMetadataDriver
+     * @var MappingDriver
      */
-    private $metadataDriver;
+    protected $mappingDriver;
+
+    /**
+     * @var NamingStrategy
+     */
+    protected $namingStrategy;
 
     /**
      * @var ClassMetadataExporter
@@ -44,15 +50,18 @@ class ClassMetadataGenerator
     private $metadataExporter;
 
     /**
-     * @param ClassMetadataDriver        $metadataDriver
+     * @param MappingDriver              $mappingDriver
+     * @param NamingStrategy             $namingStrategy
      * @param ClassMetadataExporter|null $metadataExporter
      */
     public function __construct(
-        ClassMetadataDriver $metadataDriver,
+        MappingDriver $mappingDriver,
+        NamingStrategy $namingStrategy,
         ClassMetadataExporter $metadataExporter = null
     )
     {
-        $this->metadataDriver   = $metadataDriver;
+        $this->mappingDriver    = $mappingDriver;
+        $this->namingStrategy   = $namingStrategy;
         $this->metadataExporter = $metadataExporter ?: new ClassMetadataExporter();
     }
 
@@ -64,8 +73,9 @@ class ClassMetadataGenerator
      */
     public function generate(string $path, ClassMetadataDefinition $definition)
     {
-        $metadata   = $this->metadataDriver->getClassMetadata($definition->entityClassName, $definition->parent);
-        $sourceCode = $this->metadataExporter->export($metadata);
+        $builder    = $this->mappingDriver->loadMetadataForClass($definition->entityClassName, $definition->parent);
+        $metadata   = $builder->build($this->namingStrategy);
+        $sourceCode = $this->metadataExporter->export($metadata); // @todo guilhermeblanco Pass class name to exporter
 
         $this->ensureDirectoryIsReady(dirname($path));
 
