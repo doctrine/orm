@@ -242,7 +242,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @var array
      */
-    private $persisters = [];
+    private $entityPersisters = [];
 
     /**
      * The collection persister instances used to persist collections.
@@ -2460,7 +2460,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear()
     {
-        $this->persisters =
+        $this->entityPersisters =
+        $this->collectionPersisters =
         $this->eagerLoadingEntities =
         $this->identityMap =
         $this->entityIdentifiers =
@@ -3062,8 +3063,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getEntityPersister($entityName)
     {
-        if (isset($this->persisters[$entityName])) {
-            return $this->persisters[$entityName];
+        if (isset($this->entityPersisters[$entityName])) {
+            return $this->entityPersisters[$entityName];
         }
 
         $class = $this->em->getClassMetadata($entityName);
@@ -3092,9 +3093,9 @@ class UnitOfWork implements PropertyChangedListener
                 ->buildCachedEntityPersister($this->em, $persister, $class);
         }
 
-        $this->persisters[$entityName] = $persister;
+        $this->entityPersisters[$entityName] = $persister;
 
-        return $this->persisters[$entityName];
+        return $this->entityPersisters[$entityName];
     }
 
     /**
@@ -3351,7 +3352,7 @@ class UnitOfWork implements PropertyChangedListener
             return;
         }
 
-        foreach (array_merge($this->persisters, $this->collectionPersisters) as $persister) {
+        foreach (array_merge($this->entityPersisters, $this->collectionPersisters) as $persister) {
             if ($persister instanceof CachedPersister) {
                 $callback($persister);
             }
