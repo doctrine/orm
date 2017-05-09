@@ -401,12 +401,6 @@ class SchemaTool
                 $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
             }
         }
-
-        // For now, this is a hack required for single table inheritence, since this method is called
-        // twice by single table inheritence relations
-        if (!$table->hasIndex('primary')) {
-            //$table->setPrimaryKey($pkColumns);
-        }
     }
 
     /**
