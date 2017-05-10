@@ -191,6 +191,12 @@ class XmlDriver extends FileDriver
                 }
             }
         }
+        
+        // Evaluate <discriminator-map-entry...>
+        if (isset($xmlRoot->{'discriminator-map-entry'})) {
+            $entry = $xmlRoot->{'discriminator-map-entry'};
+            $metadata->addDiscriminatorMapClass($entry['name'], $className);
+        }
 
 
         // Evaluate <change-tracking-policy...>

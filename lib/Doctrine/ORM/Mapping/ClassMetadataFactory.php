@@ -232,6 +232,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         $class->setParentClasses($nonSuperclassParents);
+        
+        // if a new discriminatorMapEntry modified the discriminatorMap update the parent as well
+        if ($parent && ! $class->isInheritanceTypeNone() && $class->discriminatorMap != $parent->discriminatorMap) {
+            $parent->setDiscriminatorMap($class->discriminatorMap);
+            
+            if (!in_array($parent->getName(), $class->parentClasses)) {
+                $class->parentClasses[] = $parent->getName();
+            }
+            
+            if (!in_array($class->getName(), $parent->subClasses)) {
+                $parent->subClasses[] = $class->getName();
+            }
+        }
 
         if ($class->isRootEntity() && ! $class->isInheritanceTypeNone() && ! $class->discriminatorMap) {
             $this->addDefaultDiscriminatorMap($class);
