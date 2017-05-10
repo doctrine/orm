@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\TypeAwareObject;
 
 /**
  * Provides an enclosed support for parameter inferring.
@@ -61,6 +62,10 @@ class ParameterTypeInferer
             return is_int(current($value))
                 ? Connection::PARAM_INT_ARRAY
                 : Connection::PARAM_STR_ARRAY;
+        }
+
+        if ($value instanceof TypeAwareObject) {
+                return $value->getDBALType();
         }
 
         return \PDO::PARAM_STR;
