@@ -431,4 +431,18 @@ class ExprTest extends OrmTestCase
 
         $this->assertEquals(0, $andExpr->count());
     }
+
+    public function testAddEmpty() {
+        $andExpr = $this->_expr->andx();
+        $andExpr->add($this->_expr->andx());
+        
+        $this->assertEquals(0, $andExpr->count());
+    }
+
+    public function testAddNull() {
+        $andExpr = $this->_expr->andx();
+        $andExpr->add(null);
+        
+        $this->assertEquals(0, $andExpr->count());
+    }
 }
