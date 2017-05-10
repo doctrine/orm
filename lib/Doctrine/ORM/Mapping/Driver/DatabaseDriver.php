@@ -77,7 +77,12 @@ class DatabaseDriver implements MappingDriver
      * @var string|null
      */
     private $namespace;
-
+    
+    /**
+     * @var boolean
+     */
+    private $biDirecional;
+    
     /**
      * @param AbstractSchemaManager $schemaManager
      */
@@ -97,7 +102,25 @@ class DatabaseDriver implements MappingDriver
     {
         $this->namespace = $namespace;
     }
-
+    
+    /**
+     * Set the creation of the Entities as bidirectional.
+     *
+     * @param string $biDirecional
+     *
+     * @return void
+     */
+    public function setBiDirecionalEntities($biDirecional = false){
+        $this->biDirecional = $biDirecional;
+    }
+    
+    /**
+     * Get if the creation of the Entities is bidirectional.
+     * @return void
+     */
+    public function isBiDirecionalEntities(){
+        return $this->biDirecional;
+    }
     /**
      * {@inheritDoc}
      */
@@ -185,7 +208,11 @@ class DatabaseDriver implements MappingDriver
 
         $this->buildIndexes($metadata);
         $this->buildFieldMappings($metadata);
-        $this->buildToOneAssociationMappings($metadata);
+        if (true === $this->isBiDirecionalEntities()){
+            $this->buildBiDirecionalToOneAssociationMappings($metadata);
+        }else{
+            $this->buildToOneAssociationMappings($metadata);
+        }
 
         foreach ($this->manyToManyTables as $manyTable) {
             foreach ($manyTable->getForeignKeys() as $foreignKey) {
@@ -436,6 +463,75 @@ class DatabaseDriver implements MappingDriver
         return $fieldMapping;
     }
 
+    /**
+     * Build to one (one to one, many to one) association mapping from class metadata with bi-direcional entities
+     *
+     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
+     */
+    private function buildBiDirecionalToOneAssociationMappings(ClassMetadataInfo $metadata)
+    {
+        $tableName = $metadata->table['name'];
+        $foreignKeys = $this->getTableForeignKeys($this->tables[$tableName]);
+
+        foreach ($foreignKeys as $foreignKey) {
+            $foreignTable = $foreignKey->getForeignTableName();
+            $cols = $foreignKey->getColumns();
+            $fkCols = $foreignKey->getForeignColumns();
+
+            $localColumn = current($cols);
+            $associationMapping = array();
+            $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableName, $localColumn, true);
+            $associationMapping['targetEntity'] = $this->getClassNameForTable($foreignTable);
+
+            for ($i = 0; $i < count($cols); $i++) {
+                $associationMapping['joinColumns'][] = array(
+                    'name' => $cols[$i],
+                    'referencedColumnName' => $fkCols[$i],
+                );
+            }
+            $metadata->mapManyToOne($associationMapping);
+        }
+
+        foreach ($this->tables as $tableCandidate) {
+            if ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+                $foreignKeysCandidate = $tableCandidate->getForeignKeys();
+            } else {
+                $foreignKeysCandidate = array();
+            }
+
+            foreach ($foreignKeysCandidate as $foreignKey) {
+                $foreignTable = $foreignKey->getForeignTableName();
+
+                if ($foreignTable == $tableName && !isset($this->manyToManyTables[$tableCandidate->getName()])) {
+
+                    $fkCols = $foreignKey->getForeignColumns();
+                    $cols = $foreignKey->getColumns();
+
+
+                    $localColumn = current($cols);
+
+                    $associationMapping = array();
+                    $associationMapping['fieldName'] = $this->getFieldNameForColumn($tableCandidate->getName(), $tableCandidate->getName(), true);
+                    $associationMapping['targetEntity'] = $this->getClassNameForTable($tableCandidate->getName());
+                    $associationMapping['mappedBy'] = $this->getFieldNameForColumn($tableCandidate->getName(), $localColumn, true);
+
+                    try {
+                        $primaryKeyColumns = $tableCandidate->getPrimaryKey()->getColumns();
+                        if (count($primaryKeyColumns) == 1) {
+                            $indexColumn = current($primaryKeyColumns);
+                            $associationMapping['indexBy'] = $indexColumn;
+                        }
+                    } catch (SchemaException $e) {
+                        
+                    }
+
+                    $metadata->mapOneToMany($associationMapping);
+                }
+            }
+        }
+    }
+    
+    
     /**
      * Build to one (one to one, many to one) association mapping from class metadata.
      *
