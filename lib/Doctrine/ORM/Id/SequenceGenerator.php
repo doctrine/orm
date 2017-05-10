@@ -71,6 +71,10 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      */
     public function generate(EntityManager $em, $entity)
     {
+        if ($entity){
+            $this->_sequenceName=$em->getClassMetadata(get_class($entity))->sequenceGeneratorDefinition['sequenceName'];
+        }
+
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
