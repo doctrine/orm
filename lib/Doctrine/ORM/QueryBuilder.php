@@ -346,7 +346,7 @@ class QueryBuilder
      *
      * @return Query
      */
-    public function getQuery()
+    public function createQuery()
     {
         $parameters = clone $this->parameters;
         $query      = $this->_em->createQuery($this->getDQL())
