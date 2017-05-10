@@ -267,7 +267,9 @@ public function <methodName>(<methodTypeHint>$<variableName><variableDefault>)
  */
 public function <methodName>(<methodTypeHint>$<variableName>)
 {
-<spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>if (!$this-><fieldName>->contains($<variableName>)) {
+<spaces><spaces>$this-><fieldName>[] = $<variableName>;
+<spaces>}
 
 <spaces>return $this;
 }';
