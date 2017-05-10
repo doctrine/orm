@@ -237,7 +237,7 @@ use Doctrine\Common\Util\ClassUtils;
             $this->flush();
             $this->conn->commit();
 
-            return $return ?: true;
+            return is_null($return) ? true : $return;
         } catch (Exception $e) {
             $this->close();
             $this->conn->rollBack();
