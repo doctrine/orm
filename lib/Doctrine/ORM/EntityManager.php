@@ -183,6 +183,16 @@ use Doctrine\Common\Util\ClassUtils;
     }
 
     /**
+     * Sets the database connection
+     * 
+     * @param $connection \Doctrine\DBAL\Connection
+     */
+    public function setConnection(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
+    /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
