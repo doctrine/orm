@@ -282,6 +282,13 @@ class UnitOfWork implements PropertyChangedListener
     private $reflectionPropertiesGetter;
 
     /**
+     * Additional information to create referenced entities with subclasses
+     *
+     * @var array
+     */
+    private $eagerLoadingInheritedEntities = array();
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param EntityManagerInterface $em
@@ -2689,7 +2696,17 @@ class UnitOfWork implements PropertyChangedListener
                             // If it might be a subtype, it can not be lazy. There isn't even
                             // a way to solve this with deferred eager loading, which means putting
                             // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
-                            $newValue = $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            // Maybe not anymore...
+                            if ($hints['fetchMode'][$class->name][$field] == ClassMetadata::FETCH_EAGER &&
+                                isset($hints['deferEagerLoad']) &&
+                                !$targetClass->isIdentifierComposite) {
+
+                                $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
+                                $this->eagerLoadingInheritedEntities[$targetClass->rootEntityName][$relatedIdHash][current($associatedId)] = array($entity, $class, $field);
+                            }
+                            else {
+                                $this->getEntityPersister($assoc['targetEntity'])->loadOneToOneEntity($assoc, $entity, $associatedId);
+                            }
                             break;
 
                         default:
@@ -2805,6 +2822,24 @@ class UnitOfWork implements PropertyChangedListener
             $this->getEntityPersister($entityName)->loadAll(
                 array_combine($class->identifier, [array_values($ids)])
             );
+
+            // Allow deferred loading of related entities with subclasses
+            foreach($ids as $relatedIdHash => $associatedId) {
+                if(isset($this->eagerLoadingInheritedEntities[$entityName][$relatedIdHash][$associatedId])) {
+
+                    // get additional information about the source entity
+                    list($entity, $class, $field) = $this->eagerLoadingInheritedEntities[$entityName][$relatedIdHash][$associatedId];
+                    unset($this->eagerLoadingInheritedEntities[$entityName][$relatedIdHash][$associatedId]);
+
+                    // Get referenced entity which should be loaded now and set it in source
+                    $newValue = $this->getByIdHash($relatedIdHash, $entityName);
+                    $class->reflFields[$field]->setValue($entity, $newValue);
+
+                    // Override original data
+                    $oid = spl_object_hash($entity);
+                    $this->originalEntityData[$oid][$field] = $newValue;
+                }
+            }
         }
     }
 
