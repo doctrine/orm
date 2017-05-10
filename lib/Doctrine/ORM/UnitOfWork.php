@@ -991,6 +991,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
+            if (! isset($this->entityInsertions[$oid])) {
+                continue;
+            }
+
             $persister->addInsert($entity);
 
             unset($this->entityInsertions[$oid]);
@@ -1045,6 +1049,10 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
+            if (! isset($this->entityUpdates[$oid])) {
+                continue;
+            }
+
             if ($preUpdateInvoke != ListenersInvoker::INVOKE_NONE) {
                 $this->listenersInvoker->invoke($class, Events::preUpdate, $entity, new PreUpdateEventArgs($entity, $this->em, $this->getEntityChangeSet($entity)), $preUpdateInvoke);
 
@@ -1078,6 +1086,10 @@ class UnitOfWork implements PropertyChangedListener
 
         foreach ($this->entityDeletions as $oid => $entity) {
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
+                continue;
+            }
+
+            if (! isset($this->entityDeletions[$oid])) {
                 continue;
             }
 
