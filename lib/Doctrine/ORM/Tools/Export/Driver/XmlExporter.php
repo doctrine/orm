@@ -204,7 +204,7 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['options'])) {
-                    $optionsXml = $fieldXml->addChild('options');
+                    $optionsXml = $fieldXml->addChild('options')
                     foreach ($field['options'] as $key => $value) {
                         $optionXml = $optionsXml->addChild('option', $value);
                         $optionXml->addAttribute('name', $key);
@@ -219,8 +219,8 @@ class XmlExporter extends AbstractExporter
                     $fieldXml->addAttribute('column-definition', $field['columnDefinition']);
                 }
 
-                if (isset($field['nullable'])) {
-                    $fieldXml->addAttribute('nullable', $field['nullable'] ? 'true' : 'false');
+                if (isset($field['nullable']) && $field['nullable']) {
+                    $fieldXml->addAttribute('nullable', 'true');
                 }
             }
         }
