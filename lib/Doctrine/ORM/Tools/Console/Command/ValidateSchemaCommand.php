@@ -71,6 +71,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getHelper('em')->getEntityManager();
+        $em->getMetadataFactory()->setCacheDriver(null);
         $validator = new SchemaValidator($em);
         $exit = 0;
 

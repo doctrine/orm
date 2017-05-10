@@ -56,6 +56,7 @@ EOT
     {
         /* @var $entityManager \Doctrine\ORM\EntityManager */
         $entityManager = $this->getHelper('em')->getEntityManager();
+        $entityManager->getMetadataFactory()->setCacheDriver(null);
 
         $entityClassNames = $entityManager->getConfiguration()
                                           ->getMetadataDriverImpl()
