@@ -23,6 +23,7 @@ has a very simple API and implements the SPL interfaces ``Countable`` and
     foreach ($paginator as $post) {
         echo $post->getHeadline() . "\n";
     }
+    ?>
 
 Paginating Doctrine queries is not as simple as you might think in the
 beginning. If you have complex fetch-join scenarios with one-to-many or
