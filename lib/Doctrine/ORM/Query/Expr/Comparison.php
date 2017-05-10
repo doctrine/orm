@@ -95,6 +95,16 @@ class Comparison
      */
     public function __toString()
     {
-        return $this->leftExpr . ' ' . $this->operator . ' ' . $this->rightExpr;
+        return $this->transform($this->leftExpr) . ' ' . $this->operator . ' ' . $this->transform($this->rightExpr);
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function transform($value)
+    {
+        return is_bool($value) ? ($value ? 'true' : 'false') : $value;
     }
 }
