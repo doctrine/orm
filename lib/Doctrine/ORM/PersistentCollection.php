@@ -539,6 +539,16 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
+    public function jsonSerialize()
+    {
+        $this->initialize();
+
+        return $this->coll->jsonSerialize();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function clear()
     {
         if ($this->initialized && $this->isEmpty()) {
