@@ -57,6 +57,6 @@ class GeneralCaseExpression extends Node
      */
     public function dispatch($sqlWalker)
     {
-        return $sqlWalker->walkGeneralCaseExpression($this);
+        return $sqlWalker->walkGeneralStringCaseExpression($this);
     }
 }
