@@ -730,6 +730,10 @@ class YamlDriver extends FileDriver
             }
         }
 
+        if (isset($column['name'])) {
+            $mapping['columnName'] = $column['name'];
+        }
+
         if (isset($column['column'])) {
             $mapping['columnName'] = $column['column'];
         }
