@@ -2302,4 +2302,25 @@ class SqlWalker implements TreeWalker
 
         return $resultAlias;
     }
+    
+    /**
+     * It was made to be used to return strings
+     *
+     * @param GeneralCaseExpression $generalCaseExpression
+     * @return string The SQL.
+     * @author Renato Medina [medinadato@gmail.com]
+     */
+    public function walkGeneralStringCaseExpression(AST\GeneralCaseExpression $generalCaseExpression)
+    {
+        $sql = 'CASE';
+
+        foreach ($generalCaseExpression->whenClauses as $whenClause) {
+            $sql .= ' WHEN ' . $this->walkConditionalExpression($whenClause->caseConditionExpression);
+            $sql .= ' THEN \'' . $this->walkSimpleArithmeticExpression($whenClause->thenScalarExpression) . '\'';
+        }
+
+        $sql .= ' ELSE \'' . $this->walkSimpleArithmeticExpression($generalCaseExpression->elseScalarExpression) . '\' END';
+
+        return $sql;
+    }
 }
