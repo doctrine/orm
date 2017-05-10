@@ -1173,14 +1173,11 @@ class Parser
      */
     public function SelectClause()
     {
-        $isDistinct = false;
         $this->match(Lexer::T_SELECT);
 
         // Check for DISTINCT
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-
-            $isDistinct = true;
         }
 
         // Process SelectExpressions (1..N)
@@ -1203,13 +1200,10 @@ class Parser
      */
     public function SimpleSelectClause()
     {
-        $isDistinct = false;
         $this->match(Lexer::T_SELECT);
 
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-
-            $isDistinct = true;
         }
 
         return new AST\SimpleSelectClause($this->SimpleSelectExpression(), $isDistinct);
@@ -2445,12 +2439,8 @@ class Parser
      */
     public function ConditionalFactor()
     {
-        $not = false;
-
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-
-            $not = true;
         }
 
         $conditionalPrimary = $this->ConditionalPrimary();
@@ -2629,13 +2619,10 @@ class Parser
      */
     public function CollectionMemberExpression()
     {
-        $not        = false;
         $entityExpr = $this->EntityExpression();
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-
-            $not = true;
         }
 
         $this->match(Lexer::T_MEMBER);
@@ -2794,22 +2781,19 @@ class Parser
      */
     public function ArithmeticFactor()
     {
-        $sign = null;
-
-        if (($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) || $this->lexer->isNextToken(Lexer::T_MINUS)) {
-            $this->match(($isPlus) ? Lexer::T_PLUS : Lexer::T_MINUS);
-            $sign = $isPlus;
+        if ($isPlus = $this->lexer->isNextToken(Lexer::T_PLUS)) {
+            $this->match(Lexer::T_PLUS);
+        } elseif ($this->lexer->isNextToken(Lexer::T_MINUS)) {
+            $this->match(Lexer::T_MINUS);
         }
 
         $primary = $this->ArithmeticPrimary();
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticFactor
         // if only one AST\ArithmeticPrimary is defined
-        if ($sign === null) {
-            return $primary;
-        }
-
-        return new AST\ArithmeticFactor($primary, $sign);
+        return $isPlus
+            ? new AST\ArithmeticFactor($primary, $isPlus)
+            : $primary;
     }
 
     /**
@@ -2986,7 +2970,6 @@ class Parser
     public function AggregateExpression()
     {
         $lookaheadType = $this->lexer->lookahead['type'];
-        $isDistinct = false;
 
         if ( ! in_array($lookaheadType, [Lexer::T_COUNT, Lexer::T_AVG, Lexer::T_MAX, Lexer::T_MIN, Lexer::T_SUM])) {
             $this->syntaxError('One of: MAX, MIN, AVG, SUM, COUNT');
@@ -2996,9 +2979,8 @@ class Parser
         $functionName = $this->lexer->token['value'];
         $this->match(Lexer::T_OPEN_PARENTHESIS);
 
-        if ($this->lexer->isNextToken(Lexer::T_DISTINCT)) {
+        if ($isDistinct = $this->lexer->isNextToken(Lexer::T_DISTINCT)) {
             $this->match(Lexer::T_DISTINCT);
-            $isDistinct = true;
         }
 
         $pathExp = $this->SimpleArithmeticExpression();
@@ -3040,12 +3022,10 @@ class Parser
      */
     public function BetweenExpression()
     {
-        $not = false;
         $arithExpr1 = $this->ArithmeticExpression();
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_BETWEEN);
@@ -3185,11 +3165,9 @@ class Parser
     public function LikeExpression()
     {
         $stringExpr = $this->StringExpression();
-        $not = false;
 
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_LIKE);
@@ -3301,11 +3279,8 @@ class Parser
      */
     public function ExistsExpression()
     {
-        $not = false;
-
-        if ($this->lexer->isNextToken(Lexer::T_NOT)) {
+        if ($not = $this->lexer->isNextToken(Lexer::T_NOT)) {
             $this->match(Lexer::T_NOT);
-            $not = true;
         }
 
         $this->match(Lexer::T_EXISTS);
