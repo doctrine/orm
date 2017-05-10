@@ -579,7 +579,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     * @return void
+     * @return self
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -593,6 +593,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->persist($entity);
+
+        return $this;
     }
 
     /**
@@ -603,7 +605,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The entity instance to remove.
      *
-     * @return void
+     * @return self
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -617,6 +619,8 @@ use Doctrine\Common\Util\ClassUtils;
         $this->errorIfClosed();
 
         $this->unitOfWork->remove($entity);
+
+        return $this;
     }
 
     /**
@@ -650,7 +654,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @param object $entity The entity to detach.
      *
-     * @return void
+     * @return self
      *
      * @throws ORMInvalidArgumentException
      */
@@ -661,6 +665,8 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         $this->unitOfWork->detach($entity);
+
+        return $this;
     }
 
     /**
