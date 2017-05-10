@@ -99,6 +99,11 @@ class EntityRepository implements ObjectRepository, Selectable
 
         return $rsm;
     }
+    
+    public function createQuery($dql)
+    {
+        return $this->_em->createQuery($dql);
+    }
 
     /**
      * Creates a new Query instance based on a predefined metadata named query.
