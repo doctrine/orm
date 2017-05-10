@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\Column;
@@ -46,6 +47,14 @@ class AnnotationDriver extends AbstractAnnotationDriver
         'Doctrine\ORM\Mapping\Entity' => 1,
         'Doctrine\ORM\Mapping\MappedSuperclass' => 2,
     );
+
+    /**
+     * Registers annotation classes to the common registry.
+     */
+    public static function registerAnnotationClasses()
+    {
+        AnnotationRegistry::registerFile(__DIR__ . '/DoctrineAnnotations.php');
+    }
 
     /**
      * {@inheritDoc}

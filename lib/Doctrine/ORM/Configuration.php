@@ -151,7 +151,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function newDefaultAnnotationDriver($paths = array(), $useSimpleAnnotationReader = true)
     {
-        AnnotationRegistry::registerFile(__DIR__ . '/Mapping/Driver/DoctrineAnnotations.php');
+        AnnotationDriver::registerAnnotationClasses();
 
         if ($useSimpleAnnotationReader) {
             // Register the ORM Annotations in the AnnotationRegistry
