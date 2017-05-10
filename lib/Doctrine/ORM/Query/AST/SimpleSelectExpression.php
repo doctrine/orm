@@ -40,6 +40,7 @@ class SimpleSelectExpression extends Node
      * @var string
      */
     public $fieldIdentificationVariable;
+    public $hiddenAliasResultVariable;
 
     /**
      * @param Node $expression
