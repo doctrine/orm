@@ -996,6 +996,46 @@ class ObjectHydratorTest extends HydrationTestCase
     }
 
     /**
+     * SELECT u.id, u.name
+     *   FROM Doctrine\Tests\Models\CMS\CmsUser u
+     *
+     * @dataProvider provideDataForUserEntityResult
+     */
+    public function testScalarQueryIteration($userEntityKey)
+    {
+        $rsm = new ResultSetMapping;
+        $rsm->addEntityResult('Doctrine\Tests\Models\CMS\CmsUser', 'u', $userEntityKey ?: null);
+        $rsm->addScalarResult('sclr0', 'id');
+        $rsm->addScalarResult('sclr1', 'name');
+
+        // Faked result set
+        $resultSet = array(
+            array(
+                'sclr0' => '1',
+                'sclr1' => 'romanb'
+            ),
+            array(
+                'sclr0' => '2',
+                'sclr1' => 'jwage'
+            ),
+            array(
+                'sclr0' => '3',
+                'sclr1' => 'everzet'
+            )
+        );
+
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
+        $iterator = $hydrator->iterate($stmt, $rsm, array(Query::HINT_FORCE_PARTIAL_LOAD => true));
+
+        $this->assertEquals(array(
+            array(array('id' => 1, 'name' => 'romanb')),
+            array(array('id' => 2, 'name' => 'jwage')),
+            array(array('id' => 3, 'name' => 'everzet')),
+        ), iterator_to_array($iterator));
+    }
+
+    /**
      * SELECT p
      *   FROM Doctrine\Tests\Models\ECommerce\ECommerceProduct p
      */
