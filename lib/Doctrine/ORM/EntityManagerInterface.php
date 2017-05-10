@@ -65,7 +65,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Starts a transaction on the underlying database connection.
      *
-     * @return void
+     * @return self
      */
     public function beginTransaction();
 
@@ -88,14 +88,14 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Commits a transaction on the underlying database connection.
      *
-     * @return void
+     * @return self
      */
     public function commit();
 
     /**
      * Performs a rollback on the underlying database connection.
      *
-     * @return void
+     * @return self
      */
     public function rollback();
 
@@ -183,7 +183,7 @@ interface EntityManagerInterface extends ObjectManager
      * by this EntityManager become detached. The EntityManager may no longer
      * be used after it is closed.
      *
-     * @return void
+     * @return self
      */
     public function close();
 
@@ -206,7 +206,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param int      $lockMode
      * @param int|null $lockVersion
      *
-     * @return void
+     * @return self
      *
      * @throws OptimisticLockException
      * @throws PessimisticLockException
