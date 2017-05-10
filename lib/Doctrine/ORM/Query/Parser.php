@@ -186,6 +186,7 @@ class Parser
         return isset(self::$_STRING_FUNCTIONS[$functionName])
             || isset(self::$_DATETIME_FUNCTIONS[$functionName])
             || isset(self::$_NUMERIC_FUNCTIONS[$functionName]);
+        
     }
 
     /**
@@ -1951,7 +1952,10 @@ class Parser
                 $this->match($lookahead);
 
                 return new AST\Literal(AST\Literal::BOOLEAN, $this->lexer->token['value']);
+            case Lexer::T_NULL:
+                $this->match($lookahead);
 
+                return new AST\Literal(AST\Literal::NULL, $this->_lexer->token['value']);
             case ($lookahead === Lexer::T_INPUT_PARAMETER):
                 switch (true) {
                     case $this->isMathOperator($peek):

@@ -24,6 +24,7 @@ class Literal extends Node
     const STRING = 1;
     const BOOLEAN = 2;
     const NUMERIC = 3;
+    const NULL = 4;
 
     /**
      * @var int
