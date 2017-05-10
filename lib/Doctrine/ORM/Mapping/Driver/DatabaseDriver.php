@@ -526,7 +526,7 @@ class DatabaseDriver implements MappingDriver
             return $this->namespace . $this->classNamesForTables[$tableName];
         }
 
-        return $this->namespace . Inflector::classify(strtolower($tableName));
+        return $this->namespace . Inflector::classify($tableName);
     }
 
     /**
@@ -543,8 +543,6 @@ class DatabaseDriver implements MappingDriver
         if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
         }
-
-        $columnName = strtolower($columnName);
 
         // Replace _id if it is a foreignkey column
         if ($fk) {
