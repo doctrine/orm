@@ -99,5 +99,21 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
             $limitQuery->getSQL()
         );
     }
+    
+
+    /**
+     * @group DDC-2890
+     */
+    public function testLimitSubqueryWithSortOnAssociation()
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p ORDER BY p.author');
+        $limitQuery = clone $query;
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\ORM\Tools\Pagination\LimitSubqueryWalker'));
+
+        $this->assertEquals(
+            "SELECT DISTINCT m0_.id AS id0 FROM MyBlogPost m0_ ORDER BY m0_.author_id ASC", $limitQuery->getSql()
+        );
+    }
 }
 
