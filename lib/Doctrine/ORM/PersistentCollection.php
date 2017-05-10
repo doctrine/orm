@@ -110,6 +110,17 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $this->typeClass   = $class;
         $this->initialized = true;
     }
+    
+    /**
+     * Performs a deep clone of this persistent collection
+     * 
+     */
+    public function __clone()
+    {
+        if(is_object($this->coll)) {
+            $this->coll = clone $this->coll;
+        }
+    }
 
     /**
      * INTERNAL:
