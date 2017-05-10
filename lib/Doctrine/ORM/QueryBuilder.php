@@ -718,6 +718,23 @@ class QueryBuilder
             $dqlPart = $newDqlPart;
         }
 
+        //adding multiple identical joins should still produce vaild SQL
+        if ($dqlPartName == 'join' && $isMultiple) {
+            $key = key($dqlPart);
+            if (isset($this->_dqlParts[$dqlPartName][$key])) {
+                foreach ($this->_dqlParts[$dqlPartName][$key] as $part) {
+                    if (($part->getAlias() == $dqlPart[$key]->getAlias()) &&
+                        ($part->getJoin() == $dqlPart[$key]->getJoin()) &&
+                        ($part->getJoinType() == $dqlPart[$key]->getJoinType()) &&
+                        ($part->getConditionType() == $dqlPart[$key]->getConditionType()) &&
+                        ($part->getCondition() == $dqlPart[$key]->getCondition()) &&
+                        ($part->getIndexBy() == $dqlPart[$key]->getIndexBy())) {
+                        return $this;
+                    }
+                }
+            }
+        }
+
         if ($append && $isMultiple) {
             if (is_array($dqlPart)) {
                 $key = key($dqlPart);
