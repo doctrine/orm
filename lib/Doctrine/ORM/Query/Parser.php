@@ -1508,6 +1508,10 @@ class Parser
                 $expr = $this->FunctionDeclaration();
                 break;
 
+            case ($this->isFunction($peek)):
+                $expr = $this->FunctionDeclaration();
+                break;
+
             case ($this->isMathOperator($peek)):
                 $expr = $this->SimpleArithmeticExpression();
                 break;
