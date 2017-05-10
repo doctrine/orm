@@ -495,4 +495,39 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         ));
         $this->assertEquals(1, count($users));
     }
+    
+    /**
+     * @group DDC-1995
+     */
+    public function testFindByDiscriminatorWithInstanceOf()
+    {
+        $manager = new CompanyManager();
+        $manager->setName('gblanco');
+        $manager->setSalary(1234);
+        $manager->setTitle('Awesome!');
+        $manager->setDepartment('IT');
+        
+        $employee = new CompanyEmployee;
+        $employee->setName('Roman S. Borschel');
+        $employee->setSalary(100000);
+        $employee->setDepartment('IT');
+
+        $this->_em->persist($manager);
+        $this->_em->persist($employee);
+        $this->_em->flush();
+
+        $repository = $this->_em->getRepository("Doctrine\Tests\Models\Company\CompanyPerson");
+        
+        // Query without parameter
+        $query = $this->_em->createQuery("SELECT m FROM Doctrine\Tests\Models\Company\CompanyPerson m WHERE m INSTANCE OF Doctrine\Tests\Models\Company\CompanyManager");
+        $results = $query->execute();
+        $this->assertEquals(1, count($results));
+        
+        // Query with parameter
+        $metadata = $this->_em->getMetadataFactory()->getMetadataFor("Doctrine\Tests\Models\Company\CompanyManager");
+        $query = $this->_em->createQuery("SELECT m FROM Doctrine\Tests\Models\Company\CompanyPerson m WHERE m INSTANCE OF :type");
+        $query->setParameter('type', $metadata);
+        $results = $query->execute();
+        $this->assertEquals(1, count($results));
+    }
 }
