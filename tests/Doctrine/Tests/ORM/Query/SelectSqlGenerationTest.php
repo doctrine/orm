@@ -284,6 +284,14 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
+    public function testSupportsStringFunctionInOrderBy()
+    {
+        $this->assertSqlGeneration(
+            'SELECT u FROM Doctrine\Tests\Models\Forum\ForumUser u ORDER BY LENGTH(u.username) DESC',
+            'SELECT f0_.id AS id0, f0_.username AS username1 FROM forum_users f0_ ORDER BY LENGTH(f0_.username) DESC'
+        );
+    }
+
     public function testSupportsSelectDistinct()
     {
         $this->assertSqlGeneration(
