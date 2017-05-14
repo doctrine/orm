@@ -1504,7 +1504,7 @@ class Parser
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
-            case ($this->isFunction($peek)):
+            case ($this->isFunction()):
                 $expr = $this->FunctionDeclaration();
                 break;
 

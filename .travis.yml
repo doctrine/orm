@@ -23,6 +23,7 @@ before_script:
 script:
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
   - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
+  - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -l 0 lib; fi
 
 after_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
@@ -75,6 +76,10 @@ matrix:
       dist: trusty
       group: edge # until the next update
       env: DB=sqlite
+    - php: 7
+      env: PHPSTAN=1
+    - php: 7.1
+      env: PHPSTAN=1
 
   allow_failures:
     - php: nightly
