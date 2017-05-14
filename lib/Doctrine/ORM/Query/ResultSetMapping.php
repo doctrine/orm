@@ -451,7 +451,7 @@ class ResultSetMapping
     /**
      * @param string $alias
      *
-     * @return AssociationMapping
+     * @return string
      */
     public function getRelation($alias)
     {

@@ -514,10 +514,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     public function offsetSet($offset, $value)
     {
         if ( ! isset($offset)) {
-            return $this->add($value);
+            $this->add($value);
+            return;
         }
 
-        return $this->set($offset, $value);
+        $this->set($offset, $value);
     }
 
     /**
