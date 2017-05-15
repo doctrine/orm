@@ -344,7 +344,7 @@ class QueryBuilder
      *     $results = $q->execute();
      * </code>
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function getQuery()
     {

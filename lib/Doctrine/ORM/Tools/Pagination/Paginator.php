@@ -24,6 +24,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryInterface;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -35,7 +36,7 @@ use Doctrine\ORM\NoResultException;
 class Paginator implements \Countable, \IteratorAggregate
 {
     /**
-     * @var Query
+     * @var QueryInterface
      */
     private $query;
 
@@ -57,8 +58,8 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Constructor.
      *
-     * @param Query|QueryBuilder $query               A Doctrine ORM query or query builder.
-     * @param boolean            $fetchJoinCollection Whether the query joins a collection (true by default).
+     * @param QueryInterface|QueryBuilder $query               A Doctrine ORM query or query builder.
+     * @param boolean                     $fetchJoinCollection Whether the query joins a collection (true by default).
      */
     public function __construct($query, $fetchJoinCollection = true)
     {
@@ -73,7 +74,7 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Returns the query.
      *
-     * @return Query
+     * @return QueryInterface
      */
     public function getQuery()
     {
@@ -179,13 +180,13 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Clones a query.
      *
-     * @param Query $query The query.
+     * @param QueryInterface $query The query.
      *
-     * @return Query The cloned query.
+     * @return QueryInterface The cloned query.
      */
-    private function cloneQuery(Query $query)
+    private function cloneQuery(QueryInterface $query)
     {
-        /* @var $cloneQuery Query */
+        /* @var $cloneQuery QueryInterface */
         $cloneQuery = clone $query;
 
         $cloneQuery->setParameters(clone $query->getParameters());
@@ -201,11 +202,11 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Determines whether to use an output walker for the query.
      *
-     * @param Query $query The query.
+     * @param QueryInterface $query The query.
      *
      * @return bool
      */
-    private function useOutputWalker(Query $query)
+    private function useOutputWalker(QueryInterface $query)
     {
         if ($this->useOutputWalkers === null) {
             return (bool) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) === false;
@@ -217,10 +218,10 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Appends a custom tree walker to the tree walkers hint.
      *
-     * @param Query  $query
+     * @param QueryInterface $query
      * @param string $walkerClass
      */
-    private function appendTreeWalker(Query $query, $walkerClass)
+    private function appendTreeWalker(QueryInterface $query, $walkerClass)
     {
         $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
 
@@ -235,11 +236,11 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Returns Query prepared to count.
      *
-     * @return Query
+     * @return QueryInterface
      */
     private function getCountQuery()
     {
-        /* @var $countQuery Query */
+        /* @var $countQuery QueryInterface */
         $countQuery = $this->cloneQuery($this->query);
 
         if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {

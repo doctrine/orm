@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
+use Doctrine\ORM\QueryInterface;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -134,7 +135,7 @@ class Parser
     /**
      * The Query to parse.
      *
-     * @var Query
+     * @var QueryInterface
      */
     private $query;
 
@@ -191,13 +192,13 @@ class Parser
     /**
      * Creates a new query parser object.
      *
-     * @param Query $query The Query to parse.
+     * @param QueryInterface $query The Query to parse.
      */
-    public function __construct(Query $query)
+    public function __construct(QueryInterface $query)
     {
         $this->query        = $query;
         $this->em           = $query->getEntityManager();
-        $this->lexer        = new Lexer($query->getDql());
+        $this->lexer        = new Lexer($query->getDQL());
         $this->parserResult = new ParserResult();
     }
 

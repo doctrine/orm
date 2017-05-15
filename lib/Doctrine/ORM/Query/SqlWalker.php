@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryInterface;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -193,7 +194,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the Query instance used by the walker.
      *
-     * @return Query.
+     * @return QueryInterface.
      */
     public function getQuery()
     {
