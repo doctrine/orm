@@ -1367,6 +1367,13 @@ public function __construct(<params>)
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
+
+        // Skips generating the SET method if the field is marked read-only
+        $fieldMapping = isset($metadata->fieldMappings[$fieldName]) ? $metadata->fieldMappings[$fieldName] : array();
+        if ($type === 'set' && isset($fieldMapping['readonly']) && $fieldMapping['readonly'] === true) {
+            return '';
+        }
+
         $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
 
         $var = sprintf('%sMethodTemplate', $type);
