@@ -275,6 +275,24 @@ class DefaultCacheFactoryTest extends OrmTestCase
         );
     }
 
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory
+     */
+    public function testInvalidFileLockRegionDirectoryExceptionWithEmptyString()
+    {
+        $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
+
+        $factory->setFileLockRegionDirectory('');
+
+        $factory->getRegion(
+            [
+                'usage'   => ClassMetadata::CACHE_USAGE_READ_WRITE,
+                'region'  => 'foo'
+            ]
+        );
+    }
+
     public function testBuildsNewNamespacedCacheInstancePerRegionInstance()
     {
         $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
