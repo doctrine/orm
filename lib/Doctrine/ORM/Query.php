@@ -738,7 +738,7 @@ final class Query extends AbstractQuery
             ->getName();
 
         return md5(
-            $this->getDql() . serialize($this->_hints) .
+            $this->getDQL() . serialize($this->_hints) .
             '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .
