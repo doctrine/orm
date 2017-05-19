@@ -379,7 +379,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return string
      */
-    private function getShortName($className)
+    protected function getShortName($className)
     {
         if (strpos($className, "\\") === false) {
             return strtolower($className);
