@@ -5,7 +5,6 @@ php:
   - 7.0
   - 7.1
   - nightly
-  - hhvm
 
 env:
   - DB=mysql
@@ -43,42 +42,9 @@ matrix:
       env:
         - DB=sqlite
         - DEPENDENCIES='low'
-    - php: hhvm
-      sudo: true
-      dist: trusty
-      group: edge # until the next Trusty update
-      addons:
-        mariadb: 10.1
-      env: DB=mariadb
-    - php: hhvm
-      sudo: true
-      dist: trusty
-      group: edge # until the next update
-      addons:
-        apt:
-          packages:
-            - mysql-server-5.6
-            - mysql-client-core-5.6
-            - mysql-client-5.6
-      services:
-        - mysql
-      env: DB=mysql
-    - php: hhvm
-      sudo: true
-      dist: trusty
-      group: edge # until the next update
-      services:
-        - postgresql
-      env: DB=pgsql
-    - php: hhvm
-      sudo: true
-      dist: trusty
-      group: edge # until the next update
-      env: DB=sqlite
 
   allow_failures:
     - php: nightly
-    - php: hhvm
 
 cache:
   directories:

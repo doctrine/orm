@@ -27,8 +27,4 @@ tools:
         enabled: true
         filter:
             paths: ["lib/*", "tests/*"]
-    php_hhvm:
-        enabled: true
-        filter:
-            paths: ["lib/*", "tests/*"]
     sensiolabs_security_checker: true
