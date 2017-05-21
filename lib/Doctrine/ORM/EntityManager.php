@@ -36,14 +36,15 @@ use Doctrine\Common\Util\ClassUtils;
  * the static create() method. The quickest way to obtain a fully
  * configured EntityManager is:
  *
+ *     use Doctrine\DBAL\Connection;
  *     use Doctrine\ORM\Tools\Setup;
  *     use Doctrine\ORM\EntityManager;
  *
  *     $paths = array('/path/to/entity/mapping/files');
  *
- *     $config = Setup::createAnnotationMetadataConfiguration($paths);
- *     $dbParams = array('driver' => 'pdo_sqlite', 'memory' => true);
- *     $entityManager = EntityManager::create($dbParams, $config);
+ *     $configuration = Setup::createAnnotationMetadataConfiguration($paths);
+ *     $connection = new Connection(...);
+ *     $entityManager = EntityManager::getInstance();
  *
  * For more information see
  * {@link http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html}
@@ -61,6 +62,13 @@ use Doctrine\Common\Util\ClassUtils;
  */
 /* final */class EntityManager implements EntityManagerInterface
 {
+    /**
+     * The God instance of itself. Kneel!
+     *
+     * @var self
+     */
+    private static $god;
+
     /**
      * The used Configuration.
      *
@@ -135,6 +143,24 @@ use Doctrine\Common\Util\ClassUtils;
      * @var \Doctrine\ORM\Cache The second level cache regions API.
      */
     private $cache;
+
+    /**
+     * Returns the God EntityManager instance.
+     * Be careful to provide global configuration on the first call as it creates the new mighty God.
+     * You've been warned.
+     *
+     * @return self
+     */
+    final public static function getInstance()
+    {
+        if (self::$god === null) {
+            global $connection, $configuration, $eventManager;
+
+            self::$god = new self($connection, $configuration, $eventManager);
+        }
+
+        return self::$god;
+    }
 
     /**
      * Creates a new EntityManager that operates on the given database connection
@@ -815,39 +841,19 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * Factory method to create EntityManager instances.
      *
+     * @deprecated Use EntityManager::getInstance() and global injection instead, removed in version 2.5.7.
+     *
      * @param mixed         $conn         An array with the connection parameters or an existing Connection instance.
      * @param Configuration $config       The Configuration instance to use.
      * @param EventManager  $eventManager The EventManager instance to use.
      *
      * @return EntityManager The created EntityManager.
      *
-     * @throws \InvalidArgumentException
      * @throws ORMException
      */
     public static function create($conn, Configuration $config, EventManager $eventManager = null)
     {
-        if ( ! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
-        }
-
-        switch (true) {
-            case (is_array($conn)):
-                $conn = \Doctrine\DBAL\DriverManager::getConnection(
-                    $conn, $config, ($eventManager ?: new EventManager())
-                );
-                break;
-
-            case ($conn instanceof Connection):
-                if ($eventManager !== null && $conn->getEventManager() !== $eventManager) {
-                     throw ORMException::mismatchedEventManager();
-                }
-                break;
-
-            default:
-                throw new \InvalidArgumentException("Invalid argument: " . $conn);
-        }
-
-        return new EntityManager($conn, $config, $conn->getEventManager());
+        throw ORMException::notSupported();
     }
 
     /**
