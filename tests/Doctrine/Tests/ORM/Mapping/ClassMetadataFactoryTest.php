@@ -3,7 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\AbstractIdGenerator;
@@ -390,7 +390,7 @@ class ClassMetadataFactoryTest extends \Doctrine\Tests\OrmTestCase
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
-        /* @var $entityManager EntityManager */
+        /* @var $entityManager EntityManagerInterface */
         $entityManager        = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
 
         $classMetadataFactory->setEntityManager($entityManager);
@@ -463,7 +463,7 @@ class TestEntity1
 
 class CustomIdGenerator extends AbstractIdGenerator
 {
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
     }
 }

@@ -36,7 +36,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected static $_sharedConn;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $_em;
 
@@ -642,7 +642,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      * @param \Doctrine\ORM\Configuration   $config       The Configuration to pass to the EntityManager.
      * @param \Doctrine\Common\EventManager $eventManager The EventManager to pass to the EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     protected function _getEntityManager($config = null, $eventManager = null) {
         // NOTE: Functional tests use their own shared metadata cache, because
