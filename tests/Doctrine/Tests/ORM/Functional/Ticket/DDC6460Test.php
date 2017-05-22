@@ -2,12 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Proxy\Proxy;
 
 class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -16,16 +18,19 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->setUpEntitySchema(
                 [
-                    $this->_em->getClassMetadata(DDC6460Entity::class),
-                    $this->_em->getClassMetadata(DDC6460ParentEntity::class),
+                    DDC6460Entity::class,
+                    DDC6460ParentEntity::class,
                 ]
             );
-        } catch (\Exception $e) {
+        } catch (SchemaException $e) {
         }
     }
 
+    /**
+     * @group DDC-6460
+     */
     public function testInlineEmbeddable()
     {
         $isFieldMapped = $this->_em
@@ -35,6 +40,9 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertTrue($isFieldMapped);
     }
 
+    /**
+     * @group DDC-6460
+     */
     public function testInlineEmbeddableProxyInitialization()
     {
         $entity = new DDC6460Entity();
@@ -42,7 +50,6 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $entity->embedded = new DDC6460Embeddable();
         $entity->embedded->field = 'test';
         $this->_em->persist($entity);
-        $this->_em->flush();
 
         $second = new DDC6460ParentEntity();
         $second->id = 1;
@@ -52,9 +59,13 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $proxy = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
+        $secondEntityWithLazyParameter = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
-        $this->assertNotNull($proxy->lazyLoaded->embedded);
+        $this->assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
+        $this->assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
+        $this->assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        $this->assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
+        $this->assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
     }
 }
 
@@ -95,6 +106,6 @@ class DDC6460ParentEntity
      */
     public $id;
 
-    /** @ManyToOne(targetEntity = "DDC6460Entity", fetch="EXTRA_LAZY") */
+    /** @ManyToOne(targetEntity = "DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"}) */
     public $lazyLoaded;
 }
