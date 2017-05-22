@@ -1852,7 +1852,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function hasField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]);
+        return isset($this->fieldMappings[$fieldName]) || isset($this->embeddedClasses[$fieldName]);
     }
 
     /**
