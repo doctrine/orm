@@ -3362,6 +3362,10 @@ class Parser
                 $this->match(Lexer::T_EQUALS);
 
                 return '<>';
+                
+            case 'LIKE':
+                $this->match(Lexer::T_LIKE);
+                return 'LIKE';
 
             default:
                 $this->syntaxError('=, <, <=, <>, >, >=, !=');
