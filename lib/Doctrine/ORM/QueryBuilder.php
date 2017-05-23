@@ -526,7 +526,7 @@ class QueryBuilder
      *
      * @param string|integer $key   The parameter position or name.
      * @param mixed          $value The parameter value.
-     * @param string|null    $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
+     * @param string|integer|null    $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return self
      */
