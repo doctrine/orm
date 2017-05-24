@@ -595,6 +595,38 @@ class QueryBuilder
     }
 
     /**
+     * Add a collection of query parameters for the query being constructed
+     *
+     * <code>
+     *     // $qb is an existing QueryBuilder instance, and may contain already
+     *     // initialized parameters.
+     *
+     *     $qb = $qb->where('u.id = :user_id1 OR u.id = :user_id2')
+     *         ->addParameters(new ArrayCollection(array(
+     *             new Parameter('user_id1', 1),
+     *             new Parameter('user_id2', 2)
+     *        )));
+     * </code>
+     *
+     * @param \Doctrine\Common\Collections\ArrayCollection|array $parameters The query parameters to set.
+     *
+     * @return QueryBuilder This QueryBuilder instance.
+     */
+    public function addParameters($parameters)
+    {
+        foreach ($parameters as $key => $value) {
+            if ($value instanceof Query\Parameter) {
+                $key   = $value->getName();
+                $value = $value->getValue();
+            }
+
+            $this->setParameter($key, $value);
+        }
+
+        return $this;
+    }
+
+    /**
      * Gets all defined query parameters for the query being constructed.
      *
      * @return \Doctrine\Common\Collections\ArrayCollection The currently defined query parameters.

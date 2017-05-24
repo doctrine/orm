@@ -629,6 +629,30 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertEquals($parameters, $qb->getQuery()->getParameters());
     }
 
+    public function testAddParameters()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('u')
+           ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+           ->where($qb->expr()->orX('u.username = :username', 'u.username = :username2', 'u.username = :username3'));
+
+        $parameters = new ArrayCollection();
+        $parameters->add(new Parameter('username', 'jwage'));
+        $parameters->add(new Parameter('username2', 'jonwage'));
+
+        $qb->setParameters($parameters);
+
+        $addParameters = new ArrayCollection();
+        $addParameters->add(new Parameter('username2', 'jwage'));
+        $addParameters->add(new Parameter('username3', 'jonwage'));
+
+        $qb->addParameters($addParameters);
+
+        $this->assertEquals('jwage', $qb->getQuery()->getParameter('username2')->getValue());
+        $this->assertEquals('jonwage', $qb->getQuery()->getParameter('username3')->getValue());
+        $this->assertCount(3, $qb->getQuery()->getParameters());
+    }
+
 
     public function testGetParameters()
     {
