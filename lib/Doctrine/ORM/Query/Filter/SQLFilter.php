@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Query\Filter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use Doctrine\DBAL\Types\Type;
 
 /**
  * The base class that user defined filters should extend.
@@ -104,7 +105,18 @@ abstract class SQLFilter
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
-        return $this->em->getConnection()->quote($this->parameters[$name]['value'], $this->parameters[$name]['type']);
+        $param = $this->parameters[$name];
+        $isTraversable = is_array($param['value']) || $param['value'] instanceof \Traversable;
+        if ($isTraversable && ! in_array($param['type'], array(Type::TARRAY, Type::SIMPLE_ARRAY, Type::JSON_ARRAY))) {
+            $connection = $this->em->getConnection();
+            $quoted = array_map(function($value) use ($connection, $param) {
+                return $connection->quote($value, $param['type']);
+            }, $param['value']);
+
+            return implode(',', $quoted);
+        }
+
+        return $this->em->getConnection()->quote($param['value'], $param['type']);
     }
 
     /**
