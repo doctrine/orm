@@ -872,10 +872,11 @@ class SqlWalker implements TreeWalker
      * Walks down a RangeVariableDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
+     * @param bool $buildNestedJoins
      *
      * @return string
      */
-    public function walkRangeVariableDeclaration($rangeVariableDeclaration)
+    public function walkRangeVariableDeclaration($rangeVariableDeclaration, $buildNestedJoins = false)
     {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
@@ -891,7 +892,11 @@ class SqlWalker implements TreeWalker
         );
 
         if ($class->isInheritanceTypeJoined()) {
-            $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            if ($buildNestedJoins) {
+                $sql = '(' . $sql . $this->_generateClassTableInheritanceJoins($class, $dqlAlias) . ')';
+            } else {
+                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+            }
         }
 
         return $sql;
@@ -1137,11 +1142,11 @@ class SqlWalker implements TreeWalker
                     $conditions[] = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 }
 
-                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER)
+                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER && empty($conditions))
                     ? ' AND '
                     : ' ON ';
 
-                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration);
+                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration, !empty($conditions));
 
                 // Apply remaining inheritance restrictions
                 $discrSql = $this->_generateDiscriminatorColumnConditionSQL([$dqlAlias]);
