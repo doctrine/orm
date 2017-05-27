@@ -89,17 +89,14 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function __construct(MetadataConfiguration $configuration)
     {
-        $generator = new ClassMetadataGenerator(
-            $configuration->getMappingDriver(),
-            $configuration->getNamingStrategy()
-        );
+        $mappingDriver     = $configuration->getMappingDriver();
+        $resolver          = $configuration->getResolver();
+        $autoGenerate      = $configuration->getAutoGenerate();
+        $generator         = new ClassMetadataGenerator($mappingDriver);
+        $definitionFactory = new ClassMetadataDefinitionFactory($resolver, $generator, $autoGenerate);
 
-        $this->mappingDriver     = $configuration->getMappingDriver();
-        $this->definitionFactory = new ClassMetadataDefinitionFactory(
-            $configuration->getResolver(),
-            $generator,
-            $configuration->getAutoGenerate()
-        );
+        $this->mappingDriver     = $mappingDriver;
+        $this->definitionFactory = $definitionFactory;
     }
 
     /**

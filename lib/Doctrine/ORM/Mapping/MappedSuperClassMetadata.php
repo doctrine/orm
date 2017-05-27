@@ -33,7 +33,12 @@ namespace Doctrine\ORM\Mapping;
 class MappedSuperClassMetadata extends ComponentMetadata
 {
     /**
-     * @var Property
+     * @var null|string
+     */
+    protected $customRepositoryClassName;
+
+    /**
+     * @var null|Property
      */
     protected $declaredVersion;
 
@@ -46,6 +51,22 @@ class MappedSuperClassMetadata extends ComponentMetadata
     public function __construct(string $className, ?MappedSuperClassMetadata $parent = null)
     {
         parent::__construct($className, $parent);
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCustomRepositoryClassName() : ?string
+    {
+        return $this->customRepositoryClassName;
+    }
+
+    /**
+     * @param null|string customRepositoryClassName
+     */
+    public function setCustomRepositoryClassName(?string $customRepositoryClassName)
+    {
+        $this->customRepositoryClassName = $customRepositoryClassName;
     }
 
     /**
@@ -86,5 +107,17 @@ class MappedSuperClassMetadata extends ComponentMetadata
     public function isVersioned() : bool
     {
         return $this->getVersion() !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addDeclaredProperty(Property $property)
+    {
+        parent::addDeclaredProperty($property);
+
+        if ($property instanceof VersionFieldMetadata) {
+            $this->setDeclaredVersion($property);
+        }
     }
 }

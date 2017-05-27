@@ -33,11 +33,14 @@ namespace Doctrine\ORM\Mapping;
 class EntityClassMetadata extends ComponentMetadata
 {
     /**
-     * (Optional) The name of the custom repository class used for the entity class.
-     *
-     * @var string
+     * @var null|string The name of the custom repository class used for the entity class.
      */
-    public $customRepositoryClassName;
+    protected $customRepositoryClassName;
+
+    /**
+     * @var null|Property The field which is used for versioning in optimistic locking (if any).
+     */
+    protected $declaredVersion = null;
 
     /**
      * Whether this class describes the mapping of a read-only class.
@@ -48,21 +51,21 @@ class EntityClassMetadata extends ComponentMetadata
      *
      * @var boolean
      */
-    private $readOnly = false;
+    protected $readOnly = false;
 
     /**
      * READ-ONLY: The names of all subclasses (descendants).
      *
      * @var array
      */
-    public $subClasses = [];
+    protected $subClasses = [];
 
     /**
      * READ-ONLY: The named queries allowed to be called directly from Repository.
      *
      * @var array
      */
-    public $namedQueries = [];
+    protected $namedQueries = [];
 
     /**
      * READ-ONLY: The named native queries allowed to be called directly from Repository.
@@ -79,7 +82,7 @@ class EntityClassMetadata extends ComponentMetadata
      *
      * @var array
      */
-    public $namedNativeQueries = [];
+    protected $namedNativeQueries = [];
 
     /**
      * READ-ONLY: The mappings of the results of native SQL queries.
@@ -95,21 +98,21 @@ class EntityClassMetadata extends ComponentMetadata
      *
      * @var array
      */
-    public $sqlResultSetMappings = [];
+    protected $sqlResultSetMappings = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
      * @var array
      */
-    public $lifecycleCallbacks = [];
+    protected $lifecycleCallbacks = [];
 
     /**
      * READ-ONLY: The registered entity listeners.
      *
      * @var array
      */
-    public $entityListeners = [];
+    protected $entityListeners = [];
 
     /**
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
@@ -117,24 +120,96 @@ class EntityClassMetadata extends ComponentMetadata
      *
      * @var array
      */
-    public $identifier = [];
+    protected $identifier = [];
 
     /**
      * READ-ONLY: The primary table metadata.
      *
      * @var TableMetadata
      */
-    public $table;
-
-    /**
-     * READ-ONLY: The field which is used for versioning in optimistic locking (if any).
-     *
-     * @var FieldMetadata|null
-     */
-    public $versionProperty = null;
+    protected $table;
 
     /**
      * @var \Doctrine\Instantiator\InstantiatorInterface|null
      */
-    private $instantiator;
+    protected $instantiator;
+
+    /**
+     * MappedSuperClassMetadata constructor.
+     *
+     * @param string                 $className
+     * @param ComponentMetadata|null $parent
+     */
+    public function __construct(string $className, ?ComponentMetadata $parent = null)
+    {
+        parent::__construct($className, $parent);
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getCustomRepositoryClassName() : ?string
+    {
+        return $this->customRepositoryClassName;
+    }
+
+    /**
+     * @param null|string customRepositoryClassName
+     */
+    public function setCustomRepositoryClassName(?string $customRepositoryClassName)
+    {
+        $this->customRepositoryClassName = $customRepositoryClassName;
+    }
+
+    /**
+     * @return Property|null
+     */
+    public function getDeclaredVersion() : ?Property
+    {
+        return $this->declaredVersion;
+    }
+
+    /**
+     * @param Property $property
+     */
+    public function setDeclaredVersion(Property $property)
+    {
+        $this->declaredVersion = $property;
+    }
+
+    /**
+     * @return Property|null
+     */
+    public function getVersion() : ?Property
+    {
+        /** @var ComponentMetadata|null $parent */
+        $parent  = $this->parent;
+        $version = $this->declaredVersion;
+
+        if ($parent && ! $version) {
+            $version = $parent->getVersion();
+        }
+
+        return $version;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVersioned() : bool
+    {
+        return $this->getVersion() !== null;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addDeclaredProperty(Property $property)
+    {
+        parent::addDeclaredProperty($property);
+
+        if ($property instanceof VersionFieldMetadata) {
+            $this->setDeclaredVersion($property);
+        }
+    }
 }

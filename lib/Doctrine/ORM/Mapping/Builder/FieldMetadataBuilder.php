@@ -31,7 +31,7 @@ class FieldMetadataBuilder extends LocalColumnMetadataBuilder
     /** @var string */
     protected $name;
 
-    /** @var  */
+    /** @var NamingStrategy */
     private $namingStrategy;
 
     public function __construct(NamingStrategy $namingStrategy = null)

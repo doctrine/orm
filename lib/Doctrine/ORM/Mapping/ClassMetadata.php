@@ -1896,10 +1896,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
      */
     public function setDiscriminatorColumn(DiscriminatorColumnMetadata $discriminatorColumn)
     {
-        if (empty($discriminatorColumn->getColumnName())) {
-            throw MappingException::nameIsMandatoryForDiscriminatorColumns($this->name);
-        }
-
         if (isset($this->fieldNames[$discriminatorColumn->getColumnName()])) {
             throw MappingException::duplicateColumnName($this->name, $discriminatorColumn->getColumnName());
         }
@@ -2159,7 +2155,7 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     private function assertPropertyNotMapped(string $fieldName)
     {
         if (isset($this->properties[$fieldName])) {
-            throw MappingException::duplicateProperty($this, $this->properties[$fieldName]);
+            throw MappingException::duplicateProperty($this->getName(), $this->properties[$fieldName]);
         }
 
 //        if (isset($this->embeddedClasses[$fieldName])) {

@@ -40,28 +40,20 @@ class ClassMetadataGenerator
     protected $mappingDriver;
 
     /**
-     * @var NamingStrategy
-     */
-    protected $namingStrategy;
-
-    /**
      * @var ClassMetadataExporter
      */
     private $metadataExporter;
 
     /**
      * @param MappingDriver              $mappingDriver
-     * @param NamingStrategy             $namingStrategy
      * @param ClassMetadataExporter|null $metadataExporter
      */
     public function __construct(
         MappingDriver $mappingDriver,
-        NamingStrategy $namingStrategy,
         ClassMetadataExporter $metadataExporter = null
     )
     {
         $this->mappingDriver    = $mappingDriver;
-        $this->namingStrategy   = $namingStrategy;
         $this->metadataExporter = $metadataExporter ?: new ClassMetadataExporter();
     }
 
@@ -73,8 +65,7 @@ class ClassMetadataGenerator
      */
     public function generate(string $path, ClassMetadataDefinition $definition)
     {
-        $builder    = $this->mappingDriver->loadMetadataForClass($definition->entityClassName, $definition->parent);
-        $metadata   = $builder->build($this->namingStrategy);
+        $metadata   = $this->mappingDriver->loadMetadataForClass($definition->entityClassName, $definition->parent);
         $sourceCode = $this->metadataExporter->export($metadata); // @todo guilhermeblanco Pass class name to exporter
 
         $this->ensureDirectoryIsReady(dirname($path));
