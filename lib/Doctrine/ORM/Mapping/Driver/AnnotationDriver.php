@@ -210,7 +210,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
-        // Evaluate DoctrineChangeTrackingPolicy annotation
+        // Evaluate @ChangeTrackingPolicy annotation
         if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
             $changeTrackingAnnot = $classAnnotations[Annotation\ChangeTrackingPolicy::class];
 
