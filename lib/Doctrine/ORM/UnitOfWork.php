@@ -19,10 +19,8 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
@@ -55,10 +53,8 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\ORM\Query\AST\Join;
 use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Doctrine\ORM\Utility\PersisterHelper;
 use Exception;
 use InvalidArgumentException;
 use UnexpectedValueException;

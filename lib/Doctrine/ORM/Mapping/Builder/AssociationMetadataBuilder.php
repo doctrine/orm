@@ -168,7 +168,7 @@ abstract class AssociationMetadataBuilder
      *
      * @return self
      */
-    public function withCache(CacheMetadata $cache = null)
+    public function withCache(?CacheMetadata $cache)
     {
         $this->cache = $cache;
 

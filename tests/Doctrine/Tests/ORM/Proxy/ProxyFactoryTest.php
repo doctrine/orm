@@ -70,17 +70,29 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $identifier = ['id' => 42];
         $proxyClass = 'Proxies\__CG__\Doctrine\Tests\Models\ECommerce\ECommerceFeature';
-        $persister  = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
 
-        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+        $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
-        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, $identifier);
+        $persister  = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $persister
             ->expects($this->atLeastOnce())
             ->method('load')
             ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
             ->will($this->returnValue(new \stdClass()));
+
+        $persister
+            ->expects(self::any())
+            ->method('getClassMetadata')
+            ->willReturn($classMetaData);
+
+        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, $identifier);
 
         $proxy->getDescription();
     }
@@ -92,6 +104,7 @@ class ProxyFactoryTest extends OrmTestCase
     {
         $cm = new ClassMetadata(AbstractClass::class);
         $cm->initializeReflection(new RuntimeReflectionService());
+
         self::assertNotNull($cm->getReflectionClass());
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
@@ -104,16 +117,28 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyLoadingDoesNotMarkTheProxyAsInitialized()
     {
-        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
-        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+        $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
-        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $persister
             ->expects($this->atLeastOnce())
             ->method('load')
             ->will($this->returnValue(null));
+
+        $persister
+            ->expects(self::any())
+            ->method('getClassMetadata')
+            ->willReturn($classMetaData);
+
+        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+
+        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
 
         try {
             $proxy->getDescription();
@@ -131,16 +156,28 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testFailedProxyCloningDoesNotMarkTheProxyAsInitialized()
     {
-        $persister = $this->getMockBuilder(BasicEntityPersister::class)->setMethods(['load'])->disableOriginalConstructor()->getMock();
-        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+        $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
-        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setMethods(['load', 'getClassMetadata'])
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $persister
             ->expects($this->atLeastOnce())
             ->method('load')
             ->will($this->returnValue(null));
+
+        $persister
+            ->expects(self::any())
+            ->method('getClassMetadata')
+            ->willReturn($classMetaData);
+
+        $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
+
+        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        $proxy = $this->proxyFactory->getProxy(ECommerceFeature::class, ['id' => 42]);
 
         try {
             $cloned = clone $proxy;
@@ -172,10 +209,6 @@ class ProxyFactoryTest extends OrmTestCase
             ->setMethods(['load', 'getClassMetadata'])
             ->disableOriginalConstructor()
             ->getMock();
-        $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
-
-        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
-        $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
 
         $persister
             ->expects(self::atLeastOnce())
@@ -183,9 +216,14 @@ class ProxyFactoryTest extends OrmTestCase
             ->willReturn($companyEmployee);
 
         $persister
-            ->expects(self::atLeastOnce())
+            ->expects(self::any())
             ->method('getClassMetadata')
             ->willReturn($classMetaData);
+
+        $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
+
+        /* @var $proxy \Doctrine\Common\Proxy\Proxy */
+        $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
 
         /* @var $cloned CompanyEmployee */
         $cloned = clone $proxy;
