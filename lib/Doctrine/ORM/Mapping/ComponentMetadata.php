@@ -121,13 +121,15 @@ abstract class ComponentMetadata
 
     /**
      * @param Property $property
+     *
+     * @throws MappingException
      */
     public function addDeclaredProperty(Property $property)
     {
         $propertyName = $property->getName();
 
-        if (isset($this->declaredProperties[$propertyName])) {
-            return;
+        if ($this->hasProperty($propertyName)) {
+            throw MappingException::duplicateProperty($this->getClassName(), $this->getProperty($propertyName));
         }
 
         $property->setDeclaringClass($this);
@@ -171,6 +173,24 @@ abstract class ComponentMetadata
     /**
      * @param string $propertyName
      *
+     * @return null|Property
+     */
+    public function getProperty(string $propertyName) : ?Property
+    {
+        if (isset($this->declaredProperties[$propertyName])) {
+            return $this->declaredProperties[$propertyName];
+        }
+
+        if ($this->parent) {
+            return $this->parent->getProperty($propertyName);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $propertyName
+     *
      * @return bool
      */
     public function hasProperty(string $propertyName) : bool
@@ -180,19 +200,5 @@ abstract class ComponentMetadata
         }
 
         return $this->parent && $this->parent->hasProperty($propertyName);
-    }
-
-    /**
-     * Handles component metadata clone nicely.
-     */
-    public function __clone()
-    {
-        if ($this->cache) {
-            $this->cache = clone $this->cache;
-        }
-
-        foreach ($this->declaredProperties as $name => $property) {
-            $this->declaredProperties[$name] = clone $property;
-        }
     }
 }

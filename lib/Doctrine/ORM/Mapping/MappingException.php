@@ -397,16 +397,17 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string   $className
      * @param Property $property
      *
      * @return MappingException
      */
-    public static function duplicateProperty(ClassMetadata $metadata, Property $property)
+    public static function duplicateProperty($className, Property $property)
     {
         return new self(sprintf(
             'Property "%s" in "%s" was already declared in "%s", but it must be declared only once',
             $property->getName(),
-            $metadata->getName(),
+            $className,
             $property->getDeclaringClass()->getName()
         ));
     }
@@ -567,18 +568,19 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string   $className
      * @param Property $property
      *
      * @return MappingException
      */
-    public static function sqlConversionNotAllowedForPrimaryKeyProperties(Property $property)
+    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, Property $property)
     {
         return new self(sprintf(
             'It is not possible to set id field "%s" to type "%s" in entity class "%s". ' .
             'The type "%s" requires conversion SQL which is not allowed for identifiers.',
             $property->getName(),
             $property->getTypeName(),
-            $property->getDeclaringClass()->getName(),
+            $className,
             $property->getTypeName()
         ));
     }
