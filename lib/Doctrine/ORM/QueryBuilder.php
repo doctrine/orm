@@ -736,6 +736,36 @@ class QueryBuilder
     }
 
     /**
+     * Set an array of DQL parts.
+     *
+     * <code>
+     *     $qb = $em->createQueryBuilder()
+     *         ->select('u', 'p')
+     *         ->from('User', 'u')
+     *         ->leftJoin('u.Phonenumbers', 'p');
+     *     $qb2 = $em->createQueryBuilder()
+     *         ->setDQLParts($qb->getDQLParts());
+     * </code>
+     *
+     * @param array $parts
+     *
+     * @return QueryBuilder This QueryBuilder instance.
+     */
+    public function setDQLParts(array $parts = array())
+    {
+        foreach ($parts as $name => $part) {
+            if ($part) {
+                if (is_array($part) && $name != 'join') {
+                    $part = reset($part);
+                }
+                $this->add($name, $part);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Specifies an item that is to be returned in the query result.
      * Replaces any previously specified selections, if any.
      *

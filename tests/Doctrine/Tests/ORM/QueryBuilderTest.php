@@ -590,6 +590,18 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertEquals(10, $qb->getMaxResults());
     }
 
+    public function testSetDQLParts()
+    {
+        $q = $this->_em->createQueryBuilder()
+          ->select('u')
+          ->from('Doctrine\Tests\Models\CMS\CmsUser', 'u')
+          ->where('u.username = test');
+
+        $q2 = $this->_em->createQueryBuilder()->setDQLParts($q->getDQLParts());
+
+        $this->assertEquals($q->getDQL(), $q2->getDQL());
+    }
+
     public function testGetQuery()
     {
         $qb = $this->_em->createQueryBuilder()
