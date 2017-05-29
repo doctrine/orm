@@ -15,6 +15,7 @@ env:
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
   - if [[ $TRAVIS_PHP_VERSION -lt '7.0' && $TRAVIS_PHP_VERSION != 'hhv*' ]]; then phpenv config-rm xdebug.ini; fi
+  - composer global require "hirak/prestissimo:^0.3"
   - composer self-update
   - composer install --prefer-source
   - if [ "$DEPENDENCIES" != "low" ]; then composer update; fi;
