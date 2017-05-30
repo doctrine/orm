@@ -800,6 +800,10 @@ class YamlDriver extends FileDriver
      */
     protected function loadMappingFile($file)
     {
+        if (defined(Yaml::class . '::PARSE_KEYS_AS_STRINGS')) {
+            return Yaml::parse(file_get_contents($file), Yaml::PARSE_KEYS_AS_STRINGS);
+        }
+
         return Yaml::parse(file_get_contents($file));
     }
 }
