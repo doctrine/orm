@@ -61,7 +61,7 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -99,7 +99,7 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -125,7 +125,7 @@ class HydrationCompleteHandlerTest extends TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -187,7 +187,7 @@ class HydrationCompleteHandlerTest extends TestCase
         $this->handler->hydrationComplete();
     }
 
-    public function testGetValidListenerInvocationFlags()
+    public function invocationFlagProvider()
     {
         return [
             [ListenersInvoker::INVOKE_LISTENERS],
