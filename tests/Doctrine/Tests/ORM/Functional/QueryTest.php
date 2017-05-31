@@ -208,7 +208,7 @@ class QueryTest extends OrmFunctionalTestCase
         }
 
         $this->assertEquals(1, count($found));
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
                     [
@@ -256,8 +256,8 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
-        $this->assertEquals(2, $iteratedCount);
+        $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        $this->assertSame(2, $iteratedCount);
 
         $this->_em->flush();
         $this->_em->clear();
@@ -293,8 +293,8 @@ class QueryTest extends OrmFunctionalTestCase
             $iteratedCount++;
         }
 
-        $this->assertEquals(["Doctrine 2", "Symfony 2"], $topics);
-        $this->assertEquals(2, $iteratedCount);
+        $this->assertSame(["Doctrine 2", "Symfony 2"], $topics);
+        $this->assertSame(2, $iteratedCount);
 
         $this->_em->flush();
     }

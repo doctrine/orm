@@ -32,8 +32,8 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = 'SELECT d FROM ' . DecimalModel::class . ' d';
         $decimal = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(0.15, $decimal->decimal);
-        $this->assertEquals(0.1515, $decimal->highScale);
+        $this->assertSame('0.15', $decimal->decimal);
+        $this->assertSame('0.1515', $decimal->highScale);
     }
 
     /**
@@ -78,7 +78,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dql = 'SELECT s FROM ' . SerializationModel::class . ' s';
         $serialize = $this->_em->createQuery($dql)->getSingleResult();
 
-        $this->assertEquals(["foo" => "bar", "bar" => "baz"], $serialize->array);
+        $this->assertSame(["foo" => "bar", "bar" => "baz"], $serialize->array);
     }
 
     public function testObject()
@@ -108,7 +108,7 @@ class TypeTest extends OrmFunctionalTestCase
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf(\DateTime::class, $dateTimeDb->date);
-        $this->assertEquals('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
+        $this->assertSame('2009-10-01', $dateTimeDb->date->format('Y-m-d'));
     }
 
     public function testDateTime()
@@ -123,11 +123,12 @@ class TypeTest extends OrmFunctionalTestCase
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
-        $this->assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+        $this->assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
         $articles = $this->_em->getRepository(DateTimeModel::class)
                               ->findBy(['datetime' => new \DateTime()]);
-        $this->assertEquals(0, count($articles));
+
+        $this->assertEmpty($articles);
     }
 
     public function testDqlQueryBindDateTimeInstance()
@@ -177,6 +178,6 @@ class TypeTest extends OrmFunctionalTestCase
         $dateTimeDb = $this->_em->find(DateTimeModel::class, $dateTime->id);
 
         $this->assertInstanceOf(\DateTime::class, $dateTimeDb->time);
-        $this->assertEquals('19:27:20', $dateTimeDb->time->format('H:i:s'));
+        $this->assertSame('19:27:20', $dateTimeDb->time->format('H:i:s'));
     }
 }

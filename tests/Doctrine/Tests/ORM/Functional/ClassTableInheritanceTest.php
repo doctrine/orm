@@ -51,7 +51,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $entities = $query->getResult();
 
-        $this->assertEquals(2, count($entities));
+        $this->assertCount(2, $entities);
         $this->assertInstanceOf(CompanyPerson::class, $entities[0]);
         $this->assertInstanceOf(CompanyEmployee::class, $entities[1]);
         $this->assertTrue(is_numeric($entities[0]->getId()));
@@ -66,7 +66,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $entities = $query->getResult();
 
-        $this->assertEquals(1, count($entities));
+        $this->assertCount(1, $entities);
         $this->assertInstanceOf(CompanyEmployee::class, $entities[0]);
         $this->assertTrue(is_numeric($entities[0]->getId()));
         $this->assertEquals('Guilherme Blanco', $entities[0]->getName());
@@ -164,7 +164,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery('select p, s from ' . CompanyPerson::class . ' p join p.spouse s where p.name=\'Mary Smith\'');
 
         $result = $query->getResult();
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assertInstanceOf(CompanyPerson::class, $result[0]);
         $this->assertEquals('Mary Smith', $result[0]->getName());
         $this->assertInstanceOf(CompanyEmployee::class, $result[0]->getSpouse());
@@ -182,8 +182,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $person1->addFriend($person2);
 
-        $this->assertEquals(1, count($person1->getFriends()));
-        $this->assertEquals(1, count($person2->getFriends()));
+        $this->assertCount(1, $person1->getFriends());
+        $this->assertCount(1, $person2->getFriends());
 
 
         $this->_em->persist($person1);
@@ -197,8 +197,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $query->setParameter(1, 'Roman');
 
         $result = $query->getResult();
-        $this->assertEquals(1, count($result));
-        $this->assertEquals(1, count($result[0]->getFriends()));
+        $this->assertCount(1, $result);
+        $this->assertCount(1, $result[0]->getFriends());
         $this->assertEquals('Roman', $result[0]->getName());
 
         $friends = $result[0]->getFriends();
@@ -226,7 +226,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $result = $q->getResult();
 
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assertInstanceOf(CompanyOrganization::class, $result[0]);
         $this->assertNull($result[0]->getMainEvent());
 
@@ -235,7 +235,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(PersistentCollection::class, $events);
         $this->assertFalse($events->isInitialized());
 
-        $this->assertEquals(2, count($events));
+        $this->assertCount(2, $events);
         if ($events[0] instanceof CompanyAuction) {
             $this->assertInstanceOf(CompanyRaffle::class, $events[1]);
         } else {
@@ -259,7 +259,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $q->setParameter(1, $event1->getId());
 
         $result = $q->getResult();
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s", get_class($result[0])));
 
         $this->_em->clear();
@@ -269,7 +269,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $result = $q->getResult();
 
-        $this->assertEquals(1, count($result));
+        $this->assertCount(1, $result);
         $this->assertInstanceOf(CompanyOrganization::class, $result[0]);
 
         $mainEvent = $result[0]->getMainEvent();
@@ -286,9 +286,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.salary = 1')
                   ->execute();
 
-        $this->assertTrue(count($this->_em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')
-            ->getResult()) > 0);
+        $result = $this->_em->createQuery('SELECT count(p.id) FROM ' . CompanyEmployee::class . ' p WHERE p.salary = 1')
+                            ->getResult();
+
+        $this->assertGreaterThan(0, count($result));
     }
 
     /**
@@ -441,7 +442,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $manager = $this->_em->find(CompanyManager::class, $manager->getId());
-        $this->assertEquals(1, count($manager->getFriends()));
+
+        $this->assertCount(1, $manager->getFriends());
     }
 
     /**
@@ -481,12 +483,12 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $users = $repository->matching(new Criteria(
             Criteria::expr()->eq('department', 'IT')
         ));
-        $this->assertEquals(1, count($users));
+        $this->assertCount(1, $users);
 
         $repository = $this->_em->getRepository(CompanyManager::class);
         $users = $repository->matching(new Criteria(
             Criteria::expr()->eq('department', 'IT')
         ));
-        $this->assertEquals(1, count($users));
+        $this->assertCount(1, $users);
     }
 }
