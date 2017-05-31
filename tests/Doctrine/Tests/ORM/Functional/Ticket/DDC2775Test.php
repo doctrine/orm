@@ -17,10 +17,10 @@ class DDC2775Test extends OrmFunctionalTestCase
 
         $this->setUpEntitySchema(
             [
-            User::class,
-            Role::class,
-            AdminRole::class,
-            Authorization::class,
+                User::class,
+                Role::class,
+                AdminRole::class,
+                Authorization::class,
             ]
         );
     }
@@ -30,9 +30,8 @@ class DDC2775Test extends OrmFunctionalTestCase
      */
     public function testIssueCascadeRemove()
     {
-        $user = new User();
-
         $role = new AdminRole();
+        $user = new User();
         $user->addRole($role);
 
         $authorization = new Authorization();

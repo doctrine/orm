@@ -14,23 +14,25 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1925User::class),
-            $this->_em->getClassMetadata(DDC1925Product::class),
+                $this->_em->getClassMetadata(DDC1925User::class),
+                $this->_em->getClassMetadata(DDC1925Product::class),
             ]
         );
 
         $user = new DDC1925User();
         $user->setTitle("Test User");
-        $this->_em->persist($user);
 
         $product = new DDC1925Product();
         $product->setTitle("Test product");
+
+        $this->_em->persist($user);
         $this->_em->persist($product);
         $this->_em->flush();
 
         $product->addBuyer($user);
 
-        $this->_em->getUnitOfWork()->computeChangeSets();
+        $this->_em->getUnitOfWork()
+                  ->computeChangeSets();
 
         $this->_em->persist($product);
         $this->_em->flush();
@@ -104,15 +106,7 @@ class DDC1925Product
     }
 
     /**
-     * @param string $buyers
-     */
-    public function setBuyers($buyers)
-    {
-        $this->buyers = $buyers;
-    }
-
-    /**
-     * @return string
+     * @return ArrayCollection
      */
     public function getBuyers()
     {

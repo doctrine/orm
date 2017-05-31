@@ -38,10 +38,9 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        // $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $productJoined = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
+
         $this->_em->persist($productJoined);
         $this->_em->persist($productSingleTable);
         $this->_em->flush();

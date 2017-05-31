@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\LockMode;
+use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC933Test extends OrmFunctionalTestCase
@@ -9,6 +11,7 @@ class DDC933Test extends OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('company');
+
         parent::setUp();
     }
 
@@ -17,9 +20,7 @@ class DDC933Test extends OrmFunctionalTestCase
      */
     public function testLockCTIClass()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-
-        $manager = new \Doctrine\Tests\Models\Company\CompanyManager();
+        $manager = new CompanyManager();
         $manager->setName('beberlei');
         $manager->setSalary(1234);
         $manager->setTitle('Vice President of This Test');
@@ -29,7 +30,7 @@ class DDC933Test extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->beginTransaction();
-        $this->_em->lock($manager, \Doctrine\DBAL\LockMode::PESSIMISTIC_READ);
+        $this->_em->lock($manager, LockMode::PESSIMISTIC_READ);
         $this->_em->rollback();
     }
 }

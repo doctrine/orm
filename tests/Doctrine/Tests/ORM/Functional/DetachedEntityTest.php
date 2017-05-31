@@ -23,7 +23,8 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function testSimpleDetachMerge() {
+    public function testSimpleDetachMerge()
+    {
         $user = new CmsUser;
         $user->name = 'Roman';
         $user->username = 'romanb';
@@ -33,12 +34,9 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // $user is now detached
-
         $this->assertFalse($this->_em->contains($user));
 
         $user->name = 'Roman B.';
-
-        //$this->assertEquals(UnitOfWork::STATE_DETACHED, $this->_em->getUnitOfWork()->getEntityState($user));
 
         $user2 = $this->_em->merge($user);
 
@@ -49,7 +47,6 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
     public function testSerializeUnserializeModifyMerge()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser;
         $user->name = 'Guilherme';
         $user->username = 'gblanco';
@@ -173,7 +170,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->detach($user);
 
-        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
+        $dql = 'SELECT u FROM ' . CmsUser::class . ' u WHERE u.id = ?1';
         $query = $this->_em->createQuery($dql);
         $query->setParameter(1, $user);
 
@@ -216,7 +213,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $this->_em->detach($article);
 
-        $sql = "UPDATE cms_articles SET version = version+1 WHERE id = " . $article->id;
+        $sql = 'UPDATE cms_articles SET version = version + 1 WHERE id = ' . $article->id;
         $this->_em->getConnection()->executeUpdate($sql);
 
         $this->expectException(OptimisticLockException::class);

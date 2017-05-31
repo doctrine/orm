@@ -8,12 +8,11 @@ class DDC144Test extends OrmFunctionalTestCase
 {
     protected function setUp() {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC144FlowElement::class),
-            $this->_em->getClassMetadata(DDC144Operand::class),
+                $this->_em->getClassMetadata(DDC144FlowElement::class),
+                $this->_em->getClassMetadata(DDC144Operand::class),
             ]
         );
 
@@ -24,10 +23,10 @@ class DDC144Test extends OrmFunctionalTestCase
      */
     public function testIssue()
     {
-
         $operand = new DDC144Operand;
         $operand->property = 'flowValue';
         $operand->operandProperty = 'operandValue';
+
         $this->_em->persist($operand);
         $this->_em->flush();
 
@@ -41,23 +40,30 @@ class DDC144Test extends OrmFunctionalTestCase
  * @DiscriminatorColumn(type="string", name="discr")
  * @DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
  */
-class DDC144FlowElement {
+class DDC144FlowElement
+{
     /**
      * @Id @Column(type="integer") @GeneratedValue
      * @var int
      */
     public $id;
+
     /** @Column */
     public $property;
 }
 
-abstract class DDC144Expression extends DDC144FlowElement {
-    abstract function method();
+abstract class DDC144Expression extends DDC144FlowElement
+{
+    abstract public function method();
 }
 
 /** @Entity @Table(name="ddc144_operands") */
-class DDC144Operand extends DDC144Expression {
+class DDC144Operand extends DDC144Expression
+{
     /** @Column */
     public $operandProperty;
-    function method() {}
+
+    public function method()
+    {
+    }
 }

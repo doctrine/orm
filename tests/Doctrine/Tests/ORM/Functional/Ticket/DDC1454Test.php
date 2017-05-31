@@ -14,12 +14,11 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1454File::class),
-                $this->_em->getClassMetadata(DDC1454Picture::class),
+                    $this->_em->getClassMetadata(DDC1454File::class),
+                    $this->_em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
-
         }
     }
 
@@ -36,7 +35,6 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1454Picture extends DDC1454File
 {
-
 }
 
 /**
@@ -53,14 +51,16 @@ class DDC1454File
      */
     public $fileId;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->fileId = rand();
     }
 
     /**
      * Get fileId
      */
-    public function getFileId() {
+    public function getFileId()
+    {
         return $this->fileId;
     }
 

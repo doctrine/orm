@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -32,7 +33,7 @@ class ScalarHydratorTest extends HydrationTestCase
 
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
@@ -63,7 +64,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
     }
@@ -93,7 +94,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
     }

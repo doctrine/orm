@@ -727,7 +727,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";

@@ -14,18 +14,17 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if (!$this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
+        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsSequences()) {
             $this->markTestSkipped('Only working for Databases that support sequences.');
         }
 
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(SequenceEntity::class),
+                    $this->_em->getClassMetadata(SequenceEntity::class),
                 ]
             );
         } catch(\Exception $e) {
-
         }
     }
 
@@ -35,6 +34,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
             $e = new SequenceEntity();
             $this->_em->persist($e);
         }
+
         $this->_em->flush();
     }
 }
@@ -48,7 +48,7 @@ class SequenceEntity
      * @Id
      * @column(type="integer")
      * @GeneratedValue(strategy="SEQUENCE")
-     * @SequenceGenerator(allocationSize=5,sequenceName="person_id_seq")
+     * @SequenceGenerator(allocationSize=5, sequenceName="person_id_seq")
      */
     public $id;
 }

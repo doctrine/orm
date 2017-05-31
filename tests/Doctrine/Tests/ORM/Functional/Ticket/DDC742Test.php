@@ -27,8 +27,8 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC742User::class),
-                $this->_em->getClassMetadata(DDC742Comment::class)
+                    $this->_em->getClassMetadata(DDC742User::class),
+                    $this->_em->getClassMetadata(DDC742Comment::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -64,9 +64,9 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
-        $comment3 = $this->_em->find(get_class($comment3), $comment3->id);
-        $user->favoriteComments->add($comment3);
+        $user = $this->_em->find(DDC742User::class, $user->id);
+        $user->favoriteComments->add($this->_em->find(DDC742Comment::class, $comment3->id));
+
         $this->_em->flush();
     }
 }
@@ -86,11 +86,13 @@ class DDC742User
      * @var int
      */
     public $id;
+
     /**
      * @Column(length=100, type="string")
      * @var string
      */
     public $title;
+
     /**
      * @ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
      * @JoinTable(
@@ -99,7 +101,7 @@ class DDC742User
      *  inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
      * )
      *
-     * @var Doctrine\ORM\PersistentCollection
+     * @var \Doctrine\ORM\PersistentCollection
      */
     public $favoriteComments;
 }
@@ -119,6 +121,7 @@ class DDC742Comment
      * @var int
      */
     public $id;
+
     /**
      * @Column(length=100, type="string")
      * @var string

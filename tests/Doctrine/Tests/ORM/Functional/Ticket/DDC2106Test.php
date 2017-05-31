@@ -12,9 +12,10 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2106Entity::class),
+                $this->_em->getClassMetadata(DDC2106Entity::class),
             ]
         );
     }

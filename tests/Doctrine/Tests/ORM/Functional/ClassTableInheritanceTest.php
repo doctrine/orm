@@ -2,16 +2,16 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\Tests\Models\Company\CompanyPerson,
-    Doctrine\Tests\Models\Company\CompanyEmployee,
-    Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyOrganization,
-    Doctrine\Tests\Models\Company\CompanyAuction,
-    Doctrine\Tests\Models\Company\CompanyRaffle;
-
-use Doctrine\Common\Collections\Criteria;
+use Doctrine\Tests\Models\Company\CompanyAuction;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyEvent;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyOrganization;
+use Doctrine\Tests\Models\Company\CompanyPerson;
+use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -24,8 +24,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('company');
+
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
     }
 
     public function testCRUD()
@@ -47,7 +47,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyPerson p order by p.name desc");
+        $query = $this->_em->createQuery('select p from ' . CompanyPerson::class . ' p order by p.name desc');
 
         $entities = $query->getResult();
 
@@ -62,7 +62,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("select p from Doctrine\Tests\Models\Company\CompanyEmployee p");
+        $query = $this->_em->createQuery('select p from ' . CompanyEmployee::class . ' p');
 
         $entities = $query->getResult();
 
@@ -80,7 +80,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $query = $this->_em->createQuery("update Doctrine\Tests\Models\Company\CompanyEmployee p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
+        $query = $this->_em->createQuery("update " . CompanyEmployee::class . " p set p.name = ?1, p.department = ?2 where p.name='Guilherme Blanco' and p.salary = ?3");
         $query->setParameter(1, 'NewName', 'string');
         $query->setParameter(2, 'NewDepartment');
         $query->setParameter(3, 100000);
@@ -88,12 +88,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $numUpdated = $query->execute();
         $this->assertEquals(1, $numUpdated);
 
-        $query = $this->_em->createQuery("delete from Doctrine\Tests\Models\Company\CompanyPerson p");
+        $query = $this->_em->createQuery('delete from ' . CompanyPerson::class . ' p');
         $numDeleted = $query->execute();
         $this->assertEquals(2, $numDeleted);
     }
 
-    public function testMultiLevelUpdateAndFind() {
+    public function testMultiLevelUpdateAndFind()
+    {
     	$manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
@@ -119,7 +120,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertTrue(is_numeric($manager->getId()));
     }
 
-    public function testFindOnBaseClass() {
+    public function testFindOnBaseClass()
+    {
         $manager = new CompanyManager;
         $manager->setName('Roman S. Borschel');
         $manager->setSalary(100000);
@@ -139,7 +141,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->assertTrue(is_numeric($person->getId()));
     }
 
-    public function testSelfReferencingOneToOne() {
+    public function testSelfReferencingOneToOne()
+    {
     	$manager = new CompanyManager;
         $manager->setName('John Smith');
         $manager->setSalary(100000);
@@ -155,16 +158,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->persist($manager);
         $this->_em->persist($wife);
-
         $this->_em->flush();
-
-        //var_dump($this->_em->getConnection()->fetchAll('select * from company_persons'));
-        //var_dump($this->_em->getConnection()->fetchAll('select * from company_employees'));
-        //var_dump($this->_em->getConnection()->fetchAll('select * from company_managers'));
-
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select p, s from Doctrine\Tests\Models\Company\CompanyPerson p join p.spouse s where p.name=\'Mary Smith\'');
+        $query = $this->_em->createQuery('select p, s from ' . CompanyPerson::class . ' p join p.spouse s where p.name=\'Mary Smith\'');
 
         $result = $query->getResult();
         $this->assertEquals(1, count($result));
@@ -196,7 +193,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $query = $this->_em->createQuery('select p, f from Doctrine\Tests\Models\Company\CompanyPerson p join p.friends f where p.name=?1');
+        $query = $this->_em->createQuery('select p, f from ' . CompanyPerson::class . ' p join p.friends f where p.name=?1');
         $query->setParameter(1, 'Roman');
 
         $result = $query->getResult();
@@ -247,7 +244,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         }
     }
 
-
     public function testLazyLoading2()
     {
         $org = new CompanyOrganization;
@@ -259,16 +255,16 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyEvent a where a.id = ?1');
+        $q = $this->_em->createQuery('select a from ' . CompanyEvent::class . ' a where a.id = ?1');
         $q->setParameter(1, $event1->getId());
 
         $result = $q->getResult();
         $this->assertEquals(1, count($result));
-        $this->assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s",get_class($result[0])));
+        $this->assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s", get_class($result[0])));
 
         $this->_em->clear();
 
-        $q = $this->_em->createQuery('select a from Doctrine\Tests\Models\Company\CompanyOrganization a where a.id = ?1');
+        $q = $this->_em->createQuery('select a from ' . CompanyOrganization::class . ' a where a.id = ?1');
         $q->setParameter(1, $org->getId());
 
         $result = $q->getResult();
@@ -287,8 +283,8 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
      */
     public function testBulkUpdateIssueDDC368()
     {
-        $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
-        $this->_em->createQuery($dql)->execute();
+        $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.salary = 1')
+                  ->execute();
 
         $this->assertTrue(count($this->_em->createQuery(
             'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')
@@ -300,12 +296,10 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
      */
     public function testBulkUpdateNonScalarParameterDDC1341()
     {
-        $dql   = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.startDate = ?0 WHERE p.department = ?1';
-        $query = $this->_em->createQuery($dql)
-            ->setParameter(0, new \DateTime())
-            ->setParameter(1, 'IT');
-
-        $result = $query->execute();
+        $this->_em->createQuery('UPDATE ' . CompanyEmployee::class . ' AS p SET p.startDate = ?0 WHERE p.department = ?1')
+                  ->setParameter(0, new \DateTime())
+                  ->setParameter(1, 'IT')
+                  ->execute();
 
     }
 
@@ -314,8 +308,6 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
      */
     public function testDeleteJoinTableRecords()
     {
-        #$this->markTestSkipped('Nightmare! friends adds both ID 6-7 and 7-6 into two rows of the join table. How to detect this?');
-
         $employee1 = new CompanyEmployee();
         $employee1->setName('gblanco');
         $employee1->setSalary(0);
@@ -361,8 +353,9 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $dql = "SELECT m FROM Doctrine\Tests\Models\Company\CompanyManager m WHERE m.spouse = ?1";
-        $dqlManager = $this->_em->createQuery($dql)->setParameter(1, $person->getId())->getSingleResult();
+        $dqlManager = $this->_em->createQuery('SELECT m FROM ' . CompanyManager::class . ' m WHERE m.spouse = ?1')
+                                ->setParameter(1, $person->getId())
+                                ->getSingleResult();
 
         $this->assertEquals($manager->getId(), $dqlManager->getId());
         $this->assertEquals($person->getId(), $dqlManager->getSpouse()->getId());

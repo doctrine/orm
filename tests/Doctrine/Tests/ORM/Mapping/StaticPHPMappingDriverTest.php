@@ -12,7 +12,6 @@ class StaticPHPMappingDriverTest extends AbstractMappingDriverTest
         return new StaticPHPDriver(__DIR__ . DIRECTORY_SEPARATOR . 'php');
     }
 
-
     /**
      * All class with static::loadMetadata are entities for php driver
      *

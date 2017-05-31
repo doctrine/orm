@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 
@@ -13,6 +14,7 @@ class DDC1306Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
+
         parent::setUp();
     }
 
@@ -25,7 +27,7 @@ class DDC1306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($phone);
         $this->_em->flush();
 
-        $address = new \Doctrine\Tests\Models\CMS\CmsAddress();
+        $address = new CmsAddress();
         $address->city = "bonn";
         $address->country = "Germany";
         $address->street = "somestreet!";
