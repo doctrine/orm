@@ -42,8 +42,11 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($bus);
         $this->_em->remove($car);
         $this->_em->flush();
-    }
 
+        self::assertEmpty($this->_em->getRepository(DDC1113Car::class)->findAll());
+        self::assertEmpty($this->_em->getRepository(DDC1113Bus::class)->findAll());
+        self::assertEmpty($this->_em->getRepository(DDC1113Engine::class)->findAll());
+    }
 }
 
 /**

@@ -248,8 +248,12 @@ class UnitOfWorkTest extends OrmTestCase
         // Schedule user for update without changes
         $this->_unitOfWork->scheduleForUpdate($user);
 
+        self::assertNotEmpty($this->_unitOfWork->getScheduledEntityUpdates());
+
         // This commit should not raise an E_NOTICE
         $this->_unitOfWork->commit();
+
+        self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
     }
 
     /**

@@ -57,7 +57,11 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
                   ->setParameter('activeUser', $user1)
                   ->getResult();
 
+        $queryCount = $this->getCurrentQueryCount();
+
         $this->_em->flush();
+
+        self::assertSame($queryCount, $this->getCurrentQueryCount(), 'No query should be executed during flush in this case');
     }
 }
 

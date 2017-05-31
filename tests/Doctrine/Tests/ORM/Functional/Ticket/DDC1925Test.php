@@ -36,6 +36,12 @@ class DDC1925Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($product);
         $this->_em->flush();
+        $this->_em->clear();
+
+        /** @var DDC1925Product $persistedProduct */
+        $persistedProduct = $this->_em->find(DDC1925Product::class, $product->getId());
+
+        self::assertEquals($user, $persistedProduct->getBuyers()->first());
     }
 }
 

@@ -169,13 +169,29 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?1 AND u.status = ?2')
                   ->setParameters($parameters)
                   ->getResult();
+
+        $extractValue = function (Parameter $parameter) {
+            return $parameter->getValue();
+        };
+
+        self::assertSame(
+            $parameters->map($extractValue)->toArray(),
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params']
+        );
     }
 
     public function testSetParametersBackwardsCompatible()
     {
+        $parameters = [1 => 'jwage', 2 => 'active'];
+
         $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u WHERE u.name = ?1 AND u.status = ?2')
-                  ->setParameters([1 => 'jwage', 2 => 'active'])
+                  ->setParameters($parameters)
                   ->getResult();
+
+        self::assertSame(
+            array_values($parameters),
+            $this->_sqlLoggerStack->queries[$this->_sqlLoggerStack->currentQuery]['params']
+        );
     }
 
     /**

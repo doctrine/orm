@@ -30,12 +30,13 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
 
     public function testHighAllocationSizeSequence()
     {
-        for ($i = 0; $i < 11; $i++) {
-            $e = new SequenceEntity();
-            $this->_em->persist($e);
+        for ($i = 0; $i < 11; ++$i) {
+            $this->_em->persist(new SequenceEntity());
         }
 
         $this->_em->flush();
+
+        self::assertCount(11, $this->_em->getRepository(SequenceEntity::class)->findAll());
     }
 }
 

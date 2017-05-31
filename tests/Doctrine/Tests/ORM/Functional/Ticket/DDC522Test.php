@@ -78,7 +78,11 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $newCust = $this->_em->find(get_class($fkCust), $fkCust->id);
+        $expected = clone $fkCust;
+        // removing dynamic field (which is not persisted)
+        unset($expected->name);
+
+        self::assertEquals($expected, $this->_em->find(DDC522ForeignKeyTest::class, $fkCust->id));
     }
 }
 

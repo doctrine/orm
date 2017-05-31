@@ -50,6 +50,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $like->word = 'test2';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
     }
 
     /**
@@ -61,8 +64,13 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($like);
         $this->_em->flush();
 
+        $idToBeRemoved = $like->id;
+
         $this->_em->remove($like);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
     }
 
     /**
@@ -76,6 +84,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $index->name = 'asdf';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
     }
 
     /**
@@ -87,8 +98,13 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($index);
         $this->_em->flush();
 
+        $idToBeRemoved = $index->id;
+
         $this->_em->remove($index);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
     /**
@@ -102,6 +118,9 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $index->name = 'asdf';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
     /**
@@ -113,8 +132,13 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($index);
         $this->_em->flush();
 
+        $idToBeRemoved = $index->id;
+
         $this->_em->remove($index);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832JoinedTreeIndex::class, $idToBeRemoved));
     }
 }
 

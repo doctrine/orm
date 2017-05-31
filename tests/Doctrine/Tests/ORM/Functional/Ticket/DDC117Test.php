@@ -275,6 +275,8 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($this->article1);
         $this->_em->flush();
+
+        self::assertSame($this->articleDetails, $this->_em->find(DDC117ArticleDetails::class, $this->article1));
     }
 
     /**

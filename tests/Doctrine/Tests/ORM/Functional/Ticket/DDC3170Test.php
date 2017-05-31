@@ -46,17 +46,23 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->_em->createQueryBuilder()
+        $result = $this->_em->createQueryBuilder()
                   ->select('p')
                   ->from(DDC3170ProductJoined::class, 'p')
                   ->getQuery()
                   ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
 
-        $this->_em->createQueryBuilder()
+        self::assertCount(1, $result);
+        self::assertContainsOnly(DDC3170ProductJoined::class, $result);
+
+        $result = $this->_em->createQueryBuilder()
                   ->select('p')
                   ->from(DDC3170ProductSingleTable::class, 'p')
                   ->getQuery()
                   ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
+
+        self::assertCount(1, $result);
+        self::assertContainsOnly(DDC3170ProductSingleTable::class, $result);
     }
 }
 

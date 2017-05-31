@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\UnitOfWork;
+
 /**
  * @group DDC-1454
  */
@@ -25,9 +27,9 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFailingCase()
     {
         $pic = new DDC1454Picture();
-        $this->_em->getUnitOfWork()->getEntityState($pic);
-    }
 
+        self::assertSame(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($pic));
+    }
 }
 
 /**

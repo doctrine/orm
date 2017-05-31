@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,12 +12,21 @@ class DDC192Test extends OrmFunctionalTestCase
 {
     public function testSchemaCreation()
     {
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(DDC192User::class),
-                $this->_em->getClassMetadata(DDC192Phonenumber::class)
-            ]
-        );
+        $classes = [
+            $this->_em->getClassMetadata(DDC192User::class),
+            $this->_em->getClassMetadata(DDC192Phonenumber::class),
+        ];
+
+        $this->_schemaTool->createSchema($classes);
+
+        $tables = $this->_em->getConnection()
+                            ->getSchemaManager()
+                            ->listTableNames();
+
+        /** @var ClassMetadata $class */
+        foreach ($classes as $class) {
+            self::assertContains($class->getTableName(), $tables);
+        }
     }
 }
 

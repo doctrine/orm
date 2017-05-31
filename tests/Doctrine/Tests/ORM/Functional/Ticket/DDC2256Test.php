@@ -51,14 +51,14 @@ class DDC2256Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $rsm->addFieldResult('g', 'group_id', 'id');
         $rsm->addFieldResult('g', 'group_name', 'name');
 
-        $this->_em->createNativeQuery($sql, $rsm)->getResult();
+        self::assertCount(1, $this->_em->createNativeQuery($sql, $rsm)->getResult());
 
         // Test ResultSetMappingBuilder.
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata('MyNamespace:DDC2256User', 'u');
         $rsm->addJoinedEntityFromClassMetadata('MyNamespace:DDC2256Group', 'g', 'u', 'group', ['id' => 'group_id', 'name' => 'group_name']);
 
-        $this->_em->createNativeQuery($sql, $rsm)->getResult();
+        self::assertCount(1, $this->_em->createNativeQuery($sql, $rsm)->getResult());
     }
 }
 

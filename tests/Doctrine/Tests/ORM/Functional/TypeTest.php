@@ -145,6 +145,9 @@ class TypeTest extends OrmFunctionalTestCase
         $dateTimeDb = $this->_em->createQuery('SELECT d FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime = ?1')
                                 ->setParameter(1, $date, DBALType::DATETIME)
                                 ->getSingleResult();
+
+        $this->assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
+        $this->assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
     public function testDqlQueryBuilderBindDateTimeInstance()
@@ -164,6 +167,9 @@ class TypeTest extends OrmFunctionalTestCase
                                  ->where('d.datetime = ?1')
                                  ->setParameter(1, $date, DBALType::DATETIME)
                                  ->getQuery()->getSingleResult();
+
+        $this->assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
+        $this->assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
     public function testTime()

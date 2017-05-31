@@ -34,7 +34,8 @@ class DDC2106Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entityWithoutId);
 
         $criteria = Criteria::create()->where(Criteria::expr()->eq('parent', $entityWithoutId));
-        $entity->children->matching($criteria)->count();
+
+        self::assertCount(0, $entity->children->matching($criteria));
     }
 }
 

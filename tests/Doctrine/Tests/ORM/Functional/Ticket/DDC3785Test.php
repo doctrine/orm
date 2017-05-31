@@ -44,8 +44,13 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $asset->getAttributes()
               ->removeElement($attribute1);
 
+        $idToBeRemoved = $attribute1->id;
+
         $this->_em->persist($asset);
         $this->_em->flush();
+
+        self::assertNull($this->_em->find(DDC3785_Attribute::class, $idToBeRemoved));
+        self::assertNotNull($this->_em->find(DDC3785_Attribute::class, $attribute2->id));
     }
 }
 
@@ -100,7 +105,7 @@ class DDC3785_Attribute
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
-    private $id;
+    public $id;
 
     /** @Column(type = "string") */
     private $name;

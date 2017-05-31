@@ -48,5 +48,8 @@ class DDC1306Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($user->getAddress());
         $this->_em->remove($user);
         $this->_em->flush();
+
+        self::assertEmpty($this->_em->getRepository(CmsAddress::class)->findAll());
+        self::assertEmpty($this->_em->getRepository(CmsUser::class)->findAll());
     }
 }

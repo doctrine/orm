@@ -325,6 +325,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CompanyFixContract::class, 'c');
+
+        self::assertSame(CompanyFixContract::class, $rsm->getClassName('c'));
     }
 
     /**

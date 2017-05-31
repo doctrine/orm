@@ -30,6 +30,7 @@ class DDC144Test extends OrmFunctionalTestCase
         $this->_em->persist($operand);
         $this->_em->flush();
 
+        self::assertSame($operand, $this->_em->find(DDC144Operand::class, $operand->id));
     }
 }
 

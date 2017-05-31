@@ -33,7 +33,7 @@ class SchemaValidatorTest extends OrmTestCase
                  ->getMetadataDriverImpl()
                  ->addPaths([$path]);
 
-        $this->validator->validateMapping();
+        self::assertEmpty($this->validator->validateMapping());
     }
 
     public function modelSetProvider(): array

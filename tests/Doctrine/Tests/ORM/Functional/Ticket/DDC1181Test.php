@@ -47,6 +47,8 @@ class DDC1181Test extends OrmFunctionalTestCase
 
         $this->_em->remove($hotel);
         $this->_em->flush();
+
+        self::assertEmpty($this->_em->getRepository(DDC1181Booking::class)->findAll());
     }
 }
 
