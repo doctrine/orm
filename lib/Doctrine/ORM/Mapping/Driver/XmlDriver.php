@@ -623,7 +623,7 @@ class XmlDriver extends FileDriver
 
                 // Check for `fetch`
                 if (isset($overrideElement['fetch'])) {
-                    $override['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . (string) $overrideElement['fetch']);
+                    $override['fetch'] = constant(ClassMetadata::class . '::FETCH_' . (string) $overrideElement['fetch']);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);

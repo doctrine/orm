@@ -624,7 +624,7 @@ class YamlDriver extends FileDriver
 
                 // Check for `fetch`
                 if (isset($associationOverrideElement['fetch'])) {
-                    $override['fetch'] = constant('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $associationOverrideElement['fetch']);
+                    $override['fetch'] = constant(ClassMetadata::class . '::FETCH_' . $associationOverrideElement['fetch']);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);
