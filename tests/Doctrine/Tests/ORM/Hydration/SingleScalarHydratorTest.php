@@ -72,17 +72,22 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $stmt = new HydratorMockStatement($resultSet);
         $hydrator = new SingleScalarHydrator($this->_em);
 
-        if ($name == 'result1') {
+        if ($name === 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals('romanb', $result);
-        } else if ($name == 'result2') {
+            return;
+        }
+
+        if ($name === 'result2') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
             $this->assertEquals(1, $result);
-        } else if ($name == 'result3' || $name == 'result4') {
-            try {
-                $result = $hydrator->hydrateAll($stmt, $rsm);
-                $this->fail();
-            } catch (\Doctrine\ORM\NonUniqueResultException $e) {}
+
+            return;
+        }
+
+        if (in_array($name, ['result3', 'result4'], true)) {
+            $this->expectException(NonUniqueResultException::class);
+            $hydrator->hydrateAll($stmt, $rsm);
         }
     }
 }

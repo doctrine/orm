@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -113,14 +114,16 @@ class DetachedEntityTest extends OrmFunctionalTestCase
     {
         $ph = new CmsPhonenumber();
         $ph->phonenumber = '12345';
+
         $this->_em->persist($ph);
         $this->_em->flush();
         $this->_em->clear();
+
         $this->_em->persist($ph);
-        try {
-            $this->_em->flush();
-            $this->fail();
-        } catch (\Exception $expected) {}
+
+        // since it tries to insert the object twice (with the same PK)
+        $this->expectException(UniqueConstraintViolationException::class);
+        $this->_em->flush();
     }
 
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
