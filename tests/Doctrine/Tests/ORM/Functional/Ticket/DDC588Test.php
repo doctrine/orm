@@ -23,6 +23,8 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         // Following should not result in exception
         $this->_em->refresh($site);
+
+        $this->addToAssertionCount(1);
     }
 }
 

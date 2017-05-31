@@ -36,6 +36,8 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         $this->_em->persist($entity);
         $this->_em->flush();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testFind()

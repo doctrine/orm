@@ -301,6 +301,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
                   ->setParameter(1, 'IT')
                   ->execute();
 
+        $this->addToAssertionCount(1);
     }
 
     /**

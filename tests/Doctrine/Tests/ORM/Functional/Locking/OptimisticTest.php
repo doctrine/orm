@@ -178,6 +178,8 @@ class OptimisticTest extends OrmFunctionalTestCase
         $proxy = $this->_em->getReference(OptimisticStandard::class, $test->id);
 
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
+
+        $this->addToAssertionCount(1);
     }
 
     public function testOptimisticTimestampSetsDefaultValue()

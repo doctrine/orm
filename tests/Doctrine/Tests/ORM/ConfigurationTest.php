@@ -179,6 +179,8 @@ class ConfigurationTest extends TestCase
     {
         $this->setProductionSettings();
         $this->configuration->ensureProductionSettings();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testEnsureProductionSettingsQueryCache()

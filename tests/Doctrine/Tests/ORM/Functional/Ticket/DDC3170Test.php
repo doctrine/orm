@@ -46,27 +46,17 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        try {
-            $this->_em->createQueryBuilder()
-                ->select('p')
-                ->from(DDC3170ProductJoined::class, 'p')
-                ->getQuery()
-                ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
-        } catch (HydrationException $e) // Thrown by SimpleObjectHydrator
-        {
-            $this->fail('Failed correct mapping of discriminator column when using simple object hydration and class table inheritance');
-        }
+        $this->_em->createQueryBuilder()
+                  ->select('p')
+                  ->from(DDC3170ProductJoined::class, 'p')
+                  ->getQuery()
+                  ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
 
-        try {
-            $this->_em->createQueryBuilder()
-                ->select('p')
-                ->from(DDC3170ProductSingleTable::class, 'p')
-                ->getQuery()
-                ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
-        } catch (HydrationException $e) // Thrown by SimpleObjectHydrator
-        {
-            $this->fail('Failed correct mapping of discriminator column when using simple object hydration and single table inheritance');
-        }
+        $this->_em->createQueryBuilder()
+                  ->select('p')
+                  ->from(DDC3170ProductSingleTable::class, 'p')
+                  ->getQuery()
+                  ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
     }
 }
 

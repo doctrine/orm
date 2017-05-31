@@ -24,64 +24,28 @@ class SchemaValidatorTest extends OrmTestCase
         $this->validator = new SchemaValidator($this->em);
     }
 
-    public function testCmsModelSet()
+    /**
+     * @dataProvider modelSetProvider
+     */
+    public function testCmsModelSet(string $path)
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/CMS"
-            ]
-        );
+        $this->em->getConfiguration()
+                 ->getMetadataDriverImpl()
+                 ->addPaths([$path]);
+
         $this->validator->validateMapping();
     }
 
-    public function testCompanyModelSet()
+    public function modelSetProvider(): array
     {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/Company"
-            ]
-        );
-        $this->validator->validateMapping();
-    }
-
-    public function testECommerceModelSet()
-    {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/ECommerce"
-            ]
-        );
-        $this->validator->validateMapping();
-    }
-
-    public function testForumModelSet()
-    {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/Forum"
-            ]
-        );
-        $this->validator->validateMapping();
-    }
-
-    public function testNavigationModelSet()
-    {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/Navigation"
-            ]
-        );
-        $this->validator->validateMapping();
-    }
-
-    public function testRoutingModelSet()
-    {
-        $this->em->getConfiguration()->getMetadataDriverImpl()->addPaths(
-            [
-            __DIR__ . "/../../Models/Routing"
-            ]
-        );
-        $this->validator->validateMapping();
+        return [
+            'cms'        => [__DIR__ . '/../../Models/CMS'],
+            'company'    => [__DIR__ . '/../../Models/Company'],
+            'ecommerce'  => [__DIR__ . '/../../Models/ECommerce'],
+            'forum'      => [__DIR__ . '/../../Models/Forum'],
+            'navigation' => [__DIR__ . '/../../Models/Navigation'],
+            'routing'    => [__DIR__ . '/../../Models/Routing'],
+        ];
     }
 
     /**

@@ -68,6 +68,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->favoriteComments->add($this->_em->find(DDC742Comment::class, $comment3->id));
 
         $this->_em->flush();
+        $this->addToAssertionCount(1);
     }
 }
 
