@@ -1,0 +1,5 @@
+Doctrine\Tests\Models\DDC5934\DDC5934Contract:
+  type: entity
+  associationOverride:
+    members:
+      fetch: EXTRA_LAZY

@@ -2153,6 +2153,10 @@ class ClassMetadataInfo implements ClassMetadata
             $mapping['joinTable'] = $overrideMapping['joinTable'];
         }
 
+        if (isset($overrideMapping['fetch'])) {
+            $mapping['fetch'] = $overrideMapping['fetch'];
+        }
+
         $mapping['joinColumnFieldNames']        = null;
         $mapping['joinTableColumns']            = null;
         $mapping['sourceToTargetKeyColumns']    = null;

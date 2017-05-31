@@ -455,6 +455,7 @@ Things to note:
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
 -  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override
 ~~~~~~~~~~~~~~~~~~~~

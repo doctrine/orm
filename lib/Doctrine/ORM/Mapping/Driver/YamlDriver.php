@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -620,6 +621,11 @@ class YamlDriver extends FileDriver
                 // Check for inversedBy
                 if (isset($associationOverrideElement['inversedBy'])) {
                     $override['inversedBy'] = (string) $associationOverrideElement['inversedBy'];
+                }
+
+                // Check for `fetch`
+                if (isset($associationOverrideElement['fetch'])) {
+                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . $associationOverrideElement['fetch']);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);
