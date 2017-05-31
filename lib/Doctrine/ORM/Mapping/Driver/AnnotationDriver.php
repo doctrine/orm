@@ -472,7 +472,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
                 // Check for `fetch`
                 if ($associationOverride->fetch) {
-                    $override['fetch'] = constant(ClassMetadata::class . '::FETCH_' . $associationOverride->fetch);
+                    $override['fetch'] = constant(Mapping\ClassMetadata::class . '::FETCH_' . $associationOverride->fetch);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);

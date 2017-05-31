@@ -24,6 +24,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -623,7 +624,7 @@ class XmlDriver extends FileDriver
 
                 // Check for `fetch`
                 if (isset($overrideElement['fetch'])) {
-                    $override['fetch'] = constant(ClassMetadata::class . '::FETCH_' . (string) $overrideElement['fetch']);
+                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . (string) $overrideElement['fetch']);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);
