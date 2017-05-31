@@ -106,7 +106,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\CMS\CmsArticle::class,
             Models\CMS\CmsComment::class,
         ],
-        'forum' => [],
         'company' => [
             Models\Company\CompanyPerson::class,
             Models\Company\CompanyEmployee::class,
