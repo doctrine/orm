@@ -1269,6 +1269,24 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertSame(['foo', 'baz'], $metadata->getColumnNames(['status', 'name']));
     }
+
+    /**
+     * @group DDC-6460
+     */
+    public function testInlineEmbeddable()
+    {
+        $classMetadata = new ClassMetadata(TestEntity1::class);
+
+        $classMetadata->mapEmbedded(
+            [
+                'fieldName'    => 'test',
+                'class'        => TestEntity1::class,
+                'columnPrefix' => false,
+            ]
+        );
+
+        $this->assertTrue($classMetadata->hasField('test'));
+    }
 }
 
 /**
