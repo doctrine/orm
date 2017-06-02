@@ -479,7 +479,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function add($value)
     {
-        $this->collection->add($value);
+        parent::add($value);
 
         $this->changed();
 
