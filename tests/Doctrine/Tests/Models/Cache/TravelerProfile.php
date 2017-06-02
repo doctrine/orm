@@ -23,7 +23,6 @@ class TravelerProfile
 
     /**
      * @OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
-     * @Cache()
      */
     private $info;
 
