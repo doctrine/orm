@@ -116,6 +116,27 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     }
 
     /**
+     * Adds a new field value in the entity changeset.
+     *
+     * If the field already exists, it sets the new value.
+     *
+     * @param string $field
+     * @param mixed  $value
+     *
+     * @return void
+     */
+    public function addNewValue($field, $value)
+    {
+        $metadata = $this->getEntityManager()->getClassMetadata(get_class($this->getEntity()));
+
+        if ( ! $metadata->hasField($field)) {
+            $this->assertValidField($field);
+        }
+
+        $this->entityChangeSet[$field][1] = $value;
+    }
+
+    /**
      * Asserts the field exists in changeset.
      *
      * @param string $field
