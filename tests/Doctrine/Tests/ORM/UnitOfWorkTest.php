@@ -11,6 +11,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -354,6 +355,26 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
         $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+    }
+
+    public function testClearManagerWithObject()
+    {
+        $this->expectException(ORMException::class);
+        $this->expectExceptionMessage('must be a string');
+
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->clear($entity);
+    }
+
+    public function testClearManagerWithNullValue()
+    {
+        $entity = new Country(456, 'United Kingdom');
+
+        $this->_unitOfWork->clear();
+
+        $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity));
+        $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity));
     }
 
     /**

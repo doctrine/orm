@@ -2378,6 +2378,10 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clear($entityName = null)
     {
+        if ($entityName !== null && !is_string($entityName)) {
+            throw ORMException::invalidEntityName($entityName);
+        }
+
         if ($entityName === null) {
             $this->identityMap =
             $this->entityIdentifiers =
