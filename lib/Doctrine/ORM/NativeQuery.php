@@ -25,7 +25,7 @@ namespace Doctrine\ORM;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-final class NativeQuery extends AbstractQuery
+class NativeQuery extends AbstractQuery
 {
     /**
      * @var string
