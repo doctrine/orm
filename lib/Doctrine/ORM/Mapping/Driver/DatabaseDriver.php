@@ -299,9 +299,17 @@ class DatabaseDriver implements MappingDriver
             if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
                 $this->manyToManyTables[$tableName] = $table;
             } else {
+                // If you work with PostgreSQL Schemas you need tu filter the names of table to generate
+                // Correct name for PHP Classes
+                $schema = 'public';
+                $realTableName = $tableName;
+                if (strpos($tableName, ".") !== false) {
+                    list($schema, $realTableName) = explode(".", $tableName);
+                }
+                
                 // lower-casing is necessary because of Oracle Uppercase Tablenames,
                 // assumption is lower-case + underscore separated.
-                $className = $this->getClassNameForTable($tableName);
+                $className = $this->getClassNameForTable($realTableName);
 
                 $this->tables[$tableName] = $table;
                 $this->classToTableNames[$className] = $tableName;
