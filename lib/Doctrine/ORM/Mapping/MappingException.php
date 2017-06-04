@@ -394,6 +394,17 @@ class MappingException extends \Doctrine\ORM\ORMException
 
     /**
      * @param string $entity
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function duplicateEmbeddedMapping($entity, $fieldName)
+    {
+        return new self('Embedded "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once.');
+    }
+
+    /**
+     * @param string $entity
      * @param string $queryName
      *
      * @return MappingException
