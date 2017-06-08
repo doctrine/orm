@@ -30,8 +30,8 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     /**
      * Fetches all rows from the result set.
      *
-     * @param null       $fetchMode
-     * @param null       $fetchArgument
+     * @param int|null   $fetchMode
+     * @param int|null   $fetchArgument
      * @param array|null $ctorArgs
      * @return array
      */
