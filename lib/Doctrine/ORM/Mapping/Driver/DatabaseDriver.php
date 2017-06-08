@@ -393,7 +393,7 @@ class DatabaseDriver implements MappingDriver
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
             'columnName' => $column->getName(),
             'type'       => $column->getType()->getName(),
-            'nullable'   => ( ! $column->getNotNull()),
+            'nullable'   => ( ! $column->getNotnull()),
         ];
 
         // Type specific elements
@@ -482,7 +482,7 @@ class DatabaseDriver implements MappingDriver
     }
 
     /**
-     * Retreive schema table definition foreign keys.
+     * Retrieve schema table definition foreign keys.
      *
      * @param \Doctrine\DBAL\Schema\Table $table
      *

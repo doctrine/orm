@@ -1502,8 +1502,8 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * @param AST\NewObjectExpression $newObjectExpression
-     *
+     * @param AST\NewObjectExpression   $newObjectExpression
+     * @param null|string               $newObjectResultAlias
      * @return string The SQL.
      */
     public function walkNewObject($newObjectExpression, $newObjectResultAlias=null)
@@ -1761,7 +1761,7 @@ class SqlWalker implements TreeWalker
     public function walkWhereClause($whereClause)
     {
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
-        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->rootAliases);
+        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($this->rootAliases);
 
         if ($this->em->hasFilters()) {
             $filterClauses = [];

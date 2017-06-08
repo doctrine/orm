@@ -341,13 +341,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
 
-                $lockSql = ' ' . $this->platform->getReadLockSql();
+                $lockSql = ' ' . $this->platform->getReadLockSQL();
 
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
 
-                $lockSql = ' ' . $this->platform->getWriteLockSql();
+                $lockSql = ' ' . $this->platform->getWriteLockSQL();
 
                 break;
         }
