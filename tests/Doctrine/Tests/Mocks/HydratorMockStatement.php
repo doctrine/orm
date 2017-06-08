@@ -109,7 +109,6 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
      */
     public function execute($params = null)
     {
-
     }
 
     /**
