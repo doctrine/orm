@@ -3376,8 +3376,13 @@ class Parser
         $token = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);
 
-        // Check for built-in functions first!
+        $customFunctionDeclaration = $this->CustomFunctionDeclaration();
+        
+        // Check for custom functions functions first!
         switch (true) {
+            case $customFunctionDeclaration !== null:
+                return $customFunctionDeclaration;
+            
             case (isset(self::$_STRING_FUNCTIONS[$funcName])):
                 return $this->FunctionsReturningStrings();
 
@@ -3388,7 +3393,7 @@ class Parser
                 return $this->FunctionsReturningDatetime();
 
             default:
-                return $this->CustomFunctionDeclaration();
+                $this->syntaxError('known function', $token);
         }
     }
 
@@ -3416,7 +3421,7 @@ class Parser
                 return $this->CustomFunctionsReturningDatetime();
 
             default:
-                $this->syntaxError('known function', $token);
+                return null;
         }
     }
 
