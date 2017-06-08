@@ -1,19 +1,16 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * PostFlushEventTest
  *
- * @author Daniel Freudenberger <df@rebuy.de>
  * @author Tom Lei <tomlei90@gmail.com>
  */
-class PostFlushEventTest extends OrmFunctionalTestCase
+class DDC1511Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     /**
      * @var PostFlushListener
@@ -31,45 +28,13 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
     protected function tearDown()
     {
-      $this->listener->postFlushAssertions = null;
-      parent::tearDown();
-    }
-
-    public function testListenerShouldBeNotified()
-    {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
-        $this->assertTrue($this->listener->wasNotified);
-    }
-
-    public function testListenerShouldNotBeNotifiedWhenFlushThrowsException()
-    {
-        $user = new CmsUser();
-        $user->username = 'dfreudenberger';
-        $this->_em->persist($user);
-        $exceptionRaised = false;
-
-        try {
-            $this->_em->flush();
-        } catch (\Exception $ex) {
-            $exceptionRaised = true;
-        }
-
-        $this->assertTrue($exceptionRaised);
-        $this->assertFalse($this->listener->wasNotified);
-    }
-
-    public function testListenerShouldReceiveEntityManagerThroughArgs()
-    {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
-        $receivedEm = $this->listener->receivedArgs->getEntityManager();
-        $this->assertSame($this->_em, $receivedEm);
+        $this->listener->postFlushAssertions = null;
+        parent::tearDown();
     }
 
     public function testUnitOfWorkInPostFlushShouldHaveInsertedEntities()
     {
-        $testUser = $this->createNewUser('tom.lei@applesauce', 'Tom Lei');
+        $testUser = $this->createNewValidUser('tom.lei@blues', 'Tom Lei');
 
         $this->listener->postFlushAssertions = function(PostFlushEventArgs $args) use ($testUser) {
             $uow = $args->getEntityManager()->getUnitOfWork();
@@ -84,7 +49,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
     public function testUnitOfWorkInPostFlushShouldHaveUpdatedEntities()
     {
-        $testUser = $this->createNewUser('tom.lei@applesauce', 'Tom Lei');
+        $testUser = $this->createNewValidUser('tom.lei@molson', 'Tom Lei');
         $this->_em->persist($testUser);
         $this->_em->flush();
 
@@ -102,7 +67,7 @@ class PostFlushEventTest extends OrmFunctionalTestCase
 
     public function testUnitOfWorkInPostFlushShouldHaveDeletedEntities()
     {
-        $testUser = $this->createNewUser('tom.lei@applesauce', 'Tom Lei');
+        $testUser = $this->createNewValidUser('tom.lei@applesauce', 'Tom Lei');
         $this->_em->persist($testUser);
         $this->_em->flush();
 
@@ -120,36 +85,17 @@ class PostFlushEventTest extends OrmFunctionalTestCase
     /**
      * @return CmsUser
      */
-    private function createNewValidUser()
-    {
-        return $this->createNewUser('dfreudenberger', 'Daniel Freudenberger');
-    }
-
-    /**
-     * @return CmsUser
-     */
-    private function createNewUser($userName, $name)
+    private function createNewValidUser($userName, $name)
     {
         $user = new CmsUser();
         $user->username = $userName;
         $user->name = $name;
-
         return $user;
     }
 }
 
 class PostFlushListener
 {
-    /**
-     * @var bool
-     */
-    public $wasNotified = false;
-
-    /**
-     * @var PostFlushEventArgs
-     */
-    public $receivedArgs;
-
     /**
      * @var callable | null
      */
@@ -158,11 +104,7 @@ class PostFlushListener
     /**
      * @param PostFlushEventArgs $args
      */
-    public function postFlush(PostFlushEventArgs $args)
-    {
-        $this->wasNotified = true;
-        $this->receivedArgs = $args;
-
+    public function postFlush(PostFlushEventArgs $args) {
         if (is_callable($this->postFlushAssertions)) {
             call_user_func($this->postFlushAssertions, $args);
         }
