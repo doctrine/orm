@@ -425,10 +425,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomStringFunction($name, $className)
     {
-        if (Query\Parser::isInternalFunction($name)) {
-            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
-        }
-
         $this->_attributes['customStringFunctions'][strtolower($name)] = $className;
     }
 
@@ -483,10 +479,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomNumericFunction($name, $className)
     {
-        if (Query\Parser::isInternalFunction($name)) {
-            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
-        }
-
         $this->_attributes['customNumericFunctions'][strtolower($name)] = $className;
     }
 
@@ -541,10 +533,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function addCustomDatetimeFunction($name, $className)
     {
-        if (Query\Parser::isInternalFunction($name)) {
-            throw ORMException::overwriteInternalDQLFunctionNotAllowed($name);
-        }
-
         $this->_attributes['customDatetimeFunctions'][strtolower($name)] = $className;
     }
 

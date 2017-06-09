@@ -65,6 +65,13 @@ class Parser
         'date_diff' => Functions\DateDiffFunction::class,
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
+
+        // Aggregate functions
+        'min'       => Functions\MinFunction::class,
+        'max'       => Functions\MaxFunction::class,
+        'avg'       => Functions\AvgFunction::class,
+        'sum'       => Functions\SumFunction::class,
+        'count'     => Functions\CountFunction::class,
     ];
 
     /**
@@ -170,23 +177,6 @@ class Parser
      * @var array
      */
     private $identVariableExpressions = [];
-
-    /**
-     * Checks if a function is internally defined. Used to prevent overwriting
-     * of built-in functions through user-defined functions.
-     *
-     * @param string $functionName
-     *
-     * @return bool
-     */
-    static public function isInternalFunction($functionName)
-    {
-        $functionName = strtolower($functionName);
-
-        return isset(self::$_STRING_FUNCTIONS[$functionName])
-            || isset(self::$_DATETIME_FUNCTIONS[$functionName])
-            || isset(self::$_NUMERIC_FUNCTIONS[$functionName]);
-    }
 
     /**
      * Creates a new query parser object.
@@ -1978,9 +1968,6 @@ class Parser
                         // SUM(u.id) + COUNT(u.id)
                         return $this->SimpleArithmeticExpression();
 
-                    case ($this->isAggregateFunction($this->lexer->lookahead['type'])):
-                        return $this->AggregateExpression();
-
                     default:
                         // IDENTITY(u)
                         return $this->FunctionDeclaration();
@@ -2207,11 +2194,6 @@ class Parser
                     case ($this->isMathOperator($this->peekBeyondClosingParenthesis())):
                         // SUM(u.id) + COUNT(u.id)
                         $expression = $this->ScalarExpression();
-                        break;
-
-                    case ($this->isAggregateFunction($lookaheadType)):
-                        // COUNT(u.id)
-                        $expression = $this->AggregateExpression();
                         break;
 
                     default:
@@ -2858,10 +2840,6 @@ class Parser
                 $peek = $this->lexer->glimpse();
 
                 if ($peek['value'] == '(') {
-                    if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
-                        return $this->AggregateExpression();
-                    }
-
                     return $this->FunctionDeclaration();
                 }
 
@@ -2932,11 +2910,6 @@ class Parser
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
                 return $this->CaseExpression();
-
-            default:
-                if ($this->isAggregateFunction($lookaheadType)) {
-                    return $this->AggregateExpression();
-                }
         }
 
         $this->syntaxError(
@@ -3234,10 +3207,6 @@ class Parser
 
             case $this->lexer->isNextToken(Lexer::T_COALESCE):
                 $expr = $this->CoalesceExpression();
-                break;
-
-            case $this->isAggregateFunction($this->lexer->lookahead['type']):
-                $expr = $this->AggregateExpression();
                 break;
 
             case $this->isFunction():

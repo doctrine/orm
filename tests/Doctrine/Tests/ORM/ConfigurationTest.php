@@ -265,8 +265,6 @@ class ConfigurationTest extends TestCase
         $this->assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
         $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomStringFunction('concat', __CLASS__);
     }
 
     public function testAddGetCustomNumericFunction()
@@ -276,8 +274,6 @@ class ConfigurationTest extends TestCase
         $this->assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
         $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomNumericFunction('abs', __CLASS__);
     }
 
     public function testAddGetCustomDatetimeFunction()
@@ -287,8 +283,6 @@ class ConfigurationTest extends TestCase
         $this->assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
         $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomDatetimeFunction('date_add', __CLASS__);
     }
 
     public function testAddGetCustomHydrationMode()
