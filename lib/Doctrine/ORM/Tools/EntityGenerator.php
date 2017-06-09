@@ -1731,7 +1731,7 @@ public function __construct(<params>)
 
             $embedded = ['class="' . $embeddedClass['class'] . '"'];
 
-            if (isset($fieldMapping['columnPrefix'])) {
+            if (isset($embeddedClass['columnPrefix'])) {
                 $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
             }
 
