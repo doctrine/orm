@@ -75,6 +75,10 @@ class ResultCommandTest extends OrmFunctionalTestCase
                 'APC',
             ],
             [
+                Cache\ApcuCache::class,
+                'APCu',
+            ],
+            [
                 Cache\XcacheCache::class,
                 'XCache',
             ],
