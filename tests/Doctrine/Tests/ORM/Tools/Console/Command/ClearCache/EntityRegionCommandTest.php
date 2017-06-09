@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Tools\Console\Command;
+namespace Doctrine\Tests\ORM\Tools\Console\Command\ClearCache;
 
 use Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
@@ -13,7 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 /**
  * @group DDC-2183
  */
-class ClearCacheEntityRegionCommandTest extends OrmFunctionalTestCase
+class EntityRegionCommandTest extends OrmFunctionalTestCase
 {
     /**
      * @var \Symfony\Component\Console\Application
