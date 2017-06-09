@@ -1732,7 +1732,11 @@ public function __construct(<params>)
             $embedded = ['class="' . $embeddedClass['class'] . '"'];
 
             if (isset($embeddedClass['columnPrefix'])) {
-                $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+                if (is_string($embeddedClass['columnPrefix'])) {
+                    $embedded[] = 'columnPrefix="' . $embeddedClass['columnPrefix'] . '"';
+                } else {
+                    $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+                }
             }
 
             $lines[] = $this->spaces . ' * @' .
