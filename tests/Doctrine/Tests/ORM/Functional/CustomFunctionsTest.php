@@ -47,6 +47,24 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $this->assertEquals(1, count($users));
         $this->assertSame($user, $users[0]);
     }
+
+    public function testCustomFunctionOverride()
+    {
+        $user = new CmsUser();
+        $user->name = 'Bob';
+        $user->username = 'Dylan';
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->_em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+
+        $query = $this->_em->createQuery('SELECT COUNT(u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+
+        $users = $query->getResult();
+
+        $this->assertEquals(1, count($users));
+        $this->assertSame($user, $users[0]);
+    }
 }
 
 class NoOp extends FunctionNode
@@ -70,3 +88,23 @@ class NoOp extends FunctionNode
     }
 }
 
+class CustomCount extends FunctionNode
+{
+    /**
+     * @var PathExpression
+     */
+    private $field;
+
+    public function parse(Parser $parser)
+    {
+        $parser->match(Lexer::T_IDENTIFIER);
+        $parser->match(Lexer::T_OPEN_PARENTHESIS);
+        $this->field = $parser->StringExpression();
+        $parser->match(Lexer::T_CLOSE_PARENTHESIS);
+    }
+
+    public function getSql(SqlWalker $sqlWalker)
+    {
+        return $this->field->dispatch($sqlWalker);
+    }
+}

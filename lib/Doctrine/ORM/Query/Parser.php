@@ -3377,7 +3377,7 @@ class Parser
         $funcName = strtolower($token['value']);
 
         $customFunctionDeclaration = $this->CustomFunctionDeclaration();
-        
+
         // Check for custom functions functions first!
         switch (true) {
             case $customFunctionDeclaration !== null:
