@@ -1064,11 +1064,11 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = ' ' . $this->platform->getReadLockSql();
+                $lockSql = ' ' . $this->platform->getReadLockSQL();
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = ' ' . $this->platform->getWriteLockSql();
+                $lockSql = ' ' . $this->platform->getWriteLockSQL();
                 break;
         }
 
@@ -1520,12 +1520,12 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = $this->platform->getReadLockSql();
+                $lockSql = $this->platform->getReadLockSQL();
 
                 break;
             case LockMode::PESSIMISTIC_WRITE:
 
-                $lockSql = $this->platform->getWriteLockSql();
+                $lockSql = $this->platform->getWriteLockSQL();
                 break;
         }
 
@@ -1870,8 +1870,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @param string $field
-     * @param mixed  $value
+     * @param string        $field
+     * @param mixed         $value
+     * @param ClassMetadata $class
      *
      * @return array
      *

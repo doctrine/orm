@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\Common\Cache\MultiGetCache;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**

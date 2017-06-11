@@ -185,7 +185,7 @@ EOT
 
         if (count($matches) > 1) {
             throw new \InvalidArgumentException(sprintf(
-                'Entity name "%s" is ambigous, possible matches: "%s"',
+                'Entity name "%s" is ambiguous, possible matches: "%s"',
                 $entityName, implode(', ', $matches)
             ));
         }

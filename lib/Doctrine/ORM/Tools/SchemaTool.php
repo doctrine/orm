@@ -351,8 +351,7 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The portable column definition of the discriminator column as required by
-     *               the DBAL.
+     * @return void
      */
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
@@ -384,7 +383,7 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The list of portable column definitions as required by the DBAL.
+     * @return void
      */
     private function gatherColumns($class, Table $table)
     {
@@ -410,7 +409,7 @@ class SchemaTool
      * @param array         $mapping The field mapping.
      * @param Table         $table
      *
-     * @return array The portable column definition as required by the DBAL.
+     * @return void
      */
     private function gatherColumn($class, array $mapping, Table $table)
     {

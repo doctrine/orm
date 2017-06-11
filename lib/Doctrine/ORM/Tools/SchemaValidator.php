@@ -90,7 +90,7 @@ class SchemaValidator
 
         foreach ($class->fieldMappings as $fieldName => $mapping) {
             if (!Type::hasType($mapping['type'])) {
-                $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existant type '" . $mapping['type'] . "'.";
+                $ce[] = "The field '" . $class->name . "#" . $fieldName."' uses a non-existent type '" . $mapping['type'] . "'.";
             }
         }
 

@@ -1376,7 +1376,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The field mapping to validate & complete.
      *
-     * @return array The validated and completed field mapping.
+     * @return void
      *
      * @throws MappingException
      */
@@ -2034,7 +2034,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return \Doctrine\DBAL\Types\Type|string|null
      *
-     * @deprecated 3.0 remove this. this method is bogous and unreliable, since it cannot resolve the type of a column
+     * @deprecated 3.0 remove this. this method is bogus and unreliable, since it cannot resolve the type of a column
      *             that is derived by a referenced field on a different entity.
      */
     public function getTypeOfColumn($columnName)

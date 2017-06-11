@@ -41,6 +41,7 @@ class DateAddFunction extends FunctionNode
 
     /**
      * @override
+     * @inheritdoc
      */
     public function getSql(SqlWalker $sqlWalker)
     {
@@ -77,6 +78,7 @@ class DateAddFunction extends FunctionNode
 
     /**
      * @override
+     * @inheritdoc
      */
     public function parse(Parser $parser)
     {
