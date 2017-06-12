@@ -37,6 +37,7 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Doctrine\ORM\Id\IdGeneratorInterface;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -262,8 +263,10 @@ class BasicEntityPersister implements EntityPersister
             return [];
         }
 
-        $postInsertIds  = [];
+        /* @var $idGenerator IdGeneratorInterface */
         $idGenerator    = $this->class->idGenerator;
+        $postInsertIds  = [];
+
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
 
         $stmt       = $this->conn->prepare($this->getInsertSQL());
@@ -283,7 +286,7 @@ class BasicEntityPersister implements EntityPersister
             $stmt->execute();
 
             if ($isPostInsertId) {
-                $generatedId = $idGenerator->generate($this->em, $entity);
+                $generatedId = $idGenerator->generateId($this->em, $entity);
                 $id = [
                     $this->class->identifier[0] => $generatedId
                 ];

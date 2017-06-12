@@ -550,7 +550,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * READ-ONLY: The ID generator used for generating IDs for this class.
      *
-     * @var \Doctrine\ORM\Id\AbstractIdGenerator
+     * @var \Doctrine\ORM\Id\IdGeneratorInterface
      *
      * @todo Remove!
      */
@@ -2963,7 +2963,7 @@ class ClassMetadataInfo implements ClassMetadata
     /**
      * Sets the ID generator used to generate IDs for instances of this class.
      *
-     * @param \Doctrine\ORM\Id\AbstractIdGenerator $generator
+     * @param \Doctrine\ORM\Id\IdGeneratorInterface $generator
      *
      * @return void
      */

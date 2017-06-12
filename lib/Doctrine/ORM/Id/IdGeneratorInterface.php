@@ -19,35 +19,30 @@
 
 namespace Doctrine\ORM\Id;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\IdGeneratorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Represents an ID generator that uses the database UUID expression
- *
- * @since 2.3
- * @author Maarten de Keizer <m.de.keizer@markei.nl>
+ * The class implementing this can generate entity-id's.
  */
-class UuidGenerator implements IdGeneratorInterface
+interface IdGeneratorInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function generateId(EntityManagerInterface $em, $entity)
-    {
-        $conn = $em->getConnection();
-        $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
-
-        return $conn->query($sql)->fetchColumn(0);
-    }
 
     /**
-     * {@inheritdoc}
+     * Generates an identifier for an entity.
+     *
+     * @param EntityManagerInterface $em
+     * @param \Doctrine\ORM\Mapping\Entity $entity
+     * @return mixed
      */
-    public function isPostInsertGenerator()
-    {
-        return false;
-    }
+    public function generateId(EntityManagerInterface $em, $entity);
+
+    /**
+     * Gets whether this generator is a post-insert generator which means that
+     * {@link generate()} must be called after the entity has been inserted
+     * into the database.
+     *
+     * @return boolean
+     */
+    public function isPostInsertGenerator();
 
 }

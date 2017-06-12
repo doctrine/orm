@@ -20,13 +20,15 @@
 namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Id\IdGeneratorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Id generator that obtains IDs from special "identity" columns. These are columns
  * that automatically get a database-generated, auto-incremented identifier on INSERT.
  * This generator obtains the last insert id after such an insert.
  */
-class IdentityGenerator extends AbstractIdGenerator
+class IdentityGenerator implements IdGeneratorInterface
 {
     /**
      * The name of the sequence to pass to lastInsertId(), if any.
@@ -50,7 +52,7 @@ class IdentityGenerator extends AbstractIdGenerator
     /**
      * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         return (int) $em->getConnection()->lastInsertId($this->sequenceName);
     }

@@ -21,6 +21,8 @@ namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
 use Serializable;
+use Doctrine\ORM\Id\IdGeneratorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Represents an ID generator that uses a database sequence.
@@ -28,7 +30,7 @@ use Serializable;
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
  */
-class SequenceGenerator extends AbstractIdGenerator implements Serializable
+class SequenceGenerator implements Serializable, IdGeneratorInterface
 {
     /**
      * The allocation size of the sequence.
@@ -69,7 +71,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * {@inheritDoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generateId(EntityManagerInterface $em, $entity)
     {
         if ($this->_maxValue === null || $this->_nextValue == $this->_maxValue) {
             // Allocate new values
@@ -82,6 +84,15 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
 
         return $this->_nextValue++;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
+    }
+
 
     /**
      * Gets the maximum value of the currently allocated bag of values.
