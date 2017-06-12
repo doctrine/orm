@@ -10,6 +10,9 @@ use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Application;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @covers \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand<extended>
+ */
 class MetadataCommandTest extends OrmFunctionalTestCase
 {
     /**
