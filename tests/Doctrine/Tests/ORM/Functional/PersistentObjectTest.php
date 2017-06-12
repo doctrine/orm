@@ -16,15 +16,16 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(PersistentEntity::class),
+                    $this->_em->getClassMetadata(PersistentEntity::class),
                 ]
             );
         } catch (\Exception $e) {
-
         }
+
         PersistentObject::setObjectManager($this->_em);
     }
 
@@ -35,6 +36,8 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         $this->_em->persist($entity);
         $this->_em->flush();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testFind()

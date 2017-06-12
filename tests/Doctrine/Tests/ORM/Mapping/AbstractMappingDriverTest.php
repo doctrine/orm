@@ -68,17 +68,10 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $factory;
     }
 
-    public function testLoadMapping()
+    public function testEntityTableNameAndInheritance()
     {
-        return $this->createClassMetadata(User::class);
-    }
+        $class = $this->createClassMetadata(User::class);
 
-    /**
-     * @depends testLoadMapping
-     * @param ClassMetadata $class
-     */
-    public function testEntityTableNameAndInheritance($class)
-    {
         $this->assertEquals('cms_users', $class->getTableName());
         $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_NONE, $class->inheritanceType);
 
@@ -274,14 +267,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     /**
      * @group #6129
      *
-     * @depends testLoadMapping
-     *
-     * @param ClassMetadata $class
-     *
      * @return ClassMetadata
      */
-    public function testBooleanValuesForOptionIsSetCorrectly(ClassMetadata $class)
+    public function testBooleanValuesForOptionIsSetCorrectly()
     {
+        $class = $this->createClassMetadata(User::class);
+
         $this->assertInternalType('bool', $class->fieldMappings['id']['options']['unsigned']);
         $this->assertFalse($class->fieldMappings['id']['options']['unsigned']);
 

@@ -221,10 +221,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 
         $em = $this->_getTestEntityManager();
         $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
+
         $factory = new ClassMetadataFactory();
         $factory->setEntityManager($em);
 
-        $cm = $factory->getMetadataFor(ChildEntity::class);
+        self::assertInstanceOf(ClassMetadata::class, $factory->getMetadataFor(ChildEntity::class));
     }
 
     public function testInvalidFetchOptionThrowsException()

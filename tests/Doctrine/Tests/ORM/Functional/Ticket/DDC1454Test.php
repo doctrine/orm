@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\UnitOfWork;
+
 /**
  * @group DDC-1454
  */
@@ -14,21 +16,20 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1454File::class),
-                $this->_em->getClassMetadata(DDC1454Picture::class),
+                    $this->_em->getClassMetadata(DDC1454File::class),
+                    $this->_em->getClassMetadata(DDC1454Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
-
         }
     }
 
     public function testFailingCase()
     {
         $pic = new DDC1454Picture();
-        $this->_em->getUnitOfWork()->getEntityState($pic);
-    }
 
+        self::assertSame(UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($pic));
+    }
 }
 
 /**
@@ -36,7 +37,6 @@ class DDC1454Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1454Picture extends DDC1454File
 {
-
 }
 
 /**
@@ -53,14 +53,16 @@ class DDC1454File
      */
     public $fileId;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->fileId = rand();
     }
 
     /**
      * Get fileId
      */
-    public function getFileId() {
+    public function getFileId()
+    {
         return $this->fileId;
     }
 

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
@@ -105,7 +106,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\CMS\CmsArticle::class,
             Models\CMS\CmsComment::class,
         ],
-        'forum' => [],
         'company' => [
             Models\Company\CompanyPerson::class,
             Models\Company\CompanyEmployee::class,
@@ -674,12 +674,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Gets an EntityManager for testing purposes.
      *
-     * @param \Doctrine\ORM\Configuration   $config       The Configuration to pass to the EntityManager.
-     * @param \Doctrine\Common\EventManager $eventManager The EventManager to pass to the EntityManager.
+     * @return EntityManager
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @throws \Doctrine\ORM\ORMException
      */
-    protected function _getEntityManager($config = null, $eventManager = null) {
+    protected function _getEntityManager(Connection $connection = null) {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
@@ -732,13 +731,17 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $this->isSecondLevelCacheEnabled = true;
         }
 
-        $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(
-            [
-            realpath(__DIR__ . '/Models/Cache'),
-            realpath(__DIR__ . '/Models/GeoNames')
-            ], true));
+        $config->setMetadataDriverImpl(
+            $config->newDefaultAnnotationDriver(
+                [
+                    realpath(__DIR__ . '/Models/Cache'),
+                    realpath(__DIR__ . '/Models/GeoNames')
+                ],
+                true
+            )
+        );
 
-        $conn = static::$_sharedConn;
+        $conn = $connection ?: static::$_sharedConn;
         $conn->getConfiguration()->setSQLLogger($this->_sqlLoggerStack);
 
         // get rid of more global state

@@ -22,19 +22,22 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->_assignedGen = new AssignedGenerator;
     }
 
-    public function testThrowsExceptionIfIdNotAssigned()
+    /**
+     * @dataProvider entitiesWithoutId
+     */
+    public function testThrowsExceptionIfIdNotAssigned($entity)
     {
-        try {
-            $entity = new AssignedSingleIdEntity;
-            $this->_assignedGen->generate($this->_em, $entity);
-            $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (ORMException $expected) {}
+        $this->expectException(ORMException::class);
 
-        try {
-            $entity = new AssignedCompositeIdEntity;
-            $this->_assignedGen->generate($this->_em, $entity);
-            $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (ORMException $expected) {}
+        $this->_assignedGen->generate($this->_em, $entity);
+    }
+
+    public function entitiesWithoutId(): array
+    {
+        return [
+            'single'    => [new AssignedSingleIdEntity()],
+            'composite' => [new AssignedCompositeIdEntity()],
+        ];
     }
 
     public function testCorrectIdGeneration()
