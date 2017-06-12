@@ -16,7 +16,7 @@ class SchemaValidatorTest extends OrmFunctionalTestCase
     {
         $modelSets = [];
         foreach (self::$_modelSets as $modelSet => $classes) {
-            if ($modelSet == "customtype") {
+            if (in_array($modelSet, ['customtype', 'gh5804'])) {
                 continue;
             }
             $modelSets[] = [$modelSet];
