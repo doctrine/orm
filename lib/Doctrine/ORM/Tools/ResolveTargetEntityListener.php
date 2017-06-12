@@ -80,7 +80,7 @@ class ResolveTargetEntityListener implements EventSubscriber
             $args->setFoundMetadata(
                 $args
                     ->getObjectManager()
-                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassname()]['targetEntity'])
+                    ->getClassMetadata($this->resolveTargetEntities[$args->getClassName()]['targetEntity'])
             );
         }
     }

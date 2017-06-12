@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Mapping\MappingException;
 use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;

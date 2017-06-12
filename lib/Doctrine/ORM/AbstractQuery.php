@@ -27,9 +27,6 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
-use Doctrine\ORM\Cache;
-use Doctrine\ORM\Query\ResultSetMapping;
-
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
  *

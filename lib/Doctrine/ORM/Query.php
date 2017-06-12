@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
 use Doctrine\ORM\Query\Parser;
@@ -204,7 +203,7 @@ final class Query extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->_parse()->getSQLExecutor()->getSQLStatements();
+        return $this->_parse()->getSqlExecutor()->getSqlStatements();
     }
 
     /**
@@ -738,7 +737,7 @@ final class Query extends AbstractQuery
             ->getName();
 
         return md5(
-            $this->getDql() . serialize($this->_hints) .
+            $this->getDQL() . serialize($this->_hints) .
             '&platform=' . $platform .
             ($this->_em->hasFilters() ? $this->_em->getFilters()->getHash() : '') .
             '&firstResult=' . $this->_firstResult . '&maxResult=' . $this->_maxResults .

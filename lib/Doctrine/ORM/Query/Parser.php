@@ -197,7 +197,7 @@ class Parser
     {
         $this->query        = $query;
         $this->em           = $query->getEntityManager();
-        $this->lexer        = new Lexer($query->getDql());
+        $this->lexer        = new Lexer($query->getDQL());
         $this->parserResult = new ParserResult();
     }
 
@@ -277,7 +277,7 @@ class Parser
         }
 
         if ($this->deferredPathExpressions) {
-            $this->processDeferredPathExpressions($AST);
+            $this->processDeferredPathExpressions();
         }
 
         if ($this->deferredResultVariables) {
@@ -482,7 +482,7 @@ class Parser
         $distance = 12;
 
         // Find a position of a final word to display in error string
-        $dql    = $this->query->getDql();
+        $dql    = $this->query->getDQL();
         $length = strlen($dql);
         $pos    = $token['position'] + $distance;
         $pos    = strpos($dql, ' ', ($length > $pos) ? $pos : $length);
@@ -749,11 +749,9 @@ class Parser
      * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      * CollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
      *
-     * @param mixed $AST
-     *
      * @return void
      */
-    private function processDeferredPathExpressions($AST)
+    private function processDeferredPathExpressions()
     {
         foreach ($this->deferredPathExpressions as $deferredItem) {
             $pathExpression = $deferredItem['expression'];
@@ -1504,7 +1502,7 @@ class Parser
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
-            case ($this->isFunction($peek)):
+            case ($this->isFunction()):
                 $expr = $this->FunctionDeclaration();
                 break;
 
@@ -1795,7 +1793,7 @@ class Parser
      * PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
      * PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
      *
-     * @return array
+     * @return \Doctrine\ORM\Query\AST\PartialObjectExpression
      */
     public function PartialObjectExpression()
     {
