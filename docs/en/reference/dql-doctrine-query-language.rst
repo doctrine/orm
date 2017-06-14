@@ -935,8 +935,7 @@ the Query class. Here they are:
 
 -  ``Query#getResult()``: Retrieves a collection of objects. The
    result is either a plain collection of objects (pure) or an array
-   where the objects are nested in the result rows (
-   ).
+   where the objects are nested in the result rows (mixed).
 -  ``Query#getSingleResult()``: Retrieves a single object. If the
    result contains more than one object, an ``NonUniqueResultException``
    is thrown. If the result contains no objects, an ``NoResultException``
