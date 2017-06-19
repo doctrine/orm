@@ -271,7 +271,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      *
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory();
 

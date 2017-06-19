@@ -24,10 +24,10 @@ namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Configuration\MetadataConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * AbstractClassMetadataFactory is the base of ClassMetadata object creation that contain all the metadata mapping

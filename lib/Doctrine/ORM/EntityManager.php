@@ -24,8 +24,9 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Throwable;
@@ -101,7 +102,7 @@ use Throwable;
     /**
      * The proxy factory used to create dynamic proxies.
      *
-     * @var \Doctrine\ORM\Proxy\ProxyFactory
+     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     private $proxyFactory;
 
@@ -154,6 +155,7 @@ use Throwable;
 
         $proxyConfiguration = new ProxyConfiguration();
 
+        $proxyConfiguration->setResolver(new DefaultProxyResolver($config->getProxyNamespace(), $config->getProxyDir()));
         $proxyConfiguration->setDirectory($config->getProxyDir());
         $proxyConfiguration->setNamespace($config->getProxyNamespace());
         $proxyConfiguration->setAutoGenerate($config->getAutoGenerateProxyClasses());
@@ -167,7 +169,7 @@ use Throwable;
 
         $this->repositoryFactory = $config->getRepositoryFactory();
         $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new ProxyFactory($this, $proxyConfiguration);
+        $this->proxyFactory      = new StaticProxyFactory($this, $proxyConfiguration);
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig    = $config->getSecondLevelCacheConfiguration();

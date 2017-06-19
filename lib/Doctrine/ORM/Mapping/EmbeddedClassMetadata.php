@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * Class EmbeddedClassMetadata

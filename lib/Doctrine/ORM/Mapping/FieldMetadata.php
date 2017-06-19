@@ -22,9 +22,8 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Sequencing\Generator;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 class FieldMetadata extends LocalColumnMetadata implements Property
 {

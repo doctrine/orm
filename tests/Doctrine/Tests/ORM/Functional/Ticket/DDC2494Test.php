@@ -51,7 +51,7 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        self::assertInstanceOf('\Doctrine\Common\Proxy\Proxy', $item->getCurrency());
+        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $item->getCurrency());
         self::assertFalse($item->getCurrency()->__isInitialized());
 
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);

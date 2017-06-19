@@ -41,7 +41,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $x2 = $this->em->find(get_class($x), $x->id); // proxy injected for Y
         self::assertInstanceOf(Proxy::class, $x2->y);
-        self::assertFalse($x2->y->__isInitialized__);
+        self::assertFalse($x2->y->__isInitialized());
 
         // proxy for Y is in identity map
 
@@ -49,7 +49,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
         self::assertInstanceOf(Proxy::class, $z2->y);
-        self::assertTrue($z2->y->__isInitialized__);
+        self::assertTrue($z2->y->__isInitialized());
         self::assertEquals('Y', $z2->y->data);
         self::assertEquals($y->id, $z2->y->id);
 

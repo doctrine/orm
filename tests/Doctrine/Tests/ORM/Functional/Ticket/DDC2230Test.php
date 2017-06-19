@@ -4,8 +4,8 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -19,12 +19,10 @@ class DDC2230Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->schemaTool->createSchema(
-                [
+            $this->schemaTool->createSchema([
                 $this->em->getClassMetadata(DDC2230User::class),
                 $this->em->getClassMetadata(DDC2230Address::class),
-                ]
-            );
+            ]);
         } catch (ToolsException $e) {}
     }
 

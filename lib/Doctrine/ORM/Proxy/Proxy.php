@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -19,7 +22,7 @@
 
 namespace Doctrine\ORM\Proxy;
 
-use Doctrine\Common\Proxy\Proxy as BaseProxy;
+use Doctrine\ORM\Proxy\Factory\ProxyDefinition;
 
 /**
  * Interface for proxy classes.
@@ -27,6 +30,30 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
  */
-interface Proxy extends BaseProxy
+interface Proxy
 {
+    /**
+     * Initializes this proxy if its not yet initialized.
+     *
+     * Acts as a no-op if already initialized.
+     *
+     * @return void
+     */
+    public function __load();
+
+    /**
+     * Returns whether this proxy is initialized or not.
+     *
+     * @return bool
+     */
+    public function __isInitialized();
+
+    /**
+     * Marks the proxy as initialized or not.
+     *
+     * @param boolean $initialized
+     *
+     * @return void
+     */
+    public function __setInitialized($initialized);
 }
