@@ -420,8 +420,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
-     *
-     * @throws ORMException
      */
     public function addCustomStringFunction($name, $className)
     {
@@ -474,8 +472,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
-     *
-     * @throws ORMException
      */
     public function addCustomNumericFunction($name, $className)
     {
@@ -528,8 +524,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * @param string|callable $className Class name or a callable that returns the function.
      *
      * @return void
-     *
-     * @throws ORMException
      */
     public function addCustomDatetimeFunction($name, $className)
     {
