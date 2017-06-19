@@ -2,11 +2,12 @@
 
 namespace Doctrine\Performance\Mock;
 
+use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Proxy\ProxyFactory;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\Tests\ORM\Performance\MockUnitOfWork;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
@@ -30,12 +31,14 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     {
         $config = $this->realEntityManager->getConfiguration();
 
-        return new ProxyFactory(
-            $this,
-            $config->getProxyDir(),
-            $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
-        );
+        $proxyConfiguration = new ProxyConfiguration();
+
+        $proxyConfiguration->setResolver(new DefaultProxyResolver($config->getProxyNamespace(), $config->getProxyDir()));
+        $proxyConfiguration->setDirectory($config->getProxyDir());
+        $proxyConfiguration->setNamespace($config->getProxyNamespace());
+        $proxyConfiguration->setAutoGenerate($config->getAutoGenerateProxyClasses());
+
+        return new StaticProxyFactory($this, $proxyConfiguration);
     }
 
     /**
@@ -49,7 +52,7 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata($className) : ClassMetadata
     {
         return $this->realEntityManager->getClassMetadata($className);
     }

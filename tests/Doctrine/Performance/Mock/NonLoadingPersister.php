@@ -2,8 +2,8 @@
 
 namespace Doctrine\Performance\Mock;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Query;
 
 /**
  * A persister that doesn't actually load given objects
@@ -20,9 +20,9 @@ class NonLoadingPersister extends BasicEntityPersister
     public function load(
         array $criteria,
         $entity = null,
-        $assoc = null,
+        ?AssociationMetadata $assoc = null,
         array $hints = [],
-        $lockMode = 0,
+        $lockMode = null,
         $limit = null,
         array $orderBy = null
     ) {
