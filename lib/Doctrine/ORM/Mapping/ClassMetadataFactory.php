@@ -19,14 +19,14 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
 use Doctrine\DBAL\Platforms;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Sequencing;
 use ReflectionException;
 
 /**

@@ -68,7 +68,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertEquals($fkt->cart->id, $cartId);
         self::assertInstanceOf(Proxy::class, $fkt2->cart);
-        self::assertFalse($fkt2->cart->__isInitialized__);
+        self::assertFalse($fkt2->cart->__isInitialized());
     }
 
     /**

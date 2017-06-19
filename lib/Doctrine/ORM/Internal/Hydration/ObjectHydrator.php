@@ -416,7 +416,7 @@ class ObjectHydrator extends AbstractHydrator
                     $reflFieldValue = $association->getValue($parentObject);
 
                     if (! $reflFieldValue || isset($this->hints[Query::HINT_REFRESH]) ||
-                        ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized__)) {
+                        ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {

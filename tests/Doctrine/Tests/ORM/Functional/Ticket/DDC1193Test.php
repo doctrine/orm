@@ -45,7 +45,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         $company = $this->em->find(get_class($company), $companyId);
 
         self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
-        self::assertFalse($company->member->__isInitialized__, "Pre-Condition");
+        self::assertFalse($company->member->__isInitialized(), "Pre-Condition");
         self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
 
         $this->em->remove($company);

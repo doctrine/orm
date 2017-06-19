@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 class TransientMetadata implements Property
 {
@@ -67,6 +67,14 @@ class TransientMetadata implements Property
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPrimaryKey()
+    {
+        return false;
     }
 
     /**

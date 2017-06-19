@@ -17,7 +17,7 @@ class EntityManagerMock extends EntityManager
     private $uowMock;
 
     /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory|null
+     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory|null
      */
     private $proxyFactoryMock;
 
@@ -44,7 +44,7 @@ class EntityManagerMock extends EntityManager
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\ProxyFactory $proxyFactory
+     * @param \Doctrine\ORM\Proxy\Factory\ProxyFactory $proxyFactory
      *
      * @return void
      */
@@ -54,7 +54,7 @@ class EntityManagerMock extends EntityManager
     }
 
     /**
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory()
     {

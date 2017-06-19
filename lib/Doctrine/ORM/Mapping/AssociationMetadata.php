@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 class AssociationMetadata implements Property
 {
@@ -55,13 +55,13 @@ class AssociationMetadata implements Property
 
     /** @var array<string> */
     private $cascade = [];
-    
+
     /** @var bool */
     private $owningSide = true;
 
     /** @var bool */
     private $orphanRemoval = false;
-    
+
     /** @var null|CacheMetadata */
     private $cache = null;
 
@@ -170,7 +170,7 @@ class AssociationMetadata implements Property
     {
         $this->cascade = $cascade;
     }
-    
+
     /**
      * @param bool $owningSide
      */
@@ -178,7 +178,7 @@ class AssociationMetadata implements Property
     {
         $this->owningSide = $owningSide;
     }
-    
+
     /**
      * @return bool
      */
@@ -250,7 +250,7 @@ class AssociationMetadata implements Property
     {
         return $this->orphanRemoval;
     }
-    
+
     /**
      * @return null|CacheMetadata
      */

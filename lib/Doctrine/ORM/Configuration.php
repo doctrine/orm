@@ -22,12 +22,10 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
 use Doctrine\Common\Annotations\CachedReader;
-use Doctrine\Common\Annotations\SimpleAnnotationReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -35,6 +33,7 @@ use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 
@@ -79,19 +78,19 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @return int Possible values are constants of Doctrine\ORM\Proxy\Factory\StaticProxyFactory.
      */
     public function getAutoGenerateProxyClasses()
     {
         return isset($this->attributes['autoGenerateProxyClasses'])
             ? $this->attributes['autoGenerateProxyClasses']
-            : AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+            : ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\StaticProxyFactory.
      *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void

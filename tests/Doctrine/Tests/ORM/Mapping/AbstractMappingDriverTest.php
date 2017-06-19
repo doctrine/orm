@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManager;
@@ -13,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\UnderscoreNamingStrategy;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsAddressListener;
