@@ -1031,7 +1031,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'",
-            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.phonenumber) AS dctrn__1 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr_1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
+            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.phonenumber) AS sclr_2 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr_1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
         );
     }
 
@@ -1198,7 +1198,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u.name, (SELECT COUNT(cfc.id) total FROM Doctrine\Tests\Models\Company\CompanyFixContract cfc) as cfc_count FROM Doctrine\Tests\Models\CMS\CmsUser u",
-            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.id) AS dctrn__total FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr_1 FROM cms_users c0_"
+            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.id) AS sclr_2 FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr_1 FROM cms_users c0_"
         );
     }
 
@@ -1750,7 +1750,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
         $this->assertSqlGeneration(
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) = ( SELECT SUM(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
-            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 FROM cms_users c0_ WHERE COUNT(c0_.id) = (SELECT SUM(c1_.id) AS dctrn__1 FROM cms_users c1_)'
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 FROM cms_users c0_ WHERE COUNT(c0_.id) = (SELECT SUM(c1_.id) AS sclr_4 FROM cms_users c1_)'
         );
         $this->assertSqlGeneration(
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) <= ( SELECT SUM(u2.id) + COUNT(u2.email) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
