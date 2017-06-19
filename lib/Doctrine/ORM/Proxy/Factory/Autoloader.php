@@ -20,49 +20,54 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Proxy\Factory;
 
 use InvalidArgumentException;
 
+/**
+ * Special Autoloader for Proxy classes, which are not PSR-0 compliant.
+ *
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
+ */
 class Autoloader
 {
     /**
-     * Resolves ClassMetadata class name to a filename based on the following pattern.
+     * Resolves proxy class name to a filename based on the following pattern.
      *
-     * 1. Remove Metadata namespace from class name.
+     * 1. Remove Proxy namespace from class name.
      * 2. Remove namespace separators from remaining class name.
-     * 3. Return PHP filename from metadata-dir with the result from 2.
+     * 3. Return PHP filename from proxy-dir with the result from 2.
      *
-     * @param string $metadataDir
-     * @param string $metadataNamespace
+     * @param string $proxyDir
+     * @param string $proxyNamespace
      * @param string $className
      *
      * @return string
      *
      * @throws InvalidArgumentException
      */
-    public static function resolveFile(string $metadataDir, string $metadataNamespace, string $className) : string
+    public static function resolveFile(string $proxyDir, string $proxyNamespace, string $className) : string
     {
-        if (0 !== strpos($className, $metadataNamespace)) {
+        if (0 !== strpos($className, $proxyNamespace)) {
             throw new InvalidArgumentException(
-                sprintf('The class "%s" is not part of the metadata namespace "%s"', $className, $metadataNamespace)
+                sprintf('The class "%s" is not part of the proxy namespace "%s"', $className, $proxyNamespace)
             );
         }
 
-        // remove metadata namespace from class name
-        $classNameRelativeToMetadataNamespace = substr($className, strlen($metadataNamespace));
+        // remove proxy namespace from class name
+        $classNameRelativeToProxyNamespace = substr($className, strlen($proxyNamespace));
 
         // remove namespace separators from remaining class name
-        $fileName = str_replace('\\', '', $classNameRelativeToMetadataNamespace);
+        $fileName = str_replace('\\', '', $classNameRelativeToProxyNamespace);
 
-        return $metadataDir . DIRECTORY_SEPARATOR . $fileName . '.php';
+        return $proxyDir . DIRECTORY_SEPARATOR . $fileName . '.php';
     }
 
     /**
-     * Registers and returns autoloader callback for the given metadata dir and namespace.
+     * Registers and returns autoloader callback for the given proxy dir and namespace.
      *
-     * @param string        $metadataDir
-     * @param string        $metadataNamespace
+     * @param string        $proxyDir
+     * @param string        $proxyNamespace
      * @param callable|null $notFoundCallback Invoked when the proxy file is not found.
      *
      * @return \Closure
@@ -70,12 +75,12 @@ class Autoloader
      * @throws InvalidArgumentException
      */
     public static function register(
-        string $metadataDir,
-        string $metadataNamespace,
+        string $proxyDir,
+        string $proxyNamespace,
         callable $notFoundCallback = null
     ) : \Closure
     {
-        $metadataNamespace = ltrim($metadataNamespace, '\\');
+        $proxyNamespace = ltrim($proxyNamespace, '\\');
 
         if (! (null === $notFoundCallback || is_callable($notFoundCallback))) {
             $type = is_object($notFoundCallback) ? get_class($notFoundCallback) : gettype($notFoundCallback);
@@ -85,12 +90,12 @@ class Autoloader
             );
         }
 
-        $autoloader = function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
-            if (0 === strpos($className, $metadataNamespace)) {
-                $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
+        $autoloader = function ($className) use ($proxyDir, $proxyNamespace, $notFoundCallback) {
+            if (0 === strpos($className, $proxyNamespace)) {
+                $file = Autoloader::resolveFile($proxyDir, $proxyNamespace, $className);
 
                 if ($notFoundCallback && ! file_exists($file)) {
-                    call_user_func($notFoundCallback, $metadataDir, $metadataNamespace, $className);
+                    call_user_func($notFoundCallback, $proxyDir, $proxyNamespace, $className);
                 }
 
                 require $file;

@@ -20,12 +20,15 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Proxy\Factory;
 
-class DefaultClassMetadataResolver implements ClassMetadataResolver
+use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Proxy\Proxy;
+
+class DefaultProxyResolver implements ProxyResolver
 {
     /**
-     * Marker for ClassMetadata class names.
+     * Marker for Proxy class names.
      *
      * @var string
      */
@@ -42,7 +45,7 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
     private $directory;
 
     /**
-     * DefaultClassMetadataResolver constructor.
+     * DefaultProxyResolver constructor.
      *
      * @param string $namespace
      * @param string $directory
@@ -50,13 +53,13 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
     public function __construct(string $namespace, string $directory)
     {
         $this->namespace = ltrim($namespace, '\\');
-        $this->directory = rtrim($this->directory, DIRECTORY_SEPARATOR);
+        $this->directory = rtrim($directory, DIRECTORY_SEPARATOR);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function resolveMetadataClassName(string $className) : string
+    public function resolveProxyClassName(string $className) : string
     {
         return sprintf('%s\%s\%s', $this->namespace, self::MARKER, ltrim($className, '\\'));
     }
@@ -64,7 +67,7 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
     /**
      * {@inheritdoc}
      */
-    public function resolveMetadataClassPath(string $className) : string
+    public function resolveProxyClassPath(string $className) : string
     {
         return sprintf('%s/%s/%s.php', $this->directory, self::MARKER, str_replace('\\', '.', $className));
     }

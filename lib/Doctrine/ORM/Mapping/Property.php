@@ -19,8 +19,7 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ReflectionService;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 interface Property
 {
@@ -51,6 +50,11 @@ interface Property
      * @return string
      */
     public function getName();
+
+    /**
+     * @return bool
+     */
+    public function isPrimaryKey();
 
     /**
      * @param \ReflectionProperty $reflectionProperty

@@ -2,13 +2,14 @@
 
 namespace Doctrine\Tests\ORM\Proxy;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -61,9 +62,13 @@ class ProxyFactoryTest extends OrmTestCase
 
         $proxyConfiguration->setDirectory(sys_get_temp_dir());
         $proxyConfiguration->setNamespace('Proxies');
-        $proxyConfiguration->setAutoGenerate(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
+        $proxyConfiguration->setAutoGenerate(ProxyFactory::AUTOGENERATE_ALWAYS);
+        $proxyConfiguration->setResolver(new DefaultProxyResolver(
+            $proxyConfiguration->getNamespace(),
+            $proxyConfiguration->getDirectory()
+        ));
 
-        $this->proxyFactory = new ProxyFactory($this->emMock, $proxyConfiguration);
+        $this->proxyFactory = new StaticProxyFactory($this->emMock, $proxyConfiguration);
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister()
@@ -147,8 +152,6 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     /**
@@ -186,8 +189,6 @@ class ProxyFactoryTest extends OrmTestCase
         }
 
         self::assertFalse($proxy->__isInitialized());
-        self::assertInstanceOf('Closure', $proxy->__getInitializer(), 'The initializer wasn\'t removed');
-        self::assertInstanceOf('Closure', $proxy->__getCloner(), 'The cloner wasn\'t removed');
     }
 
     public function testProxyClonesParentFields()

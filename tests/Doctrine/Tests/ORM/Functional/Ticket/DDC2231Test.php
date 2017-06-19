@@ -16,11 +16,10 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->schemaTool->createSchema(
-            [
+        
+        $this->schemaTool->createSchema([
             $this->em->getClassMetadata(DDC2231EntityY::class),
-            ]
-        );
+        ]);
     }
 
     public function testInjectObjectManagerInProxyIfInitializedInUow()
@@ -35,11 +34,11 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $y1ref = $this->em->getReference(get_class($y1), $y1->id);
 
         self::assertInstanceOf(Proxy::class, $y1ref);
-        self::assertFalse($y1ref->__isInitialized__);
+        self::assertFalse($y1ref->__isInitialized());
 
         $id = $y1ref->doSomething();
 
-        self::assertTrue($y1ref->__isInitialized__);
+        self::assertTrue($y1ref->__isInitialized());
         self::assertEquals($this->em, $y1ref->om);
     }
 }

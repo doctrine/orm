@@ -4,7 +4,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
@@ -18,6 +17,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -247,12 +247,16 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $driverMock = new DriverMock();
         $config = new Configuration();
+
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+
         $eventManager = new EventManager();
+
         if (!$conn) {
             $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
         }
+
         $config->setMetadataDriverImpl($metadataDriver);
 
         return EntityManagerMock::create($conn, $config, $eventManager);
@@ -412,11 +416,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testFallbackLoadingCausesEventTriggeringThatCanModifyFetchedMetadata()
     {
         $test          = $this;
+
         /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
         $metadata      = $this->createMock(ClassMetadata::class);
         $cmf           = new ClassMetadataFactory();
         $mockDriver    = new MetadataDriverMock();
-        $em = $this->createEntityManager($mockDriver);
+        $em            = $this->createEntityManager($mockDriver);
         $listener      = $this->getMockBuilder(\stdClass::class)->setMethods(['onClassMetadataNotFound'])->getMock();
         $eventManager  = $em->getEventManager();
 
