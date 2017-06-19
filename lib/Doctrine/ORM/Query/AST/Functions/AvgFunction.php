@@ -29,7 +29,7 @@ use Doctrine\ORM\Query\AST\AggregateExpression;
  * @since   2.6
  * @author  Mathew Davies <thepixeldeveloper@icloud.com>
  */
-class AvgFunction extends FunctionNode
+final class AvgFunction extends FunctionNode
 {
     /**
      * @var AggregateExpression

@@ -29,7 +29,7 @@ use Doctrine\ORM\Query\AST\AggregateExpression;
  * @since   2.6
  * @author  Mathew Davies <thepixeldeveloper@icloud.com>
  */
-class MinFunction extends FunctionNode
+final class MinFunction extends FunctionNode
 {
     /**
      * @var AggregateExpression
