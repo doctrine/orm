@@ -94,12 +94,12 @@ class CustomCount extends FunctionNode
      */
     private $aggregateExpression;
 
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $this->aggregateExpression = $parser->AggregateExpression();
     }
 
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $this->aggregateExpression->dispatch($sqlWalker);
     }

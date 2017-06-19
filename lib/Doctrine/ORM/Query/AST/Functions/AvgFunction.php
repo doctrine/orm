@@ -26,8 +26,7 @@ use Doctrine\ORM\Query\AST\AggregateExpression;
 /**
  * "AVG" "(" ["DISTINCT"] StringPrimary ")"
  *
- * @link    www.doctrine-project.org
- * @since   2.0
+ * @since   2.6
  * @author  Mathew Davies <thepixeldeveloper@icloud.com>
  */
 class AvgFunction extends FunctionNode
@@ -35,12 +34,12 @@ class AvgFunction extends FunctionNode
     /**
      * @var AggregateExpression
      */
-    public $aggregateExpression;
+    private $aggregateExpression;
 
     /**
      * @inheritDoc
      */
-    public function getSql(SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker): string
     {
         return $this->aggregateExpression->dispatch($sqlWalker);
     }
@@ -48,7 +47,7 @@ class AvgFunction extends FunctionNode
     /**
      * @inheritDoc
      */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $this->aggregateExpression = $parser->AggregateExpression();
     }
