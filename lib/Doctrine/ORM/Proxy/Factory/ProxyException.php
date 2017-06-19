@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -17,13 +20,15 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Proxy;
-
-use Doctrine\Common\Proxy\Autoloader as BaseAutoloader;
+namespace Doctrine\ORM\Proxy\Factory;
 
 /**
- * @deprecated use \Doctrine\Common\Proxy\Autoloader instead
+ * Base exception interface for proxy exceptions.
+ *
+ * @link   www.doctrine-project.org
+ * @since  2.4
+ * @author Marco Pivetta <ocramius@gmail.com>
  */
-class Autoloader extends BaseAutoloader
+interface ProxyException
 {
 }

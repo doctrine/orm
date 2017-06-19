@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;
@@ -66,7 +66,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         self::assertArrayHasKey('article', $class->getProperties());
 
         $association = $class->getProperty('article');
-        
+
         self::assertTrue($association->isPrimaryKey());
     }
 

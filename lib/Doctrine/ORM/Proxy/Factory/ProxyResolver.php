@@ -20,33 +20,29 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
-
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
+namespace Doctrine\ORM\Proxy\Factory;
 
 /**
- * RuntimeClassMetadataFactory is the ClassMetadata object creation factory that runs at
- * execution time, consuming pre-exising entity classes.
+ * Interface ProxyResolver
  *
- * @package Doctrine\ORM\Mapping\Factory
+ * @package Doctrine\ORM\Proxy\Factory
+ *
  * @since 3.0
- *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class RuntimeClassMetadataFactory extends AbstractClassMetadataFactory
+interface ProxyResolver
 {
-    /** @var RuntimeReflectionService */
-    private $reflectionService;
+    /**
+     * @param string $className
+     *
+     * @return string
+     */
+    public function resolveProxyClassName(string $className) : string;
 
     /**
-     * @return RuntimeReflectionService
+     * @param string $className
+     *
+     * @return string
      */
-    protected function getReflectionService() : RuntimeReflectionService
-    {
-        if (! $this->reflectionService) {
-            $this->reflectionService = new RuntimeReflectionService();
-        }
-
-        return $this->reflectionService;
-    }
+    public function resolveProxyClassPath(string $className) : string;
 }

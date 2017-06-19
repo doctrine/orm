@@ -485,7 +485,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Ignore uninitialized proxy objects
-        if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
             return;
         }
 
@@ -781,7 +781,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     continue;
                 }
 
@@ -808,7 +808,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(AssociationMetadata $association, $value)
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized__) {
+        if ($value instanceof Proxy && ! $value->__isInitialized()) {
             return;
         }
 
@@ -2303,7 +2303,7 @@ class UnitOfWork implements PropertyChangedListener
         );
 
         foreach ($associations as $association) {
-            if ($entity instanceof Proxy && !$entity->__isInitialized__) {
+            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__load();
             }
 
@@ -2367,7 +2367,7 @@ class UnitOfWork implements PropertyChangedListener
                     return;
                 }
 
-                if ($entity instanceof Proxy && !$entity->__isInitialized__) {
+                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                     $entity->__load();
                 }
 
@@ -2633,7 +2633,7 @@ class UnitOfWork implements PropertyChangedListener
             if (! ($association instanceof AssociationMetadata)) {
                 continue;
             }
-            
+
             // Check if the association is not among the fetch-joined associations already.
             if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
                 continue;
@@ -2758,7 +2758,7 @@ class UnitOfWork implements PropertyChangedListener
                         $newValue instanceof Proxy &&
                         isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                         $hints['fetchMode'][$class->name][$field] === FetchMode::EAGER &&
-                        $newValue->__isInitialized__ === false
+                        ! $newValue->__isInitialized()
                     ) {
 
                         $this->eagerLoadingEntities[$targetClass->rootEntityName][$relatedIdHash] = current($associatedId);
@@ -2775,7 +2775,7 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 default:
-                    // Proxies do not carry any kind of original entity data until they'e fully loaded/initialized
+                    // Proxies do not carry any kind of original entity data until they're fully loaded/initialized
                     $managedData = [];
 
                     switch (true) {
@@ -3113,7 +3113,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function registerManaged($entity, array $id, array $data)
     {
-        $isProxy = ! $entity instanceof Proxy || $entity->__isInitialized();
+        $isProxy = $entity instanceof Proxy && ! $entity->__isInitialized();
         $oid     = spl_object_hash($entity);
 
         $this->entityIdentifiers[$oid]  = $id;
@@ -3122,7 +3122,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->addToIdentityMap($entity);
 
-        if ($entity instanceof NotifyPropertyChanged && $isProxy) {
+        if ($entity instanceof NotifyPropertyChanged && ! $isProxy) {
             $entity->addPropertyChangedListener($this);
         }
     }

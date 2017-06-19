@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
+use Doctrine\ORM\Reflection\StaticReflectionService;
 
 /**
  * StaticClassMetadataFactory is the ClassMetadata object creation factory that sits behind

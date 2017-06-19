@@ -456,7 +456,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals("dr. dolittle", $result[0]->topic);
         self::assertInstanceOf(Proxy::class, $result[0]->user);
-        self::assertFalse($result[0]->user->__isInitialized__);
+        self::assertFalse($result[0]->user->__isInitialized());
     }
 
     /**

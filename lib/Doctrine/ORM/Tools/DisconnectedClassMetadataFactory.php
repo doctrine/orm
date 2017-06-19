@@ -19,7 +19,7 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\Common\Persistence\Mapping\StaticReflectionService;
+use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
 /**
@@ -39,7 +39,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 class DisconnectedClassMetadataFactory extends ClassMetadataFactory
 {
     /**
-     * @return \Doctrine\Common\Persistence\Mapping\StaticReflectionService
+     * @return StaticReflectionService
      */
     public function getReflectionService()
     {

@@ -19,12 +19,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping\Builder;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
 use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
 use Doctrine\Tests\OrmTestCase;
 
 /**

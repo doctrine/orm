@@ -405,7 +405,7 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             $property->setValue($entity, $idValue);
         }
     }
-    
+
     /**
      * Handles metadata cloning nicely.
      */
@@ -542,7 +542,7 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     /**
      * Restores some state that can not be serialized/unserialized.
      *
-     * @param \Doctrine\Common\Persistence\Mapping\ReflectionService $reflService
+     * @param \Doctrine\ORM\Reflection\ReflectionService $reflService
      *
      * @return void
      */

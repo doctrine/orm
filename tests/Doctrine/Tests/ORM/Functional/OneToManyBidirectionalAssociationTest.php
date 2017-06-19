@@ -117,9 +117,9 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $product = $features[0]->getProduct();
         self::assertInstanceOf(Proxy::class, $product);
         self::assertInstanceOf(ECommerceProduct::class, $product);
-        self::assertFalse($product->__isInitialized__);
+        self::assertFalse($product->__isInitialized());
         self::assertSame('Doctrine Cookbook', $product->getName());
-        self::assertTrue($product->__isInitialized__);
+        self::assertTrue($product->__isInitialized());
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide2()

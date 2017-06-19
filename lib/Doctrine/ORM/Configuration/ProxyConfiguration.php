@@ -22,7 +22,8 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Configuration;
 
-use Doctrine\Common\Proxy\AbstractProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyResolver;
 
 /**
  * Configuration container for proxy manager options of Doctrine.
@@ -34,6 +35,11 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
  */
 class ProxyConfiguration
 {
+    /**
+     * @var ProxyResolver
+     */
+    private $resolver;
+
     /**
      * @var string
      */
@@ -47,7 +53,23 @@ class ProxyConfiguration
     /**
      * @var int
      */
-    private $autoGenerate = AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+    private $autoGenerate = ProxyFactory::AUTOGENERATE_ALWAYS;
+
+    /**
+     * @return ProxyResolver
+     */
+    public function getResolver(): ProxyResolver
+    {
+        return $this->resolver;
+    }
+
+    /**
+     * @param ProxyResolver $resolver
+     */
+    public function setResolver(ProxyResolver $resolver)
+    {
+        $this->resolver = $resolver;
+    }
 
     /**
      * @return string

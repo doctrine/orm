@@ -68,7 +68,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         foreach ($appointments AS $eagerAppointment) {
             self::assertInstanceOf(Proxy::class, $eagerAppointment->patient);
-            self::assertTrue($eagerAppointment->patient->__isInitialized__, "Proxy should already be initialized due to eager loading!");
+            self::assertTrue($eagerAppointment->patient->__isInitialized(), "Proxy should already be initialized due to eager loading!");
         }
     }
 }

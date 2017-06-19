@@ -37,12 +37,12 @@ interface ClassMetadataResolver
      *
      * @return string
      */
-    public function resolveMetadataClassName(string $className);
+    public function resolveMetadataClassName(string $className) : string;
 
     /**
      * @param string $className
      *
      * @return string
      */
-    public function resolveMetadataClassPath(string $className);
+    public function resolveMetadataClassPath(string $className) : string;
 }

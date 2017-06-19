@@ -147,15 +147,15 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $address2 = $this->em->find(get_class($address), $address->id);
         self::assertInstanceOf(Proxy::class, $address2->user);
-        self::assertFalse($address2->user->__isInitialized__);
+        self::assertFalse($address2->user->__isInitialized());
         $detachedAddress2 = unserialize(serialize($address2));
         self::assertInstanceOf(Proxy::class, $detachedAddress2->user);
-        self::assertFalse($detachedAddress2->user->__isInitialized__);
+        self::assertFalse($detachedAddress2->user->__isInitialized());
 
         $managedAddress2 = $this->em->merge($detachedAddress2);
         self::assertInstanceOf(Proxy::class, $managedAddress2->user);
         self::assertFalse($managedAddress2->user === $detachedAddress2->user);
-        self::assertFalse($managedAddress2->user->__isInitialized__);
+        self::assertFalse($managedAddress2->user->__isInitialized());
     }
 
     /**

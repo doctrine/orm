@@ -690,7 +690,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         self::assertInstanceOf(Proxy::class, $address2->getUser());
         self::assertTrue($userRef === $address2->getUser());
-        self::assertFalse($userRef->__isInitialized__);
+        self::assertFalse($userRef->__isInitialized());
         self::assertEquals('Germany', $address2->country);
         self::assertEquals('Berlin', $address2->city);
         self::assertEquals('12345', $address2->zip);
@@ -1000,7 +1000,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
             ->getSingleResult();
 
         self::assertInstanceOf(Proxy::class, $article->user, "It IS a proxy, ...");
-        self::assertTrue($article->user->__isInitialized__, "...but its initialized!");
+        self::assertTrue($article->user->__isInitialized(), "...but its initialized!");
         self::assertEquals($qc+2, $this->getCurrentQueryCount());
     }
 
