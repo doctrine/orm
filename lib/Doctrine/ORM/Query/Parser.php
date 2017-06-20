@@ -65,6 +65,13 @@ class Parser
         'date_diff' => Functions\DateDiffFunction::class,
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
+
+        // Aggregate functions
+        'min'       => Functions\MinFunction::class,
+        'max'       => Functions\MaxFunction::class,
+        'avg'       => Functions\AvgFunction::class,
+        'sum'       => Functions\SumFunction::class,
+        'count'     => Functions\CountFunction::class,
     ];
 
     /**
@@ -170,23 +177,6 @@ class Parser
      * @var array
      */
     private $identVariableExpressions = [];
-
-    /**
-     * Checks if a function is internally defined. Used to prevent overwriting
-     * of built-in functions through user-defined functions.
-     *
-     * @param string $functionName
-     *
-     * @return bool
-     */
-    static public function isInternalFunction($functionName)
-    {
-        $functionName = strtolower($functionName);
-
-        return isset(self::$_STRING_FUNCTIONS[$functionName])
-            || isset(self::$_DATETIME_FUNCTIONS[$functionName])
-            || isset(self::$_NUMERIC_FUNCTIONS[$functionName]);
-    }
 
     /**
      * Creates a new query parser object.
@@ -1978,9 +1968,6 @@ class Parser
                         // SUM(u.id) + COUNT(u.id)
                         return $this->SimpleArithmeticExpression();
 
-                    case ($this->isAggregateFunction($this->lexer->lookahead['type'])):
-                        return $this->AggregateExpression();
-
                     default:
                         // IDENTITY(u)
                         return $this->FunctionDeclaration();
@@ -2207,11 +2194,6 @@ class Parser
                     case ($this->isMathOperator($this->peekBeyondClosingParenthesis())):
                         // SUM(u.id) + COUNT(u.id)
                         $expression = $this->ScalarExpression();
-                        break;
-
-                    case ($this->isAggregateFunction($lookaheadType)):
-                        // COUNT(u.id)
-                        $expression = $this->AggregateExpression();
                         break;
 
                     default:
@@ -2858,10 +2840,6 @@ class Parser
                 $peek = $this->lexer->glimpse();
 
                 if ($peek['value'] == '(') {
-                    if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
-                        return $this->AggregateExpression();
-                    }
-
                     return $this->FunctionDeclaration();
                 }
 
@@ -2932,11 +2910,6 @@ class Parser
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
                 return $this->CaseExpression();
-
-            default:
-                if ($this->isAggregateFunction($lookaheadType)) {
-                    return $this->AggregateExpression();
-                }
         }
 
         $this->syntaxError(
@@ -3236,10 +3209,6 @@ class Parser
                 $expr = $this->CoalesceExpression();
                 break;
 
-            case $this->isAggregateFunction($this->lexer->lookahead['type']):
-                $expr = $this->AggregateExpression();
-                break;
-
             case $this->isFunction():
                 $expr = $this->FunctionDeclaration();
                 break;
@@ -3376,8 +3345,13 @@ class Parser
         $token = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);
 
-        // Check for built-in functions first!
+        $customFunctionDeclaration = $this->CustomFunctionDeclaration();
+
+        // Check for custom functions functions first!
         switch (true) {
+            case $customFunctionDeclaration !== null:
+                return $customFunctionDeclaration;
+            
             case (isset(self::$_STRING_FUNCTIONS[$funcName])):
                 return $this->FunctionsReturningStrings();
 
@@ -3388,7 +3362,7 @@ class Parser
                 return $this->FunctionsReturningDatetime();
 
             default:
-                return $this->CustomFunctionDeclaration();
+                $this->syntaxError('known function', $token);
         }
     }
 
@@ -3416,7 +3390,7 @@ class Parser
                 return $this->CustomFunctionsReturningDatetime();
 
             default:
-                $this->syntaxError('known function', $token);
+                return null;
         }
     }
 

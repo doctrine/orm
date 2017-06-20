@@ -324,16 +324,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $functionName
-     *
-     * @return ORMException
-     */
-    public static function overwriteInternalDQLFunctionNotAllowed($functionName)
-    {
-        return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");
-    }
-
-    /**
      * @return ORMException
      */
     public static function cantUseInOperatorOnCompositeKeys()

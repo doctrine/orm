@@ -1579,12 +1579,6 @@ class SqlWalker implements TreeWalker
                 $sql .= $this->walkPathExpression($expr);
                 break;
 
-            case ($expr instanceof AST\AggregateExpression):
-                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
-
-                $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
-                break;
-
             case ($expr instanceof AST\Subselect):
                 $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
 
