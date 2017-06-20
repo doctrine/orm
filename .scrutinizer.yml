@@ -9,27 +9,16 @@ before_commands:
 tools:
     external_code_coverage:
         timeout: 3600
-    php_code_coverage:
-        enabled: true
-    php_code_sniffer:
-        enabled: false
-    php_cpd:
-        enabled: true
-        excluded_dirs: ["bin", "docs", "tests", "tools", "vendor"]
-    php_cs_fixer:
-        enabled: false
-    php_loc:
-        enabled: true
-        excluded_dirs: ["bin", "docs", "tests", "tools", "vendor"]
-    php_mess_detector:
-        enabled: true
-        filter:
-            paths: ["lib/*"]
-    php_pdepend:
-        enabled: true
-        excluded_dirs: ["docs", "examples", "tests", "vendor"]
-    php_analyzer:
-        enabled: true
-        filter:
-            paths: ["lib/*", "tests/*"]
-    sensiolabs_security_checker: true
+
+filter:
+    excluded_paths:
+        - docs
+        - tools
+
+build_failure_conditions:
+    - 'elements.rating(<= C).new.exists'                        # No new classes/methods with a rating of C or worse allowed
+    - 'issues.label("coding-style").new.exists'                 # No new coding style issues allowed
+    - 'issues.severity(>= MAJOR).new.exists'                    # New issues of major or higher severity
+    - 'project.metric_change("scrutinizer.test_coverage", < 0)' # Code Coverage decreased from previous inspection
+    - 'patches.label("Doc Comments").new.exists'                # No new doc comments patches allowed
+    - 'patches.label("Unused Use Statements").new.exists'       # No new unused imports patches allowed
