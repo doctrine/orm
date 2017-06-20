@@ -14,18 +14,18 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.0",
+        "php": "^7.1",
         "ext-pdo": "*",
         "doctrine/collections": "^1.4",
         "doctrine/dbal": ">=2.5-dev,<2.7-dev",
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": "^2.7.1",
-        "doctrine/cache": "~1.5",
-        "doctrine/annotations": "~1.2",
-        "symfony/console": "~2.5|~3.0|~4.0"
+        "doctrine/cache": "~1.6",
+        "doctrine/annotations": "~1.4",
+        "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
-        "symfony/yaml": "~2.3|~3.0|~4.0",
+        "symfony/yaml": "~3.0|~4.0",
         "phpunit/phpunit": "^6.0"
     },
     "suggest": {
