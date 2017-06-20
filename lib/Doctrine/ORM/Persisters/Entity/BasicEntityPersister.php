@@ -346,9 +346,7 @@ class BasicEntityPersister implements EntityPersister
 
         $types = [];
         foreach ($id as $field => $value) {
-            foreach ($this->getTypes($field, $value, $versionedClass) as $type) {
-                $types[] = $type;
-            }
+            $types = array_merge($types, $this->getTypes($field, $value, $versionedClass));
         }
 
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
