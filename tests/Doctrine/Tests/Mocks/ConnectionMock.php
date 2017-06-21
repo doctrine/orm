@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
 
@@ -15,12 +16,12 @@ class ConnectionMock extends Connection
     private $_fetchOneResult;
 
     /**
-     * @var \Exception
+     * @var \Exception|null
      */
     private $_fetchOneException;
 
     /**
-     * @var Statement
+     * @var Statement|null
      */
     private $_queryResult;
 
@@ -107,7 +108,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function query()
+    public function query() : Statement
     {
         return $this->_queryResult;
     }
