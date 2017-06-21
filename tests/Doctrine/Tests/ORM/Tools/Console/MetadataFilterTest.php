@@ -32,8 +32,8 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     public function testFilterWithEmptyArray() : void
     {
         $originalMetadatas = array(
-            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
-            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::CLASSNAME),
+            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
+            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
         );
 
         $metadatas = $originalMetadatas;
@@ -47,9 +47,9 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     public function testFilterWithString() : void
     {
         $originalMetadatas = array(
-            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
-            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::CLASSNAME),
-            $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::CLASSNAME),
+            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
+            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
+            $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::class),
         );
 
         $metadatas = $originalMetadatas;
@@ -80,9 +80,9 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     public function testFilterWithString2() : void
     {
         $originalMetadatas = array(
-            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
-            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::CLASSNAME),
-            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::CLASSNAME),
+            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
+            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::class),
+            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::class),
         );
 
         $metadatas = $originalMetadatas;
@@ -97,9 +97,9 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     public function testFilterWithArray() : void
     {
         $originalMetadatas = array(
-            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
-            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::CLASSNAME),
-            $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::CLASSNAME),
+            $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
+            $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
+            $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::class),
         );
 
         $metadatas = $originalMetadatas;
@@ -117,9 +117,9 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     public function testFilterWithRegex() : void
     {
         $originalMetadatas = array(
-            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
-            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::CLASSNAME),
-            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::CLASSNAME),
+            $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
+            $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::class),
+            $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::class),
         );
 
         $metadatas = $originalMetadatas;
@@ -143,8 +143,6 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
@@ -152,8 +150,6 @@ class MetadataFilterTestEntityAaa
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
@@ -161,8 +157,6 @@ class MetadataFilterTestEntityBbb
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
@@ -170,8 +164,6 @@ class MetadataFilterTestEntityCcc
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
@@ -179,8 +171,6 @@ class MetadataFilterTestEntityFoo
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
@@ -188,8 +178,6 @@ class MetadataFilterTestEntityBar
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") */
     protected $id;
 }
