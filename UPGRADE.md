@@ -2,6 +2,11 @@
 
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
 
+Method `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported`
+now has a required parameter `$pathExpr`.
+
+## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
+
 Method `Doctrine\ORM\Query\Parser#isInternalFunction` was removed because 
 the distinction between internal function and user defined DQL was removed.
 [#6500](https://github.com/doctrine/doctrine2/pull/6500)
