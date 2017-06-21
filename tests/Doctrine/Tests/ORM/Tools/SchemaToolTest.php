@@ -165,11 +165,11 @@ class SchemaToolTest extends OrmTestCase
         $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
     }
 
-    public function testSetDiscriminatorColumnWithoutLength()
+    public function testSetDiscriminatorColumnWithoutLength() : void
     {
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
-        $metadata   = $em->getClassMetadata(__NAMESPACE__ . '\\FirstEntity');
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
 
         $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
         $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'string']);
