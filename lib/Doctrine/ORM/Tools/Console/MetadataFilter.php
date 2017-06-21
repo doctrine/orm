@@ -84,10 +84,6 @@ class MetadataFilter extends \FilterIterator implements \Countable
                 );
             }
 
-            if ($pregResult === 0) {
-                return false;
-            }
-
             if ($pregResult) {
                 return true;
             }
