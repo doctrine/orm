@@ -23,6 +23,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
         $driver = $this->createAnnotationDriver();
         $em     = $this->_getTestEntityManager();
+
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
         $this->cmf = new DisconnectedClassMetadataFactory();
@@ -31,13 +32,13 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFilterWithEmptyArray() : void
     {
-        $originalMetadatas = array(
+        $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
             $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
-        );
+        ];
 
         $metadatas = $originalMetadatas;
-        $metadatas = MetadataFilter::filter($metadatas, array());
+        $metadatas = MetadataFilter::filter($metadatas, []);
 
         $this->assertContains($metadataAaa, $metadatas);
         $this->assertContains($metadataBbb, $metadatas);
@@ -46,11 +47,11 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFilterWithString() : void
     {
-        $originalMetadatas = array(
+        $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
             $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
             $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::class),
-        );
+        ];
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityAaa');
@@ -79,11 +80,11 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFilterWithString2() : void
     {
-        $originalMetadatas = array(
+        $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
             $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::class),
             $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::class),
-        );
+        ];
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'MetadataFilterTestEntityFoo');
@@ -96,17 +97,17 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFilterWithArray() : void
     {
-        $originalMetadatas = array(
+        $originalMetadatas = [
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::class),
             $metadataBbb = $this->cmf->getMetadataFor(MetadataFilterTestEntityBbb::class),
             $metadataCcc = $this->cmf->getMetadataFor(MetadataFilterTestEntityCcc::class),
-        );
+        ];
 
         $metadatas = $originalMetadatas;
-        $metadatas = MetadataFilter::filter($metadatas, array(
+        $metadatas = MetadataFilter::filter($metadatas, [
             'MetadataFilterTestEntityAaa',
             'MetadataFilterTestEntityCcc',
-        ));
+        ]);
 
         $this->assertContains($metadataAaa, $metadatas);
         $this->assertNotContains($metadataBbb, $metadatas);
@@ -116,11 +117,11 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 
     public function testFilterWithRegex() : void
     {
-        $originalMetadatas = array(
+        $originalMetadatas = [
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::class),
             $metadataFooBar = $this->cmf->getMetadataFor(MetadataFilterTestEntityFooBar::class),
             $metadataBar    = $this->cmf->getMetadataFor(MetadataFilterTestEntityBar::class),
-        );
+        ];
 
         $metadatas = $originalMetadatas;
         $metadatas = MetadataFilter::filter($metadatas, 'Foo$');
