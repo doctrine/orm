@@ -183,9 +183,9 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function flush($entity = null)
+    public function flush()
     {
-        return $this->wrapped->flush($entity);
+        return $this->wrapped->flush();
     }
 
     /**
