@@ -204,13 +204,15 @@ class QueryException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param object $pathExpr
+     *
      * @return QueryException
      */
-    public static function associationPathInverseSideNotSupported()
+    public static function associationPathInverseSideNotSupported($pathExpr)
     {
         return new self(
-            "A single-valued association path expression to an inverse side is not supported".
-            " in DQL queries. Use an explicit join instead."
+            "A single-valued association path expression to an inverse side is not supported in DQL queries. " .
+            "Instead of '" . $pathExpr->identificationVariable . "." . $pathExpr->field . "' use an explicit join."
         );
     }
 
