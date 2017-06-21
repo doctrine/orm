@@ -2293,7 +2293,7 @@ class SqlWalker implements TreeWalker
 
             $metadata = $this->em->getClassMetadata($parameter);
 
-            if ($metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
+            if (! $metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
                 throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
             }
 
@@ -2305,13 +2305,15 @@ class SqlWalker implements TreeWalker
                 $currentMetadata = $this->em->getClassMetadata($class);
                 $currentDiscriminator = $currentMetadata->discriminatorValue;
 
-                if (null !== $currentDiscriminator && ! array_key_exists($currentDiscriminator, $discriminators)) {
+                if (null !== $currentDiscriminator) {
                     $discriminators[$currentDiscriminator] = null;
                 }
             }
         }
 
-        $sqlParameterList = array_map([$this->conn, 'quote'], array_keys($discriminators));
+        foreach (array_keys($discriminators) as $dis) {
+            $sqlParameterList[] = $this->conn->quote($dis);
+        }
 
         return '(' . implode(', ', $sqlParameterList) . ')';
     }
