@@ -129,7 +129,6 @@ optimize the performance of the Flush Operation:
 - Temporarily mark entities as read only. If you have a very large UnitOfWork
   but know that a large set of entities has not changed, just mark them as read
   only with ``$entityManager->getUnitOfWork()->markReadOnly($entity)``.
-- Flush only a single entity with ``$entityManager->flush($entity)``.
 - Use :doc:`Change Tracking Policies <change-tracking-policies>` to use more
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
