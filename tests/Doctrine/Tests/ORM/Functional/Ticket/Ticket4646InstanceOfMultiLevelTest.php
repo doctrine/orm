@@ -1,156 +1,150 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional\Ticket {
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Employee;
-    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Engineer;
-    use Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person;
-    use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-    class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
+class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
+{
+    protected function setUp()
     {
-        protected function setUp()
-        {
-            parent::setUp();
+        parent::setUp();
 
-            $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(Person::class),
-                $this->_em->getClassMetadata(Employee::class),
-                $this->_em->getClassMetadata(Engineer::class),
-            ]);
-        }
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(PersonTicket4646MultiLevel::class),
+            $this->_em->getClassMetadata(EmployeeTicket4646MultiLevel::class),
+            $this->_em->getClassMetadata(EngineerTicket4646MultiLevel::class),
+        ]);
+    }
 
-        public function testInstanceOf()
-        {
-            $this->loadData();
+    public function testInstanceOf()
+    {
+        $this->loadData();
 
-            $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person p
-                    WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person';
-            $query = $this->_em->createQuery($dql);
-            $result = $query->getResult();
+        $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
+                WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel';
+        $query = $this->_em->createQuery($dql);
+        $result = $query->getResult();
 
-            $this->assertCount(3, $result);
+        $this->assertCount(3, $result);
 
-            foreach ($result as $r) {
-                $this->assertInstanceOf(Person::class, $r);
-                if ($r instanceof Engineer) {
-                    $this->assertEquals('foobar', $r->getName());
-                    $this->assertEquals('doctrine', $r->getSpecialization());
-                } elseif ($r instanceof Employee) {
-                    $this->assertEquals('bar', $r->getName());
-                    $this->assertEquals('qux', $r->getDepartement());
-                } else {
-                    $this->assertEquals('foo', $r->getName());
-                }
+        foreach ($result as $r) {
+            $this->assertInstanceOf(PersonTicket4646MultiLevel::class, $r);
+            if ($r instanceof EngineerTicket4646MultiLevel) {
+                $this->assertEquals('foobar', $r->getName());
+                $this->assertEquals('doctrine', $r->getSpecialization());
+            } elseif ($r instanceof EmployeeTicket4646MultiLevel) {
+                $this->assertEquals('bar', $r->getName());
+                $this->assertEquals('qux', $r->getDepartement());
+            } else {
+                $this->assertEquals('foo', $r->getName());
             }
         }
+    }
 
-        private function loadData()
-        {
-            $person = new Person();
-            $person->setName('foo');
+    private function loadData()
+    {
+        $person = new PersonTicket4646MultiLevel();
+        $person->setName('foo');
 
-            $employee = new Employee();
-            $employee->setName('bar');
-            $employee->setDepartement('qux');
+        $employee = new EmployeeTicket4646MultiLevel();
+        $employee->setName('bar');
+        $employee->setDepartement('qux');
 
-            $engineer = new Engineer();
-            $engineer->setName('foobar');
-            $engineer->setDepartement('dep');
-            $engineer->setSpecialization('doctrine');
+        $engineer = new EngineerTicket4646MultiLevel();
+        $engineer->setName('foobar');
+        $engineer->setDepartement('dep');
+        $engineer->setSpecialization('doctrine');
 
-            $this->_em->persist($person);
-            $this->_em->persist($employee);
-            $this->_em->persist($engineer);
+        $this->_em->persist($person);
+        $this->_em->persist($employee);
+        $this->_em->persist($engineer);
 
-            $this->_em->flush(array($person, $employee, $engineer));
-        }
+        $this->_em->flush(array($person, $employee, $engineer));
     }
 }
 
-namespace Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest {
+/**
+ * @Entity()
+ * @Table(name="instance_of_multi_level_test_person")
+ * @InheritanceType(value="JOINED")
+ * @DiscriminatorColumn(name="kind", type="string")
+ * @DiscriminatorMap(value={
+ *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel",
+ *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646MultiLevel",
+ *     "engineer": "Doctrine\Tests\ORM\Functional\Ticket\EngineerTicket4646MultiLevel",
+ * })
+ */
+class PersonTicket4646MultiLevel
+{
     /**
-     * @Entity()
-     * @Table(name="instance_of_multi_level_test_person")
-     * @InheritanceType(value="JOINED")
-     * @DiscriminatorColumn(name="kind", type="string")
-     * @DiscriminatorMap(value={
-     *     "person": "Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Person",
-     *     "employee": "Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Employee",
-     *     "engineer": "Doctrine\Tests\ORM\Functional\InstanceOfMultiLevelTest\Engineer",
-     * })
+     * @Id()
+     * @GeneratedValue()
+     * @Column(type="integer")
      */
-    class Person
+    private $id;
+
+    /**
+     * @Column(type="string")
+     */
+    private $name;
+
+    public function getId()
     {
-        /**
-         * @Id()
-         * @GeneratedValue()
-         * @Column(type="integer")
-         */
-        private $id;
-
-        /**
-         * @Column(type="string")
-         */
-        private $name;
-
-        public function getId()
-        {
-            return $this->id;
-        }
-
-        public function getName()
-        {
-            return $this->name;
-        }
-
-        public function setName($name)
-        {
-            $this->name = $name;
-        }
+        return $this->id;
     }
 
-    /**
-     * @Entity()
-     * @Table(name="instance_of_multi_level_employee")
-     */
-    class Employee extends Person
+    public function getName()
     {
-        /**
-         * @Column(type="string")
-         */
-        private $departement;
-
-        public function getDepartement()
-        {
-            return $this->departement;
-        }
-
-        public function setDepartement($departement)
-        {
-            $this->departement = $departement;
-        }
+        return $this->name;
     }
 
-    /**
-     * @Entity()
-     * @Table(name="instance_of_multi_level_engineer")
-     */
-    class Engineer extends Employee
+    public function setName($name)
     {
-        /**
-         * @Column(type="string")
-         */
-        private $specialization;
+        $this->name = $name;
+    }
+}
 
-        public function getSpecialization()
-        {
-            return $this->specialization;
-        }
+/**
+ * @Entity()
+ * @Table(name="instance_of_multi_level_employee")
+ */
+class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
+{
+    /**
+     * @Column(type="string")
+     */
+    private $departement;
 
-        public function setSpecialization($specialization)
-        {
-            $this->specialization = $specialization;
-        }
+    public function getDepartement()
+    {
+        return $this->departement;
+    }
+
+    public function setDepartement($departement)
+    {
+        $this->departement = $departement;
+    }
+}
+
+/**
+ * @Entity()
+ * @Table(name="instance_of_multi_level_engineer")
+ */
+class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
+{
+    /**
+     * @Column(type="string")
+     */
+    private $specialization;
+
+    public function getSpecialization()
+    {
+        return $this->specialization;
+    }
+
+    public function setSpecialization($specialization)
+    {
+        $this->specialization = $specialization;
     }
 }

@@ -2290,7 +2290,7 @@ class SqlWalker implements TreeWalker
 
             $metadata = $this->em->getClassMetadata($parameter);
 
-            if (! $metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
+            if ($metadata->getName() !== $discrClass->name && ! $metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
                 throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
             }
 
