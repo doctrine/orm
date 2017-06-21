@@ -280,19 +280,27 @@ class QueryTest extends OrmTestCase
         self::assertCount(2, $query->expireResultCache(false)->getResult());
     }
 
+    /**
+     * @group #6162
+     */
     public function testSelectJoinSubquery()
     {
         $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');
-        $query->getResult();
+        $query->getSQL();
     }
 
+    /**
+     * @group #6162
+     */
     public function testSelectFromSubquery()
     {
         $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');
-        $query->getResult();
+        $query->getSQL();
     }
 }
