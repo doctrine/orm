@@ -343,19 +343,17 @@ use Doctrine\Common\Util\ClassUtils;
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     * @param null|object|array $entity
-     *
      * @return void
      *
      * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null)
+    public function flush()
     {
         $this->errorIfClosed();
 
-        $this->unitOfWork->commit($entity);
+        $this->unitOfWork->commit();
     }
 
     /**
