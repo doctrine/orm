@@ -45,7 +45,7 @@ class DDC2790Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // (and consequently also triggers preUpdate/postUpdate for the entity in question)
         $entity->name = 'Robin';
 
-        $this->em->flush($entity);
+        $this->em->flush();
 
         $qb = $this->em->createQueryBuilder();
         $qb->from(get_class($entity), 'c');
