@@ -2,41 +2,57 @@
 
 namespace Doctrine\Tests\ORM\Id;
 
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Id\SequenceGenerator;
+use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\OrmTestCase;
 
-/**
- * Description of SequenceGeneratorTest
- *
- * @author robo
- */
 class SequenceGeneratorTest extends OrmTestCase
 {
-    private $_em;
-    private $_seqGen;
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
 
-    protected function setUp()
+    /**
+     * @var SequenceGenerator
+     */
+    private $sequenceGenerator;
+
+    /**
+     * @var ConnectionMock
+     */
+    private $connection;
+
+    protected function setUp() : void
     {
-        $this->_em = $this->_getTestEntityManager();
-        $this->_seqGen = new SequenceGenerator('seq', 10);
+        parent::setUp();
+
+        $this->entityManager     = $this->_getTestEntityManager();
+        $this->sequenceGenerator = new SequenceGenerator('seq', 10);
+        $this->connection        = $this->entityManager->getConnection();
+
+        self::assertInstanceOf(ConnectionMock::class, $this->connection);
     }
 
-    public function testGeneration()
+    public function testGeneration() : void
     {
-        $this->_em->getConnection()->setFetchOneException(
-            new \RuntimeException('Fetch* method used. Query method should be used instead, as NEXTVAL should be run on a master server in master-slave setup.')
-        );
+        $this->connection->setFetchOneException(new \BadMethodCallException(
+            'Fetch* method used. Query method should be used instead, '
+            . 'as NEXTVAL should be run on a master server in master-slave setup.'
+        ));
 
-        for ($i=0; $i < 42; ++$i) {
+        for ($i = 0; $i < 42; ++$i) {
             if ($i % 10 == 0) {
-                $nextId = [[(int)($i / 10) * 10]];
-                $this->_em->getConnection()->setQueryResult(new StatementArrayMock($nextId));
+                $this->connection->setQueryResult(new StatementArrayMock([[(int)($i / 10) * 10]]));
             }
-            $id = $this->_seqGen->generate($this->_em, null);
-            $this->assertEquals($i, $id);
-            $this->assertEquals((int)($i / 10) * 10 + 10, $this->_seqGen->getCurrentMaxValue());
-            $this->assertEquals($i + 1, $this->_seqGen->getNextValue());
+
+            $id = $this->sequenceGenerator->generate($this->entityManager, null);
+
+            self::assertSame($i, $id);
+            self::assertSame((int)($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());
+            self::assertSame($i + 1, $this->sequenceGenerator->getNextValue());
         }
     }
 }
