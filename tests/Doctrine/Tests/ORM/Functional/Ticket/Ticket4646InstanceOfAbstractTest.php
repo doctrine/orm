@@ -18,7 +18,8 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 
     public function testInstanceOf()
     {
-        $this->loadData();
+        $this->_em->persist(new EmployeeTicket4646Abstract());
+        $this->_em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Abstract p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Abstract';
@@ -26,23 +27,7 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertCount(1, $result);
-
-        foreach ($result as $r) {
-            $this->assertInstanceOf(PersonTicket4646Abstract::class, $r);
-            $this->assertInstanceOf(EmployeeTicket4646Abstract::class, $r);
-            $this->assertSame('bar', $r->getName());
-        }
-    }
-
-    private function loadData()
-    {
-        $employee = new EmployeeTicket4646Abstract();
-        $employee->setName('bar');
-        $employee->setDepartement('qux');
-
-        $this->_em->persist($employee);
-
-        $this->_em->flush($employee);
+        $this->assertContainsOnlyInstancesOf(PersonTicket4646Abstract::class, $result);
     }
 }
 
@@ -64,24 +49,9 @@ abstract class PersonTicket4646Abstract
      */
     private $id;
 
-    /**
-     * @Column(type="string")
-     */
-    private $name;
-
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
     }
 }
 
@@ -91,18 +61,4 @@ abstract class PersonTicket4646Abstract
  */
 class EmployeeTicket4646Abstract extends PersonTicket4646Abstract
 {
-    /**
-     * @Column(type="string")
-     */
-    private $departement;
-
-    public function getDepartement()
-    {
-        return $this->departement;
-    }
-
-    public function setDepartement($departement)
-    {
-        $this->departement = $departement;
-    }
 }

@@ -19,7 +19,10 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 
     public function testInstanceOf()
     {
-        $this->loadData();
+        $this->_em->persist(new PersonTicket4646MultiLevel());
+        $this->_em->persist(new EmployeeTicket4646MultiLevel());
+        $this->_em->persist(new EngineerTicket4646MultiLevel());
+        $this->_em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel';
@@ -27,40 +30,7 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertCount(3, $result);
-
-        foreach ($result as $r) {
-            $this->assertInstanceOf(PersonTicket4646MultiLevel::class, $r);
-            if ($r instanceof EngineerTicket4646MultiLevel) {
-                $this->assertEquals('foobar', $r->getName());
-                $this->assertEquals('doctrine', $r->getSpecialization());
-            } elseif ($r instanceof EmployeeTicket4646MultiLevel) {
-                $this->assertEquals('bar', $r->getName());
-                $this->assertEquals('qux', $r->getDepartement());
-            } else {
-                $this->assertEquals('foo', $r->getName());
-            }
-        }
-    }
-
-    private function loadData()
-    {
-        $person = new PersonTicket4646MultiLevel();
-        $person->setName('foo');
-
-        $employee = new EmployeeTicket4646MultiLevel();
-        $employee->setName('bar');
-        $employee->setDepartement('qux');
-
-        $engineer = new EngineerTicket4646MultiLevel();
-        $engineer->setName('foobar');
-        $engineer->setDepartement('dep');
-        $engineer->setSpecialization('doctrine');
-
-        $this->_em->persist($person);
-        $this->_em->persist($employee);
-        $this->_em->persist($engineer);
-
-        $this->_em->flush(array($person, $employee, $engineer));
+        $this->assertContainsOnlyInstancesOf(PersonTicket4646MultiLevel::class, $result);
     }
 }
 
@@ -84,24 +54,9 @@ class PersonTicket4646MultiLevel
      */
     private $id;
 
-    /**
-     * @Column(type="string")
-     */
-    private $name;
-
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
     }
 }
 
@@ -111,20 +66,6 @@ class PersonTicket4646MultiLevel
  */
 class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 {
-    /**
-     * @Column(type="string")
-     */
-    private $departement;
-
-    public function getDepartement()
-    {
-        return $this->departement;
-    }
-
-    public function setDepartement($departement)
-    {
-        $this->departement = $departement;
-    }
 }
 
 /**
@@ -133,18 +74,4 @@ class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
  */
 class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
 {
-    /**
-     * @Column(type="string")
-     */
-    private $specialization;
-
-    public function getSpecialization()
-    {
-        return $this->specialization;
-    }
-
-    public function setSpecialization($specialization)
-    {
-        $this->specialization = $specialization;
-    }
 }

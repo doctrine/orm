@@ -18,7 +18,9 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
 
     public function testInstanceOf()
     {
-        $this->loadData();
+        $this->_em->persist(new PersonTicket4646());
+        $this->_em->persist(new EmployeeTicket4646());
+        $this->_em->flush();
 
         $dql = 'SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646 p
                 WHERE p INSTANCE OF Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646';
@@ -26,30 +28,7 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
         $result = $query->getResult();
 
         $this->assertCount(2, $result);
-
-        foreach ($result as $r) {
-            $this->assertInstanceOf(PersonTicket4646::class, $r);
-            if ($r instanceof EmployeeTicket4646) {
-                $this->assertEquals('bar', $r->getName());
-            } else {
-                $this->assertEquals('foo', $r->getName());
-            }
-        }
-    }
-
-    private function loadData()
-    {
-        $person = new PersonTicket4646();
-        $person->setName('foo');
-
-        $employee = new EmployeeTicket4646();
-        $employee->setName('bar');
-        $employee->setDepartement('qux');
-
-        $this->_em->persist($person);
-        $this->_em->persist($employee);
-
-        $this->_em->flush(array($person, $employee));
+        $this->assertContainsOnlyInstancesOf(PersonTicket4646::class, $result);
     }
 }
 
@@ -72,24 +51,9 @@ class PersonTicket4646
      */
     private $id;
 
-    /**
-     * @Column(type="string")
-     */
-    private $name;
-
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
     }
 }
 
@@ -99,18 +63,4 @@ class PersonTicket4646
  */
 class EmployeeTicket4646 extends PersonTicket4646
 {
-    /**
-     * @Column(type="string")
-     */
-    private $departement;
-
-    public function getDepartement()
-    {
-        return $this->departement;
-    }
-
-    public function setDepartement($departement)
-    {
-        $this->departement = $departement;
-    }
 }
