@@ -144,41 +144,41 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
 /** @Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
 
 /** @Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column(type="integer") */
+    /** @Id @Column */
     protected $id;
 }
