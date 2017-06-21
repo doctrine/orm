@@ -17,7 +17,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
      */
     private $cmf;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->cmf->setEntityManager($em);
     }
 
-    public function testFilterWithEmptyArray()
+    public function testFilterWithEmptyArray() : void
     {
         $originalMetadatas = array(
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
@@ -44,7 +44,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(count($originalMetadatas), $metadatas);
     }
 
-    public function testFilterWithString()
+    public function testFilterWithString() : void
     {
         $originalMetadatas = array(
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
@@ -77,7 +77,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(1, $metadatas);
     }
 
-    public function testFilterWithString2()
+    public function testFilterWithString2() : void
     {
         $originalMetadatas = array(
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
@@ -94,7 +94,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(2, $metadatas);
     }
 
-    public function testFilterWithArray()
+    public function testFilterWithArray() : void
     {
         $originalMetadatas = array(
             $metadataAaa = $this->cmf->getMetadataFor(MetadataFilterTestEntityAaa::CLASSNAME),
@@ -114,7 +114,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         $this->assertCount(2, $metadatas);
     }
 
-    public function testFilterWithRegex()
+    public function testFilterWithRegex() : void
     {
         $originalMetadatas = array(
             $metadataFoo    = $this->cmf->getMetadataFor(MetadataFilterTestEntityFoo::CLASSNAME),
