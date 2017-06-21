@@ -644,6 +644,7 @@ class SqlWalker implements TreeWalker
     {
         $sql = '';
 
+        /* @var $pathExpr Query\AST\PathExpression */
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $fieldName = $pathExpr->field;
