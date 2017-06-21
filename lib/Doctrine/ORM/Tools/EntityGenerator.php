@@ -1380,6 +1380,14 @@ public function __construct(<params>)
             $variableType   =  '\\' . ltrim($variableType, '\\');
             $methodTypeHint =  '\\' . $typeHint . ' ';
         }
+        
+        if($metadata->hasAssociation($fieldName)) {
+            $assoc = $metadata->getAssociationMapping($fieldName);
+            if($assoc['type'] === ClassMetadataInfo::ONE_TO_MANY) {
+                $target = '\\' . ltrim($metadata->getAssociationMapping($fieldName)['targetEntity'], '\\');
+                $variableType .= '|'.$target.'[]';
+            }
+        }
 
         $replacements = [
           '<description>'       => ucfirst($type) . ' ' . $variableName . '.',
