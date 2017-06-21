@@ -2280,7 +2280,6 @@ class SqlWalker implements TreeWalker
      */
     private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $discrClass, AST\InstanceOfExpression $instanceOfExpr)
     {
-        $knownSubclasses = array_flip($discrClass->subClasses);
         $sqlParameterList = [];
         $discriminators = [];
         foreach ($instanceOfExpr->value as $parameter) {
@@ -2292,15 +2291,13 @@ class SqlWalker implements TreeWalker
                 continue;
             }
 
-            // Trim first backslash
-            $parameter = ltrim($parameter, '\\');
+            $metadata = $this->em->getClassMetadata($parameter);
 
-            if ($parameter !== $discrClass->name && ! array_key_exists($parameter, $knownSubclasses)) {
+            if ($metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
                 throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
             }
 
             // Include discriminators for parameter class and its subclass
-            $metadata = $this->em->getClassMetadata($parameter);
             $hierarchyClasses = $metadata->subClasses;
             $hierarchyClasses[] = $metadata->name;
 
@@ -2308,15 +2305,13 @@ class SqlWalker implements TreeWalker
                 $currentMetadata = $this->em->getClassMetadata($class);
                 $currentDiscriminator = $currentMetadata->discriminatorValue;
 
-                if (is_string($currentDiscriminator) && ! array_key_exists($currentDiscriminator, $discriminators)) {
-                    $discriminators[$currentDiscriminator] = true;
+                if (null !== $currentDiscriminator && ! array_key_exists($currentDiscriminator, $discriminators)) {
+                    $discriminators[$currentDiscriminator] = null;
                 }
             }
         }
 
-        foreach (array_keys($discriminators) as $dis) {
-            $sqlParameterList[] = $this->conn->quote($dis);
-        }
+        $sqlParameterList = array_map([$this->conn, 'quote'], array_keys($discriminators));
 
         return '(' . implode(', ', $sqlParameterList) . ')';
     }
