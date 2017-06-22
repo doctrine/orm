@@ -53,12 +53,13 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $user = new CmsUser();
         $user->name = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
 
-        $this->_em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+
+        $query = $this->em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
 
         $usersCount = $query->getSingleScalarResult();
 

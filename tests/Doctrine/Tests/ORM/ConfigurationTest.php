@@ -262,9 +262,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
-
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomStringFunction('concat', __CLASS__);
     }
 
     public function testAddGetCustomNumericFunction()
@@ -277,9 +274,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
-
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomNumericFunction('abs', __CLASS__);
     }
 
     public function testAddGetCustomDatetimeFunction()
@@ -292,21 +286,21 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
-
-        $this->expectException(ORMException::class);
-        $this->configuration->addCustomDatetimeFunction('date_add', __CLASS__);
     }
 
     public function testAddGetCustomHydrationMode()
     {
         self::assertSame(null, $this->configuration->getCustomHydrationMode('NonExisting'));
+
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
+
         self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
 
     public function testSetCustomHydrationModes()
     {
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
+
         self::assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
 
         $this->configuration->setCustomHydrationModes(
@@ -322,22 +316,29 @@ class ConfigurationTest extends DoctrineTestCase
     public function testSetGetClassMetadataFactoryName()
     {
         self::assertSame(ClassMetadataFactory::class, $this->configuration->getClassMetadataFactoryName());
+
         $this->configuration->setClassMetadataFactoryName(__CLASS__);
+
         self::assertSame(__CLASS__, $this->configuration->getClassMetadataFactoryName());
     }
 
     public function testAddGetFilters()
     {
         self::assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
+
         $this->configuration->addFilter('FilterName', __CLASS__);
+
         self::assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
     }
 
     public function setDefaultRepositoryClassName()
     {
         self::assertSame(EntityRepository::class, $this->configuration->getDefaultRepositoryClassName());
+
         $this->configuration->setDefaultRepositoryClassName(DDC753CustomRepository::class);
+
         self::assertSame(DDC753CustomRepository::class, $this->configuration->getDefaultRepositoryClassName());
+
         $this->expectException(ORMException::class);
         $this->configuration->setDefaultRepositoryClassName(__CLASS__);
     }
@@ -345,8 +346,11 @@ class ConfigurationTest extends DoctrineTestCase
     public function testSetGetNamingStrategy()
     {
         self::assertInstanceOf(NamingStrategy::class, $this->configuration->getNamingStrategy());
+
         $namingStrategy = $this->createMock(NamingStrategy::class);
+
         $this->configuration->setNamingStrategy($namingStrategy);
+
         self::assertSame($namingStrategy, $this->configuration->getNamingStrategy());
     }
 
@@ -357,8 +361,11 @@ class ConfigurationTest extends DoctrineTestCase
     {
         self::assertInstanceOf(EntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
         self::assertInstanceOf(DefaultEntityListenerResolver::class, $this->configuration->getEntityListenerResolver());
+
         $resolver = $this->createMock(EntityListenerResolver::class);
+
         $this->configuration->setEntityListenerResolver($resolver);
+
         self::assertSame($resolver, $this->configuration->getEntityListenerResolver());
     }
 
