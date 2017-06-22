@@ -290,7 +290,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSelectJoinSubquery()
     {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');
@@ -302,7 +302,7 @@ class QueryTest extends OrmTestCase
      */
     public function testSelectFromSubquery()
     {
-        $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+        $query = $this->em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
 
         $this->expectException(QueryException::class);
         $this->expectExceptionMessage('Subquery');

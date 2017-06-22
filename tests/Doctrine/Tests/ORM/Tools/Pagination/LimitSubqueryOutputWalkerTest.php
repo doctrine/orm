@@ -335,7 +335,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`author_id` AS c1, t0.`category_id` AS c2 FROM `BlogPost` t0 WHERE ((SELECT COUNT(t1.`id`) AS dctrn__1 FROM `BlogPost` t1) = 1)) dctrn_result ORDER BY c0 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`author_id` AS c1, t0.`category_id` AS c2 FROM `BlogPost` t0 WHERE ((SELECT COUNT(t1.`id`) AS c3 FROM `BlogPost` t1) = 1)) dctrn_result ORDER BY c0 DESC',
             $query->getSQL()
         );
     }
@@ -351,7 +351,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT c0, MIN(c1) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, ROW_NUMBER() OVER(ORDER BY t0."id" DESC) AS c1, t0."author_id" AS c2, t0."category_id" AS c3 FROM "BlogPost" t0 WHERE ((SELECT COUNT(t1."id") AS dctrn__1 FROM "BlogPost" t1) = 1)) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c0, MIN(c1) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, ROW_NUMBER() OVER(ORDER BY t0."id" DESC) AS c1, t0."author_id" AS c2, t0."category_id" AS c3 FROM "BlogPost" t0 WHERE ((SELECT COUNT(t1."id") AS c4 FROM "BlogPost" t1) = 1)) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }
@@ -395,7 +395,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`name` AS c1, (SELECT MIN(t1.`title`) AS dctrn__1 FROM `MyBlogPost` t1 WHERE t1.`author_id` = t0.`id`) AS c2 FROM `Author` t0) dctrn_result ORDER BY c2 DESC',
+            'SELECT DISTINCT c0 FROM (SELECT t0.`id` AS c0, t0.`name` AS c1, (SELECT MIN(t1.`title`) AS c3 FROM `MyBlogPost` t1 WHERE t1.`author_id` = t0.`id`) AS c2 FROM `Author` t0) dctrn_result ORDER BY c2 DESC',
             $query->getSQL()
         );
     }
@@ -420,7 +420,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT c0, MIN(c3) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, t0."name" AS c1, (SELECT MIN(t1."title") AS dctrn__1 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS c2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS dctrn__2 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS c3 FROM "Author" t0) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT c0, MIN(c4) AS dctrn_minrownum FROM (SELECT t0."id" AS c0, t0."name" AS c1, (SELECT MIN(t1."title") AS c3 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS c2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS c5 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS c4 FROM "Author" t0) dctrn_result GROUP BY c0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }
@@ -445,7 +445,7 @@ ORDER BY b.id DESC'
         $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, LimitSubqueryOutputWalker::class);
 
         self::assertEquals(
-            'SELECT DISTINCT C0, MIN(C3) AS dctrn_minrownum FROM (SELECT t0."id" AS C0, t0."name" AS C1, (SELECT MIN(t1."title") AS dctrn__1 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS C2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS dctrn__2 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS C3 FROM "Author" t0) dctrn_result GROUP BY C0 ORDER BY dctrn_minrownum ASC',
+            'SELECT DISTINCT C0, MIN(C4) AS dctrn_minrownum FROM (SELECT t0."id" AS C0, t0."name" AS C1, (SELECT MIN(t1."title") AS C3 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") AS C2, ROW_NUMBER() OVER(ORDER BY (SELECT MIN(t1."title") AS C5 FROM "MyBlogPost" t1 WHERE t1."author_id" = t0."id") DESC) AS C4 FROM "Author" t0) dctrn_result GROUP BY C0 ORDER BY dctrn_minrownum ASC',
             $query->getSQL()
         );
     }

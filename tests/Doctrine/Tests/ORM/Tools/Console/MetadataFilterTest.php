@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 
@@ -22,7 +23,7 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
         parent::setUp();
 
         $driver = $this->createAnnotationDriver();
-        $em     = $this->_getTestEntityManager();
+        $em     = $this->getTestEntityManager();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
 
@@ -141,44 +142,44 @@ class MetadataFilterTest extends \Doctrine\Tests\OrmTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityAaa
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityBbb
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityCcc
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityFoo
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityBar
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class MetadataFilterTestEntityFooBar
 {
-    /** @Id @Column */
+    /** @ORM\Id @ORM\Column */
     protected $id;
 }
