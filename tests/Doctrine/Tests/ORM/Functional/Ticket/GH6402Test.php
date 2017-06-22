@@ -25,6 +25,7 @@ class GH6402Test extends OrmFunctionalTestCase
         $id = $this->createAddress();
 
         $address = $this->em->find(Address::class, $id);
+
         self::assertNotNull($address->user);
     }
 
@@ -45,6 +46,7 @@ class GH6402Test extends OrmFunctionalTestCase
         $id = $this->createFullAddress();
 
         $address = $this->em->find(FullAddress::class, $id);
+
         self::assertNotNull($address->user);
     }
 

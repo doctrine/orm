@@ -315,6 +315,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+
         $cm->getSingleIdentifierFieldName();
     }
 

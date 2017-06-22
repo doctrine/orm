@@ -246,6 +246,7 @@ class QueryTest extends OrmTestCase
     {
         $query = $this->em->createQuery();
         $query->setHydrationCacheProfile(null);
+
         self::assertNull($query->getHydrationCacheProfile());
     }
 
@@ -257,26 +258,29 @@ class QueryTest extends OrmTestCase
         $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
 
         $query = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
-                           ->useResultCache(true);
+                          ->useResultCache(true);
 
         /** @var DriverConnectionMock $driverConnectionMock */
         $driverConnectionMock = $this->em->getConnection()
-                                          ->getWrappedConnection();
-
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+            ->getWrappedConnection();
 
         // Performs the query and sets up the initial cache
-        self::assertCount(1, $query->getResult());
+        self::assertCount(0, $query->getResult());
 
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1], ['id_0' => 2]]));
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1]]));
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(1, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1], ['c0' => 2]]));
 
         // Retrieves cached data since expire flag is false and we have a cached result set
-        self::assertCount(1, $query->getResult());
+        self::assertCount(1, $query->expireResultCache(false)->getResult());
 
         // Performs the query and caches the result set since expire flag is true
         self::assertCount(2, $query->expireResultCache(true)->getResult());
 
-        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1]]));
 
         // Retrieves cached data since expire flag is false and we have a cached result set
         self::assertCount(2, $query->expireResultCache(false)->getResult());

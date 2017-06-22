@@ -113,12 +113,12 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testRemovingElementsAlsoRemovesKeys()
     {
-        $dummy = new \stdClass();
+        $this->setUpPersistentCollection();
 
-        $this->collection->add($dummy);
+        $this->collection->add('dummy');
         self::assertEquals([0], array_keys($this->collection->toArray()));
 
-        $this->collection->removeElement($dummy);
+        $this->collection->removeElement('dummy');
         self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
@@ -142,7 +142,9 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->add($dummy);
         $this->collection->removeElement($dummy);
         $this->collection->clear();
+
         $this->collection->add($dummy);
+
         self::assertEquals([0], array_keys($this->collection->toArray()));
     }
 

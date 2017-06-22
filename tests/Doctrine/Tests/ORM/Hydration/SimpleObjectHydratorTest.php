@@ -127,6 +127,7 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $stmt       = new HydratorMockStatement($resultSet);
         $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->em);
         $result = $hydrator->hydrateAll($stmt, $rsm);
+
         self::assertEquals($result[0], $expectedEntity);
     }
 }

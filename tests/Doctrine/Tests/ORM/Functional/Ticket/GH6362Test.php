@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH6362Test extends OrmFunctionalTestCase
 {
@@ -45,10 +47,10 @@ final class GH6362Test extends OrmFunctionalTestCase
         $rsm->addFieldResult('c', 'id_2', 'id');
         $rsm->addFieldResult('d', 'id_3', 'id');
 
-        $rsm->addMetaResult('a', 'bases_id_4', 'bases_id', false, 'integer');
-        $rsm->addMetaResult('b', 'type_5', 'type');
-        $rsm->addMetaResult('c', 'type_6', 'type');
-        $rsm->addMetaResult('d', 'child_id_7', 'child_id', false, 'integer');
+        $rsm->addMetaResult('a', 'bases_id_4', 'bases_id', false, Type::getType('integer'));
+        $rsm->addMetaResult('b', 'type_5', 'type', false, Type::getType('string'));
+        $rsm->addMetaResult('c', 'type_6', 'type', false, Type::getType('string'));
+        $rsm->addMetaResult('d', 'child_id_7', 'child_id', false, Type::getType('integer'));
 
         $rsm->setDiscriminatorColumn('b', 'type_5');
         $rsm->setDiscriminatorColumn('c', 'type_6');
@@ -76,69 +78,69 @@ final class GH6362Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Start
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
+     * @ORM\ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
      */
     private $bases;
 }
 
 /**
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"child" = "GH6362Child"})
- * @Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"child" = "GH6362Child"})
+ * @ORM\Entity
  */
 abstract class GH6362Base
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @OneToMany(targetEntity="GH6362Start", mappedBy="bases")
+     * @ORM\OneToMany(targetEntity="GH6362Start", mappedBy="bases")
      */
     private $starts;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Child extends GH6362Base
 {
     /**
-     * @OneToMany(targetEntity="GH6362Join", mappedBy="child")
+     * @ORM\OneToMany(targetEntity="GH6362Join", mappedBy="child")
      */
     private $joins;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH6362Join
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
+     * @ORM\ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
      */
     private $child;
 }

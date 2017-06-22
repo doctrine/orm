@@ -402,6 +402,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         self::assertFalse($this->unitOfWork->isInIdentityMap($entity1));
         self::assertFalse($this->unitOfWork->isInIdentityMap($entity2));
+
         self::assertFalse($this->unitOfWork->isScheduledForInsert($entity1));
         self::assertFalse($this->unitOfWork->isScheduledForInsert($entity2));
     }

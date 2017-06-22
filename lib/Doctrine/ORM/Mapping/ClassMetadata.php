@@ -1226,6 +1226,10 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
         }
 
+        if ( ! isset($this->identifier[0])) {
+            throw MappingException::noIdDefined($this->name);
+        }
+
         return $this->identifier[0];
     }
 
@@ -1462,6 +1466,10 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
             // Override what it should be allowed to change
             if ($property->getInversedBy()) {
                 $originalProperty->setInversedBy($property->getInversedBy());
+            }
+
+            if ($property->getFetchMode() !== $originalProperty->getFetchMode()) {
+                $originalProperty->setFetchMode($property->getFetchMode());
             }
 
             if ($originalProperty instanceof ToOneAssociationMetadata && $property->getJoinColumns()) {

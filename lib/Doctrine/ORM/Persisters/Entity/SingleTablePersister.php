@@ -91,11 +91,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                                 );
                             }
 
-                            $columnList[] = $this->getSelectJoinColumnSQL(
-                                $joinColumn->getTableName(),
-                                $joinColumn->getColumnName(),
-                                $joinColumn->getType()
-                            );
+                            $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
                         }
 
                         break;

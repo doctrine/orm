@@ -58,7 +58,8 @@ class DDC2775Test extends OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity @ORM\Table(name="ddc2775_role")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2775_role")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="role_type", type="string")
  * @ORM\DiscriminatorMap({"admin"="AdminRole"})
@@ -66,7 +67,8 @@ class DDC2775Test extends OrmFunctionalTestCase
 abstract class Role
 {
     /**
-     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
     public $id;

@@ -51,17 +51,17 @@ class DefaultCacheFactoryTest extends OrmTestCase
     protected function setUp()
     {
         $this->enableSecondLevelCache();
-        
+
         parent::setUp();
 
         $this->em            = $this->getTestEntityManager();
         $this->regionsConfig = new RegionsConfiguration;
-        
+
         $arguments = [
-            $this->regionsConfig, 
+            $this->regionsConfig,
             $this->getSharedSecondLevelCacheDriverImpl()
         ];
-        
+
         $this->factory = $this->getMockBuilder(DefaultCacheFactory::class)
             ->setMethods(['getRegion'])
             ->setConstructorArgs($arguments)
@@ -265,7 +265,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $em         = $this->em;
         $metadata   = clone $em->getClassMetadata(State::class);
         $persister  = new BasicEntityPersister($em, $metadata);
-        
+
         $metadata->setCache(
             new CacheMetadata(-1, 'doctrine_tests_models_cache_state')
         );
@@ -331,7 +331,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $fooCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'foo');
         $fooRegion = $factory->getRegion($fooCache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
 
@@ -361,10 +361,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
         /* @var $cache \Doctrine\Common\Cache\Cache */
         $cache   = $this->createMock(Cache::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
-        
+
         self::assertInstanceOf(DefaultRegion::class, $barRegion);
     }
 
@@ -373,7 +373,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         /* @var $cache \Doctrine\Common\Cache\CacheProvider */
         $cache   = $this->getMockForAbstractClass(CacheProvider::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
 

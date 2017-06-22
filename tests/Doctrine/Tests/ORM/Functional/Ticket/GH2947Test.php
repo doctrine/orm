@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -16,7 +17,11 @@ class GH2947Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->schemaTool->createSchema([$this->em->getClassMetadata(GH2947Car::class)]);
+        $this->schemaTool->createSchema(
+            [
+                $this->em->getClassMetadata(GH2947Car::class)
+            ]
+        );
     }
 
     public function testIssue()
@@ -71,15 +76,15 @@ class GH2947Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="GH2947_car")
+ * @ORM\Entity
+ * @ORM\Table(name="GH2947_car")
  */
 class GH2947Car
 {
     /**
-     * @Id
-     * @Column(type="string", length=25)
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string", length=25)
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $brand;
 
