@@ -364,6 +364,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function getNamedNativeQuery($name)
     {
+        throw ORMException::notSupported();
+        // dead code stays as a reminder
         if ( ! isset($this->_attributes['namedNativeQueries'][$name])) {
             throw ORMException::namedNativeQueryNotFound($name);
         }
