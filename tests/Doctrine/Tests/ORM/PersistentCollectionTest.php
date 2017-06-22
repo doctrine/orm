@@ -113,13 +113,13 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testRemovingElementsAlsoRemovesKeys()
     {
-        $dummy = new \stdClass();
+        $this->setUpPersistentCollection();
 
-        $this->collection->add($dummy);
-        $this->assertEquals([0], array_keys($this->collection->toArray()));
+        $this->collection->add('dummy');
+        self::assertEquals([0], array_keys($this->collection->toArray()));
 
-        $this->collection->removeElement($dummy);
-        $this->assertEquals([], array_keys($this->collection->toArray()));
+        $this->collection->removeElement('dummy');
+        self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
     /**
@@ -129,7 +129,7 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->collection->add(new \stdClass());
         $this->collection->clear();
-        $this->assertEquals([], array_keys($this->collection->toArray()));
+        self::assertEquals([], array_keys($this->collection->toArray()));
     }
 
     /**
@@ -142,8 +142,10 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->add($dummy);
         $this->collection->removeElement($dummy);
         $this->collection->clear();
+
         $this->collection->add($dummy);
-        $this->assertEquals([0], array_keys($this->collection->toArray()));
+
+        self::assertEquals([0], array_keys($this->collection->toArray()));
     }
 
     /**
@@ -156,7 +158,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElement       = new \stdClass();
         $persistedElement = new \stdClass();
@@ -191,7 +193,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElement                    = new \stdClass();
         $newElementThatIsAlsoPersisted = new \stdClass();
@@ -235,7 +237,7 @@ class PersistentCollectionTest extends OrmTestCase
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
-        $this->_emMock->setUnitOfWork($unitOfWork);
+        $this->emMock->setUnitOfWork($unitOfWork);
 
         $newElementThatIsAlsoPersisted = new \stdClass();
         $persistedElement              = new \stdClass();

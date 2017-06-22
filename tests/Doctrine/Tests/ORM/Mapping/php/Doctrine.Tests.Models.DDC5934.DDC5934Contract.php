@@ -1,7 +1,9 @@
 <?php
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 
-$metadata->setAssociationOverride('members', [
-    'fetch' => ClassMetadata::FETCH_EXTRA_LAZY,
-]);
+$association = new Mapping\ManyToManyAssociationMetadata('members');
+
+$association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
+
+$metadata->setPropertyOverride($association);

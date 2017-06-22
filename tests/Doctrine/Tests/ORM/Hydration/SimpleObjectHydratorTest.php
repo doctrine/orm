@@ -124,9 +124,10 @@ class SimpleObjectHydratorTest extends HydrationTestCase
         $expectedEntity->id = 1;
         $expectedEntity->tags = ['tag1', 'tag2'];
 
-        $stmt       = new HydratorMockStatement($resultSet);
-        $hydrator   = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->em);
-        $result = $hydrator->hydrateAll($stmt, $rsm);
-        $this->assertEquals($result[0], $expectedEntity);
+        $stmt     = new HydratorMockStatement($resultSet);
+        $hydrator = new \Doctrine\ORM\Internal\Hydration\SimpleObjectHydrator($this->em);
+        $result   = $hydrator->hydrateAll($stmt, $rsm);
+
+        self::assertEquals($result[0], $expectedEntity);
     }
 }

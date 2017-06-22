@@ -862,8 +862,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
-        $this->assertArrayHasKey('members', $contractMetadata->associationMappings);
-        $this->assertSame(ClassMetadata::FETCH_EXTRA_LAZY, $contractMetadata->associationMappings['members']['fetch']);
+        self::assertArrayHasKey('members', $contractMetadata->getProperties());
+
+        $contractMembers = $contractMetadata->getProperty('members');
+
+        self::assertSame(Mapping\FetchMode::EXTRA_LAZY, $contractMembers->getFetchMode());
     }
 
     /**

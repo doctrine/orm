@@ -1,17 +1,21 @@
 <?php
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
-$metadata->mapField([
-   'id'         => true,
-   'fieldName'  => 'id',
-   'type'       => 'integer',
-   'columnName' => 'id',
-]);
+$fieldMetadata = new Mapping\FieldMetadata('id');
 
-$metadata->mapManyToMany([
-    'fieldName'    => 'members',
-    'targetEntity' => 'DDC5934Member',
-]);
+$fieldMetadata->setType(Type::getType('integer'));
+$fieldMetadata->setColumnName('id');
+$fieldMetadata->setPrimaryKey(true);
 
-$metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+$metadata->addProperty($fieldMetadata);
+
+$association = new Mapping\ManyToManyAssociationMetadata('members');
+
+$association->setTargetEntity('DDC5934Member');
+
+$metadata->addProperty($association);
+
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

@@ -310,37 +310,37 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(2, $result1);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(2, $result1);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->assertTrue($this->cache->containsEntity(State::class, $this->states[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
+        self::assertTrue($this->cache->containsEntity(State::class, $this->states[0]->getId()));
+        self::assertTrue($this->cache->containsEntity(State::class, $this->states[1]->getId()));
 
-        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[2]->getId()));
-        $this->assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
+        self::assertTrue($this->cache->containsEntity(City::class, $this->cities[0]->getId()));
+        self::assertTrue($this->cache->containsEntity(City::class, $this->cities[1]->getId()));
+        self::assertTrue($this->cache->containsEntity(City::class, $this->cities[2]->getId()));
+        self::assertTrue($this->cache->containsEntity(City::class, $this->cities[3]->getId()));
 
-        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[2]->getId()));
-        $this->assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[3]->getId()));
+        self::assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[0]->getId()));
+        self::assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[1]->getId()));
+        self::assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[2]->getId()));
+        self::assertTrue($this->cache->containsEntity(Attraction::class, $this->attractions[3]->getId()));
 
-        $this->assertInstanceOf(State::class, $result1[0]);
-        $this->assertInstanceOf(State::class, $result1[1]);
+        self::assertInstanceOf(State::class, $result1[0]);
+        self::assertInstanceOf(State::class, $result1[1]);
 
-        $this->assertCount(2, $result1[0]->getCities());
-        $this->assertCount(2, $result1[1]->getCities());
+        self::assertCount(2, $result1[0]->getCities());
+        self::assertCount(2, $result1[1]->getCities());
 
-        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::class, $result1[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::class, $result1[1]->getCities()->get(1));
+        self::assertInstanceOf(City::class, $result1[0]->getCities()->get(0));
+        self::assertInstanceOf(City::class, $result1[0]->getCities()->get(1));
+        self::assertInstanceOf(City::class, $result1[1]->getCities()->get(0));
+        self::assertInstanceOf(City::class, $result1[1]->getCities()->get(1));
 
-        $this->assertCount(2, $result1[0]->getCities()->get(0)->getAttractions());
-        $this->assertCount(2, $result1[0]->getCities()->get(1)->getAttractions());
-        $this->assertCount(2, $result1[1]->getCities()->get(0)->getAttractions());
-        $this->assertCount(1, $result1[1]->getCities()->get(1)->getAttractions());
+        self::assertCount(2, $result1[0]->getCities()->get(0)->getAttractions());
+        self::assertCount(2, $result1[0]->getCities()->get(1)->getAttractions());
+        self::assertCount(2, $result1[1]->getCities()->get(0)->getAttractions());
+        self::assertCount(1, $result1[1]->getCities()->get(1)->getAttractions());
 
         $this->em->clear();
 
@@ -348,24 +348,24 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(2, $result2);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(2, $result2);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->assertInstanceOf(State::class, $result2[0]);
-        $this->assertInstanceOf(State::class, $result2[1]);
+        self::assertInstanceOf(State::class, $result2[0]);
+        self::assertInstanceOf(State::class, $result2[1]);
 
-        $this->assertCount(2, $result2[0]->getCities());
-        $this->assertCount(2, $result2[1]->getCities());
+        self::assertCount(2, $result2[0]->getCities());
+        self::assertCount(2, $result2[1]->getCities());
 
-        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(0));
-        $this->assertInstanceOf(City::class, $result2[0]->getCities()->get(1));
-        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
-        $this->assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
+        self::assertInstanceOf(City::class, $result2[0]->getCities()->get(0));
+        self::assertInstanceOf(City::class, $result2[0]->getCities()->get(1));
+        self::assertInstanceOf(City::class, $result2[1]->getCities()->get(0));
+        self::assertInstanceOf(City::class, $result2[1]->getCities()->get(1));
 
-        $this->assertCount(2, $result2[0]->getCities()->get(0)->getAttractions());
-        $this->assertCount(2, $result2[0]->getCities()->get(1)->getAttractions());
-        $this->assertCount(2, $result2[1]->getCities()->get(0)->getAttractions());
-        $this->assertCount(1, $result2[1]->getCities()->get(1)->getAttractions());
+        self::assertCount(2, $result2[0]->getCities()->get(0)->getAttractions());
+        self::assertCount(2, $result2[0]->getCities()->get(1)->getAttractions());
+        self::assertCount(2, $result2[1]->getCities()->get(0)->getAttractions());
+        self::assertCount(1, $result2[1]->getCities()->get(1)->getAttractions());
     }
 
     public function testBasicQueryParams()
@@ -1134,8 +1134,8 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(2, $result1);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(2, $result1);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $this->em->persist(new Country('France'));
         $this->em->flush();
@@ -1147,11 +1147,11 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(3, $result2);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(3, $result2);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(Country::class, $entity);
+            self::assertInstanceOf(Country::class, $entity);
         }
     }
 }

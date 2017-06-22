@@ -51,7 +51,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         $entities = $query->getResult();
 
-        self::assertCount($entities);
+        self::assertCount(2, $entities);
         self::assertInstanceOf(CompanyPerson::class, $entities[0]);
         self::assertInstanceOf(CompanyEmployee::class, $entities[1]);
         self::assertTrue(is_numeric($entities[0]->getId()));

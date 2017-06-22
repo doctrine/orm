@@ -207,8 +207,8 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo), $result1);
-        $this->assertEquals($queryCount + 5, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo), $result1);
+        self::assertEquals($queryCount + 5, $this->getCurrentQueryCount());
 
         $contact = new AttractionContactInfo(
             '1234-1234',
@@ -225,11 +225,11 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo) + 1, $result2);
-        $this->assertEquals($queryCount + 6, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo) + 1, $result2);
+        self::assertEquals($queryCount + 6, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(AttractionInfo::class, $entity);
+            self::assertInstanceOf(AttractionInfo::class, $entity);
         }
     }
 }
