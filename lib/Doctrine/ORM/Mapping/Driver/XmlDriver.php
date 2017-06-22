@@ -28,6 +28,7 @@ use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -692,7 +693,7 @@ class XmlDriver extends FileDriver
                 // Check for fetch
                 if (isset($overrideElement['fetch'])) {
                     $override->setFetchMode(
-                        constant(Metadata::class . '::FETCH_' . (string) $overrideElement['fetch'])
+                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $overrideElement['fetch'])
                     );
                 }
 

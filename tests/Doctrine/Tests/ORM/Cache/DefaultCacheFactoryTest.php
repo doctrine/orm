@@ -51,17 +51,17 @@ class DefaultCacheFactoryTest extends OrmTestCase
     protected function setUp()
     {
         $this->enableSecondLevelCache();
-        
+
         parent::setUp();
 
         $this->em            = $this->getTestEntityManager();
         $this->regionsConfig = new RegionsConfiguration;
-        
+
         $arguments = [
-            $this->regionsConfig, 
+            $this->regionsConfig,
             $this->getSharedSecondLevelCacheDriverImpl()
         ];
-        
+
         $this->factory = $this->getMockBuilder(DefaultCacheFactory::class)
             ->setMethods(['getRegion'])
             ->setConstructorArgs($arguments)
@@ -269,7 +269,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $em         = $this->em;
         $metadata   = clone $em->getClassMetadata(State::class);
         $persister  = new BasicEntityPersister($em, $metadata);
-        
+
         $metadata->setCache(
             new CacheMetadata(-1, 'doctrine_tests_models_cache_state')
         );
@@ -304,7 +304,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $factory = new DefaultCacheFactory($this->regionsConfig, $this->getSharedSecondLevelCacheDriverImpl());
 
         $fooCache  = new CacheMetadata(CacheUsage::READ_WRITE, 'foo');
-        
+
         $factory->getRegion($fooCache);
     }
 
@@ -314,7 +314,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         $fooCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'foo');
         $fooRegion = $factory->getRegion($fooCache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
 
@@ -335,8 +335,8 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
 
-        $this->assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
-        $this->assertSame('testing:bar', $barRegion->getCache()->getNamespace());
+        self::assertSame('testing:foo', $fooRegion->getCache()->getNamespace());
+        self::assertSame('testing:bar', $barRegion->getCache()->getNamespace());
     }
 
     public function testBuildsDefaultCacheRegionFromGenericCacheRegion()
@@ -344,10 +344,10 @@ class DefaultCacheFactoryTest extends OrmTestCase
         /* @var $cache \Doctrine\Common\Cache\Cache */
         $cache   = $this->createMock(Cache::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
-        
+
         self::assertInstanceOf(DefaultRegion::class, $barRegion);
     }
 
@@ -356,7 +356,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         /* @var $cache \Doctrine\Common\Cache\CacheProvider */
         $cache   = $this->getMockForAbstractClass(CacheProvider::class);
         $factory = new DefaultCacheFactory($this->regionsConfig, $cache);
-        
+
         $barCache  = new CacheMetadata(CacheUsage::READ_ONLY, 'bar');
         $barRegion = $factory->getRegion($barCache);
 

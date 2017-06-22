@@ -2016,7 +2016,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT a, u FROM Doctrine\Tests\Models\Quote\Address a JOIN a.user u',
-            'SELECT t0."address-id" AS c0, t0."address-zip" AS c1, t1."user-id" AS c2, t1."user-name" AS c3, t1."type" AS c4  FROM "quote-address" t0 INNER JOIN "quote-user" t1 ON t0."user-id" = t1."user-id" WHERE t1."type" IN (\'simple\', \'full\')'
+            'SELECT t0."address-id" AS c0, t0."address-zip" AS c1, t1."user-id" AS c2, t1."user-name" AS c3, t0."type" AS c4 FROM "quote-address" t0 INNER JOIN "quote-user" t1 ON t0."user-id" = t1."user-id" WHERE t0."type" IN (\'simple\', \'full\')'
         );
 
         $this->assertSqlGeneration(

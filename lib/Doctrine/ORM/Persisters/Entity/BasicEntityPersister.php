@@ -834,6 +834,7 @@ class BasicEntityPersister implements EntityPersister
 
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
+            // @todo guilhermeblanco In master we have: $identifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
             $identifier[$targetTableAlias . "." . $targetKeyColumn] = $value;
 
             unset($identifier[$targetKeyColumn]);
@@ -1762,7 +1763,7 @@ class BasicEntityPersister implements EntityPersister
     private function getSelectConditionStatementColumnSQL($field, AssociationMetadata $association = null)
     {
         $property = $this->class->getProperty($field);
-        
+
         if ($property instanceof FieldMetadata) {
             $tableAlias = $this->getSQLTableAlias($property->getTableName());
             $columnName = $this->platform->quoteIdentifier($property->getColumnName());

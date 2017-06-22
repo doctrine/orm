@@ -2,21 +2,23 @@
 
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="`quote-city`")
+ * @ORM\Entity
+ * @ORM\Table(name="quote-city")
  */
 class City
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`city-id`")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="city-id")
      */
     public $id;
 
     /**
-     * @Column(name="`city-name`")
+     * @ORM\Column(name="city-name")
      */
     public $name;
 

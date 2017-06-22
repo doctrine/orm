@@ -285,13 +285,13 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repos = $this->em->getRepository(CmsUser::class);
 
         $userCount = $repos->count([]);
-        $this->assertSame(4, $userCount);
+        self::assertSame(4, $userCount);
 
         $userCount = $repos->count(['status' => 'dev']);
-        $this->assertSame(2, $userCount);
+        self::assertSame(2, $userCount);
 
         $userCount = $repos->count(['status' => 'nonexistent']);
-        $this->assertSame(0, $userCount);
+        self::assertSame(0, $userCount);
     }
 
     public function testCountBy()
@@ -300,7 +300,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repos = $this->em->getRepository(CmsUser::class);
 
         $userCount = $repos->countByStatus('dev');
-        $this->assertSame(2, $userCount);
+        self::assertSame(2, $userCount);
     }
 
     /**
@@ -914,32 +914,32 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $this->loadFixture();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'Foo')));
-        $this->assertCount(0, $users);
+        self::assertCount(0, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'R')));
-        $this->assertCount(1, $users);
+        self::assertCount(1, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('status', 'de')));
-        $this->assertCount(2, $users);
+        self::assertCount(2, $users);
     }
 
     public function testMatchingCriteriaEndsWithComparison()
     {
         $this->loadFixture();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
+        $repository = $this->em->getRepository(CmsUser::class);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'foo')));
-        $this->assertCount(0, $users);
+        self::assertCount(0, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'oman')));
-        $this->assertCount(1, $users);
+        self::assertCount(1, $users);
 
         $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('status', 'ev')));
-        $this->assertCount(2, $users);
+        self::assertCount(2, $users);
     }
 
     /**

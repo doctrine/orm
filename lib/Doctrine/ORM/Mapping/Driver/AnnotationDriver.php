@@ -389,10 +389,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     $override->setInversedBy($associationOverride->inversedBy);
                 }
 
-                // Check for `fetch`
+                // Check for fetch
                 if ($associationOverride->fetch) {
                     $override->setFetchMode(
-                        constant(Mapping\ClassMetadata::class . '::FETCH_' . $associationOverride->fetch)
+                        constant(Mapping\FetchMode::class . '::' . $associationOverride->fetch)
                     );
                 }
 

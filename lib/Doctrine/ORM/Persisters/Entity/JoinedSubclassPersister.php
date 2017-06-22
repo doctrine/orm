@@ -432,11 +432,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     );
                 }
 
-                $columnList[] = $this->getSelectJoinColumnSQL(
-                    $joinColumn->getTableName(),
-                    $joinColumn->getColumnName(),
-                    $joinColumn->getType()
-                );
+                $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
             }
         }
 
@@ -483,11 +479,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                         );
                     }
 
-                    $columnList[] = $this->getSelectJoinColumnSQL(
-                        $joinColumn->getTableName(),
-                        $joinColumn->getColumnName(),
-                        $joinColumn->getType()
-                    );
+                    $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);
                 }
             }
         }

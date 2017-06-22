@@ -339,15 +339,15 @@ final class Query extends AbstractQuery
         array $types,
         array $connectionParams
     ) {
-        if (null === $this->_queryCacheProfile || ! $this->getExpireResultCache()) {
+        if (null === $this->queryCacheProfile || ! $this->getExpireResultCache()) {
             return;
         }
 
-        $cacheDriver = $this->_queryCacheProfile->getResultCacheDriver();
+        $cacheDriver = $this->queryCacheProfile->getResultCacheDriver();
         $statements  = (array) $executor->getSqlStatements(); // Type casted since it can either be a string or an array
 
         foreach ($statements as $statement) {
-            $cacheKeys = $this->_queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
+            $cacheKeys = $this->queryCacheProfile->generateCacheKeys($statement, $sqlParams, $types, $connectionParams);
 
             $cacheDriver->delete(reset($cacheKeys));
         }

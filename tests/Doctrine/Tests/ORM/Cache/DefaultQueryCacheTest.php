@@ -556,15 +556,15 @@ class DefaultQueryCacheTest extends OrmTestCase
         $cities      = $reflection->invoke($this->queryCache, $rsm, 'c', $bavaria);
         $attractions = $reflection->invoke($this->queryCache, $rsm, 'a', $bavaria);
 
-        $this->assertCount(2, $cities);
-        $this->assertCount(2,  $attractions);
+        self::assertCount(2, $cities);
+        self::assertCount(2,  $attractions);
 
-        $this->assertInstanceOf(Collection::class, $cities);
-        $this->assertInstanceOf(Collection::class, $attractions[0]);
-        $this->assertInstanceOf(Collection::class, $attractions[1]);
+        self::assertInstanceOf(Collection::class, $cities);
+        self::assertInstanceOf(Collection::class, $attractions[0]);
+        self::assertInstanceOf(Collection::class, $attractions[1]);
 
-        $this->assertCount(2, $attractions[0]);
-        $this->assertCount(1, $attractions[1]);
+        self::assertCount(2, $attractions[0]);
+        self::assertCount(1, $attractions[1]);
     }
 
     /**
