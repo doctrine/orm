@@ -22,7 +22,7 @@
         "doctrine/common": "^2.7.1",
         "doctrine/cache": "~1.6",
         "doctrine/annotations": "~1.4",
-        "symfony/console": "~3.0|~4.0"
+        "symfony/console": "~2.8|~3.0|~4.0"
     },
     "require-dev": {
         "symfony/yaml": "~3.4|~4.0",
