@@ -3,29 +3,26 @@
 namespace Doctrine\Tests\Models\DDC5934;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping;
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC5934BaseContract
 {
     /**
-     * @Id()
-     * @Column(name="id", type="integer")
-     * @GeneratedValue()
+     * @ORM\Id()
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue()
      */
     public $id;
 
     /**
      * @var ArrayCollection
      *
-     * @ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
+     * @ORM\ManyToMany(targetEntity="DDC5934Member", fetch="LAZY", inversedBy="contracts")
      */
     public $members;
 
@@ -34,20 +31,22 @@ class DDC5934BaseContract
         $this->members = new ArrayCollection();
     }
 
-    public static function loadMetadata(ClassMetadata $metadata)
+    public static function loadMetadata(Mapping\ClassMetadata $metadata)
     {
-        $metadata->mapField([
-            'id'         => true,
-            'fieldName'  => 'id',
-            'type'       => 'integer',
-            'columnName' => 'id',
-        ]);
+        $fieldMetadata = new Mapping\FieldMetadata('id');
 
-        $metadata->mapManyToMany([
-            'fieldName'    => 'members',
-            'targetEntity' => 'DDC5934Member',
-        ]);
+        $fieldMetadata->setType(Type::getType('integer'));
+        $fieldMetadata->setColumnName('id');
+        $fieldMetadata->setPrimaryKey(true);
 
-        $metadata->setIdGeneratorType(ClassMetadata::GENERATOR_TYPE_AUTO);
+        $metadata->addProperty($fieldMetadata);
+
+        $association = new Mapping\ManyToManyAssociationMetadata('members');
+
+        $association->setTargetEntity('DDC5934Member');
+
+        $metadata->addProperty($association);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }

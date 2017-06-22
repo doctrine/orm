@@ -242,10 +242,10 @@ class EntityManagerTest extends OrmTestCase
 
         $this->em->persist($entity);
 
-        $this->assertTrue($this->em->contains($entity));
+        self::assertTrue($this->em->contains($entity));
 
         $this->em->clear(null);
 
-        $this->assertFalse($this->em->contains($entity));
+        self::assertFalse($this->em->contains($entity));
     }
 }

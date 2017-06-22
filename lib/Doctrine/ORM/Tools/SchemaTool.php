@@ -705,8 +705,8 @@ class SchemaTool
                 throw new \Doctrine\ORM\ORMException(sprintf(
                     'Column name "%s" referenced for relation from %s towards %s does not exist.',
                     $joinColumn->getReferencedColumnName(),
-                    $mapping['sourceEntity'],
-                    $mapping['targetEntity']
+                    $mapping->getSourceEntity(),
+                    $mapping->getTargetEntity()
                 ));
             }
 

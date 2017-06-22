@@ -41,7 +41,7 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($object);
         $this->em->flush();
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
     }
 
     public function testFetchObjectWithAutoIncrementedCustomType()
@@ -54,8 +54,8 @@ class DDC5684Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $rawId = $object->id->value;
         $object = $this->em->find(DDC5684Object::class, new DDC5684ObjectId($rawId));
 
-        $this->assertInstanceOf(DDC5684ObjectId::class, $object->id);
-        $this->assertEquals($rawId, $object->id->value);
+        self::assertInstanceOf(DDC5684ObjectId::class, $object->id);
+        self::assertEquals($rawId, $object->id->value);
     }
 }
 

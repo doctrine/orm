@@ -50,7 +50,7 @@ class DDC2775Test extends OrmFunctionalTestCase
         $this->em->remove($user);
         $this->em->flush();
 
-        self::assertEmpty($this->_em->getRepository(Authorization::class)->findAll());
+        self::assertEmpty($this->em->getRepository(Authorization::class)->findAll());
 
         // With the bug, the second flush throws an error because the cascade remove didn't work correctly
         $this->em->flush();
@@ -58,7 +58,8 @@ class DDC2775Test extends OrmFunctionalTestCase
 }
 
 /**
- * @ORM\Entity @ORM\Table(name="ddc2775_role")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc2775_role")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="role_type", type="string")
  * @ORM\DiscriminatorMap({"admin"="AdminRole"})
@@ -66,7 +67,8 @@ class DDC2775Test extends OrmFunctionalTestCase
 abstract class Role
 {
     /**
-     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
     public $id;

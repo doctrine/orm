@@ -227,8 +227,8 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractions), $result1);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractions), $result1);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         $contact = new Beach(
             'Botafogo',
@@ -245,11 +245,11 @@ class SecondLevelCacheSingleTableInheritanceTest extends SecondLevelCacheAbstrac
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractions) + 1, $result2);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractions) + 1, $result2);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(Attraction::class, $entity);
+            self::assertInstanceOf(Attraction::class, $entity);
         }
     }
 }

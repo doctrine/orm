@@ -22,7 +22,7 @@ namespace Doctrine\ORM;
 /**
  * Class to store and retrieve the version of Doctrine
  *
- * 
+ *
  * @link    www.doctrine-project.org
  * @since   2.0
  * @version $Revision$
@@ -36,7 +36,7 @@ class Version
     /**
      * Current Doctrine Version
      */
-    const VERSION = '2.6.0-DEV';
+    const VERSION = '3.0.0-DEV';
 
     /**
      * Compares a Doctrine version with the current one.

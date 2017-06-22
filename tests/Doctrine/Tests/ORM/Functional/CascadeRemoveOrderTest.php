@@ -49,7 +49,7 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         $this->em->remove($eOloaded);
         $this->em->flush();
 
-        self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
+        self::assertNull($this->em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
     }
 
     public function testMany()

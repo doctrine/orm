@@ -26,7 +26,8 @@ class GH6402Test extends OrmFunctionalTestCase
     {
         $id = $this->createAddress();
 
-        $address = $this->_em->find(Address::class, $id);
+        $address = $this->em->find(Address::class, $id);
+
         self::assertNotNull($address->user);
     }
 
@@ -34,7 +35,7 @@ class GH6402Test extends OrmFunctionalTestCase
     {
         $id = $this->createAddress();
 
-        $addresses = $this->_em->createQuery('SELECT a FROM ' . Address::class . ' a WHERE a.id = :id')
+        $addresses = $this->em->createQuery('SELECT a FROM ' . Address::class . ' a WHERE a.id = :id')
             ->setParameter('id', $id)
             ->getResult();
 
@@ -46,7 +47,8 @@ class GH6402Test extends OrmFunctionalTestCase
     {
         $id = $this->createFullAddress();
 
-        $address = $this->_em->find(FullAddress::class, $id);
+        $address = $this->em->find(FullAddress::class, $id);
+
         self::assertNotNull($address->user);
     }
 
@@ -54,7 +56,7 @@ class GH6402Test extends OrmFunctionalTestCase
     {
         $id = $this->createFullAddress();
 
-        $addresses = $this->_em->createQuery('SELECT a FROM ' . FullAddress::class . ' a WHERE a.id = :id')
+        $addresses = $this->em->createQuery('SELECT a FROM ' . FullAddress::class . ' a WHERE a.id = :id')
             ->setParameter('id', $id)
             ->getResult();
 
@@ -89,8 +91,8 @@ class GH6402Test extends OrmFunctionalTestCase
         $user->name = "foo";
         $user->setAddress($address);
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
     }
 }

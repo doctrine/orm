@@ -21,6 +21,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**
  * Base class for entity persisters that implement a certain inheritance mapping strategy.
@@ -51,21 +52,26 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     }
 
     /**
-     * @param string $tableName The class that declares this field. The table this class is
-     *                          mapped to must own the column for the given field.
-     * @param string $field     The field name.
-     * @param Type   $type
+     * @param JoinColumnMetadata $joinColumnMetadata
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableName, $field, $type)
+    protected function getSelectJoinColumnSQL(JoinColumnMetadata $joinColumnMetadata)
     {
-        $tableAlias  = $this->getSQLTableAlias($tableName);
-        $columnAlias = $this->getSQLColumnAlias();
-        $sql         = sprintf('%s.%s', $tableAlias, $field);
+        $tableAlias       = $this->getSQLTableAlias($joinColumnMetadata->getTableName());
+        $columnAlias      = $this->getSQLColumnAlias();
+        $columnType       = $joinColumnMetadata->getType();
+        $quotedColumnName = $this->platform->quoteIdentifier($joinColumnMetadata->getColumnName());
+        $sql              = sprintf('%s.%s', $tableAlias, $quotedColumnName);
 
-        $this->currentPersisterContext->rsm->addMetaResult('r', $columnAlias, $field, false, $type);
+        $this->currentPersisterContext->rsm->addMetaResult(
+            'r',
+            $columnAlias,
+            $joinColumnMetadata->getColumnName(),
+            $joinColumnMetadata->isPrimaryKey(),
+            $columnType
+        );
 
-        return $type->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
+        return $columnType->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
 }

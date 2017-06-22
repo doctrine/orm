@@ -125,7 +125,7 @@ class TypeTest extends OrmFunctionalTestCase
         self::assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
         self::assertEquals('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
 
-        $articles = $this->_em
+        $articles = $this->em
             ->getRepository(DateTimeModel::class)
             ->findBy(['datetime' => new \DateTime("now")])
         ;
@@ -144,13 +144,13 @@ class TypeTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dateTimeDb = $this->_em
+        $dateTimeDb = $this->em
             ->createQuery('SELECT d FROM Doctrine\Tests\Models\Generic\DateTimeModel d WHERE d.datetime = ?1')
             ->setParameter(1, $date, DBALType::DATETIME)
             ->getSingleResult();
 
-        $this->assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
-        $this->assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+        self::assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
+        self::assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
     public function testDqlQueryBuilderBindDateTimeInstance()
@@ -164,7 +164,7 @@ class TypeTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $dateTimeDb = $this->_em->createQueryBuilder()
+        $dateTimeDb = $this->em->createQueryBuilder()
              ->select('d')
              ->from(DateTimeModel::class, 'd')
              ->where('d.datetime = ?1')
@@ -172,8 +172,8 @@ class TypeTest extends OrmFunctionalTestCase
              ->getQuery()
              ->getSingleResult();
 
-        $this->assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
-        $this->assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
+        self::assertInstanceOf(\DateTime::class, $dateTimeDb->datetime);
+        self::assertSame('2009-10-02 20:10:52', $dateTimeDb->datetime->format('Y-m-d H:i:s'));
     }
 
     public function testTime()

@@ -256,7 +256,7 @@ class UnitOfWorkTest extends OrmTestCase
         // Schedule user for update without changes
         $this->unitOfWork->scheduleForUpdate($user);
 
-        self::assertNotEmpty($this->_unitOfWork->getScheduledEntityUpdates());
+        self::assertNotEmpty($this->unitOfWork->getScheduledEntityUpdates());
 
         // This commit should not raise an E_NOTICE
         $this->unitOfWork->commit();
@@ -356,18 +356,18 @@ class UnitOfWorkTest extends OrmTestCase
         $entity2 = new Country(456, 'United Kingdom');
 
         $this->unitOfWork->persist($entity1);
-        $this->assertTrue($this->unitOfWork->isInIdentityMap($entity1));
+        self::assertTrue($this->unitOfWork->isInIdentityMap($entity1));
 
         $this->unitOfWork->persist($entity2);
-        $this->assertTrue($this->unitOfWork->isInIdentityMap($entity2));
+        self::assertTrue($this->unitOfWork->isInIdentityMap($entity2));
 
         $this->unitOfWork->clear();
-        
-        $this->assertFalse($this->unitOfWork->isInIdentityMap($entity1));
-        $this->assertFalse($this->unitOfWork->isInIdentityMap($entity2));
-        
-        $this->assertFalse($this->unitOfWork->isScheduledForInsert($entity1));
-        $this->assertFalse($this->unitOfWork->isScheduledForInsert($entity2));
+
+        self::assertFalse($this->unitOfWork->isInIdentityMap($entity1));
+        self::assertFalse($this->unitOfWork->isInIdentityMap($entity2));
+
+        self::assertFalse($this->unitOfWork->isScheduledForInsert($entity1));
+        self::assertFalse($this->unitOfWork->isScheduledForInsert($entity2));
     }
 
     /**
