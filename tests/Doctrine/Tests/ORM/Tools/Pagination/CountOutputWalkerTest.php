@@ -36,12 +36,12 @@ class CountOutputWalkerTest extends PaginationTestCase
             // Grouping support
             [
                 'SELECT p.name FROM Doctrine\Tests\ORM\Tools\Pagination\Person p GROUP BY p.name',
-                'SELECT COUNT(*) AS dctrn_count FROM (SELECT p0_."name" AS name_0 FROM "Person" p0_ GROUP BY p0_."name") dctrn_table'
+                'SELECT COUNT(*) AS dctrn_count FROM (SELECT t0."name" AS c0 FROM "Person" t0 GROUP BY t0."name") dctrn_table'
             ],
             // Having support
             [
                 'SELECT g, u, count(u.id) AS userCount FROM Doctrine\Tests\ORM\Tools\Pagination\Group g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0',
-                'SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT c1 FROM (SELECT count(t0."id") AS c0, t1."id" AS c1, t0."id" AS c2 FROM "groups" t1 LEFT JOIN "user_group" t2 ON t1."id" = t2."group_id" LEFT JOIN "User" t0 ON t0."id" = t2."user_id" GROUP BY t1."id" HAVING c0 > 0) dctrn_result) dctrn_table'
+                'SELECT COUNT(*) AS dctrn_count FROM (SELECT count(t0."id") AS c0, t1."id" AS c1, t0."id" AS c2 FROM "groups" t1 LEFT JOIN "user_group" t2 ON t1."id" = t2."group_id" LEFT JOIN "User" t0 ON t0."id" = t2."user_id" GROUP BY t1."id" HAVING c0 > 0) dctrn_table'
             ],
         ];
     }

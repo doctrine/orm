@@ -53,6 +53,7 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $user = new CmsUser();
         $user->name = 'Bob';
         $user->username = 'Dylan';
+
         $this->em->persist($user);
         $this->em->flush();
 

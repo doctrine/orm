@@ -2,8 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
@@ -175,12 +177,18 @@ class SchemaToolTest extends OrmTestCase
 
     public function testSetDiscriminatorColumnWithoutLength() : void
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $metadata   = $em->getClassMetadata(FirstEntity::class);
 
-        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
-        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'string']);
+        $metadata->setInheritanceType(InheritanceType::SINGLE_TABLE);
+
+        $discriminatorColumn = new DiscriminatorColumnMetadata();
+
+        $discriminatorColumn->setColumnName('discriminator');
+        $discriminatorColumn->setType(Type::getType('string'));
+
+        $metadata->setDiscriminatorColumn($discriminatorColumn);
 
         $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
 
