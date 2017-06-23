@@ -28,14 +28,12 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\Builder\TableMetadataBuilder;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\TableMetadata;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.

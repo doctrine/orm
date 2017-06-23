@@ -25,10 +25,6 @@ use Doctrine\Common\Persistence\Mapping\Driver\AnnotationDriver as AbstractAnnot
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
-use Doctrine\ORM\Mapping\Builder\ClassMetadataBuilder;
-use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\ORM\Mapping;
 
 /**
@@ -55,10 +51,9 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-        $builder = new ClassMetadataBuilder($metadata);
-        $class   = $metadata->getReflectionClass();
+        $class = $metadata->getReflectionClass();
 
-        if ( ! $class) {
+        if (! $class) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
             $class = new \ReflectionClass($metadata->name);
@@ -80,11 +75,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
                 if ($entityAnnot->repositoryClass !== null) {
-                    $builder->withCustomRepositoryClass($entityAnnot->repositoryClass);
+                    $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
                 }
 
                 if ($entityAnnot->readOnly) {
-                    $builder->asReadOnly();
+                    $metadata->asReadOnly();
                 }
 
                 break;
@@ -92,12 +87,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($classAnnotations[Annotation\MappedSuperclass::class]):
                 $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
-                $builder->withCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
-                $builder->asMappedSuperClass();
+                $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+
+                $metadata->isMappedSuperclass = true;
+                $metadata->isEmbeddedClass = false;
                 break;
 
             case isset($classAnnotations[Annotation\Embeddable::class]):
-                $builder->asEmbeddable();
+                $metadata->isEmbeddedClass = true;
+                $metadata->isMappedSuperclass = false;
                 break;
 
             default:
@@ -109,7 +107,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $tableAnnot = $classAnnotations[Annotation\Table::class];
             $table      = $this->convertTableAnnotationToTableMetadata($tableAnnot);
 
-            $builder->withTable($table);
+            $metadata->setTable($table);
         }
 
         // Evaluate @Cache annotation
@@ -117,7 +115,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
             $cache      = $this->convertCacheAnnotationToCacheMetadata($cacheAnnot, $metadata);
 
-            $builder->withCache($cache);
+            $metadata->setCache($cache);
         }
 
         // Evaluate NamedNativeQueries annotation
@@ -160,7 +158,10 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
 
-                $builder->addNamedQuery($namedQuery->name, $namedQuery->query);
+                $metadata->addNamedQuery([
+                    'name' => $namedQuery->name,
+                    'query' => $namedQuery->query
+                ]);
             }
         }
 
@@ -173,31 +174,32 @@ class AnnotationDriver extends AbstractAnnotationDriver
             );
 
             if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
+                $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 
-                $discriminatorColumnBuilder->withTableName($metadata->getTableName());
+                $discriminatorColumn->setTableName($metadata->getTableName());
+                $discriminatorColumn->setColumnName('dtype');
+                $discriminatorColumn->setType(Type::getType('string'));
+                $discriminatorColumn->setLength(255);
 
                 // Evaluate DiscriminatorColumn annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
                     /** @var Annotation\DiscriminatorColumn $discriminatorColumnAnnotation */
                     $discriminatorColumnAnnotation = $classAnnotations[Annotation\DiscriminatorColumn::class];
+                    $typeName                      = ! empty($discriminatorColumnAnnotation->type)
+                        ? $discriminatorColumnAnnotation->type
+                        : 'string';
 
-                    $discriminatorColumnBuilder->withColumnName($discriminatorColumnAnnotation->name);
+                    $discriminatorColumn->setType(Type::getType($typeName));
+                    $discriminatorColumn->setColumnName($discriminatorColumnAnnotation->name);
 
                     if (! empty($discriminatorColumnAnnotation->columnDefinition)) {
-                        $discriminatorColumnBuilder->withColumnDefinition($discriminatorColumnAnnotation->columnDefinition);
-                    }
-
-                    if (! empty($discriminatorColumnAnnotation->type)) {
-                        $discriminatorColumnBuilder->withType(Type::getType($discriminatorColumnAnnotation->type));
+                        $discriminatorColumn->setColumnDefinition($discriminatorColumnAnnotation->columnDefinition);
                     }
 
                     if (! empty($discriminatorColumnAnnotation->length)) {
-                        $discriminatorColumnBuilder->withLength($discriminatorColumnAnnotation->length);
+                        $discriminatorColumn->setLength($discriminatorColumnAnnotation->length);
                     }
                 }
-
-                $discriminatorColumn = $discriminatorColumnBuilder->build();
 
                 $metadata->setDiscriminatorColumn($discriminatorColumn);
 
@@ -991,14 +993,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
     {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
-        $cacheBuilder  = new CacheMetadataBuilder();
 
-        $cacheBuilder
-            ->withUsage(constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage)))
-            ->withRegion($cacheAnnot->region ?: $defaultRegion)
-        ;
+        $usage = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
+        $region = $cacheAnnot->region ?: $defaultRegion;
 
-        return $cacheBuilder->build();
+        return new Mapping\CacheMetadata($usage, $region);
     }
 
     /**
