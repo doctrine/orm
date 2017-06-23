@@ -22,12 +22,10 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\Builder\DiscriminatorColumnMetadataBuilder;
-use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
-use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
+use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -230,9 +228,12 @@ class XmlDriver extends FileDriver
             );
 
             if ($metadata->inheritanceType !== InheritanceType::NONE) {
-                $discriminatorColumnBuilder = new DiscriminatorColumnMetadataBuilder();
+                $discriminatorColumn = new DiscriminatorColumnMetadata();
 
-                $discriminatorColumnBuilder->withTableName($metadata->getTableName());
+                $discriminatorColumn->setTableName($metadata->getTableName());
+                $discriminatorColumn->setColumnName('dtype');
+                $discriminatorColumn->setType(Type::getType('string'));
+                $discriminatorColumn->setLength(255);
 
                 // Evaluate <discriminator-column...>
                 if (isset($xmlRoot->{'discriminator-column'})) {
@@ -241,19 +242,17 @@ class XmlDriver extends FileDriver
                         ? (string) $discriminatorColumnMapping['type']
                         : 'string';
 
-                    $discriminatorColumnBuilder->withType(Type::getType($typeName));
-                    $discriminatorColumnBuilder->withColumnName((string) $discriminatorColumnMapping['name']);
+                    $discriminatorColumn->setType(Type::getType($typeName));
+                    $discriminatorColumn->setColumnName((string) $discriminatorColumnMapping['name']);
 
                     if (isset($discriminatorColumnMapping['column-definition'])) {
-                        $discriminatorColumnBuilder->withColumnDefinition((string) $discriminatorColumnMapping['column-definition']);
+                        $discriminatorColumn->setColumnDefinition((string) $discriminatorColumnMapping['column-definition']);
                     }
 
                     if (isset($discriminatorColumnMapping['length'])) {
-                        $discriminatorColumnBuilder->withLength((int) $discriminatorColumnMapping['length']);
+                        $discriminatorColumn->setLength((int) $discriminatorColumnMapping['length']);
                     }
                 }
-
-                $discriminatorColumn = $discriminatorColumnBuilder->build();
 
                 $metadata->setDiscriminatorColumn($discriminatorColumn);
 
@@ -375,7 +374,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($oneToOneElement['fetch'])) {
                     $association->setFetchMode(
-                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToOneElement['fetch'])
+                        constant(sprintf('%s::%s', FetchMode::class, (string) $oneToOneElement['fetch']))
                     );
                 }
 
@@ -871,7 +870,6 @@ class XmlDriver extends FileDriver
     {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
-        $cacheBuilder  = new CacheMetadataBuilder();
 
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
         $usage  = isset($cacheMapping['usage'])
@@ -879,12 +877,7 @@ class XmlDriver extends FileDriver
             : CacheUsage::READ_ONLY
         ;
 
-        $cacheBuilder
-            ->withUsage($usage)
-            ->withRegion($region)
-        ;
-
-        return $cacheBuilder->build();
+        return new CacheMetadata($usage, $region);
     }
 
     /**
