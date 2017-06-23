@@ -20,7 +20,7 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Builder;
+namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 

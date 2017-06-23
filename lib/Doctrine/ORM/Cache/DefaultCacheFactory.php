@@ -36,7 +36,6 @@ use Doctrine\ORM\Cache\Region\FileLockRegion;
 use Doctrine\ORM\Cache\Region\UpdateTimestampCache;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\Builder\CacheMetadataBuilder;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -179,14 +178,12 @@ class DefaultCacheFactory implements CacheFactory
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null)
     {
-        $builder = new CacheMetadataBuilder();
-        
-        $builder
-            ->withRegion($regionName ?: Cache::DEFAULT_QUERY_REGION_NAME)
-            ->withUsage(CacheUsage::NONSTRICT_READ_WRITE)
-        ;
-        
-        return new DefaultQueryCache($em, $this->getRegion($builder->build()));
+        $cacheMetadata = new CacheMetadata(
+            CacheUsage::NONSTRICT_READ_WRITE,
+            $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME
+        );
+
+        return new DefaultQueryCache($em, $this->getRegion($cacheMetadata));
     }
 
     /**
@@ -211,7 +208,7 @@ class DefaultCacheFactory implements CacheFactory
     public function getRegion(CacheMetadata $cache)
     {
         $regionName = $cache->getRegion();
-        
+
         if (isset($this->regions[$regionName])) {
             return $this->regions[$regionName];
         }
