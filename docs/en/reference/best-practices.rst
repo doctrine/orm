@@ -43,7 +43,7 @@ should use events judiciously.
 Use cascades judiciously
 ------------------------
 
-Automatic cascades of the persist/remove/merge/etc. operations are
+Automatic cascades of the persist/remove/refresh/etc. operations are
 very handy but should be used wisely. Do NOT simply add all
 cascades to all associations. Think about which cascades actually
 do make sense for you for a particular association, given the
