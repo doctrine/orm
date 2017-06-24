@@ -1562,7 +1562,7 @@ public function __construct(<params>)
             if ($association->getCascade()) {
                 $cascades = [];
 
-                foreach (['remove', 'persist', 'refresh', 'merge', 'detach'] as $cascadeType) {
+                foreach (['remove', 'persist', 'refresh'] as $cascadeType) {
                     if (in_array($cascadeType, $association->getCascade())) {
                         $cascades[] = sprintf('"%s"', $cascadeType);
                     }

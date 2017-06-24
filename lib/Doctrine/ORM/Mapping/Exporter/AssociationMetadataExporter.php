@@ -59,7 +59,7 @@ abstract class AssociationMetadataExporter implements Exporter
      */
     private function resolveCascade(array $cascade)
     {
-        $resolvedCascade = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $resolvedCascade = ['remove', 'persist', 'refresh'];
 
         foreach ($resolvedCascade as $key => $value) {
             if (in_array($value, $cascade, true)) {
