@@ -39,7 +39,7 @@ class ToolsException extends ORMException
      */
     public static function schemaToolFailure($sql, \Exception $e)
     {
-        return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, "0", $e);
+        return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, 0, $e);
     }
 
     /**

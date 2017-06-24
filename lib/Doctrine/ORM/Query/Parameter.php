@@ -61,7 +61,7 @@ class Parameter
      */
     public function __construct($name, $value, $type = null)
     {
-        $this->name = trim($name, ':');
+        $this->name = trim((string) $name, ':');
 
         $this->setValue($value, $type);
     }

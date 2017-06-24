@@ -796,7 +796,7 @@ class XmlDriver extends FileDriver
     private function cacheToArray(SimpleXMLElement $cacheMapping)
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
-        $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
+        $usage  = isset($cacheMapping['usage']) ? strtoupper((string) $cacheMapping['usage']) : null;
 
         if ($usage && ! defined('Doctrine\ORM\Mapping\ClassMetadata::CACHE_USAGE_' . $usage)) {
             throw new \InvalidArgumentException(sprintf('Invalid cache usage "%s"', $usage));

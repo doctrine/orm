@@ -191,15 +191,15 @@ class XmlExporter extends AbstractExporter
                 }
 
                 if (isset($field['length'])) {
-                    $fieldXml->addAttribute('length', $field['length']);
+                    $fieldXml->addAttribute('length', (string) $field['length']);
                 }
 
                 if (isset($field['precision'])) {
-                    $fieldXml->addAttribute('precision', $field['precision']);
+                    $fieldXml->addAttribute('precision', (string) $field['precision']);
                 }
 
                 if (isset($field['scale'])) {
-                    $fieldXml->addAttribute('scale', $field['scale']);
+                    $fieldXml->addAttribute('scale', (string) $field['scale']);
                 }
 
                 if (isset($field['unique']) && $field['unique']) {
@@ -209,7 +209,7 @@ class XmlExporter extends AbstractExporter
                 if (isset($field['options'])) {
                     $optionsXml = $fieldXml->addChild('options');
                     foreach ($field['options'] as $key => $value) {
-                        $optionXml = $optionsXml->addChild('option', $value);
+                        $optionXml = $optionsXml->addChild('option', (string) $value);
                         $optionXml->addAttribute('name', $key);
                     }
                 }
@@ -436,8 +436,8 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml = $identifierXmlNode->addChild('sequence-generator');
 
         $sequenceGeneratorXml->addAttribute('sequence-name', $sequenceDefinition['sequenceName']);
-        $sequenceGeneratorXml->addAttribute('allocation-size', $sequenceDefinition['allocationSize']);
-        $sequenceGeneratorXml->addAttribute('initial-value', $sequenceDefinition['initialValue']);
+        $sequenceGeneratorXml->addAttribute('allocation-size', (string) $sequenceDefinition['allocationSize']);
+        $sequenceGeneratorXml->addAttribute('initial-value', (string) $sequenceDefinition['initialValue']);
     }
 
     /**
