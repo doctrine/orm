@@ -302,10 +302,22 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated
+     */
+    public function merge($object)
+    {
+        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated
      */
     public function detach($object)
     {
-        $this->realEntityManager->detach($object);
+        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
     }
 
     /**
