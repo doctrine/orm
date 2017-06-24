@@ -114,7 +114,7 @@ of several common elements:
         phonenumbers:
           targetEntity: Phonenumber
           mappedBy: user
-          cascade: ["persist", "merge"]
+          cascade: ["persist", "refresh"]
       manyToMany:
         groups:
           targetEntity: Group

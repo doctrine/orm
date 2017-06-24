@@ -688,7 +688,6 @@ specified by their respective tags:
 
 
 -  ``<cascade-persist />``
--  ``<cascade-merge />``
 -  ``<cascade-remove />``
 -  ``<cascade-refresh />``
 
