@@ -46,7 +46,6 @@
         <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Tools\Export\Phonenumber" mapped-by="user" orphan-removal="true" fetch="LAZY">
             <cascade>
                 <cascade-persist/>
-                <cascade-merge/>
             </cascade>
             <order-by>
                 <order-by-field name="number" direction="ASC" />
@@ -57,8 +56,6 @@
             <cascade>
                 <cascade-refresh/>
                 <cascade-persist/>
-                <cascade-merge/>
-                <cascade-detach/>
                 <cascade-remove/>
             </cascade>
         </one-to-many>

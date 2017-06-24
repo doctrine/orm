@@ -142,11 +142,11 @@ class CmsUser
      */
     public $name;
     /**
-     * @ORM\OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     public $phonenumbers;
     /**
-     * @ORM\OneToMany(targetEntity="CmsArticle", mappedBy="user", cascade={"detach"})
+     * @ORM\OneToMany(targetEntity="CmsArticle", mappedBy="user")
      */
     public $articles;
     /**
@@ -159,7 +159,7 @@ class CmsUser
      */
     public $email;
     /**
-     * @ORM\ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist", "merge", "detach"})
+     * @ORM\ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist"})
      * @ORM\JoinTable(name="cms_users_groups",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}

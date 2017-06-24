@@ -25,7 +25,7 @@ class Article
     public $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Category", cascade={"merge", "persist"})
+     * @ORM\ManyToOne(targetEntity="Category", cascade={"persist"})
      */
     public $category;
 

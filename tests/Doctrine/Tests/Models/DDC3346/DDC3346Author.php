@@ -24,7 +24,7 @@ class DDC3346Author
     public $username;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER", cascade={"detach"})
+     * @ORM\OneToMany(targetEntity="DDC3346Article", mappedBy="user", fetch="EAGER")
      */
     public $articles = [];
 }
