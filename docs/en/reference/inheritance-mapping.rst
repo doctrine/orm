@@ -521,7 +521,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 <many-to-one field="address" target-entity="Address">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-column name="address_id" referenced-column-name="id"/>
                 </many-to-one>
