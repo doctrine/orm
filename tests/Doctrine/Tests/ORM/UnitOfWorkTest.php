@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
@@ -24,7 +23,6 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\EntityPersisterMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\GeoNames\City;
@@ -579,117 +577,6 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group 5689
-     * @group 1465
-     */
-    public function testObjectHashesOfMergedEntitiesAreNotUsedInOriginalEntityDataMap()
-    {
-        $user       = new CmsUser();
-        $user->name = 'ocramius';
-        $mergedUser = $this->unitOfWork->merge($user);
-
-        self::assertSame([], $this->unitOfWork->getOriginalEntityData($user), 'No original data was stored');
-        self::assertSame([], $this->unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
-
-
-        $user       = null;
-        $mergedUser = null;
-
-        // force garbage collection of $user (frees the used object hashes, which may be recycled)
-        gc_collect_cycles();
-
-        $newUser       = new CmsUser();
-        $newUser->name = 'ocramius';
-
-        $this->unitOfWork->persist($newUser);
-
-        self::assertSame([], $this->unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithNewEntityWillPersistItAndTriggerPrePersistListenersWithMergedEntityData()
-    {
-        $entity = new EntityWithRandomlyGeneratedField();
-
-        $generatedFieldValue = $entity->generatedField;
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this
-            ->eventManager
-            ->expects(self::once())
-            ->method('dispatchEvent')
-            ->with(
-                self::anything(),
-                self::callback(function (LifecycleEventArgs $args) use ($entity, $generatedFieldValue) {
-                    /* @var $object EntityWithRandomlyGeneratedField */
-                    $object = $args->getObject();
-
-                    self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-                    self::assertNotSame($entity, $object);
-                    self::assertSame($generatedFieldValue, $object->generatedField);
-
-                    return true;
-                })
-            );
-
-        /* @var $object EntityWithRandomlyGeneratedField */
-        $object = $this->unitOfWork->merge($entity);
-
-        self::assertNotSame($object, $entity);
-        self::assertInstanceOf(EntityWithRandomlyGeneratedField::class, $object);
-        self::assertSame($object->generatedField, $entity->generatedField);
-    }
-
-    /**
-     * @group DDC-1955
-     * @group 5570
-     * @group 6174
-     */
-    public function testMergeWithExistingEntityWillNotPersistItNorTriggerPrePersistListeners()
-    {
-        $persistedEntity = new EntityWithRandomlyGeneratedField();
-        $mergedEntity    = new EntityWithRandomlyGeneratedField();
-
-        $mergedEntity->id = $persistedEntity->id;
-        $mergedEntity->generatedField = random_int(
-            $persistedEntity->generatedField + 1,
-            $persistedEntity->generatedField + 1000
-        );
-
-        $this
-            ->eventManager
-            ->expects(self::any())
-            ->method('hasListeners')
-            ->willReturnCallback(function ($eventName) {
-                return $eventName === Events::prePersist;
-            });
-        $this->eventManager->expects(self::never())->method('dispatchEvent');
-
-        $this->unitOfWork->registerManaged(
-            $persistedEntity,
-            ['id' => $persistedEntity->id],
-            ['generatedField' => $persistedEntity->generatedField]
-        );
-
-        /* @var $merged EntityWithRandomlyGeneratedField */
-        $merged = $this->unitOfWork->merge($mergedEntity);
-
-        self::assertSame($merged, $persistedEntity);
-        self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
-    }
-
-    /**
-<<<<<<< HEAD
      * Unlike next test, this one demonstrates that the problem does
      * not necessarily reproduce if all the pieces are being flushed together.
      *
