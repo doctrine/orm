@@ -318,29 +318,18 @@ class UnitOfWork implements PropertyChangedListener
      * 4) All collection updates
      * 5) All entity deletions
      *
-     * @param null|object|array $entity
-     *
      * @return void
      *
      * @throws \Exception
      */
-    public function commit($entity = null)
+    public function commit()
     {
         // Raise preFlush
         if ($this->eventManager->hasListeners(Events::preFlush)) {
             $this->eventManager->dispatchEvent(Events::preFlush, new PreFlushEventArgs($this->em));
         }
 
-        // Compute changes done since last commit.
-        if ($entity === null) {
-            $this->computeChangeSets();
-        } elseif (is_object($entity)) {
-            $this->computeSingleEntityChangeSet($entity);
-        } elseif (is_array($entity)) {
-            foreach ($entity as $object) {
-                $this->computeSingleEntityChangeSet($object);
-            }
-        }
+        $this->computeChangeSets();
 
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
@@ -445,54 +434,6 @@ class UnitOfWork implements PropertyChangedListener
         foreach ($this->entityInsertions as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
-            $this->computeChangeSet($class, $entity);
-        }
-    }
-
-    /**
-     * Only flushes the given entity according to a ruleset that keeps the UoW consistent.
-     *
-     * 1. All entities scheduled for insertion, (orphan) removals and changes in collections are processed as well!
-     * 2. Read Only entities are skipped.
-     * 3. Proxies are skipped.
-     * 4. Only if entity is properly managed.
-     *
-     * @param object $entity
-     *
-     * @return void
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function computeSingleEntityChangeSet($entity)
-    {
-        $state = $this->getEntityState($entity);
-
-        if ($state !== self::STATE_MANAGED && $state !== self::STATE_REMOVED) {
-            throw new \InvalidArgumentException("Entity has to be managed or scheduled for removal for single computation " . self::objToStr($entity));
-        }
-
-        $class = $this->em->getClassMetadata(get_class($entity));
-
-        if ($state === self::STATE_MANAGED && $class->changeTrackingPolicy === ChangeTrackingPolicy::DEFERRED_IMPLICIT) {
-            $this->persist($entity);
-        }
-
-        // Compute changes for INSERTed entities first. This must always happen even in this case.
-        $this->computeScheduleInsertsChangeSets();
-
-        if ($class->isReadOnly()) {
-            return;
-        }
-
-        // Ignore uninitialized proxy objects
-        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-            return;
-        }
-
-        // Only MANAGED entities that are NOT SCHEDULED FOR INSERTION OR DELETION are processed here.
-        $oid = spl_object_hash($entity);
-
-        if ( ! isset($this->entityInsertions[$oid]) && ! isset($this->entityDeletions[$oid]) && isset($this->entityStates[$oid])) {
             $this->computeChangeSet($class, $entity);
         }
     }

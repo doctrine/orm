@@ -1,5 +1,31 @@
 # Upgrade to 3.0
 
+## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+
+If your code relies on single entity flushing optimisations via
+`EntityManager#flush($entity)`, the signature has been changed to
+`EntityManager#flush()`.
+
+Said API was affected by multiple data integrity bugs due to the fact      
+that change tracking was being restricted upon a subset of the managed          
+entities. The ORM cannot support committing subsets of the managed 
+entities while also guaranteeing data integrity, therefore this
+utility was removed.
+
+The `flush()` semantics remain the same, but the change tracking will be performed
+on all entities managed by the unit of work, and not just on the provided
+`$entity` or `$entities`, as the parameter is now completely ignored.
+
+The same applies to `UnitOfWork#commit($entity)`, which now is simply
+`UnitOfWork#commit()`.
+
+If you would still like to perform batching operations over small `UnitOfWork`
+instances, it is suggested to follow these paths instead:
+
+ * eagerly use `EntityManager#clear()` in conjunction with a specific second level
+   cache configuration (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/second-level-cache.html)
+ * use an explicit change tracking policy (see http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/change-tracking-policies.html)
+
 ## BC Break: Removed ``YAML`` mapping drivers.
 
 If your code relies on ``YamlDriver``  or ``SimpleYamlDriver``, you **MUST** change to

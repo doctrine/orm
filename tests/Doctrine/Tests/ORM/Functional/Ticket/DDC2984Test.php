@@ -41,7 +41,7 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->applyName('Alex');
 
         $this->em->persist($user);
-        $this->em->flush($user);
+        $this->em->flush();
 
         $repository = $this->em->getRepository(__NAMESPACE__ . "\DDC2984User");
 
