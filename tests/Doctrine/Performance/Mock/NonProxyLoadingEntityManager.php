@@ -295,14 +295,6 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function merge($object)
-    {
-        return $this->realEntityManager->merge($object);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function clear($objectName = null)
     {
         $this->realEntityManager->clear($objectName);
