@@ -35,10 +35,8 @@
     <xs:sequence>
       <xs:element name="cascade-all" type="orm:emptyType" minOccurs="0"/>
       <xs:element name="cascade-persist" type="orm:emptyType" minOccurs="0"/>
-      <xs:element name="cascade-merge" type="orm:emptyType" minOccurs="0"/>
       <xs:element name="cascade-remove" type="orm:emptyType" minOccurs="0"/>
       <xs:element name="cascade-refresh" type="orm:emptyType" minOccurs="0"/>
-      <xs:element name="cascade-detach" type="orm:emptyType" minOccurs="0"/>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:anyAttribute namespace="##other"/>
