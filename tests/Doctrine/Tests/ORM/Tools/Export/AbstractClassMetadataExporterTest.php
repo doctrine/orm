@@ -380,16 +380,18 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         $type = $this->getType();
 
-        if ($type == 'xml') {
+        if ($type === 'xml') {
             $xml = simplexml_load_string(
                 file_get_contents(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml')
             );
 
             $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:one-to-many[@field='interests']/d:cascade/d:*");
-            self::assertEquals(1, count($nodes));
+            self::assertCount(3, $nodes);
 
-            self::assertEquals('cascade-all', $nodes[0]->getName());
+            self::assertEquals('cascade-persist', $nodes[0]->getName());
+            self::assertEquals('cascade-remove', $nodes[1]->getName());
+            self::assertEquals('cascade-refresh', $nodes[2]->getName());
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }
