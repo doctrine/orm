@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Tweet;
 
 use Doctrine\ORM\Annotation as ORM;

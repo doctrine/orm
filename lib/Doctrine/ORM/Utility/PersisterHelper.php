@@ -18,6 +18,8 @@
  * <http://www.doctrine-project.org>.
  */
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Utility;
 
 use Doctrine\DBAL\Types\Type;

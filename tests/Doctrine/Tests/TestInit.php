@@ -2,6 +2,8 @@
 /*
  * This file bootstraps the test environment.
  */
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 error_reporting(E_ALL | E_STRICT);

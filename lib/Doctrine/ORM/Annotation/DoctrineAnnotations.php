@@ -17,6 +17,8 @@
  * <http://www.doctrine-project.org>.
  */
 
+declare(strict_types=1);
+
 require_once __DIR__.'/Annotation.php';
 require_once __DIR__.'/AssociationOverride.php';
 require_once __DIR__.'/AssociationOverrides.php';

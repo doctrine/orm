@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372\Traits;
 
 use Doctrine\ORM\Annotation as ORM;

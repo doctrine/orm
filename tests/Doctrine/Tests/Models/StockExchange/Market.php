@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\StockExchange;
 
 use Doctrine\Common\Collections\ArrayCollection;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Mock;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;

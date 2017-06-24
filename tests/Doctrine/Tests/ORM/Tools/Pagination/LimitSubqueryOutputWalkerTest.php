@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Platforms\MySqlPlatform;

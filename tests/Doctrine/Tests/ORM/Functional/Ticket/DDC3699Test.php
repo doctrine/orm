@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationOne;
 use Doctrine\Tests\Models\DDC3699\DDC3699RelationMany;
 use Doctrine\Tests\Models\DDC3699\DDC3699Child;
