@@ -281,7 +281,7 @@ class FileLockRegionTest extends AbstractRegionTest
         foreach ($directoryIterator as $file) {
             if ($file->isFile()) {
                 @unlink($file->getRealPath());
-            } else {
+            } elseif ($file->getRealPath() !== false) {
                 @rmdir($file->getRealPath());
             }
         }

@@ -97,15 +97,15 @@ class XmlExporter extends AbstractExporter
             $discriminatorColumnXml->addAttribute('type', $discrColumn->getTypeName());
 
             if (is_int($discrColumn->getLength())) {
-                $discriminatorColumnXml->addAttribute('length', $discrColumn->getLength());
+                $discriminatorColumnXml->addAttribute('length', (string) $discrColumn->getLength());
             }
 
             if (is_int($discrColumn->getScale())) {
-                $discriminatorColumnXml->addAttribute('scale', $discrColumn->getScale());
+                $discriminatorColumnXml->addAttribute('scale', (string) $discrColumn->getScale());
             }
 
             if (is_int($discrColumn->getPrecision())) {
-                $discriminatorColumnXml->addAttribute('precision', $discrColumn->getPrecision());
+                $discriminatorColumnXml->addAttribute('precision', (string) $discrColumn->getPrecision());
             }
         }
 
@@ -114,7 +114,7 @@ class XmlExporter extends AbstractExporter
 
             foreach ($metadata->discriminatorMap as $value => $className) {
                 $discriminatorMappingXml = $discriminatorMapXml->addChild('discriminator-mapping');
-                $discriminatorMappingXml->addAttribute('value', $value);
+                $discriminatorMappingXml->addAttribute('value', (string) $value);
                 $discriminatorMappingXml->addAttribute('class', $className);
             }
         }
@@ -229,7 +229,7 @@ class XmlExporter extends AbstractExporter
             $a1 = array_search(get_class($m1), $orderMap);
             $a2 = array_search(get_class($m2), $orderMap);
 
-            return strcmp($a1, $a2);
+            return strcmp((string) $a1, (string) $a2);
         });
 
         foreach ($properties as $property) {
@@ -282,15 +282,15 @@ class XmlExporter extends AbstractExporter
         }
 
         if (is_int($property->getLength())) {
-            $fieldXml->addAttribute('length', $property->getLength());
+            $fieldXml->addAttribute('length', (string) $property->getLength());
         }
 
         if (is_int($property->getPrecision())) {
-            $fieldXml->addAttribute('precision', $property->getPrecision());
+            $fieldXml->addAttribute('precision', (string) $property->getPrecision());
         }
 
         if (is_int($property->getScale())) {
-            $fieldXml->addAttribute('scale', $property->getScale());
+            $fieldXml->addAttribute('scale', (string) $property->getScale());
         }
 
         if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $property->getName()) {
@@ -305,7 +305,7 @@ class XmlExporter extends AbstractExporter
             $optionsXml = $fieldXml->addChild('options');
 
             foreach ($property->getOptions() as $key => $value) {
-                $optionXml = $optionsXml->addChild('option', $value);
+                $optionXml = $optionsXml->addChild('option', (string) $value);
 
                 $optionXml->addAttribute('name', $key);
             }
@@ -417,18 +417,18 @@ class XmlExporter extends AbstractExporter
             }
 
             if ($joinColumn->isNullable()) {
-                $joinColumnXml->addAttribute('nullable', $joinColumn->isNullable());
+                $joinColumnXml->addAttribute('nullable', (string) $joinColumn->isNullable());
             }
 
             if ($joinColumn->isUnique()) {
-                $joinColumnXml->addAttribute('unique', $joinColumn->isUnique());
+                $joinColumnXml->addAttribute('unique', (string) $joinColumn->isUnique());
             }
 
             if ($joinColumn->getOptions()) {
                 $optionsXml = $joinColumnXml->addChild('options');
 
                 foreach ($joinColumn->getOptions() as $key => $value) {
-                    $optionXml = $optionsXml->addChild('option', $value);
+                    $optionXml = $optionsXml->addChild('option', (string) $value);
 
                     $optionXml->addAttribute('name', $key);
                 }
@@ -504,7 +504,7 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml = $identifierXmlNode->addChild('sequence-generator');
 
         $sequenceGeneratorXml->addAttribute('sequence-name', $sequenceDefinition['sequenceName']);
-        $sequenceGeneratorXml->addAttribute('allocation-size', $sequenceDefinition['allocationSize']);
+        $sequenceGeneratorXml->addAttribute('allocation-size', (string) $sequenceDefinition['allocationSize']);
     }
 
     /**
