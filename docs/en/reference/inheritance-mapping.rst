@@ -365,8 +365,7 @@ Example:
                 <many-to-many field="groups" target-entity="Group" inversed-by="users">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
-                        <cascade-detach/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-table name="users_groups">
                         <join-columns>
@@ -414,7 +413,7 @@ Example:
               joinColumn:
                 name: address_id
                 referencedColumnName: id
-              cascade: [ persist, merge ]
+              cascade: [ persist, refresh ]
           manyToMany:
             groups:
               targetEntity: Group
@@ -426,7 +425,7 @@ Example:
                 inverseJoinColumns:
                   group_id:
                     referencedColumnName: id
-              cascade: [ persist, merge, detach ]
+              cascade: [ persist, refresh ]
 
         # admin mapping
         MyProject\Model\Admin:
