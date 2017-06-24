@@ -429,7 +429,7 @@ class XmlExporter extends AbstractExporter
     {
         $cascades = [];
 
-        foreach (['remove', 'persist', 'refresh'] as $type) {
+        foreach (['persist', 'remove', 'refresh'] as $type) {
             if (in_array($type, $associationCascades)) {
                 $cascades[] = 'cascade-' . $type;
             }
