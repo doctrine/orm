@@ -756,7 +756,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
 
         // Cascades
-        $cascadeTypes = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $cascadeTypes = ['remove', 'persist', 'refresh'];
         $cascades     = array_map('strtolower', $property->getCascade());
 
         if (in_array('all', $cascades)) {

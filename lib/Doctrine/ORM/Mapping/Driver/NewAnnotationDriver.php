@@ -1127,7 +1127,7 @@ class NewAnnotationDriver implements MappingDriver
      */
     private function getCascade(string $className, string $fieldName, array $originalCascades)
     {
-        $cascadeTypes = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $cascadeTypes = ['remove', 'persist', 'refresh'];
         $cascades     = array_map('strtolower', $originalCascades);
 
         if (in_array('all', $cascades)) {
