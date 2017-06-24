@@ -885,7 +885,7 @@ class XmlDriver extends FileDriver
 
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
         $usage  = isset($cacheMapping['usage'])
-            ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper($cacheMapping['usage'])))
+            ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper((string) $cacheMapping['usage'])))
             : Mapping\CacheUsage::READ_ONLY
         ;
 

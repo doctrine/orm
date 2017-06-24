@@ -77,9 +77,9 @@ abstract class AbstractDriverTest extends DoctrineTestCase
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 
