@@ -17,7 +17,7 @@ class CmsPhonenumber
      */
     public $phonenumber;
     /**
-     * @ORM\ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers", cascade={"merge"})
+     * @ORM\ManyToOne(targetEntity="CmsUser", inversedBy="phonenumbers")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;

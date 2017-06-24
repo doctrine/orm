@@ -192,7 +192,7 @@ class DDC2602User
      * @ORM\OneToOne(
      *     targetEntity="DDC2602Biography",
      *     inversedBy="user",
-     *     cascade={"persist", "merge", "refresh", "remove"}
+     *     cascade={"persist", "refresh", "remove"}
      * )
      * @ORM\JoinColumn(nullable=false)
      *
@@ -218,7 +218,7 @@ class DDC2602Biography
      * @ORM\OneToOne(
      *     targetEntity="DDC2602User",
      *     mappedBy="biography",
-     *     cascade={"persist", "merge", "refresh"}
+     *     cascade={"persist", "refresh"}
      * )
      *
      * @var DDC2602User
@@ -265,7 +265,7 @@ class DDC2602BiographyField
      * @ORM\OneToMany(
      *     targetEntity="DDC2602BiographyFieldChoice",
      *     mappedBy="field",
-     *     cascade={"persist", "merge", "refresh"}
+     *     cascade={"persist", "refresh"}
      * )
      *
      * @var \Doctrine\Common\Collections\ArrayCollection
