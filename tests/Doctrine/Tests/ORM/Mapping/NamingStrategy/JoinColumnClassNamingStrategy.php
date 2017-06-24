@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\NamingStrategy;
 
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance;
 
 use Doctrine\DBAL\Driver\PDOSqlite\Driver;

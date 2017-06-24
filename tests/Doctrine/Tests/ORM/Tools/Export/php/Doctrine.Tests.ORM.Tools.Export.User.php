@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\Tests\ORM\Tools\Export;

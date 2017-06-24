@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
 
 use Doctrine\Common\Collections\ArrayCollection;

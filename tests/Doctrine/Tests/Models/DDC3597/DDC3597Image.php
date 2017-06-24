@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597;
 
 use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
