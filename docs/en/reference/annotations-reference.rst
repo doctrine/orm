@@ -983,7 +983,7 @@ Example:
 
     <?php
     /**
-     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove", "merge"}, orphanRemoval=true)
+     * @OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist", "remove"}, orphanRemoval=true)
      */
     public $phonenumbers;
 

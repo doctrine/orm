@@ -79,7 +79,7 @@ which has mapping metadata that is overridden by the annotation above:
         protected $foo;
 
         /**
-         * @ORM\OneToOne(targetEntity="Bar", cascade={"persist", "merge"})
+         * @ORM\OneToOne(targetEntity="Bar", cascade={"persist", "refresh"})
          * @ORM\JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
          */
         protected $bar;

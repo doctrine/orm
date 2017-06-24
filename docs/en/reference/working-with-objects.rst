@@ -473,7 +473,7 @@ during development.
 .. note::
 
     Do not invoke ``flush`` after every change to an entity
-    or every single invocation of persist/remove/merge/... This is an
+    or every single invocation of persist/remove/refresh/... This is an
     anti-pattern and unnecessarily reduces the performance of your
     application. Instead, form units of work that operate on your
     objects and call ``flush`` when you are done. While serving a
