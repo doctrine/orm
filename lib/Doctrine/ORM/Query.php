@@ -371,6 +371,25 @@ final class Query extends AbstractQuery
         $this->_em->getCache()->evictEntityRegion($className);
     }
 
+    private function getAllDiscriminators(ClassMetadata $classMetadata)
+    {
+        // FIXME: this code is copied from SqlWalker->getAllDiscriminators()
+        $hierarchyClasses = $classMetadata->subClasses;
+        $hierarchyClasses[] = $classMetadata->name;
+
+        $discriminators = [];
+        foreach ($hierarchyClasses as $class) {
+            $currentMetadata = $this->getEntityManager()->getClassMetadata($class);
+            $currentDiscriminator = $currentMetadata->discriminatorValue;
+
+            if (null !== $currentDiscriminator) {
+                $discriminators[$currentDiscriminator] = null;
+            }
+        }
+
+        return $discriminators;
+    }
+
     /**
      * Processes query parameter mappings.
      *
@@ -396,6 +415,10 @@ final class Query extends AbstractQuery
 
             if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
                 $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
+            }
+
+            if (isset($rsm->discriminatorParameters[$key]) && $value instanceof ClassMetadata) {
+                $value = array_keys($this->getAllDiscriminators($value));
             }
 
             $value = $this->processParameterValue($value);
