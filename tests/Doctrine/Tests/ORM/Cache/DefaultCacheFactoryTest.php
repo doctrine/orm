@@ -269,7 +269,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister  = new BasicEntityPersister($em, $metadata);
 
         $metadata->setCache(
-            new CacheMetadata(-1, 'doctrine_tests_models_cache_state')
+            new CacheMetadata('-1', 'doctrine_tests_models_cache_state')
         );
 
         $this->expectException(\InvalidArgumentException::class);
@@ -286,7 +286,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $persister   = new OneToManyPersister($em);
 
         $association->setCache(
-            new CacheMetadata(-1, 'doctrine_tests_models_cache_state__cities')
+            new CacheMetadata('-1', 'doctrine_tests_models_cache_state__cities')
         );
 
         $this->expectException(\InvalidArgumentException::class);

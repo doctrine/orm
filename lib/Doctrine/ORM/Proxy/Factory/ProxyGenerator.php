@@ -544,7 +544,7 @@ EOT;
             }
 
             // Do not consider identifier-getter methods
-            $fieldCandidate = lcfirst(substr($reflectionMethod->getName(), 3));
+            $fieldCandidate = lcfirst((string) substr($reflectionMethod->getName(), 3));
             $isIdentifier   = $reflectionMethod->getNumberOfParameters() === 0
                 && strpos($reflectionMethod->getName(), 'get') === 0
                 && $classMetadata->hasField($fieldCandidate)

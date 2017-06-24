@@ -484,7 +484,7 @@ class Parser
         $length = ($pos !== false) ? $pos - $token['position'] : $distance;
 
         $tokenPos = (isset($token['position']) && $token['position'] > 0) ? $token['position'] : '-1';
-        $tokenStr = substr($dql, $token['position'], $length);
+        $tokenStr = substr($dql, (int) $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;

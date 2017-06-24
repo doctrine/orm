@@ -1618,7 +1618,7 @@ class SqlWalker implements TreeWalker
                     $class     = $qComp['metadata'];
                     $fieldType = $class->getProperty($e->field)->getType();
 
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
                 case ($e instanceof AST\Literal):
@@ -1632,11 +1632,11 @@ class SqlWalker implements TreeWalker
                             break;
                     }
 
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
                 default:
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
             }
 
