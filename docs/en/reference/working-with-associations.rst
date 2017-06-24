@@ -410,7 +410,7 @@ Transitive persistence / Cascade Operations
 Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
-``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
+``persist``, ``remove``, ``refresh`` or ``all``.
 
 The main use case for ``cascade: persist`` is to avoid "exposing" associated entities to your PHP application.
 Continuing with the User-Comment example of this chapter, this is how the creation of a new user and a new
