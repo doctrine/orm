@@ -79,7 +79,7 @@ class <className> extends <repositoryName>
      */
     private function getClassNamespace($fullClassName)
     {
-        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        $namespace = substr($fullClassName, 0, (int) strrpos($fullClassName, '\\'));
 
         return $namespace;
     }
