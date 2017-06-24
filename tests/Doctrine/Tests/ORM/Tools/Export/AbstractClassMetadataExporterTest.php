@@ -245,8 +245,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertNotContains('merge', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
         self::assertTrue($property->isOrphanRemoval());
         self::assertEquals(FetchMode::EAGER, $property->getFetchMode());
 
@@ -283,8 +281,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
         self::assertTrue($property->isOrphanRemoval());
         self::assertEquals(FetchMode::LAZY, $property->getFetchMode());
 
@@ -321,8 +317,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertContains('refresh', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
-        self::assertContains('detach', $property->getCascade());
 
         self::assertEquals(FetchMode::EXTRA_LAZY, $property->getFetchMode());
 
@@ -358,10 +352,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertNotNull($property);
 
         self::assertContains('persist', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
         self::assertContains('remove', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
 
         self::assertTrue($property->isOrphanRemoval());
 
