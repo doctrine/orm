@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\LazyLoading;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;

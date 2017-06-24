@@ -1,7 +1,9 @@
 <?php
 
-use Doctrine\ORM\Events;
+declare(strict_types=1);
+
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\Tests\ORM\Tools\Export;
 use Doctrine\Tests\ORM\Tools\Export\AddressListener;

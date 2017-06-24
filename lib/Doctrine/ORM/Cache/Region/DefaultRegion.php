@@ -18,6 +18,8 @@
  * <http://www.doctrine-project.org>.
  */
 
+declare(strict_types=1);
+
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\Common\Cache\Cache as CacheAdapter;
