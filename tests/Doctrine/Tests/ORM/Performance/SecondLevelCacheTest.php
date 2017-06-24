@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Performance;
 
 use Doctrine\DBAL\Logging\DebugStack;

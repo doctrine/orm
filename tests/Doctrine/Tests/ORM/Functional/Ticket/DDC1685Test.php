@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;

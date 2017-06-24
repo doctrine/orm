@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Proxy;
 
 use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
