@@ -40,7 +40,7 @@ final class MappingDescribeCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName('orm:mapping:describe')
@@ -78,7 +78,7 @@ EOT
      * @param EntityManagerInterface $entityManager
      * @param OutputInterface        $output
      */
-    private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
+    private function displayEntity(string $entityName, EntityManagerInterface $entityManager, OutputInterface $output): void
     {
         $table = new Table($output);
 
@@ -163,7 +163,7 @@ EOT
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
+    private function getClassMetadata(string $entityName, EntityManagerInterface $entityManager): \Doctrine\ORM\Mapping\ClassMetadata
     {
         try {
             return $entityManager->getClassMetadata($entityName);
@@ -201,7 +201,7 @@ EOT
      *
      * @return string
      */
-    private function formatValue($value)
+    private function formatValue($value): string
     {
         if ('' === $value) {
             return '';
@@ -246,7 +246,7 @@ EOT
      *
      * @return array
      */
-    private function formatField($label, $value)
+    private function formatField(string $label, $value): array
     {
         if (null === $value) {
             $value = '<comment>None</comment>';
@@ -262,7 +262,7 @@ EOT
      *
      * @return array
      */
-    private function formatMappings(array $propertyMappings)
+    private function formatMappings(array $propertyMappings): array
     {
         $output = [];
 
@@ -284,7 +284,7 @@ EOT
      *
      * @return array
      */
-    private function formatEntityListeners(array $entityListeners)
+    private function formatEntityListeners(array $entityListeners): array
     {
         return $this->formatField(
             'Entity listeners',

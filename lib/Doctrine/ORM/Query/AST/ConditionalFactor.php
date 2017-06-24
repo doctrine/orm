@@ -44,7 +44,7 @@ class ConditionalFactor extends Node
     /**
      * @param ConditionalPrimary $conditionalPrimary
      */
-    public function __construct($conditionalPrimary)
+    public function __construct(ConditionalPrimary $conditionalPrimary)
     {
         $this->conditionalPrimary = $conditionalPrimary;
     }

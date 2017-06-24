@@ -42,7 +42,7 @@ class ValidateSchemaCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:validate-schema')

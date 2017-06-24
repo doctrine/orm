@@ -49,7 +49,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * @return void
      */
-    public function walkComparison(Comparison $comparison)
+    public function walkComparison(Comparison $comparison): void
     {
         $value          = $this->getValueFromComparison($comparison);
         $field          = $comparison->getField();
@@ -72,7 +72,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * @return void
      */
-    public function walkCompositeExpression(CompositeExpression $expr)
+    public function walkCompositeExpression(CompositeExpression $expr): void
     {
         foreach ($expr->getExpressionList() as $child) {
             $this->dispatch($child);
@@ -96,7 +96,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * @return array
      */
-    public function getParamsAndTypes()
+    public function getParamsAndTypes(): array
     {
         return [$this->values, $this->types];
     }

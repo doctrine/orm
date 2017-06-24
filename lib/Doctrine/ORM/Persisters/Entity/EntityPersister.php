@@ -35,21 +35,21 @@ interface EntityPersister
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    public function getClassMetadata();
+    public function getClassMetadata(): \Doctrine\ORM\Mapping\ClassMetadata;
 
     /**
      * Gets the ResultSetMapping used for hydration.
      *
      * @return \Doctrine\ORM\Query\ResultSetMapping
      */
-    public function getResultSetMapping();
+    public function getResultSetMapping(): \Doctrine\ORM\Query\ResultSetMapping;
 
     /**
      * Get all queued inserts.
      *
      * @return array
     */
-    public function getInserts();
+    public function getInserts(): array;
 
      /**
      * @TODO - It should not be here.
@@ -59,7 +59,7 @@ interface EntityPersister
      *
      * @return string
      */
-    public function getInsertSQL();
+    public function getInsertSQL(): string;
 
     /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
@@ -73,7 +73,7 @@ interface EntityPersister
      *
      * @return string
      */
-    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null);
+    public function getSelectSQL($criteria, $assoc = null, $lockMode = null, $limit = null, $offset = null, array $orderBy = null): string;
 
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
@@ -82,7 +82,7 @@ interface EntityPersister
      *
      * @return string
      */
-    public function getCountSQL($criteria = []);
+    public function getCountSQL($criteria = []): string;
 
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
@@ -91,7 +91,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function expandParameters($criteria);
+    public function expandParameters($criteria): array;
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
@@ -100,7 +100,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function expandCriteriaParameters(Criteria $criteria);
+    public function expandCriteriaParameters(Criteria $criteria): array;
 
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.
@@ -112,7 +112,7 @@ interface EntityPersister
      *
      * @return string
      */
-    public function getSelectConditionStatementSQL($field, $value, $assoc = null, $comparison = null);
+    public function getSelectConditionStatementSQL(string $field, $value, $assoc = null, $comparison = null): string;
 
     /**
      * Adds an entity to the queued insertions.
@@ -122,7 +122,7 @@ interface EntityPersister
      *
      * @return void
      */
-    public function addInsert($entity);
+    public function addInsert($entity): void;
 
     /**
      * Executes all queued entity insertions and returns any generated post-insert
@@ -133,7 +133,7 @@ interface EntityPersister
      * @return array An array of any generated post-insert IDs. This will be an empty array
      *               if the entity class does not use the IDENTITY generation strategy.
      */
-    public function executeInserts();
+    public function executeInserts(): array;
 
     /**
      * Updates a managed entity. The entity is updated according to its current changeset
@@ -143,7 +143,7 @@ interface EntityPersister
      *
      * @return void
      */
-    public function update($entity);
+    public function update($entity): void;
 
     /**
      * Deletes a managed entity.
@@ -157,7 +157,7 @@ interface EntityPersister
      *
      * @return bool TRUE if the entity got deleted in the database, FALSE otherwise.
      */
-    public function delete($entity);
+    public function delete($entity): bool;
 
     /**
      * Count entities (optionally filtered by a criteria)
@@ -166,7 +166,7 @@ interface EntityPersister
      *
      * @return int
      */
-    public function count($criteria = []);
+    public function count($criteria = []): int;
 
     /**
      * Gets the name of the table that owns the column the given field is mapped to.
@@ -179,7 +179,7 @@ interface EntityPersister
      *
      * @return string The table name.
      */
-    public function getOwningTable($fieldName);
+    public function getOwningTable(string $fieldName): string;
 
     /**
      * Loads an entity by a list of field criteria.
@@ -240,7 +240,7 @@ interface EntityPersister
      *
      * @return void
      */
-    public function refresh(array $id, $entity, $lockMode = null);
+    public function refresh(array $id, $entity, $lockMode = null): void;
 
     /**
      * Loads Entities matching the given Criteria object.
@@ -249,7 +249,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadCriteria(Criteria $criteria);
+    public function loadCriteria(Criteria $criteria): array;
 
     /**
      * Loads a list of entities by a list of field criteria.
@@ -261,7 +261,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadAll(array $criteria = [], array $orderBy = null, $limit = null, $offset = null);
+    public function loadAll(array $criteria = [], array $orderBy = null, ?int $limit = null, ?int $offset = null): array;
 
     /**
      * Gets (sliced or full) elements of the given collection.
@@ -273,7 +273,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null);
+    public function getManyToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null): array;
 
     /**
      * Loads a collection of entities of a many-to-many association.
@@ -284,7 +284,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection);
+    public function loadManyToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection): array;
 
     /**
      * Loads a collection of entities in a one-to-many association.
@@ -295,7 +295,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection);
+    public function loadOneToManyCollection(array $assoc, $sourceEntity, PersistentCollection $collection): array;
 
     /**
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
@@ -305,7 +305,7 @@ interface EntityPersister
      *
      * @return void
      */
-    public function lock(array $criteria, $lockMode);
+    public function lock(array $criteria, int $lockMode): void;
 
     /**
      * Returns an array with (sliced or full list) of elements in the specified collection.
@@ -317,7 +317,7 @@ interface EntityPersister
      *
      * @return array
      */
-    public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null);
+    public function getOneToManyCollection(array $assoc, $sourceEntity, $offset = null, $limit = null): array;
 
     /**
      * Checks whether the given managed entity exists in the database.
@@ -327,5 +327,5 @@ interface EntityPersister
      *
      * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
      */
-    public function exists($entity, Criteria $extraConditions = null);
+    public function exists($entity, Criteria $extraConditions = null): bool;
 }

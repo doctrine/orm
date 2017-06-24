@@ -53,7 +53,7 @@ class OrderByItem extends Node
     /**
      * @return bool
      */
-    public function isAsc()
+    public function isAsc(): bool
     {
         return strtoupper($this->type) == 'ASC';
     }
@@ -61,7 +61,7 @@ class OrderByItem extends Node
     /**
      * @return bool
      */
-    public function isDesc()
+    public function isDesc(): bool
     {
         return strtoupper($this->type) == 'DESC';
     }

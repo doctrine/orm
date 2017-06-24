@@ -162,7 +162,7 @@ class PhpExporter extends AbstractExporter
      *
      * @return string
      */
-    protected function _varExport($var)
+    protected function _varExport($var): string
     {
         $export = var_export($var, true);
         $export = str_replace("\n", PHP_EOL . str_repeat(' ', 8), $export);

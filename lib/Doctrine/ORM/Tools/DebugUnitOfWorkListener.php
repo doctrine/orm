@@ -51,18 +51,13 @@ class DebugUnitOfWorkListener
      * @param string $file
      * @param string $context
      */
-    public function __construct($file = 'php://output', $context = '')
+    public function __construct(string $file = 'php://output', string $context = '')
     {
         $this->file = $file;
         $this->context = $context;
     }
 
-    /**
-     * @param \Doctrine\ORM\Event\OnFlushEventArgs $args
-     *
-     * @return void
-     */
-    public function onFlush(OnFlushEventArgs $args)
+    public function onFlush(OnFlushEventArgs $args): void
     {
         $this->dumpIdentityMap($args->getEntityManager());
     }
@@ -74,7 +69,7 @@ class DebugUnitOfWorkListener
      *
      * @return void
      */
-    public function dumpIdentityMap(EntityManagerInterface $em)
+    public function dumpIdentityMap(EntityManagerInterface $em): void
     {
         $uow = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
@@ -139,7 +134,7 @@ class DebugUnitOfWorkListener
      *
      * @return string
      */
-    private function getType($var)
+    private function getType($var): string
     {
         if (is_object($var)) {
             $refl = new \ReflectionObject($var);
@@ -156,7 +151,7 @@ class DebugUnitOfWorkListener
      *
      * @return string
      */
-    private function getIdString($entity, UnitOfWork $uow)
+    private function getIdString($entity, UnitOfWork $uow): string
     {
         if ($uow->isInIdentityMap($entity)) {
             $ids = $uow->getEntityIdentifier($entity);

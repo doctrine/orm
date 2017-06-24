@@ -54,7 +54,7 @@ class CollectionCacheKey extends CacheKey
      * @param string $association     The field name that represents the association.
      * @param array  $ownerIdentifier The identifier of the owning entity.
      */
-    public function __construct($entityClass, $association, array $ownerIdentifier)
+    public function __construct(string $entityClass, string $association, array $ownerIdentifier)
     {
         ksort($ownerIdentifier);
 

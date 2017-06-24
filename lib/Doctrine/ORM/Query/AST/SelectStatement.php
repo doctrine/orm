@@ -65,7 +65,7 @@ class SelectStatement extends Node
      * @param SelectClause $selectClause
      * @param FromClause   $fromClause
      */
-    public function __construct($selectClause, $fromClause)
+    public function __construct(SelectClause $selectClause, FromClause $fromClause)
     {
         $this->selectClause = $selectClause;
         $this->fromClause = $fromClause;

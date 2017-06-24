@@ -36,12 +36,12 @@ interface CachedCollectionPersister extends CachedPersister, CollectionPersister
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    public function getSourceEntityMetadata();
+    public function getSourceEntityMetadata(): \Doctrine\ORM\Mapping\ClassMetadata;
 
     /**
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    public function getTargetEntityMetadata();
+    public function getTargetEntityMetadata(): \Doctrine\ORM\Mapping\ClassMetadata;
 
     /**
      * Loads a collection from cache
@@ -51,7 +51,7 @@ interface CachedCollectionPersister extends CachedPersister, CollectionPersister
      *
      * @return \Doctrine\ORM\PersistentCollection|null
      */
-    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key);
+    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key): ?\Doctrine\ORM\PersistentCollection;
 
     /**
      * Stores a collection into cache
@@ -61,5 +61,5 @@ interface CachedCollectionPersister extends CachedPersister, CollectionPersister
      *
      * @return void
      */
-    public function storeCollectionCache(CollectionCacheKey $key, $elements);
+    public function storeCollectionCache(CollectionCacheKey $key, $elements): void;
 }

@@ -57,7 +57,7 @@ class Parameter
      * @param mixed  $value Parameter value
      * @param mixed  $type  Parameter type
      */
-    public function __construct($name, $value, $type = null)
+    public function __construct(string $name, $value, $type = null)
     {
         $this->name = trim($name, ':');
 
@@ -69,7 +69,7 @@ class Parameter
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -100,7 +100,7 @@ class Parameter
      * @param mixed $value Parameter value.
      * @param mixed $type  Parameter type.
      */
-    public function setValue($value, $type = null)
+    public function setValue($value, $type = null): void
     {
         $this->value = $value;
         $this->type  = $type ?: ParameterTypeInferer::inferType($value);

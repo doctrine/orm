@@ -57,7 +57,7 @@ class GenerateSchemaEventArgs extends EventArgs
     /**
      * @return EntityManagerInterface
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->em;
     }
@@ -65,7 +65,7 @@ class GenerateSchemaEventArgs extends EventArgs
     /**
      * @return Schema
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         return $this->schema;
     }

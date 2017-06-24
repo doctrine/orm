@@ -45,7 +45,7 @@ class JoinAssociationPathExpression extends Node
      * @param string $identificationVariable
      * @param string $associationField
      */
-    public function __construct($identificationVariable, $associationField)
+    public function __construct(string $identificationVariable, string $associationField)
     {
         $this->identificationVariable = $identificationVariable;
         $this->associationField       = $associationField;

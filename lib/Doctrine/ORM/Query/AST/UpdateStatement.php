@@ -44,7 +44,7 @@ class UpdateStatement extends Node
     /**
      * @param UpdateClause $updateClause
      */
-    public function __construct($updateClause)
+    public function __construct(UpdateClause $updateClause)
     {
         $this->updateClause = $updateClause;
     }

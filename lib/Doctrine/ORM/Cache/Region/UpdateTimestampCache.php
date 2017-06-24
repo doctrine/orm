@@ -35,7 +35,7 @@ class UpdateTimestampCache extends DefaultRegion implements TimestampRegion
     /**
      * {@inheritdoc}
      */
-    public function update(CacheKey $key)
+    public function update(CacheKey $key): void
     {
         $this->put($key, new TimestampCacheEntry);
     }

@@ -136,7 +136,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function addInsert($entity)
+    public function addInsert($entity): void
     {
         $this->persister->addInsert($entity);
     }
@@ -216,7 +216,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * @return \Doctrine\ORM\Cache\EntityHydrator
      */
-    public function getEntityHydrator()
+    public function getEntityHydrator(): \Doctrine\ORM\Cache\EntityHydrator
     {
         return $this->hydrator;
     }
@@ -246,7 +246,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * @param object $entity
      */
-    private function storeJoinedAssociations($entity)
+    private function storeJoinedAssociations($entity): void
     {
         if ($this->joinedAssociations === null) {
             $associations = [];
@@ -291,7 +291,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      *
      * @return string
      */
-    protected function getHash($query, $criteria, array $orderBy = null, $limit = null, $offset = null)
+    protected function getHash(array $query, string $criteria, array $orderBy = null, int $limit = null, int $offset = null): string
     {
         list($params) = ($criteria instanceof Criteria)
             ? $this->persister->expandCriteriaParameters($criteria)
@@ -621,7 +621,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function lock(array $criteria, $lockMode)
+    public function lock(array $criteria, $lockMode): void
     {
         $this->persister->lock($criteria, $lockMode);
     }
@@ -629,7 +629,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, $entity, $lockMode = null)
+    public function refresh(array $id, $entity, $lockMode = null): void
     {
         $this->persister->refresh($id, $entity, $lockMode);
     }
@@ -640,7 +640,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      *
      * @return CollectionCacheKey
      */
-    protected function buildCollectionCacheKey(array $association, $ownerId)
+    protected function buildCollectionCacheKey(array $association, array $ownerId): CollectionCacheKey
     {
         /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($association['sourceEntity']);

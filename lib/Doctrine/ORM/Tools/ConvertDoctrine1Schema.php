@@ -60,7 +60,7 @@ class ConvertDoctrine1Schema
      *
      * @author Jonathan Wage
      */
-    public function __construct($from)
+    public function __construct(array $from)
     {
         $this->from = (array) $from;
     }
@@ -71,7 +71,7 @@ class ConvertDoctrine1Schema
      *
      * @return array An array of ClassMetadataInfo instances
      */
-    public function getMetadata()
+    public function getMetadata(): array
     {
         $schema = [];
         foreach ($this->from as $path) {
@@ -99,7 +99,7 @@ class ConvertDoctrine1Schema
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadataInfo
      */
-    private function convertToClassMetadataInfo($className, $mappingInformation)
+    private function convertToClassMetadataInfo(string $className, array $mappingInformation): \Doctrine\ORM\Mapping\ClassMetadataInfo
     {
         $metadata = new ClassMetadataInfo($className);
 
@@ -118,7 +118,7 @@ class ConvertDoctrine1Schema
      *
      * @return void
      */
-    private function convertTableName($className, array $model, ClassMetadataInfo $metadata)
+    private function convertTableName(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (isset($model['tableName']) && $model['tableName']) {
             $e = explode('.', $model['tableName']);
@@ -139,7 +139,7 @@ class ConvertDoctrine1Schema
      *
      * @return void
      */
-    private function convertColumns($className, array $model, ClassMetadataInfo $metadata)
+    private function convertColumns(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         $id = false;
 
@@ -175,7 +175,7 @@ class ConvertDoctrine1Schema
      *
      * @throws ToolsException
      */
-    private function convertColumn($className, $name, $column, ClassMetadataInfo $metadata)
+    private function convertColumn(string $className, string $name, $column, ClassMetadataInfo $metadata): array
     {
         if (is_string($column)) {
             $string = $column;
@@ -263,7 +263,7 @@ class ConvertDoctrine1Schema
      *
      * @return void
      */
-    private function convertIndexes($className, array $model, ClassMetadataInfo $metadata)
+    private function convertIndexes(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (empty($model['indexes'])) {
             return;
@@ -286,7 +286,7 @@ class ConvertDoctrine1Schema
      *
      * @return void
      */
-    private function convertRelations($className, array $model, ClassMetadataInfo $metadata)
+    private function convertRelations(string $className, array $model, ClassMetadataInfo $metadata): void
     {
         if (empty($model['relations'])) {
             return;

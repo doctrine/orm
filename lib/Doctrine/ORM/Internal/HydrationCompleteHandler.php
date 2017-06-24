@@ -68,7 +68,7 @@ final class HydrationCompleteHandler
      * @param ClassMetadata $class
      * @param object        $entity
      */
-    public function deferPostLoadInvoking(ClassMetadata $class, $entity)
+    public function deferPostLoadInvoking(ClassMetadata $class, $entity): void
     {
         $invoke = $this->listenersInvoker->getSubscribedSystems($class, Events::postLoad);
 
@@ -84,7 +84,7 @@ final class HydrationCompleteHandler
      *
      * Method fires all deferred invocations of postLoad events
      */
-    public function hydrationComplete()
+    public function hydrationComplete(): void
     {
         $toInvoke                          = $this->deferredPostLoadInvocations;
         $this->deferredPostLoadInvocations = [];

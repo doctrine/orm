@@ -47,7 +47,7 @@ class Version
      * @return int Returns -1 if older, 0 if it is the same, 1 if version
      *             passed as argument is newer.
      */
-    public static function compare($version)
+    public static function compare(string $version): int
     {
         $currentVersion = str_replace(' ', '', strtolower(self::VERSION));
         $version        = str_replace(' ', '', $version);

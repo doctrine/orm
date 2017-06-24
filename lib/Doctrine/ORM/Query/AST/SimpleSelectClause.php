@@ -45,7 +45,7 @@ class SimpleSelectClause extends Node
      * @param SimpleSelectExpression $simpleSelectExpression
      * @param bool                   $isDistinct
      */
-    public function __construct($simpleSelectExpression, $isDistinct)
+    public function __construct(SimpleSelectExpression $simpleSelectExpression, bool $isDistinct)
     {
         $this->simpleSelectExpression = $simpleSelectExpression;
         $this->isDistinct = $isDistinct;

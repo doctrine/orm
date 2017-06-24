@@ -48,7 +48,7 @@ class EntityCacheEntry implements CacheEntry
      * @param string $class The entity class.
      * @param array  $data  The entity data.
      */
-    public function __construct($class, array $data)
+    public function __construct(string $class, array $data)
     {
         $this->class = $class;
         $this->data  = $data;
@@ -63,7 +63,7 @@ class EntityCacheEntry implements CacheEntry
      *
      * @return EntityCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): EntityCacheEntry
     {
         return new self($values['class'], $values['data']);
     }
@@ -75,7 +75,7 @@ class EntityCacheEntry implements CacheEntry
      *
      * @return array
      */
-    public function resolveAssociationEntries(EntityManagerInterface $em)
+    public function resolveAssociationEntries(EntityManagerInterface $em): array
     {
         return array_map(function($value) use ($em) {
             if ( ! ($value instanceof AssociationCacheEntry)) {

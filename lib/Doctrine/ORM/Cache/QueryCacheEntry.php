@@ -46,7 +46,7 @@ class QueryCacheEntry implements CacheEntry
      * @param array $result
      * @param float $time
      */
-    public function __construct($result, $time = null)
+    public function __construct(array $result, float $time = null)
     {
         $this->result = $result;
         $this->time   = $time ?: microtime(true);
@@ -57,7 +57,7 @@ class QueryCacheEntry implements CacheEntry
      *
      * @return QueryCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): QueryCacheEntry
     {
         return new self($values['result'], $values['time']);
     }

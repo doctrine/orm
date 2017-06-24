@@ -39,7 +39,7 @@ class OptimisticLockException extends ORMException
      * @param string $msg
      * @param object $entity
      */
-    public function __construct($msg, $entity)
+    public function __construct(string $msg, $entity)
     {
         parent::__construct($msg);
         $this->entity = $entity;
@@ -60,7 +60,7 @@ class OptimisticLockException extends ORMException
      *
      * @return OptimisticLockException
      */
-    public static function lockFailed($entity)
+    public static function lockFailed($entity): OptimisticLockException
     {
         return new self("The optimistic lock on an entity failed.", $entity);
     }
@@ -72,7 +72,7 @@ class OptimisticLockException extends ORMException
      *
      * @return OptimisticLockException
      */
-    public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion)
+    public static function lockFailedVersionMismatch($entity, $expectedLockVersion, $actualLockVersion): OptimisticLockException
     {
         $expectedLockVersion = ($expectedLockVersion instanceof \DateTime) ? $expectedLockVersion->getTimestamp() : $expectedLockVersion;
         $actualLockVersion = ($actualLockVersion instanceof \DateTime) ? $actualLockVersion->getTimestamp() : $actualLockVersion;
@@ -85,7 +85,7 @@ class OptimisticLockException extends ORMException
      *
      * @return OptimisticLockException
      */
-    public static function notVersioned($entityName)
+    public static function notVersioned(string $entityName): OptimisticLockException
     {
         return new self("Cannot obtain optimistic lock on unversioned entity " . $entityName, null);
     }

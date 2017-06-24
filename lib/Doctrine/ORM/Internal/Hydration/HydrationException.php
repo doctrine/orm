@@ -25,7 +25,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
     /**
      * @return HydrationException
      */
-    public static function nonUniqueResult()
+    public static function nonUniqueResult(): HydrationException
     {
         return new self("The result returned by the query was not unique.");
     }
@@ -36,7 +36,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
      *
      * @return HydrationException
      */
-    public static function parentObjectOfRelationNotFound($alias, $parentAlias)
+    public static function parentObjectOfRelationNotFound(string $alias, string $parentAlias): HydrationException
     {
         return new self("The parent object of entity result with alias '$alias' was not found."
             . " The parent alias is '$parentAlias'.");
@@ -47,7 +47,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
      *
      * @return HydrationException
      */
-    public static function emptyDiscriminatorValue($dqlAlias)
+    public static function emptyDiscriminatorValue(string $dqlAlias): HydrationException
     {
         return new self("The DQL alias '" . $dqlAlias . "' contains an entity ".
             "of an inheritance hierarchy with an empty discriminator value. This means " .
@@ -65,7 +65,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
      *
      * @return HydrationException
      */
-    public static function missingDiscriminatorColumn($entityName, $discrColumnName, $dqlAlias)
+    public static function missingDiscriminatorColumn(string $entityName, string $discrColumnName, string $dqlAlias): HydrationException
     {
         return new self(sprintf(
             'The discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
@@ -82,7 +82,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
      *
      * @return HydrationException
      */
-    public static function missingDiscriminatorMetaMappingColumn($entityName, $discrColumnName, $dqlAlias)
+    public static function missingDiscriminatorMetaMappingColumn(string $entityName, string $discrColumnName, string $dqlAlias): HydrationException
     {
         return new self(sprintf(
             'The meta mapping for the discriminator column "%s" is missing for "%s" using the DQL alias "%s".',
@@ -96,7 +96,7 @@ class HydrationException extends \Doctrine\ORM\ORMException
      *
      * @return HydrationException
      */
-    public static function invalidDiscriminatorValue($discrValue, $discrMap)
+    public static function invalidDiscriminatorValue(string $discrValue, array $discrMap): HydrationException
     {
         return new self(sprintf(
             'The discriminator value "%s" is invalid. It must be one of "%s".',

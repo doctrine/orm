@@ -85,7 +85,7 @@ class SchemaTool
      *
      * @throws ToolsException
      */
-    public function createSchema(array $classes)
+    public function createSchema(array $classes): void
     {
         $createSchemaSql = $this->getCreateSchemaSql($classes);
         $conn = $this->em->getConnection();
@@ -107,7 +107,7 @@ class SchemaTool
      *
      * @return array The SQL statements needed to create the schema for the classes.
      */
-    public function getCreateSchemaSql(array $classes)
+    public function getCreateSchemaSql(array $classes): array
     {
         $schema = $this->getSchemaFromMetadata($classes);
 
@@ -122,7 +122,7 @@ class SchemaTool
      *
      * @return bool
      */
-    private function processingNotRequired($class, array $processedClasses)
+    private function processingNotRequired(ClassMetadata $class, array $processedClasses): bool
     {
         return (
             isset($processedClasses[$class->name]) ||
@@ -141,7 +141,7 @@ class SchemaTool
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    public function getSchemaFromMetadata(array $classes)
+    public function getSchemaFromMetadata(array $classes): Schema
     {
         // Reminder for processed classes, used for hierarchies
         $processedClasses       = [];
@@ -354,7 +354,7 @@ class SchemaTool
      *
      * @return void
      */
-    private function addDiscriminatorColumnDefinition($class, Table $table)
+    private function addDiscriminatorColumnDefinition(ClassMetadata $class, Table $table): void
     {
         $discrColumn = $class->discriminatorColumn;
 
@@ -386,7 +386,7 @@ class SchemaTool
      *
      * @return void
      */
-    private function gatherColumns($class, Table $table)
+    private function gatherColumns(ClassMetadata $class, Table $table): void
     {
         $pkColumns = [];
 
@@ -412,7 +412,7 @@ class SchemaTool
      *
      * @return void
      */
-    private function gatherColumn($class, array $mapping, Table $table)
+    private function gatherColumn(ClassMetadata $class, array $mapping, Table $table): void
     {
         $columnName = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
         $columnType = $mapping['type'];
@@ -495,7 +495,7 @@ class SchemaTool
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
+    private function gatherRelationsSql(ClassMetadata $class, Table $table, Schema $schema, array &$addedFks, array &$blacklistedFks): void
     {
         foreach ($class->associationMappings as $mapping) {
             if (isset($mapping['inherited'])) {
@@ -570,7 +570,7 @@ class SchemaTool
      *
      * @return array (ClassMetadata, referencedFieldName)
      */
-    private function getDefiningClass($class, $referencedColumnName)
+    private function getDefiningClass(ClassMetadata $class, string $referencedColumnName): array
     {
         $referencedFieldName = $class->getFieldName($referencedColumnName);
 
@@ -610,14 +610,14 @@ class SchemaTool
      * @throws \Doctrine\ORM\ORMException
      */
     private function gatherRelationJoinColumns(
-        $joinColumns,
-        $theJoinTable,
-        $class,
-        $mapping,
-        &$primaryKeyColumns,
-        &$addedFks,
-        &$blacklistedFks
-    )
+        array $joinColumns,
+        Table $theJoinTable,
+        ClassMetadata $class,
+        array $mapping,
+        array &$primaryKeyColumns,
+        array &$addedFks,
+        array &$blacklistedFks
+    ): void
     {
         $localColumns       = [];
         $foreignColumns     = [];
@@ -735,7 +735,7 @@ class SchemaTool
      *
      * @return void
      */
-    public function dropSchema(array $classes)
+    public function dropSchema(array $classes): void
     {
         $dropSchemaSql = $this->getDropSchemaSQL($classes);
         $conn = $this->em->getConnection();
@@ -754,7 +754,7 @@ class SchemaTool
      *
      * @return void
      */
-    public function dropDatabase()
+    public function dropDatabase(): void
     {
         $dropSchemaSql = $this->getDropDatabaseSQL();
         $conn = $this->em->getConnection();
@@ -769,7 +769,7 @@ class SchemaTool
      *
      * @return array
      */
-    public function getDropDatabaseSQL()
+    public function getDropDatabaseSQL(): array
     {
         $sm = $this->em->getConnection()->getSchemaManager();
         $schema = $sm->createSchema();
@@ -787,7 +787,7 @@ class SchemaTool
      *
      * @return array
      */
-    public function getDropSchemaSQL(array $classes)
+    public function getDropSchemaSQL(array $classes): array
     {
         $visitor = new DropSchemaSqlCollector($this->platform);
         $schema = $this->getSchemaFromMetadata($classes);
@@ -843,7 +843,7 @@ class SchemaTool
      *
      * @return void
      */
-    public function updateSchema(array $classes, $saveMode = false)
+    public function updateSchema(array $classes, bool $saveMode = false): void
     {
         $updateSchemaSql = $this->getUpdateSchemaSql($classes, $saveMode);
         $conn = $this->em->getConnection();
@@ -863,7 +863,7 @@ class SchemaTool
      *
      * @return array The sequence of SQL statements.
      */
-    public function getUpdateSchemaSql(array $classes, $saveMode = false)
+    public function getUpdateSchemaSql(array $classes, bool $saveMode = false): array
     {
         $sm = $this->em->getConnection()->getSchemaManager();
 

@@ -46,7 +46,7 @@ class AttachEntityListenersListener
      *
      * @return void
      */
-    public function addEntityListener($entityClass, $listenerClass, $eventName, $listenerCallback = null)
+    public function addEntityListener(string $entityClass, string $listenerClass, string $eventName, ?string $listenerCallback = null): void
     {
         $this->entityListeners[ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
@@ -62,7 +62,7 @@ class AttachEntityListenersListener
      *
      * @return void
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $event)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $event): void
     {
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata = $event->getClassMetadata();

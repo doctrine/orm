@@ -52,7 +52,7 @@ class RegionsConfiguration
      * @param integer $defaultLifetime
      * @param integer $defaultLockLifetime
      */
-    public function __construct($defaultLifetime = 3600, $defaultLockLifetime = 60)
+    public function __construct(int $defaultLifetime = 3600, int $defaultLockLifetime = 60)
     {
         $this->defaultLifetime      = (integer) $defaultLifetime;
         $this->defaultLockLifetime  = (integer) $defaultLockLifetime;
@@ -61,7 +61,7 @@ class RegionsConfiguration
     /**
      * @return integer
      */
-    public function getDefaultLifetime()
+    public function getDefaultLifetime(): int
     {
         return $this->defaultLifetime;
     }
@@ -69,7 +69,7 @@ class RegionsConfiguration
     /**
      * @param integer $defaultLifetime
      */
-    public function setDefaultLifetime($defaultLifetime)
+    public function setDefaultLifetime(int $defaultLifetime): void
     {
         $this->defaultLifetime = (integer) $defaultLifetime;
     }
@@ -77,7 +77,7 @@ class RegionsConfiguration
     /**
      * @return integer
      */
-    public function getDefaultLockLifetime()
+    public function getDefaultLockLifetime(): int
     {
         return $this->defaultLockLifetime;
     }
@@ -85,7 +85,7 @@ class RegionsConfiguration
     /**
      * @param integer $defaultLockLifetime
      */
-    public function setDefaultLockLifetime($defaultLockLifetime)
+    public function setDefaultLockLifetime(int $defaultLockLifetime): void
     {
         $this->defaultLockLifetime = (integer) $defaultLockLifetime;
     }
@@ -95,7 +95,7 @@ class RegionsConfiguration
      *
      * @return integer
      */
-    public function getLifetime($regionName)
+    public function getLifetime(string $regionName): int
     {
         return isset($this->lifetimes[$regionName])
             ? $this->lifetimes[$regionName]
@@ -106,7 +106,7 @@ class RegionsConfiguration
      * @param string  $name
      * @param integer $lifetime
      */
-    public function setLifetime($name, $lifetime)
+    public function setLifetime(string $name, int $lifetime): void
     {
         $this->lifetimes[$name] = (integer) $lifetime;
     }
@@ -116,7 +116,7 @@ class RegionsConfiguration
      *
      * @return integer
      */
-    public function getLockLifetime($regionName)
+    public function getLockLifetime(string $regionName): int
     {
         return isset($this->lockLifetimes[$regionName])
             ? $this->lockLifetimes[$regionName]
@@ -127,7 +127,7 @@ class RegionsConfiguration
      * @param string  $name
      * @param integer $lifetime
      */
-    public function setLockLifetime($name, $lifetime)
+    public function setLockLifetime(string $name, int $lifetime): void
     {
         $this->lockLifetimes[$name] = (integer) $lifetime;
     }

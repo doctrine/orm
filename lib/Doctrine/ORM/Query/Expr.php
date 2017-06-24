@@ -49,7 +49,7 @@ class Expr
      *
      * @return Expr\Andx
      */
-    public function andX($x = null)
+    public function andX(\Doctrine\ORM\Query\Expr\Comparison $x = null): Expr\Andx
     {
         return new Expr\Andx(func_get_args());
     }
@@ -68,7 +68,7 @@ class Expr
      *
      * @return Expr\Orx
      */
-    public function orX($x = null)
+    public function orX($x = null): Expr\Orx
     {
         return new Expr\Orx(func_get_args());
     }
@@ -80,7 +80,7 @@ class Expr
      *
      * @return Expr\OrderBy
      */
-    public function asc($expr)
+    public function asc($expr): Expr\OrderBy
     {
         return new Expr\OrderBy($expr, 'ASC');
     }
@@ -92,7 +92,7 @@ class Expr
      *
      * @return Expr\OrderBy
      */
-    public function desc($expr)
+    public function desc($expr): Expr\OrderBy
     {
         return new Expr\OrderBy($expr, 'DESC');
     }
@@ -112,7 +112,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function eq($x, $y)
+    public function eq($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::EQ, $y);
     }
@@ -131,7 +131,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function neq($x, $y)
+    public function neq($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::NEQ, $y);
     }
@@ -150,7 +150,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function lt($x, $y)
+    public function lt($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::LT, $y);
     }
@@ -169,7 +169,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function lte($x, $y)
+    public function lte($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::LTE, $y);
     }
@@ -188,7 +188,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function gt($x, $y)
+    public function gt($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::GT, $y);
     }
@@ -207,7 +207,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function gte($x, $y)
+    public function gte($x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, Expr\Comparison::GTE, $y);
     }
@@ -219,7 +219,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function avg($x)
+    public function avg($x): Expr\Func
     {
         return new Expr\Func('AVG', [$x]);
     }
@@ -231,7 +231,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function max($x)
+    public function max($x): Expr\Func
     {
         return new Expr\Func('MAX', [$x]);
     }
@@ -243,7 +243,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function min($x)
+    public function min($x): Expr\Func
     {
         return new Expr\Func('MIN', [$x]);
     }
@@ -255,7 +255,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function count($x)
+    public function count($x): Expr\Func
     {
         return new Expr\Func('COUNT', [$x]);
     }
@@ -267,7 +267,7 @@ class Expr
      *
      * @return string
      */
-    public function countDistinct($x)
+    public function countDistinct($x): string
     {
         return 'COUNT(DISTINCT ' . implode(', ', func_get_args()) . ')';
     }
@@ -279,7 +279,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function exists($subquery)
+    public function exists($subquery): Expr\Func
     {
         return new Expr\Func('EXISTS', [$subquery]);
     }
@@ -291,7 +291,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function all($subquery)
+    public function all($subquery): Expr\Func
     {
         return new Expr\Func('ALL', [$subquery]);
     }
@@ -303,7 +303,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function some($subquery)
+    public function some($subquery): Expr\Func
     {
         return new Expr\Func('SOME', [$subquery]);
     }
@@ -315,7 +315,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function any($subquery)
+    public function any($subquery): Expr\Func
     {
         return new Expr\Func('ANY', [$subquery]);
     }
@@ -327,7 +327,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function not($restriction)
+    public function not($restriction): Expr\Func
     {
         return new Expr\Func('NOT', [$restriction]);
     }
@@ -339,7 +339,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function abs($x)
+    public function abs($x): Expr\Func
     {
         return new Expr\Func('ABS', [$x]);
     }
@@ -359,7 +359,7 @@ class Expr
      *
      * @return Expr\Math
      */
-    public function prod($x, $y)
+    public function prod($x, $y): Expr\Math
     {
         return new Expr\Math($x, '*', $y);
     }
@@ -378,7 +378,7 @@ class Expr
      *
      * @return Expr\Math
      */
-    public function diff($x, $y)
+    public function diff($x, $y): Expr\Math
     {
         return new Expr\Math($x, '-', $y);
     }
@@ -397,7 +397,7 @@ class Expr
      *
      * @return Expr\Math
      */
-    public function sum($x, $y)
+    public function sum($x, $y): Expr\Math
     {
         return new Expr\Math($x, '+', $y);
     }
@@ -416,7 +416,7 @@ class Expr
      *
      * @return Expr\Math
      */
-    public function quot($x, $y)
+    public function quot($x, $y): Expr\Math
     {
         return new Expr\Math($x, '/', $y);
     }
@@ -428,7 +428,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function sqrt($x)
+    public function sqrt($x): Expr\Func
     {
         return new Expr\Func('SQRT', [$x]);
     }
@@ -441,7 +441,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function in($x, $y)
+    public function in(string $x, $y): Expr\Func
     {
         if (is_array($y)) {
             foreach ($y as &$literal) {
@@ -462,7 +462,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function notIn($x, $y)
+    public function notIn(string $x, $y): Expr\Func
     {
         if (is_array($y)) {
             foreach ($y as &$literal) {
@@ -482,7 +482,7 @@ class Expr
      *
      * @return string
      */
-    public function isNull($x)
+    public function isNull(string $x): string
     {
         return $x . ' IS NULL';
     }
@@ -494,7 +494,7 @@ class Expr
      *
      * @return string
      */
-    public function isNotNull($x)
+    public function isNotNull(string $x): string
     {
         return $x . ' IS NOT NULL';
     }
@@ -507,7 +507,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function like($x, $y)
+    public function like(string $x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, 'LIKE', $y);
     }
@@ -520,7 +520,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function notLike($x, $y)
+    public function notLike(string $x, $y): Expr\Comparison
     {
         return new Expr\Comparison($x, 'NOT LIKE', $y);
     }
@@ -533,7 +533,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function concat($x, $y)
+    public function concat($x, $y): Expr\Func
     {
         return new Expr\Func('CONCAT', func_get_args());
     }
@@ -547,7 +547,7 @@ class Expr
      *
      * @return Expr\Func
      */
-    public function substring($x, $from, $len = null)
+    public function substring($x, $from, $len = null): Expr\Func
     {
         $args = [$x, $from];
         if (null !== $len) {
@@ -564,7 +564,7 @@ class Expr
      *
      * @return Expr\Func A LOWER function expression.
      */
-    public function lower($x)
+    public function lower($x): Expr\Func
     {
         return new Expr\Func('LOWER', [$x]);
     }
@@ -576,7 +576,7 @@ class Expr
      *
      * @return Expr\Func An UPPER function expression.
      */
-    public function upper($x)
+    public function upper($x): Expr\Func
     {
         return new Expr\Func('UPPER', [$x]);
     }
@@ -588,7 +588,7 @@ class Expr
      *
      * @return Expr\Func A LENGTH function expression.
      */
-    public function length($x)
+    public function length($x): Expr\Func
     {
         return new Expr\Func('LENGTH', [$x]);
     }
@@ -600,7 +600,7 @@ class Expr
      *
      * @return Expr\Literal
      */
-    public function literal($literal)
+    public function literal($literal): Expr\Literal
     {
         return new Expr\Literal($this->_quoteLiteral($literal));
     }
@@ -612,7 +612,7 @@ class Expr
      *
      * @return string
      */
-    private function _quoteLiteral($literal)
+    private function _quoteLiteral($literal): string
     {
         if (is_numeric($literal) && !is_string($literal)) {
             return (string) $literal;
@@ -632,7 +632,7 @@ class Expr
      *
      * @return Expr\Func A BETWEEN expression.
      */
-    public function between($val, $x, $y)
+    public function between($val, $x, $y): Expr\Func
     {
         return $val . ' BETWEEN ' . $x . ' AND ' . $y;
     }
@@ -644,7 +644,7 @@ class Expr
      *
      * @return Expr\Func a TRIM expression.
      */
-    public function trim($x)
+    public function trim($x): Expr\Func
     {
         return new Expr\Func('TRIM', $x);
     }
@@ -657,7 +657,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function isMemberOf($x, $y)
+    public function isMemberOf(string $x, string $y): Expr\Comparison
     {
         return new Expr\Comparison($x, 'MEMBER OF', $y);
     }
@@ -670,7 +670,7 @@ class Expr
      *
      * @return Expr\Comparison
      */
-    public function isInstanceOf($x, $y)
+    public function isInstanceOf(string $x, string $y): Expr\Comparison
     {
         return new Expr\Comparison($x, 'INSTANCE OF', $y);
     }

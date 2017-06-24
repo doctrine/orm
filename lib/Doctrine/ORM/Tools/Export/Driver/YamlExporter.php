@@ -229,7 +229,7 @@ class YamlExporter extends AbstractExporter
      *
      * @return string A YAML string representing the original PHP array
      */
-    protected function yamlDump($array, $inline = 2)
+    protected function yamlDump(array $array, int $inline = 2): string
     {
         return Yaml::dump($array, $inline);
     }

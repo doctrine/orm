@@ -54,7 +54,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     /**
      * @return EntityGenerator
      */
-    public function getEntityGenerator()
+    public function getEntityGenerator(): EntityGenerator
     {
         if ($this->entityGenerator == null) {
             $this->entityGenerator = new EntityGenerator();
@@ -63,12 +63,7 @@ class ConvertDoctrine1SchemaCommand extends Command
         return $this->entityGenerator;
     }
 
-    /**
-     * @param EntityGenerator $entityGenerator
-     *
-     * @return void
-     */
-    public function setEntityGenerator(EntityGenerator $entityGenerator)
+    public function setEntityGenerator(EntityGenerator $entityGenerator): void
     {
         $this->entityGenerator = $entityGenerator;
     }
@@ -76,7 +71,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     /**
      * @return ClassMetadataExporter
      */
-    public function getMetadataExporter()
+    public function getMetadataExporter(): ClassMetadataExporter
     {
         if ($this->metadataExporter == null) {
             $this->metadataExporter = new ClassMetadataExporter();
@@ -85,12 +80,7 @@ class ConvertDoctrine1SchemaCommand extends Command
         return $this->metadataExporter;
     }
 
-    /**
-     * @param ClassMetadataExporter $metadataExporter
-     *
-     * @return void
-     */
-    public function setMetadataExporter(ClassMetadataExporter $metadataExporter)
+    public function setMetadataExporter(ClassMetadataExporter $metadataExporter): void
     {
         $this->metadataExporter = $metadataExporter;
     }
@@ -98,7 +88,7 @@ class ConvertDoctrine1SchemaCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:convert-d1-schema')
@@ -140,7 +130,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         // Process source directories
         $fromPaths = array_merge([$input->getArgument('from-path')], $input->getOption('from'));
@@ -165,7 +155,7 @@ EOT
      *
      * @throws \InvalidArgumentException
      */
-    public function convertDoctrine1Schema(array $fromPaths, $destPath, $toType, $numSpaces, $extend, OutputInterface $output)
+    public function convertDoctrine1Schema(array $fromPaths, string $destPath, string $toType, int $numSpaces, ?string $extend, OutputInterface $output): void
     {
         foreach ($fromPaths as &$dirName) {
             $dirName = realpath($dirName);

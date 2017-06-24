@@ -41,7 +41,7 @@ interface ConcurrentRegion extends Region
      *
      * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
      */
-    public function lock(CacheKey $key);
+    public function lock(CacheKey $key): \Doctrine\ORM\Cache\Lock;
 
     /**
      * Attempts to read unlock the mapping for the given key.
@@ -53,5 +53,5 @@ interface ConcurrentRegion extends Region
      *
      * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
      */
-    public function unlock(CacheKey $key, Lock $lock);
+    public function unlock(CacheKey $key, Lock $lock): void;
 }

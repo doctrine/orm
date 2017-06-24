@@ -46,7 +46,7 @@ class InputParameter extends Node
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (strlen($value) === 1) {
             throw \Doctrine\ORM\Query\QueryException::invalidParameterFormat($value);

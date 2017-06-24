@@ -37,9 +37,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     protected $wrapped;
 
-    /**
-     * @param EntityManagerInterface $wrapped
-     */
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;

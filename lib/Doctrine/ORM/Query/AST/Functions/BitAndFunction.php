@@ -35,10 +35,6 @@ class BitAndFunction extends FunctionNode
     public $firstArithmetic;
     public $secondArithmetic;
 
-    /**
-     * @override
-     * @inheritdoc
-     */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
@@ -49,11 +45,7 @@ class BitAndFunction extends FunctionNode
         );
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(\Doctrine\ORM\Query\Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

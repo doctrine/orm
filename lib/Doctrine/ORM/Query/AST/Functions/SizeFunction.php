@@ -40,11 +40,6 @@ class SizeFunction extends FunctionNode
      */
     public $collectionPathExpression;
 
-    /**
-     * @override
-     * @inheritdoc
-     * @todo If the collection being counted is already joined, the SQL can be simpler (more efficient).
-     */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $platform       = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
@@ -110,11 +105,7 @@ class SizeFunction extends FunctionNode
         return '(' . $sql . ')';
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(\Doctrine\ORM\Query\Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

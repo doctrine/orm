@@ -61,7 +61,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      * @param string  $sequenceName   The name of the sequence.
      * @param integer $allocationSize The allocation size of the sequence.
      */
-    public function __construct($sequenceName, $allocationSize)
+    public function __construct(string $sequenceName, int $allocationSize)
     {
         $this->_sequenceName = $sequenceName;
         $this->_allocationSize = $allocationSize;
@@ -90,7 +90,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      *
      * @return integer|null
      */
-    public function getCurrentMaxValue()
+    public function getCurrentMaxValue(): ?int
     {
         return $this->_maxValue;
     }
@@ -100,7 +100,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      *
      * @return integer
      */
-    public function getNextValue()
+    public function getNextValue(): int
     {
         return $this->_nextValue;
     }
@@ -108,7 +108,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
     /**
      * @return string
      */
-    public function serialize()
+    public function serialize(): string
     {
         return serialize(
             [
@@ -123,7 +123,7 @@ class SequenceGenerator extends AbstractIdGenerator implements Serializable
      *
      * @return void
      */
-    public function unserialize($serialized)
+    public function unserialize(string $serialized): void
     {
         $array = unserialize($serialized);
 

@@ -54,7 +54,7 @@ class OnFlushEventArgs extends EventArgs
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): \Doctrine\ORM\EntityManager
     {
         return $this->em;
     }

@@ -77,7 +77,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function length($length)
+    public function length(int $length): FieldBuilder
     {
         $this->mapping['length'] = $length;
 
@@ -91,7 +91,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function nullable($flag = true)
+    public function nullable(bool $flag = true): FieldBuilder
     {
         $this->mapping['nullable'] = (bool) $flag;
 
@@ -105,7 +105,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function unique($flag = true)
+    public function unique(bool $flag = true): FieldBuilder
     {
         $this->mapping['unique'] = (bool) $flag;
 
@@ -119,7 +119,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function columnName($name)
+    public function columnName(string $name): FieldBuilder
     {
         $this->mapping['columnName'] = $name;
 
@@ -133,7 +133,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function precision($p)
+    public function precision(int $p): FieldBuilder
     {
         $this->mapping['precision'] = $p;
 
@@ -147,7 +147,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function scale($s)
+    public function scale(int $s): FieldBuilder
     {
         $this->mapping['scale'] = $s;
 
@@ -160,7 +160,7 @@ class FieldBuilder
      * @deprecated Use makePrimaryKey() instead
      * @return FieldBuilder
      */
-    public function isPrimaryKey()
+    public function isPrimaryKey(): FieldBuilder
     {
         return $this->makePrimaryKey();
     }
@@ -170,7 +170,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function makePrimaryKey()
+    public function makePrimaryKey(): FieldBuilder
     {
         $this->mapping['id'] = true;
 
@@ -185,7 +185,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function option($name, $value)
+    public function option(string $name, $value): FieldBuilder
     {
         $this->mapping['options'][$name] = $value;
 
@@ -197,7 +197,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function generatedValue($strategy = 'AUTO')
+    public function generatedValue(string $strategy = 'AUTO'): FieldBuilder
     {
         $this->generatedValue = $strategy;
 
@@ -209,7 +209,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function isVersionField()
+    public function isVersionField(): FieldBuilder
     {
         $this->version = true;
 
@@ -225,7 +225,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function setSequenceGenerator($sequenceName, $allocationSize = 1, $initialValue = 1)
+    public function setSequenceGenerator(string $sequenceName, int $allocationSize = 1, int $initialValue = 1): FieldBuilder
     {
         $this->sequenceDef = [
             'sequenceName' => $sequenceName,
@@ -243,7 +243,7 @@ class FieldBuilder
      *
      * @return FieldBuilder
      */
-    public function columnDefinition($def)
+    public function columnDefinition(string $def): FieldBuilder
     {
         $this->mapping['columnDefinition'] = $def;
 
@@ -258,7 +258,7 @@ class FieldBuilder
      *
      * @return $this
      */
-    public function setCustomIdGenerator($customIdGenerator)
+    public function setCustomIdGenerator(string $customIdGenerator)
     {
         $this->customIdGenerator = (string) $customIdGenerator;
 
@@ -272,7 +272,7 @@ class FieldBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $cm = $this->builder->getClassMetadata();
         if ($this->generatedValue) {

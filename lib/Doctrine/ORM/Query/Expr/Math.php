@@ -71,7 +71,7 @@ class Math
     /**
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -87,7 +87,7 @@ class Math
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         // Adjusting Left Expression
         $leftExpr = (string) $this->leftExpr;

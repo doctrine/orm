@@ -46,7 +46,7 @@ class JoinVariableDeclaration extends Node
      * @param Join         $join
      * @param IndexBy|null $indexBy
      */
-    public function __construct($join, $indexBy)
+    public function __construct(Join $join, ?IndexBy $indexBy)
     {
         $this->join    = $join;
         $this->indexBy = $indexBy;

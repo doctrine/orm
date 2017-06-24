@@ -50,7 +50,7 @@ class InstanceOfExpression extends Node
     /**
      * @param string $identVariable
      */
-    public function __construct($identVariable)
+    public function __construct(string $identVariable)
     {
         $this->identificationVariable = $identVariable;
     }

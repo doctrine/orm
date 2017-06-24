@@ -50,7 +50,7 @@ class UpdateClause extends Node
      * @param string $abstractSchemaName
      * @param array  $updateItems
      */
-    public function __construct($abstractSchemaName, array $updateItems)
+    public function __construct(string $abstractSchemaName, array $updateItems)
     {
         $this->abstractSchemaName = $abstractSchemaName;
         $this->updateItems = $updateItems;

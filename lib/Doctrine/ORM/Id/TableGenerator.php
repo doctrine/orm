@@ -63,7 +63,7 @@ class TableGenerator extends AbstractIdGenerator
      * @param string $sequenceName
      * @param int    $allocationSize
      */
-    public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
+    public function __construct(string $tableName, string $sequenceName = 'default', int $allocationSize = 10)
     {
         $this->_tableName = $tableName;
         $this->_sequenceName = $sequenceName;

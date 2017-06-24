@@ -52,7 +52,7 @@ class CollectionCacheEntry implements CacheEntry
      *
      * @return CollectionCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): CollectionCacheEntry
     {
         return new self($values['identifiers']);
     }

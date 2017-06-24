@@ -399,7 +399,7 @@ class XmlExporter extends AbstractExporter
      * @param \SimpleXMLElement $parentXml
      * @param array             $options
      */
-    private function exportTableOptions(\SimpleXMLElement $parentXml, array $options)
+    private function exportTableOptions(\SimpleXMLElement $parentXml, array $options): void
     {
         foreach ($options as $name => $option) {
             $isArray   = is_array($option);
@@ -423,7 +423,7 @@ class XmlExporter extends AbstractExporter
      *
      * @return void
      */
-    private function exportSequenceInformation(\SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata)
+    private function exportSequenceInformation(\SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata): void
     {
         $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
 
@@ -443,7 +443,7 @@ class XmlExporter extends AbstractExporter
      *
      * @return string $xml
      */
-    private function _asXml($simpleXml)
+    private function _asXml(\SimpleXMLElement $simpleXml): string
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($simpleXml->asXML());

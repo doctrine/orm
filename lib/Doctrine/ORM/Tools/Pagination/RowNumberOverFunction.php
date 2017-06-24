@@ -38,10 +38,6 @@ class RowNumberOverFunction extends FunctionNode
      */
     public $orderByClause;
 
-    /**
-     * @override
-     * @inheritdoc
-     */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         return 'ROW_NUMBER() OVER(' . trim($sqlWalker->walkOrderByClause(
@@ -49,13 +45,7 @@ class RowNumberOverFunction extends FunctionNode
         )) . ')';
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     *
-     * @throws ORMException
-     */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(\Doctrine\ORM\Query\Parser $parser): void
     {
         throw new ORMException("The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.");
     }

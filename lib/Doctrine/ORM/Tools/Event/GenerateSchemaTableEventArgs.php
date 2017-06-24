@@ -64,7 +64,7 @@ class GenerateSchemaTableEventArgs extends EventArgs
     /**
      * @return ClassMetadata
      */
-    public function getClassMetadata()
+    public function getClassMetadata(): ClassMetadata
     {
         return $this->classMetadata;
     }
@@ -72,7 +72,7 @@ class GenerateSchemaTableEventArgs extends EventArgs
     /**
      * @return Schema
      */
-    public function getSchema()
+    public function getSchema(): Schema
     {
         return $this->schema;
     }
@@ -80,7 +80,7 @@ class GenerateSchemaTableEventArgs extends EventArgs
     /**
      * @return Table
      */
-    public function getClassTable()
+    public function getClassTable(): Table
     {
         return $this->classTable;
     }

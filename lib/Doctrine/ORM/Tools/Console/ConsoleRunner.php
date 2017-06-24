@@ -39,7 +39,7 @@ class ConsoleRunner
      * @param EntityManagerInterface $entityManager
      * @return HelperSet
      */
-    public static function createHelperSet(EntityManagerInterface $entityManager)
+    public static function createHelperSet(EntityManagerInterface $entityManager): HelperSet
     {
         return new HelperSet(
             [
@@ -57,7 +57,7 @@ class ConsoleRunner
      *
      * @return void
      */
-    static public function run(HelperSet $helperSet, $commands = [])
+    static public function run(HelperSet $helperSet, $commands = []): void
     {
         $cli = self::createApplication($helperSet, $commands);
         $cli->run();
@@ -72,7 +72,7 @@ class ConsoleRunner
      *
      * @return \Symfony\Component\Console\Application
      */
-    static public function createApplication(HelperSet $helperSet, $commands = [])
+    static public function createApplication(HelperSet $helperSet, array $commands = []): \Symfony\Component\Console\Application
     {
         $cli = new Application('Doctrine Command Line Interface', Version::VERSION);
         $cli->setCatchExceptions(true);
@@ -83,12 +83,7 @@ class ConsoleRunner
         return $cli;
     }
 
-    /**
-     * @param Application $cli
-     *
-     * @return void
-     */
-    static public function addCommands(Application $cli)
+    static public function addCommands(Application $cli): void
     {
         $cli->addCommands(
             [
@@ -117,7 +112,7 @@ class ConsoleRunner
         );
     }
 
-    static public function printCliConfigTemplate()
+    static public function printCliConfigTemplate(): void
     {
         echo <<<'HELP'
 You are missing a "cli-config.php" or "config/cli-config.php" file in your

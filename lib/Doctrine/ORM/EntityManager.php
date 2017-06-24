@@ -187,7 +187,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
      */
-    public function getMetadataFactory()
+    public function getMetadataFactory(): \Doctrine\ORM\Mapping\ClassMetadataFactory
     {
         return $this->metadataFactory;
     }
@@ -207,7 +207,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function beginTransaction()
+    public function beginTransaction(): void
     {
         $this->conn->beginTransaction();
     }
@@ -249,7 +249,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function commit()
+    public function commit(): void
     {
         $this->conn->commit();
     }
@@ -257,7 +257,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function rollback()
+    public function rollback(): void
     {
         $this->conn->rollBack();
     }
@@ -278,7 +278,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    public function getClassMetadata($className)
+    public function getClassMetadata(string $className): \Doctrine\ORM\Mapping\ClassMetadata
     {
         return $this->metadataFactory->getMetadataFor($className);
     }
@@ -352,7 +352,7 @@ use Doctrine\Common\Util\ClassUtils;
      *         makes use of optimistic locking fails.
      * @throws ORMException
      */
-    public function flush($entity = null)
+    public function flush($entity = null): void
     {
         $this->errorIfClosed();
 
@@ -377,7 +377,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws TransactionRequiredException
      * @throws ORMException
      */
-    public function find($entityName, $id, $lockMode = null, $lockVersion = null)
+    public function find(string $entityName, $id, $lockMode = null, $lockVersion = null)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
@@ -545,7 +545,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
      *                                                               found in the mappings
      */
-    public function clear($entityName = null)
+    public function clear(?string $entityName = null): void
     {
         if (null !== $entityName && ! is_string($entityName)) {
             throw ORMInvalidArgumentException::invalidEntityName($entityName);
@@ -561,7 +561,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function close()
+    public function close(): void
     {
         $this->clear();
 
@@ -584,7 +584,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function persist($entity)
+    public function persist($entity): void
     {
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#persist()', $entity);
@@ -608,7 +608,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function remove($entity)
+    public function remove($entity): void
     {
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#remove()', $entity);
@@ -630,7 +630,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
-    public function refresh($entity)
+    public function refresh($entity): void
     {
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#refresh()', $entity);
@@ -654,7 +654,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @throws ORMInvalidArgumentException
      */
-    public function detach($entity)
+    public function detach($entity): void
     {
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
@@ -692,7 +692,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
      * Fatal error: Maximum function nesting level of '100' reached, aborting!
      */
-    public function copy($entity, $deep = false)
+    public function copy($entity, $deep = false): void
     {
         throw new \BadMethodCallException("Not implemented.");
     }
@@ -700,7 +700,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function lock($entity, $lockMode, $lockVersion = null)
+    public function lock($entity, $lockMode, $lockVersion = null): void
     {
         $this->unitOfWork->lock($entity, $lockMode, $lockVersion);
     }
@@ -712,7 +712,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @return \Doctrine\ORM\EntityRepository The repository class.
      */
-    public function getRepository($entityName)
+    public function getRepository(string $entityName): \Doctrine\ORM\EntityRepository
     {
         return $this->repositoryFactory->getRepository($this, $entityName);
     }
@@ -724,7 +724,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @return boolean TRUE if this EntityManager currently manages the given entity, FALSE otherwise.
      */
-    public function contains($entity)
+    public function contains($entity): bool
     {
         return $this->unitOfWork->isScheduledForInsert($entity)
             || $this->unitOfWork->isInIdentityMap($entity)
@@ -754,7 +754,7 @@ use Doctrine\Common\Util\ClassUtils;
      *
      * @throws ORMException If the EntityManager is closed.
      */
-    private function errorIfClosed()
+    private function errorIfClosed(): void
     {
         if ($this->closed) {
             throw ORMException::entityManagerClosed();
@@ -826,7 +826,7 @@ use Doctrine\Common\Util\ClassUtils;
     /**
      * {@inheritDoc}
      */
-    public function initializeObject($obj)
+    public function initializeObject($obj): void
     {
         $this->unitOfWork->initializeObject($obj);
     }
@@ -843,7 +843,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    public static function create($connection, Configuration $config, EventManager $eventManager = null)
+    public static function create($connection, Configuration $config, EventManager $eventManager = null): EntityManager
     {
         if ( ! $config->getMetadataDriverImpl()) {
             throw ORMException::missingMappingDriverImpl();
@@ -866,7 +866,7 @@ use Doctrine\Common\Util\ClassUtils;
      * @throws \InvalidArgumentException
      * @throws ORMException
      */
-    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null)
+    protected static function createConnection($connection, Configuration $config, EventManager $eventManager = null): Connection
     {
         if (is_array($connection)) {
             return DriverManager::getConnection($connection, $config, $eventManager ?: new EventManager());

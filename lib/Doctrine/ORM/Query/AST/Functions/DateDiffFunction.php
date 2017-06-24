@@ -37,10 +37,6 @@ class DateDiffFunction extends FunctionNode
     public $date1;
     public $date2;
 
-    /**
-     * @override
-     * @inheritdoc
-     */
     public function getSql(SqlWalker $sqlWalker)
     {
         return $sqlWalker->getConnection()->getDatabasePlatform()->getDateDiffExpression(
@@ -49,11 +45,7 @@ class DateDiffFunction extends FunctionNode
         );
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

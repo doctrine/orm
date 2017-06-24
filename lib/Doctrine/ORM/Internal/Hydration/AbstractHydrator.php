@@ -114,7 +114,7 @@ abstract class AbstractHydrator
      *
      * @return IterableResult
      */
-    public function iterate($stmt, $resultSetMapping, array $hints = [])
+    public function iterate($stmt, $resultSetMapping, array $hints = []): IterableResult
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -138,7 +138,7 @@ abstract class AbstractHydrator
      *
      * @return array
      */
-    public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
+    public function hydrateAll($stmt, $resultSetMapping, array $hints = []): array
     {
         $this->_stmt  = $stmt;
         $this->_rsm   = $resultSetMapping;
@@ -184,7 +184,7 @@ abstract class AbstractHydrator
      *
      * @return void
      */
-    public function onClear($eventArgs)
+    public function onClear($eventArgs): void
     {
     }
 
@@ -194,7 +194,7 @@ abstract class AbstractHydrator
      *
      * @return void
      */
-    protected function prepare()
+    protected function prepare(): void
     {
     }
 
@@ -204,7 +204,7 @@ abstract class AbstractHydrator
      *
      * @return void
      */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         $this->_stmt->closeCursor();
 
@@ -226,7 +226,7 @@ abstract class AbstractHydrator
      *
      * @throws HydrationException
      */
-    protected function hydrateRowData(array $data, array &$result)
+    protected function hydrateRowData(array $data, array &$result): void
     {
         throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
     }
@@ -236,7 +236,7 @@ abstract class AbstractHydrator
      *
      * @return array
      */
-    abstract protected function hydrateAllData();
+    abstract protected function hydrateAllData(): array;
 
     /**
      * Processes a row of the result set.
@@ -254,7 +254,7 @@ abstract class AbstractHydrator
      * @return array  An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.
      */
-    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
+    protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents): array
     {
         $rowData = ['data' => []];
 
@@ -322,7 +322,7 @@ abstract class AbstractHydrator
      *
      * @return array The processed row.
      */
-    protected function gatherScalarRowData(&$data)
+    protected function gatherScalarRowData(array &$data): array
     {
         $rowData = [];
 
@@ -357,7 +357,7 @@ abstract class AbstractHydrator
      *
      * @return array|null
      */
-    protected function hydrateColumnInfo($key)
+    protected function hydrateColumnInfo(string $key): ?array
     {
         if (isset($this->_cache[$key])) {
             return $this->_cache[$key];
@@ -430,7 +430,7 @@ abstract class AbstractHydrator
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    protected function getClassMetadata($className)
+    protected function getClassMetadata(string $className): \Doctrine\ORM\Mapping\ClassMetadata
     {
         if ( ! isset($this->_metadataCache[$className])) {
             $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
@@ -450,7 +450,7 @@ abstract class AbstractHydrator
      *
      * @todo The "$id" generation is the same of UnitOfWork#createEntity. Remove this duplication somehow
      */
-    protected function registerManaged(ClassMetadata $class, $entity, array $data)
+    protected function registerManaged(ClassMetadata $class, $entity, array $data): void
     {
         if ($class->isIdentifierComposite) {
             $id = [];

@@ -66,7 +66,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function prepare()
+    protected function prepare(): void
     {
         $this->_isSimpleQuery = count($this->_rsm->aliasMap) <= 1;
 
@@ -94,7 +94,7 @@ class ArrayHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         // 1) Initialize
         $id = $this->_idTemplate; // initialize the id-memory
@@ -276,7 +276,7 @@ class ArrayHydrator extends AbstractHydrator
      *
      * @return void
      */
-    private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
+    private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne): void
     {
         if ($coll === null) {
             unset($this->_resultPointers[$dqlAlias]); // Ticket #1228

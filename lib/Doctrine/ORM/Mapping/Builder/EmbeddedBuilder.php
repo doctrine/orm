@@ -56,7 +56,7 @@ class EmbeddedBuilder
      * @param string $columnPrefix
      * @return $this
      */
-    public function setColumnPrefix($columnPrefix)
+    public function setColumnPrefix(string $columnPrefix)
     {
         $this->mapping['columnPrefix'] = $columnPrefix;
 
@@ -70,7 +70,7 @@ class EmbeddedBuilder
      *
      * @return ClassMetadataBuilder
      */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $cm = $this->builder->getClassMetadata();
 

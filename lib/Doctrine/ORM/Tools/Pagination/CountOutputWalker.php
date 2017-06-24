@@ -62,7 +62,7 @@ class CountOutputWalker extends SqlWalker
      * @param \Doctrine\ORM\Query\ParserResult $parserResult
      * @param array                            $queryComponents
      */
-    public function __construct($query, $parserResult, array $queryComponents)
+    public function __construct(\Doctrine\ORM\Query $query, \Doctrine\ORM\Query\ParserResult $parserResult, array $queryComponents)
     {
         $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
         $this->rsm = $parserResult->getResultSetMapping();
@@ -84,7 +84,7 @@ class CountOutputWalker extends SqlWalker
      *
      * @throws \RuntimeException
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): string
     {
         if ($this->platform->getName() === "mssql") {
             $AST->orderByClause = null;

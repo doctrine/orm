@@ -31,7 +31,7 @@ abstract class AbstractIdGenerator
      * @param \Doctrine\ORM\Mapping\Entity $entity
      * @return mixed
      */
-    abstract public function generate(EntityManager $em, $entity);
+    abstract public function generate(EntityManager $em, \Doctrine\ORM\Mapping\Entity $entity);
 
     /**
      * Gets whether this generator is a post-insert generator which means that
@@ -43,7 +43,7 @@ abstract class AbstractIdGenerator
      *
      * @return boolean
      */
-    public function isPostInsertGenerator()
+    public function isPostInsertGenerator(): bool
     {
         return false;
     }

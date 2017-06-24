@@ -44,7 +44,7 @@ class EmptyCollectionComparisonExpression extends Node
     /**
      * @param PathExpression $expression
      */
-    public function __construct($expression)
+    public function __construct(PathExpression $expression)
     {
         $this->expression = $expression;
     }

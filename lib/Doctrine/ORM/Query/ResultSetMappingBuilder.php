@@ -82,7 +82,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @param EntityManagerInterface $em
      * @param integer                $defaultRenameMode
      */
-    public function __construct(EntityManagerInterface $em, $defaultRenameMode = self::COLUMN_RENAMING_NONE)
+    public function __construct(EntityManagerInterface $em, int $defaultRenameMode = self::COLUMN_RENAMING_NONE)
     {
         $this->em                = $em;
         $this->defaultRenameMode = $defaultRenameMode;
@@ -98,7 +98,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = [], $renameMode = null)
+    public function addRootEntityFromClassMetadata(string $class, string $alias, array $renamedColumns = [], ?int $renameMode = null): void
     {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -120,7 +120,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = [], $renameMode = null)
+    public function addJoinedEntityFromClassMetadata(string $class, string $alias, string $parentAlias, string $relation, array $renamedColumns = [], ?int $renameMode = null): void
     {
         $renameMode     = $renameMode ?: $this->defaultRenameMode;
         $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
@@ -140,7 +140,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @throws \InvalidArgumentException
      */
-    protected function addAllClassFields($class, $alias, $columnAliasMap = [])
+    protected function addAllClassFields(string $class, string $alias, array $columnAliasMap = []): void
     {
         $classMetadata = $this->em->getClassMetadata($class);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
@@ -200,7 +200,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return string
      */
-    private function getColumnAlias($columnName, $mode, array $customRenameColumns)
+    private function getColumnAlias(string $columnName, int $mode, array $customRenameColumns): string
     {
         switch ($mode) {
             case self::COLUMN_RENAMING_INCREMENT:
@@ -227,7 +227,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return array
      */
-    private function getColumnAliasMap($className, $mode, array $customRenameColumns)
+    private function getColumnAliasMap(string $className, int $mode, array $customRenameColumns): array
     {
         if ($customRenameColumns) { // for BC with 2.2-2.3 API
             $mode = self::COLUMN_RENAMING_CUSTOM;
@@ -260,7 +260,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return ResultSetMappingBuilder
      */
-    public function addNamedNativeQueryMapping(ClassMetadataInfo $class, array $queryMapping)
+    public function addNamedNativeQueryMapping(ClassMetadataInfo $class, array $queryMapping): ResultSetMappingBuilder
     {
         if (isset($queryMapping['resultClass'])) {
             return $this->addNamedNativeQueryResultClassMapping($class, $queryMapping['resultClass']);
@@ -277,7 +277,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return  ResultSetMappingBuilder
      */
-    public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, $resultClassName)
+    public function addNamedNativeQueryResultClassMapping(ClassMetadataInfo $class, string $resultClassName): ResultSetMappingBuilder
     {
         $classMetadata  = $this->em->getClassMetadata($resultClassName);
         $shortName      = $classMetadata->reflClass->getShortName();
@@ -322,7 +322,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return ResultSetMappingBuilder
      */
-    public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, $resultSetMappingName)
+    public function addNamedNativeQueryResultSetMapping(ClassMetadataInfo $class, string $resultSetMappingName): ResultSetMappingBuilder
     {
         $counter        = 0;
         $resultMapping  = $class->getSqlResultSetMapping($resultSetMappingName);
@@ -377,7 +377,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * @throws MappingException
      * @throws \InvalidArgumentException
      */
-    public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, $alias)
+    public function addNamedNativeQueryEntityResultMapping(ClassMetadataInfo $classMetadata, array $entityMapping, string $alias): ResultSetMappingBuilder
     {
         if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
             $discriminatorColumn = $entityMapping['discriminatorColumn'];
@@ -437,7 +437,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return string
      */
-    public function generateSelectClause($tableAliases = [])
+    public function generateSelectClause(array $tableAliases = []): string
     {
         $sql = "";
 
@@ -469,7 +469,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->generateSelectClause([]);
     }

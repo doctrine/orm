@@ -70,7 +70,7 @@ class CommitOrderCalculator
      *
      * @return boolean
      */
-    public function hasNode($hash)
+    public function hasNode(string $hash): bool
     {
         return isset($this->nodeList[$hash]);
     }
@@ -83,7 +83,7 @@ class CommitOrderCalculator
      *
      * @return void
      */
-    public function addNode($hash, $node)
+    public function addNode(string $hash, $node): void
     {
         $vertex = new \stdClass();
 
@@ -104,7 +104,7 @@ class CommitOrderCalculator
      *
      * @return void
      */
-    public function addDependency($fromHash, $toHash, $weight)
+    public function addDependency(string $fromHash, string $toHash, int $weight): void
     {
         $vertex = $this->nodeList[$fromHash];
         $edge   = new \stdClass();
@@ -124,7 +124,7 @@ class CommitOrderCalculator
      *
      * @return array
      */
-    public function sort()
+    public function sort(): array
     {
         foreach ($this->nodeList as $vertex) {
             if ($vertex->state !== self::NOT_VISITED) {
@@ -149,7 +149,7 @@ class CommitOrderCalculator
      *
      * @param \stdClass $vertex
      */
-    private function visit($vertex)
+    private function visit(\stdClass $vertex): void
     {
         $vertex->state = self::IN_PROGRESS;
 

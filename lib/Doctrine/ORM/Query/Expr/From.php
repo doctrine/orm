@@ -51,7 +51,7 @@ class From
      * @param string $alias   The alias of the class.
      * @param string $indexBy The index for the from.
      */
-    public function __construct($from, $alias, $indexBy = null)
+    public function __construct(string $from, string $alias, string $indexBy = null)
     {
         $this->from    = $from;
         $this->alias   = $alias;
@@ -61,7 +61,7 @@ class From
     /**
      * @return string
      */
-    public function getFrom()
+    public function getFrom(): string
     {
         return $this->from;
     }
@@ -69,7 +69,7 @@ class From
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -77,7 +77,7 @@ class From
     /**
      * @return string
      */
-    public function getIndexBy()
+    public function getIndexBy(): string
     {
         return $this->indexBy;
     }
@@ -85,7 +85,7 @@ class From
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->from . ' ' . $this->alias .
                 ($this->indexBy ? ' INDEX BY ' . $this->indexBy : '');

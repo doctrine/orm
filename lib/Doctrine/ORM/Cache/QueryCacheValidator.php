@@ -36,5 +36,5 @@ interface QueryCacheValidator
      *
      * @return boolean
      */
-    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry);
+    public function isValid(QueryCacheKey $key, QueryCacheEntry $entry): bool;
 }

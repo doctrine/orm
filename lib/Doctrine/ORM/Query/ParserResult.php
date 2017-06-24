@@ -69,7 +69,7 @@ class ParserResult
      * @return ResultSetMapping|null The result set mapping of the parsed query or NULL
      *                               if the query is not a SELECT query.
      */
-    public function getResultSetMapping()
+    public function getResultSetMapping(): ?ResultSetMapping
     {
         return $this->_resultSetMapping;
     }
@@ -81,7 +81,7 @@ class ParserResult
      *
      * @return void
      */
-    public function setResultSetMapping(ResultSetMapping $rsm)
+    public function setResultSetMapping(ResultSetMapping $rsm): void
     {
         $this->_resultSetMapping = $rsm;
     }
@@ -93,7 +93,7 @@ class ParserResult
      *
      * @return void
      */
-    public function setSqlExecutor($executor)
+    public function setSqlExecutor(\Doctrine\ORM\Query\Exec\AbstractSqlExecutor $executor): void
     {
         $this->_sqlExecutor = $executor;
     }
@@ -103,7 +103,7 @@ class ParserResult
      *
      * @return \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
      */
-    public function getSqlExecutor()
+    public function getSqlExecutor(): \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
     {
         return $this->_sqlExecutor;
     }
@@ -117,7 +117,7 @@ class ParserResult
      *
      * @return void
      */
-    public function addParameterMapping($dqlPosition, $sqlPosition)
+    public function addParameterMapping($dqlPosition, $sqlPosition): void
     {
         $this->_parameterMappings[$dqlPosition][] = $sqlPosition;
     }
@@ -127,7 +127,7 @@ class ParserResult
      *
      * @return array The parameter mappings.
      */
-    public function getParameterMappings()
+    public function getParameterMappings(): array
     {
         return $this->_parameterMappings;
     }
@@ -139,7 +139,7 @@ class ParserResult
      *
      * @return array The positions of the corresponding SQL parameters.
      */
-    public function getSqlParameterPositions($dqlPosition)
+    public function getSqlParameterPositions($dqlPosition): array
     {
         return $this->_parameterMappings[$dqlPosition];
     }

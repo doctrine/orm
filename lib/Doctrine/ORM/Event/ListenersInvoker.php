@@ -68,7 +68,7 @@ class ListenersInvoker
      *
      * @return integer Bitmask of subscribed event systems.
      */
-    public function getSubscribedSystems(ClassMetadata $metadata, $eventName)
+    public function getSubscribedSystems(ClassMetadata $metadata, string $eventName): int
     {
         $invoke = self::INVOKE_NONE;
 
@@ -96,7 +96,7 @@ class ListenersInvoker
      * @param \Doctrine\Common\EventArgs          $event     The Event args.
      * @param integer                             $invoke    Bitmask to invoke listeners.
      */
-    public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
+    public function invoke(ClassMetadata $metadata, string $eventName, $entity, EventArgs $event, $invoke): void
     {
         if ($invoke & self::INVOKE_CALLBACKS) {
             foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {

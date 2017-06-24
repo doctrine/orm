@@ -78,7 +78,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function prepare()
+    protected function prepare(): void
     {
         if ( ! isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) {
             $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] = true;
@@ -134,7 +134,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         $eagerLoad = (isset($this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD])) && $this->_hints[UnitOfWork::HINT_DEFEREAGERLOAD] == true;
 
@@ -181,7 +181,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @return \Doctrine\ORM\PersistentCollection
      */
-    private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
+    private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias): \Doctrine\ORM\PersistentCollection
     {
         $oid      = spl_object_hash($entity);
         $relation = $class->associationMappings[$fieldName];
@@ -230,7 +230,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @throws HydrationException
      */
-    private function getEntity(array $data, $dqlAlias)
+    private function getEntity(array $data, string $dqlAlias)
     {
         $className = $this->_rsm->aliasMap[$dqlAlias];
 
@@ -278,7 +278,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @return mixed
      */
-    private function getEntityFromIdentityMap($className, array $data)
+    private function getEntityFromIdentityMap(string $className, array $data)
     {
         // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
         $class = $this->_metadataCache[$className];
@@ -323,7 +323,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @return void
      */
-    protected function hydrateRowData(array $row, array &$result)
+    protected function hydrateRowData(array $row, array &$result): void
     {
         // Initialize
         $id = $this->idTemplate; // initialize the id-memory
@@ -583,7 +583,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @return void
      */
-    public function onClear($eventArgs)
+    public function onClear($eventArgs): void
     {
         parent::onClear($eventArgs);
 

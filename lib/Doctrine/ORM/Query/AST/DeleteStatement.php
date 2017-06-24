@@ -44,7 +44,7 @@ class DeleteStatement extends Node
     /**
      * @param DeleteClause $deleteClause
      */
-    public function __construct($deleteClause)
+    public function __construct(DeleteClause $deleteClause)
     {
         $this->deleteClause = $deleteClause;
     }

@@ -102,7 +102,7 @@ class FilterCollection
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
-    public function enable($name)
+    public function enable(string $name): \Doctrine\ORM\Query\Filter\SQLFilter
     {
         if ( ! $this->has($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
@@ -132,7 +132,7 @@ class FilterCollection
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
-    public function disable($name)
+    public function disable(string $name): \Doctrine\ORM\Query\Filter\SQLFilter
     {
         // Get the filter to return it
         $filter = $this->getFilter($name);
@@ -154,7 +154,7 @@ class FilterCollection
      *
      * @throws \InvalidArgumentException If the filter is not enabled.
      */
-    public function getFilter($name)
+    public function getFilter(string $name): \Doctrine\ORM\Query\Filter\SQLFilter
     {
         if ( ! $this->isEnabled($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
@@ -170,7 +170,7 @@ class FilterCollection
      *
      * @return bool true if the filter exists, false if not.
      */
-    public function has($name)
+    public function has(string $name): bool
     {
         return null !== $this->config->getFilterClassName($name);
     }
@@ -182,7 +182,7 @@ class FilterCollection
      *
      * @return boolean True if the filter is enabled, false otherwise.
      */
-    public function isEnabled($name)
+    public function isEnabled(string $name): bool
     {
         return isset($this->enabledFilters[$name]);
     }
@@ -190,7 +190,7 @@ class FilterCollection
     /**
      * @return boolean True, if the filter collection is clean.
      */
-    public function isClean()
+    public function isClean(): bool
     {
         return self::FILTERS_STATE_CLEAN === $this->filtersState;
     }
@@ -200,7 +200,7 @@ class FilterCollection
      *
      * @return string
      */
-    public function getHash()
+    public function getHash(): string
     {
         // If there are only clean filters, the previous hash can be returned
         if (self::FILTERS_STATE_CLEAN === $this->filtersState) {
@@ -219,7 +219,7 @@ class FilterCollection
     /**
      * Sets the filter state to dirty.
      */
-    public function setFiltersStateDirty()
+    public function setFiltersStateDirty(): void
     {
         $this->filtersState = self::FILTERS_STATE_DIRTY;
     }

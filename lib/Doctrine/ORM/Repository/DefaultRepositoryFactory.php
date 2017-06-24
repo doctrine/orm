@@ -59,7 +59,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
      */
-    private function createRepository(EntityManagerInterface $entityManager, $entityName)
+    private function createRepository(EntityManagerInterface $entityManager, string $entityName): \Doctrine\Common\Persistence\ObjectRepository
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata            = $entityManager->getClassMetadata($entityName);

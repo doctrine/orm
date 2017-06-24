@@ -65,7 +65,7 @@ class PathExpression extends Node
      * @param string      $identificationVariable
      * @param string|null $field
      */
-    public function __construct($expectedType, $identificationVariable, $field = null)
+    public function __construct(int $expectedType, string $identificationVariable, ?string $field = null)
     {
         $this->expectedType = $expectedType;
         $this->identificationVariable = $identificationVariable;

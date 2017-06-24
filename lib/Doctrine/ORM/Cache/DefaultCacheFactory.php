@@ -83,7 +83,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @param string $fileLockRegionDirectory
      */
-    public function setFileLockRegionDirectory($fileLockRegionDirectory)
+    public function setFileLockRegionDirectory(string $fileLockRegionDirectory): void
     {
         $this->fileLockRegionDirectory = (string) $fileLockRegionDirectory;
     }
@@ -91,23 +91,17 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @return string
      */
-    public function getFileLockRegionDirectory()
+    public function getFileLockRegionDirectory(): string
     {
         return $this->fileLockRegionDirectory;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\Region $region
-     */
-    public function setRegion(Region $region)
+    public function setRegion(Region $region): void
     {
         $this->regions[$region->getName()] = $region;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\TimestampRegion $region
-     */
-    public function setTimestampRegion(TimestampRegion $region)
+    public function setTimestampRegion(TimestampRegion $region): void
     {
         $this->timestampRegion = $region;
     }
@@ -228,7 +222,7 @@ class DefaultCacheFactory implements CacheFactory
      *
      * @return CacheAdapter
      */
-    private function createRegionCache($name)
+    private function createRegionCache(string $name): CacheAdapter
     {
         $cacheAdapter = clone $this->cache;
 

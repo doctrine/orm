@@ -67,7 +67,7 @@ final class IdentifierFlattener
      *
      * @return array
      */
-    public function flattenIdentifier(ClassMetadata $class, array $id)
+    public function flattenIdentifier(ClassMetadata $class, array $id): array
     {
         $flatId = [];
 

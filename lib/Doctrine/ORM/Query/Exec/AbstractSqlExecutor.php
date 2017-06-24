@@ -49,17 +49,12 @@ abstract class AbstractSqlExecutor
      *
      * @return array  All the SQL update statements.
      */
-    public function getSqlStatements()
+    public function getSqlStatements(): array
     {
         return $this->_sqlStatements;
     }
 
-    /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile $qcp
-     *
-     * @return void
-     */
-    public function setQueryCacheProfile(QueryCacheProfile $qcp)
+    public function setQueryCacheProfile(QueryCacheProfile $qcp): void
     {
         $this->queryCacheProfile = $qcp;
     }
@@ -69,7 +64,7 @@ abstract class AbstractSqlExecutor
      *
      * @return void
      */
-    public function removeQueryCacheProfile()
+    public function removeQueryCacheProfile(): void
     {
         $this->queryCacheProfile = null;
     }
@@ -83,5 +78,5 @@ abstract class AbstractSqlExecutor
      *
      * @return \Doctrine\DBAL\Driver\Statement
      */
-    abstract public function execute(Connection $conn, array $params, array $types);
+    abstract public function execute(Connection $conn, array $params, array $types): \Doctrine\DBAL\Driver\Statement;
 }

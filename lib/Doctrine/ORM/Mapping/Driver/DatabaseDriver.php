@@ -79,9 +79,6 @@ class DatabaseDriver implements MappingDriver
      */
     private $namespace;
 
-    /**
-     * @param AbstractSchemaManager $schemaManager
-     */
     public function __construct(AbstractSchemaManager $schemaManager)
     {
         $this->_sm = $schemaManager;
@@ -94,7 +91,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return void
      */
-    public function setNamespace($namespace)
+    public function setNamespace(string $namespace): void
     {
         $this->namespace = $namespace;
     }
@@ -125,7 +122,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return void
      */
-    public function setClassNameForTable($tableName, $className)
+    public function setClassNameForTable(string $tableName, string $className): void
     {
         $this->classNamesForTables[$tableName] = $className;
     }
@@ -139,7 +136,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return void
      */
-    public function setFieldNameForColumn($tableName, $columnName, $fieldName)
+    public function setFieldNameForColumn(string $tableName, string $columnName, string $fieldName): void
     {
         $this->fieldNamesForColumns[$tableName][$columnName] = $fieldName;
     }
@@ -152,7 +149,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return void
      */
-    public function setTables($entityTables, $manyToManyTables)
+    public function setTables(array $entityTables, array $manyToManyTables): void
     {
         $this->tables = $this->manyToManyTables = $this->classToTableNames = [];
 
@@ -171,7 +168,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata): void
     {
         $this->reverseEngineerMappingFromDatabase();
 
@@ -255,12 +252,7 @@ class DatabaseDriver implements MappingDriver
         }
     }
 
-    /**
-     * @return void
-     *
-     * @throws \Doctrine\ORM\Mapping\MappingException
-     */
-    private function reverseEngineerMappingFromDatabase()
+    private function reverseEngineerMappingFromDatabase(): void
     {
         if ($this->tables !== null) {
             return;
@@ -315,7 +307,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
      */
-    private function buildIndexes(ClassMetadataInfo $metadata)
+    private function buildIndexes(ClassMetadataInfo $metadata): void
     {
         $tableName = $metadata->table['name'];
         $indexes   = $this->tables[$tableName]->getIndexes();
@@ -340,7 +332,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
      */
-    private function buildFieldMappings(ClassMetadataInfo $metadata)
+    private function buildFieldMappings(ClassMetadataInfo $metadata): void
     {
         $tableName      = $metadata->table['name'];
         $columns        = $this->tables[$tableName]->getColumns();
@@ -388,7 +380,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return array
      */
-    private function buildFieldMapping($tableName, Column $column)
+    private function buildFieldMapping(string $tableName, Column $column): array
     {
         $fieldMapping = [
             'fieldName'  => $this->getFieldNameForColumn($tableName, $column->getName(), false),
@@ -442,7 +434,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
      */
-    private function buildToOneAssociationMappings(ClassMetadataInfo $metadata)
+    private function buildToOneAssociationMappings(ClassMetadataInfo $metadata): void
     {
         $tableName   = $metadata->table['name'];
         $primaryKeys = $this->getTablePrimaryKeys($this->tables[$tableName]);
@@ -489,7 +481,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return array
      */
-    private function getTableForeignKeys(Table $table)
+    private function getTableForeignKeys(Table $table): array
     {
         return ($this->_sm->getDatabasePlatform()->supportsForeignKeyConstraints())
             ? $table->getForeignKeys()
@@ -503,7 +495,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return array
      */
-    private function getTablePrimaryKeys(Table $table)
+    private function getTablePrimaryKeys(Table $table): array
     {
         try {
             return $table->getPrimaryKey()->getColumns();
@@ -521,7 +513,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return string
      */
-    private function getClassNameForTable($tableName)
+    private function getClassNameForTable(string $tableName): string
     {
         if (isset($this->classNamesForTables[$tableName])) {
             return $this->namespace . $this->classNamesForTables[$tableName];
@@ -539,7 +531,7 @@ class DatabaseDriver implements MappingDriver
      *
      * @return string
      */
-    private function getFieldNameForColumn($tableName, $columnName, $fk = false)
+    private function getFieldNameForColumn(string $tableName, string $columnName, bool $fk = false): string
     {
         if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];

@@ -33,7 +33,7 @@ interface Region extends MultiGetRegion
      *
      * @return string The region name
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * Determine whether this region contains data for the given key.
@@ -42,7 +42,7 @@ interface Region extends MultiGetRegion
      *
      * @return boolean TRUE if the underlying cache contains corresponding data; FALSE otherwise.
      */
-    public function contains(CacheKey $key);
+    public function contains(CacheKey $key): bool;
 
     /**
      * Get an item from the cache.
@@ -53,7 +53,7 @@ interface Region extends MultiGetRegion
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the item or region.
      */
-    public function get(CacheKey $key);
+    public function get(CacheKey $key): ?\Doctrine\ORM\Cache\CacheEntry;
 
     /**
      * Put an item into the cache.
@@ -64,7 +64,7 @@ interface Region extends MultiGetRegion
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the region.
      */
-    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null);
+    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null): void;
 
     /**
      * Remove an item from the cache.
@@ -73,12 +73,12 @@ interface Region extends MultiGetRegion
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the region.
      */
-    public function evict(CacheKey $key);
+    public function evict(CacheKey $key): void;
 
     /**
      * Remove all contents of this particular cache region.
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates problem accessing the region.
      */
-    public function evictAll();
+    public function evictAll(): void;
 }

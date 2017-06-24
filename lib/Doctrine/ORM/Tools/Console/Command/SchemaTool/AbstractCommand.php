@@ -45,7 +45,7 @@ abstract class AbstractCommand extends Command
      *
      * @return null|int Null or 0 if everything went fine, or an error code.
      */
-    abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas);
+    abstract protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas): ?int;
 
     /**
      * {@inheritdoc}

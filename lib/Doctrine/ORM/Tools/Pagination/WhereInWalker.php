@@ -72,7 +72,7 @@ class WhereInWalker extends TreeWalkerAdapter
      *
      * @throws \RuntimeException
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause

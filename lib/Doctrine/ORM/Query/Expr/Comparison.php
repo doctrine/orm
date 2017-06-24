@@ -78,7 +78,7 @@ class Comparison
     /**
      * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -94,7 +94,7 @@ class Comparison
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->leftExpr . ' ' . $this->operator . ' ' . $this->rightExpr;
     }

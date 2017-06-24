@@ -65,7 +65,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @param array $queryAliases
      */
-    public function __construct($queryAliases)
+    public function __construct(array $queryAliases)
     {
         $this->queryAliases = $queryAliases;
         $this->expr = new Expr();
@@ -77,7 +77,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getParameters()
+    public function getParameters(): \Doctrine\Common\Collections\Collection
     {
         return new ArrayCollection($this->parameters);
     }
@@ -87,7 +87,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @return void
      */
-    public function clearParameters()
+    public function clearParameters(): void
     {
         $this->parameters = [];
     }
@@ -99,7 +99,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      *
      * @return string|null
      */
-    private static function convertComparisonOperator($criteriaOperator)
+    private static function convertComparisonOperator(string $criteriaOperator): ?string
     {
         return isset(self::$operatorMap[$criteriaOperator]) ? self::$operatorMap[$criteriaOperator] : null;
     }

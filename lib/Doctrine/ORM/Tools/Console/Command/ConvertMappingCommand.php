@@ -46,7 +46,7 @@ class ConvertMappingCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:convert-mapping')
@@ -115,7 +115,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $em = $this->getHelper('em')->getEntityManager();
 
@@ -194,7 +194,7 @@ EOT
      *
      * @return \Doctrine\ORM\Tools\Export\Driver\AbstractExporter
      */
-    protected function getExporter($toType, $destPath)
+    protected function getExporter(string $toType, string $destPath): \Doctrine\ORM\Tools\Export\Driver\AbstractExporter
     {
         $cme = new ClassMetadataExporter();
 

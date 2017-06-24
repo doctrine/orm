@@ -59,7 +59,7 @@ abstract class Base
     /**
      * @param array $args
      */
-    public function __construct($args = [])
+    public function __construct(array $args = [])
     {
         $this->addMultiple($args);
     }
@@ -69,7 +69,7 @@ abstract class Base
      *
      * @return Base
      */
-    public function addMultiple($args = [])
+    public function addMultiple(array $args = []): Base
     {
         foreach ((array) $args as $arg) {
             $this->add($arg);
@@ -85,7 +85,7 @@ abstract class Base
      *
      * @throws \InvalidArgumentException
      */
-    public function add($arg)
+    public function add($arg): Base
     {
         if ( $arg !== null && (!$arg instanceof self || $arg->count() > 0) ) {
             // If we decide to keep Expr\Base instances, we can use this check
@@ -106,7 +106,7 @@ abstract class Base
     /**
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->parts);
     }
@@ -114,7 +114,7 @@ abstract class Base
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->count() == 1) {
             return (string) $this->parts[0];

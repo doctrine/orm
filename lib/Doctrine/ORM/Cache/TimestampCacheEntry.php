@@ -38,7 +38,7 @@ class TimestampCacheEntry implements CacheEntry
     /**
      * @param float $time
      */
-    public function __construct($time = null)
+    public function __construct(float $time = null)
     {
         $this->time = $time ? (float) $time : microtime(true);
     }
@@ -52,7 +52,7 @@ class TimestampCacheEntry implements CacheEntry
      *
      * @return TimestampCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): TimestampCacheEntry
     {
         return new self($values['time']);
     }

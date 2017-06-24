@@ -104,7 +104,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param ClassMetadata          $class      The class descriptor of the entity type of this collection.
      * @param Collection             $collection The collection elements.
      */
-    public function __construct(EntityManagerInterface $em, $class, Collection $collection)
+    public function __construct(EntityManagerInterface $em, ClassMetadata $class, Collection $collection)
     {
         $this->collection  = $collection;
         $this->em          = $em;
@@ -122,7 +122,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function setOwner($entity, array $assoc)
+    public function setOwner($entity, array $assoc): void
     {
         $this->owner            = $entity;
         $this->association      = $assoc;
@@ -143,7 +143,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * @return Mapping\ClassMetadata
      */
-    public function getTypeClass()
+    public function getTypeClass(): Mapping\ClassMetadata
     {
         return $this->typeClass;
     }
@@ -157,7 +157,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function hydrateAdd($element)
+    public function hydrateAdd($element): void
     {
         $this->collection->add($element);
 
@@ -184,7 +184,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function hydrateSet($key, $element)
+    public function hydrateSet($key, $element): void
     {
         $this->collection->set($key, $element);
 
@@ -204,7 +204,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function initialize()
+    public function initialize(): void
     {
         if ($this->initialized || ! $this->association) {
             return;
@@ -221,7 +221,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function takeSnapshot()
+    public function takeSnapshot(): void
     {
         $this->snapshot = $this->collection->toArray();
         $this->isDirty  = false;
@@ -233,7 +233,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array The last snapshot of the elements.
      */
-    public function getSnapshot()
+    public function getSnapshot(): array
     {
         return $this->snapshot;
     }
@@ -244,7 +244,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array
      */
-    public function getDeleteDiff()
+    public function getDeleteDiff(): array
     {
         return array_udiff_assoc(
             $this->snapshot,
@@ -259,7 +259,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array
      */
-    public function getInsertDiff()
+    public function getInsertDiff(): array
     {
         return array_udiff_assoc(
             $this->collection->toArray(),
@@ -273,7 +273,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array
      */
-    public function getMapping()
+    public function getMapping(): array
     {
         return $this->association;
     }
@@ -283,7 +283,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    private function changed()
+    private function changed(): void
     {
         if ($this->isDirty) {
             return;
@@ -306,7 +306,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return boolean TRUE if the collection is dirty, FALSE otherwise.
      */
-    public function isDirty()
+    public function isDirty(): bool
     {
         return $this->isDirty;
     }
@@ -318,7 +318,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function setDirty($dirty)
+    public function setDirty(bool $dirty): void
     {
         $this->isDirty = $dirty;
     }
@@ -330,7 +330,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return void
      */
-    public function setInitialized($bool)
+    public function setInitialized(bool $bool): void
     {
         $this->initialized = $bool;
     }
@@ -464,7 +464,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set($key, $value): void
     {
         parent::set($key, $value);
 
@@ -540,7 +540,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
-    public function clear()
+    public function clear(): void
     {
         if ($this->initialized && $this->isEmpty()) {
             $this->collection->clear();
@@ -584,7 +584,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         return ['collection', 'initialized'];
     }
@@ -601,7 +601,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return array
      */
-    public function slice($offset, $length = null)
+    public function slice(int $offset, ?int $length = null): array
     {
         if ( ! $this->initialized && ! $this->isDirty && $this->association['fetch'] === ClassMetadata::FETCH_EXTRA_LAZY) {
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
@@ -649,7 +649,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @throws \RuntimeException
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria): Collection
     {
         if ($this->isDirty) {
             $this->initialize();
@@ -685,7 +685,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function unwrap()
+    public function unwrap(): \Doctrine\Common\Collections\Collection
     {
         return $this->collection;
     }
@@ -693,7 +693,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * {@inheritdoc}
      */
-    protected function doInitialize()
+    protected function doInitialize(): void
     {
         // Has NEW objects added through add(). Remember them.
         $newObjects = [];

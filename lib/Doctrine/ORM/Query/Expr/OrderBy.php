@@ -60,7 +60,7 @@ class OrderBy
      * @param string|null $sort
      * @param string|null $order
      */
-    public function __construct($sort = null, $order = null)
+    public function __construct(?string $sort = null, ?string $order = null)
     {
         if ($sort) {
             $this->add($sort, $order);
@@ -73,7 +73,7 @@ class OrderBy
      *
      * @return void
      */
-    public function add($sort, $order = null)
+    public function add(string $sort, ?string $order = null): void
     {
         $order = ! $order ? 'ASC' : $order;
         $this->parts[] = $sort . ' '. $order;
@@ -82,7 +82,7 @@ class OrderBy
     /**
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         return count($this->parts);
     }
@@ -90,7 +90,7 @@ class OrderBy
     /**
      * @return array
      */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }
@@ -98,7 +98,7 @@ class OrderBy
     /**
      * @return string
      */
-    public function __tostring()
+    public function __tostring(): string
     {
         return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;
     }

@@ -182,7 +182,7 @@ class ResultSetMapping
      *
      * @todo Rename: addRootEntity
      */
-    public function addEntityResult($class, $alias, $resultAlias = null)
+    public function addEntityResult(string $class, string $alias, ?string $resultAlias = null): ResultSetMapping
     {
         $this->aliasMap[$alias] = $class;
         $this->entityMappings[$alias] = $resultAlias;
@@ -207,7 +207,7 @@ class ResultSetMapping
      *
      * @todo Rename: addDiscriminatorColumn
      */
-    public function setDiscriminatorColumn($alias, $discrColumn)
+    public function setDiscriminatorColumn(string $alias, string $discrColumn): ResultSetMapping
     {
         $this->discriminatorColumns[$alias] = $discrColumn;
         $this->columnOwnerMap[$discrColumn] = $alias;
@@ -223,7 +223,7 @@ class ResultSetMapping
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      */
-    public function addIndexBy($alias, $fieldName)
+    public function addIndexBy(string $alias, string $fieldName): ResultSetMapping
     {
         $found = false;
 
@@ -258,7 +258,7 @@ class ResultSetMapping
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      */
-    public function addIndexByScalar($resultColumnName)
+    public function addIndexByScalar(string $resultColumnName): ResultSetMapping
     {
         $this->indexByMap['scalars'] = $resultColumnName;
 
@@ -273,7 +273,7 @@ class ResultSetMapping
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      */
-    public function addIndexByColumn($alias, $resultColumnName)
+    public function addIndexByColumn(string $alias, string $resultColumnName): ResultSetMapping
     {
         $this->indexByMap[$alias] = $resultColumnName;
 
@@ -290,7 +290,7 @@ class ResultSetMapping
      *
      * @todo Rename: isIndexed($alias)
      */
-    public function hasIndexBy($alias)
+    public function hasIndexBy(string $alias): bool
     {
         return isset($this->indexByMap[$alias]);
     }
@@ -305,7 +305,7 @@ class ResultSetMapping
      *
      * @todo Rename: isField
      */
-    public function isFieldResult($columnName)
+    public function isFieldResult(string $columnName): bool
     {
         return isset($this->fieldMappings[$columnName]);
     }
@@ -326,7 +326,7 @@ class ResultSetMapping
      *
      * @todo Rename: addField
      */
-    public function addFieldResult($alias, $columnName, $fieldName, $declaringClass = null)
+    public function addFieldResult(string $alias, string $columnName, string $fieldName, ?string $declaringClass = null): ResultSetMapping
     {
         // column name (in result set) => field name
         $this->fieldMappings[$columnName] = $fieldName;
@@ -355,7 +355,7 @@ class ResultSetMapping
      *
      * @todo Rename: addJoinedEntity
      */
-    public function addJoinedEntityResult($class, $alias, $parentAlias, $relation)
+    public function addJoinedEntityResult(string $class, string $alias, string $parentAlias, string $relation): ResultSetMapping
     {
         $this->aliasMap[$alias]       = $class;
         $this->parentAliasMap[$alias] = $parentAlias;
@@ -375,7 +375,7 @@ class ResultSetMapping
      *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias, $type = 'string')
+    public function addScalarResult(string $columnName, string $alias, string $type = 'string'): ResultSetMapping
     {
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;
@@ -393,7 +393,7 @@ class ResultSetMapping
      * @param mixed  $parameter The parameter name in the SQL result set.
      * @param string $attribute The metadata attribute.
      */
-    public function addMetadataParameterMapping($parameter, $attribute)
+    public function addMetadataParameterMapping($parameter, $attribute): void
     {
         $this->metadataParameterMapping[$parameter] = $attribute;
     }
@@ -407,7 +407,7 @@ class ResultSetMapping
      *
      * @todo Rename: isScalar
      */
-    public function isScalarResult($columnName)
+    public function isScalarResult(string $columnName): bool
     {
         return isset($this->scalarMappings[$columnName]);
     }
@@ -420,7 +420,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getClassName($alias)
+    public function getClassName(string $alias): string
     {
         return $this->aliasMap[$alias];
     }
@@ -432,7 +432,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getScalarAlias($columnName)
+    public function getScalarAlias(string $columnName): string
     {
         return $this->scalarMappings[$columnName];
     }
@@ -444,7 +444,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getDeclaringClass($columnName)
+    public function getDeclaringClass(string $columnName): string
     {
         return $this->declaringClasses[$columnName];
     }
@@ -454,7 +454,7 @@ class ResultSetMapping
      *
      * @return AssociationMapping
      */
-    public function getRelation($alias)
+    public function getRelation(string $alias): AssociationMapping
     {
         return $this->relationMap[$alias];
     }
@@ -464,7 +464,7 @@ class ResultSetMapping
      *
      * @return boolean
      */
-    public function isRelation($alias)
+    public function isRelation(string $alias): bool
     {
         return isset($this->relationMap[$alias]);
     }
@@ -476,7 +476,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getEntityAlias($columnName)
+    public function getEntityAlias(string $columnName): string
     {
         return $this->columnOwnerMap[$columnName];
     }
@@ -488,7 +488,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getParentAlias($alias)
+    public function getParentAlias(string $alias): string
     {
         return $this->parentAliasMap[$alias];
     }
@@ -500,7 +500,7 @@ class ResultSetMapping
      *
      * @return boolean
      */
-    public function hasParentAlias($alias)
+    public function hasParentAlias(string $alias): bool
     {
         return isset($this->parentAliasMap[$alias]);
     }
@@ -512,7 +512,7 @@ class ResultSetMapping
      *
      * @return string
      */
-    public function getFieldName($columnName)
+    public function getFieldName(string $columnName): string
     {
         return $this->fieldMappings[$columnName];
     }
@@ -520,7 +520,7 @@ class ResultSetMapping
     /**
      * @return array
      */
-    public function getAliasMap()
+    public function getAliasMap(): array
     {
         return $this->aliasMap;
     }
@@ -530,7 +530,7 @@ class ResultSetMapping
      *
      * @return integer
      */
-    public function getEntityResultCount()
+    public function getEntityResultCount(): int
     {
         return count($this->aliasMap);
     }
@@ -544,7 +544,7 @@ class ResultSetMapping
      *
      * @return boolean
      */
-    public function isMixedResult()
+    public function isMixedResult(): bool
     {
         return $this->isMixed;
     }
@@ -562,7 +562,7 @@ class ResultSetMapping
      *
      * @todo Make all methods of this class require all parameters and not infer anything
      */
-    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
+    public function addMetaResult(string $alias, string $columnName, string $fieldName, bool $isIdentifierColumn = false, string $type = null): ResultSetMapping
     {
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;

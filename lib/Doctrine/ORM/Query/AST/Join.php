@@ -55,7 +55,7 @@ class Join extends Node
      * @param int  $joinType
      * @param Node $joinAssociationDeclaration
      */
-    public function __construct($joinType, $joinAssociationDeclaration)
+    public function __construct(int $joinType, Node $joinAssociationDeclaration)
     {
         $this->joinType = $joinType;
         $this->joinAssociationDeclaration = $joinAssociationDeclaration;

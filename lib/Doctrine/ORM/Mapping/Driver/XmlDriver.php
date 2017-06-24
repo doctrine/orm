@@ -53,7 +53,7 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata): void
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         /* @var $xmlRoot SimpleXMLElement */
@@ -667,7 +667,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The options array.
      */
-    private function _parseOptions(SimpleXMLElement $options)
+    private function _parseOptions(SimpleXMLElement $options): array
     {
         $array = [];
 
@@ -702,7 +702,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The mapping array.
      */
-    private function joinColumnToArray(SimpleXMLElement $joinColumnElement)
+    private function joinColumnToArray(SimpleXMLElement $joinColumnElement): array
     {
         $joinColumn = [
             'name' => (string) $joinColumnElement['name'],
@@ -735,7 +735,7 @@ class XmlDriver extends FileDriver
      *
      * @return array
      */
-    private function columnToArray(SimpleXMLElement $fieldMapping)
+    private function columnToArray(SimpleXMLElement $fieldMapping): array
     {
         $mapping = [
             'fieldName' => (string) $fieldMapping['name'],
@@ -791,7 +791,7 @@ class XmlDriver extends FileDriver
      *
      * @return array
      */
-    private function cacheToArray(SimpleXMLElement $cacheMapping)
+    private function cacheToArray(SimpleXMLElement $cacheMapping): array
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
@@ -817,7 +817,7 @@ class XmlDriver extends FileDriver
      *
      * @return array The list of cascade options.
      */
-    private function _getCascadeMappings(SimpleXMLElement $cascadeElement)
+    private function _getCascadeMappings(SimpleXMLElement $cascadeElement): array
     {
         $cascades = [];
         /* @var $action SimpleXmlElement */
@@ -866,7 +866,7 @@ class XmlDriver extends FileDriver
      *
      * @return bool
      */
-    protected function evaluateBoolean($element)
+    protected function evaluateBoolean($element): bool
     {
         $flag = (string) $element;
 

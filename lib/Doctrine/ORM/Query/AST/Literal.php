@@ -40,7 +40,7 @@ class Literal extends Node
      * @param int   $type
      * @param mixed $value
      */
-    public function __construct($type, $value)
+    public function __construct(int $type, $value)
     {
         $this->type = $type;
         $this->value = $value;

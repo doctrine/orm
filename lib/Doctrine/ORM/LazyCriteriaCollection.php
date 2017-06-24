@@ -69,7 +69,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @return integer
      */
-    public function count()
+    public function count(): int
     {
         if ($this->isInitialized()) {
             return $this->collection->count();
@@ -88,7 +88,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @return boolean TRUE if the collection is empty, FALSE otherwise.
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         if ($this->isInitialized()) {
             return $this->collection->isEmpty();
@@ -104,7 +104,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
      *
      * @return bool
      */
-    public function contains($element)
+    public function contains($element): bool
     {
         if ($this->isInitialized()) {
             return $this->collection->contains($element);
@@ -126,7 +126,7 @@ class LazyCriteriaCollection extends AbstractLazyCollection implements Selectabl
     /**
      * {@inheritDoc}
      */
-    protected function doInitialize()
+    protected function doInitialize(): void
     {
         $elements         = $this->entityPersister->loadCriteria($this->criteria);
         $this->collection = new ArrayCollection($elements);

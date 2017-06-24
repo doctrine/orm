@@ -49,7 +49,7 @@ class ClassMetadataExporter
      *
      * @return void
      */
-    public static function registerExportDriver($name, $class)
+    public static function registerExportDriver(string $name, string $class): void
     {
         self::$_exporterDrivers[$name] = $class;
     }
@@ -64,7 +64,7 @@ class ClassMetadataExporter
      *
      * @throws ExportException
      */
-    public function getExporter($type, $dest = null)
+    public function getExporter(string $type, ?string $dest = null): Driver\AbstractExporter
     {
         if ( ! isset(self::$_exporterDrivers[$type])) {
             throw ExportException::invalidExporterDriverType($type);

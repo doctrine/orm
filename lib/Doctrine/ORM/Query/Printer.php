@@ -49,7 +49,7 @@ class Printer
      *
      * @param bool $silent Parse tree will not be printed if true.
      */
-    public function __construct($silent = false)
+    public function __construct(bool $silent = false)
     {
         $this->_silent = $silent;
     }
@@ -64,7 +64,7 @@ class Printer
      *
      * @return void
      */
-    public function startProduction($name)
+    public function startProduction(string $name): void
     {
         $this->println('(' . $name);
         $this->_indent++;
@@ -77,7 +77,7 @@ class Printer
      *
      * @return void
      */
-    public function endProduction()
+    public function endProduction(): void
     {
         $this->_indent--;
         $this->println(')');
@@ -90,7 +90,7 @@ class Printer
      *
      * @return void
      */
-    public function println($str)
+    public function println(string $str): void
     {
         if ( ! $this->_silent) {
             echo str_repeat('    ', $this->_indent), $str, "\n";

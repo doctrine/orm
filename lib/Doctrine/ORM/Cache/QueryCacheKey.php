@@ -58,9 +58,9 @@ class QueryCacheKey extends CacheKey
      * @param TimestampCacheKey|null $timestampKey
      */
     public function __construct(
-        $hash,
-        $lifetime = 0,
-        $cacheMode = Cache::MODE_NORMAL,
+        string $hash,
+        int $lifetime = 0,
+        int $cacheMode = Cache::MODE_NORMAL,
         TimestampCacheKey $timestampKey = null
     ) {
         $this->hash         = $hash;

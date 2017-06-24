@@ -53,7 +53,7 @@ class AggregateExpression extends Node
      * @param PathExpression|SimpleArithmeticExpression $pathExpression
      * @param bool                                      $isDistinct
      */
-    public function __construct($functionName, $pathExpression, $isDistinct)
+    public function __construct(string $functionName, $pathExpression, $isDistinct)
     {
         $this->functionName = $functionName;
         $this->pathExpression = $pathExpression;

@@ -241,7 +241,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function addInsert($entity)
+    public function addInsert($entity): void
     {
         $this->queuedInserts[spl_object_hash($entity)] = $entity;
     }
@@ -317,7 +317,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return void
      */
-    protected function assignDefaultVersionValue($entity, array $id)
+    protected function assignDefaultVersionValue($entity, array $id): void
     {
         $value = $this->fetchVersionValue($this->class, $id);
 
@@ -332,7 +332,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed
      */
-    protected function fetchVersionValue($versionedClass, array $id)
+    protected function fetchVersionValue(\Doctrine\ORM\Mapping\ClassMetadata $versionedClass, array $id)
     {
         $versionField = $versionedClass->versionField;
         $fieldMapping = $versionedClass->fieldMappings[$versionField];
@@ -355,7 +355,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         $tableName  = $this->class->getTableName();
         $updateData = $this->prepareUpdateData($entity);
@@ -390,7 +390,7 @@ class BasicEntityPersister implements EntityPersister
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    protected final function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
+    protected final function updateTable($entity, $quotedTableName, array $updateData, $versioned = false): void
     {
         $set    = [];
         $types  = [];
@@ -494,7 +494,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return void
      */
-    protected function deleteJoinTableRecords($identifier)
+    protected function deleteJoinTableRecords(array $identifier): void
     {
         foreach ($this->class->associationMappings as $mapping) {
             if ($mapping['type'] !== ClassMetadata::MANY_TO_MANY) {
@@ -603,7 +603,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array The prepared data.
      */
-    protected function prepareUpdateData($entity)
+    protected function prepareUpdateData($entity): array
     {
         $versionField = null;
         $result       = [];
@@ -692,7 +692,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @see prepareUpdateData
      */
-    protected function prepareInsertData($entity)
+    protected function prepareInsertData($entity): array
     {
         return $this->prepareUpdateData($entity);
     }
@@ -804,7 +804,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function refresh(array $id, $entity, $lockMode = null)
+    public function refresh(array $id, $entity, $lockMode = null): void
     {
         $sql = $this->getSelectSQL($id, null, $lockMode);
         list($params, $types) = $this->expandParameters($id);
@@ -915,7 +915,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array
      */
-    private function loadArrayFromStatement($assoc, $stmt)
+    private function loadArrayFromStatement(array $assoc, \Doctrine\DBAL\Statement $stmt): array
     {
         $rsm    = $this->currentPersisterContext->rsm;
         $hints  = [UnitOfWork::HINT_DEFEREAGERLOAD => true];
@@ -937,7 +937,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array
      */
-    private function loadCollectionFromStatement($assoc, $stmt, $coll)
+    private function loadCollectionFromStatement(array $assoc, \Doctrine\DBAL\Statement $stmt, PersistentCollection $coll): array
     {
         $rsm   = $this->currentPersisterContext->rsm;
         $hints = [
@@ -973,7 +973,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
+    private function getManyToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null): \Doctrine\DBAL\Driver\Statement
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -1135,7 +1135,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    protected final function getOrderBySQL(array $orderBy, $baseTableAlias)
+    protected final function getOrderBySQL(array $orderBy, string $baseTableAlias): string
     {
         $orderByList = [];
 
@@ -1193,7 +1193,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string The SQL fragment.
      */
-    protected function getSelectColumnsSQL()
+    protected function getSelectColumnsSQL(): string
     {
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
             return $this->currentPersisterContext->selectColumnListSql;
@@ -1314,7 +1314,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getSelectColumnAssociationSQL($field, $assoc, ClassMetadata $class, $alias = 'r')
+    protected function getSelectColumnAssociationSQL(string $field, array $assoc, ClassMetadata $class, string $alias = 'r'): string
     {
         if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE) ) {
             return '';
@@ -1346,7 +1346,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getSelectManyToManyJoinSQL(array $manyToMany)
+    protected function getSelectManyToManyJoinSQL(array $manyToMany): string
     {
         $conditions         = [];
         $association        = $manyToMany;
@@ -1422,7 +1422,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array The list of columns.
      */
-    protected function getInsertColumnList()
+    protected function getInsertColumnList(): array
     {
         $columns = [];
 
@@ -1466,7 +1466,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getSelectColumnSQL($field, ClassMetadata $class, $alias = 'r')
+    protected function getSelectColumnSQL(string $field, ClassMetadata $class, string $alias = 'r'): string
     {
         $root         = $alias == 'r' ? '' : $alias ;
         $tableAlias   = $this->getSQLTableAlias($class->name, $root);
@@ -1494,7 +1494,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @todo Reconsider. Binding table aliases to class names is not such a good idea.
      */
-    protected function getSQLTableAlias($className, $assocName = '')
+    protected function getSQLTableAlias(string $className, string $assocName = ''): string
     {
         if ($assocName) {
             $className .= '#' . $assocName;
@@ -1514,7 +1514,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function lock(array $criteria, $lockMode)
+    public function lock(array $criteria, $lockMode): void
     {
         $lockSql      = '';
         $conditionSql = $this->getSelectConditionSQL($criteria);
@@ -1549,7 +1549,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getLockTablesSql($lockMode)
+    protected function getLockTablesSql(int $lockMode): string
     {
         return $this->platform->appendLockHint(
             'FROM '
@@ -1566,7 +1566,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getSelectConditionCriteriaSQL(Criteria $criteria)
+    protected function getSelectConditionCriteriaSQL(Criteria $criteria): string
     {
         $expression = $criteria->getWhereExpression();
 
@@ -1658,7 +1658,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    private function getSelectConditionStatementColumnSQL($field, $assoc = null)
+    private function getSelectConditionStatementColumnSQL(string $field, ?array $assoc = null)
     {
         if (isset($this->class->fieldMappings[$field])) {
             $className = (isset($this->class->fieldMappings[$field]['inherited']))
@@ -1728,7 +1728,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      */
-    protected function getSelectConditionSQL(array $criteria, $assoc = null)
+    protected function getSelectConditionSQL(array $criteria, ?array $assoc = null): string
     {
         $conditions = [];
 
@@ -1771,7 +1771,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return \Doctrine\DBAL\Statement
      */
-    private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null)
+    private function getOneToManyStatement(array $assoc, $sourceEntity, $offset = null, $limit = null): \Doctrine\DBAL\Statement
     {
         $this->switchPersisterContext($offset, $limit);
 
@@ -1851,7 +1851,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array
      */
-    private function expandToManyParameters($criteria)
+    private function expandToManyParameters($criteria): array
     {
         $params = [];
         $types  = [];
@@ -1879,7 +1879,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function getTypes($field, $value, ClassMetadata $class)
+    private function getTypes(string $field, $value, ClassMetadata $class): array
     {
         $types = [];
 
@@ -1929,7 +1929,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return array
      */
-    private function getValues($value)
+    private function getValues($value): array
     {
         if (is_array($value)) {
             $newValue = [];
@@ -2014,7 +2014,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string LEFT JOIN if one of the columns is nullable, INNER JOIN otherwise.
      */
-    protected function getJoinSQLForJoinColumns($joinColumns)
+    protected function getJoinSQLForJoinColumns(array $joinColumns): string
     {
         // if one of the join columns is nullable, return left join
         foreach ($joinColumns as $joinColumn) {
@@ -2042,7 +2042,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string The SQL query part to add to a query.
      */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         $filterClauses = [];
 
@@ -2065,7 +2065,7 @@ class BasicEntityPersister implements EntityPersister
      * @param null|int $offset
      * @param null|int $limit
      */
-    protected function switchPersisterContext($offset, $limit)
+    protected function switchPersisterContext(?int $offset, ?int $limit): void
     {
         if (null === $offset && null === $limit) {
             $this->currentPersisterContext = $this->noLimitsContext;

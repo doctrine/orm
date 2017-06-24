@@ -53,7 +53,7 @@ class InExpression extends Node
     /**
      * @param ArithmeticExpression $expression
      */
-    public function __construct($expression)
+    public function __construct(ArithmeticExpression $expression)
     {
         $this->expression = $expression;
     }

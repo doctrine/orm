@@ -56,7 +56,7 @@ abstract class AbstractExporter
     /**
      * @param string|null $dir
      */
-    public function __construct($dir = null)
+    public function __construct(?string $dir = null)
     {
         $this->_outputDir = $dir;
     }
@@ -66,7 +66,7 @@ abstract class AbstractExporter
      *
      * @return void
      */
-    public function setOverwriteExistingFiles($overwrite)
+    public function setOverwriteExistingFiles(bool $overwrite): void
     {
         $this->_overwriteExistingFiles = $overwrite;
     }
@@ -79,7 +79,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    abstract public function exportClassMetadata(ClassMetadataInfo $metadata);
+    abstract public function exportClassMetadata(ClassMetadataInfo $metadata): string;
 
     /**
      * Sets the array of ClassMetadataInfo instances to export.
@@ -88,7 +88,7 @@ abstract class AbstractExporter
      *
      * @return void
      */
-    public function setMetadata(array $metadata)
+    public function setMetadata(array $metadata): void
     {
         $this->_metadata = $metadata;
     }
@@ -98,7 +98,7 @@ abstract class AbstractExporter
      *
      * @return string|null
      */
-    public function getExtension()
+    public function getExtension(): ?string
     {
         return $this->_extension;
     }
@@ -115,7 +115,7 @@ abstract class AbstractExporter
      *
      * @return void
      */
-    public function setOutputDir($dir)
+    public function setOutputDir(string $dir): void
     {
         $this->_outputDir = $dir;
     }
@@ -128,7 +128,7 @@ abstract class AbstractExporter
      *
      * @throws \Doctrine\ORM\Tools\Export\ExportException
      */
-    public function export()
+    public function export(): void
     {
         if ( ! is_dir($this->_outputDir)) {
             mkdir($this->_outputDir, 0775, true);
@@ -158,7 +158,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    protected function _generateOutputPath(ClassMetadataInfo $metadata): string
     {
         return $this->_outputDir . '/' . str_replace('\\', '.', $metadata->name) . $this->_extension;
     }
@@ -175,7 +175,7 @@ abstract class AbstractExporter
      *
      * @return void
      */
-    public function setExtension($extension)
+    public function setExtension(string $extension): void
     {
         $this->_extension = $extension;
     }
@@ -185,7 +185,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _getInheritanceTypeString($type)
+    protected function _getInheritanceTypeString(int $type): string
     {
         switch ($type) {
             case ClassMetadataInfo::INHERITANCE_TYPE_NONE:
@@ -207,7 +207,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _getFetchModeString($mode)
+    protected function _getFetchModeString(int $mode): string
     {
         switch ($mode) {
             case ClassMetadataInfo::FETCH_EAGER:
@@ -226,7 +226,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _getChangeTrackingPolicyString($policy)
+    protected function _getChangeTrackingPolicyString(int $policy): string
     {
         switch ($policy) {
             case ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT:
@@ -245,7 +245,7 @@ abstract class AbstractExporter
      *
      * @return string
      */
-    protected function _getIdGeneratorTypeString($type)
+    protected function _getIdGeneratorTypeString(int $type): string
     {
         switch ($type) {
             case ClassMetadataInfo::GENERATOR_TYPE_AUTO:

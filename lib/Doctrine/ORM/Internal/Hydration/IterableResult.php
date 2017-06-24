@@ -52,17 +52,12 @@ class IterableResult implements \Iterator
     /**
      * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
      */
-    public function __construct($hydrator)
+    public function __construct(\Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator)
     {
         $this->_hydrator = $hydrator;
     }
 
-    /**
-     * @return void
-     *
-     * @throws HydrationException
-     */
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->_rewinded == true) {
             throw new HydrationException("Can only iterate a Result once.");
@@ -96,7 +91,7 @@ class IterableResult implements \Iterator
     /**
      * @return int
      */
-    public function key()
+    public function key(): int
     {
         return $this->_key;
     }
@@ -104,7 +99,7 @@ class IterableResult implements \Iterator
     /**
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return ($this->_current!=false);
     }

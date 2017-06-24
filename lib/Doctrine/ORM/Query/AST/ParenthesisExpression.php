@@ -33,9 +33,6 @@ class ParenthesisExpression extends Node
      */
     public $expression;
 
-    /**
-     * @param \Doctrine\ORM\Query\AST\Node $expression
-     */
     public function __construct(Node $expression)
     {
         $this->expression = $expression;

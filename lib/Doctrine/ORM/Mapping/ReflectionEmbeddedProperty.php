@@ -59,7 +59,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
      * @param ReflectionProperty $childProperty
      * @param string             $embeddedClass
      */
-    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
+    public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, string $embeddedClass)
     {
         $this->parentProperty  = $parentProperty;
         $this->childProperty   = $childProperty;
@@ -85,7 +85,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     /**
      * {@inheritDoc}
      */
-    public function setValue($object, $value = null)
+    public function setValue($object, $value = null): void
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 

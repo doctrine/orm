@@ -40,7 +40,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         $mapping = $collection->getMapping();
 
@@ -61,7 +61,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         $mapping = $collection->getMapping();
 
@@ -305,7 +305,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
      */
-    public function getFilterSql($mapping)
+    public function getFilterSql(array $mapping)
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
@@ -331,7 +331,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return string The SQL query part to add to a query.
      */
-    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
+    protected function generateFilterConditionSQL(ClassMetadata $targetEntity, string $targetTableAlias): string
     {
         $filterClauses = [];
 
@@ -353,7 +353,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return array
      */
-    protected function getOnConditionSQL($mapping)
+    protected function getOnConditionSQL(array $mapping): array
     {
         $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
         $association = ( ! $mapping['isOwningSide'])
@@ -469,7 +469,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return array
      */
-    protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
+    protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element): array
     {
         return $this->collectJoinTableColumnParameters($collection, $element);
     }
@@ -520,7 +520,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return array
      */
-    protected function getInsertRowSQLParameters(PersistentCollection $collection, $element)
+    protected function getInsertRowSQLParameters(PersistentCollection $collection, $element): array
     {
         return $this->collectJoinTableColumnParameters($collection, $element);
     }
@@ -534,7 +534,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return array
      */
-    private function collectJoinTableColumnParameters(PersistentCollection $collection, $element)
+    private function collectJoinTableColumnParameters(PersistentCollection $collection, $element): array
     {
         $params      = [];
         $mapping     = $collection->getMapping();
@@ -580,7 +580,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - parameters to be bound for filtering
      *                - types of the parameters to be bound for filtering
      */
-    private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, $key, $addFilters)
+    private function getJoinTableRestrictionsWithKey(PersistentCollection $collection, string $key, bool $addFilters): array
     {
         $filterMapping = $collection->getMapping();
         $mapping       = $filterMapping;
@@ -665,7 +665,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *                - parameters to be bound for filtering
      *                - types of the parameters to be bound for filtering
      */
-    private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters)
+    private function getJoinTableRestrictions(PersistentCollection $collection, $element, $addFilters): array
     {
         $filterMapping  = $collection->getMapping();
         $mapping        = $filterMapping;
@@ -728,7 +728,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * @return array
      */
-    private function expandCriteriaParameters(Criteria $criteria)
+    private function expandCriteriaParameters(Criteria $criteria): array
     {
         $expression = $criteria->getWhereExpression();
 
@@ -750,7 +750,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @param ClassMetadata $targetClass
      * @return string
      */
-    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
+    private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass): string
     {
         $orderings = $criteria->getOrderings();
         if ($orderings) {
@@ -774,7 +774,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * @return string
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function getLimitSql(Criteria $criteria)
+    private function getLimitSql(Criteria $criteria): string
     {
         $limit  = $criteria->getMaxResults();
         $offset = $criteria->getFirstResult();

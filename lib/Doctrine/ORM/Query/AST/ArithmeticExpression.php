@@ -44,7 +44,7 @@ class ArithmeticExpression extends Node
     /**
      * @return bool
      */
-    public function isSimpleArithmeticExpression()
+    public function isSimpleArithmeticExpression(): bool
     {
         return (bool) $this->simpleArithmeticExpression;
     }
@@ -52,7 +52,7 @@ class ArithmeticExpression extends Node
     /**
      * @return bool
      */
-    public function isSubselect()
+    public function isSubselect(): bool
     {
         return (bool) $this->subselect;
     }

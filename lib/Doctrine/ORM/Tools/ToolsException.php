@@ -35,7 +35,7 @@ class ToolsException extends ORMException
      *
      * @return ToolsException
      */
-    public static function schemaToolFailure($sql, \Exception $e)
+    public static function schemaToolFailure(string $sql, \Exception $e): ToolsException
     {
         return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, "0", $e);
     }
@@ -45,7 +45,7 @@ class ToolsException extends ORMException
      *
      * @return ToolsException
      */
-    public static function couldNotMapDoctrine1Type($type)
+    public static function couldNotMapDoctrine1Type(string $type): ToolsException
     {
         return new self("Could not map doctrine 1 type '$type'!");
     }

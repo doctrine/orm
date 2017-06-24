@@ -49,7 +49,7 @@ class Select extends Base
     /**
      * @return array
      */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }

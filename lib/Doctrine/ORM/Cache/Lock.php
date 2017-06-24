@@ -42,7 +42,7 @@ class Lock
      * @param string  $value
      * @param integer $time
      */
-    public function __construct($value, $time = null)
+    public function __construct(string $value, int $time = null)
     {
         $this->value = $value;
         $this->time  = $time ? : time();
@@ -51,7 +51,7 @@ class Lock
     /**
      * @return \Doctrine\ORM\Cache\Lock
      */
-    public static function createLockRead()
+    public static function createLockRead(): \Doctrine\ORM\Cache\Lock
     {
         return new self(uniqid(time(), true));
     }

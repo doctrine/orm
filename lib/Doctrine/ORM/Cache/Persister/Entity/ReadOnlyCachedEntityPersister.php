@@ -34,7 +34,7 @@ class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersis
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         throw CacheException::updateReadOnlyEntity(ClassUtils::getClass($entity));
     }

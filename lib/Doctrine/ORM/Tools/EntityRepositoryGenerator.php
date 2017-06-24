@@ -58,7 +58,7 @@ class <className> extends <repositoryName>
      *
      * @return string
      */
-    public function generateEntityRepositoryClass($fullClassName)
+    public function generateEntityRepositoryClass(string $fullClassName): string
     {
         $variables = [
             '<namespace>'       => $this->generateEntityRepositoryNamespace($fullClassName),
@@ -76,7 +76,7 @@ class <className> extends <repositoryName>
      *
      * @return string $namespace
      */
-    private function getClassNamespace($fullClassName)
+    private function getClassNamespace(string $fullClassName): string
     {
         $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
 
@@ -90,7 +90,7 @@ class <className> extends <repositoryName>
      *
      * @return string
      */
-    private function generateClassName($fullClassName)
+    private function generateClassName(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -110,7 +110,7 @@ class <className> extends <repositoryName>
      *
      * @return string $namespace
      */
-    private function generateEntityRepositoryNamespace($fullClassName)
+    private function generateEntityRepositoryNamespace(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -122,7 +122,7 @@ class <className> extends <repositoryName>
      *
      * @return string $repositoryName
      */
-    private function generateEntityRepositoryName($fullClassName)
+    private function generateEntityRepositoryName(string $fullClassName): string
     {
         $namespace = $this->getClassNamespace($fullClassName);
 
@@ -141,7 +141,7 @@ class <className> extends <repositoryName>
      *
      * @return void
      */
-    public function writeEntityRepositoryClass($fullClassName, $outputDirectory)
+    public function writeEntityRepositoryClass(string $fullClassName, string $outputDirectory): void
     {
         $code = $this->generateEntityRepositoryClass($fullClassName);
 
@@ -164,7 +164,7 @@ class <className> extends <repositoryName>
      *
      * @return \Doctrine\ORM\Tools\EntityRepositoryGenerator
      */
-    public function setDefaultRepositoryName($repositoryName)
+    public function setDefaultRepositoryName(string $repositoryName): \Doctrine\ORM\Tools\EntityRepositoryGenerator
     {
         $this->repositoryName = $repositoryName;
 

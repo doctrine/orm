@@ -38,14 +38,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return \Doctrine\ORM\Cache|null
      */
-    public function getCache();
+    public function getCache(): ?\Doctrine\ORM\Cache;
 
     /**
      * Gets the database connection object used by the EntityManager.
      *
      * @return \Doctrine\DBAL\Connection
      */
-    public function getConnection();
+    public function getConnection(): \Doctrine\DBAL\Connection;
 
     /**
      * Gets an ExpressionBuilder used for object-oriented construction of query expressions.
@@ -61,14 +61,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return \Doctrine\ORM\Query\Expr
      */
-    public function getExpressionBuilder();
+    public function getExpressionBuilder(): \Doctrine\ORM\Query\Expr;
 
     /**
      * Starts a transaction on the underlying database connection.
      *
      * @return void
      */
-    public function beginTransaction();
+    public function beginTransaction(): void;
 
     /**
      * Executes a function in a transaction.
@@ -84,21 +84,21 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return mixed The non-empty value returned from the closure or true instead.
      */
-    public function transactional($func);
+    public function transactional(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
      *
      * @return void
      */
-    public function commit();
+    public function commit(): void;
 
     /**
      * Performs a rollback on the underlying database connection.
      *
      * @return void
      */
-    public function rollback();
+    public function rollback(): void;
 
     /**
      * Creates a new Query object.
@@ -107,7 +107,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return Query
      */
-    public function createQuery($dql = '');
+    public function createQuery(string $dql = ''): Query;
 
     /**
      * Creates a Query from a named query.
@@ -116,7 +116,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return Query
      */
-    public function createNamedQuery($name);
+    public function createNamedQuery(string $name): Query;
 
     /**
      * Creates a native SQL query.
@@ -126,7 +126,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return NativeQuery
      */
-    public function createNativeQuery($sql, ResultSetMapping $rsm);
+    public function createNativeQuery(string $sql, ResultSetMapping $rsm): NativeQuery;
 
     /**
      * Creates a NativeQuery from a named native query.
@@ -135,14 +135,14 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return NativeQuery
      */
-    public function createNamedNativeQuery($name);
+    public function createNamedNativeQuery(string $name): NativeQuery;
 
     /**
      * Create a QueryBuilder instance
      *
      * @return QueryBuilder
      */
-    public function createQueryBuilder();
+    public function createQueryBuilder(): QueryBuilder;
 
     /**
      * Gets a reference to the entity identified by the given type and identifier
@@ -155,7 +155,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @throws ORMException
      */
-    public function getReference($entityName, $id);
+    public function getReference(string $entityName, $id);
 
     /**
      * Gets a partial reference to the entity identified by the given type and identifier
@@ -177,7 +177,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return object The (partial) entity reference.
      */
-    public function getPartialReference($entityName, $identifier);
+    public function getPartialReference(string $entityName, $identifier);
 
     /**
      * Closes the EntityManager. All entities that are currently managed
@@ -186,7 +186,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @return void
      */
-    public function close();
+    public function close(): void;
 
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
@@ -212,35 +212,35 @@ interface EntityManagerInterface extends ObjectManager
      * @throws OptimisticLockException
      * @throws PessimisticLockException
      */
-    public function lock($entity, $lockMode, $lockVersion = null);
+    public function lock($entity, $lockMode, $lockVersion = null): void;
 
     /**
      * Gets the EventManager used by the EntityManager.
      *
      * @return \Doctrine\Common\EventManager
      */
-    public function getEventManager();
+    public function getEventManager(): \Doctrine\Common\EventManager;
 
     /**
      * Gets the Configuration used by the EntityManager.
      *
      * @return Configuration
      */
-    public function getConfiguration();
+    public function getConfiguration(): Configuration;
 
     /**
      * Check if the Entity manager is open or closed.
      *
      * @return bool
      */
-    public function isOpen();
+    public function isOpen(): bool;
 
     /**
      * Gets the UnitOfWork used by the EntityManager to coordinate operations.
      *
      * @return UnitOfWork
      */
-    public function getUnitOfWork();
+    public function getUnitOfWork(): UnitOfWork;
 
     /**
     * Gets a hydrator for the given hydration mode.
@@ -254,7 +254,7 @@ interface EntityManagerInterface extends ObjectManager
     *
     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
     */
-    public function getHydrator($hydrationMode);
+    public function getHydrator(int $hydrationMode): \Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
     /**
      * Create a new instance for the given hydration mode.
@@ -265,33 +265,33 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @throws ORMException
      */
-    public function newHydrator($hydrationMode);
+    public function newHydrator(int $hydrationMode): \Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      *
      * @return \Doctrine\ORM\Proxy\ProxyFactory
      */
-    public function getProxyFactory();
+    public function getProxyFactory(): \Doctrine\ORM\Proxy\ProxyFactory;
 
     /**
      * Gets the enabled filters.
      *
      * @return \Doctrine\ORM\Query\FilterCollection The active filter collection.
      */
-    public function getFilters();
+    public function getFilters(): \Doctrine\ORM\Query\FilterCollection;
 
     /**
      * Checks whether the state of the filter collection is clean.
      *
      * @return boolean True, if the filter collection is clean.
      */
-    public function isFiltersStateClean();
+    public function isFiltersStateClean(): bool;
 
     /**
      * Checks whether the Entity Manager has filters.
      *
      * @return boolean True, if the EM has a filter collection.
      */
-    public function hasFilters();
+    public function hasFilters(): bool;
 }

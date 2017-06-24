@@ -43,7 +43,7 @@ class Setup
      *
      * @return void
      */
-    public static function registerAutoloadDirectory($directory)
+    public static function registerAutoloadDirectory(string $directory): void
     {
         if (!class_exists('Doctrine\Common\ClassLoader', false)) {
             require_once $directory . "/Doctrine/Common/ClassLoader.php";
@@ -67,7 +67,7 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null, $useSimpleAnnotationReader = true)
+    public static function createAnnotationMetadataConfiguration(array $paths, bool $isDevMode = false, string $proxyDir = null, Cache $cache = null, bool $useSimpleAnnotationReader = true): Configuration
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths, $useSimpleAnnotationReader));
@@ -85,7 +85,7 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createXMLMetadataConfiguration(array $paths, bool $isDevMode = false, string $proxyDir = null, Cache $cache = null): Configuration
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
@@ -103,7 +103,7 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createYAMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createYAMLMetadataConfiguration(array $paths, bool $isDevMode = false, string $proxyDir = null, Cache $cache = null): Configuration
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new YamlDriver($paths));
@@ -120,7 +120,7 @@ class Setup
      *
      * @return Configuration
      */
-    public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createConfiguration(bool $isDevMode = false, string $proxyDir = null, Cache $cache = null): Configuration
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
 

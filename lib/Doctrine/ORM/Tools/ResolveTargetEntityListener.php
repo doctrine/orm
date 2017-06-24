@@ -62,20 +62,13 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @return void
      */
-    public function addResolveTargetEntity($originalEntity, $newEntity, array $mapping)
+    public function addResolveTargetEntity(string $originalEntity, string $newEntity, array $mapping): void
     {
         $mapping['targetEntity']                                   = ltrim($newEntity, "\\");
         $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = $mapping;
     }
 
-    /**
-     * @param OnClassMetadataNotFoundEventArgs $args
-     *
-     * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
-     */
-    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
+    public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args): void
     {
         if (array_key_exists($args->getClassName(), $this->resolveTargetEntities)) {
             $args->setFoundMetadata(
@@ -95,7 +88,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @internal this is an event callback, and should not be called directly
      */
-    public function loadClassMetadata(LoadClassMetadataEventArgs $args)
+    public function loadClassMetadata(LoadClassMetadataEventArgs $args): void
     {
         /* @var $cm \Doctrine\ORM\Mapping\ClassMetadata */
         $cm = $args->getClassMetadata();
@@ -119,7 +112,7 @@ class ResolveTargetEntityListener implements EventSubscriber
      *
      * @return void
      */
-    private function remapAssociation($classMetadata, $mapping)
+    private function remapAssociation(\Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata, array $mapping): void
     {
         $newMapping = $this->resolveTargetEntities[$mapping['targetEntity']];
         $newMapping = array_replace_recursive($mapping, $newMapping);

@@ -173,7 +173,7 @@ class QueryBuilder
      *
      * @return Query\Expr
      */
-    public function expr()
+    public function expr(): Query\Expr
     {
         return $this->_em->getExpressionBuilder();
     }
@@ -186,7 +186,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setCacheable($cacheable)
+    public function setCacheable(bool $cacheable): self
     {
         $this->cacheable = (boolean) $cacheable;
 
@@ -196,7 +196,7 @@ class QueryBuilder
     /**
      * @return boolean TRUE if the query results are enable for second level cache, FALSE otherwise.
      */
-    public function isCacheable()
+    public function isCacheable(): bool
     {
         return $this->cacheable;
     }
@@ -206,7 +206,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setCacheRegion($cacheRegion)
+    public function setCacheRegion(string $cacheRegion): self
     {
         $this->cacheRegion = (string) $cacheRegion;
 
@@ -218,7 +218,7 @@ class QueryBuilder
     *
     * @return string|null The cache region name; NULL indicates the default region.
     */
-    public function getCacheRegion()
+    public function getCacheRegion(): ?string
     {
         return $this->cacheRegion;
     }
@@ -226,7 +226,7 @@ class QueryBuilder
     /**
      * @return integer
      */
-    public function getLifetime()
+    public function getLifetime(): int
     {
         return $this->lifetime;
     }
@@ -238,7 +238,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setLifetime($lifetime)
+    public function setLifetime(int $lifetime): self
     {
         $this->lifetime = (integer) $lifetime;
 
@@ -248,7 +248,7 @@ class QueryBuilder
     /**
      * @return integer
      */
-    public function getCacheMode()
+    public function getCacheMode(): int
     {
         return $this->cacheMode;
     }
@@ -258,7 +258,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setCacheMode($cacheMode)
+    public function setCacheMode(int $cacheMode): self
     {
         $this->cacheMode = (integer) $cacheMode;
 
@@ -270,7 +270,7 @@ class QueryBuilder
      *
      * @return integer
      */
-    public function getType()
+    public function getType(): int
     {
         return $this->_type;
     }
@@ -280,7 +280,7 @@ class QueryBuilder
      *
      * @return EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManager
     {
         return $this->_em;
     }
@@ -290,7 +290,7 @@ class QueryBuilder
      *
      * @return integer Either QueryBuilder::STATE_DIRTY or QueryBuilder::STATE_CLEAN.
      */
-    public function getState()
+    public function getState(): int
     {
         return $this->_state;
     }
@@ -307,7 +307,7 @@ class QueryBuilder
      *
      * @return string The DQL query string.
      */
-    public function getDQL()
+    public function getDQL(): string
     {
         if ($this->_dql !== null && $this->_state === self::STATE_CLEAN) {
             return $this->_dql;
@@ -347,7 +347,7 @@ class QueryBuilder
      *
      * @return Query
      */
-    public function getQuery()
+    public function getQuery(): Query
     {
         $parameters = clone $this->parameters;
         $query      = $this->_em->createQuery($this->getDQL())
@@ -382,7 +382,7 @@ class QueryBuilder
      *
      * @return string
      */
-    private function findRootAlias($alias, $parentAlias)
+    private function findRootAlias(string $alias, string $parentAlias): string
     {
         $rootAlias = null;
 
@@ -418,7 +418,7 @@ class QueryBuilder
      *
      * @return string
      */
-    public function getRootAlias()
+    public function getRootAlias(): string
     {
         $aliases = $this->getRootAliases();
 
@@ -443,7 +443,7 @@ class QueryBuilder
      *
      * @return array
      */
-    public function getRootAliases()
+    public function getRootAliases(): array
     {
         $aliases = [];
 
@@ -476,7 +476,7 @@ class QueryBuilder
      * </code>
      * @return array
      */
-    public function getAllAliases()
+    public function getAllAliases(): array
     {
         return array_merge($this->getRootAliases(), array_keys($this->joinRootAliases));
     }
@@ -495,7 +495,7 @@ class QueryBuilder
      *
      * @return array
      */
-    public function getRootEntities()
+    public function getRootEntities(): array
     {
         $entities = [];
 
@@ -531,7 +531,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setParameter($key, $value, $type = null)
+    public function setParameter($key, $value, $type = null): self
     {
         $filteredParameters = $this->parameters->filter(
             function ($parameter) use ($key)
@@ -575,7 +575,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setParameters($parameters)
+    public function setParameters($parameters): self
     {
         // BC compatibility with 2.3-
         if (is_array($parameters)) {
@@ -600,7 +600,7 @@ class QueryBuilder
      *
      * @return \Doctrine\Common\Collections\ArrayCollection The currently defined query parameters.
      */
-    public function getParameters()
+    public function getParameters(): \Doctrine\Common\Collections\ArrayCollection
     {
         return $this->parameters;
     }
@@ -612,7 +612,7 @@ class QueryBuilder
      *
      * @return Query\Parameter|null The value of the bound parameter.
      */
-    public function getParameter($key)
+    public function getParameter($key): ?Query\Parameter
     {
         $filteredParameters = $this->parameters->filter(
             function ($parameter) use ($key)
@@ -633,7 +633,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setFirstResult($firstResult)
+    public function setFirstResult(int $firstResult): self
     {
         $this->_firstResult = $firstResult;
 
@@ -646,7 +646,7 @@ class QueryBuilder
      *
      * @return integer The position of the first result.
      */
-    public function getFirstResult()
+    public function getFirstResult(): int
     {
         return $this->_firstResult;
     }
@@ -658,7 +658,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function setMaxResults($maxResults)
+    public function setMaxResults(int $maxResults): self
     {
         $this->_maxResults = $maxResults;
 
@@ -671,7 +671,7 @@ class QueryBuilder
      *
      * @return integer Maximum number of results.
      */
-    public function getMaxResults()
+    public function getMaxResults(): int
     {
         return $this->_maxResults;
     }
@@ -688,7 +688,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function add($dqlPartName, $dqlPart, $append = false)
+    public function add(string $dqlPartName, $dqlPart, $append = false): self
     {
         if ($append && ($dqlPartName === "where" || $dqlPartName === "having")) {
             throw new \InvalidArgumentException(
@@ -751,7 +751,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function select($select = null)
+    public function select($select = null): self
     {
         $this->_type = self::SELECT;
 
@@ -778,7 +778,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function distinct($flag = true)
+    public function distinct(bool $flag = true): self
     {
         $this->_dqlParts['distinct'] = (bool) $flag;
 
@@ -800,7 +800,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function addSelect($select = null)
+    public function addSelect($select = null): self
     {
         $this->_type = self::SELECT;
 
@@ -829,7 +829,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function delete($delete = null, $alias = null)
+    public function delete(string $delete = null, string $alias = null): self
     {
         $this->_type = self::DELETE;
 
@@ -856,7 +856,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function update($update = null, $alias = null)
+    public function update(string $update = null, string $alias = null): self
     {
         $this->_type = self::UPDATE;
 
@@ -883,7 +883,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function from($from, $alias, $indexBy = null)
+    public function from(string $from, string $alias, string $indexBy = null): self
     {
         return $this->add('from', new Expr\From($from, $alias, $indexBy), true);
     }
@@ -911,7 +911,7 @@ class QueryBuilder
      *
      * @throws Query\QueryException
      */
-    public function indexBy($alias, $indexBy)
+    public function indexBy(string $alias, string $indexBy): self
     {
         $rootAliases = $this->getRootAliases();
 
@@ -955,7 +955,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function join($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
+    public function join(string $join, string $alias, ?string $conditionType = null, ?string $condition = null, ?string $indexBy = null): self
     {
         return $this->innerJoin($join, $alias, $conditionType, $condition, $indexBy);
     }
@@ -981,7 +981,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
+    public function innerJoin(string $join, string $alias, ?string $conditionType = null, ?string $condition = null, ?string $indexBy = null): self
     {
         $parentAlias = substr($join, 0, strpos($join, '.'));
 
@@ -1016,7 +1016,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
+    public function leftJoin(string $join, string $alias, ?string $conditionType = null, ?string $condition = null, ?string $indexBy = null): self
     {
         $parentAlias = substr($join, 0, strpos($join, '.'));
 
@@ -1044,7 +1044,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function set($key, $value)
+    public function set(string $key, string $value): self
     {
         return $this->add('set', new Expr\Comparison($key, Expr\Comparison::EQ, $value), true);
     }
@@ -1075,7 +1075,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function where($predicates)
+    public function where($predicates): self
     {
         if ( ! (func_num_args() == 1 && $predicates instanceof Expr\Composite)) {
             $predicates = new Expr\Andx(func_get_args());
@@ -1102,7 +1102,7 @@ class QueryBuilder
      *
      * @see where()
      */
-    public function andWhere()
+    public function andWhere(): self
     {
         $args  = func_get_args();
         $where = $this->getDQLPart('where');
@@ -1135,7 +1135,7 @@ class QueryBuilder
      *
      * @see where()
      */
-    public function orWhere()
+    public function orWhere(): self
     {
         $args  = func_get_args();
         $where = $this->getDQLPart('where');
@@ -1165,7 +1165,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function groupBy($groupBy)
+    public function groupBy(string $groupBy): self
     {
         return $this->add('groupBy', new Expr\GroupBy(func_get_args()));
     }
@@ -1185,7 +1185,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function addGroupBy($groupBy)
+    public function addGroupBy(string $groupBy): self
     {
         return $this->add('groupBy', new Expr\GroupBy(func_get_args()), true);
     }
@@ -1198,7 +1198,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function having($having)
+    public function having($having): self
     {
         if ( ! (func_num_args() == 1 && ($having instanceof Expr\Andx || $having instanceof Expr\Orx))) {
             $having = new Expr\Andx(func_get_args());
@@ -1215,7 +1215,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function andHaving($having)
+    public function andHaving($having): self
     {
         $args   = func_get_args();
         $having = $this->getDQLPart('having');
@@ -1238,7 +1238,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function orHaving($having)
+    public function orHaving($having): self
     {
         $args   = func_get_args();
         $having = $this->getDQLPart('having');
@@ -1262,7 +1262,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function orderBy($sort, $order = null)
+    public function orderBy($sort, $order = null): self
     {
         $orderBy = ($sort instanceof Expr\OrderBy) ? $sort : new Expr\OrderBy($sort, $order);
 
@@ -1277,7 +1277,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function addOrderBy($sort, $order = null)
+    public function addOrderBy($sort, $order = null): self
     {
         $orderBy = ($sort instanceof Expr\OrderBy) ? $sort : new Expr\OrderBy($sort, $order);
 
@@ -1297,7 +1297,7 @@ class QueryBuilder
      *
      * @throws Query\QueryException
      */
-    public function addCriteria(Criteria $criteria)
+    public function addCriteria(Criteria $criteria): self
     {
         $allAliases = $this->getAllAliases();
         if ( ! isset($allAliases[0])) {
@@ -1352,7 +1352,7 @@ class QueryBuilder
      *
      * @todo Rename: getQueryPart (or remove?)
      */
-    public function getDQLPart($queryPartName)
+    public function getDQLPart(string $queryPartName)
     {
         return $this->_dqlParts[$queryPartName];
     }
@@ -1364,7 +1364,7 @@ class QueryBuilder
      *
      * @todo Rename: getQueryParts (or remove?)
      */
-    public function getDQLParts()
+    public function getDQLParts(): array
     {
         return $this->_dqlParts;
     }
@@ -1372,7 +1372,7 @@ class QueryBuilder
     /**
      * @return string
      */
-    private function _getDQLForDelete()
+    private function _getDQLForDelete(): string
     {
          return 'DELETE'
               . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
@@ -1383,7 +1383,7 @@ class QueryBuilder
     /**
      * @return string
      */
-    private function _getDQLForUpdate()
+    private function _getDQLForUpdate(): string
     {
          return 'UPDATE'
               . $this->_getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
@@ -1395,7 +1395,7 @@ class QueryBuilder
     /**
      * @return string
      */
-    private function _getDQLForSelect()
+    private function _getDQLForSelect(): string
     {
         $dql = 'SELECT'
              . ($this->_dqlParts['distinct']===true ? ' DISTINCT' : '')
@@ -1437,7 +1437,7 @@ class QueryBuilder
      *
      * @return string
      */
-    private function _getReducedDQLQueryPart($queryPartName, $options = [])
+    private function _getReducedDQLQueryPart(string $queryPartName, array $options = []): string
     {
         $queryPart = $this->getDQLPart($queryPartName);
 
@@ -1457,7 +1457,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function resetDQLParts($parts = null)
+    public function resetDQLParts(?array $parts = null): self
     {
         if (null === $parts) {
             $parts = array_keys($this->_dqlParts);
@@ -1477,7 +1477,7 @@ class QueryBuilder
      *
      * @return self
      */
-    public function resetDQLPart($part)
+    public function resetDQLPart(string $part): self
     {
         $this->_dqlParts[$part] = is_array($this->_dqlParts[$part]) ? [] : null;
         $this->_state           = self::STATE_DIRTY;
@@ -1491,7 +1491,7 @@ class QueryBuilder
      *
      * @return string The string representation of this QueryBuilder.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getDQL();
     }

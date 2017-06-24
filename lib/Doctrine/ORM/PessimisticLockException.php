@@ -34,7 +34,7 @@ class PessimisticLockException extends ORMException
     /**
      * @return PessimisticLockException
      */
-    public static function lockFailed()
+    public static function lockFailed(): PessimisticLockException
     {
         return new self("The pessimistic lock failed.");
     }

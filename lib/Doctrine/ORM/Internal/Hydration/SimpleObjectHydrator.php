@@ -34,7 +34,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function prepare()
+    protected function prepare(): void
     {
         if (count($this->_rsm->aliasMap) !== 1) {
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
@@ -50,7 +50,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function cleanup()
+    protected function cleanup(): void
     {
         parent::cleanup();
 
@@ -77,7 +77,7 @@ class SimpleObjectHydrator extends AbstractHydrator
     /**
      * {@inheritdoc}
      */
-    protected function hydrateRowData(array $sqlResult, array &$result)
+    protected function hydrateRowData(array $sqlResult, array &$result): void
     {
         $entityName = $this->class->name;
         $data       = [];

@@ -50,7 +50,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata): void
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $class = $metadata->getReflectionClass();
@@ -544,7 +544,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @throws MappingException If the fetch mode is not valid.
      */
-    private function getFetchMode($className, $fetchMode)
+    private function getFetchMode(string $className, string $fetchMode): int
     {
         if ( ! defined('Doctrine\ORM\Mapping\ClassMetadata::FETCH_' . $fetchMode)) {
             throw MappingException::invalidFetchMode($className, $fetchMode);
@@ -560,7 +560,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @return array
      */
-    private function getMethodCallbacks(\ReflectionMethod $method)
+    private function getMethodCallbacks(\ReflectionMethod $method): array
     {
         $callbacks   = [];
         $annotations = $this->reader->getMethodAnnotations($method);
@@ -608,7 +608,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      * @param Mapping\JoinColumn $joinColumn
      * @return array
      */
-    private function joinColumnToArray(Mapping\JoinColumn $joinColumn)
+    private function joinColumnToArray(Mapping\JoinColumn $joinColumn): array
     {
         return [
             'name' => $joinColumn->name,
@@ -628,7 +628,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @return array
      */
-    private function columnToArray($fieldName, Mapping\Column $column)
+    private function columnToArray(string $fieldName, Mapping\Column $column): array
     {
         $mapping = [
             'fieldName' => $fieldName,
@@ -663,7 +663,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
      *
      * @return AnnotationDriver
      */
-    static public function create($paths = [], AnnotationReader $reader = null)
+    static public function create($paths = [], AnnotationReader $reader = null): AnnotationDriver
     {
         if ($reader == null) {
             $reader = new AnnotationReader();

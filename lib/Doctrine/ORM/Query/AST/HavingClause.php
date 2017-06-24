@@ -39,7 +39,7 @@ class HavingClause extends Node
     /**
      * @param ConditionalExpression $conditionalExpression
      */
-    public function __construct($conditionalExpression)
+    public function __construct(ConditionalExpression $conditionalExpression)
     {
         $this->conditionalExpression = $conditionalExpression;
     }

@@ -29,7 +29,7 @@ class ExportException extends ORMException
      *
      * @return ExportException
      */
-    public static function invalidExporterDriverType($type)
+    public static function invalidExporterDriverType(string $type): ExportException
     {
         return new self("The specified export driver '$type' does not exist");
     }
@@ -39,7 +39,7 @@ class ExportException extends ORMException
      *
      * @return ExportException
      */
-    public static function invalidMappingDriverType($type)
+    public static function invalidMappingDriverType(string $type): ExportException
     {
         return new self("The mapping driver '$type' does not exist");
     }
@@ -49,7 +49,7 @@ class ExportException extends ORMException
      *
      * @return ExportException
      */
-    public static function attemptOverwriteExistingFile($file)
+    public static function attemptOverwriteExistingFile(string $file): ExportException
     {
         return new self("Attempting to overwrite an existing file '".$file."'.");
     }

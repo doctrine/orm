@@ -48,7 +48,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): \Doctrine\ORM\EntityManager
     {
         return $this->getObjectManager();
     }

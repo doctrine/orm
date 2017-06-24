@@ -81,7 +81,7 @@ class TrimFunction extends FunctionNode
     /**
      * {@inheritdoc}
      */
-    public function parse(Parser $parser)
+    public function parse(Parser $parser): void
     {
         $lexer = $parser->getLexer();
 
@@ -108,7 +108,7 @@ class TrimFunction extends FunctionNode
     /**
      * @return integer
      */
-    private function getTrimMode()
+    private function getTrimMode(): int
     {
         if ($this->leading) {
             return AbstractPlatform::TRIM_LEADING;
@@ -125,12 +125,7 @@ class TrimFunction extends FunctionNode
         return AbstractPlatform::TRIM_UNSPECIFIED;
     }
 
-    /**
-     * @param \Doctrine\ORM\Query\Parser $parser
-     *
-     * @return void
-     */
-    private function parseTrimMode(Parser $parser)
+    private function parseTrimMode(Parser $parser): void
     {
         $lexer = $parser->getLexer();
         $value = $lexer->lookahead['value'];

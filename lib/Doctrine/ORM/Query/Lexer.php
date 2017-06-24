@@ -120,7 +120,7 @@ class Lexer extends \Doctrine\Common\Lexer
      *
      * @param string $input A query string.
      */
-    public function __construct($input)
+    public function __construct(string $input)
     {
         $this->setInput($input);
     }

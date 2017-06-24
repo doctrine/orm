@@ -43,7 +43,7 @@ class BigIntegerIdentityGenerator extends AbstractIdGenerator
      *                                  to obtain the last generated identifier within the current
      *                                  database session/connection, if any.
      */
-    public function __construct($sequenceName = null)
+    public function __construct(?string $sequenceName = null)
     {
         $this->sequenceName = $sequenceName;
     }

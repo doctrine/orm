@@ -81,7 +81,7 @@ abstract class AbstractCollectionPersister implements CollectionPersister
      *
      * @return bool
      */
-    protected function isValidEntityState($entity)
+    protected function isValidEntityState($entity): bool
     {
         $entityState = $this->uow->getEntityState($entity, UnitOfWork::STATE_NEW);
 

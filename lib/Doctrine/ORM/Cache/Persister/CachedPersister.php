@@ -31,17 +31,17 @@ interface CachedPersister
     /**
      * Perform whatever processing is encapsulated here after completion of the transaction.
      */
-    public function afterTransactionComplete();
+    public function afterTransactionComplete(): void;
 
     /**
      * Perform whatever processing is encapsulated here after completion of the rolled-back.
      */
-    public function afterTransactionRolledBack();
+    public function afterTransactionRolledBack(): void;
 
     /**
      * Gets the The region access.
      *
      * @return \Doctrine\ORM\Cache\Region
      */
-    public function getCacheRegion();
+    public function getCacheRegion(): \Doctrine\ORM\Cache\Region;
 }

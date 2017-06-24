@@ -31,7 +31,7 @@ class TimestampCacheKey extends CacheKey
     /**
      * @param string $space Result cache id
      */
-    public function __construct($space)
+    public function __construct(string $space)
     {
         $this->hash = (string) $space;
     }

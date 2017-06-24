@@ -49,7 +49,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function afterTransactionComplete()
+    public function afterTransactionComplete(): void
     {
         $isChanged = true;
 
@@ -79,7 +79,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function afterTransactionRolledBack()
+    public function afterTransactionRolledBack(): void
     {
         if (isset($this->queuedCache['update'])) {
             foreach ($this->queuedCache['update'] as $item) {
@@ -124,7 +124,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         $key  = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
         $lock = $this->region->lock($key);

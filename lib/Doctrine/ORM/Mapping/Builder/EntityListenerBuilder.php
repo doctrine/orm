@@ -54,7 +54,7 @@ class EntityListenerBuilder
      *
      * @throws \Doctrine\ORM\Mapping\MappingException           When the listener class not found.
      */
-    static public function bindEntityListener(ClassMetadata $metadata, $className)
+    static public function bindEntityListener(ClassMetadata $metadata, string $className): void
     {
         $class = $metadata->fullyQualifiedClassName($className);
 

@@ -38,5 +38,5 @@ interface RepositoryFactory
      *
      * @return \Doctrine\Common\Persistence\ObjectRepository
      */
-    public function getRepository(EntityManagerInterface $entityManager, $entityName);
+    public function getRepository(EntityManagerInterface $entityManager, string $entityName): \Doctrine\Common\Persistence\ObjectRepository;
 }

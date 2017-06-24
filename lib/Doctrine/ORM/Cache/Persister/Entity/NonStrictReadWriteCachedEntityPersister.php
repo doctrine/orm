@@ -34,7 +34,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function afterTransactionComplete()
+    public function afterTransactionComplete(): void
     {
         $isChanged = false;
 
@@ -68,7 +68,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function afterTransactionRolledBack()
+    public function afterTransactionRolledBack(): void
     {
         $this->queuedCache = [];
     }
@@ -93,7 +93,7 @@ class NonStrictReadWriteCachedEntityPersister extends AbstractEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         $this->persister->update($entity);
 

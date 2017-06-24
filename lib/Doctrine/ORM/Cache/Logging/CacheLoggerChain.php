@@ -41,7 +41,7 @@ class CacheLoggerChain implements CacheLogger
      * @param string                                  $name
      * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
      */
-    public function setLogger($name, CacheLogger $logger)
+    public function setLogger(string $name, CacheLogger $logger): void
     {
         $this->loggers[$name] = $logger;
     }
@@ -51,7 +51,7 @@ class CacheLoggerChain implements CacheLogger
      *
      * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
      */
-    public function getLogger($name)
+    public function getLogger(string $name): ?\Doctrine\ORM\Cache\Logging\CacheLogger
     {
         return isset($this->loggers[$name]) ? $this->loggers[$name] : null;
     }
@@ -59,7 +59,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * @return array<\Doctrine\ORM\Cache\Logging\CacheLogger>
      */
-    public function getLoggers()
+    public function getLoggers(): array<\Doctrine\ORM\Cache\Logging\CacheLogger>
     {
         return $this->loggers;
     }
@@ -67,7 +67,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function collectionCacheHit($regionName, CollectionCacheKey $key)
+    public function collectionCacheHit($regionName, CollectionCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->collectionCacheHit($regionName, $key);
@@ -77,7 +77,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function collectionCacheMiss($regionName, CollectionCacheKey $key)
+    public function collectionCacheMiss($regionName, CollectionCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->collectionCacheMiss($regionName, $key);
@@ -87,7 +87,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function collectionCachePut($regionName, CollectionCacheKey $key)
+    public function collectionCachePut($regionName, CollectionCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->collectionCachePut($regionName, $key);
@@ -97,7 +97,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function entityCacheHit($regionName, EntityCacheKey $key)
+    public function entityCacheHit($regionName, EntityCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->entityCacheHit($regionName, $key);
@@ -107,7 +107,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function entityCacheMiss($regionName, EntityCacheKey $key)
+    public function entityCacheMiss($regionName, EntityCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->entityCacheMiss($regionName, $key);
@@ -117,7 +117,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function entityCachePut($regionName, EntityCacheKey $key)
+    public function entityCachePut($regionName, EntityCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->entityCachePut($regionName, $key);
@@ -127,7 +127,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function queryCacheHit($regionName, QueryCacheKey $key)
+    public function queryCacheHit($regionName, QueryCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->queryCacheHit($regionName, $key);
@@ -137,7 +137,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function queryCacheMiss($regionName, QueryCacheKey $key)
+    public function queryCacheMiss($regionName, QueryCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->queryCacheMiss($regionName, $key);
@@ -147,7 +147,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * {@inheritdoc}
      */
-    public function queryCachePut($regionName, QueryCacheKey $key)
+    public function queryCachePut($regionName, QueryCacheKey $key): void
     {
         foreach ($this->loggers as $logger) {
             $logger->queryCachePut($regionName, $key);

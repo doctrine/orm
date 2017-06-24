@@ -57,7 +57,7 @@ class EntityManagerHelper extends Helper
      *
      * @return EntityManagerInterface
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->_em;
     }

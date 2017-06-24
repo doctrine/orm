@@ -47,7 +47,7 @@ class WhenClause extends Node
      * @param ConditionalExpression $caseConditionExpression
      * @param mixed                 $thenScalarExpression
      */
-    public function __construct($caseConditionExpression, $thenScalarExpression)
+    public function __construct(ConditionalExpression $caseConditionExpression, $thenScalarExpression)
     {
         $this->caseConditionExpression = $caseConditionExpression;
         $this->thenScalarExpression = $thenScalarExpression;

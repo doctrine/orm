@@ -40,7 +40,7 @@ class CreateCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:schema-tool:create')

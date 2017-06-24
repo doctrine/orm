@@ -35,7 +35,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
      *
      * @return OneToManyAssociationBuilder
      */
-    public function setOrderBy(array $fieldNames)
+    public function setOrderBy(array $fieldNames): OneToManyAssociationBuilder
     {
         $this->mapping['orderBy'] = $fieldNames;
 
@@ -47,7 +47,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
      *
      * @return OneToManyAssociationBuilder
      */
-    public function setIndexBy($fieldName)
+    public function setIndexBy(string $fieldName): OneToManyAssociationBuilder
     {
         $this->mapping['indexBy'] = $fieldName;
 
@@ -57,7 +57,7 @@ class OneToManyAssociationBuilder extends AssociationBuilder
     /**
      * @return ClassMetadataBuilder
      */
-    public function build()
+    public function build(): ClassMetadataBuilder
     {
         $mapping = $this->mapping;
         if ($this->joinColumns) {

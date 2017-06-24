@@ -47,7 +47,7 @@ class UpdateItem extends Node
      * @param PathExpression                           $pathExpression
      * @param InputParameter|ArithmeticExpression|null $newValue
      */
-    public function __construct($pathExpression, $newValue)
+    public function __construct(PathExpression $pathExpression, $newValue)
     {
         $this->pathExpression = $pathExpression;
         $this->newValue = $newValue;

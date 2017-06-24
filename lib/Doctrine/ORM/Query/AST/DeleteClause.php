@@ -44,7 +44,7 @@ class DeleteClause extends Node
     /**
      * @param string $abstractSchemaName
      */
-    public function __construct($abstractSchemaName)
+    public function __construct(string $abstractSchemaName)
     {
         $this->abstractSchemaName = $abstractSchemaName;
     }

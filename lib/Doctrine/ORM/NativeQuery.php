@@ -40,7 +40,7 @@ final class NativeQuery extends AbstractQuery
      *
      * @return NativeQuery This query instance.
      */
-    public function setSQL($sql)
+    public function setSQL(string $sql): NativeQuery
     {
         $this->_sql = $sql;
 

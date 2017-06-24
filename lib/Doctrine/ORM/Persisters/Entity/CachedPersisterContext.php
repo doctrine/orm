@@ -94,7 +94,7 @@ class CachedPersisterContext
     public function __construct(
         ClassMetadata $class,
         ResultSetMapping $rsm,
-        $handlesLimits
+        bool $handlesLimits
     ) {
         $this->class         = $class;
         $this->rsm           = $rsm;

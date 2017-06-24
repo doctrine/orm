@@ -39,7 +39,7 @@ interface CollectionPersister
      *
      * @return void
      */
-    public function delete(PersistentCollection $collection);
+    public function delete(PersistentCollection $collection): void;
 
     /**
      * Updates the given collection, synchronizing its state with the database
@@ -49,7 +49,7 @@ interface CollectionPersister
      *
      * @return void
      */
-    public function update(PersistentCollection $collection);
+    public function update(PersistentCollection $collection): void;
 
     /**
      * Counts the size of this persistent collection.
@@ -58,7 +58,7 @@ interface CollectionPersister
      *
      * @return integer
      */
-    public function count(PersistentCollection $collection);
+    public function count(PersistentCollection $collection): int;
 
     /**
      * Slices elements.
@@ -69,7 +69,7 @@ interface CollectionPersister
      *
      * @return  array
      */
-    public function slice(PersistentCollection $collection, $offset, $length = null);
+    public function slice(PersistentCollection $collection, int $offset, int $length = null): array;
 
     /**
      * Checks for existence of an element.
@@ -79,7 +79,7 @@ interface CollectionPersister
      *
      * @return boolean
      */
-    public function contains(PersistentCollection $collection, $element);
+    public function contains(PersistentCollection $collection, $element): bool;
 
     /**
      * Checks for existence of a key.
@@ -89,7 +89,7 @@ interface CollectionPersister
      *
      * @return boolean
      */
-    public function containsKey(PersistentCollection $collection, $key);
+    public function containsKey(PersistentCollection $collection, $key): bool;
 
     /**
      * Removes an element.
@@ -119,5 +119,5 @@ interface CollectionPersister
      *
      * @return array
      */
-    public function loadCriteria(PersistentCollection $collection, Criteria $criteria);
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria): array;
 }

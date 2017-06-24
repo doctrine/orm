@@ -59,7 +59,7 @@ class FileLockRegion implements ConcurrentRegion
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(Region $region, $directory, $lockLifetime)
+    public function __construct(Region $region, string $directory, string $lockLifetime)
     {
         if ( ! is_dir($directory) && ! @mkdir($directory, 0775, true)) {
             throw new \InvalidArgumentException(sprintf('The directory "%s" does not exist and could not be created.', $directory));
@@ -80,7 +80,7 @@ class FileLockRegion implements ConcurrentRegion
      *
      * @return boolean
      */
-    private function isLocked(CacheKey $key, Lock $lock = null)
+    private function isLocked(CacheKey $key, Lock $lock = null): bool
     {
         $filename = $this->getLockFileName($key);
 
@@ -116,7 +116,7 @@ class FileLockRegion implements ConcurrentRegion
      *
      * @return string
      */
-    private function getLockFileName(CacheKey $key)
+    private function getLockFileName(CacheKey $key): string
     {
         return $this->directory . DIRECTORY_SEPARATOR . $key->hash . '.' . self::LOCK_EXTENSION;
     }
@@ -126,7 +126,7 @@ class FileLockRegion implements ConcurrentRegion
      *
      * @return string
      */
-    private function getLockContent($filename)
+    private function getLockContent(string $filename): string
     {
         return @file_get_contents($filename);
     }
@@ -136,7 +136,7 @@ class FileLockRegion implements ConcurrentRegion
      *
      * @return integer
      */
-    private function getLockTime($filename)
+    private function getLockTime(string $filename): int
     {
         return @fileatime($filename);
     }

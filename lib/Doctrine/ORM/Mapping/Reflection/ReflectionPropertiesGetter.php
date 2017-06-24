@@ -44,9 +44,6 @@ final class ReflectionPropertiesGetter
      */
     private $reflectionService;
 
-    /**
-     * @param ReflectionService $reflectionService
-     */
     public function __construct(ReflectionService $reflectionService)
     {
         $this->reflectionService = $reflectionService;
@@ -81,7 +78,7 @@ final class ReflectionPropertiesGetter
      *
      * @return ReflectionClass[]
      */
-    private function getHierarchyClasses($className)
+    private function getHierarchyClasses(string $className)
     {
         $classes         = [];
         $parentClassName = $className;
@@ -124,7 +121,7 @@ final class ReflectionPropertiesGetter
      *
      * @return bool
      */
-    private function isInstanceProperty(ReflectionProperty $reflectionProperty)
+    private function isInstanceProperty(ReflectionProperty $reflectionProperty): bool
     {
         return ! $reflectionProperty->isStatic();
     }
@@ -134,7 +131,7 @@ final class ReflectionPropertiesGetter
      *
      * @return null|ReflectionProperty
      */
-    private function getAccessibleProperty(ReflectionProperty $property)
+    private function getAccessibleProperty(ReflectionProperty $property): ?ReflectionProperty
     {
         return $this->reflectionService->getAccessibleProperty(
             $property->getDeclaringClass()->getName(),
@@ -147,7 +144,7 @@ final class ReflectionPropertiesGetter
      *
      * @return string
      */
-    private function getLogicalName(ReflectionProperty $property)
+    private function getLogicalName(ReflectionProperty $property): string
     {
         $propertyName = $property->getName();
 

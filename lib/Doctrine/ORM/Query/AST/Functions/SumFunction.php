@@ -37,17 +37,11 @@ final class SumFunction extends FunctionNode
      */
     private $aggregateExpression;
 
-    /**
-     * @inheritDoc
-     */
     public function getSql(SqlWalker $sqlWalker): string
     {
         return $this->aggregateExpression->dispatch($sqlWalker);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function parse(Parser $parser): void
     {
         $this->aggregateExpression = $parser->AggregateExpression();

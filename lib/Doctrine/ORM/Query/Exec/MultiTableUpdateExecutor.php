@@ -69,7 +69,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      * @param \Doctrine\ORM\Query\AST\Node  $AST The root AST node of the DQL query.
      * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
      */
-    public function __construct(AST\Node $AST, $sqlWalker)
+    public function __construct(AST\Node $AST, \Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $em             = $sqlWalker->getEntityManager();
         $conn           = $em->getConnection();

@@ -42,7 +42,7 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
     /**
      * @return \Doctrine\Common\Persistence\Mapping\StaticReflectionService
      */
-    public function getReflectionService()
+    public function getReflectionService(): \Doctrine\Common\Persistence\Mapping\StaticReflectionService
     {
         return new StaticReflectionService();
     }

@@ -58,7 +58,7 @@ class DefaultRegion implements Region
      * @param CacheAdapter $cache
      * @param integer      $lifetime
      */
-    public function __construct($name, CacheAdapter $cache, $lifetime = 0)
+    public function __construct(string $name, CacheAdapter $cache, int $lifetime = 0)
     {
         $this->cache    = $cache;
         $this->name     = (string) $name;
@@ -76,7 +76,7 @@ class DefaultRegion implements Region
     /**
      * @return \Doctrine\Common\Cache\CacheProvider
      */
-    public function getCache()
+    public function getCache(): \Doctrine\Common\Cache\CacheProvider
     {
         return $this->cache;
     }
@@ -122,7 +122,7 @@ class DefaultRegion implements Region
      * @param CacheKey $key
      * @return string
      */
-    protected function getCacheEntryKey(CacheKey $key)
+    protected function getCacheEntryKey(CacheKey $key): string
     {
         return $this->name . self::REGION_KEY_SEPARATOR . $key->hash;
     }

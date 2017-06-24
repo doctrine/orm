@@ -62,7 +62,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @throws \RuntimeException
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         $queryComponents = $this->_getQueryComponents();
         // Get the root entity and alias from the AST fromClause
@@ -126,7 +126,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @param SelectStatement $AST
      */
-    private function validate(SelectStatement $AST)
+    private function validate(SelectStatement $AST): void
     {
         // Prevent LimitSubqueryWalker from being used with queries that include
         // a limit, a fetched to-many join, and an order by condition that
@@ -163,7 +163,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
      */
-    private function createSelectExpressionItem(PathExpression $pathExpression)
+    private function createSelectExpressionItem(PathExpression $pathExpression): \Doctrine\ORM\Query\AST\Functions\IdentityFunction
     {
         if ($pathExpression->type === PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION) {
             $identity = new IdentityFunction('identity');

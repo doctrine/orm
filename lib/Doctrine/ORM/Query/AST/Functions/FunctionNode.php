@@ -43,7 +43,7 @@ abstract class FunctionNode extends Node
     /**
      * @param string $name
      */
-    public function __construct($name)
+    public function __construct(string $name)
     {
         $this->name = $name;
     }
@@ -53,14 +53,14 @@ abstract class FunctionNode extends Node
      *
      * @return string
      */
-    abstract public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker);
+    abstract public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker): string;
 
     /**
      * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker
      *
      * @return string
      */
-    public function dispatch($sqlWalker)
+    public function dispatch(\Doctrine\ORM\Query\SqlWalker $sqlWalker): string
     {
         return $sqlWalker->walkFunction($this);
     }
@@ -70,5 +70,5 @@ abstract class FunctionNode extends Node
      *
      * @return void
      */
-    abstract public function parse(\Doctrine\ORM\Query\Parser $parser);
+    abstract public function parse(\Doctrine\ORM\Query\Parser $parser): void;
 }

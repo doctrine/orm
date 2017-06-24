@@ -63,7 +63,7 @@ class TreeWalkerChain implements TreeWalker
      *
      * @return array
      */
-    public function getQueryComponents()
+    public function getQueryComponents(): array
     {
         return $this->_queryComponents;
     }
@@ -71,7 +71,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function setQueryComponent($dqlAlias, array $queryComponent)
+    public function setQueryComponent($dqlAlias, array $queryComponent): void
     {
         $requiredKeys = ['metadata', 'parent', 'relation', 'map', 'nestingLevel', 'token'];
 
@@ -100,7 +100,7 @@ class TreeWalkerChain implements TreeWalker
      *
      * @return void
      */
-    public function addTreeWalker($walkerClass)
+    public function addTreeWalker(string $walkerClass): void
     {
         $this->_walkers[] = $walkerClass;
     }
@@ -108,7 +108,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSelectStatement(AST\SelectStatement $AST)
+    public function walkSelectStatement(AST\SelectStatement $AST): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSelectStatement($AST);
@@ -120,7 +120,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSelectClause($selectClause)
+    public function walkSelectClause($selectClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSelectClause($selectClause);
@@ -130,7 +130,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkFromClause($fromClause)
+    public function walkFromClause($fromClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkFromClause($fromClause);
@@ -140,7 +140,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkFunction($function)
+    public function walkFunction($function): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkFunction($function);
@@ -150,7 +150,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkOrderByClause($orderByClause)
+    public function walkOrderByClause($orderByClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkOrderByClause($orderByClause);
@@ -160,7 +160,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkOrderByItem($orderByItem)
+    public function walkOrderByItem($orderByItem): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkOrderByItem($orderByItem);
@@ -170,7 +170,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkHavingClause($havingClause)
+    public function walkHavingClause($havingClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkHavingClause($havingClause);
@@ -180,7 +180,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkJoin($join)
+    public function walkJoin($join): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkJoin($join);
@@ -190,7 +190,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSelectExpression($selectExpression)
+    public function walkSelectExpression($selectExpression): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSelectExpression($selectExpression);
@@ -200,7 +200,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkQuantifiedExpression($qExpr)
+    public function walkQuantifiedExpression($qExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkQuantifiedExpression($qExpr);
@@ -210,7 +210,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSubselect($subselect)
+    public function walkSubselect($subselect): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSubselect($subselect);
@@ -220,7 +220,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSubselectFromClause($subselectFromClause)
+    public function walkSubselectFromClause($subselectFromClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSubselectFromClause($subselectFromClause);
@@ -230,7 +230,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSimpleSelectClause($simpleSelectClause)
+    public function walkSimpleSelectClause($simpleSelectClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSimpleSelectClause($simpleSelectClause);
@@ -240,7 +240,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSimpleSelectExpression($simpleSelectExpression)
+    public function walkSimpleSelectExpression($simpleSelectExpression): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSimpleSelectExpression($simpleSelectExpression);
@@ -250,7 +250,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkAggregateExpression($aggExpression)
+    public function walkAggregateExpression($aggExpression): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkAggregateExpression($aggExpression);
@@ -260,7 +260,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkGroupByClause($groupByClause)
+    public function walkGroupByClause($groupByClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkGroupByClause($groupByClause);
@@ -270,7 +270,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkGroupByItem($groupByItem)
+    public function walkGroupByItem($groupByItem): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkGroupByItem($groupByItem);
@@ -280,7 +280,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkUpdateStatement(AST\UpdateStatement $AST)
+    public function walkUpdateStatement(AST\UpdateStatement $AST): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkUpdateStatement($AST);
@@ -290,7 +290,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkDeleteStatement(AST\DeleteStatement $AST)
+    public function walkDeleteStatement(AST\DeleteStatement $AST): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkDeleteStatement($AST);
@@ -300,7 +300,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkDeleteClause(AST\DeleteClause $deleteClause)
+    public function walkDeleteClause(AST\DeleteClause $deleteClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkDeleteClause($deleteClause);
@@ -310,7 +310,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkUpdateClause($updateClause)
+    public function walkUpdateClause($updateClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkUpdateClause($updateClause);
@@ -320,7 +320,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkUpdateItem($updateItem)
+    public function walkUpdateItem($updateItem): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkUpdateItem($updateItem);
@@ -330,7 +330,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkWhereClause($whereClause)
+    public function walkWhereClause($whereClause): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkWhereClause($whereClause);
@@ -340,7 +340,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkConditionalExpression($condExpr)
+    public function walkConditionalExpression($condExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkConditionalExpression($condExpr);
@@ -350,7 +350,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkConditionalTerm($condTerm)
+    public function walkConditionalTerm($condTerm): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkConditionalTerm($condTerm);
@@ -360,7 +360,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkConditionalFactor($factor)
+    public function walkConditionalFactor($factor): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkConditionalFactor($factor);
@@ -370,7 +370,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkConditionalPrimary($condPrimary)
+    public function walkConditionalPrimary($condPrimary): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkConditionalPrimary($condPrimary);
@@ -380,7 +380,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkExistsExpression($existsExpr)
+    public function walkExistsExpression($existsExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkExistsExpression($existsExpr);
@@ -390,7 +390,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkCollectionMemberExpression($collMemberExpr)
+    public function walkCollectionMemberExpression($collMemberExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkCollectionMemberExpression($collMemberExpr);
@@ -400,7 +400,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr)
+    public function walkEmptyCollectionComparisonExpression($emptyCollCompExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkEmptyCollectionComparisonExpression($emptyCollCompExpr);
@@ -410,7 +410,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkNullComparisonExpression($nullCompExpr)
+    public function walkNullComparisonExpression($nullCompExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkNullComparisonExpression($nullCompExpr);
@@ -420,7 +420,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkInExpression($inExpr)
+    public function walkInExpression($inExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkInExpression($inExpr);
@@ -430,7 +430,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkInstanceOfExpression($instanceOfExpr)
+    public function walkInstanceOfExpression($instanceOfExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkInstanceOfExpression($instanceOfExpr);
@@ -440,7 +440,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkLiteral($literal)
+    public function walkLiteral($literal): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkLiteral($literal);
@@ -450,7 +450,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkBetweenExpression($betweenExpr)
+    public function walkBetweenExpression($betweenExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkBetweenExpression($betweenExpr);
@@ -460,7 +460,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkLikeExpression($likeExpr)
+    public function walkLikeExpression($likeExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkLikeExpression($likeExpr);
@@ -470,7 +470,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkStateFieldPathExpression($stateFieldPathExpression)
+    public function walkStateFieldPathExpression($stateFieldPathExpression): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkStateFieldPathExpression($stateFieldPathExpression);
@@ -480,7 +480,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkComparisonExpression($compExpr)
+    public function walkComparisonExpression($compExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkComparisonExpression($compExpr);
@@ -490,7 +490,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkInputParameter($inputParam)
+    public function walkInputParameter($inputParam): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkInputParameter($inputParam);
@@ -500,7 +500,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkArithmeticExpression($arithmeticExpr)
+    public function walkArithmeticExpression($arithmeticExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkArithmeticExpression($arithmeticExpr);
@@ -510,7 +510,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkArithmeticTerm($term)
+    public function walkArithmeticTerm($term): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkArithmeticTerm($term);
@@ -520,7 +520,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkStringPrimary($stringPrimary)
+    public function walkStringPrimary($stringPrimary): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkStringPrimary($stringPrimary);
@@ -530,7 +530,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkArithmeticFactor($factor)
+    public function walkArithmeticFactor($factor): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkArithmeticFactor($factor);
@@ -540,7 +540,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkSimpleArithmeticExpression($simpleArithmeticExpr)
+    public function walkSimpleArithmeticExpression($simpleArithmeticExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkSimpleArithmeticExpression($simpleArithmeticExpr);
@@ -550,7 +550,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkPathExpression($pathExpr)
+    public function walkPathExpression($pathExpr): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkPathExpression($pathExpr);
@@ -560,7 +560,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function walkResultVariable($resultVariable)
+    public function walkResultVariable($resultVariable): void
     {
         foreach ($this->_walkers as $walker) {
             $walker->walkResultVariable($resultVariable);
@@ -570,7 +570,7 @@ class TreeWalkerChain implements TreeWalker
     /**
      * {@inheritdoc}
      */
-    public function getExecutor($AST)
+    public function getExecutor($AST): void
     {
     }
 }

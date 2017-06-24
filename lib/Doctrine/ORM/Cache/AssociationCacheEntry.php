@@ -46,7 +46,7 @@ class AssociationCacheEntry implements CacheEntry
      * @param string $class      The entity class.
      * @param array  $identifier The entity identifier.
      */
-    public function __construct($class, array $identifier)
+    public function __construct(string $class, array $identifier)
     {
         $this->class       = $class;
         $this->identifier  = $identifier;
@@ -61,7 +61,7 @@ class AssociationCacheEntry implements CacheEntry
      *
      * @return AssociationCacheEntry
      */
-    public static function __set_state(array $values)
+    public static function __set_state(array $values): AssociationCacheEntry
     {
         return new self($values['class'], $values['identifier']);
     }

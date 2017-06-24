@@ -51,7 +51,7 @@ class IdentificationVariableDeclaration extends Node
      * @param IndexBy|null                  $indexBy
      * @param array                         $joins
      */
-    public function __construct($rangeVariableDecl, $indexBy, array $joins)
+    public function __construct(?RangeVariableDeclaration $rangeVariableDecl, ?IndexBy $indexBy, array $joins)
     {
         $this->rangeVariableDeclaration = $rangeVariableDecl;
         $this->indexBy = $indexBy;

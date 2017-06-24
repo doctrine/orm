@@ -73,7 +73,7 @@ class ProxyFactory extends AbstractProxyFactory
      * @param boolean|int            $autoGenerate The strategy for automatically generating proxy classes. Possible
      *                                             values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
      */
-    public function __construct(EntityManagerInterface $em, $proxyDir, $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
+    public function __construct(EntityManagerInterface $em, string $proxyDir, string $proxyNs, $autoGenerate = AbstractProxyFactory::AUTOGENERATE_NEVER)
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
@@ -122,7 +122,7 @@ class ProxyFactory extends AbstractProxyFactory
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createInitializer(ClassMetadata $classMetadata, EntityPersister $entityPersister): \Closure
     {
         $wakeupProxy = $classMetadata->getReflectionClass()->hasMethod('__wakeup');
 
@@ -176,7 +176,7 @@ class ProxyFactory extends AbstractProxyFactory
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister)
+    private function createCloner(ClassMetadata $classMetadata, EntityPersister $entityPersister): \Closure
     {
         return function (BaseProxy $proxy) use ($entityPersister, $classMetadata) {
             if ($proxy->__isInitialized()) {

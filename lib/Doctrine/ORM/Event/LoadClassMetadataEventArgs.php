@@ -40,7 +40,7 @@ class LoadClassMetadataEventArgs extends BaseLoadClassMetadataEventArgs
      *
      * @return \Doctrine\ORM\EntityManager
      */
-    public function getEntityManager()
+    public function getEntityManager(): \Doctrine\ORM\EntityManager
     {
         return $this->getObjectManager();
     }

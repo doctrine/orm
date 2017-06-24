@@ -76,7 +76,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return Query
      */
-    public function getQuery()
+    public function getQuery(): Query
     {
         return $this->query;
     }
@@ -86,7 +86,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return boolean Whether the query joins a collection.
      */
-    public function getFetchJoinCollection()
+    public function getFetchJoinCollection(): bool
     {
         return $this->fetchJoinCollection;
     }
@@ -96,7 +96,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return bool|null
      */
-    public function getUseOutputWalkers()
+    public function getUseOutputWalkers(): ?bool
     {
         return $this->useOutputWalkers;
     }
@@ -108,7 +108,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return $this
      */
-    public function setUseOutputWalkers($useOutputWalkers)
+    public function setUseOutputWalkers(?bool $useOutputWalkers)
     {
         $this->useOutputWalkers = $useOutputWalkers;
 
@@ -184,7 +184,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return Query The cloned query.
      */
-    private function cloneQuery(Query $query)
+    private function cloneQuery(Query $query): Query
     {
         /* @var $cloneQuery Query */
         $cloneQuery = clone $query;
@@ -206,7 +206,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return bool
      */
-    private function useOutputWalker(Query $query)
+    private function useOutputWalker(Query $query): bool
     {
         if ($this->useOutputWalkers === null) {
             return (bool) $query->getHint(Query::HINT_CUSTOM_OUTPUT_WALKER) === false;
@@ -221,7 +221,7 @@ class Paginator implements \Countable, \IteratorAggregate
      * @param Query  $query
      * @param string $walkerClass
      */
-    private function appendTreeWalker(Query $query, $walkerClass)
+    private function appendTreeWalker(Query $query, string $walkerClass): void
     {
         $hints = $query->getHint(Query::HINT_CUSTOM_TREE_WALKERS);
 
@@ -238,7 +238,7 @@ class Paginator implements \Countable, \IteratorAggregate
      *
      * @return Query
      */
-    private function getCountQuery()
+    private function getCountQuery(): Query
     {
         /* @var $countQuery Query */
         $countQuery = $this->cloneQuery($this->query);

@@ -73,7 +73,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
-    private function getVersionedClassMetadata()
+    private function getVersionedClassMetadata(): \Doctrine\ORM\Mapping\ClassMetadata
     {
         if (isset($this->class->fieldMappings[$this->class->versionField]['inherited'])) {
             $definingClassName = $this->class->fieldMappings[$this->class->versionField]['inherited'];
@@ -93,7 +93,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @override
      */
-    public function getOwningTable($fieldName)
+    public function getOwningTable(string $fieldName): string
     {
         if (isset($this->owningTableMap[$fieldName])) {
             return $this->owningTableMap[$fieldName];
@@ -231,7 +231,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    public function update($entity)
+    public function update($entity): void
     {
         $updateData = $this->prepareUpdateData($entity);
 
@@ -427,7 +427,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return string
      */
-    protected function getSelectColumnsSQL()
+    protected function getSelectColumnsSQL(): string
     {
         // Create the column list fragment only once
         if ($this->currentPersisterContext->selectColumnListSql !== null) {
@@ -566,7 +566,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function assignDefaultVersionValue($entity, array $id)
+    protected function assignDefaultVersionValue($entity, array $id): void
     {
         $value = $this->fetchVersionValue($this->getVersionedClassMetadata(), $id);
         $this->class->setFieldValue($entity, $this->class->versionField, $value);
@@ -577,7 +577,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      *
      * @return string
      */
-    private function getJoinSql($baseTableAlias)
+    private function getJoinSql(string $baseTableAlias): string
     {
         $joinSql          = '';
         $identifierColumn = $this->class->getIdentifierColumnNames();

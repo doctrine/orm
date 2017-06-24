@@ -75,7 +75,7 @@ class Join
      * @param string|null $condition     The condition for the join.
      * @param string|null $indexBy       The index for the join.
      */
-    public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
+    public function __construct(string $joinType, string $join, ?string $alias = null, ?string $conditionType = null, ?string $condition = null, ?string $indexBy = null)
     {
         $this->joinType       = $joinType;
         $this->join           = $join;
@@ -88,7 +88,7 @@ class Join
     /**
      * @return string 
      */
-    public function getJoinType()
+    public function getJoinType(): string
     {
         return $this->joinType;
     }
@@ -96,7 +96,7 @@ class Join
     /**
      * @return string
      */
-    public function getJoin()
+    public function getJoin(): string
     {
         return $this->join;
     }
@@ -104,7 +104,7 @@ class Join
     /**
      * @return string
      */
-    public function getAlias()
+    public function getAlias(): string
     {
         return $this->alias;
     }
@@ -112,7 +112,7 @@ class Join
     /**
      * @return string
      */
-    public function getConditionType()
+    public function getConditionType(): string
     {
         return $this->conditionType;
     }
@@ -120,7 +120,7 @@ class Join
     /**
      * @return string
      */
-    public function getCondition()
+    public function getCondition(): string
     {
         return $this->condition;
     }
@@ -128,7 +128,7 @@ class Join
     /**
      * @return string
      */
-    public function getIndexBy()
+    public function getIndexBy(): string
     {
         return $this->indexBy;
     }
@@ -136,7 +136,7 @@ class Join
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return strtoupper($this->joinType) . ' JOIN ' . $this->join
              . ($this->alias ? ' ' . $this->alias : '')

@@ -36,7 +36,7 @@ class CacheException extends ORMException
      *
      * @return \Doctrine\ORM\Cache\CacheException
      */
-    public static function updateReadOnlyCollection($sourceEntity, $fieldName)
+    public static function updateReadOnlyCollection(string $sourceEntity, string $fieldName): \Doctrine\ORM\Cache\CacheException
     {
         return new self(sprintf('Cannot update a readonly collection "%s#%s"', $sourceEntity, $fieldName));
     }
@@ -46,7 +46,7 @@ class CacheException extends ORMException
      *
      * @return \Doctrine\ORM\Cache\CacheException
      */
-    public static function updateReadOnlyEntity($entityName)
+    public static function updateReadOnlyEntity(string $entityName): \Doctrine\ORM\Cache\CacheException
     {
         return new self(sprintf('Cannot update a readonly entity "%s"', $entityName));
     }
@@ -56,7 +56,7 @@ class CacheException extends ORMException
      *
      * @return \Doctrine\ORM\Cache\CacheException
      */
-    public static function nonCacheableEntity($entityName)
+    public static function nonCacheableEntity(string $entityName): \Doctrine\ORM\Cache\CacheException
     {
         return new self(sprintf('Entity "%s" not configured as part of the second-level cache.', $entityName));
     }
@@ -67,7 +67,7 @@ class CacheException extends ORMException
      *
      * @return CacheException
      */
-    public static function nonCacheableEntityAssociation($entityName, $field)
+    public static function nonCacheableEntityAssociation(string $entityName, string $field): CacheException
     {
         return new self(sprintf('Entity association field "%s#%s" not configured as part of the second-level cache.', $entityName, $field));
     }

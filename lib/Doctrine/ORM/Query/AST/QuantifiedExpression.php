@@ -43,7 +43,7 @@ class QuantifiedExpression extends Node
     /**
      * @param Subselect $subselect
      */
-    public function __construct($subselect)
+    public function __construct(Subselect $subselect)
     {
         $this->subselect = $subselect;
     }
@@ -51,7 +51,7 @@ class QuantifiedExpression extends Node
     /**
      * @return bool
      */
-    public function isAll()
+    public function isAll(): bool
     {
         return strtoupper($this->type) == 'ALL';
     }
@@ -59,7 +59,7 @@ class QuantifiedExpression extends Node
     /**
      * @return bool
      */
-    public function isAny()
+    public function isAny(): bool
     {
         return strtoupper($this->type) == 'ANY';
     }
@@ -67,7 +67,7 @@ class QuantifiedExpression extends Node
     /**
      * @return bool
      */
-    public function isSome()
+    public function isSome(): bool
     {
         return strtoupper($this->type) == 'SOME';
     }

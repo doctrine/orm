@@ -45,7 +45,7 @@ class SubselectIdentificationVariableDeclaration
      * @param PathExpression $associationPathExpression
      * @param string         $aliasIdentificationVariable
      */
-    public function __construct($associationPathExpression, $aliasIdentificationVariable)
+    public function __construct(PathExpression $associationPathExpression, string $aliasIdentificationVariable)
     {
         $this->associationPathExpression   = $associationPathExpression;
         $this->aliasIdentificationVariable = $aliasIdentificationVariable;

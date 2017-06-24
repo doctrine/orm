@@ -64,17 +64,12 @@ class AnnotationExporter extends AbstractExporter
      *
      * @return string
      */
-    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    protected function _generateOutputPath(ClassMetadataInfo $metadata): string
     {
         return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
     }
 
-    /**
-     * @param \Doctrine\ORM\Tools\EntityGenerator $entityGenerator
-     *
-     * @return void
-     */
-    public function setEntityGenerator(EntityGenerator $entityGenerator)
+    public function setEntityGenerator(EntityGenerator $entityGenerator): void
     {
         $this->_entityGenerator = $entityGenerator;
     }

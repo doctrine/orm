@@ -47,7 +47,7 @@ class Func
      * @param string $name
      * @param array  $arguments
      */
-    public function __construct($name, $arguments)
+    public function __construct(string $name, array $arguments)
     {
         $this->name         = $name;
         $this->arguments    = (array) $arguments;
@@ -56,7 +56,7 @@ class Func
     /**
      * @return string 
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -64,7 +64,7 @@ class Func
     /**
      * @return array
      */
-    public function getArguments()
+    public function getArguments(): array
     {
         return $this->arguments;
     }
@@ -72,7 +72,7 @@ class Func
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name . '(' . implode(', ', $this->arguments) . ')';
     }

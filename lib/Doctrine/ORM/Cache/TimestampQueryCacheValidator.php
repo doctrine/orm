@@ -31,9 +31,6 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
      */
     private $timestampRegion;
 
-    /**
-     * @param TimestampRegion $timestampRegion
-     */
     public function __construct(TimestampRegion $timestampRegion)
     {
         $this->timestampRegion = $timestampRegion;
@@ -61,7 +58,7 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
      *
      * @return bool
      */
-    private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry)
+    private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry): bool
     {
         if ($key->timestampKey === null) {
             return false;

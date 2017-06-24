@@ -42,7 +42,7 @@ class RunDqlCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:run-dql')
@@ -82,7 +82,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         /* @var $em \Doctrine\ORM\EntityManagerInterface */
         $em = $this->getHelper('em')->getEntityManager();

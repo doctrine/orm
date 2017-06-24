@@ -54,7 +54,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      *
      * @return string The table name.
      */
-    abstract protected function getDiscriminatorColumnTableName();
+    abstract protected function getDiscriminatorColumnTableName(): string;
 
     /**
      * {@inheritdoc}
@@ -89,7 +89,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
      *
      * @return string
      */
-    protected function getSelectJoinColumnSQL($tableAlias, $joinColumnName, $quotedColumnName, $type)
+    protected function getSelectJoinColumnSQL(string $tableAlias, string $joinColumnName, string $quotedColumnName, string $type): string
     {
         $columnAlias = $this->getSQLColumnAlias($joinColumnName);
 

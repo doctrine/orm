@@ -37,7 +37,7 @@ interface NamingStrategy
      *
      * @return string A table name.
      */
-    function classToTableName($className);
+    function classToTableName(string $className): string;
 
     /**
      * Returns a column name for a property.
@@ -47,7 +47,7 @@ interface NamingStrategy
      *
      * @return string A column name.
      */
-    function propertyToColumnName($propertyName, $className = null);
+    function propertyToColumnName(string $propertyName, ?string $className = null): string;
 
     /**
      * Returns a column name for an embedded property.
@@ -59,14 +59,14 @@ interface NamingStrategy
      *
      * @return string
      */
-    function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null);
+    function embeddedFieldToColumnName(string $propertyName, string $embeddedColumnName, string $className = null, string $embeddedClassName = null): string;
 
     /**
      * Returns the default reference column name.
      *
      * @return string A column name.
      */
-    function referenceColumnName();
+    function referenceColumnName(): string;
 
     /**
      * Returns a join column name for a property.
@@ -75,7 +75,7 @@ interface NamingStrategy
      *
      * @return string A join column name.
      */
-    function joinColumnName($propertyName);
+    function joinColumnName(string $propertyName): string;
 
     /**
      * Returns a join table name.
@@ -86,7 +86,7 @@ interface NamingStrategy
      *
      * @return string A join table name.
      */
-    function joinTableName($sourceEntity, $targetEntity, $propertyName = null);
+    function joinTableName(string $sourceEntity, string $targetEntity, ?string $propertyName = null): string;
 
     /**
      * Returns the foreign key column name for the given parameters.
@@ -96,5 +96,5 @@ interface NamingStrategy
      *
      * @return string A join column name.
      */
-    function joinKeyColumnName($entityName, $referencedColumnName = null);
+    function joinKeyColumnName(string $entityName, ?string $referencedColumnName = null): string;
 }

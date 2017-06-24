@@ -41,10 +41,6 @@ class ConcatFunction extends FunctionNode
 
     public $concatExpressions = [];
 
-    /**
-     * @override
-     * @inheritdoc
-     */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
@@ -58,11 +54,7 @@ class ConcatFunction extends FunctionNode
         return call_user_func_array([$platform,'getConcatExpression'], $args);
     }
 
-    /**
-     * @override
-     * @inheritdoc
-     */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(\Doctrine\ORM\Query\Parser $parser): void
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

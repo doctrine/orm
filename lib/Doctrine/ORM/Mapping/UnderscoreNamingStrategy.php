@@ -41,7 +41,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      *
      * @param integer $case CASE_LOWER | CASE_UPPER
      */
-    public function __construct($case = CASE_LOWER)
+    public function __construct(int $case = CASE_LOWER)
     {
         $this->case = $case;
     }
@@ -49,7 +49,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * @return integer CASE_LOWER | CASE_UPPER
      */
-    public function getCase()
+    public function getCase(): int
     {
         return $this->case;
     }
@@ -62,7 +62,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      *
      * @return void
      */
-    public function setCase($case)
+    public function setCase(int $case): void
     {
         $this->case = $case;
     }
@@ -133,7 +133,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      *
      * @return string
      */
-    private function underscore($string)
+    private function underscore(string $string): string
     {
         $string = preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string);
 

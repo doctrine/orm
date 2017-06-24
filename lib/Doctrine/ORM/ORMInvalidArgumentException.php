@@ -33,7 +33,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function scheduleInsertForManagedEntity($entity)
+    static public function scheduleInsertForManagedEntity($entity): ORMInvalidArgumentException
     {
         return new self("A managed+dirty entity " . self::objToStr($entity) . " can not be scheduled for insertion.");
     }
@@ -43,7 +43,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function scheduleInsertForRemovedEntity($entity)
+    static public function scheduleInsertForRemovedEntity($entity): ORMInvalidArgumentException
     {
         return new self("Removed entity " . self::objToStr($entity) . " can not be scheduled for insertion.");
     }
@@ -53,7 +53,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function scheduleInsertTwice($entity)
+    static public function scheduleInsertTwice($entity): ORMInvalidArgumentException
     {
         return new self("Entity " . self::objToStr($entity) . " can not be scheduled for insertion twice.");
     }
@@ -64,7 +64,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function entityWithoutIdentity($className, $entity)
+    static public function entityWithoutIdentity(string $className, $entity): ORMInvalidArgumentException
     {
         return new self(
             "The given entity of type '" . $className . "' (".self::objToStr($entity).") has no identity/no " .
@@ -77,7 +77,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function readOnlyRequiresManagedEntity($entity)
+    static public function readOnlyRequiresManagedEntity($entity): ORMInvalidArgumentException
     {
         return new self("Only managed entities can be marked or checked as read only. But " . self::objToStr($entity) . " is not");
     }
@@ -88,7 +88,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function newEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function newEntityFoundThroughRelationship(array $assoc, $entry): ORMInvalidArgumentException
     {
         return new self("A new entity was found through the relationship '"
             . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
@@ -106,7 +106,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function detachedEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function detachedEntityFoundThroughRelationship(array $assoc, $entry): ORMInvalidArgumentException
     {
         return new self("A detached entity of type " . $assoc['targetEntity'] . " (" . self::objToStr($entry) . ") "
             . " was found through the relationship '" . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' "
@@ -118,7 +118,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function entityNotManaged($entity)
+    static public function entityNotManaged($entity): ORMInvalidArgumentException
     {
         return new self("Entity " . self::objToStr($entity) . " is not managed. An entity is managed if its fetched " .
             "from the database or registered as new through EntityManager#persist");
@@ -130,7 +130,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function entityHasNoIdentity($entity, $operation)
+    static public function entityHasNoIdentity($entity, $operation): ORMInvalidArgumentException
     {
         return new self("Entity has no identity, therefore " . $operation ." cannot be performed. " . self::objToStr($entity));
     }
@@ -141,7 +141,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function entityIsRemoved($entity, $operation)
+    static public function entityIsRemoved($entity, $operation): ORMInvalidArgumentException
     {
         return new self("Entity is removed, therefore " . $operation ." cannot be performed. " . self::objToStr($entity));
     }
@@ -152,7 +152,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    static public function detachedEntityCannot($entity, $operation)
+    static public function detachedEntityCannot($entity, $operation): ORMInvalidArgumentException
     {
         return new self("Detached entity " . self::objToStr($entity) . " cannot be " . $operation);
     }
@@ -164,7 +164,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return ORMInvalidArgumentException
      */
-    public static function invalidObject($context, $given, $parameterIndex = 1)
+    public static function invalidObject(string $context, $given, $parameterIndex = 1): ORMInvalidArgumentException
     {
         return new self($context . ' expects parameter ' . $parameterIndex .
             ' to be an entity object, '. gettype($given) . ' given.');
@@ -173,7 +173,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @return ORMInvalidArgumentException
      */
-    public static function invalidCompositeIdentifier()
+    public static function invalidCompositeIdentifier(): ORMInvalidArgumentException
     {
         return new self("Binding an entity with a composite primary key to a query is not supported. " .
             "You should split the parameter into the explicit fields and bind them separately.");
@@ -182,7 +182,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     /**
      * @return ORMInvalidArgumentException
      */
-    public static function invalidIdentifierBindingEntity()
+    public static function invalidIdentifierBindingEntity(): ORMInvalidArgumentException
     {
         return new self("Binding entities to query parameters only allowed for entities that have an identifier.");
     }
@@ -194,7 +194,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return self
      */
-    public static function invalidAssociation(ClassMetadata $targetClass, $assoc, $actualValue)
+    public static function invalidAssociation(ClassMetadata $targetClass, array $assoc, $actualValue): self
     {
         $expectedType = 'Doctrine\Common\Collections\Collection|array';
 
@@ -218,7 +218,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return self
      */
-    public static function invalidEntityName($entityName)
+    public static function invalidEntityName($entityName): self
     {
         return new self(sprintf('Entity name must be a string, %s given', gettype($entityName)));
     }
@@ -230,7 +230,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return string
      */
-    private static function objToStr($obj)
+    private static function objToStr($obj): string
     {
         return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_hash($obj);
     }

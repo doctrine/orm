@@ -42,7 +42,7 @@ abstract class Node
      *
      * @throws ASTException
      */
-    public function dispatch($walker)
+    public function dispatch(\Doctrine\ORM\Query\SqlWalker $walker)
     {
         throw ASTException::noDispatchForNode($this);
     }
@@ -52,7 +52,7 @@ abstract class Node
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->dump($this);
     }
@@ -62,7 +62,7 @@ abstract class Node
      *
      * @return string
      */
-    public function dump($obj)
+    public function dump($obj): string
     {
         static $ident = 0;
 

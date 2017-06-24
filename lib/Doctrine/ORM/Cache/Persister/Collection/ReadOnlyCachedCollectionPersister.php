@@ -33,7 +33,7 @@ class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollecti
      /**
      * {@inheritdoc}
      */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {
             throw CacheException::updateReadOnlyCollection(ClassUtils::getClass($collection->getOwner()), $this->association['fieldName']);

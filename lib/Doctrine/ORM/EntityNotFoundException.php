@@ -36,7 +36,7 @@ class EntityNotFoundException extends ORMException
      *
      * @return self
      */
-    public static function fromClassNameAndIdentifier($className, array $id)
+    public static function fromClassNameAndIdentifier(string $className, array $id): self
     {
         $ids = [];
 

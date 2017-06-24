@@ -56,7 +56,7 @@ class ArithmeticFactor extends Node
     /**
      * @return bool
      */
-    public function isPositiveSigned()
+    public function isPositiveSigned(): bool
     {
         return $this->sign === true;
     }
@@ -64,7 +64,7 @@ class ArithmeticFactor extends Node
     /**
      * @return bool
      */
-    public function isNegativeSigned()
+    public function isNegativeSigned(): bool
     {
         return $this->sign === false;
     }

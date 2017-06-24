@@ -51,7 +51,7 @@ class YamlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata): void
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
         $element = $this->getElement($className);
@@ -678,7 +678,7 @@ class YamlDriver extends FileDriver
      *
      * @return array The mapping array.
      */
-    private function joinColumnToArray($joinColumnElement)
+    private function joinColumnToArray(array $joinColumnElement): array
     {
         $joinColumn = [];
         if (isset($joinColumnElement['referencedColumnName'])) {
@@ -720,7 +720,7 @@ class YamlDriver extends FileDriver
      *
      * @return  array
      */
-    private function columnToArray($fieldName, $column)
+    private function columnToArray(string $fieldName, array $column): array
     {
         $mapping = [
             'fieldName' => $fieldName
@@ -783,7 +783,7 @@ class YamlDriver extends FileDriver
      *
      * @return array
      */
-    private function cacheToArray($cacheMapping)
+    private function cacheToArray(array $cacheMapping): array
     {
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;

@@ -53,7 +53,7 @@ class SimpleCaseExpression extends Node
      * @param array          $simpleWhenClauses
      * @param mixed          $elseScalarExpression
      */
-    public function __construct($caseOperand, array $simpleWhenClauses, $elseScalarExpression)
+    public function __construct(PathExpression $caseOperand, array $simpleWhenClauses, $elseScalarExpression)
     {
         $this->caseOperand = $caseOperand;
         $this->simpleWhenClauses = $simpleWhenClauses;

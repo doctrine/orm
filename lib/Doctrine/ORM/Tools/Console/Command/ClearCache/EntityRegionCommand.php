@@ -39,7 +39,7 @@ class EntityRegionCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
         ->setName('orm:clear-cache:region:entity')
@@ -80,7 +80,7 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $em          = $this->getHelper('em')->getEntityManager();
         $entityClass = $input->getArgument('entity-class');

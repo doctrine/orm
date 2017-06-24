@@ -38,7 +38,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function delete(PersistentCollection $collection)
+    public function delete(PersistentCollection $collection): void
     {
         // The only valid case here is when you have weak entities. In this
         // scenario, you have @OneToMany with orphanRemoval=true, and replacing
@@ -62,7 +62,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function update(PersistentCollection $collection)
+    public function update(PersistentCollection $collection): void
     {
         // This can never happen. One to many can only be inverse side.
         // For owning side one to many, it is required to have a join table,
@@ -192,7 +192,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
+    public function loadCriteria(PersistentCollection $collection, Criteria $criteria): void
     {
         throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
     }
@@ -204,7 +204,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function deleteEntityCollection(PersistentCollection $collection)
+    private function deleteEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
         $identifier  = $this->uow->getEntityIdentifier($collection->getOwner());
@@ -236,7 +236,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function deleteJoinedEntityCollection(PersistentCollection $collection)
+    private function deleteJoinedEntityCollection(PersistentCollection $collection): int
     {
         $mapping     = $collection->getMapping();
         $sourceClass = $this->em->getClassMetadata($mapping['sourceEntity']);

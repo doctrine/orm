@@ -146,7 +146,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      *
      * @return \Doctrine\ORM\PersistentCollection|null
      */
-    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
+    public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key): ?\Doctrine\ORM\PersistentCollection
     {
         if (($cache = $this->region->get($key)) === null) {
             return null;
@@ -162,7 +162,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     /**
      * {@inheritdoc}
      */
-    public function storeCollectionCache(CollectionCacheKey $key, $elements)
+    public function storeCollectionCache(CollectionCacheKey $key, $elements): void
     {
         /* @var $targetPersister CachedEntityPersister */
         $associationMapping = $this->sourceEntity->associationMappings[$key->association];
@@ -278,7 +278,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      *
      * @param PersistentCollection $collection
      */
-    protected function evictCollectionCache(PersistentCollection $collection)
+    protected function evictCollectionCache(PersistentCollection $collection): void
     {
         $key = new CollectionCacheKey(
             $this->sourceEntity->rootEntityName,
@@ -297,7 +297,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      * @param string $targetEntity
      * @param object $element
      */
-    protected function evictElementCache($targetEntity, $element)
+    protected function evictElementCache(string $targetEntity, $element): void
     {
         /* @var $targetPersister CachedEntityPersister */
         $targetPersister = $this->uow->getEntityPersister($targetEntity);

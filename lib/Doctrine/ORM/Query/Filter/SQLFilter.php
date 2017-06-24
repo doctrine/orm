@@ -70,7 +70,7 @@ abstract class SQLFilter
      *
      * @return SQLFilter The current SQL filter.
      */
-    final public function setParameter($name, $value, $type = null)
+    final public function setParameter(string $name, string $value, ?string $type = null): SQLFilter
     {
         if (null === $type) {
             $type = ParameterTypeInferer::inferType($value);
@@ -99,7 +99,7 @@ abstract class SQLFilter
      *
      * @throws \InvalidArgumentException
      */
-    final public function getParameter($name)
+    final public function getParameter(string $name): string
     {
         if (!isset($this->parameters[$name])) {
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
@@ -115,7 +115,7 @@ abstract class SQLFilter
      *
      * @return boolean
      */
-    final public function hasParameter($name)
+    final public function hasParameter(string $name): bool
     {
         if (!isset($this->parameters[$name])) {
             return false;
@@ -129,7 +129,7 @@ abstract class SQLFilter
      *
      * @return string String representation of the SQLFilter.
      */
-    final public function __toString()
+    final public function __toString(): string
     {
         return serialize($this->parameters);
     }
@@ -139,7 +139,7 @@ abstract class SQLFilter
      *
      * @return \Doctrine\DBAL\Connection
      */
-    final protected function getConnection()
+    final protected function getConnection(): \Doctrine\DBAL\Connection
     {
         return $this->em->getConnection();
     }
@@ -152,5 +152,5 @@ abstract class SQLFilter
      *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */
-    abstract public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias);
+    abstract public function addFilterConstraint(ClassMetadata $targetEntity, string $targetTableAlias): string;
 }

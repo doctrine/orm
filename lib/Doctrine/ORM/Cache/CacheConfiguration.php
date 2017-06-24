@@ -53,17 +53,12 @@ class CacheConfiguration
     /**
      * @return \Doctrine\ORM\Cache\CacheFactory|null
      */
-    public function getCacheFactory()
+    public function getCacheFactory(): ?\Doctrine\ORM\Cache\CacheFactory
     {
         return $this->cacheFactory;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\CacheFactory $factory
-     *
-     * @return void
-     */
-    public function setCacheFactory(CacheFactory $factory)
+    public function setCacheFactory(CacheFactory $factory): void
     {
         $this->cacheFactory = $factory;
     }
@@ -71,15 +66,12 @@ class CacheConfiguration
     /**
      * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
      */
-    public function getCacheLogger()
+    public function getCacheLogger(): ?\Doctrine\ORM\Cache\Logging\CacheLogger
     {
          return $this->cacheLogger;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
-     */
-    public function setCacheLogger(CacheLogger $logger)
+    public function setCacheLogger(CacheLogger $logger): void
     {
         $this->cacheLogger = $logger;
     }
@@ -87,7 +79,7 @@ class CacheConfiguration
     /**
      * @return \Doctrine\ORM\Cache\RegionsConfiguration
      */
-    public function getRegionsConfiguration()
+    public function getRegionsConfiguration(): \Doctrine\ORM\Cache\RegionsConfiguration
     {
         if ($this->regionsConfig === null) {
             $this->regionsConfig = new RegionsConfiguration();
@@ -96,10 +88,7 @@ class CacheConfiguration
         return $this->regionsConfig;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\RegionsConfiguration $regionsConfig
-     */
-    public function setRegionsConfiguration(RegionsConfiguration $regionsConfig)
+    public function setRegionsConfiguration(RegionsConfiguration $regionsConfig): void
     {
         $this->regionsConfig = $regionsConfig;
     }
@@ -107,7 +96,7 @@ class CacheConfiguration
     /**
      * @return \Doctrine\ORM\Cache\QueryCacheValidator
      */
-    public function getQueryValidator()
+    public function getQueryValidator(): \Doctrine\ORM\Cache\QueryCacheValidator
     {
         if ($this->queryValidator === null) {
             $this->queryValidator = new TimestampQueryCacheValidator(
@@ -118,10 +107,7 @@ class CacheConfiguration
          return $this->queryValidator;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\QueryCacheValidator $validator
-     */
-    public function setQueryValidator(QueryCacheValidator $validator)
+    public function setQueryValidator(QueryCacheValidator $validator): void
     {
         $this->queryValidator = $validator;
     }

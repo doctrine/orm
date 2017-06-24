@@ -42,9 +42,6 @@ class SchemaValidator
      */
     private $em;
 
-    /**
-     * @param EntityManagerInterface $em
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -62,7 +59,7 @@ class SchemaValidator
      *
      * @return array
      */
-    public function validateMapping()
+    public function validateMapping(): array
     {
         $errors = [];
         $cmf = $this->em->getMetadataFactory();
@@ -84,7 +81,7 @@ class SchemaValidator
      *
      * @return array
      */
-    public function validateClass(ClassMetadataInfo $class)
+    public function validateClass(ClassMetadataInfo $class): array
     {
         $ce = [];
         $cmf = $this->em->getMetadataFactory();
@@ -263,7 +260,7 @@ class SchemaValidator
      *
      * @return bool
      */
-    public function schemaInSyncWithMetadata()
+    public function schemaInSyncWithMetadata(): bool
     {
         $schemaTool = new SchemaTool($this->em);
 

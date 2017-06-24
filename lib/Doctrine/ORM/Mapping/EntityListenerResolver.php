@@ -35,7 +35,7 @@ interface EntityListenerResolver
      *
      * @return void
      */
-    function clear($className = null);
+    function clear(string $className = null): void;
 
     /**
      * Returns a entity listener instance for the given class name.
@@ -44,12 +44,12 @@ interface EntityListenerResolver
      *
      * @return object An entity listener
      */
-    function resolve($className);
+    function resolve(string $className);
 
     /**
      * Register a entity listener instance.
      *
      * @param object $object An entity listener
      */
-    function register($object);
+    function register($object): void;
 }

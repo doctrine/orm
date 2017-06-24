@@ -35,7 +35,7 @@ interface CachedEntityPersister extends CachedPersister, EntityPersister
     /**
      * @return \Doctrine\ORM\Cache\EntityHydrator
      */
-    public function getEntityHydrator();
+    public function getEntityHydrator(): \Doctrine\ORM\Cache\EntityHydrator;
 
     /**
      * @param object                             $entity
@@ -43,5 +43,5 @@ interface CachedEntityPersister extends CachedPersister, EntityPersister
      *
      * @return boolean
      */
-    public function storeEntityCache($entity, EntityCacheKey $key);
+    public function storeEntityCache($entity, EntityCacheKey $key): bool;
 }

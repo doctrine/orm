@@ -214,7 +214,7 @@ final class Query extends AbstractQuery
      *         \Doctrine\ORM\Query\AST\UpdateStatement |
      *         \Doctrine\ORM\Query\AST\DeleteStatement
      */
-    public function getAST()
+    public function getAST(): \Doctrine\ORM\Query\AST\SelectStatement
     {
         $parser = new Parser($this);
 
@@ -241,7 +241,7 @@ final class Query extends AbstractQuery
      *
      * @return \Doctrine\ORM\Query\ParserResult
      */
-    private function _parse()
+    private function _parse(): \Doctrine\ORM\Query\ParserResult
     {
         $types = [];
 
@@ -339,7 +339,7 @@ final class Query extends AbstractQuery
         array $sqlParams,
         array $types,
         array $connectionParams
-    ) {
+    ): void {
         if (null === $this->_queryCacheProfile || ! $this->getExpireResultCache()) {
             return;
         }
@@ -357,7 +357,7 @@ final class Query extends AbstractQuery
     /**
      * Evict entity cache region
      */
-    private function evictEntityCacheRegion()
+    private function evictEntityCacheRegion(): void
     {
         $AST = $this->getAST();
 
@@ -381,7 +381,7 @@ final class Query extends AbstractQuery
      *
      * @throws Query\QueryException
      */
-    private function processParameterMappings($paramMappings)
+    private function processParameterMappings(array $paramMappings): array
     {
         $sqlParams = [];
         $types     = [];
@@ -442,7 +442,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query instance.
      */
-    public function setQueryCacheDriver($queryCache)
+    public function setQueryCacheDriver(?\Doctrine\Common\Cache\Cache $queryCache): Query
     {
         $this->_queryCache = $queryCache;
 
@@ -456,7 +456,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query instance.
      */
-    public function useQueryCache($bool)
+    public function useQueryCache(bool $bool): Query
     {
         $this->_useQueryCache = $bool;
 
@@ -469,7 +469,7 @@ final class Query extends AbstractQuery
      * @return \Doctrine\Common\Cache\Cache|null The cache driver used for query caching or NULL, if
      *                                           this Query does not use query caching.
      */
-    public function getQueryCacheDriver()
+    public function getQueryCacheDriver(): ?\Doctrine\Common\Cache\Cache
     {
         if ($this->_queryCache) {
             return $this->_queryCache;
@@ -485,7 +485,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query instance.
      */
-    public function setQueryCacheLifetime($timeToLive)
+    public function setQueryCacheLifetime(int $timeToLive): Query
     {
         if ($timeToLive !== null) {
             $timeToLive = (int) $timeToLive;
@@ -501,7 +501,7 @@ final class Query extends AbstractQuery
      *
      * @return int
      */
-    public function getQueryCacheLifetime()
+    public function getQueryCacheLifetime(): int
     {
         return $this->_queryCacheTTL;
     }
@@ -513,7 +513,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query instance.
      */
-    public function expireQueryCache($expire = true)
+    public function expireQueryCache(bool $expire = true): Query
     {
         $this->_expireQueryCache = $expire;
 
@@ -525,15 +525,12 @@ final class Query extends AbstractQuery
      *
      * @return bool
      */
-    public function getExpireQueryCache()
+    public function getExpireQueryCache(): bool
     {
         return $this->_expireQueryCache;
     }
 
-    /**
-     * @override
-     */
-    public function free()
+    public function free(): void
     {
         parent::free();
 
@@ -548,7 +545,7 @@ final class Query extends AbstractQuery
      *
      * @return \Doctrine\ORM\AbstractQuery
      */
-    public function setDQL($dqlQuery)
+    public function setDQL(string $dqlQuery): \Doctrine\ORM\AbstractQuery
     {
         if ($dqlQuery !== null) {
             $this->_dql = $dqlQuery;
@@ -563,7 +560,7 @@ final class Query extends AbstractQuery
      *
      * @return string DQL query.
      */
-    public function getDQL()
+    public function getDQL(): string
     {
         return $this->_dql;
     }
@@ -578,7 +575,7 @@ final class Query extends AbstractQuery
      *
      * @return integer The query state.
      */
-    public function getState()
+    public function getState(): int
     {
         return $this->_state;
     }
@@ -590,7 +587,7 @@ final class Query extends AbstractQuery
      *
      * @return boolean
      */
-    public function contains($dql)
+    public function contains(string $dql): bool
     {
         return stripos($this->getDQL(), $dql) !== false;
     }
@@ -602,7 +599,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query object.
      */
-    public function setFirstResult($firstResult)
+    public function setFirstResult(int $firstResult): Query
     {
         $this->_firstResult = $firstResult;
         $this->_state       = self::STATE_DIRTY;
@@ -616,7 +613,7 @@ final class Query extends AbstractQuery
      *
      * @return integer The position of the first result.
      */
-    public function getFirstResult()
+    public function getFirstResult(): int
     {
         return $this->_firstResult;
     }
@@ -628,7 +625,7 @@ final class Query extends AbstractQuery
      *
      * @return Query This query object.
      */
-    public function setMaxResults($maxResults)
+    public function setMaxResults(int $maxResults): Query
     {
         $this->_maxResults = $maxResults;
         $this->_state      = self::STATE_DIRTY;
@@ -642,7 +639,7 @@ final class Query extends AbstractQuery
      *
      * @return integer Maximum number of results.
      */
-    public function getMaxResults()
+    public function getMaxResults(): int
     {
         return $this->_maxResults;
     }
@@ -656,7 +653,7 @@ final class Query extends AbstractQuery
      *
      * @return \Doctrine\ORM\Internal\Hydration\IterableResult
      */
-    public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
+    public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT): \Doctrine\ORM\Internal\Hydration\IterableResult
     {
         $this->setHint(self::HINT_INTERNAL_ITERATION, true);
 
@@ -694,7 +691,7 @@ final class Query extends AbstractQuery
      *
      * @throws TransactionRequiredException
      */
-    public function setLockMode($lockMode)
+    public function setLockMode(int $lockMode): Query
     {
         if (in_array($lockMode, [LockMode::NONE, LockMode::PESSIMISTIC_READ, LockMode::PESSIMISTIC_WRITE], true)) {
             if ( ! $this->_em->getConnection()->isTransactionActive()) {
@@ -712,7 +709,7 @@ final class Query extends AbstractQuery
      *
      * @return int|null The current lock mode of this query or NULL if no specific lock mode is set.
      */
-    public function getLockMode()
+    public function getLockMode(): ?int
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 
@@ -728,7 +725,7 @@ final class Query extends AbstractQuery
      *
      * @return string
      */
-    protected function _getQueryCacheId()
+    protected function _getQueryCacheId(): string
     {
         ksort($this->_hints);
 

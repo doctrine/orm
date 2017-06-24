@@ -51,7 +51,7 @@ class CountWalker extends TreeWalkerAdapter
      *
      * @throws \RuntimeException
      */
-    public function walkSelectStatement(SelectStatement $AST)
+    public function walkSelectStatement(SelectStatement $AST): void
     {
         if ($AST->havingClause) {
             throw new \RuntimeException('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
