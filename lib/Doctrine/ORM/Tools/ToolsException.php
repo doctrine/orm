@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -36,7 +39,7 @@ class ToolsException extends ORMException
      */
     public static function schemaToolFailure($sql, \Exception $e)
     {
-        return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, "0", $e);
+        return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, 0, $e);
     }
 
     /**

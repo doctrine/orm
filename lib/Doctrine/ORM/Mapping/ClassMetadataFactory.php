@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -703,7 +706,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
-                if ( ! class_exists($definition['class'])) {
+                if ($definition['class'] === null || ! class_exists($definition['class'])) {
                     throw new ORMException("Can't instantiate custom generator : " .
                         $definition['class']);
                 }

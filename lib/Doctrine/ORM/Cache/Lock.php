@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types = 1);
+
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -53,6 +56,6 @@ class Lock
      */
     public static function createLockRead()
     {
-        return new self(uniqid(time(), true));
+        return new self(uniqid((string) time(), true));
     }
 }

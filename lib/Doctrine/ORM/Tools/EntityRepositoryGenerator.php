@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -77,7 +80,7 @@ class <className> extends <repositoryName>
      */
     private function getClassNamespace($fullClassName)
     {
-        $namespace = substr($fullClassName, 0, strrpos($fullClassName, '\\'));
+        $namespace = substr($fullClassName, 0, (int) strrpos($fullClassName, '\\'));
 
         return $namespace;
     }

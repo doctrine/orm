@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -1532,7 +1535,7 @@ class SqlWalker implements TreeWalker
                     $class     = $qComp['metadata'];
                     $fieldType = $class->fieldMappings[$e->field]['type'];
 
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
                 case ($e instanceof AST\Literal):
@@ -1546,11 +1549,11 @@ class SqlWalker implements TreeWalker
                             break;
                     }
 
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
 
                 default:
-                    $sqlSelectExpressions[] = trim($e->dispatch($this)) . ' AS ' . $columnAlias;
+                    $sqlSelectExpressions[] = trim((string) $e->dispatch($this)) . ' AS ' . $columnAlias;
                     break;
             }
 

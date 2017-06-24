@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -479,7 +482,7 @@ class Parser
         $length = ($pos !== false) ? $pos - $token['position'] : $distance;
 
         $tokenPos = (isset($token['position']) && $token['position'] > 0) ? $token['position'] : '-1';
-        $tokenStr = substr($dql, $token['position'], $length);
+        $tokenStr = substr($dql, (int) $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;

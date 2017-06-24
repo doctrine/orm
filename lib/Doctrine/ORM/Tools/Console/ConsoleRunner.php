@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types = 1);
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -124,6 +127,9 @@ project, which is required to get the Doctrine Console working. You can use the
 following sample as a template:
 
 <?php
+
+declare(strict_types = 1);
+
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 // replace with file to your own project bootstrap
