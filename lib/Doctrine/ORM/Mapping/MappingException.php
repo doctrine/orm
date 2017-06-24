@@ -781,7 +781,7 @@ class MappingException extends \Doctrine\ORM\ORMException
         $cascades = implode(", ", array_map(function ($e) { return "'" . $e . "'"; }, $cascades));
 
         return new self(sprintf(
-            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'",
+            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', and 'refresh'",
             $className,
             $propertyName,
             $cascades
