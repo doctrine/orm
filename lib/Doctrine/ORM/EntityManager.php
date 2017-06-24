@@ -338,6 +338,26 @@ final class EntityManager implements EntityManagerInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @deprecated
+     */
+    public function merge($object)
+    {
+        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @deprecated
+     */
+    public function detach($object)
+    {
+        throw new \BadMethodCallException('@TODO method disabled - will be removed in 3.0 with a release of doctrine/common');
+    }
+
+    /**
      * Flushes all changes to objects that have been queued up to now to the database.
      * This effectively synchronizes the in-memory state of managed objects with the
      * database.
