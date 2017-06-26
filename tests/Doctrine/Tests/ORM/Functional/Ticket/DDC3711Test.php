@@ -26,6 +26,5 @@ class DDC3711Test extends YamlMappingDriverTest
 
         $this->assertEquals(['link_a_id1' => "id1", 'link_a_id2' => "id2"], $entityA->associationMappings['entityB']['relationToSourceKeyColumns']);
         $this->assertEquals(['link_b_id1' => "id1", 'link_b_id2' => "id2"], $entityA->associationMappings['entityB']['relationToTargetKeyColumns']);
-
     }
 }

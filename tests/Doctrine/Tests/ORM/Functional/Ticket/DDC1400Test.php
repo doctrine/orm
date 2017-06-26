@@ -14,9 +14,9 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1400Article::class),
-                $this->_em->getClassMetadata(DDC1400User::class),
-                $this->_em->getClassMetadata(DDC1400UserState::class),
+                    $this->_em->getClassMetadata(DDC1400Article::class),
+                    $this->_em->getClassMetadata(DDC1400User::class),
+                    $this->_em->getClassMetadata(DDC1400UserState::class),
                 ]
             );
         } catch (\Exception $ignored) {
@@ -48,17 +48,20 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->persist($userState1);
         $this->_em->persist($userState2);
-
         $this->_em->flush();
         $this->_em->clear();
 
         $user1 = $this->_em->getReference(DDC1400User::class, $user1->id);
 
-        $q = $this->_em->createQuery("SELECT a, s FROM ".__NAMESPACE__."\DDC1400Article a JOIN a.userStates s WITH s.user = :activeUser");
-        $q->setParameter('activeUser', $user1);
-        $articles = $q->getResult();
+        $this->_em->createQuery('SELECT a, s FROM ' . DDC1400Article::class . ' a JOIN a.userStates s WITH s.user = :activeUser')
+                  ->setParameter('activeUser', $user1)
+                  ->getResult();
+
+        $queryCount = $this->getCurrentQueryCount();
 
         $this->_em->flush();
+
+        self::assertSame($queryCount, $this->getCurrentQueryCount(), 'No query should be executed during flush in this case');
     }
 }
 

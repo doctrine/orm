@@ -6,7 +6,9 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -147,7 +149,8 @@ class QueryTest extends OrmTestCase
     public function testIterateWithDistinct()
     {
         $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
-        $q->iterate();
+
+        self::assertInstanceOf(IterableResult::class, $q->iterate());
     }
 
     /**
@@ -242,5 +245,62 @@ class QueryTest extends OrmTestCase
         $query = $this->_em->createQuery();
         $query->setHydrationCacheProfile(null);
         $this->assertNull($query->getHydrationCacheProfile());
+    }
+
+    /**
+     * @group 2947
+     */
+    public function testResultCacheEviction()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+                           ->useResultCache(true);
+
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->_em->getConnection()
+                                          ->getWrappedConnection();
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(1, $query->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1], ['id_0' => 2]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(1, $query->getResult());
+
+        // Performs the query and caches the result set since expire flag is true
+        self::assertCount(2, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(2, $query->expireResultCache(false)->getResult());
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectJoinSubquery()
+    {
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectFromSubquery()
+    {
+        $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
     }
 }

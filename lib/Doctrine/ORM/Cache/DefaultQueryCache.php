@@ -122,11 +122,9 @@ class DefaultQueryCache implements QueryCache
 
         // @TODO - move to cache hydration component
         foreach ($entry->result as $index => $entry) {
-
             $entityEntry = is_array($entries) && array_key_exists($index, $entries) ? $entries[$index] : null;
 
             if ($entityEntry === null) {
-
                 if ($this->cacheLogger !== null) {
                     $this->cacheLogger->entityCacheMiss($regionName, $cacheKeys->identifiers[$index]);
                 }
@@ -139,7 +137,6 @@ class DefaultQueryCache implements QueryCache
             }
 
             if ( ! $hasRelation) {
-
                 $result[$index]  = $this->uow->createEntity($entityEntry->class, $entityEntry->resolveAssociationEntries($this->em), self::$hints);
 
                 continue;
@@ -178,14 +175,20 @@ class DefaultQueryCache implements QueryCache
                     continue;
                 }
 
-                $collection  = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
+                $generateKeys = function ($id) use ($assocMetadata): EntityCacheKey {
+                    return new EntityCacheKey($assocMetadata->rootEntityName, $id);
+                };
+
+                $collection   = new PersistentCollection($this->em, $assocMetadata, new ArrayCollection());
+                $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
+                $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
+                    $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
 
-                    if (($assocEntry = $assocRegion->get($assocKey = new EntityCacheKey($assocMetadata->rootEntityName, $assocId))) === null) {
-
+                    if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {
-                            $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKey);
+                            $this->cacheLogger->entityCacheMiss($assocRegion->getName(), $assocKeys->identifiers[$assocIndex]);
                         }
 
                         $this->uow->hydrationComplete();
@@ -198,7 +201,7 @@ class DefaultQueryCache implements QueryCache
                     $collection->hydrateSet($assocIndex, $element);
 
                     if ($this->cacheLogger !== null) {
-                        $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKey);
+                        $this->cacheLogger->entityCacheHit($assocRegion->getName(), $assocKeys->identifiers[$assocIndex]);
                     }
                 }
 

@@ -35,6 +35,7 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         $this->useModelSet('company');
         parent::setUp();
+
         $this->platform = $this->_em->getConnection()->getDatabasePlatform();
     }
 
@@ -324,6 +325,8 @@ class NativeQueryTest extends OrmFunctionalTestCase
     {
         $rsm = new ResultSetMappingBuilder($this->_em);
         $rsm->addRootEntityFromClassMetadata(CompanyFixContract::class, 'c');
+
+        self::assertSame(CompanyFixContract::class, $rsm->getClassName('c'));
     }
 
     /**
@@ -426,9 +429,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(CmsUser::class);
 
-
         $result = $repository->createNativeNamedQuery('fetchIdAndUsernameWithResultClass')
-                        ->setParameter(1, 'FabioBatSilva')->getResult();
+                            ->setParameter(1, 'FabioBatSilva')
+                            ->getResult();
 
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf(CmsUser::class, $result[0]);
@@ -439,9 +442,9 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-
         $result = $repository->createNativeNamedQuery('fetchAllColumns')
-                        ->setParameter(1, 'FabioBatSilva')->getResult();
+                            ->setParameter(1, 'FabioBatSilva')
+                            ->getResult();
 
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf(CmsUser::class, $result[0]);
@@ -468,19 +471,16 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $addr->zip      = 10827;
         $addr->city     = 'São Paulo';
 
-
         $user->setAddress($addr);
 
         $this->_em->persist($user);
         $this->_em->flush();
-
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(CmsUser::class);
-
-
-        $result = $repository->createNativeNamedQuery('fetchJoinedAddress')
-                        ->setParameter(1, 'FabioBatSilva')->getResult();
+        $result = $this->_em->getRepository(CmsUser::class)
+                            ->createNativeNamedQuery('fetchJoinedAddress')
+                            ->setParameter(1, 'FabioBatSilva')
+                            ->getResult();
 
         $this->assertEquals(1, count($result));
         $this->assertInstanceOf(CmsUser::class, $result[0]);

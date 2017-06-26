@@ -119,7 +119,7 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @return ClassMetadataInfo
      */
-    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [])
+    private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null)
     {
         $metadata = new ClassMetadataInfo($this->_namespace . '\EntityGeneratorIsbn');
         $metadata->namespace = $this->_namespace;
@@ -131,7 +131,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata->mapField(['fieldName' => 'checkDigit', 'type' => 'integer']);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
-            $this->mapEmbedded($fieldName, $metadata, $embeddedClass);
+            $this->mapEmbedded($fieldName, $metadata, $embeddedClass, $columnPrefix);
         }
 
         $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
@@ -222,6 +222,39 @@ class EntityGeneratorTest extends OrmTestCase
         $this->loadEntityClass($metadata);
 
         return new $metadata->name;
+    }
+
+    /**
+     * @group GH-6314
+     */
+    public function testEmbeddedEntityWithNamedColumnPrefix()
+    {
+        $columnPrefix = 'GH6314Prefix_';
+        $testMetadata = $this->generateTestEmbeddableFixture();
+        $isbnMetadata = $this->generateIsbnEmbeddableFixture(['testEmbedded' => $testMetadata], $columnPrefix);
+        $isbnEntity = $this->newInstance($isbnMetadata);
+        $refClass = new \ReflectionClass($isbnEntity);
+        self::assertTrue($refClass->hasProperty('testEmbedded'));
+
+        $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
+        $needle = sprintf('@Embedded(class="%s", columnPrefix="%s")', $testMetadata->name, $columnPrefix);
+        self::assertContains($needle, $docComment);
+    }
+
+    /**
+     * @group GH-6314
+     */
+    public function testEmbeddedEntityWithoutColumnPrefix()
+    {
+        $testMetadata = $this->generateTestEmbeddableFixture();
+        $isbnMetadata = $this->generateIsbnEmbeddableFixture(['testEmbedded' => $testMetadata], false);
+        $isbnEntity = $this->newInstance($isbnMetadata);
+        $refClass = new \ReflectionClass($isbnEntity);
+        self::assertTrue($refClass->hasProperty('testEmbedded'));
+
+        $docComment = $refClass->getProperty('testEmbedded')->getDocComment();
+        $needle = sprintf('@Embedded(class="%s", columnPrefix=false)', $testMetadata->name);
+        self::assertContains($needle, $docComment);
     }
 
     public function testGeneratedEntityClass()

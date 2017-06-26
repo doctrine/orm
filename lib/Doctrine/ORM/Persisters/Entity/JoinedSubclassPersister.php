@@ -341,13 +341,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
 
-                $lockSql = ' ' . $this->platform->getReadLockSql();
+                $lockSql = ' ' . $this->platform->getReadLockSQL();
 
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
 
-                $lockSql = ' ' . $this->platform->getWriteLockSql();
+                $lockSql = ' ' . $this->platform->getWriteLockSQL();
 
                 break;
         }
@@ -462,21 +462,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 ? $this->getSQLTableAlias($mapping['inherited'])
                 : $baseTableAlias;
 
-            foreach ($mapping['targetToSourceKeyColumns'] as $srcColumn) {
-                $className = isset($mapping['inherited'])
-                    ? $mapping['inherited']
-                    : $this->class->name;
+            $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-
+            foreach ($mapping['joinColumns'] as $joinColumn) {
                 $columnList[] = $this->getSelectJoinColumnSQL(
                     $tableAlias,
-                    $srcColumn,
-                    PersisterHelper::getTypeOfColumn(
-                        $mapping['sourceToTargetKeyColumns'][$srcColumn],
-                        $targetClass,
-                        $this->em
-                    )
+                    $joinColumn['name'],
+                    $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform),
+                    PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                 );
             }
         }
@@ -510,21 +503,14 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
-                foreach ($mapping['targetToSourceKeyColumns'] as $srcColumn) {
-                    $className = isset($mapping['inherited'])
-                        ? $mapping['inherited']
-                        : $subClass->name;
+                $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
 
-                    $targetClass = $this->em->getClassMetadata($mapping['targetEntity']);
-
+                foreach ($mapping['joinColumns'] as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
-                        $srcColumn,
-                        PersisterHelper::getTypeOfColumn(
-                            $mapping['sourceToTargetKeyColumns'][$srcColumn],
-                            $targetClass,
-                            $this->em
-                        )
+                        $joinColumn['name'],
+                        $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
+                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                     );
                 }
             }

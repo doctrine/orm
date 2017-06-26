@@ -358,8 +358,8 @@ class ObjectHydrator extends AbstractHydrator
 
                 // Get a reference to the parent object to which the joined element belongs.
                 if ($this->_rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
-                    $first = reset($this->resultPointers);
-                    $parentObject = $first[key($first)];
+                    $objectClass = $this->resultPointers[$parentAlias];
+                    $parentObject = $objectClass[key($objectClass)];
                 } else if (isset($this->resultPointers[$parentAlias])) {
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
@@ -433,7 +433,7 @@ class ObjectHydrator extends AbstractHydrator
 
                     if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
                         // we only need to take action if this value is null,
-                        // we refresh the entity or its an unitialized proxy.
+                        // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);

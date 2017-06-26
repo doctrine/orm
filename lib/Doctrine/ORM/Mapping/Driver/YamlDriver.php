@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -174,7 +175,7 @@ class YamlDriver extends FileDriver
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
 
-            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType != Metadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate discriminatorColumn
                 if (isset($element['discriminatorColumn'])) {
                     $discrColumn = $element['discriminatorColumn'];
@@ -622,6 +623,11 @@ class YamlDriver extends FileDriver
                     $override['inversedBy'] = (string) $associationOverrideElement['inversedBy'];
                 }
 
+                // Check for `fetch`
+                if (isset($associationOverrideElement['fetch'])) {
+                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . $associationOverrideElement['fetch']);
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }
@@ -800,6 +806,10 @@ class YamlDriver extends FileDriver
      */
     protected function loadMappingFile($file)
     {
+        if (defined(Yaml::class . '::PARSE_KEYS_AS_STRINGS')) {
+            return Yaml::parse(file_get_contents($file), Yaml::PARSE_KEYS_AS_STRINGS);
+        }
+
         return Yaml::parse(file_get_contents($file));
     }
 }

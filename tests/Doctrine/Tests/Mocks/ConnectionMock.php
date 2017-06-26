@@ -1,7 +1,9 @@
 <?php
 
 namespace Doctrine\Tests\Mocks;
+
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Mock class for Connection.
@@ -12,6 +14,16 @@ class ConnectionMock extends Connection
      * @var mixed
      */
     private $_fetchOneResult;
+
+    /**
+     * @var \Exception|null
+     */
+    private $_fetchOneException;
+
+    /**
+     * @var Statement|null
+     */
+    private $_queryResult;
 
     /**
      * @var DatabasePlatformMock
@@ -86,7 +98,19 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
+        if (null !== $this->_fetchOneException) {
+            throw $this->_fetchOneException;
+        }
+
         return $this->_fetchOneResult;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query() : Statement
+    {
+        return $this->_queryResult;
     }
 
     /**
@@ -113,6 +137,16 @@ class ConnectionMock extends Connection
     }
 
     /**
+     * @param \Exception|null $exception
+     *
+     * @return void
+     */
+    public function setFetchOneException(\Exception $exception = null)
+    {
+        $this->_fetchOneException = $exception;
+    }
+
+    /**
      * @param \Doctrine\DBAL\Platforms\AbstractPlatform $platform
      *
      * @return void
@@ -130,6 +164,14 @@ class ConnectionMock extends Connection
     public function setLastInsertId($id)
     {
         $this->_lastInsertId = $id;
+    }
+
+    /**
+     * @param Statement $result
+     */
+    public function setQueryResult(Statement $result)
+    {
+        $this->_queryResult = $result;
     }
 
     /**

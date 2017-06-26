@@ -20,7 +20,7 @@ You can specify a different strategy by calling ``Doctrine\ORM\Configuration#set
 
     <?php
     $namingStrategy = new MyNamingStrategy();
-    $configuration()->setNamingStrategy($namingStrategy);
+    $configuration->setNamingStrategy($namingStrategy);
 
 Underscore naming strategy
 ---------------------------
@@ -31,7 +31,7 @@ Underscore naming strategy
 
     <?php
     $namingStrategy = new \Doctrine\ORM\Mapping\UnderscoreNamingStrategy(CASE_UPPER);
-    $configuration()->setNamingStrategy($namingStrategy);
+    $configuration->setNamingStrategy($namingStrategy);
 
 For SomeEntityName the strategy will generate the table SOME_ENTITY_NAME with the
 ``CASE_UPPER`` option, or some_entity_name with the ``CASE_LOWER`` option.

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -32,12 +33,12 @@ class ScalarHydratorTest extends HydrationTestCase
 
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertTrue(is_array($result));
-        $this->assertEquals(2, count($result));
+        $this->assertInternalType('array', $result);
+        $this->assertCount(2, $result);
         $this->assertEquals('romanb', $result[0]['u_name']);
         $this->assertEquals(1, $result[0]['u_id']);
         $this->assertEquals('jwage', $result[1]['u_name']);
@@ -63,9 +64,9 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $rsm);
+        self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
 
     /**
@@ -93,8 +94,8 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new \Doctrine\ORM\Internal\Hydration\ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->_em);
 
-        $result = $hydrator->hydrateAll($stmt, $rsm);
+        self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
 }

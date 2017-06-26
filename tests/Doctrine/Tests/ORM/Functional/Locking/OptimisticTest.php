@@ -16,15 +16,16 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(OptimisticJoinedParent::class),
-                $this->_em->getClassMetadata(OptimisticJoinedChild::class),
-                $this->_em->getClassMetadata(OptimisticStandard::class),
-                $this->_em->getClassMetadata(OptimisticTimestamp::class)
+                    $this->_em->getClassMetadata(OptimisticJoinedParent::class),
+                    $this->_em->getClassMetadata(OptimisticJoinedChild::class),
+                    $this->_em->getClassMetadata(OptimisticStandard::class),
+                    $this->_em->getClassMetadata(OptimisticTimestamp::class)
                 ]
             );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
+
         $this->_conn = $this->_em->getConnection();
     }
 
@@ -168,7 +169,6 @@ class OptimisticTest extends OrmFunctionalTestCase
     public function testLockWorksWithProxy()
     {
         $test = new OptimisticStandard();
-
         $test->name = 'test';
 
         $this->_em->persist($test);
@@ -178,6 +178,8 @@ class OptimisticTest extends OrmFunctionalTestCase
         $proxy = $this->_em->getReference(OptimisticStandard::class, $test->id);
 
         $this->_em->lock($proxy, LockMode::OPTIMISTIC, 1);
+
+        $this->addToAssertionCount(1);
     }
 
     public function testOptimisticTimestampSetsDefaultValue()

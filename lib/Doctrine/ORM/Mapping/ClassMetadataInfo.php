@@ -1376,7 +1376,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The field mapping to validate & complete.
      *
-     * @return array The validated and completed field mapping.
+     * @return void
      *
      * @throws MappingException
      */
@@ -1547,11 +1547,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadeRemove']  = in_array('remove', $cascades);
         $mapping['isCascadePersist'] = in_array('persist', $cascades);
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
+        $mapping['isCascadeMerge']   = in_array('merge', $cascades);
+        $mapping['isCascadeDetach']  = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1796,12 +1796,16 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
+        }
+
+        if ( ! isset($this->identifier[0])) {
+            throw MappingException::noIdDefined($this->name);
         }
 
         return $this->identifier[0];
@@ -1813,7 +1817,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierColumnName()
     {
@@ -1848,7 +1852,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function hasField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]);
+        return isset($this->fieldMappings[$fieldName]) || isset($this->embeddedClasses[$fieldName]);
     }
 
     /**
@@ -2030,7 +2034,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return \Doctrine\DBAL\Types\Type|string|null
      *
-     * @deprecated 3.0 remove this. this method is bogous and unreliable, since it cannot resolve the type of a column
+     * @deprecated 3.0 remove this. this method is bogus and unreliable, since it cannot resolve the type of a column
      *             that is derived by a referenced field on a different entity.
      */
     public function getTypeOfColumn($columnName)
@@ -2147,6 +2151,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($overrideMapping['joinTable'])) {
             $mapping['joinTable'] = $overrideMapping['joinTable'];
+        }
+
+        if (isset($overrideMapping['fetch'])) {
+            $mapping['fetch'] = $overrideMapping['fetch'];
         }
 
         $mapping['joinColumnFieldNames']        = null;
@@ -2297,6 +2305,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $this->table['name'] = $table['name'];
+        }
+
+        if (isset($table['quoted'])) {
+            $this->table['quoted'] = $table['quoted'];
         }
 
         if (isset($table['schema'])) {

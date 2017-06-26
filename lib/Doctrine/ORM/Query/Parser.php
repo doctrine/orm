@@ -65,6 +65,13 @@ class Parser
         'date_diff' => Functions\DateDiffFunction::class,
         'bit_and'   => Functions\BitAndFunction::class,
         'bit_or'    => Functions\BitOrFunction::class,
+
+        // Aggregate functions
+        'min'       => Functions\MinFunction::class,
+        'max'       => Functions\MaxFunction::class,
+        'avg'       => Functions\AvgFunction::class,
+        'sum'       => Functions\SumFunction::class,
+        'count'     => Functions\CountFunction::class,
     ];
 
     /**
@@ -172,23 +179,6 @@ class Parser
     private $identVariableExpressions = [];
 
     /**
-     * Checks if a function is internally defined. Used to prevent overwriting
-     * of built-in functions through user-defined functions.
-     *
-     * @param string $functionName
-     *
-     * @return bool
-     */
-    static public function isInternalFunction($functionName)
-    {
-        $functionName = strtolower($functionName);
-
-        return isset(self::$_STRING_FUNCTIONS[$functionName])
-            || isset(self::$_DATETIME_FUNCTIONS[$functionName])
-            || isset(self::$_NUMERIC_FUNCTIONS[$functionName]);
-    }
-
-    /**
      * Creates a new query parser object.
      *
      * @param Query $query The Query to parse.
@@ -197,7 +187,7 @@ class Parser
     {
         $this->query        = $query;
         $this->em           = $query->getEntityManager();
-        $this->lexer        = new Lexer($query->getDql());
+        $this->lexer        = new Lexer($query->getDQL());
         $this->parserResult = new ParserResult();
     }
 
@@ -277,7 +267,7 @@ class Parser
         }
 
         if ($this->deferredPathExpressions) {
-            $this->processDeferredPathExpressions($AST);
+            $this->processDeferredPathExpressions();
         }
 
         if ($this->deferredResultVariables) {
@@ -482,7 +472,7 @@ class Parser
         $distance = 12;
 
         // Find a position of a final word to display in error string
-        $dql    = $this->query->getDql();
+        $dql    = $this->query->getDQL();
         $length = strlen($dql);
         $pos    = $token['position'] + $distance;
         $pos    = strpos($dql, ' ', ($length > $pos) ? $pos : $length);
@@ -749,11 +739,9 @@ class Parser
      * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      * CollectionValuedPathExpression        ::= IdentificationVariable "." CollectionValuedAssociationField
      *
-     * @param mixed $AST
-     *
      * @return void
      */
-    private function processDeferredPathExpressions($AST)
+    private function processDeferredPathExpressions()
     {
         foreach ($this->deferredPathExpressions as $deferredItem) {
             $pathExpression = $deferredItem['expression'];
@@ -1504,7 +1492,7 @@ class Parser
         $glimpse = $this->lexer->glimpse();
 
         switch (true) {
-            case ($this->isFunction($peek)):
+            case ($this->isFunction()):
                 $expr = $this->FunctionDeclaration();
                 break;
 
@@ -1724,9 +1712,15 @@ class Parser
      * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
      * @return \Doctrine\ORM\Query\AST\RangeVariableDeclaration
+     *
+     * @throws QueryException
      */
     public function RangeVariableDeclaration()
     {
+        if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS) && $this->lexer->glimpse()['type'] === Lexer::T_SELECT) {
+            $this->semanticalError('Subquery is not supported here', $this->lexer->token);
+        }
+
         $abstractSchemaName = $this->AbstractSchemaName();
 
         $this->validateAbstractSchemaName($abstractSchemaName);
@@ -1795,7 +1789,7 @@ class Parser
      * PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
      * PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
      *
-     * @return array
+     * @return \Doctrine\ORM\Query\AST\PartialObjectExpression
      */
     public function PartialObjectExpression()
     {
@@ -1979,9 +1973,6 @@ class Parser
                     case ($this->isMathOperator($this->peekBeyondClosingParenthesis())):
                         // SUM(u.id) + COUNT(u.id)
                         return $this->SimpleArithmeticExpression();
-
-                    case ($this->isAggregateFunction($this->lexer->lookahead['type'])):
-                        return $this->AggregateExpression();
 
                     default:
                         // IDENTITY(u)
@@ -2209,11 +2200,6 @@ class Parser
                     case ($this->isMathOperator($this->peekBeyondClosingParenthesis())):
                         // SUM(u.id) + COUNT(u.id)
                         $expression = $this->ScalarExpression();
-                        break;
-
-                    case ($this->isAggregateFunction($lookaheadType)):
-                        // COUNT(u.id)
-                        $expression = $this->AggregateExpression();
                         break;
 
                     default:
@@ -2860,10 +2846,6 @@ class Parser
                 $peek = $this->lexer->glimpse();
 
                 if ($peek['value'] == '(') {
-                    if ($this->isAggregateFunction($this->lexer->lookahead['type'])) {
-                        return $this->AggregateExpression();
-                    }
-
                     return $this->FunctionDeclaration();
                 }
 
@@ -2934,11 +2916,6 @@ class Parser
             case Lexer::T_COALESCE:
             case Lexer::T_NULLIF:
                 return $this->CaseExpression();
-
-            default:
-                if ($this->isAggregateFunction($lookaheadType)) {
-                    return $this->AggregateExpression();
-                }
         }
 
         $this->syntaxError(
@@ -3238,10 +3215,6 @@ class Parser
                 $expr = $this->CoalesceExpression();
                 break;
 
-            case $this->isAggregateFunction($this->lexer->lookahead['type']):
-                $expr = $this->AggregateExpression();
-                break;
-
             case $this->isFunction():
                 $expr = $this->FunctionDeclaration();
                 break;
@@ -3378,8 +3351,13 @@ class Parser
         $token = $this->lexer->lookahead;
         $funcName = strtolower($token['value']);
 
-        // Check for built-in functions first!
+        $customFunctionDeclaration = $this->CustomFunctionDeclaration();
+
+        // Check for custom functions functions first!
         switch (true) {
+            case $customFunctionDeclaration !== null:
+                return $customFunctionDeclaration;
+            
             case (isset(self::$_STRING_FUNCTIONS[$funcName])):
                 return $this->FunctionsReturningStrings();
 
@@ -3390,7 +3368,7 @@ class Parser
                 return $this->FunctionsReturningDatetime();
 
             default:
-                return $this->CustomFunctionDeclaration();
+                $this->syntaxError('known function', $token);
         }
     }
 
@@ -3418,7 +3396,7 @@ class Parser
                 return $this->CustomFunctionsReturningDatetime();
 
             default:
-                $this->syntaxError('known function', $token);
+                return null;
         }
     }
 

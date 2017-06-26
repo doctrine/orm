@@ -32,7 +32,7 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testinvalidEntityOrMappedSuperClassShouldMentionParentClasses()
     {
-        $this->createClassMetadata(DDC889Class::class);
+        self::assertInstanceOf(ClassMetadata::class, $this->createClassMetadata(DDC889Class::class));
     }
 
     /**

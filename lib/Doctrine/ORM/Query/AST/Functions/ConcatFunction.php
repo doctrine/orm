@@ -42,6 +42,7 @@ class ConcatFunction extends FunctionNode
 
     /**
      * @override
+     * @inheritdoc
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
@@ -58,6 +59,7 @@ class ConcatFunction extends FunctionNode
 
     /**
      * @override
+     * @inheritdoc
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {

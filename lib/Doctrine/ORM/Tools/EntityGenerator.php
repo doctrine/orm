@@ -1731,8 +1731,12 @@ public function __construct(<params>)
 
             $embedded = ['class="' . $embeddedClass['class'] . '"'];
 
-            if (isset($fieldMapping['columnPrefix'])) {
-                $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+            if (isset($embeddedClass['columnPrefix'])) {
+                if (is_string($embeddedClass['columnPrefix'])) {
+                    $embedded[] = 'columnPrefix="' . $embeddedClass['columnPrefix'] . '"';
+                } else {
+                    $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+                }
             }
 
             $lines[] = $this->spaces . ' * @' .

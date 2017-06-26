@@ -351,15 +351,14 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The portable column definition of the discriminator column as required by
-     *               the DBAL.
+     * @return void
      */
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
         $discrColumn = $class->discriminatorColumn;
 
         if ( ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)
+            (strtolower($discrColumn['type']) == 'string' && ! isset($discrColumn['length']))
         ) {
             $discrColumn['type'] = 'string';
             $discrColumn['length'] = 255;
@@ -384,7 +383,7 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The list of portable column definitions as required by the DBAL.
+     * @return void
      */
     private function gatherColumns($class, Table $table)
     {
@@ -401,12 +400,6 @@ class SchemaTool
                 $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
             }
         }
-
-        // For now, this is a hack required for single table inheritence, since this method is called
-        // twice by single table inheritence relations
-        if (!$table->hasIndex('primary')) {
-            //$table->setPrimaryKey($pkColumns);
-        }
     }
 
     /**
@@ -416,7 +409,7 @@ class SchemaTool
      * @param array         $mapping The field mapping.
      * @param Table         $table
      *
-     * @return array The portable column definition as required by the DBAL.
+     * @return void
      */
     private function gatherColumn($class, array $mapping, Table $table)
     {

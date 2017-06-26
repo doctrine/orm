@@ -727,7 +727,6 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      */
     public function testNewAssociatedEntityDuringFlushThrowsException()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $user = new CmsUser();
         $user->username = "beberlei";
         $user->name = "Benjamin E.";
@@ -741,11 +740,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $address->user = $user;
 
         $this->_em->persist($address);
-        // pretend we forgot to persist $user
-        try {
-            $this->_em->flush(); // should raise an exception
-            $this->fail();
-        } catch (\InvalidArgumentException $expected) {}
+
+        // flushing without persisting $user should raise an exception
+        $this->expectException(\InvalidArgumentException::class);
+        $this->_em->flush();
     }
 
     /**
@@ -775,11 +773,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $u2->name = "Benjamin E.";
         $u2->status = 'inactive';
         $address->user = $u2;
-        // pretend we forgot to persist $u2
-        try {
-            $this->_em->flush(); // should raise an exception
-            $this->fail();
-        } catch (\InvalidArgumentException $expected) {}
+
+        // flushing without persisting $u2 should raise an exception
+        $this->expectException(\InvalidArgumentException::class);
+        $this->_em->flush();
     }
 
     /**
@@ -798,11 +795,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $art->addComment($com);
 
         $this->_em->persist($art);
-        // pretend we forgot to persist $com
-        try {
-            $this->_em->flush(); // should raise an exception
-            $this->fail();
-        } catch (\InvalidArgumentException $expected) {}
+
+        // flushing without persisting $com should raise an exception
+        $this->expectException(\InvalidArgumentException::class);
+        $this->_em->flush();
     }
 
     public function testOneToOneOrphanRemoval()
@@ -934,10 +930,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->name = "Benjamin E.";
         $user->status = 'active';
         $user->id = 42;
-        try {
-            $this->_em->merge($user);
-            $this->fail();
-        } catch (EntityNotFoundException $enfe) {}
+
+        $this->expectException(EntityNotFoundException::class);
+        $this->_em->merge($user);
     }
 
     /**

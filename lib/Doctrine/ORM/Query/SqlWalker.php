@@ -643,6 +643,7 @@ class SqlWalker implements TreeWalker
     {
         $sql = '';
 
+        /* @var $pathExpr Query\AST\PathExpression */
         switch ($pathExpr->type) {
             case AST\PathExpression::TYPE_STATE_FIELD:
                 $fieldName = $pathExpr->field;
@@ -670,7 +671,7 @@ class SqlWalker implements TreeWalker
                 $assoc = $class->associationMappings[$fieldName];
 
                 if ( ! $assoc['isOwningSide']) {
-                    throw QueryException::associationPathInverseSideNotSupported();
+                    throw QueryException::associationPathInverseSideNotSupported($pathExpr);
                 }
 
                 // COMPOSITE KEYS NOT (YET?) SUPPORTED
@@ -763,7 +764,8 @@ class SqlWalker implements TreeWalker
                     $columnAlias = $this->getSQLColumnAlias($columnName);
                     $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                    $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $class, $this->platform);
+                    $sqlSelectExpressions[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
 
                     $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $isIdentifier, $columnType);
                 }
@@ -791,7 +793,8 @@ class SqlWalker implements TreeWalker
                             $columnAlias = $this->getSQLColumnAlias($columnName);
                             $columnType  = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-                            $sqlSelectExpressions[] = $sqlTableAlias . '.' . $columnName . ' AS ' . $columnAlias;
+                            $quotedColumnName       = $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform);
+                            $sqlSelectExpressions[] = $sqlTableAlias . '.' . $quotedColumnName . ' AS ' . $columnAlias;
 
                             $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $subClass->isIdentifier($columnName), $columnType);
                         }
@@ -1499,8 +1502,8 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * @param AST\NewObjectExpression $newObjectExpression
-     *
+     * @param AST\NewObjectExpression   $newObjectExpression
+     * @param null|string               $newObjectResultAlias
      * @return string The SQL.
      */
     public function walkNewObject($newObjectExpression, $newObjectResultAlias=null)
@@ -1574,12 +1577,6 @@ class SqlWalker implements TreeWalker
         switch (true) {
             case ($expr instanceof AST\PathExpression):
                 $sql .= $this->walkPathExpression($expr);
-                break;
-
-            case ($expr instanceof AST\AggregateExpression):
-                $alias = $simpleSelectExpression->fieldIdentificationVariable ?: $this->scalarResultCounter++;
-
-                $sql .= $this->walkAggregateExpression($expr) . ' AS dctrn__' . $alias;
                 break;
 
             case ($expr instanceof AST\Subselect):
@@ -1758,7 +1755,7 @@ class SqlWalker implements TreeWalker
     public function walkWhereClause($whereClause)
     {
         $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
-        $discrSql = $this->_generateDiscriminatorColumnConditionSql($this->rootAliases);
+        $discrSql = $this->_generateDiscriminatorColumnConditionSQL($this->rootAliases);
 
         if ($this->em->hasFilters()) {
             $filterClauses = [];
@@ -2273,42 +2270,29 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     * @param ClassMetadataInfo $discrClass
+     * @param ClassMetadataInfo $rootClass
      * @param AST\InstanceOfExpression $instanceOfExpr
      * @return string The list in parentheses of valid child discriminators from the given class
      * @throws QueryException
      */
-    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $discrClass, AST\InstanceOfExpression $instanceOfExpr)
+    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $rootClass, AST\InstanceOfExpression $instanceOfExpr)
     {
         $sqlParameterList = [];
         $discriminators = [];
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
-
-                $sqlParameterList[] = $this->walkInputParameter($parameter);
-
+                $this->rsm->discriminatorParameters[$parameter->name] = $parameter->name;
+                $sqlParameterList[] = $this->walkInParameter($parameter);
                 continue;
             }
 
             $metadata = $this->em->getClassMetadata($parameter);
 
-            if ($metadata->getName() !== $discrClass->name && ! $metadata->getReflectionClass()->isSubclassOf($discrClass->name)) {
-                throw QueryException::instanceOfUnrelatedClass($parameter, $discrClass->name);
+            if ($metadata->getName() !== $rootClass->name && ! $metadata->getReflectionClass()->isSubclassOf($rootClass->name)) {
+                throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->name);
             }
 
-            // Include discriminators for parameter class and its subclass
-            $hierarchyClasses = $metadata->subClasses;
-            $hierarchyClasses[] = $metadata->name;
-
-            foreach ($hierarchyClasses as $class) {
-                $currentMetadata = $this->em->getClassMetadata($class);
-                $currentDiscriminator = $currentMetadata->discriminatorValue;
-
-                if (null !== $currentDiscriminator) {
-                    $discriminators[$currentDiscriminator] = null;
-                }
-            }
+            $discriminators = $discriminators + $this->getAllDiscriminators($metadata);
         }
 
         foreach (array_keys($discriminators) as $dis) {
@@ -2316,5 +2300,24 @@ class SqlWalker implements TreeWalker
         }
 
         return '(' . implode(', ', $sqlParameterList) . ')';
+    }
+
+    private function getAllDiscriminators(ClassMetadata $classMetadata)
+    {
+        // FIXME: this code is identical to Query->getAllDiscriminators()
+        $hierarchyClasses = $classMetadata->subClasses;
+        $hierarchyClasses[] = $classMetadata->name;
+
+        $discriminators = [];
+        foreach ($hierarchyClasses as $class) {
+            $currentMetadata = $this->em->getClassMetadata($class);
+            $currentDiscriminator = $currentMetadata->discriminatorValue;
+
+            if (null !== $currentDiscriminator) {
+                $discriminators[$currentDiscriminator] = null;
+            }
+        }
+
+        return $discriminators;
     }
 }
