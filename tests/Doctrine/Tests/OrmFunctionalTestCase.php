@@ -6,6 +6,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
+use Doctrine\Tests\Models\OneToOneForeignEntityPrimaryKey;
 
 /**
  * Base testcase class for all functional ORM testcases.
@@ -289,6 +290,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             'Doctrine\Tests\Models\Issue5989\Issue5989Employee',
             'Doctrine\Tests\Models\Issue5989\Issue5989Manager',
         ),
+        'issue6526' => array(
+            OneToOneForeignEntityPrimaryKey\Entity::CLASSNAME,
+            OneToOneForeignEntityPrimaryKey\ForeignEntity::CLASSNAME,
+        ),
     );
 
     /**
@@ -553,6 +558,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM issue5989_persons');
             $conn->executeUpdate('DELETE FROM issue5989_employees');
             $conn->executeUpdate('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->_usedModelSets['issue6526'])) {
+            $conn->executeUpdate('DELETE FROM entity');
+            $conn->executeUpdate('DELETE FROM foreign_entity');
         }
 
         $this->_em->clear();
