@@ -290,7 +290,7 @@ abstract class AbstractHydrator
                     if(
                         isset($cacheKeyInfo['discriminatorColumn']) && 
                         isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
-                        $data[$cacheKeyInfo['discriminatorColumn']] !== $cacheKeyInfo['discriminatorValue']
+                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
                     ){
                         break;
                     }
