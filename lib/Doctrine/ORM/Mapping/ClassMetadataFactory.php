@@ -700,8 +700,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $class->setGeneratorDefinition($definition);
                 }
 
-                $sequenceName      = $platform->quoteIdentifier($definition['sequenceName']);
-                $sequenceGenerator = new Sequencing\SequenceGenerator($sequenceName, $definition['allocationSize']);
+                $sequenceGenerator = new Sequencing\SequenceGenerator(
+                    $platform->quoteIdentifier($definition['sequenceName']),
+                    $definition['allocationSize']
+                );
 
                 $class->setIdGenerator($sequenceGenerator);
                 break;
