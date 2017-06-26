@@ -560,6 +560,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM issue5989_managers');
         }
 
+        if (isset($this->_usedModelSets['issue6526'])) {
+            $conn->executeUpdate('DELETE FROM entity');
+            $conn->executeUpdate('DELETE FROM foreign_entity');
+        }
+
         $this->_em->clear();
     }
 
