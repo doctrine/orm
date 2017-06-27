@@ -1661,8 +1661,16 @@ public function __construct(<params>)
 
             $options = [];
 
-            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
-                $options[] = '"unsigned"=true';
+            if (isset($fieldMapping['options']) && $fieldMapping['options']) {
+                foreach ($fieldMapping['options'] as $key => $value) {
+                    if ($value) {
+                        if ($key === 'unsigned') {
+                            $options[] = '"unsigned"=true';
+                        } else {
+                            $options[] = '"' . $key . '"="' . $value . '""';
+                        }
+                    }
+                }
             }
 
             if ($options) {
