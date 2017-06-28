@@ -1660,7 +1660,7 @@ public function __construct(<params>)
             }
 
             if (isset($fieldMapping['options']) && !empty($fieldMapping['options'])) {
-                $column[] = $this->generateFormattedOptionsString($fieldMapping['options'])
+                $column[] = $this->generateFormattedOptionsString($fieldMapping['options']);
             }
 
             if (isset($fieldMapping['columnDefinition'])) {
@@ -1716,7 +1716,7 @@ public function __construct(<params>)
      */
     protected function generateFormattedOptionsString(array $optionsArray) 
     {
-        $options  = []
+        $options  = [];
         foreach ($optionsArray as $key => $value) {
             if ($value) {
                 if ($key === 'unsigned') {
