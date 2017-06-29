@@ -13,7 +13,7 @@ class DDC6499Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -26,21 +26,55 @@ class DDC6499Test extends OrmFunctionalTestCase
     }
 
     /**
+     * {@inheritDoc}
+     */
+    protected function tearDown() : void
+    {
+        parent::tearDown();
+
+        $this->_schemaTool->dropSchema(
+            [
+                $this->_em->getClassMetadata(DDC6499A::class),
+                $this->_em->getClassMetadata(DDC6499B::class),
+            ]
+        );
+    }
+
+    /**
      * Test for the bug described in issue #6499.
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $a = new DDC6499A();
         $this->_em->persist($a);
 
         $b = new DDC6499B();
-        $a->setB($b);
+        $a->b = $b;
         $this->_em->persist($b);
 
         $this->_em->flush();
+        $this->_em->clear();
 
-        // Issue #6499 will result in a Integrity constraint violation before reaching this point
-        $this->assertEquals(true, true);
+        self::assertEquals($this->_em->find(DDC6499A::class, $a->id)->b->id, $b->id, "Issue #6499 will result in a Integrity constraint violation before reaching this point.");
+    }
+
+    /**
+     * Test for the bug described in issue #6499 (reversed order).
+     */
+    public function testIssueReversed() : void
+    {
+        $a = new DDC6499A();
+
+        $b = new DDC6499B();
+        $a->b = $b;
+
+        $this->_em->persist($b);
+        $this->_em->persist($a);
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($this->_em->find(DDC6499A::class, $a->id)->b->id, $b->id, "Issue #6499 will result in a Integrity constraint violation before reaching this point.");
     }
 }
 
@@ -48,125 +82,27 @@ class DDC6499Test extends OrmFunctionalTestCase
 class DDC6499A
 {
     /**
-     * @Id()
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(name="id", type="integer")
+     * @Id @Column(type="integer") @GeneratedValue
      */
-    private $id;
+    public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC6499B", mappedBy="a", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    private $bs;
-
-    /**
-     * @OneToOne(targetEntity="DDC6499B", cascade={"persist"})
+     * @OneToOne(targetEntity="DDC6499B")
      * @JoinColumn(nullable=false)
      */
-    private $b;
-
-    /**
-     * DDC6499A constructor.
-     */
-    public function __construct()
-    {
-        $this->bs = new ArrayCollection();
-    }
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return DDC6499B[]|ArrayCollection
-     */
-    public function getBs()
-    {
-        return $this->bs;
-    }
-
-    /**
-     * @param DDC6499B $b
-     */
-    public function addB(DDC6499B $b)
-    {
-        if ($this->bs->contains($b)) return;
-
-        $this->bs->add($b);
-
-        // Update owning side
-        $b->setA($this);
-    }
-
-    /**
-     * @param DDC6499B $b
-     */
-    public function removeB(DDC6499B $b)
-    {
-        if (!$this->bs->contains($b)) return;
-
-        $this->bs->removeElement($b);
-
-        // Not updating owning side due to orphan removal
-    }
-
-    /**
-     * @return DDC6499B
-     */
-    public function getB()
-    {
-        return $this->b;
-    }
-
-    /**
-     * @param DDC6499B $b
-     */
-    public function setB(DDC6499B $b)
-    {
-        $this->b = $b;
-    }
+    public $b;
 }
 
 /** @Entity */
 class DDC6499B
 {
     /**
-     * @Id()
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(name="id", type="integer")
+     * @Id @Column(type="integer") @GeneratedValue
      */
-    private $id;
+    public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC6499A", inversedBy="bs", cascade={"persist"})
+     * @ManyToOne(targetEntity="DDC6499A", inversedBy="bs")
      */
-    private $a;
-
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return DDC6499A
-     */
-    public function getA()
-    {
-        return $this->a;
-    }
-
-    /**
-     * @param DDC6499A $a
-     */
-    public function setA(DDC6499A $a)
-    {
-        $this->a = $a;
-    }
+    public $a;
 }
