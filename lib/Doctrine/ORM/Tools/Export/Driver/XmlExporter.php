@@ -240,6 +240,7 @@ class XmlExporter extends AbstractExporter
         });
 
         foreach ($metadata->associationMappings as $associationMapping) {
+            $associationMappingXml = null;
             if ($associationMapping['type'] == ClassMetadataInfo::ONE_TO_ONE) {
                 $associationMappingXml = $root->addChild('one-to-one');
             } elseif ($associationMapping['type'] == ClassMetadataInfo::MANY_TO_ONE) {

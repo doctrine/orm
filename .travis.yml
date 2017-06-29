@@ -23,7 +23,7 @@ before_script:
   - if [[ $DB == "mysql" || $DB == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi;
 
 script:
-  - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -l 0 -c phpstan.neon lib; fi
+  - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib; fi
   - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
   - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 

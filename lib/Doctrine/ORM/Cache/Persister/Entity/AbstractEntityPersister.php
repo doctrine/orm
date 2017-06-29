@@ -548,28 +548,28 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $hasCache  = ($persister instanceof CachedPersister);
         $key       = null;
 
-        if ($hasCache) {
-            $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
-            $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
-            $list    = $persister->loadCollectionCache($coll, $key);
+        if ( ! $hasCache) {
+            return $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
+        }
 
-            if ($list !== null) {
-                if ($this->cacheLogger) {
-                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
-                }
+        $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
+        $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
+        $list    = $persister->loadCollectionCache($coll, $key);
 
-                return $list;
+        if ($list !== null) {
+            if ($this->cacheLogger) {
+                $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
             }
+
+            return $list;
         }
 
         $list = $this->persister->loadManyToManyCollection($assoc, $sourceEntity, $coll);
 
-        if ($hasCache) {
-            $persister->storeCollectionCache($key, $list);
+        $persister->storeCollectionCache($key, $list);
 
-            if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
-            }
+        if ($this->cacheLogger) {
+            $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
         }
 
         return $list;
@@ -583,28 +583,28 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $persister = $this->uow->getCollectionPersister($assoc);
         $hasCache  = ($persister instanceof CachedPersister);
 
-        if ($hasCache) {
-            $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
-            $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
-            $list    = $persister->loadCollectionCache($coll, $key);
+        if ( ! $hasCache) {
+            return $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
+        }
 
-            if ($list !== null) {
-                if ($this->cacheLogger) {
-                    $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
-                }
+        $ownerId = $this->uow->getEntityIdentifier($coll->getOwner());
+        $key     = $this->buildCollectionCacheKey($assoc, $ownerId);
+        $list    = $persister->loadCollectionCache($coll, $key);
 
-                return $list;
+        if ($list !== null) {
+            if ($this->cacheLogger) {
+                $this->cacheLogger->collectionCacheHit($persister->getCacheRegion()->getName(), $key);
             }
+
+            return $list;
         }
 
         $list = $this->persister->loadOneToManyCollection($assoc, $sourceEntity, $coll);
 
-        if ($hasCache) {
-            $persister->storeCollectionCache($key, $list);
+        $persister->storeCollectionCache($key, $list);
 
-            if ($this->cacheLogger) {
-                $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
-            }
+        if ($this->cacheLogger) {
+            $this->cacheLogger->collectionCacheMiss($persister->getCacheRegion()->getName(), $key);
         }
 
         return $list;

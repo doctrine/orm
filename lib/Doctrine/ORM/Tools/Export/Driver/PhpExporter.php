@@ -102,6 +102,7 @@ class PhpExporter extends AbstractExporter
                 $cascade = ['all'];
             }
 
+            $method = null;
             $associationMappingArray = [
                 'fieldName'    => $associationMapping['fieldName'],
                 'targetEntity' => $associationMapping['targetEntity'],
@@ -129,6 +130,7 @@ class PhpExporter extends AbstractExporter
                     'orphanRemoval',
                     'orderBy',
                 ];
+                $oneToManyMappingArray = [];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $oneToManyMappingArray[$index] = $associationMapping[$index];
@@ -142,6 +144,7 @@ class PhpExporter extends AbstractExporter
                     'joinTable',
                     'orderBy',
                 ];
+                $manyToManyMappingArray = [];
                 foreach ($potentialAssociationMappingIndexes as $index) {
                     if (isset($associationMapping[$index])) {
                         $manyToManyMappingArray[$index] = $associationMapping[$index];
