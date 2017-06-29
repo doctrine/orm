@@ -16,6 +16,7 @@
     "require": {
         "php": "^7.1",
         "ext-pdo": "*",
+        "laravel/laravel": "^5.4.0",
         "doctrine/collections": "^1.4",
         "doctrine/dbal": ">=2.5-dev,<2.7-dev",
         "doctrine/instantiator": "~1.0.1",
