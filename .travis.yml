@@ -20,6 +20,7 @@ before_script:
   - if [ "$DEPENDENCIES" != "low" ]; then composer update; fi;
   - if [ "$DEPENDENCIES" == "low" ]; then composer update --prefer-lowest; fi;
   - if [[ $PHPSTAN = 1 ]]; then composer require --dev --prefer-stable phpstan/phpstan:^0.7 symfony/console:^3.0; fi
+  - if [ "$MYSQL_VERSION" == "5.7" ]; then bash ./tests/travis/install-mysql-5.7.sh; fi;
   - if [[ $DB == "mysql" || $DB == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi;
 
 script:
@@ -46,6 +47,13 @@ matrix:
       env:
         - DB=pgsql
         - PHPSTAN=1
+
+    - php: 7.1
+      env: DB=mysql MYSQL_VERSION=5.7
+      sudo: required
+    - php: nightly
+      env: DB=mysql MYSQL_VERSION=5.7
+      sudo: required
 
   allow_failures:
     - php: nightly
