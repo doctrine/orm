@@ -22,40 +22,13 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-
-class ClassMetadataDefinition
+interface ClassMetadataGeneratorStrategy
 {
     /**
-     * @var string
-     */
-    public $entityClassName;
-
-    /**
-     * @var string
-     */
-    public $metadataClassName;
-
-    /**
-     * @var ClassMetadata|null
-     */
-    public $parentClassMetadata;
-
-    /**
-     * ClassMetadataDefinition constructor.
+     * @param string                  $filePath
+     * @param ClassMetadataDefinition $definition
      *
-     * @param string             $entityClassName
-     * @param string             $metadataClassName
-     * @param ClassMetadata|null $parentMetadata
+     * @return void
      */
-    public function __construct(
-        string $entityClassName,
-        string $metadataClassName,
-        ?ClassMetadata $parentMetadata = null
-    )
-    {
-        $this->entityClassName     = $entityClassName;
-        $this->metadataClassName   = $metadataClassName;
-        $this->parentClassMetadata = $parentMetadata;
-    }
+    public function generate(string $filePath, ClassMetadataDefinition $definition) : void;
 }

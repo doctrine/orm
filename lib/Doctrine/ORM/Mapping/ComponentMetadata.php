@@ -72,6 +72,14 @@ abstract class ComponentMetadata
     /**
      * @return string
      */
+    public function getRootClassName() : string
+    {
+        return $this->parent ? $this->parent->getRootClassName() : $this->className;
+    }
+
+    /**
+     * @return string
+     */
     public function getClassName() : string
     {
         return $this->className;
