@@ -58,38 +58,17 @@ class ClassMetadataGenerator
     }
 
     /**
-     * @param string                  $path
      * @param ClassMetadataDefinition $definition
      *
-     * @throws \RuntimeException
+     * @return string
      */
-    public function generate(string $path, ClassMetadataDefinition $definition)
+    public function generate(ClassMetadataDefinition $definition) : string
     {
-        $metadata   = $this->mappingDriver->loadMetadataForClass($definition->entityClassName, $definition->parent);
-        $sourceCode = $this->metadataExporter->export($metadata); // @todo guilhermeblanco Pass class name to exporter
+        $metadata = $this->mappingDriver->loadMetadataForClass(
+            $definition->entityClassName,
+            $definition->parentClassMetadata
+        );
 
-        $this->ensureDirectoryIsReady(dirname($path));
-
-        $tmpFileName = $path . '.' . uniqid('', true);
-
-        file_put_contents($tmpFileName, $sourceCode);
-        @chmod($tmpFileName, 0664);
-        rename($tmpFileName, $path);
-    }
-
-    /**
-     * @param string $directory
-     *
-     * @throws \RuntimeException
-     */
-    protected function ensureDirectoryIsReady(string $directory)
-    {
-        if (! is_dir($directory) && (false === @mkdir($directory, 0775, true))) {
-            throw new \RuntimeException(sprintf('Your metadata directory "%s" must be writable', $directory));
-        }
-
-        if (! is_writable($directory)) {
-            throw new \RuntimeException(sprintf('Your proxy directory "%s" must be writable', $directory));
-        }
+        return $this->metadataExporter->export($metadata);
     }
 }
