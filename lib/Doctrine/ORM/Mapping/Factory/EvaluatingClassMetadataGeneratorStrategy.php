@@ -22,40 +22,30 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-
-class ClassMetadataDefinition
+class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
 {
     /**
-     * @var string
+     * @var ClassMetadataGenerator
      */
-    public $entityClassName;
+    private $generator;
 
     /**
-     * @var string
-     */
-    public $metadataClassName;
-
-    /**
-     * @var ClassMetadata|null
-     */
-    public $parentClassMetadata;
-
-    /**
-     * ClassMetadataDefinition constructor.
+     * FileWriterDefinitionGeneratorStrategy constructor.
      *
-     * @param string             $entityClassName
-     * @param string             $metadataClassName
-     * @param ClassMetadata|null $parentMetadata
+     * @param ClassMetadataGenerator $generator
      */
-    public function __construct(
-        string $entityClassName,
-        string $metadataClassName,
-        ?ClassMetadata $parentMetadata = null
-    )
+    public function __construct(ClassMetadataGenerator $generator)
     {
-        $this->entityClassName     = $entityClassName;
-        $this->metadataClassName   = $metadataClassName;
-        $this->parentClassMetadata = $parentMetadata;
+        $this->generator = $generator;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function generate(string $filePath, ClassMetadataDefinition $definition): void
+    {
+        $sourceCode = $this->generator->generate($definition);
+
+        eval($sourceCode);
     }
 }
