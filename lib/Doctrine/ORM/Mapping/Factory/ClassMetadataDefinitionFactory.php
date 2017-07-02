@@ -23,7 +23,6 @@ declare(strict_types = 1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\Factory\AbstractClassMetadataFactory;
 
 class ClassMetadataDefinitionFactory
 {
@@ -33,56 +32,51 @@ class ClassMetadataDefinitionFactory
     private $resolver;
 
     /**
-     * @var ClassMetadataGenerator
+     * @var ClassMetadataGeneratorStrategy
      */
-    private $generator;
+    private $generatorStrategy;
 
     /**
-     * @var int
+     * ClassMetadataDefinitionFactory constructor.
+     *
+     * @param ClassMetadataResolver          $resolver
+     * @param ClassMetadataGeneratorStrategy $generatorStrategy
      */
-    private $autoGenerate;
-
-    public function __construct(ClassMetadataResolver $resolver, ClassMetadataGenerator $generator, int $autoGenerate)
+    public function __construct(ClassMetadataResolver $resolver, ClassMetadataGeneratorStrategy $generatorStrategy)
     {
-        $this->resolver     = $resolver;
-        $this->generator    = $generator;
-        $this->autoGenerate = $autoGenerate;
+        $this->resolver          = $resolver;
+        $this->generatorStrategy = $generatorStrategy;
     }
 
     /**
      * @param string             $className
-     * @param ClassMetadata|null $parent
+     * @param ClassMetadata|null $parentMetadata
      *
      * @return ClassMetadataDefinition
      */
-    public function build(string $className, ?ClassMetadata $parent) : ClassMetadataDefinition
+    public function build(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
     {
-        $metadataClassName = $this->resolver->resolveMetadataClassName($className);
-        $definition        = new ClassMetadataDefinition($className, $metadataClassName, $parent);
+        $definition = $this->createDefinition($className, $parentMetadata);
 
-        if (! class_exists($metadataClassName, false)) {
+        if (! class_exists($definition->metadataClassName, false)) {
             $metadataClassPath = $this->resolver->resolveMetadataClassPath($className);
 
-            switch ($this->autoGenerate) {
-                case AbstractClassMetadataFactory::AUTOGENERATE_FILE_NOT_EXISTS:
-                    if (! file_exists($metadataClassPath)) {
-                        $this->generator->generate($metadataClassPath, $definition);
-                    }
-
-                    break;
-
-                case AbstractClassMetadataFactory::AUTOGENERATE_ALWAYS:
-                    $this->generator->generate($metadataClassPath, $definition);
-                    break;
-
-                case AbstractClassMetadataFactory::AUTOGENERATE_NEVER:
-                    // Do nothing
-                    break;
-            }
-
-            require $metadataClassPath;
+            $this->generatorStrategy->generate($metadataClassPath, $definition);
         }
 
         return $definition;
+    }
+
+    /**
+     * @param string             $className
+     * @param ClassMetadata|null $parentMetadata
+     *
+     * @return ClassMetadataDefinition
+     */
+    private function createDefinition(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
+    {
+        $metadataClassName = $this->resolver->resolveMetadataClassName($className);
+
+        return new ClassMetadataDefinition($className, $metadataClassName, $parentMetadata);
     }
 }
