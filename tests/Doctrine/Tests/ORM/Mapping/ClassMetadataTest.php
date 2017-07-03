@@ -1446,29 +1446,6 @@ class ClassMetadataTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-3120
-     */
-    public function testCanInstantiateInternalPhpClassSubclass()
-    {
-        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
-
-        self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
-    }
-
-    /**
-     * @group DDC-3120
-     */
-    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
-    {
-        /* @var $classMetadata ClassMetadata */
-        $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
-
-        $classMetadata->wakeupReflection(new RuntimeReflectionService());
-
-        self::assertInstanceOf(MyArrayObjectEntity::class, $classMetadata->newInstance());
-    }
-
-    /**
      * @group embedded
      */
     public function testWakeupReflectionWithEmbeddableAndStaticReflectionService()
@@ -1543,8 +1520,4 @@ class MyPrefixNamingStrategy extends DefaultNamingStrategy
     {
         return strtolower($this->classToTableName($className)) . '_' . $propertyName;
     }
-}
-
-class MyArrayObjectEntity extends \ArrayObject
-{
 }

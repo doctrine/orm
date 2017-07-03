@@ -130,11 +130,6 @@ class EntityClassMetadata extends ComponentMetadata
     protected $table;
 
     /**
-     * @var \Doctrine\Instantiator\InstantiatorInterface|null
-     */
-    protected $instantiator;
-
-    /**
      * MappedSuperClassMetadata constructor.
      *
      * @param string                 $className
