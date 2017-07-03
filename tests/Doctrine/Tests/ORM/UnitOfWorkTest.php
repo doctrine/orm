@@ -9,8 +9,10 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -673,6 +675,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
+<<<<<<< HEAD
      * Unlike next test, this one demonstrates that the problem does
      * not necessarily reproduce if all the pieces are being flushed together.
      *
@@ -684,6 +687,7 @@ class UnitOfWorkTest extends OrmTestCase
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
         $persister3 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
         $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
         $this->unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
         $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
@@ -701,7 +705,6 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->unitOfWork->persist($cascading);
         $this->unitOfWork->persist($nonCascading);
-
         $this->unitOfWork->commit();
 
         self::assertCount(1, $persister1->getInserts());
@@ -721,6 +724,7 @@ class UnitOfWorkTest extends OrmTestCase
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
         $persister3 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
         $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
         $this->unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
         $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
@@ -760,7 +764,6 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $persister3->getInserts());
     }
 
-
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
@@ -772,6 +775,7 @@ class UnitOfWorkTest extends OrmTestCase
     {
         $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
         $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
         $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
         $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister2);
 
@@ -799,6 +803,29 @@ class UnitOfWorkTest extends OrmTestCase
         // Persistence operations should just recover normally:
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(0, $persister2->getInserts());
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclass()
+    {
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    {
+        /* @var $classMetadata ClassMetadata */
+        $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
+
+        $classMetadata->wakeupReflection(new RuntimeReflectionService());
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
     }
 }
 
@@ -1005,4 +1032,8 @@ class EntityWithNonCascadingAssociation
     {
         $this->id = uniqid(self::class, true);
     }
+}
+
+class MyArrayObjectEntity extends \ArrayObject
+{
 }

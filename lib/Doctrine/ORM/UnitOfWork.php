@@ -24,6 +24,7 @@ use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
+use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\ListenersInvoker;
@@ -271,6 +272,11 @@ class UnitOfWork implements PropertyChangedListener
     private $identifierFlattener;
 
     /**
+     * @var Instantiator
+     */
+    private $instantiator;
+
+    /**
      * Orphaned entities that are scheduled for removal.
      *
      * @var array
@@ -315,6 +321,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
+        $this->instantiator             = new Instantiator();
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
 
@@ -2449,13 +2456,19 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
+     * INTERNAL:
+     * Creates a new instance of the mapped class, without invoking the constructor.
+     * This is only meant to be used internally, and should not be consumed by end users.
+     *
+     * @ignore
+     *
      * @param ClassMetadata $class
      *
      * @return \Doctrine\Common\Persistence\ObjectManagerAware|object
      */
-    private function newInstance($class)
+    public function newInstance(ClassMetadata $class)
     {
-        $entity = $class->newInstance();
+        $entity = $this->instantiator->instantiate($class->getName());
 
         if ($entity instanceof \Doctrine\Common\Persistence\ObjectManagerAware) {
             $entity->injectObjectManager($this->em, $class);

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -21,7 +22,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
@@ -315,11 +315,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     protected $namingStrategy;
 
     /**
-     * @var \Doctrine\Instantiator\InstantiatorInterface|null
-     */
-    private $instantiator;
-
-    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -332,7 +327,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
         $this->table          = new TableMetadata();
-        $this->instantiator   = new Instantiator();
 
         $this->table->setName($this->namingStrategy->classToTableName($entityName));
     }
@@ -530,16 +524,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     }
 
     /**
-     * Creates a new instance of the mapped class, without invoking the constructor.
-     *
-     * @return object
-     */
-    public function newInstance()
-    {
-        return $this->instantiator->instantiate($this->name);
-    }
-
-    /**
      * Restores some state that can not be serialized/unserialized.
      *
      * @param \Doctrine\ORM\Reflection\ReflectionService $reflService
@@ -550,7 +534,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
     {
         // Restore ReflectionClass and properties
         $this->reflectionClass = $reflService->getClass($this->name);
-        $this->instantiator    = $this->instantiator ?: new Instantiator();
 
         if (! $this->reflectionClass) {
             return;
