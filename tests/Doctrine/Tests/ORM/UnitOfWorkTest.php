@@ -9,8 +9,10 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -638,6 +640,7 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
+<<<<<<< HEAD
      * Unlike next test, this one demonstrates that the problem does
      * not necessarily reproduce if all the pieces are being flushed together.
      *
@@ -646,12 +649,13 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst()
     {
-        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
-        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithCascadingAssociation::class));
-        $persister3 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
-        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
-        $this->_unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
-        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
+        $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
+        $persister3 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
+        $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
+        $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
 
         $cascadePersisted = new CascadePersistedEntity();
         $cascading        = new EntityWithCascadingAssociation();
@@ -664,10 +668,9 @@ class UnitOfWorkTest extends OrmTestCase
         $cascading->cascaded = $cascadePersisted;
         $nonCascading->cascaded = $cascadePersisted;
 
-        $this->_unitOfWork->persist($cascading);
-        $this->_unitOfWork->persist($nonCascading);
-
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->persist($cascading);
+        $this->unitOfWork->persist($nonCascading);
+        $this->unitOfWork->commit();
 
         $this->assertCount(1, $persister1->getInserts());
         $this->assertCount(1, $persister2->getInserts());
@@ -683,12 +686,13 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst()
     {
-        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
-        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithCascadingAssociation::class));
-        $persister3 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
-        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
-        $this->_unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
-        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
+        $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithCascadingAssociation::class));
+        $persister3 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
+        $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
+        $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
 
         $cascadePersisted = new CascadePersistedEntity();
         $cascading        = new EntityWithCascadingAssociation();
@@ -700,8 +704,8 @@ class UnitOfWorkTest extends OrmTestCase
         // cascades across entity changesets in subsequent flushes.
         $cascading->cascaded = null;
 
-        $this->_unitOfWork->persist($cascading);
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->persist($cascading);
+        $this->unitOfWork->commit();
 
         self::assertCount(0, $persister1->getInserts());
         self::assertCount(1, $persister2->getInserts());
@@ -717,14 +721,13 @@ class UnitOfWorkTest extends OrmTestCase
         // anyway through that connection.
         $cascading->cascaded = $cascadePersisted;
 
-        $this->_unitOfWork->persist($nonCascading);
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->persist($nonCascading);
+        $this->unitOfWork->commit();
 
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(1, $persister2->getInserts());
         self::assertCount(1, $persister3->getInserts());
     }
-
 
     /**
      * This test exhibits the bug describe in the ticket, where an object that
@@ -735,21 +738,22 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits()
     {
-        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
-        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
-        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
-        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister2);
+        $persister1 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+
+        $this->unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister2);
 
         $cascadePersisted = new CascadePersistedEntity();
-        $nonCascading     = new EntityWithNonCascadingAssociation();
+        $nonCascading = new EntityWithNonCascadingAssociation();
 
         // We explicitly cause the ORM to detect a non-persisted new entity in the association graph:
         $nonCascading->nonCascaded = $cascadePersisted;
 
-        $this->_unitOfWork->persist($nonCascading);
+        $this->unitOfWork->persist($nonCascading);
 
         try {
-            $this->_unitOfWork->commit();
+            $this->unitOfWork->commit();
 
             self::fail('An exception was supposed to be raised');
         } catch (ORMInvalidArgumentException $ignored) {
@@ -757,13 +761,36 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertEmpty($persister2->getInserts());
         }
 
-        $this->_unitOfWork->clear();
-        $this->_unitOfWork->persist(new CascadePersistedEntity());
-        $this->_unitOfWork->commit();
+        $this->unitOfWork->clear();
+        $this->unitOfWork->persist(new CascadePersistedEntity());
+        $this->unitOfWork->commit();
 
         // Persistence operations should just recover normally:
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(0, $persister2->getInserts());
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclass()
+    {
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    {
+        /* @var $classMetadata ClassMetadata */
+        $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
+
+        $classMetadata->wakeupReflection(new RuntimeReflectionService());
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
     }
 }
 
@@ -970,4 +997,8 @@ class EntityWithNonCascadingAssociation
     {
         $this->id = uniqid(self::class, true);
     }
+}
+
+class MyArrayObjectEntity extends \ArrayObject
+{
 }

@@ -564,7 +564,7 @@ use Throwable;
             return ($entity instanceof $class->name) ? $entity : null;
         }
 
-        $entity = $class->newInstance();
+        $entity = $this->unitOfWork->newInstance($class);
 
         $class->assignIdentifier($entity, $sortedId);
 
