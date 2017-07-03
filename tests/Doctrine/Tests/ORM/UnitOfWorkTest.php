@@ -9,8 +9,10 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
@@ -591,6 +593,29 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertSame($merged, $persistedEntity);
         self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
     }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclass()
+    {
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
+    }
+
+    /**
+     * @group DDC-3120
+     */
+    public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
+    {
+        /* @var $classMetadata ClassMetadata */
+        $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
+
+        $classMetadata->wakeupReflection(new RuntimeReflectionService());
+
+        self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
+    }
 }
 
 /**
@@ -754,4 +779,8 @@ class EntityWithRandomlyGeneratedField
         $this->id             = uniqid('id', true);
         $this->generatedField = mt_rand(0, 100000);
     }
+}
+
+class MyArrayObjectEntity extends \ArrayObject
+{
 }
