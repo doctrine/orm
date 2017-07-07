@@ -542,6 +542,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $identifier1 = $this->uow->getEntityIdentifier($collection->getOwner());
         $identifier2 = $this->uow->getEntityIdentifier($element);
 
+        $class1 = $class2 = null;
         if ($isComposite) {
             $class1 = $this->em->getClassMetadata(get_class($collection->getOwner()));
             $class2 = $collection->getTypeClass();
