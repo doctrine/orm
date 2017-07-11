@@ -53,12 +53,14 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertEquals($fullTableName, $quotedTableName);
 
-        $property = $classMetadata->getProperty($classMetadata->getSingleIdentifierFieldName());
+        $property       = $classMetadata->getProperty($classMetadata->getSingleIdentifierFieldName());
+        $sequencePrefix = $platform->getSequencePrefix($classMetadata->getTableName(), $classMetadata->getSchemaName());
+        $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
 
         // Checks sequence name validity
         self::assertEquals(
             str_replace('"', '', $fullTableName) . '_' . $property->getColumnName() . '_seq',
-            $classMetadata->getSequenceName($platform)
+            $idSequenceName
         );
     }
 
