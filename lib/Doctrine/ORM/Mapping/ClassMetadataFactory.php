@@ -669,7 +669,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
                 if ($property && $platform->usesSequenceEmulatedIdentityColumns()) {
-                    $sequencePrefix = $class->getSequencePrefix($platform);
+                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
                     $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
                     $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
                 }
@@ -689,7 +689,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
                 if ( ! $definition) {
                     // @todo guilhermeblanco Move sequence generation to DBAL
-                    $idSequenceName = $class->getSequenceName($platform);
+                    $property = $class->identifier
+                        ? $class->getProperty($class->getSingleIdentifierFieldName())
+                        : null
+                    ;
+
+                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                    $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
                     $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
 
                     $definition = [
