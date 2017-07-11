@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,7 +46,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @since 2.0
  */
-class ClassMetadata implements TableOwner, ClassMetadataInterface
+class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\ClassMetadata
 {
     /**
      * READ-ONLY: The name of the entity class.
@@ -2152,46 +2151,6 @@ class ClassMetadata implements TableOwner, ClassMetadataInterface
 //        if (isset($this->embeddedClasses[$fieldName])) {
 //            throw MappingException::duplicateProperty($this, $this->embeddedClasses[$fieldName]);
 //        }
-    }
-
-    /**
-     * Gets the sequence name based on class metadata.
-     *
-     * @param AbstractPlatform $platform
-     * @return string
-     *
-     * @todo guilhermeblanco Sequence names should be computed in DBAL depending on the platform
-     */
-    public function getSequenceName(AbstractPlatform $platform)
-    {
-        $property = $this->properties[$this->getSingleIdentifierFieldName()];
-
-        return sprintf('%s_%s_seq', $this->getSequencePrefix($platform), $property->getColumnName());
-    }
-
-    /**
-     * Gets the sequence name prefix based on class metadata.
-     *
-     * @param AbstractPlatform $platform
-     * @return string
-     *
-     * @todo guilhermeblanco Sequence names should be computed in DBAL depending on the platform
-     */
-    public function getSequencePrefix(AbstractPlatform $platform)
-    {
-        $tableName      = $this->getTableName();
-        $sequencePrefix = $tableName;
-
-        // Prepend the schema name to the table name if there is one
-        if ($schemaName = $this->getSchemaName()) {
-            $sequencePrefix = $schemaName . '.' . $tableName;
-
-            if ( ! $platform->supportsSchemas() && $platform->canEmulateSchemas()) {
-                $sequencePrefix = $schemaName . '__' . $tableName;
-            }
-        }
-
-        return $sequencePrefix;
     }
 
     /**
