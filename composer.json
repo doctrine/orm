@@ -16,7 +16,7 @@
     "require": {
         "php": "^7.1",
         "ext-pdo": "*",
-        "doctrine/collections": "^1.4",
+        "doctrine/collections": "dev-master",
         "doctrine/dbal": ">=2.5-dev,<2.7-dev",
         "doctrine/instantiator": "~1.0.1",
         "doctrine/common": "^2.7.1",
@@ -24,6 +24,12 @@
         "doctrine/annotations": "~1.4",
         "symfony/console": "~3.0|~4.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/okoehler/collections"
+        }
+    ],
     "require-dev": {
         "symfony/yaml": "~3.0|~4.0",
         "phpunit/phpunit": "^6.0"
