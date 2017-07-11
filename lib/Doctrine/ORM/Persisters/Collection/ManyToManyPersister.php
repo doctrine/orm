@@ -237,15 +237,18 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         $parameters = $this->expandCriteriaParameters($criteria);
+        $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
 
         foreach ($parameters as $parameter) {
             list($name, $value) = $parameter;
+
+            $name = $targetClass->getColumnName($name);
+
             $whereClauses[]     = sprintf('te.%s = ?', $name);
             $params[]           = $value;
         }
 
         $mapping      = $collection->getMapping();
-        $targetClass  = $this->em->getClassMetadata($mapping['targetEntity']);
         $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
         $joinTable    = $this->quoteStrategy->getJoinTableName($mapping, $ownerMetadata, $this->platform);
         $onConditions = $this->getOnConditionSQL($mapping);
