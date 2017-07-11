@@ -97,6 +97,7 @@ class BasicEntityPersister implements EntityPersister
         Comparison::IN          => 'IN (%s)',
         Comparison::NIN         => 'NOT IN (%s)',
         Comparison::CONTAINS    => 'LIKE %s',
+        Comparison::CONTAINS_CI => 'LIKE LOWER(%s)',
         Comparison::STARTS_WITH => 'LIKE %s',
         Comparison::ENDS_WITH   => 'LIKE %s',
     ];
@@ -1614,6 +1615,10 @@ class BasicEntityPersister implements EntityPersister
                     $selectedColumns[] = $column . ' IS NOT NULL';
 
                     continue;
+                }
+
+                if ($comparison === Comparison::CONTAINS_CI) {
+                    $column = 'LOWER(' . $column . ')';
                 }
 
                 $selectedColumns[] = $column . ' ' . sprintf(self::$comparisonMap[$comparison], $placeholder);

@@ -113,6 +113,7 @@ class SqlValueVisitor extends ExpressionVisitor
 
         switch ($comparison->getOperator()) {
             case Comparison::CONTAINS:
+            case Comparison::CONTAINS_CI:
                 return "%{$value}%";
 
             case Comparison::STARTS_WITH:
