@@ -557,7 +557,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $strategy            = strtoupper($generatedValueAnnot->strategy);
             $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
-            $metadata->setIdGeneratorType($idGeneratorType);
             $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
         }
 
@@ -570,7 +569,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     'sequenceName'   => $seqGeneratorAnnot->sequenceName,
                     'allocationSize' => $seqGeneratorAnnot->allocationSize,
                 ]);
-                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
 
                 break;
 
@@ -581,7 +579,6 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     'class'     => $customGeneratorAnnot->class,
                     'arguments' => $customGeneratorAnnot->arguments,
                 ]);
-                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
 
                 break;
 

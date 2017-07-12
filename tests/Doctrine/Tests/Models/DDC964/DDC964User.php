@@ -115,6 +115,7 @@ class DDC964User
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnName('user_id');
         $fieldMetadata->setPrimaryKey(true);
+        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -169,7 +170,5 @@ class DDC964User
         $association->setCascade(['persist', 'merge', 'detach']);
 
         $metadata->addProperty($association);
-
-        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }

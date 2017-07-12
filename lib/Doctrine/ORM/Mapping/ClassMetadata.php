@@ -200,50 +200,11 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     public $inheritanceType = InheritanceType::NONE;
 
     /**
-     * READ-ONLY: The Id generator type used by the class.
-     *
-     * @var string
-     */
-    public $generatorType = GeneratorType::NONE;
-
-    /**
      * READ-ONLY: The policy used for change-tracking on entities of this class.
      *
      * @var string
      */
     public $changeTrackingPolicy = ChangeTrackingPolicy::DEFERRED_IMPLICIT;
-
-    /**
-     * READ-ONLY: The definition of the identity generator of this class.
-     * In case of SEQUENCE generation strategy, the definition has the following structure:
-     * <code>
-     * array(
-     *     'sequenceName'   => 'name',
-     *     'allocationSize' => 20,
-     * )
-     * </code>
-     *
-     * In case of CUSTOM generation strategy, the definition has the following structure:
-     * <code>
-     * array(
-     *     'class' => 'ClassName',
-     * )
-     * </code>
-     *
-     * @var array
-     *
-     * @todo Remove!
-     */
-    public $generatorDefinition;
-
-    /**
-     * READ-ONLY: The ID generator used for generating IDs for this class.
-     *
-     * @var \Doctrine\ORM\Sequencing\Generator
-     *
-     * @todo Remove!
-     */
-    public $idGenerator;
 
     /**
      * READ-ONLY: The discriminator value of this class.
@@ -450,7 +411,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             'name',
             'table',
             'rootEntityName',
-            'idGenerator', //TODO: Does not really need to be serialized. Could be moved to runtime.
         ]);
 
         // The rest of the metadata is only serialized if necessary.
@@ -469,14 +429,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             $serialized[] = 'discriminatorMap';
             $serialized[] = 'parentClasses';
             $serialized[] = 'subClasses';
-        }
-
-        if ($this->generatorType !== GeneratorType::NONE) {
-            $serialized[] = 'generatorType';
-        }
-
-        if ($this->generatorDefinition) {
-            $serialized[] = "generatorDefinition";
         }
 
         if ($this->isMappedSuperclass) {
@@ -613,7 +565,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             throw MappingException::identifierRequired($this->name);
         }
 
-        if ($this->generatorType !== GeneratorType::NONE && $this->isIdentifierComposite()) {
+        if ($this->isIdentifierComposite() && count($this->getGeneratedIdentifierProperties()) !== 0) {
             throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->name);
         }
     }
@@ -1290,18 +1242,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     }
 
     /**
-     * Sets the type of Id generator to use for the mapped class.
-     *
-     * @param int $generatorType
-     *
-     * @return void
-     */
-    public function setIdGeneratorType($generatorType)
-    {
-        $this->generatorType = $generatorType;
-    }
-
-    /**
      * Gets the name of the primary table.
      *
      * @return string
@@ -1631,6 +1571,28 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
         if ($inheritedProperty instanceof VersionFieldMetadata) {
             $this->versionProperty = $inheritedProperty;
         }
+    }
+
+    /**
+     * @return array<Property>
+     */
+    public function getIdentifierProperties(): array
+    {
+        return array_filter($this->properties, function (Property $property) : bool {
+            return $property instanceof FieldMetadata && $property->isPrimaryKey();
+        });
+    }
+
+    /**
+     * @return array<Property>
+     */
+    public function getGeneratedIdentifierProperties(): array
+    {
+        return array_filter($this->properties, function (Property $property) : bool {
+            return $property instanceof FieldMetadata
+                && $property->isPrimaryKey()
+                && $property->getIdentifierGeneratorType() !== GeneratorType::NONE;
+        });
     }
 
     /**
@@ -1982,51 +1944,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     public function hasSqlResultSetMapping($name)
     {
         return isset($this->sqlResultSetMappings[$name]);
-    }
-
-    /**
-     * Sets the ID generator used to generate IDs for instances of this class.
-     *
-     * @param \Doctrine\ORM\Sequencing\Generator $generator
-     *
-     * @return void
-     */
-    public function setIdGenerator($generator)
-    {
-        $this->idGenerator = $generator;
-    }
-
-    /**
-     * Sets the generator definition for this class.
-     * For sequence definition, it must have the following structure:
-     *
-     * <code>
-     * array(
-     *     'sequenceName'   => 'name',
-     *     'allocationSize' => 20,
-     * )
-     * </code>
-     *
-     * For custom definition, it must have the following structure:
-     *
-     * <code>
-     * array(
-     *     'class'     => 'Path\To\ClassName',
-     *     'arguments' => [],
-     * )
-     * </code>
-     *
-     * @param array $definition
-     *
-     * @return void
-     */
-    public function setGeneratorDefinition(array $definition)
-    {
-        if ($this->generatorType === GeneratorType::SEQUENCE && ! isset($definition['sequenceName'])) {
-            throw MappingException::missingSequenceName($this->name);
-        }
-
-        $this->generatorDefinition = $definition;
     }
 
     /**
