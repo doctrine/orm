@@ -655,6 +655,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     : GeneratorType::TABLE
                 );
 
+
+            if ($class->identifier) {
+                $class->getProperty($class->getSingleIdentifierFieldName())->setIdentifierGeneratorType($idGenType);
+            }
             $class->setIdGeneratorType($idGenType);
         }
 
@@ -694,16 +698,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                         : null
                     ;
 
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
-                    $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
+                    $sequencePrefix  = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                    $idSequenceName  = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
+                    $sequenceName    = $platform->fixSchemaElementName($idSequenceName);
+                    $identifierField = $class->getProperty($class->getSingleIdentifierFieldName());
 
-                    $definition = [
+                    $identifierField->setIdentifierGeneratorDefinition([
                         'sequenceName'   => $sequenceName,
                         'allocationSize' => 1,
-                    ];
-
-                    $class->setGeneratorDefinition($definition);
+                    ]);
+                    $class->setGeneratorDefinition($identifierField->getIdentifierGeneratorDefinition());
                 }
 
                 $sequenceGenerator = new Sequencing\SequenceGenerator(
