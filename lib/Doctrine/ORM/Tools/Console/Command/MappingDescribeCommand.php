@@ -109,8 +109,6 @@ EOT
                 [
                     $this->formatField('Discriminator value', $metadata->discriminatorValue),
                     $this->formatField('Discriminator map', $metadata->discriminatorMap),
-                    $this->formatField('Generator type', $metadata->generatorType),
-                    $this->formatField('Generator definition', $metadata->generatorDefinition),
                     $this->formatField('Table', ''),
                 ],
                 $this->formatTable($metadata->table),
@@ -323,6 +321,11 @@ EOT
         $output[] = $this->formatField('    isNullable', $this->formatValue($columnMetadata->isNullable()));
         $output[] = $this->formatField('    isUnique', $this->formatValue($columnMetadata->isUnique()));
         $output[] = $this->formatField('    options', $this->formatValue($columnMetadata->getOptions()));
+
+        if ($columnMetadata instanceof FieldMetadata) {
+            $output[] = $this->formatField('    Generator type', $this->formatValue($columnMetadata->getIdentifierGeneratorType()));
+            $output[] = $this->formatField('    Generator definition', $this->formatValue($columnMetadata->getIdentifierGeneratorDefinition()));
+        }
 
         return $output;
     }

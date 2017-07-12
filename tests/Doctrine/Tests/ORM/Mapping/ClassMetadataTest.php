@@ -1412,6 +1412,8 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing()
     {
+        $this->fail('FIXME');
+
         $cm = new ClassMetadata(CMS\CmsUser::class);
 
         $cm->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
@@ -1431,11 +1433,11 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
 
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setGeneratorDefinition(['sequenceName' => 'foo', 'allocationSize' => 1]);
+        $cm->getProperty('id')->setIdentifierGeneratorDefinition(['sequenceName' => 'foo', 'allocationSize' => 1]);
 
-        self::assertSame(
+        self::assertEquals(
             ['sequenceName' => 'foo', 'allocationSize' => 1, 'initialValue' => '1'],
-            $cm->sequenceGeneratorDefinition
+            $cm->getProperty('id')->getIdentifierGeneratorDefinition()
         );
     }
 
