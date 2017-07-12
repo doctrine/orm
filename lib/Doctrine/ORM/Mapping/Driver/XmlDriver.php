@@ -334,7 +334,6 @@ class XmlDriver extends FileDriver
 
                 $idGeneratorType = constant(sprintf('%s::%s', GeneratorType::class, strtoupper($strategy)));
                 $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
-                $metadata->setIdGeneratorType($fieldMetadata->getIdentifierGeneratorType());
             }
 
             // Check for SequenceGenerator/TableGenerator definition
@@ -347,7 +346,6 @@ class XmlDriver extends FileDriver
                         'allocationSize' => (string) $seqGenerator['allocation-size'],
                     ]
                 );
-                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
             } else if (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
 
@@ -357,7 +355,6 @@ class XmlDriver extends FileDriver
                         'arguments' => [],
                     ]
                 );
-                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
             }

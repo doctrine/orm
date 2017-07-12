@@ -31,6 +31,8 @@ class DDC2415Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
+        $this->fail('FIXME');
+
         $parentMetadata  = $this->em->getClassMetadata(DDC2415ParentEntity::class);
         $childMetadata   = $this->em->getClassMetadata(DDC2415ChildEntity::class);
 
@@ -66,17 +68,15 @@ class DDC2415ParentEntity
 
         $fieldMetadata->setType(Type::getType('string'));
         $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-        $metadata->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
-
-        $metadata->setGeneratorDefinition(
+        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
+        $fieldMetadata->setIdentifierGeneratorDefinition(
             [
                 'class'     => DDC2415Generator::class,
                 'arguments' => [],
             ]
         );
+
+        $metadata->addProperty($fieldMetadata);
 
         $metadata->isMappedSuperclass = true;
     }
