@@ -332,28 +332,32 @@ class XmlDriver extends FileDriver
                     : 'AUTO'
                 ;
 
-                $metadata->setIdGeneratorType(constant(sprintf('%s::%s', GeneratorType::class, strtoupper($strategy))));
+                $idGeneratorType = constant(sprintf('%s::%s', GeneratorType::class, strtoupper($strategy)));
+                $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
+                $metadata->setIdGeneratorType($fieldMetadata->getIdentifierGeneratorType());
             }
 
             // Check for SequenceGenerator/TableGenerator definition
             if (isset($idElement->{'sequence-generator'})) {
                 $seqGenerator = $idElement->{'sequence-generator'};
 
-                $metadata->setGeneratorDefinition(
+                $fieldMetadata->setIdentifierGeneratorDefinition(
                     [
                         'sequenceName'   => (string) $seqGenerator['sequence-name'],
                         'allocationSize' => (string) $seqGenerator['allocation-size'],
                     ]
                 );
+                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
             } else if (isset($idElement->{'custom-id-generator'})) {
                 $customGenerator = $idElement->{'custom-id-generator'};
 
-                $metadata->setGeneratorDefinition(
+                $fieldMetadata->setIdentifierGeneratorDefinition(
                     [
                         'class'     => (string) $customGenerator['class'],
                         'arguments' => [],
                     ]
                 );
+                $metadata->setGeneratorDefinition($fieldMetadata->getIdentifierGeneratorDefinition());
             } else if (isset($idElement->{'table-generator'})) {
                 throw MappingException::tableIdGeneratorNotImplemented($className);
             }
