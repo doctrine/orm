@@ -14,7 +14,6 @@ $tableMetadata->setName('cache_city');
 $metadata->setTable($tableMetadata);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
-$metadata->setIdGeneratorType(Mapping\GeneratorType::IDENTITY);
 $metadata->setCache(
     new Mapping\CacheMetadata(
         Mapping\CacheUsage::READ_ONLY,
@@ -25,6 +24,7 @@ $metadata->setCache(
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::IDENTITY);
 
 $metadata->addProperty($fieldMetadata);
 

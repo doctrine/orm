@@ -177,7 +177,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         self::assertTrue($property->isPrimaryKey());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(GeneratorType::IDENTITY, $class->generatorType, "Generator Type wrong");
+        self::assertEquals(GeneratorType::IDENTITY, $class->getProperty('id')->getIdentifierGeneratorType(), "Generator Type wrong");
 
         return $class;
     }

@@ -44,6 +44,11 @@ class DDC2359Test extends DoctrineTestCase
             ->method('getMetadataDriverImpl')
             ->will($this->returnValue($mockDriver));
 
+        $mockMetadata
+            ->expects($this->any())
+            ->method('getProperties')
+            ->will($this->returnValue([]));
+
         $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
         $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));
         $entityManager

@@ -1408,21 +1408,6 @@ class ClassMetadataTest extends OrmTestCase
     }
 
     /**
-     * @group DDC-2608
-     */
-    public function testSetSequenceGeneratorThrowsExceptionWhenSequenceNameIsMissing()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-
-        $cm->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $this->expectException(Mapping\MappingException::class);
-
-        $cm->setGeneratorDefinition([]);
-    }
-
-    /**
      * @group DDC-2662
      * @group 6682
      */
@@ -1431,9 +1416,18 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
 
         $cm->initializeReflection(new RuntimeReflectionService());
-        $cm->setGeneratorDefinition(['sequenceName' => 'foo', 'allocationSize' => 1]);
+        $id = new Mapping\FieldMetadata('id');
+        $id->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
+        $id->setIdentifierGeneratorDefinition([
+            'sequenceName' => 'foo',
+            'allocationSize' => 1,
+        ]);
+        $cm->addProperty($id);
 
-        self::assertEquals(['sequenceName' => 'foo', 'allocationSize' => 1, 'initialValue' => '1'], $cm->generatorDefinition);
+        self::assertEquals(
+            ['sequenceName' => 'foo', 'allocationSize' => 1, 'initialValue' => '1'],
+            $cm->getProperty('id')->getIdentifierGeneratorDefinition()
+        );
     }
 
     /**

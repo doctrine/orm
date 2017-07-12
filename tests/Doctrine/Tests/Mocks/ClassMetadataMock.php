@@ -10,12 +10,4 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class ClassMetadataMock extends ClassMetadata
 {
     /* Mock API */
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setIdGeneratorType($type)
-    {
-        $this->generatorType = $type;
-    }
 }
