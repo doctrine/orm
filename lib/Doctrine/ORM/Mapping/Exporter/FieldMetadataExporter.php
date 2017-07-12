@@ -23,6 +23,7 @@ declare(strict_types = 1);
 namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\GeneratorType;
 
 class FieldMetadataExporter extends LocalColumnMetadataExporter
 {
@@ -35,11 +36,23 @@ class FieldMetadataExporter extends LocalColumnMetadataExporter
      */
     protected function exportInstantiation(FieldMetadata $metadata) : string
     {
-        return sprintf(
+        $lines = [];
+        $lines[] = sprintf(
             'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',
             $metadata->getName(),
             $metadata->getColumnName(),
             $metadata->getTypeName()
         );
+
+        if ($metadata->getIdentifierGeneratorType() !== GeneratorType::NONE) {
+            $lines[] = '';
+            $lines[] = sprintf(
+                 '%s->setIdentifierGeneratorType(Mapping\GeneratorType::%s);',
+                 self::VARIABLE,
+                 strtoupper($metadata->getIdentifierGeneratorType())
+             );
+        }
+
+        return implode(PHP_EOL, $lines);
     }
 }
