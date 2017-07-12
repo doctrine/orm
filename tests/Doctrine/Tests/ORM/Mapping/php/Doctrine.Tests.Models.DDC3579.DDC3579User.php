@@ -9,6 +9,7 @@ $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setColumnName('user_id');
 $fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);
 
@@ -26,5 +27,3 @@ $association = new Mapping\ManyToManyAssociationMetadata('groups');
 $association->setTargetEntity('DDC3579Group');
 
 $metadata->addProperty($association);
-
-$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
