@@ -545,8 +545,11 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $class->isIdentifier($name) || $class->generatorType !== GeneratorType::IDENTITY)
-                && (! $class->isVersioned() || $name !== $class->versionProperty->getName())) {
+            if (
+                ( ! $class->isIdentifier($name)
+                    || ! $class->getProperty($name) instanceof FieldMetadata
+                    || $class->getProperty($name)->getIdentifierGeneratorType() !== GeneratorType::IDENTITY
+                ) && (! $class->isVersioned() || $name !== $class->versionProperty->getName())) {
                 $actualData[$name] = $value;
             }
         }
@@ -827,17 +830,20 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        $idGen = $class->idGenerator;
+        // TODO: Do not hardcode AssignedGenerator here, refactor once we implement ValueGenerationPlan
+        $idGen = ($class->isIdentifierComposite() || ! $class->getProperty($class->getSingleIdentifierFieldName()) instanceof FieldMetadata)
+            ? new AssignedGenerator()
+            : $class->getProperty($class->getSingleIdentifierFieldName())->getIdentifierGenerator();
 
         if (! $idGen->isPostInsertGenerator()) {
             $idValue = $idGen->generate($this->em, $entity);
 
-            if (! $idGen instanceof AssignedGenerator) {
-                $idField  = $class->getSingleIdentifierFieldName();
+            if (!$idGen instanceof AssignedGenerator) {
+                $idField = $class->getSingleIdentifierFieldName();
                 $property = $class->getProperty($idField);
                 $platform = $this->em->getConnection()->getDatabasePlatform();
-                $idValue  = $property->getType()->convertToPHPValue($idValue, $platform);
-                $idValue  = [$idField => $idValue];
+                $idValue = $property->getType()->convertToPHPValue($idValue, $platform);
+                $idValue = [$idField => $idValue];
 
                 $class->assignIdentifier($entity, $idValue);
             }
@@ -894,7 +900,7 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case ($property instanceof FieldMetadata):
-                    if (! $property->isPrimaryKey() || $class->generatorType !== GeneratorType::IDENTITY) {
+                    if (! $property->isPrimaryKey() || $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY) {
                         $actualData[$name] = $property->getValue($entity);
                     }
 
@@ -1060,10 +1066,15 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if ($class->generatorType !== GeneratorType::NONE) {
+            if (! $class->isIdentifierComposite()) {
                 $property = $class->getProperty($class->getSingleIdentifierFieldName());
 
-                $property->setValue($entity, null);
+                if (
+                    $property instanceof FieldMetadata
+                    && $property->getIdentifierGeneratorType() !== GeneratorType::NONE
+                ) {
+                    $property->setValue($entity, null);
+                }
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
@@ -1426,7 +1437,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $flatId = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id);
 
-        if ($class->generatorType === GeneratorType::NONE) {
+        if ($class->isIdentifierComposite()
+            || ! $class->getProperty($class->getSingleIdentifierFieldName()) instanceof FieldMetadata
+            || $class->getProperty($class->getSingleIdentifierFieldName())->getIdentifierGeneratorType() === GeneratorType::NONE
+        ) {
             // Check for a version field, if available, to avoid a db lookup.
             if ($class->isVersioned()) {
                 return $class->versionProperty->getValue($entity)
@@ -1447,7 +1461,9 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        if ( ! $class->idGenerator->isPostInsertGenerator()) {
+        if ($class->isIdentifierComposite()
+            || ! $class->getProperty($class->getSingleIdentifierFieldName()) instanceof FieldMetadata
+            || ! $class->getProperty($class->getSingleIdentifierFieldName())->getIdentifierGenerator()->isPostInsertGenerator()) {
             // if we have a pre insert generator we can't be sure that having an id
             // really means that the entity exists. We have to verify this through
             // the last resort: a db lookup
@@ -1808,7 +1824,9 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy === null) {
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
-                    if ($class->generatorType !== GeneratorType::NONE) {
+                    if (! $class->isIdentifierComposite()
+                        && $class->getProperty($class->getSingleIdentifierFieldName()) instanceof FieldMetadata
+                        && $class->getProperty($class->getSingleIdentifierFieldName())->getIdentifierGeneratorType() !== GeneratorType::NONE) {
                         throw EntityNotFoundException::fromClassNameAndIdentifier(
                             $class->getName(),
                             $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id)

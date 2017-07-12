@@ -50,17 +50,15 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
-
-        $metadata->setGeneratorDefinition(
+        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
+        $fieldMetadata->setIdentifierGeneratorDefinition(
             [
                 'sequenceName'   => 'seq_entity_test_id',
                 'allocationSize' => 5,
             ]
         );
+
+        $metadata->addProperty($fieldMetadata);
 
         $expectedFileContent = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>

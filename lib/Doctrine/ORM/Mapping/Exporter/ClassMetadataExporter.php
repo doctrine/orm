@@ -132,11 +132,6 @@ class ClassMetadataExporter implements Exporter
             $lines[] = null;
         }
 
-        if (! $metadata->isIdentifierComposite()) {
-            $lines[] = $objectReference . '->setIdGeneratorType(Mapping\GeneratorType::' . strtoupper($metadata->generatorType) . ');';
-            $lines[] = null;
-        }
-
         if ($metadata->inheritanceType) {
             $lines[] = $objectReference . '->setInheritanceType(Mapping\InheritanceType::' . strtoupper($metadata->inheritanceType) . ');';
             $lines[] = null;

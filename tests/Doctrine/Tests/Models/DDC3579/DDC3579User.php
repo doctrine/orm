@@ -88,6 +88,7 @@ class DDC3579User
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnName('user_id');
         $fieldMetadata->setPrimaryKey(true);
+        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -106,7 +107,5 @@ class DDC3579User
         $association->setTargetEntity('DDC3579Group');
 
         $metadata->addProperty($association);
-
-        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }
