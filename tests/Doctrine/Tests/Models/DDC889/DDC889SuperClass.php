@@ -18,9 +18,9 @@ class DDC889SuperClass
     {
         $fieldMetadata = new Mapping\FieldMetadata('name');
         $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
         $metadata->addProperty($fieldMetadata);
         $metadata->isMappedSuperclass = true;
-        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }

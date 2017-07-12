@@ -11,6 +11,7 @@ $metadata->isMappedSuperclass = true;
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
+$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);
 
@@ -20,4 +21,3 @@ $fieldMetadata->setType(Type::getType('float'));
 $metadata->addProperty($fieldMetadata);
 
 $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
-$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
