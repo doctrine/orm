@@ -132,7 +132,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             $this->addInheritedProperties($class, $parent);
             $this->addInheritedEmbeddedClasses($class, $parent);
-            $this->inheritIdGeneratorMapping($class, $parent);
 
             $class->setInheritanceType($parent->inheritanceType);
             $class->setIdentifier($parent->identifier);
@@ -158,12 +157,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             throw MappingException::reflectionFailure($class->getName(), $e);
         }
 
-        // If this class has a parent the id generator strategy is inherited.
-        // However this is only true if the hierarchy of parents contains the root entity,
-        // if it consists of mapped superclasses these don't necessarily include the id field.
-        if (! ($parent && $rootEntityFound)) {
-            $this->completeIdGeneratorMapping($class);
-        }
+        $this->completeIdentifierGeneratorMappings($class);
 
         /*if ( ! $class->isMappedSuperclass) {
             foreach ($class->embeddedClasses as $property => $embeddableClass) {
@@ -642,84 +636,84 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws ORMException
      */
-    private function completeIdGeneratorMapping(ClassMetadata $class)
+    private function completeIdentifierGeneratorMappings(ClassMetadata $class)
     {
-        $idGenType = $class->generatorType;
-        $platform  = $this->getTargetPlatform();
+        foreach ($class->getProperties() as $property) {
+            if ( ! $property instanceof FieldMetadata) {
+                continue;
+            }
 
-        if ($idGenType === GeneratorType::AUTO) {
-            $idGenType = $platform->prefersSequences()
-                ? GeneratorType::SEQUENCE
-                : ($platform->prefersIdentityColumns()
-                    ? GeneratorType::IDENTITY
-                    : GeneratorType::TABLE
-                );
+            $this->completeFieldIdentifierGeneratorMapping($property);
+        }
+    }
 
-            $class->setIdGeneratorType($idGenType);
+    private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
+    {
+        $platform = $this->getTargetPlatform();
+        $class    = $field->getDeclaringClass();;
+
+        if ($field->getIdentifierGeneratorType() === GeneratorType::AUTO) {
+            $field->setIdentifierGeneratorType(
+                $platform->prefersSequences()
+                    ? GeneratorType::SEQUENCE
+                    : ($platform->prefersIdentityColumns()
+                        ? GeneratorType::IDENTITY
+                        : GeneratorType::TABLE
+                    )
+            );
         }
 
         // Create & assign an appropriate ID generator instance
-        switch ($class->generatorType) {
+        switch ($field->getIdentifierGeneratorType()) {
             case GeneratorType::IDENTITY:
                 $sequenceName = null;
-                $property     = $class->identifier
-                    ? $class->getProperty($class->getSingleIdentifierFieldName())
-                    : null
-                ;
 
                 // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($property && $platform->usesSequenceEmulatedIdentityColumns()) {
+                if ($platform->usesSequenceEmulatedIdentityColumns()) {
                     $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
+                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $field->getColumnName());
                     $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
                 }
 
-                $generator = ($property && $property->getTypeName() === 'bigint')
+                $generator = $field->getTypeName() === 'bigint'
                     ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
                     : new Sequencing\IdentityGenerator($sequenceName)
                 ;
 
-                $class->setIdGenerator($generator);
+
+                $field->setIdentifierGenerator($generator);
 
                 break;
 
             case GeneratorType::SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                $definition = $class->generatorDefinition;
-
-                if ( ! $definition) {
+                if ( ! $field->getIdentifierGeneratorDefinition()) {
                     // @todo guilhermeblanco Move sequence generation to DBAL
-                    $property = $class->identifier
-                        ? $class->getProperty($class->getSingleIdentifierFieldName())
-                        : null
-                    ;
 
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
-                    $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
+                    $sequencePrefix  = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                    $idSequenceName  = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
+                    $sequenceName    = $platform->fixSchemaElementName($idSequenceName);
 
-                    $definition = [
+                    $field->setIdentifierGeneratorDefinition([
                         'sequenceName'   => $sequenceName,
                         'allocationSize' => 1,
-                    ];
-
-                    $class->setGeneratorDefinition($definition);
+                    ]);
                 }
 
                 $sequenceGenerator = new Sequencing\SequenceGenerator(
-                    $platform->quoteIdentifier($definition['sequenceName']),
-                    $definition['allocationSize']
+                    $platform->quoteIdentifier($field->getIdentifierGeneratorDefinition()['sequenceName']),
+                    $field->getIdentifierGeneratorDefinition()['allocationSize']
                 );
 
-                $class->setIdGenerator($sequenceGenerator);
+                $field->setIdentifierGenerator($sequenceGenerator);
                 break;
 
             case GeneratorType::NONE:
-                $class->setIdGenerator(new Sequencing\AssignedGenerator());
+                $field->setIdentifierGenerator(new Sequencing\AssignedGenerator());
                 break;
 
             case GeneratorType::UUID:
-                $class->setIdGenerator(new Sequencing\UuidGenerator());
+                $field->setIdentifierGenerator(new Sequencing\UuidGenerator());
                 break;
 
             case GeneratorType::TABLE:
@@ -727,38 +721,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::CUSTOM:
-                $definition = $class->generatorDefinition;
-
+                $definition = $field->getIdentifierGeneratorDefinition();
                 if ( ! class_exists($definition['class'])) {
                     throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
                 }
 
-                $class->setIdGenerator(new $definition['class']);
+                $field->setIdentifierGenerator(new $definition['class']);
                 break;
 
             default:
-                throw new ORMException("Unknown generator type: " . $class->generatorType);
-        }
-    }
-
-    /**
-     * Inherits the ID generator mapping from a parent class.
-     *
-     * @param ClassMetadata $class
-     * @param ClassMetadata $parent
-     */
-    private function inheritIdGeneratorMapping(ClassMetadata $class, ClassMetadata $parent)
-    {
-        if ($parent->generatorType) {
-            $class->setIdGeneratorType($parent->generatorType);
-        }
-
-        if ($parent->generatorDefinition) {
-            $class->generatorDefinition = $parent->generatorDefinition;
-        }
-
-        if ($parent->idGenerator) {
-            $class->setIdGenerator($parent->idGenerator);
+                throw new ORMException("Unknown generator type: " . $field->getIdentifierGeneratorType());
         }
     }
 

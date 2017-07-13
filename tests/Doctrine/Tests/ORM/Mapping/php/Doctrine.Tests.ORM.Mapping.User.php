@@ -55,18 +55,18 @@ $metadata->addNamedQuery(
     ]
 );
 
-$metadata->setGeneratorDefinition(
-    [
-        'sequenceName'   => 'tablename_seq',
-        'allocationSize' => 100,
-    ]
-);
-
 $fieldMetadata = new Mapping\FieldMetadata('id');
 
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
 $fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
+$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+$fieldMetadata->setIdentifierGeneratorDefinition(
+    [
+        'sequenceName'   => 'tablename_seq',
+        'allocationSize' => 100,
+    ]
+);
 
 $metadata->addProperty($fieldMetadata);
 
@@ -100,8 +100,6 @@ $versionFieldMetadata = new Mapping\VersionFieldMetadata('version');
 $versionFieldMetadata->setType(Type::getType('integer'));
 
 $metadata->addProperty($versionFieldMetadata);
-
-$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
 $joinColumns = [];
 
