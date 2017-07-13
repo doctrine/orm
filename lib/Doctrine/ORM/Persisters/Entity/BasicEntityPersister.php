@@ -97,7 +97,7 @@ class BasicEntityPersister implements EntityPersister
         Comparison::IN          => 'IN (%s)',
         Comparison::NIN         => 'NOT IN (%s)',
         Comparison::CONTAINS    => 'LIKE %s',
-        Comparison::CONTAINS_CI => 'LIKE %s',
+        Comparison::ICONTAINS   => 'LIKE %s',
         Comparison::STARTS_WITH => 'LIKE %s',
         Comparison::ENDS_WITH   => 'LIKE %s',
     ];
@@ -1617,7 +1617,7 @@ class BasicEntityPersister implements EntityPersister
                     continue;
                 }
 
-                if ($comparison === Comparison::CONTAINS_CI) {
+                if ($comparison === Comparison::ICONTAINS) {
                     $column = $this->platform->getLowerExpression($column);
                 }
 
