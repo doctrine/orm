@@ -910,6 +910,22 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertEquals(2, count($users));
     }
 
+    public function testMatchingCriteriaIContainsComparison()
+    {
+        $this->loadFixture();
+
+        $repository = $this->_em->getRepository(CmsUser::class);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->iContains('name', 'foobar')));
+        $this->assertEquals(0, count($users));
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->iContains('name', 'rOm')));
+        $this->assertEquals(1, count($users));
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->iContains('status', 'DEV')));
+        $this->assertEquals(2, count($users));
+    }
+
     public function testMatchingCriteriaStartsWithComparison()
     {
         $this->loadFixture();
