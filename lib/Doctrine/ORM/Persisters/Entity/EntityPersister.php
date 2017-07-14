@@ -185,19 +185,6 @@ interface EntityPersister
     public function count($criteria = []);
 
     /**
-     * Gets the name of the table that owns the column the given field is mapped to.
-     *
-     * The default implementation in BasicEntityPersister always returns the name
-     * of the table the entity type of this persister is mapped to, since an entity
-     * is always persisted to a single table with a BasicEntityPersister.
-     *
-     * @param string $fieldName The field name.
-     *
-     * @return string The table name.
-     */
-    public function getOwningTable($fieldName);
-
-    /**
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
      *
      * @param array $criteria
