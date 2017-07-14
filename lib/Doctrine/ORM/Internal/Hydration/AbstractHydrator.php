@@ -19,13 +19,8 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Utility\IdentifierFlattener;
 use PDO;
 
 /**
@@ -68,13 +63,6 @@ abstract class AbstractHydrator
     protected $uow;
 
     /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
-     */
-    protected $identifierFlattener;
-
-    /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
      * @var array
@@ -109,10 +97,9 @@ abstract class AbstractHydrator
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em                 = $em;
-        $this->platform           = $em->getConnection()->getDatabasePlatform();
-        $this->uow                = $em->getUnitOfWork();
-        $this->identifierFlattener = new IdentifierFlattener($this->uow, $em->getMetadataFactory());
+        $this->em       = $em;
+        $this->platform = $em->getConnection()->getDatabasePlatform();
+        $this->uow      = $em->getUnitOfWork();
     }
 
     /**
@@ -175,7 +162,7 @@ abstract class AbstractHydrator
     {
         $row = $this->stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ( ! $row) {
+        if (! $row) {
             $this->cleanup();
 
             return false;

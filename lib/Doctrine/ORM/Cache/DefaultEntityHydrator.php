@@ -29,7 +29,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * Default hydrator cache for entities
@@ -50,13 +49,6 @@ class DefaultEntityHydrator implements EntityHydrator
     private $uow;
 
     /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
-     */
-    private $identifierFlattener;
-
-    /**
      * @var array
      */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
@@ -66,9 +58,8 @@ class DefaultEntityHydrator implements EntityHydrator
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em   = $em;
-        $this->uow  = $em->getUnitOfWork();
-        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
+        $this->em  = $em;
+        $this->uow = $em->getUnitOfWork();
     }
 
     /**
@@ -76,6 +67,8 @@ class DefaultEntityHydrator implements EntityHydrator
      */
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
     {
+        $identifierFlattener = $this->em->getIdentifierFlattener();
+
         $data = $this->uow->getOriginalEntityData($entity);
         $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
 
@@ -97,7 +90,7 @@ class DefaultEntityHydrator implements EntityHydrator
                 $owningAssociation   = ! $association->isOwningSide()
                     ? $targetClassMetadata->getProperty($association->getMappedBy())
                     : $association;
-                $associationIds      = $this->identifierFlattener->flattenIdentifier(
+                $associationIds      = $identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
                     $targetClassMetadata->getIdentifierValues($data[$name])
                 );
@@ -150,21 +143,10 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             // handle association identifier
-            $targetId = is_object($data[$name]) && $this->uow->isInIdentityMap($data[$name])
-                ? $this->uow->getEntityIdentifier($data[$name])
-                : $data[$name];
-
-            // @todo guilhermeblanco From my initial research, we could move the Identifier Flattener to EM and consume
-            // @todo guilhermeblanco it here, unifying the hash generation that happens everywhere in the codebase.
-            // @TODO - fix it ! handle UnitOfWork#createEntity hash generation
-            if ( ! is_array($targetId)) {
-                $joinColumns = $association->getJoinColumns();
-                $columnName  = $joinColumns[0]->getAliasedName() ?? $joinColumns[0]->getColumnName();
-
-                $data[$columnName] = $targetId;
-
-                $targetId = [$targetClassMetadata->identifier[0] => $targetId];
-            }
+            $targetId = $this->em->getIdentifierFlattener()->flattenIdentifier(
+                $targetClassMetadata,
+                $targetClassMetadata->getIdentifierValues($data[$name])
+            );
 
             $data[$name] = new AssociationCacheEntry($targetEntity, $targetId);
         }

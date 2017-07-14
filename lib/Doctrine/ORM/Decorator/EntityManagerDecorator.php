@@ -63,6 +63,14 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
+    public function getIdentifierFlattener()
+    {
+        return $this->wrapped->getIdentifierFlattener();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function beginTransaction()
     {
         return $this->wrapped->beginTransaction();

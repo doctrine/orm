@@ -55,7 +55,6 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Sequencing\AssignedGenerator;
-use Doctrine\ORM\Utility\IdentifierFlattener;
 use InvalidArgumentException;
 use Throwable;
 use UnexpectedValueException;
@@ -265,13 +264,6 @@ class UnitOfWork implements PropertyChangedListener
     private $listenersInvoker;
 
     /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
-     */
-    private $identifierFlattener;
-
-    /**
      * @var Instantiator
      */
     private $instantiator;
@@ -320,7 +312,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->eventManager             = $em->getEventManager();
         $this->listenersInvoker         = new ListenersInvoker($em);
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
-        $this->identifierFlattener      = new IdentifierFlattener($this, $em->getMetadataFactory());
         $this->instantiator             = new Instantiator();
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
     }
@@ -1439,7 +1430,7 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        $flatId = $this->identifierFlattener->flattenIdentifier($class, $id);
+        $flatId = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id);
 
         if ($class->generatorType === GeneratorType::NONE) {
             // Check for a version field, if available, to avoid a db lookup.
@@ -1807,7 +1798,7 @@ class UnitOfWork implements PropertyChangedListener
                 $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                 $this->persistNew($class, $managedCopy);
             } else {
-                $flatId      = $this->identifierFlattener->flattenIdentifier($class, $id);
+                $flatId      = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id);
                 $managedCopy = $this->tryGetById($flatId, $class->rootEntityName);
 
                 if ($managedCopy) {
@@ -1826,7 +1817,7 @@ class UnitOfWork implements PropertyChangedListener
                     if ($class->generatorType !== GeneratorType::NONE) {
                         throw EntityNotFoundException::fromClassNameAndIdentifier(
                             $class->getName(),
-                            $this->identifierFlattener->flattenIdentifier($class, $id)
+                            $this->em->getIdentifierFlattener()->flattenIdentifier($class, $id)
                         );
                     }
 
@@ -2496,7 +2487,7 @@ class UnitOfWork implements PropertyChangedListener
     public function createEntity($className, array $data, &$hints = [])
     {
         $class  = $this->em->getClassMetadata($className);
-        $id     = $this->identifierFlattener->flattenIdentifier($class, $data);
+        $id     = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
@@ -3309,15 +3300,17 @@ class UnitOfWork implements PropertyChangedListener
             return false;
         }
 
+        $identifierFlattener = $this->em->getIdentifierFlattener();
+
         $oid1 = spl_object_hash($entity1);
         $oid2 = spl_object_hash($entity2);
 
         $id1 = isset($this->entityIdentifiers[$oid1])
             ? $this->entityIdentifiers[$oid1]
-            : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+            : $identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
         $id2 = isset($this->entityIdentifiers[$oid2])
             ? $this->entityIdentifiers[$oid2]
-            : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
+            : $identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
