@@ -21,6 +21,7 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * EntityManager interface
@@ -61,6 +62,13 @@ interface EntityManagerInterface extends ObjectManager
      * @return \Doctrine\ORM\Query\Expr
      */
     public function getExpressionBuilder();
+
+    /**
+     * Gets an IdentifierFlattener used for converting Entities into an array of identifier values.
+     *
+     * @return IdentifierFlattener
+     */
+    public function getIdentifierFlattener();
 
     /**
      * Starts a transaction on the underlying database connection.
