@@ -11,7 +11,6 @@ $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setColumnDefinition('INT unsigned NOT NULL');
 $fieldMetadata->setPrimaryKey(true);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
 $metadata->addProperty($fieldMetadata);
 

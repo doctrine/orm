@@ -29,6 +29,10 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing;
+use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
+use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use ReflectionException;
 
 /**
@@ -234,6 +238,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
 
+        $this->buildValueGenerationPlan($class);
         $this->validateRuntimeMetadata($class, $parent);
     }
 
@@ -631,7 +636,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function completeIdentifierGeneratorMappings(ClassMetadata $class)
     {
         foreach ($class->getProperties() as $property) {
-            if ( ! $property instanceof FieldMetadata) {
+            if ( ! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
                 continue;
             }
 
@@ -641,70 +646,50 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
     {
-        $platform = $this->getTargetPlatform();
-        $class    = $field->getDeclaringClass();;
+        if (!$field->hasValueGenerator()) {
+            return;
+        }
 
-        if ($field->getIdentifierGeneratorType() === GeneratorType::AUTO) {
-            $field->setIdentifierGeneratorType(
+        $platform  = $this->getTargetPlatform();
+        $class     = $field->getDeclaringClass();
+        $generator = $field->getValueGenerator();
+
+        if ($generator->getType() === GeneratorType::AUTO) {
+            $generator = new ValueGeneratorMetadata(
                 $platform->prefersSequences()
                     ? GeneratorType::SEQUENCE
                     : ($platform->prefersIdentityColumns()
                         ? GeneratorType::IDENTITY
                         : GeneratorType::TABLE
-                    )
+                ),
+                $field->getValueGenerator()->getDefinition()
             );
+            $field->setValueGenerator($generator);
         }
 
-        // Create & assign an appropriate ID generator instance
-        switch ($field->getIdentifierGeneratorType()) {
-            case GeneratorType::IDENTITY:
-                $sequenceName = null;
-
-                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
-                if ($platform->usesSequenceEmulatedIdentityColumns()) {
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $field->getColumnName());
-                    $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
-                }
-
-                $generator = $field->getTypeName() === 'bigint'
-                    ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
-                    : new Sequencing\IdentityGenerator($sequenceName)
-                ;
-
-                $field->setIdentifierGenerator($generator);
-
-                break;
-
+        // Validate generator definition and set defaults where needed
+        switch ($generator->getType()) {
             case GeneratorType::SEQUENCE:
                 // If there is no sequence definition yet, create a default definition
-                if ( ! $field->getIdentifierGeneratorDefinition()) {
-                    // @todo guilhermeblanco Move sequence generation to DBAL
-
-                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
-                    $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
-                    $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
-
-                    $field->setIdentifierGeneratorDefinition([
-                        'sequenceName'   => $sequenceName,
-                        'allocationSize' => 1,
-                    ]);
+                if ($generator->getDefinition()) {
+                    break;
                 }
 
-                $sequenceGenerator = new Sequencing\SequenceGenerator(
-                    $platform->quoteIdentifier($field->getIdentifierGeneratorDefinition()['sequenceName']),
-                    $field->getIdentifierGeneratorDefinition()['allocationSize']
+                // @todo guilhermeblanco Move sequence generation to DBAL
+                $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
+                $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
+
+                $field->setValueGenerator(
+                    new ValueGeneratorMetadata(
+                        $generator->getType(),
+                        [
+                            'sequenceName'   => $sequenceName,
+                            'allocationSize' => 1,
+                        ]
+                    )
                 );
 
-                $field->setIdentifierGenerator($sequenceGenerator);
-                break;
-
-            case GeneratorType::NONE:
-                $field->setIdentifierGenerator(new Sequencing\AssignedGenerator());
-                break;
-
-            case GeneratorType::UUID:
-                $field->setIdentifierGenerator(new Sequencing\UuidGenerator());
                 break;
 
             case GeneratorType::TABLE:
@@ -712,7 +697,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::CUSTOM:
-                $definition = $field->getIdentifierGeneratorDefinition();
+                $definition = $generator->getDefinition();
                 if ( ! isset($definition['class'])) {
                     throw new ORMException(sprintf('Cannot instantiate custom generator, no class has been defined'));
                 }
@@ -720,11 +705,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
                 }
 
-                $field->setIdentifierGenerator(new $definition['class']);
+                break;
+
+            case GeneratorType::IDENTITY:
+            case GeneratorType::NONE:
+            case GeneratorType::UUID:
                 break;
 
             default:
-                throw new ORMException("Unknown generator type: " . $field->getIdentifierGeneratorType());
+                throw new ORMException("Unknown generator type: " . $generator->getType());
         }
     }
 
@@ -778,5 +767,75 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
 
         return $this->targetPlatform;
+    }
+
+    private function buildValueGenerationPlan(ClassMetadata $class): void
+    {
+        /** @var LocalColumnMetadata[] $generatedProperties */
+        $generatedProperties = array_filter($class->getProperties(), function (Property $property): bool {
+            return $property instanceof LocalColumnMetadata && $property->hasValueGenerator();
+        });
+        $propertiesCount = count($generatedProperties);
+
+        if ($propertiesCount === 0) {
+            $class->setValueGenerationPlan(new NoopValueGenerationPlan());
+            return;
+        }
+
+        if ($propertiesCount === 1) {
+            $property = reset($generatedProperties);
+
+            $class->setValueGenerationPlan(new SingleValueGenerationPlan(
+                $class,
+                new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property))
+            ));
+
+            return;
+        }
+
+        $executors = [];
+        foreach ($generatedProperties as $property) {
+            $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+        }
+
+        $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
+    }
+
+    private function createPropertyValueGenerator(ClassMetadata $class, LocalColumnMetadata $property): Sequencing\Generator
+    {
+        $platform = $this->getTargetPlatform();
+
+        switch ($property->getValueGenerator()->getType()) {
+            case GeneratorType::IDENTITY:
+                $sequenceName = null;
+
+                // Platforms that do not have native IDENTITY support need a sequence to emulate this behaviour.
+                if ($platform->usesSequenceEmulatedIdentityColumns()) {
+                    $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                    $idSequenceName = $platform->getIdentitySequenceName($sequencePrefix, $property->getColumnName());
+                    $sequenceName   = $platform->quoteIdentifier($platform->fixSchemaElementName($idSequenceName));
+                }
+
+                return $property->getTypeName() === 'bigint'
+                    ? new Sequencing\BigIntegerIdentityGenerator($sequenceName)
+                    : new Sequencing\IdentityGenerator($sequenceName);
+
+            case GeneratorType::SEQUENCE:
+                $definition = $property->getValueGenerator()->getDefinition();
+                return new Sequencing\SequenceGenerator(
+                    $platform->quoteIdentifier($definition['sequenceName']),
+                    $definition['allocationSize']
+                );
+                break;
+
+            case GeneratorType::UUID:
+                return new Sequencing\UuidGenerator();
+                break;
+
+            case GeneratorType::CUSTOM:
+                $class = $property->getValueGenerator()->getDefinition()['class'];
+                return new $class();
+                break;
+        }
     }
 }

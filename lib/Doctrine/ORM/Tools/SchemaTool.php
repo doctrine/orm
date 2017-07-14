@@ -363,15 +363,16 @@ class SchemaTool
 
             foreach ($class->getProperties() as $property) {
                 if (! $property instanceof FieldMetadata
-                    || $property->getIdentifierGeneratorType() !== GeneratorType::SEQUENCE
+                    || ! $property->hasValueGenerator()
+                    || $property->getValueGenerator()->getType() !== GeneratorType::SEQUENCE
                     || $class->getClassName() !== $class->getRootClassName()) {
                     continue;
                 }
 
-                $quotedName = $this->platform->quoteIdentifier($property->getIdentifierGeneratorDefinition()['sequenceName']);
+                $quotedName = $this->platform->quoteIdentifier($property->getValueGenerator()->getDefinition()['sequenceName']);
 
                 if ( ! $schema->hasSequence($quotedName)) {
-                    $schema->createSequence($quotedName, $property->getIdentifierGeneratorDefinition()['allocationSize']);
+                    $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
                 }
             }
 
@@ -521,7 +522,7 @@ class SchemaTool
             $options['customSchemaOptions'] = $fieldOptions;
         }
 
-        if ($fieldMetadata->getIdentifierGeneratorType() === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() == [$fieldName]) {
+        if ($fieldMetadata->hasValueGenerator() && $fieldMetadata->getValueGenerator()->getType() === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() == [$fieldName]) {
             $options['autoincrement'] = true;
         }
 

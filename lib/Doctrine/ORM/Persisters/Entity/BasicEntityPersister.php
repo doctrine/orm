@@ -257,12 +257,10 @@ class BasicEntityPersister implements EntityPersister
      */
     public function insert($entity)
     {
-        $postInsertIds       = [];
-        $identifierComposite = $this->class->isIdentifierComposite();
-
-        $stmt       = $this->conn->prepare($this->getInsertSQL());
-        $tableName  = $this->class->getTableName();
-        $insertData = $this->prepareInsertData($entity);
+        $stmt           = $this->conn->prepare($this->getInsertSQL());
+        $tableName      = $this->class->getTableName();
+        $insertData     = $this->prepareInsertData($entity);
+        $generationPlan = $this->class->getValueGenerationPlan();
 
         if (isset($insertData[$tableName])) {
             $paramIndex = 1;
@@ -276,27 +274,15 @@ class BasicEntityPersister implements EntityPersister
 
         $stmt->execute();
 
-        if (! $identifierComposite
-            && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
-            && $property->getIdentifierGenerator()->isPostInsertGenerator()
-        ) {
-            $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
-            $id          = [$this->class->identifier[0] => $generatedId];
-
-            $postInsertIds = [
-                $this->class->getSingleIdentifierFieldName() => $generatedId,
-            ];
-        } else {
-            $id = $this->getIdentifier($entity);
+        if ($generationPlan->containsDeferred()) {
+            $generationPlan->executeDeferred($this->em, $entity);
         }
 
         if ($this->class->isVersioned()) {
-            $this->assignDefaultVersionValue($entity, $id);
+            $this->assignDefaultVersionValue($entity, $this->getIdentifier($entity));
         }
 
         $stmt->closeCursor();
-
-        return $postInsertIds;
     }
 
     /**
@@ -1524,7 +1510,12 @@ class BasicEntityPersister implements EntityPersister
                     break;
 
                 case ($property instanceof LocalColumnMetadata):
-                    if (($property instanceof FieldMetadata && $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY)
+                    if (($property instanceof FieldMetadata
+                            && (
+                                ! $property->hasValueGenerator()
+                                || $property->getValueGenerator()->getType() !== GeneratorType::IDENTITY
+                            )
+                        )
                         || $this->class->identifier[0] !== $name
                     ) {
                         $columnName = $property->getColumnName();

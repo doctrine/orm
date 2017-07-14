@@ -1184,7 +1184,7 @@ public function __construct(<params>)
                     $methods[] = $code;
                 }
 
-                if (( ! $property->isPrimaryKey() || $property->getIdentifierGeneratorType() == GeneratorType::NONE) &&
+                if (( ! $property->isPrimaryKey() || ! $property->hasValueGenerator()) &&
                     ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
                     $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $property->getTypeName(), $nullable)) {
                     $methods[] = $code;
@@ -1414,19 +1414,19 @@ public function __construct(<params>)
         $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
 
         if ($metadata instanceof FieldMetadata) {
-            if ($generatorType = $this->getIdGeneratorTypeString($metadata->getIdentifierGeneratorType())) {
+            if ($generatorType = $this->getIdGeneratorTypeString($metadata->getValueGenerator()->getType())) {
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
             }
 
-            if ($metadata->getIdentifierGeneratorDefinition()) {
+            if ($metadata->getValueGenerator()->getType()) {
                 $generator = [];
 
-                if (isset($metadata->getIdentifierGeneratorDefinition()['sequenceName'])) {
-                    $generator[] = 'sequenceName="' . $metadata->getIdentifierGeneratorDefinition()['sequenceName'] . '"';
+                if (isset($metadata->getValueGenerator()->getDefinition()['sequenceName'])) {
+                    $generator[] = 'sequenceName="' . $metadata->getValueGenerator()->getDefinition()['sequenceName'] . '"';
                 }
 
-                if (isset($metadata->getIdentifierGeneratorDefinition()['allocationSize'])) {
-                    $generator[] = 'allocationSize=' . $metadata->getIdentifierGeneratorDefinition()['allocationSize'];
+                if (isset($metadata->getValueGenerator()->getDefinition()['allocationSize'])) {
+                    $generator[] = 'allocationSize=' . $metadata->getValueGenerator()->getDefinition()['allocationSize'];
                 }
 
                 $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';

@@ -208,10 +208,10 @@ class XmlExporter extends AbstractExporter
                     $idXml->addAttribute('length', $property->getLength());
                 }
 
-                if ($property->getIdentifierGeneratorType() !== GeneratorType::NONE) {
+                if ($property->hasValueGenerator()) {
                     $generatorXml = $idXml->addChild('generator');
 
-                    $generatorXml->addAttribute('strategy', $property->getIdentifierGeneratorType());
+                    $generatorXml->addAttribute('strategy', $property->getValueGenerator()->getType());
 
                     $this->exportSequenceInformation($idXml, $property);
                 }
@@ -500,9 +500,9 @@ class XmlExporter extends AbstractExporter
      */
     private function exportSequenceInformation(\SimpleXMLElement $identifierXmlNode, FieldMetadata $metadata)
     {
-        $sequenceDefinition = $metadata->getIdentifierGeneratorDefinition();
+        $sequenceDefinition = $metadata->getValueGenerator()->getDefinition();
 
-        if (! ($metadata->getIdentifierGeneratorType() === GeneratorType::SEQUENCE && $sequenceDefinition)) {
+        if (! ($metadata->getValueGenerator()->getType() === GeneratorType::SEQUENCE && $sequenceDefinition)) {
             return;
         }
 

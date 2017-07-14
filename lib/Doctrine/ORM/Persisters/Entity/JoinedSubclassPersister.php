@@ -52,11 +52,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
      */
     public function insert($entity)
     {
-        $postInsertIds       = [];
-        $identifierComposite = $this->class->isIdentifierComposite();
         $rootClass      = ! $this->class->isRootEntity()
             ? $this->em->getClassMetadata($this->class->getRootClassName())
             : $this->class;
+        $generationPlan = $this->class->getValueGenerationPlan();
 
         // Prepare statement for the root table
         $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->getClassName());
@@ -97,19 +96,13 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $rootTableStmt->execute();
 
-        if (! $identifierComposite
-            && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
-            && $property->getIdentifierGenerator()->isPostInsertGenerator()
-        ) {
-            $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
-            $id          = [$this->class->identifier[0] => $generatedId];
-
-            $postInsertIds = [
-                $this->class->getSingleIdentifierFieldName() => $generatedId,
-            ];
+        if ($generationPlan->containsDeferred()) {
+            $generationPlan->executeDeferred($this->em, $entity);
+            $id = $this->getIdentifier($entity);
         } else {
             $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         }
+
 
         if ($this->class->isVersioned()) {
             $this->assignDefaultVersionValue($entity, $id);
@@ -148,8 +141,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($subTableStmts as $stmt) {
             $stmt->closeCursor();
         }
-
-        return $postInsertIds;
     }
 
     /**
@@ -491,9 +482,10 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             if (
-                $this->class->getClassName() !== $this->class->getRootClassName() ||
-                $this->class->getProperty($name)->getIdentifierGeneratorType() !== GeneratorType::IDENTITY ||
-                $this->class->identifier[0] !== $name
+                $this->class->getClassName() !== $this->class->getRootClassName()
+                || ! $this->class->getProperty($name)->hasValueGenerator()
+                || $this->class->getProperty($name)->getValueGenerator()->getType() !== GeneratorType::IDENTITY
+                || $this->class->identifier[0] !== $name
             ) {
                 $columnName = $property->getColumnName();
 

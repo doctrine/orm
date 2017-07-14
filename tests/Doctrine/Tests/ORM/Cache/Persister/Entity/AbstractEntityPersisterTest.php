@@ -208,10 +208,9 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
 
         $this->entityPersister->expects($this->once())
             ->method('insert')
-            ->with($this->equalTo($entity))
-            ->will($this->returnValue(['generatedId' => 1]));
+            ->with($this->equalTo($entity));
 
-        self::assertEquals(['generatedId' => 1], $persister->insert($entity));
+        self::assertNull($persister->insert($entity));
     }
 
     public function testInvokeUpdate()

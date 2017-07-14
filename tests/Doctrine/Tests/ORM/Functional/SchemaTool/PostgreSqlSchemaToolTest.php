@@ -24,7 +24,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
     {
         $address = $this->em->getClassMetadata(Models\CMS\CmsAddress::class);
 
-        self::assertEquals(1, $address->getProperty('id')->getIdentifierGeneratorDefinition()['allocationSize']);
+        self::assertEquals(1, $address->getProperty('id')->getValueGenerator()->getDefinition()['allocationSize']);
     }
 
     public function testGetCreateSchemaSql()

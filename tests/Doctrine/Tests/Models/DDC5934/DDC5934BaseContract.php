@@ -40,7 +40,7 @@ class DDC5934BaseContract
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnName('id');
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
         $metadata->addProperty($fieldMetadata);
 

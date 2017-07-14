@@ -52,13 +52,13 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
-        $fieldMetadata->setIdentifierGeneratorDefinition(
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::SEQUENCE,
             [
                 'sequenceName'   => 'seq_entity_test_id',
                 'allocationSize' => 5,
             ]
-        );
+        ));
 
         $metadata->addProperty($fieldMetadata);
 
