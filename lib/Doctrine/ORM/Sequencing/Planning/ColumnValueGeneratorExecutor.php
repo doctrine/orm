@@ -20,30 +20,38 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Mapping\Exporter;
+namespace Doctrine\ORM\Sequencing\Planning;
 
-use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\LocalColumnMetadata;
+use Doctrine\ORM\Sequencing\Generator;
 
-class FieldMetadataExporter extends LocalColumnMetadataExporter
+class ColumnValueGeneratorExecutor implements ValueGenerationExecutor
 {
-    const VARIABLE = '$property';
+    /** @var LocalColumnMetadata */
+    private $column;
 
-    /**
-     * @param FieldMetadata $metadata
-     *
-     * @return string
-     */
-    protected function exportInstantiation(FieldMetadata $metadata) : string
+    /** @var Generator */
+    private $generator;
+
+    public function __construct(LocalColumnMetadata $column, Generator $generator)
     {
-        $lines = [];
-        $lines[] = sprintf(
-            'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',
-            $metadata->getName(),
-            $metadata->getColumnName(),
-            $metadata->getTypeName()
-        );
+        $this->column = $column;
+        $this->generator = $generator;
+    }
 
-        return implode(PHP_EOL, $lines);
+    public function execute(EntityManagerInterface $entityManager, /*object*/ $entity) : array
+    {
+        $value = $this->generator->generate($entityManager, $entity);
+
+        $platform = $entityManager->getConnection()->getDatabasePlatform();
+        $convertedValue = $this->column->getType()->convertToPHPValue($value, $platform);
+
+        return [$this->column->getColumnName() => $convertedValue];
+    }
+
+    public function isDeferred() : bool
+    {
+        return $this->generator->isPostInsertGenerator();
     }
 }

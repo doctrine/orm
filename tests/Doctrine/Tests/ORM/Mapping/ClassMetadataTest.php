@@ -1360,16 +1360,18 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $id = new Mapping\FieldMetadata('id');
-        $id->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
-        $id->setIdentifierGeneratorDefinition([
-            'sequenceName' => 'foo',
-            'allocationSize' => 1,
-        ]);
+        $id->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::SEQUENCE,
+            [
+                'sequenceName' => 'foo',
+                'allocationSize' => 1,
+            ]
+        ));
         $cm->addProperty($id);
 
         self::assertEquals(
             ['sequenceName' => 'foo', 'allocationSize' => 1],
-            $cm->getProperty('id')->getIdentifierGeneratorDefinition()
+            $cm->getProperty('id')->getValueGenerator()->getDefinition()
         );
     }
 

@@ -315,34 +315,33 @@ class XmlDriver extends FileDriver
             if (isset($idElement->generator)) {
                 $strategy = isset($idElement->generator['strategy'])
                     ? (string) $idElement->generator['strategy']
-                    : 'AUTO'
-                ;
+                    : 'AUTO';
 
                 $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, strtoupper($strategy)));
-                $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
-            }
 
-            // Check for SequenceGenerator/TableGenerator definition
-            if (isset($idElement->{'sequence-generator'})) {
-                $seqGenerator = $idElement->{'sequence-generator'};
+                if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
+                    $idGeneratorDefinition = [];
 
-                $fieldMetadata->setIdentifierGeneratorDefinition(
-                    [
-                        'sequenceName'   => (string) $seqGenerator['sequence-name'],
-                        'allocationSize' => (string) $seqGenerator['allocation-size'],
-                    ]
-                );
-            } else if (isset($idElement->{'custom-id-generator'})) {
-                $customGenerator = $idElement->{'custom-id-generator'};
+                    // Check for SequenceGenerator/TableGenerator definition
+                    if (isset($idElement->{'sequence-generator'})) {
+                        $seqGenerator = $idElement->{'sequence-generator'};
+            $idGeneratorDefinition = [
+                            'sequenceName' => (string) $seqGenerator['sequence-name'],
+                            'allocationSize' => (string) $seqGenerator['allocation-size'],
+                        ];
+                    } elseif (isset($idElement->{'custom-id-generator'})) {
+                        $customGenerator = $idElement->{'custom-id-generator'};
 
-                $fieldMetadata->setIdentifierGeneratorDefinition(
-                    [
-                        'class'     => (string) $customGenerator['class'],
-                        'arguments' => [],
-                    ]
-                );
-            } else if (isset($idElement->{'table-generator'})) {
-                throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
+                        $idGeneratorDefinition = [
+                            'class' => (string) $customGenerator['class'],
+                            'arguments' => [],
+                        ];
+                    } elseif (isset($idElement->{'table-generator'})) {
+                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
+                    }
+
+                    $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
+                }
             }
 
             $metadata->addProperty($fieldMetadata);

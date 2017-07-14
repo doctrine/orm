@@ -57,13 +57,13 @@ $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
 $fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
-$fieldMetadata->setIdentifierGeneratorDefinition(
+$fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+    Mapping\GeneratorType::AUTO,
     [
         'sequenceName'   => 'tablename_seq',
         'allocationSize' => 100,
     ]
-);
+));
 
 $metadata->addProperty($fieldMetadata);
 

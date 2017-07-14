@@ -117,7 +117,7 @@ class DDC964User
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnName('user_id');
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
         $metadata->addProperty($fieldMetadata);
 

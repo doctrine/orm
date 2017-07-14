@@ -34,6 +34,7 @@ use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ValueGeneratorMetadata;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -384,7 +385,7 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setIdentifierGeneratorType(GeneratorType::AUTO);
+            $ids[0]->setValueGenerator(new ValueGeneratorMetadata(GeneratorType::AUTO));
         }
     }
 

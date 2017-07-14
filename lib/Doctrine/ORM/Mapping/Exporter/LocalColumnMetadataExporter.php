@@ -42,6 +42,14 @@ abstract class LocalColumnMetadataExporter extends ColumnMetadataExporter
         $lines[] = $objectReference . '->setScale(' . $value->getScale() . ');';
         $lines[] = $objectReference . '->setPrecision(' . $value->getPrecision() . ');';
 
+        if ($value->hasValueGenerator()) {
+            $lines[] = sprintf(
+                $objectReference . '->setValueGenerator(new ValueGenerator(%s, %s));',
+                var_export($value->getValueGenerator()->getType(), true),
+                var_export($value->getValueGenerator()->getDefinition(), true)
+            );
+        }
+
         return implode(PHP_EOL, $lines);
     }
 }

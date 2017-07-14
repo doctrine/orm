@@ -40,6 +40,11 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     protected $precision;
 
     /**
+     * @var ValueGeneratorMetadata|null
+     */
+    protected $valueGenerator;
+
+    /**
      * @return int
      */
     public function getLength()
@@ -85,5 +90,20 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     public function setPrecision(int $precision)
     {
         $this->precision = $precision;
+    }
+
+    public function hasValueGenerator(): bool
+    {
+        return $this->valueGenerator !== null;
+    }
+
+    public function getValueGenerator(): ?ValueGeneratorMetadata
+    {
+        return $this->valueGenerator;
+    }
+
+    public function setValueGenerator(?ValueGeneratorMetadata $valueGenerator): void
+    {
+        $this->valueGenerator = $valueGenerator;
     }
 }
