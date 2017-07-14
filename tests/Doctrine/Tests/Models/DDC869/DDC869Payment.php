@@ -26,7 +26,6 @@ class DDC869Payment
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -38,5 +37,6 @@ class DDC869Payment
         $metadata->isMappedSuperclass = true;
 
         $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }
