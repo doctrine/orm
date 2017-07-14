@@ -26,6 +26,7 @@ use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
+use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -276,6 +277,13 @@ class ClassMetadata implements TableOwner
     protected $namingStrategy;
 
     /**
+     * Value generation plan is responsible for generating values for auto-generated fields.
+     *
+     * @var ValueGenerationPlan
+     */
+    protected $valueGenerationPlan;
+
+    /**
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
@@ -394,6 +402,7 @@ class ClassMetadata implements TableOwner
             'name',
             'table',
             'rootEntityName',
+            'valueGenerationPlan',
         ]);
 
         // The rest of the metadata is only serialized if necessary.
@@ -551,7 +560,7 @@ class ClassMetadata implements TableOwner
         $explicitlyGeneratedProperties = array_filter($this->properties, function (Property $property) : bool {
             return $property instanceof FieldMetadata
                 && $property->isPrimaryKey()
-                && $property->getIdentifierGeneratorType() !== GeneratorType::NONE;
+                && $property->hasValueGenerator();
         });
 
         if ($this->isIdentifierComposite() && count($explicitlyGeneratedProperties) !== 0) {
@@ -1463,6 +1472,22 @@ class ClassMetadata implements TableOwner
     }
 
     /**
+     * @param string $columnName
+     *
+     * @return LocalColumnMetadata|null
+     */
+    public function getColumn(string $columnName): ?LocalColumnMetadata
+    {
+        foreach ($this->properties as $property) {
+            if ($property instanceof LocalColumnMetadata && $property->getColumnName() === $columnName) {
+                return $property;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * @return array<Property>
      */
     public function getProperties()
@@ -1858,6 +1883,16 @@ class ClassMetadata implements TableOwner
         if (is_subclass_of($className, $this->name) && ! in_array($className, $this->subClasses)) {
             $this->subClasses[] = $className;
         }
+    }
+
+    public function getValueGenerationPlan(): ValueGenerationPlan
+    {
+        return $this->valueGenerationPlan;
+    }
+
+    public function setValueGenerationPlan(ValueGenerationPlan $valueGenerationPlan): void
+    {
+        $this->valueGenerationPlan = $valueGenerationPlan;
     }
 
     /**

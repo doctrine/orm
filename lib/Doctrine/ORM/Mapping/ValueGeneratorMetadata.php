@@ -20,31 +20,29 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing;
+namespace Doctrine\ORM\Mapping;
 
-use Doctrine\ORM\EntityManager;
-
-interface Generator
+class ValueGeneratorMetadata
 {
-    /**
-     * Generates an identifier for an entity.
-     *
-     * @param EntityManager $em
-     * @param object        $entity
-     *
-     * @return \Generator
-     */
-    public function generate(EntityManager $em, $entity);
+    /** @var string */
+    protected $type;
 
-    /**
-     * Gets whether this generator is a post-insert generator which means that
-     * {@link generate()} must be called after the entity has been inserted
-     * into the database.
-     *
-     * By default, this method returns FALSE. Generators that have this requirement
-     * must override this method and return TRUE.
-     *
-     * @return boolean
-     */
-    public function isPostInsertGenerator();
+    /** @var array<string, mixed> */
+    protected $definition;
+
+    public function __construct(string $type, array $definition = [])
+    {
+        $this->type = $type;
+        $this->definition = $definition;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getDefinition(): array
+    {
+        return $this->definition;
+    }
 }

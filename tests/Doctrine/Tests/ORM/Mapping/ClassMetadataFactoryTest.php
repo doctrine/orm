@@ -56,7 +56,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // Prechecks
         self::assertEquals([], $cm1->getParentClasses());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
-        self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getIdentifierGeneratorType());
+        self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getValueGenerator()->getType());
         self::assertTrue($cm1->hasField('name'));
         self::assertCount(4, $cm1->getProperties()); // 2 fields + 2 associations
         self::assertEquals('group', $cm1->table->getName());
@@ -70,35 +70,17 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertTrue($cmMap1->hasField('name'));
     }
 
-    public function testGetMetadataFor_ReturnsLoadedCustomIdGenerator()
-    {
-        $cm1 = $this->createValidClassMetadata();
-
-        $cm1->getProperty('id')->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
-        $cm1->getProperty('id')->setIdentifierGeneratorDefinition([
-            'class' => CustomIdGenerator::class,
-            'arguments' => [],
-        ]);
-
-        $cmf = $this->createTestFactory();
-
-        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
-
-        $actual = $cmf->getMetadataFor($cm1->getClassName());
-
-        self::assertEquals(Mapping\GeneratorType::CUSTOM, $actual->getProperty('id')->getIdentifierGeneratorType());
-        self::assertInstanceOf(CustomIdGenerator::class, $actual->getProperty('id')->getIdentifierGenerator());
-    }
-
     public function testGetMetadataFor_ThrowsExceptionOnUnknownCustomGeneratorClass()
     {
         $cm1 = $this->createValidClassMetadata();
 
-        $cm1->getProperty('id')->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
-        $cm1->getProperty('id')->setIdentifierGeneratorDefinition([
-            'class' => 'NotExistingGenerator',
-            'arguments' => [],
-        ]);
+        $cm1->getProperty('id')->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::CUSTOM,
+            [
+                'class' => 'NotExistingGenerator',
+                'arguments' => [],
+            ]
+        ));
 
         $cmf = $this->createTestFactory();
 
@@ -112,7 +94,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
     {
         $cm1 = $this->createValidClassMetadata();
-        $cm1->getProperty('id')->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
+        $cm1->getProperty('id')->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::CUSTOM));
         $cmf = $this->createTestFactory();
         $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
         $this->expectException(ORMException::class);
@@ -294,7 +276,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
         $cm1->addProperty($fieldMetadata);
 
@@ -541,7 +523,7 @@ class CustomIdGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManager $em, $entity): \Generator
     {
     }
 

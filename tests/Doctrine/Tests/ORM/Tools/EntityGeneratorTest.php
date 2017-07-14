@@ -119,7 +119,7 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setNullable(false);
         $fieldMetadata->setUnique(false);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
         $metadata->addProperty($fieldMetadata);
 
@@ -196,7 +196,7 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setNullable(false);
         $fieldMetadata->setUnique(false);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
         $metadata->addProperty($fieldMetadata);
 
@@ -664,13 +664,13 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
-        $fieldMetadata->setIdentifierGeneratorDefinition(
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
+            Mapping\GeneratorType::SEQUENCE,
             [
                 'sequenceName'   => 'DDC1784_ID_SEQ',
                 'allocationSize' => 1,
             ]
-        );
+        ));
 
         $metadata->addProperty($fieldMetadata);
 
@@ -702,7 +702,7 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
+        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::SEQUENCE));
 
         $metadata->addProperty($fieldMetadata);
 

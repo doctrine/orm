@@ -143,7 +143,7 @@ interface EntityPersister
      *
      * Subclasses may override this method to customize the semantics of entity deletion.
      *
-     * @return array An array of any generated post-insert IDs. Empty array if entity class does not use the IDENTITY generation strategy.
+     * @return void
      */
     public function insert($entity);
 

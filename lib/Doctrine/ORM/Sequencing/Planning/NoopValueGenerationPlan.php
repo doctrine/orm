@@ -20,31 +20,24 @@
 
 declare(strict_types=1);
 
-namespace Doctrine\ORM\Sequencing;
+namespace Doctrine\ORM\Sequencing\Planning;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
-interface Generator
+class NoopValueGenerationPlan implements ValueGenerationPlan
 {
-    /**
-     * Generates an identifier for an entity.
-     *
-     * @param EntityManager $em
-     * @param object        $entity
-     *
-     * @return \Generator
-     */
-    public function generate(EntityManager $em, $entity);
+    public function executeImmediate(EntityManagerInterface $entityManager, /*object*/ $entity): void
+    {
+        // no-op
+    }
 
-    /**
-     * Gets whether this generator is a post-insert generator which means that
-     * {@link generate()} must be called after the entity has been inserted
-     * into the database.
-     *
-     * By default, this method returns FALSE. Generators that have this requirement
-     * must override this method and return TRUE.
-     *
-     * @return boolean
-     */
-    public function isPostInsertGenerator();
+    public function executeDeferred(EntityManagerInterface $entityManager, /*object*/ $entity): void
+    {
+        // no-op
+    }
+
+    public function containsDeferred() : bool
+    {
+        return false;
+    }
 }

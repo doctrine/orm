@@ -381,7 +381,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     {
         $this->queuedCache['insert'][] = $entity;
 
-        return $this->persister->insert($entity);
+        $this->persister->insert($entity);
     }
 
     /**
