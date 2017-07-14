@@ -634,17 +634,16 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }*/
 
-            $owningTable = $this->getOwningTable($field);
-            $newVal      = $change[1];
+            $newVal = $change[1];
 
             if ($property instanceof FieldMetadata) {
                 // @todo this should be used instead
-                //$tableName  = $property->getTableName();
+                $tableName  = $property->getTableName();
                 $columnName = $property->getColumnName();
 
                 $this->columns[$columnName] = $property;
 
-                $result[$owningTable][$columnName] = $newVal;
+                $result[$tableName][$columnName] = $newVal;
 
                 continue;
             }
@@ -676,6 +675,7 @@ class BasicEntityPersister implements EntityPersister
             $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
             foreach ($property->getJoinColumns() as $joinColumn) {
+                $tableName            = $joinColumn->getTableName();
                 $columnName           = $joinColumn->getColumnName();
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
                 $targetField          = $targetClass->fieldNames[$referencedColumnName];
@@ -688,7 +688,7 @@ class BasicEntityPersister implements EntityPersister
 
                 $this->columns[$columnName] = $joinColumn;
 
-                $result[$owningTable][$columnName] = $newValId ? $newValId[$targetField] : null;
+                $result[$tableName][$columnName] = $newValId ? $newValId[$targetField] : null;
             }
         }
 
@@ -710,14 +710,6 @@ class BasicEntityPersister implements EntityPersister
     protected function prepareInsertData($entity)
     {
         return $this->prepareUpdateData($entity);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getOwningTable($fieldName)
-    {
-        return $this->class->getTableName();
     }
 
     /**

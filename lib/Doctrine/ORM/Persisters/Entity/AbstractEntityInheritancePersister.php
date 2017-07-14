@@ -43,10 +43,12 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 
         // Populate the discriminator column
         $discColumn = $this->class->discriminatorColumn;
+        $tableName  = $discColumn->getTableName();
+        $columnName = $discColumn->getColumnName();
 
-        $this->columns[$discColumn->getColumnName()] = $discColumn;
+        $this->columns[$columnName] = $discColumn;
 
-        $data[$discColumn->getTableName()][$discColumn->getColumnName()] = $this->class->discriminatorValue;
+        $data[$tableName][$columnName] = $this->class->discriminatorValue;
 
         return $data;
     }

@@ -46,44 +46,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
 class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 {
     /**
-     * Map of table to quoted table names.
-     *
-     * @var array
-     */
-    private $quotedTableMap = [];
-
-    /**
-     * Gets the name of the table that owns the column the given field is mapped to.
-     *
-     * @param string $fieldName
-     *
-     * @return string
-     *
-     * @override
-     */
-    public function getOwningTable($fieldName)
-    {
-        $property = $this->class->getProperty($fieldName);
-
-        switch (true) {
-            case ($property && $this->class->isInheritedProperty($fieldName)):
-                $cm = $property->getDeclaringClass();
-                break;
-
-            default:
-                $cm = $this->class;
-                break;
-        }
-
-        $tableName        = $cm->getTableName();
-        $quotedTableName  = $cm->table->getQuotedQualifiedName($this->platform);
-
-        $this->quotedTableMap[$tableName] = $quotedTableName;
-
-        return $tableName;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function executeInserts()
@@ -211,10 +173,9 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $isVersioned = $this->class->isVersioned();
 
         foreach ($updateData as $tableName => $data) {
-            $quotedTableName = $this->quotedTableMap[$tableName];
-            $versioned       = $isVersioned && $this->class->versionProperty->getTableName() === $tableName;
+            $versioned = $isVersioned && $this->class->versionProperty->getTableName() === $tableName;
 
-            $this->updateTable($entity, $quotedTableName, $data, $versioned);
+            $this->updateTable($entity, $this->platform->quoteIdentifier($tableName), $data, $versioned);
         }
 
         // Make sure the table with the version column is updated even if no columns on that

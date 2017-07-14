@@ -62,6 +62,8 @@ class DDC2415ParentEntity
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
+        $metadata->isMappedSuperclass = true;
+
         $fieldMetadata = new Mapping\FieldMetadata('id');
 
         $fieldMetadata->setType(Type::getType('string'));
@@ -77,8 +79,6 @@ class DDC2415ParentEntity
                 'arguments' => [],
             ]
         );
-
-        $metadata->isMappedSuperclass = true;
     }
 }
 
