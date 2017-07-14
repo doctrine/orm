@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * An entity manager mock that prevents lazy-loading of proxies
@@ -351,5 +352,13 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     public function contains($object)
     {
         return $this->realEntityManager->contains($object);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getIdentifierFlattener()
+    {
+        return $this->realEntityManager->getIdentifierFlattener();
     }
 }

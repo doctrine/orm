@@ -20,7 +20,6 @@
 
 namespace Doctrine\ORM\Mapping;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
@@ -325,9 +324,8 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
         $this->name           = $entityName;
         $this->rootEntityName = $entityName;
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
-        $this->table          = new TableMetadata();
 
-        $this->table->setName($this->namingStrategy->classToTableName($entityName));
+        $this->setTable(new TableMetadata());
     }
 
     /**
