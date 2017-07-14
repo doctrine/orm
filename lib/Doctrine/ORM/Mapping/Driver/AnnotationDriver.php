@@ -557,7 +557,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $strategy            = strtoupper($generatedValueAnnot->strategy);
             $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
-            $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
+            $metadata->setIdGeneratorType($idGeneratorType);
         }
 
         // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
@@ -565,7 +565,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
                 $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
 
-                $fieldMetadata->setIdentifierGeneratorDefinition([
+                $metadata->setGeneratorDefinition([
                     'sequenceName'   => $seqGeneratorAnnot->sequenceName,
                     'allocationSize' => $seqGeneratorAnnot->allocationSize,
                 ]);
@@ -575,7 +575,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
                 $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
 
-                $fieldMetadata->setIdentifierGeneratorDefinition([
+                $metadata->setGeneratorDefinition([
                     'class'     => $customGeneratorAnnot->class,
                     'arguments' => $customGeneratorAnnot->arguments,
                 ]);

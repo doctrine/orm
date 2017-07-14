@@ -10,6 +10,7 @@ $tableMetadata->addOption('engine', 'MyISAM');
 $tableMetadata->addOption('foo', ['bar' => 'baz']);
 
 $metadata->setTable($tableMetadata);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
 $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
 
@@ -22,7 +23,6 @@ $fieldMetadata = new Mapping\FieldMetadata('id');
 
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);
 

@@ -177,17 +177,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testEntitySequence($class)
     {
-        self::assertInternalType(
-            'array',
-            $class->getProperty('id')->getIdentifierGeneratorDefinition(),
-            'No Sequence Definition set on this driver.'
-        );
+        self::assertInternalType('array', $class->generatorDefinition, 'No Sequence Definition set on this driver.');
         self::assertEquals(
             [
                 'sequenceName'   => 'tablename_seq',
                 'allocationSize' => 100,
             ],
-            $class->getProperty('id')->getIdentifierGeneratorDefinition()
+            $class->generatorDefinition
         );
     }
 
@@ -195,13 +191,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     {
         $class = $this->createClassMetadata(Animal::class);
 
-        self::assertEquals(Mapping\GeneratorType::CUSTOM, $class->getProperty('id')->getIdentifierGeneratorType(), "Generator Type");
+        self::assertEquals(Mapping\GeneratorType::CUSTOM, $class->generatorType, "Generator Type");
         self::assertEquals(
             [
                 'class'     => 'stdClass',
                 'arguments' => [],
             ],
-            $class->getProperty('id')->getIdentifierGeneratorDefinition(),
+            $class->generatorDefinition,
             "Generator Definition"
         );
     }
@@ -321,7 +317,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals('integer', $property->getTypeName());
         self::assertEquals(['id'], $class->identifier);
-        self::assertEquals(Mapping\GeneratorType::AUTO, $property->getIdentifierGeneratorType(), "ID-Generator is not GeneratorType::AUTO");
+        self::assertEquals(Mapping\GeneratorType::AUTO, $class->generatorType, "ID-Generator is not GeneratorType::AUTO");
 
         return $class;
     }
@@ -559,7 +555,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('id', $idProperty->getColumnName());
         self::assertEquals('name', $nameProperty->getColumnName());
 
-        self::assertEquals(Mapping\GeneratorType::NONE, $idProperty->getIdentifierGeneratorType());
+        self::assertEquals(Mapping\GeneratorType::NONE, $class->generatorType);
     }
 
     /**
@@ -1290,6 +1286,13 @@ class User
         $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
         $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
 
+        $metadata->setGeneratorDefinition(
+            [
+                'sequenceName'   => 'tablename_seq',
+                'allocationSize' => 100,
+            ]
+        );
+
         $metadata->addNamedQuery(
             [
                 'name' => 'all',
@@ -1301,13 +1304,6 @@ class User
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
-        $fieldMetadata->setIdentifierGeneratorDefinition(
-            [
-                'sequenceName'   => 'tablename_seq',
-                'allocationSize' => 100,
-            ]
-        );
 
         $metadata->addProperty($fieldMetadata);
 
@@ -1341,6 +1337,7 @@ class User
         $fieldMetadata->setType(Type::getType('integer'));
 
         $metadata->addProperty($fieldMetadata);
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         $joinColumns = [];
 
@@ -1418,8 +1415,8 @@ abstract class Animal
 
     public static function loadMetadata(ClassMetadata $metadata)
     {
-        $metadata->getProperty('id')->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
-        $metadata->getProperty('id')->setIdentifierGeneratorDefinition(
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
+        $metadata->setGeneratorDefinition(
             [
                 'class'     => 'stdClass',
                 'arguments' => [],
@@ -1494,7 +1491,6 @@ class DDC1170Entity
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnDefinition('INT unsigned NOT NULL');
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -1504,6 +1500,8 @@ class DDC1170Entity
         $fieldMetadata->setColumnDefinition('VARCHAR(255) NOT NULL');
 
         $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 
 }
@@ -1529,7 +1527,6 @@ class DDC807Entity
 
         $fieldMetadata->setType(Type::getType('string'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -1541,6 +1538,8 @@ class DDC807Entity
         $discrColumn->setColumnDefinition("ENUM('ONE','TWO')");
 
         $metadata->setDiscriminatorColumn($discrColumn);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 
@@ -1610,10 +1609,10 @@ class SingleTableEntityNoDiscriminatorColumnMapping
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('string'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
         $metadata->addProperty($fieldMetadata);
 
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 
@@ -1651,10 +1650,10 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('string'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
         $metadata->addProperty($fieldMetadata);
 
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
     }
 }
 

@@ -116,7 +116,6 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setNullable(false);
         $fieldMetadata->setUnique(false);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -163,6 +162,7 @@ class EntityGeneratorTest extends OrmTestCase
 
         $metadata->addLifecycleCallback('loading', 'postLoad');
         $metadata->addLifecycleCallback('willBeRemoved', 'preRemove');
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         foreach ($embeddedClasses as $fieldName => $embeddedClass) {
             $metadata->mapEmbedded(
@@ -193,7 +193,6 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata->setPrimaryKey(true);
         $fieldMetadata->setNullable(false);
         $fieldMetadata->setUnique(false);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -203,6 +202,8 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata->setUnique(false);
 
         $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
@@ -523,7 +524,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
-        self::assertEquals($cm->getProperty('id')->getIdentifierGenerator(), $metadata->getProperty('id')->getIdentifierGenerator());
+        self::assertEquals($cm->idGenerator, $metadata->idGenerator);
         self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
 //        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
@@ -559,7 +560,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
-        self::assertEquals($cm->getProperty('id')->getIdentifierGenerator(), $metadata->getProperty('id')->getIdentifierGenerator());
+        self::assertEquals($cm->idGenerator, $metadata->idGenerator);
         self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
 
 //        $isbn = $this->newInstance($embeddedMetadata);
@@ -621,15 +622,17 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
-        $fieldMetadata->setIdentifierGeneratorDefinition(
+
+        $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
+
+        $metadata->setGeneratorDefinition(
             [
                 'sequenceName'   => 'DDC1784_ID_SEQ',
                 'allocationSize' => 1,
             ]
         );
-
-        $metadata->addProperty($fieldMetadata);
 
         $this->generator->writeEntityClass($metadata, $this->tmpDir);
 
@@ -659,9 +662,10 @@ class EntityGeneratorTest extends OrmTestCase
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::SEQUENCE);
 
         $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::SEQUENCE);
 
         $joinTable = new Mapping\JoinTableMetadata();
         $joinTable->setName('unidade_centro_custo');

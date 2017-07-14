@@ -22,7 +22,6 @@ namespace Doctrine\ORM\Tools\Export\Driver;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
@@ -143,6 +142,10 @@ class PhpExporter extends AbstractExporter
             }
         }
 
+        if (! $metadata->isIdentifierComposite()) {
+            $lines[] = '$metadata->setIdGeneratorType(Mapping\GeneratorType::' . $metadata->generatorType . ');';
+        }
+
         foreach ($metadata->getProperties() as $property) {
             if ($property instanceof FieldMetadata) {
                 $this->exportFieldMetadata($metadata, $property, $lines);
@@ -187,11 +190,6 @@ class PhpExporter extends AbstractExporter
         $lines[] = '$property->setPrimaryKey(' . $this->varExport($property->isPrimaryKey()) . ');';
         $lines[] = '$property->setNullable(' . $this->varExport($property->isNullable()) . ');';
         $lines[] = '$property->setUnique(' . $this->varExport($property->isUnique()) . ');';
-
-        if ($property->getIdentifierGeneratorType() !== GeneratorType::NONE) {
-            $lines[] = '$property->setIdentifierGeneratorType(Mapping\GeneratorType::' . $property->getIdentifierGeneratorType() . ');';
-        }
-
         $lines[] = null;
         $lines[] = '$metadata->addProperty($property);';
     }

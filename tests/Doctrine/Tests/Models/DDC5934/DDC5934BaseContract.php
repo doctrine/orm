@@ -38,7 +38,6 @@ class DDC5934BaseContract
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setColumnName('id');
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
 
@@ -47,5 +46,7 @@ class DDC5934BaseContract
         $association->setTargetEntity('DDC5934Member');
 
         $metadata->addProperty($association);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 }

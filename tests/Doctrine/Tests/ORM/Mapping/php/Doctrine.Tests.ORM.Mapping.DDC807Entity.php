@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('string'));
 $fieldMetadata->setPrimaryKey(true);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
 $metadata->addProperty($fieldMetadata);
 
@@ -19,3 +18,5 @@ $discrColumn->setType(Type::getType('string'));
 $discrColumn->setColumnDefinition("ENUM('ONE','TWO')");
 
 $metadata->setDiscriminatorColumn($discrColumn);
+
+$metadata->setIdGeneratorType(Mapping\GeneratorType::NONE);
