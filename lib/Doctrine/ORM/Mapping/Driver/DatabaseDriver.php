@@ -383,7 +383,7 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setIdentifierGeneratorType(GeneratorType::AUTO);
+            $metadata->setIdGeneratorType(GeneratorType::AUTO);
         }
     }
 

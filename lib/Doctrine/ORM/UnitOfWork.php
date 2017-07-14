@@ -557,7 +557,7 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if (( ! $property->isPrimaryKey() || ($property instanceof FieldMetadata && $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY))
+            if (( ! $class->isIdentifier($name) || $class->generatorType !== GeneratorType::IDENTITY)
                 && (! $class->isVersioned() || $name !== $class->versionProperty->getName())) {
                 $actualData[$name] = $value;
             }
@@ -842,24 +842,22 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        if (! $class->isIdentifierComposite()) {
-            $idField = $class->getSingleIdentifierFieldName();
-            $property = $class->getProperty($idField);
-            $idGen = $property->getIdentifierGenerator();
+        $idGen = $class->idGenerator;
 
-            if (! $idGen->isPostInsertGenerator()) {
-                $idValue = $idGen->generate($this->em, $entity);
+        if (! $idGen->isPostInsertGenerator()) {
+            $idValue = $idGen->generate($this->em, $entity);
 
-                if (! $idGen instanceof AssignedGenerator) {
-                    $platform = $this->em->getConnection()->getDatabasePlatform();
-                    $idValue = $property->getType()->convertToPHPValue($idValue, $platform);
-                    $idValue = [$idField => $idValue];
+            if (! $idGen instanceof AssignedGenerator) {
+                $idField  = $class->getSingleIdentifierFieldName();
+                $property = $class->getProperty($idField);
+                $platform = $this->em->getConnection()->getDatabasePlatform();
+                $idValue  = $property->getType()->convertToPHPValue($idValue, $platform);
+                $idValue  = [$idField => $idValue];
 
-                    $class->assignIdentifier($entity, $idValue);
-                }
-
-                $this->entityIdentifiers[$oid] = $idValue;
+                $class->assignIdentifier($entity, $idValue);
             }
+
+            $this->entityIdentifiers[$oid] = $idValue;
         }
 
         $this->entityStates[$oid] = self::STATE_MANAGED;
@@ -911,7 +909,7 @@ class UnitOfWork implements PropertyChangedListener
                     break;
 
                 case ($property instanceof FieldMetadata):
-                    if (! $property->isPrimaryKey() || $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY) {
+                    if (! $property->isPrimaryKey() || $class->generatorType !== GeneratorType::IDENTITY) {
                         $actualData[$name] = $property->getValue($entity);
                     }
 
@@ -1077,12 +1075,10 @@ class UnitOfWork implements PropertyChangedListener
             // Entity with this $oid after deletion treated as NEW, even if the $oid
             // is obtained by a new entity because the old one went out of scope.
             //$this->entityStates[$oid] = self::STATE_NEW;
-            if (! $class->isIdentifierComposite()) {
-                $identifierProperty = $class->getProperty($class->getSingleIdentifierFieldName());
-                if ($identifierProperty->getIdentifierGeneratorType() !== GeneratorType::NONE) {
-                    $property = $class->getProperty($class->getSingleIdentifierFieldName());
-                    $property->setValue($entity, null);
-                }
+            if ($class->generatorType !== GeneratorType::NONE) {
+                $property = $class->getProperty($class->getSingleIdentifierFieldName());
+
+                $property->setValue($entity, null);
             }
 
             if ($invoke !== ListenersInvoker::INVOKE_NONE) {
@@ -1445,7 +1441,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $flatId = $this->identifierFlattener->flattenIdentifier($class, $id);
 
-        if (count($class->getGeneratedIdentifierProperties()) === 0) {
+        if ($class->generatorType === GeneratorType::NONE) {
             // Check for a version field, if available, to avoid a db lookup.
             if ($class->isVersioned()) {
                 return $class->versionProperty->getValue($entity)
@@ -1466,28 +1462,25 @@ class UnitOfWork implements PropertyChangedListener
             return self::STATE_NEW;
         }
 
-        foreach ($class->getGeneratedIdentifierProperties() as $property) {
-            if ($property->getIdentifierGeneratorType() !== GeneratorType::NONE
-                && $property->getIdentifierGenerator()->isPostInsertGenerator()) {
+        if ( ! $class->idGenerator->isPostInsertGenerator()) {
+            // if we have a pre insert generator we can't be sure that having an id
+            // really means that the entity exists. We have to verify this through
+            // the last resort: a db lookup
+
+            // Last try before db lookup: check the identity map.
+            if ($this->tryGetById($flatId, $class->rootEntityName)) {
                 return self::STATE_DETACHED;
             }
+
+            // db lookup
+            if ($this->getEntityPersister($class->name)->exists($entity)) {
+                return self::STATE_DETACHED;
+            }
+
+            return self::STATE_NEW;
         }
 
-        // if we have a pre insert generator we can't be sure that having an id
-        // really means that the entity exists. We have to verify this through
-        // the last resort: a db lookup
-
-        // Last try before db lookup: check the identity map.
-        if ($this->tryGetById($flatId, $class->rootEntityName)) {
-            return self::STATE_DETACHED;
-        }
-
-        // db lookup
-        if ($this->getEntityPersister($class->name)->exists($entity)) {
-            return self::STATE_DETACHED;
-        }
-
-        return self::STATE_NEW;
+        return self::STATE_DETACHED;
     }
 
     /**
@@ -1830,7 +1823,7 @@ class UnitOfWork implements PropertyChangedListener
                 if ($managedCopy === null) {
                     // If the identifier is ASSIGNED, it is NEW, otherwise an error
                     // since the managed entity was not found.
-                    if (count($class->getGeneratedIdentifierProperties()) !== 0) {
+                    if ($class->generatorType !== GeneratorType::NONE) {
                         throw EntityNotFoundException::fromClassNameAndIdentifier(
                             $class->getName(),
                             $this->identifierFlattener->flattenIdentifier($class, $id)

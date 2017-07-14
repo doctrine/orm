@@ -31,12 +31,14 @@ $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
 $fieldMetadata->setNullable(false);
 $fieldMetadata->setUnique(false);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
-$fieldMetadata->setIdentifierGeneratorDefinition(
+
+$metadata->addProperty($fieldMetadata);
+
+$metadata->setIdGeneratorType(Mapping\GeneratorType::CUSTOM);
+
+$metadata->setGeneratorDefinition(
     [
         'class'     => 'stdClass',
         'arguments' => [],
     ]
 );
-
-$metadata->addProperty($fieldMetadata);

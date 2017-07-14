@@ -93,7 +93,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         $postInsertIds  = [];
-        $idGenerator    = $this->class->getProperty($this->class->identifier[0])->getIdentifierGenerator();
+        $idGenerator    = $this->class->idGenerator;
         $isPostInsertId = $idGenerator->isPostInsertGenerator();
         $rootClass      = ($this->class->name !== $this->class->rootEntityName)
             ? $this->em->getClassMetadata($this->class->rootEntityName)
@@ -536,7 +536,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
             if (
                 $this->class->name !== $this->class->rootEntityName ||
-                $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY ||
+                $this->class->generatorType !== GeneratorType::IDENTITY ||
                 $this->class->identifier[0] !== $name
             ) {
                 $columnName = $property->getColumnName();
