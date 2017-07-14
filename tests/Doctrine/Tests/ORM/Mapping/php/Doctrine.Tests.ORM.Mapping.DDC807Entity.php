@@ -10,7 +10,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 $fieldMetadata = new Mapping\FieldMetadata('id');
 $fieldMetadata->setType(Type::getType('string'));
 $fieldMetadata->setPrimaryKey(true);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::NONE);
 
 $metadata->addProperty($fieldMetadata);
 

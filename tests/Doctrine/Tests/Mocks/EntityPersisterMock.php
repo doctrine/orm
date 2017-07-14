@@ -30,11 +30,6 @@ class EntityPersisterMock extends BasicEntityPersister
     private $deletes = [];
 
     /**
-     * @var int
-     */
-    private $identityColumnValueCounter = 0;
-
-    /**
      * @var string|null
      */
     private $mockIdGeneratorType;
@@ -61,16 +56,9 @@ class EntityPersisterMock extends BasicEntityPersister
     {
         $this->inserts[] = $entity;
 
-        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY
-            || $this->class->getProperty($this->class->getSingleIdentifierFieldName())->getIdentifierGeneratorType() === GeneratorType::IDENTITY) {
-            $id = $this->identityColumnValueCounter++;
-
-            return [
-                $this->class->getSingleIdentifierFieldName() => $id,
-            ];
+        if ($this->class->getValueGenerationPlan()->containsDeferred()) {
+            $this->class->getValueGenerationPlan()->executeDeferred($this->em, $entity);
         }
-
-        return [];
     }
 
     /**
@@ -127,7 +115,6 @@ class EntityPersisterMock extends BasicEntityPersister
     public function reset()
     {
         $this->existsCalled = false;
-        $this->identityColumnValueCounter = 0;
         $this->inserts = [];
         $this->updates = [];
         $this->deletes = [];

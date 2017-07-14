@@ -753,37 +753,41 @@ class AnnotationDriver implements MappingDriver
         // Check for GeneratedValue strategy
         if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
             $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
-            $strategy            = strtoupper($generatedValueAnnot->strategy);
-            $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
+            $strategy = strtoupper($generatedValueAnnot->strategy);
+            $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
-            $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
-        }
+            if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
+                $idGeneratorDefinition = [];
 
-        // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
-        switch (true) {
-            case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
-                $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
+                // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
+                switch (true) {
+                    case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
+                        $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
 
-                $fieldMetadata->setIdentifierGeneratorDefinition([
-                    'sequenceName'   => $seqGeneratorAnnot->sequenceName,
-                    'allocationSize' => $seqGeneratorAnnot->allocationSize,
-                ]);
+                        $idGeneratorDefinition = [
+                            'sequenceName' => $seqGeneratorAnnot->sequenceName,
+                            'allocationSize' => $seqGeneratorAnnot->allocationSize,
+                        ];
 
-                break;
+                        break;
 
-            case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
-                $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
+                    case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
+                        $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
 
-                $fieldMetadata->setIdentifierGeneratorDefinition([
-                    'class'     => $customGeneratorAnnot->class,
-                    'arguments' => $customGeneratorAnnot->arguments,
-                ]);
+                        $idGeneratorDefinition = [
+                            'class' => $customGeneratorAnnot->class,
+                            'arguments' => $customGeneratorAnnot->arguments,
+                        ];
 
-                break;
+                        break;
 
-            /* @todo If it is not supported, why does this exist? */
-            case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
-                throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
+                    /* @todo If it is not supported, why does this exist? */
+                    case isset($propertyAnnotations['Doctrine\ORM\Mapping\TableGenerator']):
+                        throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
+                }
+
+                $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
+            }
         }
 
         return $fieldMetadata;

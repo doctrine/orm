@@ -37,15 +37,6 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /** @var string */
     protected $name;
 
-    /** @var string */
-    protected $identifierGeneratorType = GeneratorType::NONE;
-
-    /** @var array<string, mixed> */
-    protected $identifierGeneratorDefinition = [];
-
-    /** @var Generator */
-    protected $identifierGenerator;
-
     /**
      * FieldMetadata constructor.
      *
@@ -89,54 +80,6 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getIdentifierGeneratorType()
-    {
-        return $this->identifierGeneratorType;
-    }
-
-    /**
-     * @param int $identifierGeneratorType
-     */
-    public function setIdentifierGeneratorType(string $identifierGeneratorType)
-    {
-        $this->identifierGeneratorType = $identifierGeneratorType;
-    }
-
-    /**
-     * @return array
-     */
-    public function getIdentifierGeneratorDefinition()
-    {
-        return $this->identifierGeneratorDefinition;
-    }
-
-    /**
-     * @param array $identifierGeneratorDefinition
-     */
-    public function setIdentifierGeneratorDefinition(array $identifierGeneratorDefinition)
-    {
-        $this->identifierGeneratorDefinition = $identifierGeneratorDefinition;
-    }
-
-    /**
-     * @return Generator
-     */
-    public function getIdentifierGenerator() : Generator
-    {
-        return $this->identifierGenerator;
-    }
-
-    /**
-     * @param Generator $identifierGenerator
-     */
-    public function setIdentifierGenerator(Generator $identifierGenerator)
-    {
-        $this->identifierGenerator = $identifierGenerator;
     }
 
     /**

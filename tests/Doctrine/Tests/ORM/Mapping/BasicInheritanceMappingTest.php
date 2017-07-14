@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -151,10 +152,10 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(SuperclassEntity::class);
 
-        self::assertInstanceOf(SequenceGenerator::class, $class->getProperty('id')->getIdentifierGenerator());
+        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
         self::assertEquals(
             ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getIdentifierGeneratorDefinition()
+            $class->getProperty('id')->getValueGenerator()->getDefinition()
         );
     }
 
@@ -167,10 +168,10 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(HierarchyD::class);
 
-        self::assertInstanceOf(SequenceGenerator::class, $class->getProperty('id')->getIdentifierGenerator());
+        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
         self::assertEquals(
             ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getIdentifierGeneratorDefinition()
+            $class->getProperty('id')->getValueGenerator()->getDefinition()
         );
     }
 
@@ -183,10 +184,10 @@ class BasicInheritanceMappingTest extends OrmTestCase
         /* @var ClassMetadata $class */
         $class = $this->cmf->getMetadataFor(MediumSuperclassEntity::class);
 
-        self::assertInstanceOf(SequenceGenerator::class, $class->getProperty('id')->getIdentifierGenerator());
+        self::assertSame(GeneratorType::SEQUENCE, $class->getProperty('id')->getValueGenerator()->getType());
         self::assertEquals(
             ['allocationSize' => 1, 'sequenceName' => 'foo'],
-            $class->getProperty('id')->getIdentifierGeneratorDefinition()
+            $class->getProperty('id')->getValueGenerator()->getDefinition()
         );
     }
 

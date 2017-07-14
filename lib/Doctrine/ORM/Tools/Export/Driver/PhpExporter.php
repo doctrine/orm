@@ -190,8 +190,12 @@ class PhpExporter extends AbstractExporter
         $lines[] = '$property->setNullable(' . $this->varExport($property->isNullable()) . ');';
         $lines[] = '$property->setUnique(' . $this->varExport($property->isUnique()) . ');';
 
-        if ($property->getIdentifierGeneratorType() !== GeneratorType::NONE) {
-            $lines[] = '$property->setIdentifierGeneratorType(Mapping\GeneratorType::' . $property->getIdentifierGeneratorType() . ');';
+        if ($property->hasValueGenerator()) {
+            $lines[] = sprintf(
+                '$property->setValueGenerator(new Mapping\ValueGeneratorMetadata(%s, %s));',
+                $this->varExport($property->getValueGenerator()->getType()),
+                $this->varExport($property->getValueGenerator()->getDefinition())
+            );
         }
 
         $lines[] = null;

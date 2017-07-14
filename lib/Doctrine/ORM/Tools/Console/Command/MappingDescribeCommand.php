@@ -335,8 +335,8 @@ EOT
         $output[] = $this->formatField('    options', $this->formatValue($columnMetadata->getOptions()));
 
         if ($columnMetadata instanceof FieldMetadata) {
-            $output[] = $this->formatField('    Generator type', $this->formatValue($columnMetadata->getIdentifierGeneratorType()));
-            $output[] = $this->formatField('    Generator definition', $this->formatValue($columnMetadata->getIdentifierGeneratorDefinition()));
+            $output[] = $this->formatField('    Generator type', $this->formatValue($columnMetadata->getValueGenerator()->getType()));
+            $output[] = $this->formatField('    Generator definition', $this->formatValue($columnMetadata->getValueGenerator()->getDefinition()));
         }
 
         return $output;

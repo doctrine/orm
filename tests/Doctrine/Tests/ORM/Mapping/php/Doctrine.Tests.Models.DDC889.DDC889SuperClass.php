@@ -11,7 +11,7 @@ $metadata->isMappedSuperclass = true;
 
 $fieldMetadata = new Mapping\FieldMetadata('name');
 $fieldMetadata->setType(Type::getType('string'));
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
+$fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
 
 $metadata->addProperty($fieldMetadata);
 
