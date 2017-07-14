@@ -20,9 +20,10 @@ class DDC889Class extends DDC889SuperClass
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
         $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
         $metadata->addProperty($fieldMetadata);
+
+        $metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
     }
 
 }

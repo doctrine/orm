@@ -9,8 +9,8 @@ $metadata->isMappedSuperclass = true;
 
 $fieldMetadata = new Mapping\FieldMetadata('name');
 $fieldMetadata->setType(Type::getType('string'));
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);
 
 $metadata->setCustomRepositoryClass(DDC889SuperClass::class);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);

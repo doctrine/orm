@@ -36,7 +36,6 @@ use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
@@ -1182,7 +1181,7 @@ public function __construct(<params>)
                     $methods[] = $code;
                 }
 
-                if (( ! $property->isPrimaryKey() || $property->getIdentifierGeneratorType() == GeneratorType::NONE) &&
+                if (( ! $property->isPrimaryKey() || $metadata->generatorType == GeneratorType::NONE) &&
                     ( ! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable) &&
                     $code = $this->generateEntityStubMethod($metadata, 'set', $fieldName, $property->getTypeName(), $nullable)) {
                     $methods[] = $code;
@@ -1403,32 +1402,30 @@ public function __construct(<params>)
     }
 
     /**
-     * @param Property $metadata
+     * @param ClassMetadata $metadata
      *
      * @return string
      */
-    protected function generateIdentifierAnnotation(Property $metadata)
+    protected function generateIdentifierAnnotation(ClassMetadata $metadata)
     {
         $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Id';
 
-        if ($metadata instanceof FieldMetadata) {
-            if ($generatorType = $this->getIdGeneratorTypeString($metadata->getIdentifierGeneratorType())) {
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
+        if ($generatorType = $this->getIdGeneratorTypeString($metadata->generatorType)) {
+            $lines[] = $this->spaces.' * @' . $this->annotationsPrefix . 'GeneratedValue(strategy="' . $generatorType . '")';
+        }
+
+        if ($metadata->generatorDefinition) {
+            $generator = [];
+
+            if (isset($metadata->generatorDefinition['sequenceName'])) {
+                $generator[] = 'sequenceName="' . $metadata->generatorDefinition['sequenceName'] . '"';
             }
 
-            if ($metadata->getIdentifierGeneratorDefinition()) {
-                $generator = [];
-
-                if (isset($metadata->generatorDefinition['sequenceName'])) {
-                    $generator[] = 'sequenceName="' . $metadata->getIdentifierGeneratorDefinition()['sequenceName'] . '"';
-                }
-
-                if (isset($metadata->generatorDefinition['allocationSize'])) {
-                    $generator[] = 'allocationSize=' . $metadata->getIdentifierGeneratorDefinition()['allocationSize'];
-                }
-
-                $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';
+            if (isset($metadata->generatorDefinition['allocationSize'])) {
+                $generator[] = 'allocationSize=' . $metadata->generatorDefinition['allocationSize'];
             }
+
+            $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'SequenceGenerator(' . implode(', ', $generator) . ')';
         }
 
         return implode(PHP_EOL, $lines);
@@ -1539,7 +1536,7 @@ public function __construct(<params>)
             $lines[] = $this->spaces . ' *';
 
             if ($association->isPrimaryKey()) {
-                $lines[] = $this->generateIdentifierAnnotation($association);
+                $lines[] = $this->generateIdentifierAnnotation($metadata);
             }
 
             $type = null;
@@ -1717,7 +1714,7 @@ public function __construct(<params>)
             $lines[] = $this->spaces . ' * @' . $this->annotationsPrefix . 'Column(' . implode(', ', $column) . ')';
 
             if ($propertyMetadata->isPrimaryKey()) {
-                $lines[] = $this->generateIdentifierAnnotation($propertyMetadata);
+                $lines[] = $this->generateIdentifierAnnotation($metadata);
             }
 
             if ($metadata->isVersioned() && $metadata->versionProperty->getName() === $propertyMetadata->getName()) {
