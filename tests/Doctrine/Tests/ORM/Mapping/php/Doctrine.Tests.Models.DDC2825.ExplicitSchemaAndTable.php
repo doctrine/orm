@@ -10,11 +10,11 @@ $tableMetadata->setName('explicit_table');
 
 /* @var $metadata ClassMetadata */
 $metadata->setTable($tableMetadata);
+$metadata->setIdGeneratorType(Mapping\GeneratorType::AUTO);
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 
 $fieldMetadata->setType(Type::getType('integer'));
 $fieldMetadata->setPrimaryKey(true);
-$fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);

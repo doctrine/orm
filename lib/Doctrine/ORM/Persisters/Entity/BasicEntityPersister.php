@@ -260,6 +260,8 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $postInsertIds  = [];
+        $idGenerator    = $this->class->idGenerator;
+        $isPostInsertId = $idGenerator->isPostInsertGenerator();
 
         $stmt       = $this->conn->prepare($this->getInsertSQL());
         $tableName  = $this->class->getTableName();
@@ -279,9 +281,8 @@ class BasicEntityPersister implements EntityPersister
 
             $stmt->execute();
 
-            if (! $this->class->isIdentifierComposite()
-                && $this->class->getProperty($this->class->identifier[0])->getIdentifierGenerator()->isPostInsertGenerator()) {
-                $generatedId = $this->class->getProperty($this->class->identifier[0])->getIdentifierGenerator()->generate($this->em, $entity);
+            if ($isPostInsertId) {
+                $generatedId = $idGenerator->generate($this->em, $entity);
                 $id          = [$this->class->identifier[0] => $generatedId];
 
                 $postInsertIds[] = [
@@ -1523,9 +1524,7 @@ class BasicEntityPersister implements EntityPersister
                     break;
 
                 case ($property instanceof LocalColumnMetadata):
-                    if (! $property instanceof FieldMetadata
-                        || $property->getIdentifierGeneratorType() !== GeneratorType::IDENTITY
-                        || $this->class->identifier[0] !== $name) {
+                    if ($this->class->generatorType !== GeneratorType::IDENTITY || $this->class->identifier[0] !== $name) {
                         $columnName = $property->getColumnName();
 
                         $columns[] = $columnName;
