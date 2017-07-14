@@ -539,7 +539,7 @@ class CustomIdGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Mapping\Property $property, EntityManager $em, $entity)
     {
     }
 

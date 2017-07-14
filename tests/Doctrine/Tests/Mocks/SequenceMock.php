@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Sequencing\SequenceGenerator;
 
 /**
@@ -18,7 +19,7 @@ class SequenceMock extends SequenceGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Property $property, EntityManager $em, $entity)
     {
         return $this->sequenceNumber++;
     }

@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Sequencing\SequenceGenerator;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
@@ -25,6 +26,11 @@ class SequenceGeneratorTest extends OrmTestCase
      */
     private $connection;
 
+    /**
+     * @var FieldMetadata
+     */
+    private $fieldMetadataMock;
+
     protected function setUp() : void
     {
         parent::setUp();
@@ -32,6 +38,7 @@ class SequenceGeneratorTest extends OrmTestCase
         $this->entityManager     = $this->getTestEntityManager();
         $this->sequenceGenerator = new SequenceGenerator('seq', 10);
         $this->connection        = $this->entityManager->getConnection();
+        $this->fieldMetadataMock = $this->createMock(FieldMetadata::class);
     }
 
     public function testGeneration() : void
@@ -46,7 +53,7 @@ class SequenceGeneratorTest extends OrmTestCase
                 $this->connection->setQueryResult(new StatementArrayMock([[(int)($i / 10) * 10]]));
             }
 
-            $id = $this->sequenceGenerator->generate($this->entityManager, null);
+            $id = $this->sequenceGenerator->generate($this->fieldMetadataMock, $this->entityManager, null);
 
             self::assertSame($i, $id);
             self::assertSame((int)($i / 10) * 10 + 10, $this->sequenceGenerator->getCurrentMaxValue());

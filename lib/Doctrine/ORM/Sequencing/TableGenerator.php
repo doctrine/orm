@@ -20,9 +20,10 @@
 namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Property;
 
 /**
- * Id generator that uses a single-row database table and a hi/lo algorithm.
+ * Value generator that uses a single-row database table and a hi/lo algorithm.
  *
  * @since   2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>
@@ -72,7 +73,7 @@ class TableGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Property $property, EntityManager $em, $entity)
     {
         if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
