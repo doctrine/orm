@@ -1093,7 +1093,7 @@ class UnitOfWork implements PropertyChangedListener
             $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
         }
 
-        $calc = $this->getCommitOrderCalculator();
+        $calc = new Internal\CommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (don't have a node).
@@ -2342,16 +2342,6 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 // Do nothing
         }
-    }
-
-    /**
-     * Gets the CommitOrderCalculator used by the UnitOfWork to order commits.
-     *
-     * @return \Doctrine\ORM\Internal\CommitOrderCalculator
-     */
-    public function getCommitOrderCalculator()
-    {
-        return new Internal\CommitOrderCalculator();
     }
 
     /**
