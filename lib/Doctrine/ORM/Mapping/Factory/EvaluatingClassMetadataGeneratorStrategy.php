@@ -30,7 +30,7 @@ class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     private $generator;
 
     /**
-     * FileWriterDefinitionGeneratorStrategy constructor.
+     * EvaluatingClassMetadataGeneratorStrategy constructor.
      *
      * @param ClassMetadataGenerator $generator
      */

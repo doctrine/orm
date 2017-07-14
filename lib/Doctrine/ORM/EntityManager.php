@@ -19,16 +19,17 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\FilterCollection;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -120,6 +121,13 @@ use Doctrine\Common\Util\ClassUtils;
     private $expressionBuilder;
 
     /**
+     * The IdentifierFlattener used for manipulating identifiers
+     *
+     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     */
+    private $identifierFlattener;
+
+    /**
      * Whether the EntityManager is closed or not.
      *
      * @var bool
@@ -166,9 +174,10 @@ use Doctrine\Common\Util\ClassUtils;
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
 
-        $this->repositoryFactory = $config->getRepositoryFactory();
-        $this->unitOfWork        = new UnitOfWork($this);
-        $this->proxyFactory      = new StaticProxyFactory($this, $proxyConfiguration);
+        $this->repositoryFactory   = $config->getRepositoryFactory();
+        $this->unitOfWork          = new UnitOfWork($this);
+        $this->proxyFactory        = new StaticProxyFactory($this, $proxyConfiguration);
+        $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadataFactory);
 
         if ($config->isSecondLevelCacheEnabled()) {
             $cacheConfig    = $config->getSecondLevelCacheConfiguration();
@@ -205,6 +214,14 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         return $this->expressionBuilder;
+    }
+
+    /**
+     * @return IdentifierFlattener
+     */
+    public function getIdentifierFlattener() : IdentifierFlattener
+    {
+        return $this->identifierFlattener;
     }
 
     /**

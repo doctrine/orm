@@ -28,7 +28,6 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -38,10 +37,8 @@ use Doctrine\ORM\Mapping\LocalColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
-use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -50,7 +47,6 @@ use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -171,13 +167,6 @@ class BasicEntityPersister implements EntityPersister
     private $insertSql;
 
     /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
-     */
-    private $identifierFlattener;
-
-    /**
      * @var CachedPersisterContext
      */
     protected $currentPersisterContext;
@@ -201,12 +190,11 @@ class BasicEntityPersister implements EntityPersister
      */
     public function __construct(EntityManagerInterface $em, ClassMetadata $class)
     {
-        $this->em                    = $em;
-        $this->class                 = $class;
-        $this->conn                  = $em->getConnection();
-        $this->platform              = $this->conn->getDatabasePlatform();
-        $this->identifierFlattener   = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
-        $this->noLimitsContext       = $this->currentPersisterContext = new CachedPersisterContext(
+        $this->em              = $em;
+        $this->class           = $class;
+        $this->conn            = $em->getConnection();
+        $this->platform        = $this->conn->getDatabasePlatform();
+        $this->noLimitsContext = $this->currentPersisterContext = new CachedPersisterContext(
             $class,
             new Query\ResultSetMapping(),
             false
@@ -345,7 +333,7 @@ class BasicEntityPersister implements EntityPersister
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
-        $flattenedId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
+        $flattenedId = $this->em->getIdentifierFlattener()->flattenIdentifier($versionedClass, $id);
         $value       = $this->conn->fetchColumn($sql, array_values($flattenedId));
         $versionType = $versionProperty->getType();
 

@@ -261,7 +261,7 @@ class ObjectHydrator extends AbstractHydrator
         }
 
         if (isset($this->hints[Query::HINT_REFRESH_ENTITY]) && isset($this->rootAliases[$dqlAlias])) {
-            $id = $this->identifierFlattener->flattenIdentifier($this->metadataCache[$className], $data);
+            $id = $this->em->getIdentifierFlattener()->flattenIdentifier($this->metadataCache[$className], $data);
 
             $this->em->getUnitOfWork()->registerManaged($this->hints[Query::HINT_REFRESH_ENTITY], $id, $data);
         }
@@ -281,7 +281,7 @@ class ObjectHydrator extends AbstractHydrator
     {
         /* @var ClassMetadata $class */
         $class = $this->metadataCache[$className];
-        $id    = $this->identifierFlattener->flattenIdentifier($class, $data);
+        $id    = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
 
         return $this->uow->tryGetById($id, $class->rootEntityName);
     }
