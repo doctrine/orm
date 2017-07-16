@@ -830,24 +830,33 @@ class UnitOfWork implements PropertyChangedListener
             $this->listenersInvoker->invoke($class, Events::prePersist, $entity, new LifecycleEventArgs($entity, $this->em), $invoke);
         }
 
-        // TODO: Do not hardcode AssignedGenerator here, refactor once we implement ValueGenerationPlan
-        $idGen = ($class->isIdentifierComposite() || ! $class->getProperty($class->getSingleIdentifierFieldName()) instanceof FieldMetadata)
-            ? new AssignedGenerator()
-            : $class->getProperty($class->getSingleIdentifierFieldName())->getIdentifierGenerator();
+        $idValue = [];
+        $hasDeferredIdentifiers = false;
+        foreach ($class->identifier as $identifierName) {
+            $identifierProperty = $class->getProperty($identifierName);
 
-        if (! $idGen->isPostInsertGenerator()) {
-            $idValue = $idGen->generate($this->em, $entity);
+            // TODO: Do not hardcode AssignedGenerator here, refactor once we implement ValueGenerationPlan
+            $idGenerator = $identifierProperty instanceof FieldMetadata
+                ? $identifierProperty->getIdentifierGenerator()
+                : new AssignedGenerator();
 
-            if (!$idGen instanceof AssignedGenerator) {
-                $idField = $class->getSingleIdentifierFieldName();
-                $property = $class->getProperty($idField);
-                $platform = $this->em->getConnection()->getDatabasePlatform();
-                $idValue = $property->getType()->convertToPHPValue($idValue, $platform);
-                $idValue = [$idField => $idValue];
-
-                $class->assignIdentifier($entity, $idValue);
+            if ($idGenerator->isPostInsertGenerator()) {
+                $hasDeferredIdentifiers = true;
+                continue;
             }
 
+            $identifierValue = $idGenerator->generate($identifierProperty, $this->em, $entity);
+
+            if (! $idGenerator instanceof AssignedGenerator) {
+                $platform = $this->em->getConnection()->getDatabasePlatform();
+                $identifierValue = $identifierProperty->getType()->convertToPHPValue($identifierValue, $platform);
+                $identifierProperty->setValue($entity, $identifierValue);
+            }
+
+            $idValue[$identifierName] = $identifierValue;
+        }
+
+        if (! $hasDeferredIdentifiers) {
             $this->entityIdentifiers[$oid] = $idValue;
         }
 

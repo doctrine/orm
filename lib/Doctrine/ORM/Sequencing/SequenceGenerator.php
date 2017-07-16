@@ -20,10 +20,11 @@
 namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Property;
 use Serializable;
 
 /**
- * Represents an ID generator that uses a database sequence.
+ * Represents a value generator that uses a database sequence.
  *
  * @since 2.0
  * @author Roman Borschel <roman@code-factory.org>
@@ -69,7 +70,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Property $property, EntityManager $em, $entity)
     {
         if ($this->maxValue === null || $this->nextValue == $this->maxValue) {
             // Allocate new values

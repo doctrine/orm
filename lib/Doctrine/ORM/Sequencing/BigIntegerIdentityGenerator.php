@@ -20,9 +20,10 @@
 namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Property;
 
 /**
- * Id generator that obtains IDs from special "identity" columns. These are columns
+ * Value generator that obtains values from special "identity" columns. These are columns
  * that automatically get a database-generated, auto-incremented identifier on INSERT.
  * This generator obtains the last insert id after such an insert.
  */
@@ -50,7 +51,7 @@ class BigIntegerIdentityGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Property $property, EntityManager $em, $entity)
     {
         return (string) $em->getConnection()->lastInsertId($this->sequenceName);
     }

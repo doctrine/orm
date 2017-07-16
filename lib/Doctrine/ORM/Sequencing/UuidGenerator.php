@@ -20,9 +20,10 @@
 namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\Property;
 
 /**
- * Represents an ID generator that uses the database UUID expression
+ * Represents a value generator that uses the database UUID expression
  *
  * @since 2.3
  * @author Maarten de Keizer <m.de.keizer@markei.nl>
@@ -32,7 +33,7 @@ class UuidGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(Property $property, EntityManager $em, $entity)
     {
         $conn = $em->getConnection();
         $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();

@@ -104,7 +104,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
                 && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
                 && $property->getIdentifierGenerator()->isPostInsertGenerator()
             ) {
-                $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
+                $generatedId = $property->getIdentifierGenerator()->generate($property, $this->em, $entity);
                 $id          = [$this->class->identifier[0] => $generatedId];
 
                 $postInsertIds[] = [

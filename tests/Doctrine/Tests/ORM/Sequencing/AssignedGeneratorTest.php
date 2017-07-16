@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Sequencing;
 
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Sequencing\AssignedGenerator;
 use Doctrine\ORM\ORMException;
 use Doctrine\Tests\OrmTestCase;
@@ -14,7 +16,14 @@ use Doctrine\Tests\OrmTestCase;
  */
 class AssignedGeneratorTest extends OrmTestCase
 {
+    /**
+     * @var EntityManager
+     */
     private $em;
+
+    /**
+     * @var AssignedGenerator
+     */
     private $assignedGen;
 
     protected function setUp()
@@ -23,36 +32,45 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->assignedGen = new AssignedGenerator;
     }
 
-    /**
-     * @dataProvider entitiesWithoutId
-     */
-    public function testThrowsExceptionIfIdNotAssigned($entity)
+    public function testThrowsExceptionIfSingleIdNotAssigned()
     {
         $this->expectException(ORMException::class);
 
-        $this->assignedGen->generate($this->em, $entity);
-    }
+        $entity = new AssignedSingleIdEntity();
+        $myIdMock = $this->createMock(FieldMetadata::class);
+        $myIdMock->expects($this->once())
+            ->method('getValue')
+            ->willReturn($entity->myId);
 
-    public function entitiesWithoutId(): array
-    {
-        return [
-            'single'    => [new AssignedSingleIdEntity()],
-            'composite' => [new AssignedCompositeIdEntity()],
-        ];
+        $this->assignedGen->generate($myIdMock, $this->em, $entity);
     }
 
     public function testCorrectIdGeneration()
     {
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
-        $id = $this->assignedGen->generate($this->em, $entity);
-        self::assertEquals(['myId' => 1], $id);
+        $myIdField = $this->createMock(FieldMetadata::class);
+        $myIdField->expects($this->once())
+            ->method('getValue')
+            ->willReturn(1);
+        $id = $this->assignedGen->generate($myIdField, $this->em, $entity);
+        self::assertEquals($entity->myId, $id);
 
         $entity = new AssignedCompositeIdEntity;
-        $entity->myId2 = 2;
         $entity->myId1 = 4;
-        $id = $this->assignedGen->generate($this->em, $entity);
-        self::assertEquals(['myId1' => 4, 'myId2' => 2], $id);
+        $entity->myId2 = 2;
+        $myId1Field = $this->createMock(FieldMetadata::class);
+        $myId1Field->expects($this->once())
+            ->method('getValue')
+            ->willReturn($entity->myId1);
+        $myId2Field = $this->createMock(FieldMetadata::class);
+        $myId2Field->expects($this->once())
+            ->method('getValue')
+            ->willReturn($entity->myId2);
+        $id = $this->assignedGen->generate($myId1Field, $this->em, $entity);
+        self::assertEquals($entity->myId1, $id);
+        $id = $this->assignedGen->generate($myId2Field, $this->em, $entity);
+        self::assertEquals($entity->myId2, $id);
     }
 }
 
