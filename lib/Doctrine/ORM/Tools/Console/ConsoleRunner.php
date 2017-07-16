@@ -92,13 +92,17 @@ class ConsoleRunner
         $cli->addCommands(
             [
                 // DBAL Commands
-                new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
                 new \Doctrine\DBAL\Tools\Console\Command\ImportCommand(),
+                new \Doctrine\DBAL\Tools\Console\Command\ReservedWordsCommand(),
+                new \Doctrine\DBAL\Tools\Console\Command\RunSqlCommand(),
 
                 // ORM Commands
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\CollectionRegionCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\EntityRegionCommand(),
                 new \Doctrine\ORM\Tools\Console\Command\ClearCache\MetadataCommand(),
-                new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
                 new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\QueryRegionCommand(),
+                new \Doctrine\ORM\Tools\Console\Command\ClearCache\ResultCommand(),
                 new \Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand(),
                 new \Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand(),
                 new \Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand(),
