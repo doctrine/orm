@@ -287,8 +287,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     // Field found
                     $fieldMetadata = $this->convertReflectionPropertyToFieldMetadata(
                         $reflProperty,
-                        $propertyAnnotations,
-                        $metadata
+                        $propertyAnnotations
                     );
 
                     $metadata->addProperty($fieldMetadata);
@@ -531,8 +530,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
     private function convertReflectionPropertyToFieldMetadata(
         \ReflectionProperty $reflProperty,
-        array $propertyAnnotations,
-        Mapping\ClassMetadata $metadata /* @todo Should be removed once FieldMetadata owns Generator information */
+        array $propertyAnnotations
     )
     {
         $className   = $reflProperty->getDeclaringClass()->getName();
@@ -557,7 +555,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             $strategy            = strtoupper($generatedValueAnnot->strategy);
             $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
-            $metadata->setIdGeneratorType($idGeneratorType);
+            $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
         }
 
         // Check for CustomGenerator/SequenceGenerator/TableGenerator definition
@@ -565,7 +563,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($propertyAnnotations[Annotation\SequenceGenerator::class]):
                 $seqGeneratorAnnot = $propertyAnnotations[Annotation\SequenceGenerator::class];
 
-                $metadata->setGeneratorDefinition([
+                $fieldMetadata->setIdentifierGeneratorDefinition([
                     'sequenceName'   => $seqGeneratorAnnot->sequenceName,
                     'allocationSize' => $seqGeneratorAnnot->allocationSize,
                 ]);
@@ -575,7 +573,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($propertyAnnotations[Annotation\CustomIdGenerator::class]):
                 $customGeneratorAnnot = $propertyAnnotations[Annotation\CustomIdGenerator::class];
 
-                $metadata->setGeneratorDefinition([
+                $fieldMetadata->setIdentifierGeneratorDefinition([
                     'class'     => $customGeneratorAnnot->class,
                     'arguments' => $customGeneratorAnnot->arguments,
                 ]);
