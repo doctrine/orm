@@ -404,7 +404,7 @@ abstract class AbstractQuery
         }
 
         if ($value instanceof Mapping\ClassMetadata) {
-            return $value->discriminatorValue ?: $value->name;
+            return $value->discriminatorValue ?: $value->getClassName();
         }
 
         if ($value instanceof Collection) {
@@ -466,7 +466,7 @@ abstract class AbstractQuery
     private function translateNamespaces(Query\ResultSetMapping $rsm)
     {
         $translate = function ($alias) {
-            return $this->em->getClassMetadata($alias)->getName();
+            return $this->em->getClassMetadata($alias)->getClassName();
         };
 
         $rsm->aliasMap = array_map($translate, $rsm->aliasMap);
@@ -1032,7 +1032,7 @@ abstract class AbstractQuery
 
         $metadata = $this->em->getClassMetadata($entityName);
 
-        return new Cache\TimestampCacheKey($metadata->rootEntityName);
+        return new Cache\TimestampCacheKey($metadata->getRootClassName());
     }
 
     /**

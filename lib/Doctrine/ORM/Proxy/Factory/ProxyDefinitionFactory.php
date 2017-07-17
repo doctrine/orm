@@ -78,7 +78,7 @@ class ProxyDefinitionFactory
         $definition = $this->createDefinition($classMetadata);
 
         if (! class_exists($definition->proxyClassName, false)) {
-            $proxyClassPath = $this->resolver->resolveProxyClassPath($classMetadata->getName());
+            $proxyClassPath = $this->resolver->resolveProxyClassPath($classMetadata->getClassName());
 
             switch ($this->autoGenerate) {
                 case ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
@@ -120,8 +120,8 @@ class ProxyDefinitionFactory
     private function createDefinition(ClassMetadata $classMetadata) : ProxyDefinition
     {
         $unitOfWork      = $this->entityManager->getUnitOfWork();
-        $entityPersister = $unitOfWork->getEntityPersister($classMetadata->getName());
-        $proxyClassName  = $this->resolver->resolveProxyClassName($classMetadata->getName());
+        $entityPersister = $unitOfWork->getEntityPersister($classMetadata->getClassName());
+        $proxyClassName  = $this->resolver->resolveProxyClassName($classMetadata->getClassName());
 
         return new ProxyDefinition($classMetadata, $entityPersister, $proxyClassName);
     }

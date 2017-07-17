@@ -76,7 +76,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         $updateClause   = $AST->updateClause;
         $primaryClass   = $sqlWalker->getEntityManager()->getClassMetadata($updateClause->abstractSchemaName);
-        $rootClass      = $em->getClassMetadata($primaryClass->rootEntityName);
+        $rootClass      = $em->getClassMetadata($primaryClass->getRootClassName());
 
         $updateItems    = $updateClause->updateItems;
 
@@ -90,7 +90,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
                 . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
 
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $updateClause->aliasIdentificationVariable);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
 
         $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
@@ -99,7 +99,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
 
         // 3. Create and store UPDATE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
+        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->getClassName()], $primaryClass->subClasses);
         $i = -1;
 
         foreach (array_reverse($classNames) as $className) {

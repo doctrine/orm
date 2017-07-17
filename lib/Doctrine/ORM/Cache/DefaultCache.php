@@ -79,7 +79,7 @@ class DefaultCache implements Cache
     public function getEntityCacheRegion($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if ( ! ($persister instanceof CachedPersister)) {
             return null;
@@ -109,7 +109,7 @@ class DefaultCache implements Cache
     public function containsEntity($className, $identifier)
     {
         $metadata   = $this->em->getClassMetadata($className);
-        $persister  = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister  = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if ( ! ($persister instanceof CachedPersister)) {
             return false;
@@ -124,7 +124,7 @@ class DefaultCache implements Cache
     public function evictEntity($className, $identifier)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
@@ -139,7 +139,7 @@ class DefaultCache implements Cache
     public function evictEntityRegion($className)
     {
         $metadata  = $this->em->getClassMetadata($className);
-        $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
         if ( ! ($persister instanceof CachedPersister)) {
             return;
@@ -156,7 +156,7 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-            $persister = $this->uow->getEntityPersister($metadata->rootEntityName);
+            $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
             if ( ! ($persister instanceof CachedPersister)) {
                 continue;
@@ -300,7 +300,7 @@ class DefaultCache implements Cache
             $identifier = $this->toIdentifierArray($metadata, $identifier);
         }
 
-        return new EntityCacheKey($metadata->rootEntityName, $identifier);
+        return new EntityCacheKey($metadata->getRootClassName(), $identifier);
     }
 
     /**
@@ -316,7 +316,7 @@ class DefaultCache implements Cache
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
 
-        return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
+        return new CollectionCacheKey($metadata->getRootClassName(), $association, $ownerIdentifier);
     }
 
     /**

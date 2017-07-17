@@ -113,7 +113,7 @@ class ProxyDefinition
             $proxy->__setInitialized(false);
 
             throw EntityNotFoundException::fromClassNameAndIdentifier(
-                $classMetadata->getName(), $identifier
+                $classMetadata->getClassName(), $identifier
             );
 
             // @todo guilhermeblanco Move the flattening identifier to Persisters
@@ -123,7 +123,7 @@ class ProxyDefinition
             );
 
             throw EntityNotFoundException::fromClassNameAndIdentifier(
-                $classMetadata->getName(),
+                $classMetadata->getClassName(),
                 $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
             );*/
         }
@@ -151,7 +151,7 @@ class ProxyDefinition
 
         if (null === $original) {
             throw EntityNotFoundException::fromClassNameAndIdentifier(
-                $classMetadata->getName(), $identifier
+                $classMetadata->getClassName(), $identifier
             );
 
             // @todo guilhermeblanco Move the flattening identifier to Persisters
@@ -161,7 +161,7 @@ class ProxyDefinition
             );
 
             throw EntityNotFoundException::fromClassNameAndIdentifier(
-                $classMetadata->getName(),
+                $classMetadata->getClassName(),
                 $identifierFlattener->flattenIdentifier($classMetadata, $identifier)
             );*/
         }

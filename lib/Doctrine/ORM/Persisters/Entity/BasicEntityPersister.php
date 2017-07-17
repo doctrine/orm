@@ -787,7 +787,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
                 throw MappingException::joinColumnMustPointToMappedField(
-                    $sourceClass->name, $sourceKeyColumn
+                    $sourceClass->getClassName(), $sourceKeyColumn
                 );
             }
 
@@ -1178,7 +1178,7 @@ class BasicEntityPersister implements EntityPersister
             $orientation = strtoupper(trim($orientation));
 
             if (! in_array($orientation, ['ASC', 'DESC'])) {
-                throw ORMException::invalidOrientation($this->class->name, $fieldName);
+                throw ORMException::invalidOrientation($this->class->getClassName(), $fieldName);
             }
 
             $property = $this->class->getProperty($fieldName);
@@ -1192,7 +1192,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             } else if ($property instanceof AssociationMetadata) {
                 if (! $property->isOwningSide()) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
+                    throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $fieldName);
                 }
 
                 $class      = $this->class->isInheritedProperty($fieldName)
@@ -1234,7 +1234,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
 
-        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r'); // r for root
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->getClassName(), 'r'); // r for root
         $this->currentPersisterContext->selectJoinSql    = '';
 
         $eagerAliasCounter = 0;
@@ -1545,7 +1545,7 @@ class BasicEntityPersister implements EntityPersister
             $this->platform->quoteIdentifier($property->getColumnName())
         );
 
-        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->name);
+        $this->currentPersisterContext->rsm->addFieldResult($alias, $columnAlias, $field, $class->getClassName());
 
         return $property->getType()->convertToPHPValueSQL($sql, $this->platform) . ' AS ' . $columnAlias;
     }
@@ -1760,7 +1760,7 @@ class BasicEntityPersister implements EntityPersister
 
             } else {
                 if (! $owningAssociation->isOwningSide()) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
+                    throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $field);
                 }
 
                 $class      = $this->class->isInheritedProperty($field)

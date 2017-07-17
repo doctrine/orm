@@ -101,7 +101,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function delete($entity)
     {
-        $key     = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $key     = new EntityCacheKey($this->class->getRootClassName(), $this->uow->getEntityIdentifier($entity));
         $lock    = $this->region->lock($key);
         $deleted = $this->persister->delete($entity);
 
@@ -126,7 +126,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function update($entity)
     {
-        $key  = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $key  = new EntityCacheKey($this->class->getRootClassName(), $this->uow->getEntityIdentifier($entity));
         $lock = $this->region->lock($key);
 
         $this->persister->update($entity);

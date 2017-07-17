@@ -283,7 +283,7 @@ class ObjectHydrator extends AbstractHydrator
         $class = $this->metadataCache[$className];
         $id    = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
 
-        return $this->uow->tryGetById($id, $class->rootEntityName);
+        return $this->uow->tryGetById($id, $class->getRootClassName());
     }
 
     /**

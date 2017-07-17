@@ -63,7 +63,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
     {
-        $this->entityName = $class->name;
+        $this->entityName = $class->getClassName();
         $this->em         = $em;
         $this->class      = $class;
     }
@@ -135,7 +135,7 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function clear()
     {
-        $this->em->clear($this->class->rootEntityName);
+        $this->em->clear($this->class->getRootClassName());
     }
 
     /**

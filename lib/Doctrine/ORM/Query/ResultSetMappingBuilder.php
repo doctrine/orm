@@ -195,7 +195,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
     private function isInheritanceSupported(ClassMetadata $metadata)
     {
         if ($metadata->inheritanceType === InheritanceType::SINGLE_TABLE
-            && in_array($metadata->name, $metadata->discriminatorMap, true)) {
+            && in_array($metadata->getClassName(), $metadata->discriminatorMap, true)) {
             return true;
         }
 
@@ -285,7 +285,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $platform      = $this->em->getConnection()->getDatabasePlatform();
         $alias         = 'e0';
 
-        $this->addEntityResult($class->name, $alias);
+        $this->addEntityResult($class->getClassName(), $alias);
 
         if ($classMetadata->discriminatorColumn) {
             $discrColumn     = $classMetadata->discriminatorColumn;
@@ -332,8 +332,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
                 $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
 
-                if ($class->name === $classMetadata->name) {
-                    $this->addEntityResult($classMetadata->name, $rootAlias);
+                if ($class->getClassName() === $classMetadata->getClassName()) {
+                    $this->addEntityResult($classMetadata->getClassName(), $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
                     $joinAlias = 'e' . ++ $counter;
@@ -345,7 +345,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                             continue;
                         }
 
-                        if ($association->getTargetEntity() !== $classMetadata->name) {
+                        if ($association->getTargetEntity() !== $classMetadata->getClassName()) {
                             continue;
                         }
 
@@ -404,7 +404,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $property = $classMetadata->getProperty($fieldName);
 
                 if (! $relation && $property instanceof FieldMetadata) {
-                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                    $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->getClassName());
 
                     continue;
                 }
@@ -413,13 +413,13 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                 if (! $property) {
                     throw new \InvalidArgumentException(
-                        "Entity '".$classMetadata->name."' has no field '".$relation."'. "
+                        "Entity '".$classMetadata->getClassName()."' has no field '".$relation."'. "
                     );
                 }
 
                 if ($property instanceof AssociationMetadata) {
                     if (! $relation) {
-                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->name);
+                        $this->addFieldResult($alias, $field['column'], $fieldName, $classMetadata->getClassName());
 
                         continue;
                     }

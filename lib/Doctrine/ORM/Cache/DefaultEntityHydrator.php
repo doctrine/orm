@@ -151,7 +151,7 @@ class DefaultEntityHydrator implements EntityHydrator
             $data[$name] = new AssociationCacheEntry($targetEntity, $targetId);
         }
 
-        return new EntityCacheEntry($metadata->name, $data);
+        return new EntityCacheEntry($metadata->getClassName(), $data);
     }
 
     /**
@@ -192,7 +192,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             $targetEntity   = $association->getTargetEntity();
             $assocMetadata  = $this->em->getClassMetadata($targetEntity);
-            $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
+            $assocKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocId);
             $assocPersister = $this->uow->getEntityPersister($targetEntity);
             $assocRegion    = $assocPersister->getCacheRegion();
             $assocEntry     = $assocRegion->get($assocKey);

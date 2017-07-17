@@ -105,7 +105,7 @@ class NewAnnotationDriver implements MappingDriver
         // Evaluate annotations on properties/fields
         /* @var \ReflectionProperty $reflectionProperty */
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
-            if ($reflectionProperty->getDeclaringClass()->name !== $reflectionClass->getName()) {
+            if ($reflectionProperty->getDeclaringClass()->getClassName() !== $reflectionClass->getName()) {
                 continue;
             }
 
@@ -512,7 +512,7 @@ class NewAnnotationDriver implements MappingDriver
     )
     {
         $usage         = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
         return new Mapping\CacheMetadata($usage, $cacheAnnot->region ?: $defaultRegion);
@@ -595,7 +595,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $classMetadata
     )
     {
-        $className    = $classMetadata->getName();
+        $className    = $classMetadata->getClassName();
         $fieldName    = $reflectionProperty->getName();
         $columnAnnot  = $propertyAnnotations[Annotation\Column::class];
         $isVersioned  = isset($propertyAnnotations[Annotation\Version::class]);
@@ -684,7 +684,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $classMetadata
     )
     {
-        $className     = $classMetadata->getName();
+        $className     = $classMetadata->getClassName();
         $fieldName     = $reflectionProperty->getName();
         $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
 
@@ -768,7 +768,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $classMetadata
     )
     {
-        $className      = $classMetadata->getName();
+        $className      = $classMetadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
 
@@ -847,7 +847,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $classMetadata
     )
     {
-        $className      = $classMetadata->getName();
+        $className      = $classMetadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $oneToManyAnnot = $propertyAnnotations[Annotation\OneToMany::class];
 
@@ -908,7 +908,7 @@ class NewAnnotationDriver implements MappingDriver
         Mapping\ClassMetadata $classMetadata
     )
     {
-        $className       = $classMetadata->getName();
+        $className       = $classMetadata->getClassName();
         $fieldName       = $reflectionProperty->getName();
         $manyToManyAnnot = $propertyAnnotations[Annotation\ManyToMany::class];
 
@@ -1036,7 +1036,7 @@ class NewAnnotationDriver implements MappingDriver
         $fieldName  = $reflectionProperty->getName();
         $joinColumn = new Mapping\JoinColumnMetadata();
         $columnName = empty($joinColumnAnnot->name)
-            ? $this->namingStrategy->propertyToColumnName($fieldName, $classMetadata->getName())
+            ? $this->namingStrategy->propertyToColumnName($fieldName, $classMetadata->getClassName())
             : $joinColumnAnnot->name
         ;
         $referencedColumnName = empty($joinColumnAnnot->referencedColumnName)

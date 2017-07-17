@@ -408,7 +408,7 @@ class MappingException extends \Doctrine\ORM\ORMException
             'Property "%s" in "%s" was already declared in "%s", but it must be declared only once',
             $property->getName(),
             $className,
-            $property->getDeclaringClass()->getName()
+            $property->getDeclaringClass()->getClassName()
         ));
     }
 

@@ -154,7 +154,7 @@ EOT
 
             foreach ($metadatas as $metadata) {
                 $output->writeln(
-                    sprintf('Processing entity "<info>%s</info>"', $metadata->name)
+                    sprintf('Processing entity "<info>%s</info>"', $metadata->getClassName())
                 );
             }
 

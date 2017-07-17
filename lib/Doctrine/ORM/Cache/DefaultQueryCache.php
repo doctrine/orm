@@ -116,7 +116,7 @@ class DefaultQueryCache implements QueryCache
         $cm = $this->em->getClassMetadata($entityName);
 
         $generateKeys = function (array $entry) use ($cm): EntityCacheKey {
-            return new EntityCacheKey($cm->rootEntityName, $entry['identifier']);
+            return new EntityCacheKey($cm->getRootClassName(), $entry['identifier']);
         };
 
         $cacheKeys = new CollectionCacheEntry(array_map($generateKeys, $entry->result));
@@ -157,7 +157,7 @@ class DefaultQueryCache implements QueryCache
 
                 // *-to-one association
                 if (isset($assoc['identifier'])) {
-                    $assocKey = new EntityCacheKey($assocMetadata->rootEntityName, $assoc['identifier']);
+                    $assocKey = new EntityCacheKey($assocMetadata->getRootClassName(), $assoc['identifier']);
 
                     if (($assocEntry = $assocRegion->get($assocKey)) === null) {
                         if ($this->cacheLogger !== null) {
@@ -187,14 +187,14 @@ class DefaultQueryCache implements QueryCache
                 }
 
                 $generateKeys = function ($id) use ($assocMetadata): EntityCacheKey {
-                    return new EntityCacheKey($assocMetadata->rootEntityName, $id);
+                    return new EntityCacheKey($assocMetadata->getRootClassName(), $id);
                 };
 
                 $assocKeys    = new CollectionCacheEntry(array_map($generateKeys, $assoc['list']));
                 $assocEntries = $assocRegion->getMultiple($assocKeys);
 
                 // *-to-many association
-                $collection  = [];
+                $collection = [];
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
                     $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
@@ -348,7 +348,7 @@ class DefaultQueryCache implements QueryCache
         // Handle *-to-one associations
         if ($association instanceof ToOneAssociationMetadata) {
             $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
-            $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
+            $entityKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocIdentifier);
 
             if ((! $assocValue instanceof Proxy && ($key->cacheMode & Cache::MODE_REFRESH)) || ! $assocRegion->contains($entityKey)) {
                 // Entity put fail
@@ -358,7 +358,7 @@ class DefaultQueryCache implements QueryCache
             }
 
             return [
-                'targetEntity'  => $assocMetadata->rootEntityName,
+                'targetEntity'  => $assocMetadata->getRootClassName(),
                 'identifier'    => $assocIdentifier,
             ];
         }
@@ -368,7 +368,7 @@ class DefaultQueryCache implements QueryCache
 
         foreach ($assocValue as $assocItemIndex => $assocItem) {
             $assocIdentifier = $this->uow->getEntityIdentifier($assocItem);
-            $entityKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocIdentifier);
+            $entityKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocIdentifier);
 
             if (($key->cacheMode & Cache::MODE_REFRESH) || ! $assocRegion->contains($entityKey)) {
                 // Entity put fail
@@ -381,7 +381,7 @@ class DefaultQueryCache implements QueryCache
         }
 
         return [
-            'targetEntity' => $assocMetadata->rootEntityName,
+            'targetEntity' => $assocMetadata->getRootClassName(),
             'list'         => $list,
         ];
     }

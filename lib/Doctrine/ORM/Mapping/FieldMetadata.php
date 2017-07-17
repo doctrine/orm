@@ -185,7 +185,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     public function wakeupReflection(ReflectionService $reflectionService)
     {
         $this->setReflectionProperty(
-            $reflectionService->getAccessibleProperty($this->declaringClass->name, $this->name)
+            $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)
         );
     }
 }

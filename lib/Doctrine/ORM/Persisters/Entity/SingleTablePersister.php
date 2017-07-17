@@ -51,7 +51,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $columnList[] = parent::getSelectColumnsSQL();
 
-        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $rootClass  = $this->em->getClassMetadata($this->class->getRootClassName());
         $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
 
          // Append discriminator column
@@ -193,7 +193,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     protected function generateFilterConditionSQL(ClassMetadata $targetEntity, $targetTableAlias)
     {
         // Ensure that the filters are applied to the root entity of the inheritance tree
-        $targetEntity = $this->em->getClassMetadata($targetEntity->rootEntityName);
+        $targetEntity = $this->em->getClassMetadata($targetEntity->getRootClassName());
         // we don't care about the $targetTableAlias, in a STI there is only one table.
 
         return parent::generateFilterConditionSQL($targetEntity, $targetTableAlias);
