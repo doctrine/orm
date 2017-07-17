@@ -51,15 +51,15 @@ class AnnotationDriver extends AbstractAnnotationDriver
      */
     public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
     {
-        $class = $metadata->getReflectionClass();
+        $reflClass = $metadata->getReflectionClass();
 
-        if (! $class) {
+        if (! $reflClass) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
-            $class = new \ReflectionClass($metadata->name);
+            $reflClass = new \ReflectionClass($metadata->getClassName());
         }
 
-        $classAnnotations = $this->reader->getClassAnnotations($class);
+        $classAnnotations = $this->reader->getClassAnnotations($reflClass);
 
         foreach ($classAnnotations as $key => $annot) {
             if ( ! is_numeric($key)) {
@@ -256,7 +256,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
             /* @var $method \ReflectionMethod */
-            foreach ($class->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $value) {
                     $metadata->addLifecycleCallback($value[0], $value[1]);
                 }
@@ -265,8 +265,8 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
         // Evaluate annotations on properties/fields
         /* @var $reflProperty \ReflectionProperty */
-        foreach ($class->getProperties() as $reflProperty) {
-            if ($reflProperty->getDeclaringClass()->name !== $class->name) {
+        foreach ($reflClass->getProperties() as $reflProperty) {
+            if ($reflProperty->getDeclaringClass()->getName() !== $reflClass->getName()) {
                 continue;
             }
 
@@ -360,7 +360,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $property  = $metadata->getProperty($fieldName);
 
                 if (! $property) {
-                    throw Mapping\MappingException::invalidOverrideFieldName($metadata->name, $fieldName);
+                    throw Mapping\MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
                 }
 
                 $existingClass = get_class($property);
@@ -989,7 +989,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
         $fieldName = null
     )
     {
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
         $usage = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));

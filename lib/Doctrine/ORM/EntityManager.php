@@ -394,6 +394,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
     public function find($entityName, $id, $lockMode = null, $lockVersion = null)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
         if (! is_array($id)) {
             if ($class->isIdentifierComposite()) {
@@ -417,7 +418,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw ORMException::missingIdentifierField($className, $identifier);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -425,14 +426,14 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
 
         // Check identity map first
-        if (($entity = $unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
-            if ( ! ($entity instanceof $class->name)) {
+        if (($entity = $unitOfWork->tryGetById($sortedId, $class->getRootClassName())) !== false) {
+            if ( ! ($entity instanceof $className)) {
                 return null;
             }
 
@@ -444,7 +445,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
                 case LockMode::NONE === $lockMode:
                 case LockMode::PESSIMISTIC_READ === $lockMode:
                 case LockMode::PESSIMISTIC_WRITE === $lockMode:
-                    $persister = $unitOfWork->getEntityPersister($class->name);
+                    $persister = $unitOfWork->getEntityPersister($className);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
             }
@@ -452,12 +453,12 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
             return $entity; // Hit!
         }
 
-        $persister = $unitOfWork->getEntityPersister($class->name);
+        $persister = $unitOfWork->getEntityPersister($className);
 
         switch (true) {
             case LockMode::OPTIMISTIC === $lockMode:
                 if ( ! $class->isVersioned()) {
-                    throw OptimisticLockException::notVersioned($class->name);
+                    throw OptimisticLockException::notVersioned($className);
                 }
 
                 $entity = $persister->load($sortedId);
@@ -485,6 +486,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
     public function getReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
         if ( ! is_array($id)) {
             if ($class->isIdentifierComposite()) {
@@ -508,7 +510,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw ORMException::missingIdentifierField($className, $identifier);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -516,19 +518,19 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
-            return ($entity instanceof $class->name) ? $entity : null;
+        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName())) !== false) {
+            return ($entity instanceof $className) ? $entity : null;
         }
 
         if ($class->subClasses) {
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
+        $entity = $this->proxyFactory->getProxy($className, $sortedId);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
@@ -541,6 +543,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
     public function getPartialReference($entityName, $id)
     {
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
+        $className = $class->getClassName();
 
         if ( ! is_array($id)) {
             if ($class->isIdentifierComposite()) {
@@ -564,7 +567,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw ORMException::missingIdentifierField($className, $identifier);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -572,12 +575,12 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
-        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName)) !== false) {
-            return ($entity instanceof $class->name) ? $entity : null;
+        if (($entity = $this->unitOfWork->tryGetById($sortedId, $class->getRootClassName())) !== false) {
+            return ($entity instanceof $className) ? $entity : null;
         }
 
         $entity = $this->unitOfWork->newInstance($class);

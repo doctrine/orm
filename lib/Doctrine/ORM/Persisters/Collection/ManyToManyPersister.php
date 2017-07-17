@@ -173,7 +173,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 . ' ON' . implode(' AND ', $this->getOnConditionSQL($association));
 
             // And criteria conditions needs to be added
-            $persister    = $this->uow->getEntityPersister($targetClass->name);
+            $persister    = $this->uow->getEntityPersister($targetClass->getClassName());
             $visitor      = new SqlExpressionVisitor($persister, $targetClass);
             $conditions[] = $visitor->dispatch($expression);
 
@@ -301,7 +301,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTableName    = $association->getJoinTable()->getQuotedQualifiedName($this->platform);
         $resultSetMapping = new Query\ResultSetMappingBuilder($this->em);
 
-        $resultSetMapping->addRootEntityFromClassMetadata($targetClass->name, 'te');
+        $resultSetMapping->addRootEntityFromClassMetadata($targetClass->getClassName(), 'te');
 
         $sql = 'SELECT ' . $resultSetMapping->generateSelectClause()
             . ' FROM ' . $tableName . ' te'
@@ -335,7 +335,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     public function getFilterSql(ManyToManyAssociationMetadata $association)
     {
         $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
+        $rootClass   = $this->em->getClassMetadata($targetClass->getRootClassName());
         $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
 
         if ('' === $filterSql) {
@@ -367,7 +367,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
-        
+
         if (! $filterClauses) {
             return '';
         }

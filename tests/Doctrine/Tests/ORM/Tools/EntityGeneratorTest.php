@@ -256,7 +256,7 @@ class EntityGeneratorTest extends OrmTestCase
             $metadata->mapEmbedded(
                 [
                     'fieldName'    => $fieldName,
-                    'class'        => $embeddedClass->name,
+                    'class'        => $embeddedClass->getClassName(),
                     'columnPrefix' => $columnPrefix,
                 ]
             );
@@ -509,7 +509,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'getAuthor'));
         self::assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'setAuthor'));
 
-//        $expectedClassName = '\\' . $embeddedMetadata->name;
+//        $expectedClassName = '\\' . $embeddedMetadata->getClassName();
 //        self::assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));
 //        self::assertPhpDocReturnType($expectedClassName, new \ReflectionMethod($book, 'getIsbn'));
 //        self::assertPhpDocParamType($expectedClassName, new \ReflectionMethod($book, 'setIsbn'));
@@ -566,10 +566,10 @@ class EntityGeneratorTest extends OrmTestCase
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //
-//        $cm = new ClassMetadata($embeddedMetadata->name);
+//        $cm = new ClassMetadata($embeddedMetadata->getClassName());
 //        $cm->initializeReflection($reflectionService);
 //
-//        $driver->loadMetadataForClass($cm->name, $cm);
+//        $driver->loadMetadataForClass($cm->getClassName(), $cm);
 //
 //        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
@@ -597,10 +597,10 @@ class EntityGeneratorTest extends OrmTestCase
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //
-//        $cm = new ClassMetadata($embeddedMetadata->name);
+//        $cm = new ClassMetadata($embeddedMetadata->getClassName());
 //        $cm->initializeReflection($reflectionService);
 //
-//        $driver->loadMetadataForClass($cm->name, $cm);
+//        $driver->loadMetadataForClass($cm->getClassName(), $cm);
 //
 //        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
@@ -1113,7 +1113,7 @@ class EntityGeneratorTest extends OrmTestCase
         $metadata = $this->generateBookEntityFixture();
         $this->loadEntityClass($metadata);
 
-        $className = basename(str_replace('\\', '/', $metadata->name));
+        $className = basename(str_replace('\\', '/', $metadata->getClassName()));
         $path = $this->tmpDir . '/' . $this->namespace . '/' . $className . '.php';
         $classTest = file_get_contents($path);
 

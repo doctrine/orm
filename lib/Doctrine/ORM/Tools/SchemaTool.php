@@ -125,10 +125,10 @@ class SchemaTool
     private function processingNotRequired($class, array $processedClasses)
     {
         return (
-            isset($processedClasses[$class->name]) ||
+            isset($processedClasses[$class->getClassName()]) ||
             $class->isMappedSuperclass ||
             $class->isEmbeddedClass ||
-            ($class->inheritanceType === InheritanceType::SINGLE_TABLE && $class->name !== $class->rootEntityName)
+            ($class->inheritanceType === InheritanceType::SINGLE_TABLE && ! $class->isRootEntity())
         );
     }
 
@@ -203,7 +203,7 @@ class SchemaTool
                     $this->gatherRelationsSql($class, $table, $schema, $addedFks, $blacklistedFks);
 
                     // Add the discriminator column only to the root table
-                    if ($class->name === $class->rootEntityName) {
+                    if ($class->isRootEntity()) {
                         $this->addDiscriminatorColumnDefinition($class, $table);
                     } else {
                         // Add an ID FK column to child tables
@@ -255,7 +255,7 @@ class SchemaTool
 
                         if ( ! empty($inheritedKeyColumns)) {
                             // Add a FK constraint on the ID column
-                            $rootClass = $this->em->getClassMetadata($class->rootEntityName);
+                            $rootClass = $this->em->getClassMetadata($class->getRootClassName());
 
                             $table->addForeignKeyConstraint(
                                 $rootClass->table->getQuotedQualifiedName($this->platform),
@@ -357,12 +357,12 @@ class SchemaTool
                 }
             }
 
-            $processedClasses[$class->name] = true;
+            $processedClasses[$class->getClassName()] = true;
 
             foreach ($class->getProperties() as $property) {
                 if (! $property instanceof FieldMetadata
                     || $property->getIdentifierGeneratorType() !== GeneratorType::SEQUENCE
-                    || $class->name !== $class->rootEntityName) {
+                    || $class->getClassName() !== $class->getRootClassName()) {
                     continue;
                 }
 
@@ -523,7 +523,7 @@ class SchemaTool
             $options['autoincrement'] = true;
         }
 
-        if ($classMetadata->inheritanceType === InheritanceType::JOINED && $classMetadata->name !== $classMetadata->rootEntityName) {
+        if ($classMetadata->inheritanceType === InheritanceType::JOINED && ! $classMetadata->isRootEntity()) {
             $options['autoincrement'] = false;
         }
 
@@ -675,7 +675,7 @@ class SchemaTool
             $joinColumns = $property->getJoinColumns();
 
             if (count($joinColumns) > 1) {
-                throw MappingException::noSingleAssociationJoinColumnFound($class->name, $fieldName);
+                throw MappingException::noSingleAssociationJoinColumnFound($class->getClassName(), $fieldName);
             }
 
             $joinColumn = reset($joinColumns);

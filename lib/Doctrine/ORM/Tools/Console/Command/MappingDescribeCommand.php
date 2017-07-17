@@ -90,8 +90,8 @@ EOT
             ['Field', 'Value'],
             array_merge(
                 [
-                    $this->formatField('Name', $metadata->name),
-                    $this->formatField('Root entity name', $metadata->rootEntityName),
+                    $this->formatField('Name', $metadata->getClassName()),
+                    $this->formatField('Root entity name', $metadata->getRootClassName()),
                     $this->formatField('Custom repository class', $metadata->customRepositoryClassName),
                     $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
                     $this->formatField('Embedded class?', $metadata->isEmbeddedClass),

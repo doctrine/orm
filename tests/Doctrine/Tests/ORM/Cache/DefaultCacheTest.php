@@ -31,7 +31,7 @@ class DefaultCacheTest extends OrmTestCase
     protected function setUp()
     {
         $this->enableSecondLevelCache();
-        
+
         parent::setUp();
 
         $this->em    = $this->getTestEntityManager();
@@ -48,7 +48,7 @@ class DefaultCacheTest extends OrmTestCase
         $metadata   = $this->em->getClassMetadata($className);
         $cacheKey   = new EntityCacheKey($metadata->name, $identifier);
         $cacheEntry = new EntityCacheEntry($metadata->name, $data);
-        $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
+        $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->getRootClassName());
 
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }

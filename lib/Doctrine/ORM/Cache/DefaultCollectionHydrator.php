@@ -65,7 +65,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         $data = [];
 
         foreach ($collection as $index => $entity) {
-            $data[$index] = new EntityCacheKey($metadata->rootEntityName, $this->uow->getEntityIdentifier($entity));
+            $data[$index] = new EntityCacheKey($metadata->getRootClassName(), $this->uow->getEntityIdentifier($entity));
         }
 
         return new CollectionCacheEntry($data);

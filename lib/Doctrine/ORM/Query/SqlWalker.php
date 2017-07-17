@@ -498,7 +498,7 @@ class SqlWalker implements TreeWalker
             case InheritanceType::JOINED:
                 // The classes in the inheritance will be added to the query one by one,
                 // but only the root node is getting filtered
-                if ($targetEntity->name !== $targetEntity->rootEntityName) {
+                if ($targetEntity->getClassName() !== $targetEntity->getRootClassName()) {
                     return '';
                 }
                 break;
@@ -506,7 +506,7 @@ class SqlWalker implements TreeWalker
             case InheritanceType::SINGLE_TABLE:
                 // With STI the table will only be queried once, make sure that the filters
                 // are added to the root entity
-                $targetEntity = $this->em->getClassMetadata($targetEntity->rootEntityName);
+                $targetEntity = $this->em->getClassMetadata($targetEntity->getRootClassName());
                 break;
 
             default:
@@ -575,7 +575,7 @@ class SqlWalker implements TreeWalker
 
         foreach ($this->selectedClasses as $selectedClass) {
             if ( ! $selectedClass['class']->isVersioned()) {
-                throw OptimisticLockException::lockFailed($selectedClass['class']->name);
+                throw OptimisticLockException::lockFailed($selectedClass['class']->getClassName());
             }
         }
 
@@ -742,10 +742,10 @@ class SqlWalker implements TreeWalker
 
             // Register as entity or joined entity result
             if ($this->queryComponents[$dqlAlias]['relation'] === null) {
-                $this->rsm->addEntityResult($class->name, $dqlAlias, $resultAlias);
+                $this->rsm->addEntityResult($class->getClassName(), $dqlAlias, $resultAlias);
             } else {
                 $this->rsm->addJoinedEntityResult(
-                    $class->name,
+                    $class->getClassName(),
                     $dqlAlias,
                     $this->queryComponents[$dqlAlias]['parent'],
                     $this->queryComponents[$dqlAlias]['relation']->getName()
@@ -1473,7 +1473,7 @@ class SqlWalker implements TreeWalker
 
                     $this->scalarResultAliasMap[$resultAlias][] = $columnAlias;
 
-                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->name);
+                    $this->rsm->addFieldResult($dqlAlias, $columnAlias, $fieldName, $class->getClassName());
                 }
 
                 // Add any additional fields of subclasses (excluding inherited fields)
@@ -2402,11 +2402,11 @@ class SqlWalker implements TreeWalker
 
             // Get name from ClassMetadata to resolve aliases.
             $entityClass        = $this->em->getClassMetadata($parameter);
-            $entityClassName    = $entityClass->name;
+            $entityClassName    = $entityClass->getClassName();
 
-            if ($entityClassName !== $rootClass->name) {
-                if (! $entityClass->getReflectionClass()->isSubclassOf($rootClass->name)) {
-                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $rootClass->name);
+            if ($entityClassName !== $rootClass->getClassName()) {
+                if (! $entityClass->getReflectionClass()->isSubclassOf($rootClass->getClassName())) {
+                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $rootClass->getClassName());
                 }
 
                 $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($entityClass, $this->em);

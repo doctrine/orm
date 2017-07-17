@@ -68,7 +68,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
 
         $primaryClass    = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
-        $rootClass       = $em->getClassMetadata($primaryClass->rootEntityName);
+        $rootClass       = $em->getClassMetadata($primaryClass->getRootClassName());
 
         $tempTable        = $platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
         $idColumns        = $rootClass->getIdentifierColumns($em);
@@ -80,7 +80,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
                 . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
 
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $primaryDqlAlias);
+        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $primaryDqlAlias);
         $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
         $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
@@ -93,7 +93,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
+        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->getClassName()], $primaryClass->subClasses);
 
         foreach (array_reverse($classNames) as $className) {
             $parentClass = $em->getClassMetadata($className);

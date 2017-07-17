@@ -96,7 +96,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
     public function delete(PersistentCollection $collection)
     {
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->getName(), $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $this->association->getName(), $ownerId);
         $lock    = $this->region->lock($key);
 
         $this->persister->delete($collection);
@@ -126,7 +126,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $this->persister->update($collection);
 
         $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association->getName(), $ownerId);
+        $key     = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $this->association->getName(), $ownerId);
         $lock    = $this->region->lock($key);
 
         if ($lock === null) {
