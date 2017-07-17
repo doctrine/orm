@@ -43,7 +43,7 @@ class CacheMetadataListener
      */
     private function isVisited(ClassMetadata $metadata)
     {
-        return isset($this->enabledItems[$metadata->getName()]);
+        return isset($this->enabledItems[$metadata->getClassName()]);
     }
 
     /**
@@ -51,7 +51,7 @@ class CacheMetadataListener
      */
     private function recordVisit(ClassMetadata $metadata)
     {
-        $this->enabledItems[$metadata->getName()] = true;
+        $this->enabledItems[$metadata->getClassName()] = true;
     }
 
     /**
@@ -68,7 +68,7 @@ class CacheMetadataListener
             return;
         }
 
-        $region = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $region = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
 
         $metadata->setCache(new CacheMetadata(CacheUsage::NONSTRICT_READ_WRITE, $region));
 
@@ -78,7 +78,7 @@ class CacheMetadataListener
         // given caching settings
         foreach ($metadata->associationMappings as $association) {
             $targetMeta = $em->getClassMetadata($association->getTargetEntity());
-            
+
             $this->enableCaching($targetMeta, $em);
 
             if ($this->isVisited($targetMeta)) {

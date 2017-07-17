@@ -173,7 +173,7 @@ EOT
 
         if (count($metadata)) {
             foreach ($metadata as $class) {
-                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
+                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->getClassName()));
             }
 
             $exporter->setMetadata($metadata);

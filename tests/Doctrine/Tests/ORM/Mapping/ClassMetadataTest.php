@@ -37,7 +37,7 @@ class ClassMetadataTest extends OrmTestCase
         // Test initial state
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->name);
-        self::assertEquals(CMS\CmsUser::class, $cm->rootEntityName);
+        self::assertEquals(CMS\CmsUser::class, $cm->getRootClassName());
         self::assertEquals([], $cm->subClasses);
         self::assertEquals([], $cm->parentClasses);
         self::assertEquals(Mapping\InheritanceType::NONE, $cm->inheritanceType);
@@ -72,7 +72,7 @@ class ClassMetadataTest extends OrmTestCase
         // Check state
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->name);
-        self::assertEquals('UserParent', $cm->rootEntityName);
+        self::assertEquals('UserParent', $cm->getRootClassName());
         self::assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
         self::assertEquals(['UserParent'], $cm->parentClasses);
         self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);

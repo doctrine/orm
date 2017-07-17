@@ -681,13 +681,13 @@ class Parser
                 }
 
                 $this->semanticalError(
-                    "There is no mapped field named '$field' on class " . $class->name . ".", $deferredItem['token']
+                    "There is no mapped field named '$field' on class " . $class->getClassName() . ".", $deferredItem['token']
                 );
             }
 
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
                 $this->semanticalError(
-                    "The partial field selection of class " . $class->name . " must contain the identifier.",
+                    "The partial field selection of class " . $class->getClassName() . " must contain the identifier.",
                     $deferredItem['token']
                 );
             }
@@ -758,7 +758,7 @@ class Parser
             // Check if field or association exists
             if (! $property) {
                 $this->semanticalError(
-                    'Class ' . $class->name . ' has no field or association named ' . $field,
+                    'Class ' . $class->getClassName() . ' has no field or association named ' . $field,
                     $deferredItem['token']
                 );
             }
@@ -1052,7 +1052,7 @@ class Parser
         $class = $qComp['metadata'];
 
         if (! (($property = $class->getProperty($field)) !== null && $property instanceof AssociationMetadata)) {
-            $this->semanticalError('Class ' . $class->name . ' has no association named ' . $field);
+            $this->semanticalError('Class ' . $class->getClassName() . ' has no association named ' . $field);
         }
 
         return new AST\JoinAssociationPathExpression($identVariable, $field);
@@ -3360,7 +3360,7 @@ class Parser
         switch (true) {
             case $customFunctionDeclaration !== null:
                 return $customFunctionDeclaration;
-            
+
             case (isset(self::$_STRING_FUNCTIONS[$funcName])):
                 return $this->FunctionsReturningStrings();
 

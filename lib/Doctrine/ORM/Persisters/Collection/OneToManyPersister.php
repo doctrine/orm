@@ -239,7 +239,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $association = $collection->getMapping();
         $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
         $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-        $rootClass   = $this->em->getClassMetadata($targetClass->rootEntityName);
+        $rootClass   = $this->em->getClassMetadata($targetClass->getRootClassName());
 
         // 1) Build temporary table DDL
         $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
@@ -263,7 +263,7 @@ class OneToManyPersister extends AbstractCollectionPersister
 
         // 2) Build insert table records into temporary table
         $dql   = ' SELECT t0.' . implode(', t0.', $rootClass->getIdentifierFieldNames())
-               . ' FROM ' . $targetClass->name . ' t0 WHERE t0.' . $association->getMappedBy() . ' = :owner';
+               . ' FROM ' . $targetClass->getClassName() . ' t0 WHERE t0.' . $association->getMappedBy() . ' = :owner';
         $query = $this->em->createQuery($dql)->setParameter('owner', $collection->getOwner());
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ') ' . $query->getSQL();
@@ -271,7 +271,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge($targetClass->parentClasses, [$targetClass->name], $targetClass->subClasses);
+        $classNames = array_merge($targetClass->parentClasses, [$targetClass->getClassName()], $targetClass->subClasses);
 
         foreach (array_reverse($classNames) as $className) {
             $parentClass = $this->em->getClassMetadata($className);

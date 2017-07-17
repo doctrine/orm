@@ -100,7 +100,7 @@ class ClassMetadataExporter implements Exporter
 
         $lines[] = $indentation . 'public function __construct(?ClassMetadata $parent = null)';
         $lines[] = $indentation . '{';
-        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getName() . '", $parent);';
+        $lines[] = $bodyIndentation . 'parent::__construct("' . $metadata->getClassName() . '", $parent);';
         $lines[] = $indentation . '}';
 
         return implode(PHP_EOL, $lines);

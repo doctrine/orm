@@ -173,7 +173,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         /* @var $targetPersister CachedEntityPersister */
         $association     = $this->sourceEntity->getProperty($key->association);
-        $targetPersister = $this->uow->getEntityPersister($this->targetEntity->rootEntityName);
+        $targetPersister = $this->uow->getEntityPersister($this->targetEntity->getRootClassName());
         $targetRegion    = $targetPersister->getCacheRegion();
         $targetHydrator  = $targetPersister->getEntityHydrator();
 
@@ -193,7 +193,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             $class      = $this->targetEntity;
             $className  = ClassUtils::getClass($elements[$index]);
 
-            if ($className !== $this->targetEntity->name) {
+            if ($className !== $this->targetEntity->getClassName()) {
                 $class = $this->metadataFactory->getMetadataFor($className);
             }
 
@@ -233,7 +233,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         $fieldName = $this->association->getName();
         $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key       = new CollectionCacheKey($this->sourceEntity->rootEntityName, $fieldName, $ownerId);
+        $key       = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $fieldName, $ownerId);
         $entry     = $this->region->get($key);
 
         if ($entry !== null) {
@@ -258,8 +258,8 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     {
         if ($persisterResult = $this->persister->removeElement($collection, $element)) {
             $this->evictCollectionCache($collection);
-            $this->evictElementCache($this->sourceEntity->rootEntityName, $collection->getOwner());
-            $this->evictElementCache($this->targetEntity->rootEntityName, $element);
+            $this->evictElementCache($this->sourceEntity->getRootClassName(), $collection->getOwner());
+            $this->evictElementCache($this->targetEntity->getRootClassName(), $element);
         }
 
         return $persisterResult;
@@ -289,7 +289,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected function evictCollectionCache(PersistentCollection $collection)
     {
         $key = new CollectionCacheKey(
-            $this->sourceEntity->rootEntityName,
+            $this->sourceEntity->getRootClassName(),
             $this->association->getName(),
             $this->uow->getEntityIdentifier($collection->getOwner())
         );

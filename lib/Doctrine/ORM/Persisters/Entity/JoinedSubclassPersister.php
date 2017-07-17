@@ -52,12 +52,12 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         $postInsertIds       = [];
         $identifierComposite = $this->class->isIdentifierComposite();
-        $rootClass      = ($this->class->name !== $this->class->rootEntityName)
-            ? $this->em->getClassMetadata($this->class->rootEntityName)
+        $rootClass      = ! $this->class->isRootEntity()
+            ? $this->em->getClassMetadata($this->class->getRootClassName())
             : $this->class;
 
         // Prepare statement for the root table
-        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->name);
+        $rootPersister = $this->em->getUnitOfWork()->getEntityPersister($rootClass->getClassName());
         $rootTableName = $rootClass->getTableName();
         $rootTableStmt = $this->conn->prepare($rootPersister->getInsertSQL());
 
@@ -200,7 +200,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // If the database platform supports FKs, just
         // delete the row from the root table. Cascades do the rest.
         if ($this->platform->supportsForeignKeyConstraints()) {
-            $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+            $rootClass  = $this->em->getClassMetadata($this->class->getRootClassName());
             $rootTable  = $rootClass->table->getQuotedQualifiedName($this->platform);
 
             return (bool) $this->conn->delete($rootTable, $id);
@@ -252,7 +252,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             : $this->getSelectConditionSQL($criteria, $association);
 
         // If the current class in the root entity, add the filters
-        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $rootClass  = $this->em->getClassMetadata($this->class->getRootClassName());
         $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
 
         if ($filterSql = $this->generateFilterConditionSQL($rootClass, $tableAlias)) {
@@ -300,7 +300,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             ? $this->getSelectConditionCriteriaSQL($criteria)
             : $this->getSelectConditionSQL($criteria);
 
-        $rootClass  = $this->em->getClassMetadata($this->class->rootEntityName);
+        $rootClass  = $this->em->getClassMetadata($this->class->getRootClassName());
         $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
         $filterSql  = $this->generateFilterConditionSQL($rootClass, $tableAlias);
 
@@ -359,7 +359,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             return $this->currentPersisterContext->selectColumnListSql;
         }
 
-        $this->currentPersisterContext->rsm->addEntityResult($this->class->name, 'r');
+        $this->currentPersisterContext->rsm->addEntityResult($this->class->getClassName(), 'r');
 
         $columnList = [];
 
@@ -489,7 +489,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             }
 
             if (
-                $this->class->name !== $this->class->rootEntityName ||
+                $this->class->getClassName() !== $this->class->getRootClassName() ||
                 $this->class->getProperty($name)->getIdentifierGeneratorType() !== GeneratorType::IDENTITY ||
                 $this->class->identifier[0] !== $name
             ) {
@@ -502,7 +502,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // Add discriminator column if it is the topmost class.
-        if ($this->class->name === $this->class->rootEntityName) {
+        if ($this->class->isRootEntity()) {
             $discrColumn     = $this->class->discriminatorColumn;
             $discrColumnName = $discrColumn->getColumnName();
 

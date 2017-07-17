@@ -343,7 +343,7 @@ public function __construct(<params>)
      */
     public function writeEntityClass(ClassMetadata $metadata, $outputDirectory)
     {
-        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->name) . $this->extension;
+        $path = $outputDirectory . '/' . str_replace('\\', DIRECTORY_SEPARATOR, $metadata->getClassName()) . $this->extension;
         $dir = dirname($path);
 
         if ( ! is_dir($dir)) {
@@ -355,7 +355,7 @@ public function __construct(<params>)
         if ( ! $this->isNew) {
             $this->parseTokensInEntityFile(file_get_contents($path));
         } else {
-            $this->staticReflection[$metadata->name] = ['properties' => [], 'methods' => []];
+            $this->staticReflection[$metadata->getClassName()] = ['properties' => [], 'methods' => []];
         }
 
         if ($this->backupExisting && file_exists($path)) {
@@ -836,9 +836,9 @@ public function __construct(<params>)
      */
     protected function hasProperty($property, ClassMetadata $metadata)
     {
-        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->name))) {
+        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->getClassName()))) {
             // don't generate property if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->getClassName());
 
             if ($reflClass->hasProperty($property)) {
                 return true;
@@ -853,8 +853,8 @@ public function __construct(<params>)
         }
 
         return (
-            isset($this->staticReflection[$metadata->name]) &&
-            in_array($property, $this->staticReflection[$metadata->name]['properties'], true)
+            isset($this->staticReflection[$metadata->getClassName()]) &&
+            in_array($property, $this->staticReflection[$metadata->getClassName()]['properties'], true)
         );
     }
 
@@ -866,9 +866,9 @@ public function __construct(<params>)
      */
     protected function hasMethod($method, ClassMetadata $metadata)
     {
-        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->name))) {
+        if ($this->extendsClass() || (!$this->isNew && class_exists($metadata->getClassName()))) {
             // don't generate method if its already on the base class.
-            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->name);
+            $reflClass = new \ReflectionClass($this->getClassToExtend() ?: $metadata->getClassName());
 
             if ($reflClass->hasMethod($method)) {
                 return true;
@@ -883,8 +883,8 @@ public function __construct(<params>)
         }
 
         return (
-            isset($this->staticReflection[$metadata->name]) &&
-            in_array(strtolower($method), $this->staticReflection[$metadata->name]['methods'], true)
+            isset($this->staticReflection[$metadata->getClassName()]) &&
+            in_array(strtolower($method), $this->staticReflection[$metadata->getClassName()]['methods'], true)
         );
     }
 
@@ -897,11 +897,11 @@ public function __construct(<params>)
      */
     protected function getTraits(ClassMetadata $metadata)
     {
-        if (! ($metadata->getReflectionClass() !== null || class_exists($metadata->name))) {
+        if (! ($metadata->getReflectionClass() !== null || class_exists($metadata->getClassName()))) {
             return [];
         }
 
-        $reflClass = $metadata->getReflectionClass() ?? new \ReflectionClass($metadata->name);
+        $reflClass = $metadata->getReflectionClass() ?? new \ReflectionClass($metadata->getClassName());
         $traits    = [];
 
         while ($reflClass !== false) {
@@ -920,7 +920,7 @@ public function __construct(<params>)
      */
     protected function hasNamespace(ClassMetadata $metadata)
     {
-        return (bool) strpos($metadata->name, '\\');
+        return (bool) strpos($metadata->getClassName(), '\\');
     }
 
     /**
@@ -956,8 +956,8 @@ public function __construct(<params>)
      */
     protected function getClassName(ClassMetadata $metadata)
     {
-        return ($pos = strrpos($metadata->name, '\\'))
-            ? substr($metadata->name, $pos + 1, strlen($metadata->name)) : $metadata->name;
+        return ($pos = strrpos($metadata->getClassName(), '\\'))
+            ? substr($metadata->getClassName(), $pos + 1, strlen($metadata->getClassName())) : $metadata->getClassName();
     }
 
     /**
@@ -967,7 +967,7 @@ public function __construct(<params>)
      */
     protected function getNamespace(ClassMetadata $metadata)
     {
-        return substr($metadata->name, 0, strrpos($metadata->name, '\\'));
+        return substr($metadata->getClassName(), 0, strrpos($metadata->getClassName(), '\\'));
     }
 
     /**
@@ -1338,7 +1338,7 @@ public function __construct(<params>)
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
-        $this->staticReflection[$metadata->name]['methods'][] = strtolower($methodName);
+        $this->staticReflection[$metadata->getClassName()]['methods'][] = strtolower($methodName);
 
         $var = sprintf('%sMethodTemplate', $type);
         $template = static::$$var;
@@ -1385,7 +1385,7 @@ public function __construct(<params>)
             return '';
         }
 
-        $this->staticReflection[$metadata->name]['methods'][] = $methodName;
+        $this->staticReflection[$metadata->getClassName()]['methods'][] = $methodName;
 
         $replacements = [
             '<name>'        => $this->annotationsPrefix . ucfirst($name),

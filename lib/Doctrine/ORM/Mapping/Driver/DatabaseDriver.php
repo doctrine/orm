@@ -183,13 +183,14 @@ class DatabaseDriver implements MappingDriver
             throw new \InvalidArgumentException("Unknown class " . $className);
         }
 
+        // @todo guilhermeblanco This should somehow disappear... =)
         $metadata->name  = $className;
 
         $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);
         $this->buildToOneAssociationMappings($metadata);
 
-        $loweredTableName = strtolower($metadata->table->getName());
+        $loweredTableName = strtolower($metadata->getTableName());
 
         foreach ($this->manyToManyTables as $manyTable) {
             foreach ($manyTable->getForeignKeys() as $foreignKey) {
@@ -324,10 +325,10 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildTable(ClassMetadata $metadata)
     {
-        $tableName    = $this->classToTableNames[$metadata->name];
+        $tableName    = $this->classToTableNames[$metadata->getClassName()];
         $indexes      = $this->tables[$tableName]->getIndexes();
 
-        $metadata->table->setName($this->classToTableNames[$metadata->name]);
+        $metadata->table->setName($this->classToTableNames[$metadata->getClassName()]);
 
         foreach ($indexes as $index) {
             /** @var Index $index */
