@@ -465,11 +465,21 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['id'] = true;
             }
 
-            for ($i = 0; $i < count($fkColumns); $i++) {
-                $associationMapping['joinColumns'][] = array(
+
+            for ($i = 0; $i < count($fkColumns); $i++){
+                $associationMappingParameters = array(
                     'name'                 => $fkColumns[$i],
-                    'referencedColumnName' => $fkForeignColumns[$i],
+                    'referencedColumnName' => $fkForeignColumns[$i]
                 );
+
+
+                $columns = $foreignKey->getLocalTable()->getColumns();
+                foreach  ($columns as $column) {
+                    if(strtolower($column->getName()) === strtolower($fkColumns[$i]) && $column->getNotNull() === true) {
+                        $associationMappingParameters['nullable'] = false;
+                    }
+                }
+                $associationMapping['joinColumns'][] = $associationMappingParameters;
             }
 
             // Here we need to check if $fkColumns are the same as $primaryKeys

@@ -124,6 +124,7 @@ class YamlExporter extends AbstractExporter
         }
 
         foreach ($metadata->associationMappings as $name => $associationMapping) {
+
             $cascade = array();
 
             if ($associationMapping['isCascadeRemove']) {
@@ -165,10 +166,13 @@ class YamlExporter extends AbstractExporter
             if ($associationMapping['type'] & ClassMetadataInfo::TO_ONE) {
                 $joinColumns = $associationMapping['isOwningSide'] ? $associationMapping['joinColumns'] : [];
                 $newJoinColumns = array();
-
                 foreach ($joinColumns as $joinColumn) {
                     $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
 
+					if(isset($joinColumn['nullable'])){
+
+						$newJoinColumns[$joinColumn['name']]['nullable'] = $joinColumn['nullable'];
+					}
                     if (isset($joinColumn['onDelete'])) {
                         $newJoinColumns[$joinColumn['name']]['onDelete'] = $joinColumn['onDelete'];
                     }

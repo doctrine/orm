@@ -305,7 +305,6 @@ class XmlExporter extends AbstractExporter
                     $cascadeXml->addChild($type);
                 }
             }
-
             if (isset($associationMapping['joinTable']) && $associationMapping['joinTable']) {
                 $joinTableXml = $associationMappingXml->addChild('join-table');
                 $joinTableXml->addAttribute('name', $associationMapping['joinTable']['name']);
@@ -316,6 +315,10 @@ class XmlExporter extends AbstractExporter
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
 
+					if(isset($joinColumn['nullable'])){
+
+						$joinColumnXml->addAttribute('nullable', $joinColumn['nullable']);
+					}
                     if (isset($joinColumn['onDelete'])) {
                         $joinColumnXml->addAttribute('on-delete', $joinColumn['onDelete']);
                     }
