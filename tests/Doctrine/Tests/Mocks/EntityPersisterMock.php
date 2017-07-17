@@ -64,7 +64,7 @@ class EntityPersisterMock extends BasicEntityPersister
             $id = $this->identityColumnValueCounter++;
 
             return [
-                'generatedId' => $id,
+                $this->class->getSingleIdentifierFieldName() => $id,
             ];
         }
 
