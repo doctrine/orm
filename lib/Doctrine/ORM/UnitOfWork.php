@@ -947,36 +947,23 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function executeInserts($class)
     {
-        $entities   = [];
         $className  = $class->name;
         $persister  = $this->getEntityPersister($className);
         $invoke     = $this->listenersInvoker->getSubscribedSystems($class, Events::postPersist);
 
         foreach ($this->entityInsertions as $oid => $entity) {
-
             if ($this->em->getClassMetadata(get_class($entity))->name !== $className) {
                 continue;
             }
 
-            $persister->addInsert($entity);
+            $postInsertId = $persister->insert($entity);
 
-            unset($this->entityInsertions[$oid]);
-
-            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
-                $entities[] = $entity;
-            }
-        }
-
-        $postInsertIds = $persister->executeInserts();
-
-        if ($postInsertIds) {
-            // Persister returned post-insert IDs
-            foreach ($postInsertIds as $postInsertId) {
+            if ($postInsertId) {
+                // Persister returned post-insert IDs
                 $idField  = $class->getSingleIdentifierFieldName();
                 $property = $class->getProperty($idField);
                 $platform = $this->em->getConnection()->getDatabasePlatform();
                 $idValue  = $property->getType()->convertToPHPValue($postInsertId['generatedId'], $platform);
-                $entity   = $postInsertId['entity'];
                 $oid      = spl_object_hash($entity);
 
                 $property->setValue($entity, $idValue);
@@ -987,12 +974,14 @@ class UnitOfWork implements PropertyChangedListener
 
                 $this->addToIdentityMap($entity);
             }
-        }
 
-        foreach ($entities as $entity) {
-            $eventArgs = new LifecycleEventArgs($entity, $this->em);
+            unset($this->entityInsertions[$oid]);
 
-            $this->listenersInvoker->invoke($class, Events::postPersist, $entity, $eventArgs, $invoke);
+            if ($invoke !== ListenersInvoker::INVOKE_NONE) {
+                $eventArgs = new LifecycleEventArgs($entity, $this->em);
+
+                $this->listenersInvoker->invoke($class, Events::postPersist, $entity, $eventArgs, $invoke);
+            }
         }
     }
 

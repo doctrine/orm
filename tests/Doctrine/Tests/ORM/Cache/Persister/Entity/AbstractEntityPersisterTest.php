@@ -57,15 +57,13 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     protected $entityPersisterMockMethods = [
         'getClassMetadata',
         'getResultSetMapping',
-        'getInserts',
         'getInsertSQL',
         'getSelectSQL',
         'getCountSQL',
         'expandParameters',
         'expandCriteriaParameters',
         'getSelectConditionStatementSQL',
-        'addInsert',
-        'executeInserts',
+        'insert',
         'update',
         'delete',
         'getOwningTable',
@@ -134,30 +132,6 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertInstanceOf(CachedEntityPersister::class, $persister);
     }
 
-    public function testInvokeAddInsert()
-    {
-        $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
-
-        $this->entityPersister->expects($this->once())
-            ->method('addInsert')
-            ->with($this->equalTo($entity));
-
-        self::assertNull($persister->addInsert($entity));
-    }
-
-    public function testInvokeGetInserts()
-    {
-        $persister = $this->createPersisterDefault();
-        $entity    = new Country("Foo");
-
-        $this->entityPersister->expects($this->once())
-            ->method('getInserts')
-            ->will($this->returnValue([$entity]));
-
-        self::assertEquals([$entity], $persister->getInserts());
-    }
-
     public function testInvokeGetSelectSQL()
     {
         $persister = $this->createPersisterDefault();
@@ -222,15 +196,17 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         self::assertEquals('name = 1', $persister->getSelectConditionStatementSQL('id', 1, $assoc, '='));
     }
 
-    public function testInvokeExecuteInserts()
+    public function testInvokeInsert()
     {
         $persister = $this->createPersisterDefault();
+        $entity    = new Country("Foo");
 
         $this->entityPersister->expects($this->once())
-            ->method('executeInserts')
-            ->will($this->returnValue(['id' => 1]));
+            ->method('insert')
+            ->with($this->equalTo($entity))
+            ->will($this->returnValue(['generatedId' => 1]));
 
-        self::assertEquals(['id' => 1], $persister->executeInserts());
+        self::assertEquals(['generatedId' => 1], $persister->insert($entity));
     }
 
     public function testInvokeUpdate()

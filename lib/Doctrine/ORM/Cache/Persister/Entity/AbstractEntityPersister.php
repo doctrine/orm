@@ -142,22 +142,6 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function addInsert($entity)
-    {
-        $this->persister->addInsert($entity);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInserts()
-    {
-        return $this->persister->getInserts();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getSelectSQL(
         $criteria,
         AssociationMetadata $association = null,
@@ -375,11 +359,11 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function executeInserts()
+    public function insert($entity)
     {
-        $this->queuedCache['insert'] = $this->persister->getInserts();
+        $this->queuedCache['insert'][] = $entity;
 
-        return $this->persister->executeInserts();
+        return $this->persister->insert($entity);
     }
 
     /**
