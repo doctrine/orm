@@ -38,45 +38,9 @@ class EntityPersisterMock extends BasicEntityPersister
     private $mockIdGeneratorType;
 
     /**
-     * @var array
-     */
-    private $postInsertIds = [];
-
-    /**
      * @var bool
      */
     private $existsCalled = false;
-
-    /**
-     * @param object $entity
-     *
-     * @return mixed
-     */
-    public function addInsert($entity)
-    {
-        $this->inserts[] = $entity;
-
-        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY
-            || $this->class->getProperty($this->class->getSingleIdentifierFieldName())->getIdentifierGeneratorType() === GeneratorType::IDENTITY) {
-            $id = $this->identityColumnValueCounter++;
-
-            $this->postInsertIds[] = [
-                'generatedId' => $id,
-                'entity' => $entity,
-            ];
-            return $id;
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array
-     */
-    public function executeInserts()
-    {
-        return $this->postInsertIds;
-    }
 
     /**
      * @param int $genType
@@ -86,6 +50,25 @@ class EntityPersisterMock extends BasicEntityPersister
     public function setMockIdGeneratorType($genType)
     {
         $this->mockIdGeneratorType = $genType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insert($entity)
+    {
+        $this->inserts[] = $entity;
+
+        if ($this->mockIdGeneratorType === GeneratorType::IDENTITY
+            || $this->class->getProperty($this->class->getSingleIdentifierFieldName())->getIdentifierGeneratorType() === GeneratorType::IDENTITY) {
+            $id = $this->identityColumnValueCounter++;
+
+            return [
+                'generatedId' => $id,
+            ];
+        }
+
+        return [];
     }
 
     /**

@@ -49,23 +49,6 @@ interface EntityPersister
     public function getResultSetMapping();
 
     /**
-     * Get all queued inserts.
-     *
-     * @return array
-    */
-    public function getInserts();
-
-     /**
-     * @TODO - It should not be here.
-     * But its necessary since JoinedSubclassPersister#executeInserts invoke the root persister.
-     *
-     * Gets the INSERT SQL used by the persister to persist a new entity.
-     *
-     * @return string
-     */
-    public function getInsertSQL();
-
-    /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array|\Doctrine\Common\Collections\Criteria $criteria
@@ -131,29 +114,20 @@ interface EntityPersister
     );
 
     /**
-     * Adds an entity to the queued insertions.
-     * The entity remains queued until {@link executeInserts} is invoked.
+     * Inserts an entity. Returns any generated post-insert identifiers that were created as a result of the insertion.
+     * The insertion happens instantaneously.
      *
-     * @param object $entity The entity to queue for insertion.
+     * Subclasses may override this method to customize the semantics of entity deletion.
      *
-     * @return void
+     * @return array An array of any generated post-insert IDs. Empty array if entity class does not use the IDENTITY generation strategy.
      */
-    public function addInsert($entity);
+    public function insert($entity);
 
     /**
-     * Executes all queued entity insertions and returns any generated post-insert
-     * identifiers that were created as a result of the insertions.
+     * Updates a managed entity. The entity is updated according to its current changeset in the running UnitOfWork.
+     * If there is no changeset, nothing is updated.
      *
-     * If no inserts are queued, invoking this method is a NOOP.
-     *
-     * @return array An array of any generated post-insert IDs. This will be an empty array
-     *               if the entity class does not use the IDENTITY generation strategy.
-     */
-    public function executeInserts();
-
-    /**
-     * Updates a managed entity. The entity is updated according to its current changeset
-     * in the running UnitOfWork. If there is no changeset, nothing is updated.
+     * Subclasses may override this method to customize the semantics of entity update.
      *
      * @param object $entity The entity to update.
      *
@@ -164,8 +138,7 @@ interface EntityPersister
     /**
      * Deletes a managed entity.
      *
-     * The entity to delete must be managed and have a persistent identifier.
-     * The deletion happens instantaneously.
+     * The entity to delete must be managed and have a persistent identifier. The deletion happens instantaneously.
      *
      * Subclasses may override this method to customize the semantics of entity deletion.
      *

@@ -59,20 +59,12 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->with($this->equalTo($key), $this->equalTo($entry));
 
         $this->entityPersister->expects($this->once())
-            ->method('addInsert')
+            ->method('insert')
             ->with($this->equalTo($entity));
-
-        $this->entityPersister->expects($this->once())
-            ->method('getInserts')
-            ->will($this->returnValue([$entity]));
-
-        $this->entityPersister->expects($this->once())
-            ->method('executeInserts');
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
-        $persister->addInsert($entity);
-        $persister->executeInserts();
+        $persister->insert($entity);
 
         self::assertCount(1, $property->getValue($persister));
 
