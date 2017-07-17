@@ -61,8 +61,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * The persisting operations that are invoked during a commit of a UnitOfWork to
  * persist the persistent entity state are:
  *
- *   - {@link addInsert} : To schedule an entity for insertion.
- *   - {@link executeInserts} : To execute all scheduled insertions.
+ *   - {@link insert} : To insert the persistent state of an entity.
  *   - {@link update} : To update the persistent state of an entity.
  *   - {@link delete} : To delete the persistent state of an entity.
  *
@@ -142,13 +141,6 @@ class BasicEntityPersister implements EntityPersister
     protected $em;
 
     /**
-     * Queued inserts.
-     *
-     * @var array
-     */
-    protected $queuedInserts = [];
-
-    /**
      * The map of column names to DBAL columns used when INSERTing or UPDATEing an entity.
      *
      * @var array<ColumnMetadata>
@@ -225,71 +217,46 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function addInsert($entity)
+    public function insert($entity)
     {
-        $this->queuedInserts[spl_object_hash($entity)] = $entity;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getInserts()
-    {
-        return $this->queuedInserts;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function executeInserts()
-    {
-        if ( ! $this->queuedInserts) {
-            return [];
-        }
-
         $postInsertIds       = [];
         $identifierComposite = $this->class->isIdentifierComposite();
 
         $stmt       = $this->conn->prepare($this->getInsertSQL());
         $tableName  = $this->class->getTableName();
+        $insertData = $this->prepareInsertData($entity);
 
-        foreach ($this->queuedInserts as $entity) {
-            $insertData = $this->prepareInsertData($entity);
+        if (isset($insertData[$tableName])) {
+            $paramIndex = 1;
 
-            if (isset($insertData[$tableName])) {
-                $paramIndex = 1;
+            foreach ($insertData[$tableName] as $columnName => $value) {
+                $type = $this->columns[$columnName]->getType();
 
-                foreach ($insertData[$tableName] as $columnName => $value) {
-                    $type = $this->columns[$columnName]->getType();
-
-                    $stmt->bindValue($paramIndex++, $value, $type);
-                }
-            }
-
-            $stmt->execute();
-
-            if (! $identifierComposite
-                && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
-                && $property->getIdentifierGenerator()->isPostInsertGenerator()
-            ) {
-                $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
-                $id          = [$this->class->identifier[0] => $generatedId];
-
-                $postInsertIds[] = [
-                    'generatedId' => $generatedId,
-                    'entity'      => $entity,
-                ];
-            } else {
-                $id = $this->class->getIdentifierValues($entity);
-            }
-
-            if ($this->class->isVersioned()) {
-                $this->assignDefaultVersionValue($entity, $id);
+                $stmt->bindValue($paramIndex++, $value, $type);
             }
         }
 
+        $stmt->execute();
+
+        if (! $identifierComposite
+            && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
+            && $property->getIdentifierGenerator()->isPostInsertGenerator()
+        ) {
+            $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
+            $id          = [$this->class->identifier[0] => $generatedId];
+
+            $postInsertIds = [
+                'generatedId' => $generatedId,
+            ];
+        } else {
+            $id = $this->class->getIdentifierValues($entity);
+        }
+
+        if ($this->class->isVersioned()) {
+            $this->assignDefaultVersionValue($entity, $id);
+        }
+
         $stmt->closeCursor();
-        $this->queuedInserts = [];
 
         return $postInsertIds;
     }
@@ -655,17 +622,13 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if ($newVal !== null) {
-                $oid = spl_object_hash($newVal);
+            if ($newVal !== null && $uow->isScheduledForInsert($newVal)) {
+                // The associated entity $newVal is not yet persisted, so we must
+                // set $newVal = null, in order to insert a null value and schedule an
+                // extra update on the UnitOfWork.
+                $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
 
-                if (isset($this->queuedInserts[$oid]) || $uow->isScheduledForInsert($newVal)) {
-                    // The associated entity $newVal is not yet persisted, so we must
-                    // set $newVal = null, in order to insert a null value and schedule an
-                    // extra update on the UnitOfWork.
-                    $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
-
-                    $newVal = null;
-                }
+                $newVal = null;
             }
 
             $newValId = null;
