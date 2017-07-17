@@ -48,12 +48,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    public function executeInserts()
+    public function insert($entity)
     {
-        if ( ! $this->queuedInserts) {
-            return [];
-        }
-
         $postInsertIds       = [];
         $identifierComposite = $this->class->isIdentifierComposite();
         $rootClass      = ($this->class->name !== $this->class->rootEntityName)
@@ -86,66 +82,63 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Execute all inserts. For each entity:
         // 1) Insert on root table
         // 2) Insert on sub tables
-        foreach ($this->queuedInserts as $entity) {
-            $insertData = $this->prepareInsertData($entity);
+        $insertData = $this->prepareInsertData($entity);
 
-            // Execute insert on root table
+        // Execute insert on root table
+        $paramIndex = 1;
+
+        foreach ($insertData[$rootTableName] as $columnName => $value) {
+            $type = $this->columns[$columnName]->getType();
+
+            $rootTableStmt->bindValue($paramIndex++, $value, $type);
+        }
+
+        $rootTableStmt->execute();
+
+        if (! $identifierComposite
+            && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
+            && $property->getIdentifierGenerator()->isPostInsertGenerator()
+        ) {
+            $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
+            $id          = [$this->class->identifier[0] => $generatedId];
+
+            $postInsertIds = [
+                'generatedId' => $generatedId,
+            ];
+        } else {
+            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        }
+
+        if ($this->class->isVersioned()) {
+            $this->assignDefaultVersionValue($entity, $id);
+        }
+
+        // Execute inserts on subtables.
+        // The order doesn't matter because all child tables link to the root table via FK.
+        foreach ($subTableStmts as $tableName => $stmt) {
+            /** @var \Doctrine\DBAL\Statement $stmt */
             $paramIndex = 1;
+            $data       = $insertData[$tableName] ?? [];
 
-            foreach ($insertData[$rootTableName] as $columnName => $value) {
-                $type = $this->columns[$columnName]->getType();
+            foreach ((array) $id as $idName => $idVal) {
+                $type = Type::getType('string');
 
-                $rootTableStmt->bindValue($paramIndex++, $value, $type);
-            }
-
-            $rootTableStmt->execute();
-
-            if (! $identifierComposite
-                && ($property = $this->class->getProperty($this->class->getSingleIdentifierFieldName())) instanceof FieldMetadata
-                && $property->getIdentifierGenerator()->isPostInsertGenerator()
-            ) {
-                $generatedId = $property->getIdentifierGenerator()->generate($this->em, $entity);
-                $id          = [$this->class->identifier[0] => $generatedId];
-
-                $postInsertIds[] = [
-                    'generatedId' => $generatedId,
-                    'entity'      => $entity,
-                ];
-            } else {
-                $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
-            }
-
-            if ($this->class->isVersioned()) {
-                $this->assignDefaultVersionValue($entity, $id);
-            }
-
-            // Execute inserts on subtables.
-            // The order doesn't matter because all child tables link to the root table via FK.
-            foreach ($subTableStmts as $tableName => $stmt) {
-                /** @var \Doctrine\DBAL\Statement $stmt */
-                $paramIndex = 1;
-                $data       = $insertData[$tableName] ?? [];
-
-                foreach ((array) $id as $idName => $idVal) {
-                    $type = Type::getType('string');
-
-                    if (isset($this->columns[$idName])) {
-                        $type = $this->columns[$idName]->getType();
-                    }
-
-                    $stmt->bindValue($paramIndex++, $idVal, $type);
+                if (isset($this->columns[$idName])) {
+                    $type = $this->columns[$idName]->getType();
                 }
 
-                foreach ($data as $columnName => $value) {
-                    if (!is_array($id) || !isset($id[$columnName])) {
-                        $type = $this->columns[$columnName]->getType();
-
-                        $stmt->bindValue($paramIndex++, $value, $type);
-                    }
-                }
-
-                $stmt->execute();
+                $stmt->bindValue($paramIndex++, $idVal, $type);
             }
+
+            foreach ($data as $columnName => $value) {
+                if (!is_array($id) || !isset($id[$columnName])) {
+                    $type = $this->columns[$columnName]->getType();
+
+                    $stmt->bindValue($paramIndex++, $value, $type);
+                }
+            }
+
+            $stmt->execute();
         }
 
         $rootTableStmt->closeCursor();
@@ -153,8 +146,6 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         foreach ($subTableStmts as $stmt) {
             $stmt->closeCursor();
         }
-
-        $this->queuedInserts = [];
 
         return $postInsertIds;
     }
