@@ -136,7 +136,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
         $this->timestampRegion  = $cacheFactory->getTimestampRegion();
         $this->hydrator         = $cacheFactory->buildEntityHydrator($em, $class);
-        $this->timestampKey     = new TimestampCacheKey($this->class->rootEntityName);
+        $this->timestampKey     = new TimestampCacheKey($this->class->getRootClassName());
     }
 
     /**
@@ -197,7 +197,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function exists($entity, Criteria $extraConditions = null)
     {
         if (null === $extraConditions) {
-            $key = new EntityCacheKey($this->class->rootEntityName, $this->class->getIdentifierValues($entity));
+            $key = new EntityCacheKey($this->class->getRootClassName(), $this->class->getIdentifierValues($entity));
 
             if ($this->region->contains($key)) {
                 return true;
@@ -231,7 +231,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
 
-        if ($className !== $this->class->name) {
+        if ($className !== $this->class->getClassName()) {
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
@@ -275,7 +275,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
 
             $assocId        = $this->uow->getEntityIdentifier($assocEntity);
             $assocMetadata  = $this->metadataFactory->getMetadataFor($targetEntity);
-            $assocKey       = new EntityCacheKey($assocMetadata->rootEntityName, $assocId);
+            $assocKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocId);
             $assocPersister = $this->uow->getEntityPersister($targetEntity);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
@@ -465,12 +465,12 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function loadById(array $identifier, $entity = null)
     {
-        $cacheKey   = new EntityCacheKey($this->class->rootEntityName, $identifier);
+        $cacheKey   = new EntityCacheKey($this->class->getRootClassName(), $identifier);
         $cacheEntry = $this->region->get($cacheKey);
         $class      = $this->class;
 
         if ($cacheEntry !== null) {
-            if ($cacheEntry->class !== $this->class->name) {
+            if ($cacheEntry->class !== $this->class->getClassName()) {
                 $class = $this->metadataFactory->getMetadataFor($cacheEntry->class);
             }
 
@@ -492,7 +492,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $class      = $this->class;
         $className  = ClassUtils::getClass($entity);
 
-        if ($className !== $this->class->name) {
+        if ($className !== $this->class->getClassName()) {
             $class = $this->metadataFactory->getMetadataFor($className);
         }
 
@@ -675,6 +675,6 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         /** @var ClassMetadata $metadata */
         $metadata = $this->metadataFactory->getMetadataFor($association->getSourceEntity());
 
-        return new CollectionCacheKey($metadata->rootEntityName, $association->getName(), $ownerId);
+        return new CollectionCacheKey($metadata->getRootClassName(), $association->getName(), $ownerId);
     }
 }

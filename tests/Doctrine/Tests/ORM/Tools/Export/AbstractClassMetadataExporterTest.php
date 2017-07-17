@@ -96,7 +96,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         $metadata[0]->name = ExportedUser::class;
 
-        self::assertEquals(ExportedUser::class, $metadata[0]->name);
+        self::assertEquals(ExportedUser::class, $metadata[0]->getClassName());
 
         $type = $this->getType();
         $cme = new ClassMetadataExporter();
@@ -134,7 +134,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         $class = current($metadata);
 
-        self::assertEquals(ExportedUser::class, $class->name);
+        self::assertEquals(ExportedUser::class, $class->getClassName());
 
         return $class;
     }

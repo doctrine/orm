@@ -324,7 +324,7 @@ class <proxyShortClassName> extends \<className> implements \<baseProxyInterface
      */
     private function generateClassName(ProxyDefinition $definition) : string
     {
-        return $definition->entityClassMetadata->getName();
+        return $definition->entityClassMetadata->getClassName();
     }
 
     private function generateLazyPublicPropertyList(ProxyDefinition $definition) : string

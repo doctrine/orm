@@ -74,7 +74,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
             ! is_object($value) &&
             ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])) {
 
-            throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->name, $field);
+            throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->getClassName(), $field);
         }
 
         return $this->persister->getSelectConditionStatementSQL($field, $value, null, $comparison->getOperator());

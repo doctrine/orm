@@ -636,7 +636,7 @@ class XmlDriver extends FileDriver
                 $property  = $metadata->getProperty($fieldName);
 
                 if (! $property) {
-                    throw MappingException::invalidOverrideFieldName($metadata->name, $fieldName);
+                    throw MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
                 }
 
                 $existingClass = get_class($property);
@@ -869,7 +869,7 @@ class XmlDriver extends FileDriver
      */
     private function convertCacheElementToCacheMetadata(SimpleXMLElement $cacheMapping, ClassMetadata $metadata, $fieldName = null)
     {
-        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->rootEntityName));
+        $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;

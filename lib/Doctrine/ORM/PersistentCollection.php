@@ -453,7 +453,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association->getFetchMode() === FetchMode::EXTRA_LAZY &&
             $this->association->getIndexedBy()) {
             if (!$this->typeClass->isIdentifierComposite() && $this->typeClass->isIdentifier($this->association->getIndexedBy())) {
-                return $this->em->find($this->typeClass->name, $key);
+                return $this->em->find($this->typeClass->getClassName(), $key);
             }
 
             return $this->em->getUnitOfWork()->getCollectionPersister($this->association)->get($this, $key);

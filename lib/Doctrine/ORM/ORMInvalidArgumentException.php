@@ -215,7 +215,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
         $expectedType = 'Doctrine\Common\Collections\Collection|array';
 
         if ($association instanceof ToOneAssociationMetadata) {
-            $expectedType = $targetClass->getName();
+            $expectedType = $targetClass->getClassName();
         }
 
         return new self(sprintf(

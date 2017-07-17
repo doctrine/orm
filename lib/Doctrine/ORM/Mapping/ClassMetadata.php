@@ -61,7 +61,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      *
      * @var string
      */
-    public $rootEntityName;
+    protected $rootEntityName;
 
     /**
      * @var CacheMetadata|null
@@ -290,6 +290,22 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     }
 
     /**
+     * @return string
+     */
+    public function getClassName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRootClassName() : string
+    {
+        return $this->rootEntityName;
+    }
+
+    /**
      * @param CacheMetadata|null $cache
      *
      * @return void
@@ -505,7 +521,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             }
 
             $fieldRefl = $reflService->getAccessibleProperty(
-                isset($embeddedClass['declared']) ? $embeddedClass['declared'] : $this->name,
+                isset($embeddedClass['declared']) ? $embeddedClass['declared'] : $this->getClassName(),
                 $property
             );
 
@@ -1417,7 +1433,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      */
     public function isRootEntity()
     {
-        return $this->name == $this->rootEntityName;
+        return $this->name === $this->rootEntityName;
     }
 
     /**
@@ -1949,14 +1965,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * @return bool
      */
     public function isVersioned()
@@ -2015,7 +2023,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     {
         /*foreach ($embeddable->fieldMappings as $fieldName => $fieldMapping) {
             $fieldMapping['fieldName']     = $property . "." . $fieldName;
-            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
+            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->getClassName();
             $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldName;
             $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
@@ -2044,12 +2052,22 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     private function assertPropertyNotMapped(string $fieldName)
     {
         if (isset($this->properties[$fieldName])) {
-            throw MappingException::duplicateProperty($this->getName(), $this->properties[$fieldName]);
+            throw MappingException::duplicateProperty($this->name, $this->properties[$fieldName]);
         }
 
 //        if (isset($this->embeddedClasses[$fieldName])) {
 //            throw MappingException::duplicateProperty($this, $this->embeddedClasses[$fieldName]);
 //        }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @todo guilhermeblanco Not used anymore. Remove this method (it exists in Persistence repo)
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
