@@ -963,7 +963,7 @@ class UnitOfWork implements PropertyChangedListener
                 $idField  = $class->getSingleIdentifierFieldName();
                 $property = $class->getProperty($idField);
                 $platform = $this->em->getConnection()->getDatabasePlatform();
-                $idValue  = $property->getType()->convertToPHPValue($postInsertId['generatedId'], $platform);
+                $idValue  = $property->getType()->convertToPHPValue($postInsertId[$idField], $platform);
                 $oid      = spl_object_hash($entity);
 
                 $property->setValue($entity, $idValue);
