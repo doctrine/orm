@@ -473,12 +473,12 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $cmf = $this->createTestFactory();
 
-        $cmf->setMetadataForClass($metadata->name, $metadata);
+        $cmf->setMetadataForClass($metadata->getClassName(), $metadata);
 
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage('The embed mapping \'embedded\' misses the \'class\' attribute.');
 
-        $cmf->getMetadataFor($metadata->name);
+        $cmf->getMetadataFor($metadata->getClassName());
     }
 
     /**
