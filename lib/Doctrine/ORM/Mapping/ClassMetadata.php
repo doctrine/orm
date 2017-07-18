@@ -52,7 +52,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      *
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * READ-ONLY: The name of the entity class that is at the root of the mapped entity inheritance
@@ -287,6 +287,16 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
         $this->namingStrategy = $namingStrategy ?: new DefaultNamingStrategy();
 
         $this->setTable(new TableMetadata());
+    }
+
+    /**
+     * @todo guilhermeblanco Remove once ClassMetadataFactory is finished
+     *
+     * @param string $className
+     */
+    public function setClassName(string $className)
+    {
+        $this->name = $className;
     }
 
     /**

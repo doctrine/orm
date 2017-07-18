@@ -184,7 +184,7 @@ class DatabaseDriver implements MappingDriver
         }
 
         // @todo guilhermeblanco This should somehow disappear... =)
-        $metadata->name  = $className;
+        $metadata->setClassName($className);
 
         $this->buildTable($metadata);
         $this->buildFieldMappings($metadata);

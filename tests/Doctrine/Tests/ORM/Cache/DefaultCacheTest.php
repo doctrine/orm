@@ -46,8 +46,8 @@ class DefaultCacheTest extends OrmTestCase
     private function putEntityCacheEntry($className, array $identifier, array $data)
     {
         $metadata   = $this->em->getClassMetadata($className);
-        $cacheKey   = new EntityCacheKey($metadata->name, $identifier);
-        $cacheEntry = new EntityCacheEntry($metadata->name, $data);
+        $cacheKey   = new EntityCacheKey($metadata->getClassName(), $identifier);
+        $cacheEntry = new EntityCacheEntry($metadata->getClassName(), $data);
         $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->getRootClassName());
 
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
@@ -62,7 +62,7 @@ class DefaultCacheTest extends OrmTestCase
     private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $data)
     {
         $metadata   = $this->em->getClassMetadata($className);
-        $cacheKey   = new CollectionCacheKey($metadata->name, $association, $ownerIdentifier);
+        $cacheKey   = new CollectionCacheKey($metadata->getClassName(), $association, $ownerIdentifier);
         $cacheEntry = new CollectionCacheEntry($data);
         $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getProperty($association));
 
