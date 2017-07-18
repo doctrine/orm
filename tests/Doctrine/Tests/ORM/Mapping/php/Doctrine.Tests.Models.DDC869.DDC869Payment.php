@@ -20,4 +20,4 @@ $fieldMetadata->setType(Type::getType('float'));
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
+$metadata->setCustomRepositoryClassName(DDC869PaymentRepository::class);

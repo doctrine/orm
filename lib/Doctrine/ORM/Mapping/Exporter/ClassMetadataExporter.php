@@ -122,8 +122,8 @@ class ClassMetadataExporter implements Exporter
         $lines[] = $indentation . 'protected function initialize()';
         $lines[] = $indentation . '{';
 
-        if ($metadata->customRepositoryClassName) {
-            $lines[] = $objectReference . '->customRepositoryClassName = "' . $metadata->customRepositoryClassName . '";';
+        if ($metadata->getCustomRepositoryClassName()) {
+            $lines[] = $objectReference . '->setCustomRepositoryClassName("' . $metadata->getCustomRepositoryClassName() . '");';
             $lines[] = null;
         }
 

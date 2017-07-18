@@ -144,8 +144,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if ($parent->isMappedSuperclass && empty($class->customRepositoryClassName)) {
-                $class->setCustomRepositoryClass($parent->customRepositoryClassName);
+            if ($parent->isMappedSuperclass && ! $class->getCustomRepositoryClassName()) {
+                $class->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
             }
 
         }
