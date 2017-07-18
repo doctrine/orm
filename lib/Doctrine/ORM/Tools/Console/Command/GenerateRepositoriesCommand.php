@@ -93,10 +93,10 @@ class GenerateRepositoriesCommand extends Command
         $generator->setDefaultRepositoryName($repositoryName);
 
         foreach ($metadatas as $metadata) {
-            if ($metadata->customRepositoryClassName) {
-                $ui->text(sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName));
+            if ($metadata->getCustomRepositoryClassName()) {
+                $ui->text(sprintf('Processing repository "<info>%s</info>"', $metadata->getCustomRepositoryClassName()));
 
-                $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
+                $generator->writeEntityRepositoryClass($metadata->getCustomRepositoryClassName(), $destPath);
 
                 ++$numRepositories;
             }

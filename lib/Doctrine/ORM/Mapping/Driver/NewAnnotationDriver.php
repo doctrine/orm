@@ -225,7 +225,7 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent);
 
         if ($entityAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+            $classMetadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
         }
 
         if ($entityAnnot->readOnly) {
@@ -404,7 +404,7 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata         = new Mapping\MappedSuperClassMetadata($reflectionClass->getName(), $parent);
 
         if ($mappedSuperclassAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+            $classMetadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
         }
 
         return $classMetadata;

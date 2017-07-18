@@ -81,7 +81,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      *
      * @var string
      */
-    public $customRepositoryClassName;
+    protected $customRepositoryClassName;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
@@ -1747,13 +1747,21 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     /**
      * Registers a custom repository class for the entity class.
      *
-     * @param string $repositoryClassName The class name of the custom mapper.
+     * @param string|null $repositoryClassName The class name of the custom mapper.
      *
      * @return void
      */
-    public function setCustomRepositoryClass($repositoryClassName)
+    public function setCustomRepositoryClassName(?string $repositoryClassName)
     {
         $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCustomRepositoryClassName() : ?string
+    {
+        return $this->customRepositoryClassName;
     }
 
     /**

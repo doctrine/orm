@@ -76,12 +76,14 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     public function testCreatesRepositoryFromCustomClassMetadata()
     {
         $customMetadata = $this->buildClassMetadata(__DIR__);
-        $customMetadata->customRepositoryClassName = DDC753DefaultRepository::class;
+
+        $customMetadata->setCustomRepositoryClassName(DDC753DefaultRepository::class);
 
         $this->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($customMetadata));
+            ->will($this->returnValue($customMetadata))
+        ;
 
         self::assertInstanceOf(
             DDC753DefaultRepository::class,
@@ -116,16 +118,13 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
      *
      * @param string $className
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function buildClassMetadata($className)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject */
-        $metadata = $this->createMock(ClassMetadata::class);
+        $metadata = new ClassMetadata($className);
 
-        $metadata->expects($this->any())->method('getName')->will($this->returnValue($className));
-
-        $metadata->customRepositoryClassName = null;
+        $metadata->setCustomRepositoryClassName(null);
 
         return $metadata;
     }

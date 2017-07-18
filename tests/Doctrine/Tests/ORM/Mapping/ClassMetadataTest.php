@@ -51,7 +51,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setInheritanceType(Mapping\InheritanceType::SINGLE_TABLE);
         $cm->setSubclasses(["One", "Two", "Three"]);
         $cm->setParentClasses(["UserParent"]);
-        $cm->setCustomRepositoryClass("UserRepository");
+        $cm->setCustomRepositoryClassName("UserRepository");
         $cm->setDiscriminatorColumn($discrColumn);
         $cm->asReadOnly();
         $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
@@ -75,7 +75,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('UserParent', $cm->getRootClassName());
         self::assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
         self::assertEquals(['UserParent'], $cm->parentClasses);
-        self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
+        self::assertEquals(CMS\UserRepository::class, $cm->getCustomRepositoryClassName());
         self::assertEquals(
             [
                 'Doctrine\Tests\Models\CMS\One',
@@ -85,7 +85,7 @@ class ClassMetadataTest extends OrmTestCase
             $cm->subClasses
         );
         self::assertEquals(['UserParent'], $cm->parentClasses);
-        self::assertEquals(CMS\UserRepository::class, $cm->customRepositoryClassName);
+        self::assertEquals(CMS\UserRepository::class, $cm->getCustomRepositoryClassName());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
         self::assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);

@@ -1023,8 +1023,8 @@ public function __construct(<params>)
             return $prefix . 'Embeddable';
         }
 
-        $customRepository = $metadata->customRepositoryClassName
-            ? '(repositoryClass="' . $metadata->customRepositoryClassName . '")'
+        $customRepository = $metadata->getCustomRepositoryClassName()
+            ? '(repositoryClass="' . $metadata->getCustomRepositoryClassName() . '")'
             : '';
 
         return $prefix . ($metadata->isMappedSuperclass ? 'MappedSuperclass' : 'Entity') . $customRepository;

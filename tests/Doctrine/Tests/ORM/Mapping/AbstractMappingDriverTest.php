@@ -519,7 +519,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('value'));
         self::assertNotNull($class->getProperty('creditCardNumber'));
-        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
         self::assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869CreditCardPayment::class));
         self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
 
@@ -528,7 +528,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('value'));
         self::assertNotNull($class->getProperty('serialNumber'));
-        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
         self::assertInstanceOf(DDC869PaymentRepository::class, $em->getRepository(DDC869ChequePayment::class));
         self::assertTrue($em->getRepository(DDC869ChequePayment::class)->isTrue());
     }
