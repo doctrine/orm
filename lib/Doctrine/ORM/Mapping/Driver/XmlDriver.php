@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
@@ -704,18 +705,35 @@ class XmlDriver extends FileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $metadata->addLifecycleCallback((string) $lifecycleCallback['method'], constant('Doctrine\ORM\Events::' . (string) $lifecycleCallback['type']));
+                $eventName   = constant(Events::class . '::' . (string) $lifecycleCallback['type']);
+                $methodName  = (string) $lifecycleCallback['method'];
+
+                $metadata->addLifecycleCallback($methodName, $eventName);
             }
         }
 
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
-                $className = (string) $listenerElement['class'];
+                $listenerClassName = $metadata->fullyQualifiedClassName((string) $listenerElement['class']);
+
+                if (! class_exists($listenerClassName)) {
+                    throw MappingException::entityListenerClassNotFound(
+                        $listenerClassName,
+                        $metadata->getClassName()
+                    );
+                }
+
+                $listenerClass = new \ReflectionClass($listenerClassName);
 
                 // Evaluate the listener using naming convention.
                 if ($listenerElement->count() === 0) {
-                    EntityListenerBuilder::bindEntityListener($metadata, $className);
+                    /* @var $method \ReflectionMethod */
+                    foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+                        foreach ($this->getMethodCallbacks($method) as $callback) {
+                            $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
+                        }
+                    }
 
                     continue;
                 }
@@ -724,7 +742,7 @@ class XmlDriver extends FileDriver
                     $eventName   = (string) $callbackElement['type'];
                     $methodName  = (string) $callbackElement['method'];
 
-                    $metadata->addEntityListener($eventName, $className, $methodName);
+                    $metadata->addEntityListener($eventName, $listenerClassName, $methodName);
                 }
             }
         }
@@ -879,6 +897,31 @@ class XmlDriver extends FileDriver
         ;
 
         return new CacheMetadata($usage, $region);
+    }
+
+    /**
+     * Parses the given method.
+     *
+     * @param \ReflectionMethod $method
+     *
+     * @return array
+     */
+    private function getMethodCallbacks(\ReflectionMethod $method)
+    {
+        $events = [
+            Events::prePersist,
+            Events::postPersist,
+            Events::preUpdate,
+            Events::postUpdate,
+            Events::preRemove,
+            Events::postRemove,
+            Events::postLoad,
+            Events::preFlush,
+        ];
+
+        return array_filter($events, function ($eventName) use ($method) {
+            return $eventName === $method->getName();
+        });
     }
 
     /**
