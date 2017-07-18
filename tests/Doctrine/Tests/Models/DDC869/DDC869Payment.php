@@ -37,6 +37,6 @@ class DDC869Payment
 
         $metadata->isMappedSuperclass = true;
 
-        $metadata->setCustomRepositoryClass(DDC869PaymentRepository::class);
+        $metadata->setCustomRepositoryClassName(DDC869PaymentRepository::class);
     }
 }

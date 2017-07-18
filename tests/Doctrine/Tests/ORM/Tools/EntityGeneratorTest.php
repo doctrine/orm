@@ -62,7 +62,8 @@ class EntityGeneratorTest extends OrmTestCase
     public function generateBookEntityFixture(array $embeddedClasses = [])
     {
         $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook');
-        $metadata->customRepositoryClassName = $this->namespace  . '\EntityGeneratorBookRepository';
+
+        $metadata->setCustomRepositoryClassName($this->namespace . '\EntityGeneratorBookRepository');
 
         $tableMetadata = new Mapping\TableMetadata();
 
@@ -565,7 +566,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
-        self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
+        self::assertEquals($cm->getCustomRepositoryClassName(), $metadata->getCustomRepositoryClassName());
 //        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
 //        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
@@ -600,7 +601,7 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
-        self::assertEquals($cm->customRepositoryClassName, $metadata->customRepositoryClassName);
+        self::assertEquals($cm->getCustomRepositoryClassName(), $metadata->getCustomRepositoryClassName());
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //

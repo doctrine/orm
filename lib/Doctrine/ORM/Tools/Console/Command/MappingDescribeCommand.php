@@ -95,7 +95,7 @@ EOT
                 [
                     $this->formatField('Name', $metadata->getClassName()),
                     $this->formatField('Root entity name', $metadata->getRootClassName()),
-                    $this->formatField('Custom repository class', $metadata->customRepositoryClassName),
+                    $this->formatField('Custom repository class', $metadata->getCustomRepositoryClassName()),
                     $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
                     $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
                     $this->formatField('Parent classes', $metadata->parentClasses),

@@ -13,4 +13,4 @@ $fieldMetadata->setIdentifierGeneratorType(Mapping\GeneratorType::AUTO);
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->setCustomRepositoryClass(DDC889SuperClass::class);
+$metadata->setCustomRepositoryClassName(DDC889SuperClass::class);

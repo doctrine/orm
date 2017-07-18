@@ -75,13 +75,13 @@ class XmlDriver extends FileDriver
 
         if ($xmlRoot->getName() === 'entity') {
             if (isset($xmlRoot['repository-class'])) {
-                $metadata->setCustomRepositoryClass((string) $xmlRoot['repository-class']);
+                $metadata->setCustomRepositoryClassName((string) $xmlRoot['repository-class']);
             }
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->asReadOnly();
             }
         } else if ($xmlRoot->getName() === 'mapped-superclass') {
-            $metadata->setCustomRepositoryClass(
+            $metadata->setCustomRepositoryClassName(
                 isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
             );
             $metadata->isMappedSuperclass = true;
