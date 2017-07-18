@@ -75,7 +75,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
                 if ($entityAnnot->repositoryClass !== null) {
-                    $metadata->setCustomRepositoryClass($entityAnnot->repositoryClass);
+                    $metadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
                 }
 
                 if ($entityAnnot->readOnly) {
@@ -87,7 +87,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
             case isset($classAnnotations[Annotation\MappedSuperclass::class]):
                 $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
-                $metadata->setCustomRepositoryClass($mappedSuperclassAnnot->repositoryClass);
+                $metadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
 
                 $metadata->isMappedSuperclass = true;
                 $metadata->isEmbeddedClass = false;

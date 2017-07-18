@@ -77,7 +77,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(DDC869CreditCardPayment::class);
 
-        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('value'));
@@ -86,7 +86,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
 
         $class = $this->cmf->getMetadataFor(DDC869ChequePayment::class);
 
-        self::assertEquals($class->customRepositoryClassName, DDC869PaymentRepository::class);
+        self::assertEquals($class->getCustomRepositoryClassName(), DDC869PaymentRepository::class);
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('value'));
@@ -95,7 +95,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         // override repositoryClass
         $class = $this->cmf->getMetadataFor(SubclassWithRepository::class);
 
-        self::assertEquals($class->customRepositoryClassName, EntityRepository::class);
+        self::assertEquals($class->getCustomRepositoryClassName(), EntityRepository::class);
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('value'));

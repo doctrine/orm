@@ -99,12 +99,12 @@ EOT
             $generator->setDefaultRepositoryName($repositoryName);
 
             foreach ($metadatas as $metadata) {
-                if ($metadata->customRepositoryClassName) {
+                if ($metadata->getCustomRepositoryClassName()) {
                     $output->writeln(
-                        sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName)
+                        sprintf('Processing repository "<info>%s</info>"', $metadata->getCustomRepositoryClassName())
                     );
 
-                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
+                    $generator->writeEntityRepositoryClass($metadata->getCustomRepositoryClassName(), $destPath);
 
                     $numRepositories++;
                 }
