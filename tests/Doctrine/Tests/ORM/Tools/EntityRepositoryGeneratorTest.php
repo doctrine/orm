@@ -166,9 +166,12 @@ class EntityRepositoryGeneratorTest extends OrmTestCase
 
         $cmf->setEntityManager($em);
 
-        $metadata               = $cmf->getMetadataFor($className);
-        $metadata->namespace    = $this->namespace;
-        $metadata->name         = $newClassName;
+        $metadata = $cmf->getMetadataFor($className);
+
+        // @todo guilhermeblanco Fix this test as changing Entity class should never be allowed.
+        $metadata->setClassName($newClassName);
+
+        $metadata->namespace                 = $this->namespace;
         $metadata->customRepositoryClassName = $newClassName . "Repository";
 
         $this->generator->writeEntityClass($metadata, $this->tmpDir);

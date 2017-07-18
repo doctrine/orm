@@ -95,7 +95,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $cmf = $this->createClassMetadataFactory($em, $type);
         $metadata = $cmf->getAllMetadata();
 
-        $metadata[0]->name = ExportedUser::class;
+        // @todo guilhermeblanco Fix this test as changing Entity class should never be allowed.
+        $metadata[0]->setClassName(ExportedUser::class);
 
         self::assertEquals(ExportedUser::class, $metadata[0]->getClassName());
 

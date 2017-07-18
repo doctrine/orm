@@ -49,7 +49,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // SUT
         $cmf = new ClassMetadataFactory();
         $cmf->setEntityManager($entityManager);
-        $cmf->setMetadataFor($cm1->name, $cm1);
+        $cmf->setMetadataFor($cm1->getClassName(), $cm1);
 
         // Prechecks
         self::assertEquals([], $cm1->parentClasses);
@@ -60,7 +60,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertEquals('group', $cm1->table->getName());
 
         // Go
-        $cmMap1 = $cmf->getMetadataFor($cm1->name);
+        $cmMap1 = $cmf->getMetadataFor($cm1->getClassName());
 
         self::assertSame($cm1, $cmMap1);
         self::assertEquals('group', $cmMap1->table->getName());
@@ -80,9 +80,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $cmf = $this->createTestFactory();
 
-        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
 
-        $actual = $cmf->getMetadataFor($cm1->name);
+        $actual = $cmf->getMetadataFor($cm1->getClassName());
 
         self::assertEquals(Mapping\GeneratorType::CUSTOM, $actual->getProperty('id')->getIdentifierGeneratorType());
         self::assertInstanceOf(CustomIdGenerator::class, $actual->getProperty('id')->getIdentifierGenerator());
@@ -100,11 +100,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         $cmf = $this->createTestFactory();
 
-        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
 
         $this->expectException(ORMException::class);
 
-        $actual = $cmf->getMetadataFor($cm1->name);
+        $actual = $cmf->getMetadataFor($cm1->getClassName());
     }
 
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
@@ -112,10 +112,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cm1 = $this->createValidClassMetadata();
         $cm1->getProperty('id')->setIdentifierGeneratorType(Mapping\GeneratorType::CUSTOM);
         $cmf = $this->createTestFactory();
-        $cmf->setMetadataForClass($cm1->name, $cm1);
+        $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
         $this->expectException(ORMException::class);
 
-        $actual = $cmf->getMetadataFor($cm1->name);
+        $actual = $cmf->getMetadataFor($cm1->getClassName());
     }
 
     public function testHasGetMetadata_NamespaceSeparatorIsNotNormalized()

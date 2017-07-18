@@ -719,7 +719,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'address.city','column'=>'city'],       $mapping['entities'][0]['fields'][4]);
         self::assertEquals(['name'=>'address.country','column'=>'country'], $mapping['entities'][0]['fields'][5]);
         self::assertEquals(['name'=>'address.id','column'=>'a_id'],         $mapping['entities'][0]['fields'][6]);
-        self::assertEquals($userMetadata->name,                             $mapping['entities'][0]['entityClass']);
+        self::assertEquals($userMetadata->getClassName(),                   $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
         self::assertEquals([],$mapping['columns']);
@@ -729,7 +729,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'name','column'=>'name'],                         $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'status'],                     $mapping['entities'][0]['fields'][2]);
         self::assertEquals(['name'=>'phonenumbers.phonenumber','column'=>'number'],   $mapping['entities'][0]['fields'][3]);
-        self::assertEquals($userMetadata->name,                                       $mapping['entities'][0]['entityClass']);
+        self::assertEquals($userMetadata->getClassName(),                             $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
         self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
@@ -738,7 +738,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'status'], $mapping['entities'][0]['fields'][2]);
-        self::assertEquals($userMetadata->name,                   $mapping['entities'][0]['entityClass']);
+        self::assertEquals($userMetadata->getClassName(),         $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
         self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
@@ -747,12 +747,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'id','column'=>'u_id'],           $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'u_name'],       $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'u_status'],   $mapping['entities'][0]['fields'][2]);
-        self::assertEquals($userMetadata->name,                       $mapping['entities'][0]['entityClass']);
+        self::assertEquals($userMetadata->getClassName(),             $mapping['entities'][0]['entityClass']);
         self::assertNull($mapping['entities'][1]['discriminatorColumn']);
         self::assertEquals(['name'=>'id','column'=>'a_id'],           $mapping['entities'][1]['fields'][0]);
         self::assertEquals(['name'=>'zip','column'=>'a_zip'],         $mapping['entities'][1]['fields'][1]);
         self::assertEquals(['name'=>'country','column'=>'a_country'], $mapping['entities'][1]['fields'][2]);
-        self::assertEquals(CmsAddress::class,                         $mapping['entities'][1]['entityClass']);
+        self::assertEquals(CmsAddress::class,                $mapping['entities'][1]['entityClass']);
 
         //person asserts
         self::assertCount(1, $personMetadata->getSqlResultSetMappings());
@@ -764,7 +764,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('discriminator',                   $mapping['entities'][0]['discriminatorColumn']);
         self::assertEquals(['name'=>'id','column'=>'id'],     $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'], $mapping['entities'][0]['fields'][1]);
-        self::assertEquals($personMetadata->name,             $mapping['entities'][0]['entityClass']);
+        self::assertEquals($personMetadata->getClassName(),   $mapping['entities'][0]['entityClass']);
     }
 
     /*
