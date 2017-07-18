@@ -43,11 +43,11 @@ class DefaultEntityHydratorTest extends OrmTestCase
     public function testCreateEntity()
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->name, ['id'=>1, 'name'=>'Foo']);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id'=>1, 'name'=>'Foo']);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry);
 
-        self::assertInstanceOf($metadata->name, $entity);
+        self::assertInstanceOf($metadata->getClassName(), $entity);
 
         self::assertEquals(1, $entity->getId());
         self::assertEquals('Foo', $entity->getName());
@@ -57,12 +57,12 @@ class DefaultEntityHydratorTest extends OrmTestCase
     public function testLoadProxy()
     {
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
-        $entry    = new EntityCacheEntry($metadata->name, ['id'=>1, 'name'=>'Foo']);
-        $proxy    = $this->em->getReference($metadata->name, $key->identifier);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
+        $entry    = new EntityCacheEntry($metadata->getClassName(), ['id'=>1, 'name'=>'Foo']);
+        $proxy    = $this->em->getReference($metadata->getClassName(), $key->identifier);
         $entity   = $this->structure->loadCacheEntry($metadata, $key, $entry, $proxy);
 
-        self::assertInstanceOf($metadata->name, $entity);
+        self::assertInstanceOf($metadata->getClassName(), $entity);
         self::assertSame($proxy, $entity);
 
         self::assertEquals(1, $entity->getId());
@@ -76,7 +76,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $uow      = $this->em->getUnitOfWork();
         $data     = ['id'=>1, 'name'=>'Foo'];
         $metadata = $this->em->getClassMetadata(Country::class);
-        $key      = new EntityCacheKey($metadata->name, ['id'=>1]);
+        $key      = new EntityCacheKey($metadata->getClassName(), ['id'=>1]);
 
         $entity->setId(1);
         $uow->registerManaged($entity, $key->identifier, $data);
@@ -105,7 +105,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $countryData    = ['id'=>11, 'name'=>'Foo'];
         $stateData      = ['id'=>12, 'name'=>'Bar', 'country' => $country];
         $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>11]);
+        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>11]);
 
         $country->setId(11);
         $state->setId(12);
@@ -138,7 +138,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $uow            = $this->em->getUnitOfWork();
         $entityData     = ['id'=>12, 'name'=>'Bar', 'country' => $proxy];
         $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>11]);
+        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>11]);
 
         $entity->setId(12);
 
@@ -169,7 +169,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
         $uow            = $this->em->getUnitOfWork();
         $entityData     = ['id'=> 12, 'name'=>'Bar', 'country' => $proxy];
         $metadata       = $this->em->getClassMetadata(State::class);
-        $key            = new EntityCacheKey($metadata->name, ['id'=>'12']);
+        $key            = new EntityCacheKey($metadata->getClassName(), ['id'=>'12']);
 
         $entity->setId(12);
 

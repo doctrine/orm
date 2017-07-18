@@ -97,7 +97,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $entity = $this->em->getReference(ECommerceProduct::class , $id);
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        self::assertEquals(ECommerceProduct::class, $class->name);
+        self::assertEquals(ECommerceProduct::class, $class->getClassName());
     }
 
     /**

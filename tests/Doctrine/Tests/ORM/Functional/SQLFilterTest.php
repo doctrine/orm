@@ -97,8 +97,9 @@ class SQLFilterTest extends OrmFunctionalTestCase
         self::assertEquals([], $em->getFilters()->getEnabledFilters());
 
         $this->configureFilters($em);
-        $filter = $em->getFilters()->enable("locale");
-        $filter = $em->getFilters()->enable("soft_delete");
+
+        $em->getFilters()->enable("locale");
+        $em->getFilters()->enable("soft_delete");
 
         // Two enabled filters
         self::assertEquals(2, count($em->getFilters()->getEnabledFilters()));
@@ -294,20 +295,17 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testSQLFilterAddConstraint()
     {
-        // Set up metadata mock
-        $targetEntity = $this->getMockBuilder(ClassMetadata::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
-        $targetEntity->name = 'MyEntity\SoftDeleteNewsItem';
-        self::assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($targetEntity, 't1_'));
+        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem');
+
+        self::assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($metadata, 't1_'));
 
         // Test for an entity that doesn't get extra filter data
-        $targetEntity->name = 'MyEntity\NoSoftDeleteNewsItem';
-        self::assertEquals('', $filter->addFilterConstraint($targetEntity, 't1_'));
+        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem');
+
+        self::assertEquals('', $filter->addFilterConstraint($metadata, 't1_'));
 
     }
 
@@ -1099,7 +1097,7 @@ class MySoftDeleteFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != "MyEntity\SoftDeleteNewsItem") {
+        if ($targetEntity->getClassName() !== "MyEntity\SoftDeleteNewsItem") {
             return "";
         }
 
@@ -1123,7 +1121,7 @@ class CMSCountryFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsAddress::class) {
+        if ($targetEntity->getClassName() !== CmsAddress::class) {
             return "";
         }
 
@@ -1135,7 +1133,7 @@ class CMSGroupPrefixFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsGroup::class) {
+        if ($targetEntity->getClassName() !== CmsGroup::class) {
             return "";
         }
 
@@ -1147,7 +1145,7 @@ class CMSArticleTopicFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
     {
-        if ($targetEntity->name != CmsArticle::class) {
+        if ($targetEntity->getClassName() !== CmsArticle::class) {
             return "";
         }
 
@@ -1159,7 +1157,7 @@ class CompanyPersonNameFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyPerson::class) {
+        if ($targetEntity->getClassName() !== CompanyPerson::class) {
             return "";
         }
 
@@ -1171,7 +1169,7 @@ class CompletedContractFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyContract::class) {
+        if ($targetEntity->getClassName() !== CompanyContract::class) {
             return "";
         }
 
@@ -1183,7 +1181,7 @@ class CompanyEventFilter extends SQLFilter
 {
     public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias, $targetTable = '')
     {
-        if ($targetEntity->name != CompanyEvent::class) {
+        if ($targetEntity->getClassName() !== CompanyEvent::class) {
             return "";
         }
 

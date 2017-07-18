@@ -55,7 +55,7 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
 
         $sourceClass    = $this->em->getClassMetadata(State::class);
         $targetClass    = $this->em->getClassMetadata(City::class);
-        $key            = new CollectionCacheKey($sourceClass->name, 'cities', ['id'=>21]);
+        $key            = new CollectionCacheKey($sourceClass->getClassName(), 'cities', ['id'=>21]);
         $collection     = new PersistentCollection($this->em, $targetClass, new ArrayCollection());
         $list           = $this->structure->loadCacheEntry($sourceClass, $key, $entry, $collection);
 
@@ -63,10 +63,10 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         self::assertCount(2, $list);
         self::assertCount(2, $collection);
 
-        self::assertInstanceOf($targetClass->name, $list[0]);
-        self::assertInstanceOf($targetClass->name, $list[1]);
-        self::assertInstanceOf($targetClass->name, $collection[0]);
-        self::assertInstanceOf($targetClass->name, $collection[1]);
+        self::assertInstanceOf($targetClass->getClassName(), $list[0]);
+        self::assertInstanceOf($targetClass->getClassName(), $list[1]);
+        self::assertInstanceOf($targetClass->getClassName(), $collection[0]);
+        self::assertInstanceOf($targetClass->getClassName(), $collection[1]);
 
         self::assertSame($list[0], $collection[0]);
         self::assertSame($list[1], $collection[1]);
