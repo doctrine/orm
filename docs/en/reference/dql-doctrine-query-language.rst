@@ -34,9 +34,9 @@ object model.
 
 DQL SELECT statements are a very powerful way of retrieving parts
 of your domain model that are not accessible via associations.
-Additionally they allow to retrieve entities and their associations
+Additionally they allow you to retrieve entities and their associations
 in one single SQL select statement which can make a huge difference
-in performance in contrast to using several queries.
+in performance compared to using several queries.
 
 DQL UPDATE and DELETE statements offer a way to execute bulk
 changes on the entities of your domain model. This is often
