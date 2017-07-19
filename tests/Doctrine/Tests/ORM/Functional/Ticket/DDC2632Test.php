@@ -6,10 +6,9 @@ use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
 /**
  * @group DDC-2632
  */
-class DDC2632Test extends  DatabaseDriverTestCase
+class DDC2632Test extends DatabaseDriverTestCase
 {
-    protected function _getType()
-    {
+    protected function _getType() {
         if (!class_exists('Symfony\Component\Yaml\Yaml', true)) {
             $this->markTestSkipped('Please install Symfony YAML Component into the include path of your PHP installation.');
         }
@@ -19,8 +18,7 @@ class DDC2632Test extends  DatabaseDriverTestCase
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
      */
     protected $_sm = null;
-    public function setUp()
-    {
+    public function setUp() {
         //  $this->useModelSet('cms');
         parent::setUp();
         $this->_sm = $this->_em->getConnection()->getSchemaManager();

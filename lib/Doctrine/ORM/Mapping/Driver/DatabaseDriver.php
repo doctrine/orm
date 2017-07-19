@@ -464,7 +464,8 @@ class DatabaseDriver implements MappingDriver
             if ($primaryKeys && in_array($localColumn, $primaryKeys)) {
                 $associationMapping['id'] = true;
             }
-            for ($i = 0; $i < count($fkColumns); $i++){
+            $sizeColumns = count($fkColumns);
+            for ($i = 0; $i < $sizeColumns; $i++){
                 $associationMappingParameters = array(
                     'name'                 => $fkColumns[$i],
                     'referencedColumnName' => $fkForeignColumns[$i]
