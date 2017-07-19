@@ -175,7 +175,7 @@ class DatabaseDriver implements MappingDriver
         $this->reverseEngineerMappingFromDatabase();
 
         if ( ! isset($this->classToTableNames[$className])) {
-            throw new \InvalidArgumentException("Unknown class " . $className);
+            throw new \InvalidArgumentException("Unknown class ".$className);
         }
 
         $tableName = $this->classToTableNames[$className];
@@ -286,7 +286,7 @@ class DatabaseDriver implements MappingDriver
 
             if ( ! $table->hasPrimaryKey()) {
                 throw new MappingException(
-                    "Table " . $table->getName() . " has no primary key. Doctrine does not ".
+                    "Table ".$table->getName()." has no primary key. Doctrine does not ".
                     "support reverse engineering from tables that don't have a primary key."
                 );
             }
@@ -407,7 +407,7 @@ class DatabaseDriver implements MappingDriver
             case Type::STRING:
             case Type::TEXT:
                 $fieldMapping['length'] = $column->getLength();
-                $fieldMapping['options']['fixed']  = $column->getFixed();
+                $fieldMapping['options']['fixed'] = $column->getFixed();
                 break;
 
             case Type::DECIMAL:
@@ -465,14 +465,14 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['id'] = true;
             }
             $sizeColumns = count($fkColumns);
-            for ($i = 0; $i < $sizeColumns; $i++){
+            for ($i = 0; $i < $sizeColumns; $i++) {
                 $associationMappingParameters = array(
                     'name'                 => $fkColumns[$i],
                     'referencedColumnName' => $fkForeignColumns[$i]
                 );
                 $columns = $foreignKey->getLocalTable()->getColumns();
-                foreach  ($columns as $column) {
-                     if(strtolower($column->getName()) === strtolower($fkColumns[$i]) && $column->getNotNull() === true) {
+                foreach ($columns as $column) {
+                     if (strtolower($column->getName()) === strtolower($fkColumns[$i]) && $column->getNotNull() === true) {
                           $associationMappingParameters['nullable'] = false;
                      }
                }
@@ -530,10 +530,10 @@ class DatabaseDriver implements MappingDriver
     private function getClassNameForTable($tableName)
     {
         if (isset($this->classNamesForTables[$tableName])) {
-            return $this->namespace . $this->classNamesForTables[$tableName];
+            return $this->namespace.$this->classNamesForTables[$tableName];
         }
 
-        return $this->namespace . Inflector::classify(strtolower($tableName));
+        return $this->namespace.Inflector::classify(strtolower($tableName));
     }
 
     /**
