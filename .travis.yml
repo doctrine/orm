@@ -13,7 +13,7 @@ env:
 
 before_script:
   - if [[ $TRAVIS_PHP_VERSION = '7.1' && $DB = 'sqlite' && "$DEPENDENCIES" != "low" ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ "$PHPUNIT_FLAGS" == "" ]]; then phpenv config-rm xdebug.ini; fi
+  - if [[ "$PHPUNIT_FLAGS" == "" ]]; then phpenv config-rm xdebug.ini || echo "xdebug not available"; fi
   - if [[ $PHPSTAN = 1 ]]; then echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
   - composer self-update
   - composer install --prefer-source
