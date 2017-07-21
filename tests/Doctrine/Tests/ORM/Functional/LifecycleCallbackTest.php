@@ -296,12 +296,12 @@ FROM
 LEFT JOIN
     entA.entities AS entB
 WHERE
-    entA.id = %s
+    entA.id = :entA_id
 DQL;
 
         $fetchedA = $this
             ->_em
-            ->createQuery(sprintf($dql, $entA->getId()))
+            ->createQuery($dql)->setParameter('entA_id', $entA->getId())
             ->getOneOrNullResult();
 
         $this->assertTrue($fetchedA->postLoadCallbackInvoked);
@@ -495,6 +495,10 @@ class LifecycleCallbackCascader
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
+    }
+    
+    public function getId() {
+        return $this->id;
     }
 }
 
