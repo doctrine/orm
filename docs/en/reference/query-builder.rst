@@ -7,14 +7,14 @@ conditionally constructing a DQL query in several steps.
 It provides a set of classes and methods that is able to
 programmatically build queries, and also provides a fluent API.
 This means that you can change between one methodology to the other
-as you want, and also pick one if you prefer.
+as you want, or just pick a preferred one.
 
 Constructing a new QueryBuilder object
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The same way you build a normal Query, you build a ``QueryBuilder``
-object, just providing the correct method name. Here is an example
-how to build a ``QueryBuilder`` object:
+object. Here is an example of how to build a ``QueryBuilder``
+object:
 
 .. code-block:: php
 
@@ -24,9 +24,9 @@ how to build a ``QueryBuilder`` object:
     // example1: creating a QueryBuilder instance
     $qb = $em->createQueryBuilder();
 
-Once you have created an instance of QueryBuilder, it provides a
-set of useful informative functions that you can use. One good
-example is to inspect what type of object the ``QueryBuilder`` is.
+An instance of QueryBuilder has several informative methods.  One
+good example is to inspect what type of object the
+``QueryBuilder`` is.
 
 .. code-block:: php
 
@@ -80,11 +80,11 @@ Working with QueryBuilder
 High level API methods
 ^^^^^^^^^^^^^^^^^^^^^^
 
-To simplify even more the way you build a query in Doctrine, we can take
-advantage of what we call Helper methods. For all base code, there
-is a set of useful methods to simplify a programmer's life. To
-illustrate how to work with them, here is the same example 6
-re-written using ``QueryBuilder`` helper methods:
+To simplify even more the way you build a query in Doctrine, you can take
+advantage of Helper methods. For all base code, there is a set of
+useful methods to simplify a programmer's life. To illustrate how
+to work with them, here is the same example 6 re-written using
+``QueryBuilder`` helper methods:
 
 .. code-block:: php
 
@@ -97,8 +97,8 @@ re-written using ``QueryBuilder`` helper methods:
        ->orderBy('u.name', 'ASC');
 
 ``QueryBuilder`` helper methods are considered the standard way to
-build DQL queries. Although it is supported, it should be avoided
-to use string based queries and greatly encouraged to use
+build DQL queries. Although it is supported, using string-based
+queries should be avoided.  You are greatly encouraged to use
 ``$qb->expr()->*`` methods. Here is a converted example 8 to
 suggested standard way to build queries:
 
@@ -317,7 +317,7 @@ the Query object which can be retrieved from ``EntityManager#createQuery()``.
 Executing a Query
 ^^^^^^^^^^^^^^^^^
 
-The QueryBuilder is a builder object only, it has no means of actually
+The QueryBuilder is a builder object only -  it has no means of actually
 executing the Query. Additionally a set of parameters such as query hints
 cannot be set on the QueryBuilder itself. This is why you always have to convert
 a querybuilder instance into a Query object:
@@ -521,10 +521,10 @@ using ``addCriteria``:
 Low Level API
 ^^^^^^^^^^^^^
 
-Now we have describe the low level (thought of as the
-hardcore method) of creating queries. It may be useful to work at
-this level for optimization purposes, but most of the time it is
-preferred to work at a higher level of abstraction.
+Now we will describe the low level method of creating queries.
+It may be useful to work at this level for optimization purposes,
+but most of the time it is preferred to work at a higher level of
+abstraction.
 
 All helper methods in ``QueryBuilder`` actually rely on a single
 one: ``add()``. This method is responsible of building every piece
@@ -577,6 +577,3 @@ same query of example 6 written using
       ->add('where', new Expr\Comparison('u.id', '=', '?1'))
       ->add('orderBy', new Expr\OrderBy('u.name', 'ASC'));
 
-Of course this is the hardest way to build a DQL query in Doctrine.
-To simplify some of these efforts, we introduce what we call as
-``Expr`` helper class.
