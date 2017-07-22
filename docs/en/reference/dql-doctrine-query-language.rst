@@ -356,7 +356,8 @@ article-ids:
     $query = $em->createQuery('SELECT u.id, a.id as article_id FROM CmsUser u LEFT JOIN u.articles a');
     $results = $query->getResult(); // array of user ids and every article_id for each user
 
-Restricting a JOIN clause by additional conditions:
+Restricting a JOIN clause by additional conditions specified by
+WITH:
 
 .. code-block:: php
 
@@ -488,6 +489,17 @@ Joins between entities without associations were not possible until version
 
     <?php
     $query = $em->createQuery('SELECT u FROM User u JOIN Blacklist b WITH u.email = b.email');
+
+.. note::
+    The differences between WHERE, WITH and HAVING clauses may be
+    confusing.
+
+    - WHERE is applied to the results of an entire query
+    - WITH is applied to a join as an additional condition. For
+    arbitrary joins (SELECT f, b FROM Foo f, Bar b WITH f.id = b.id)
+    the WITH is required, even if it is 1 = 1
+    - HAVING is applied to the results of a query after
+    aggregation (GROUP BY)
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
