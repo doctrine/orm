@@ -84,7 +84,6 @@ final class GH5804Type extends Type
 
 /**
  * @Entity
- * @Table(name="gh5804_articles")
  */
 class GH5804Article
 {
@@ -95,6 +94,7 @@ class GH5804Article
      * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
      */
     public $id;
+
     /**
      * @Version
      * @Column(type="integer")
