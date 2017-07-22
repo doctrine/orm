@@ -344,11 +344,28 @@ class BasicEntityPersister implements EntityPersister
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
+
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
 
-        $value = $this->conn->fetchColumn($sql, array_values($flatId));
+        $value = $this->conn->fetchColumn(
+            $sql,
+            array_values($flatId),
+            0,
+            $this->extractIdentifierTypes($id, $versionedClass)
+        );
 
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
+    }
+
+    private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass) : array
+    {
+        $types = [];
+
+        foreach ($id as $field => $value) {
+            $types = array_merge($types, $this->getTypes($field, $value, $versionedClass));
+        }
+
+        return $types;
     }
 
     /**
