@@ -375,11 +375,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
             $persister = $this->em->getUnitOfWork()->getCollectionPersister($this->association);
 
-            if ($persister->removeElement($this, $element)) {
-                return $element;
-            }
-
-            return null;
+            return $persister->removeElement($this, $element);
         }
 
         $removed = parent::removeElement($element);
