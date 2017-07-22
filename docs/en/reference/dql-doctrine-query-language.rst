@@ -49,9 +49,12 @@ SELECT queries
 DQL SELECT clause
 ~~~~~~~~~~~~~~~~~
 
-The select clause of a DQL query specifies what appears in the
-query result. The composition of all the expressions in the select
-clause also influences the nature of the query result.
+The SELECT clause of a DQL query specifies what gets hydrated in
+the query result. You are always returned usable objects, but any
+associated objects not included in the SELECT clause will be
+proxies (ie. unhydrated).  They get hydrated by Doctrine when
+they're read by your code, but that means at least one additional
+database access. 
 
 Here is an example that selects all users with an age > 20:
 
@@ -83,14 +86,48 @@ Lets examine the query:
 The result of this query would be a list of User objects where all
 users are older than 20.
 
-The SELECT clause allows to specify both class identification
-variables that signal the hydration of a complete entity class or
-just fields of the entity using the syntax ``u.name``. Combinations
-of both are also allowed and it is possible to wrap both fields and
-identification values into aggregation and DQL functions. Numerical
-fields can be part of computations using mathematical operations.
-See the sub-section on `Functions, Operators, Aggregates`_ for
-more information.
+The composition of the expressions in the SELECT clause also
+influences the nature of the query result. There are three
+cases:
+
+- All objects. For example:
+    ``SELECT u, p, n FROM Users u...``
+  In this case, the result array will be made up of objects of
+  the type in the FROM clause.  In the example above, the query
+  will return an array of User objects, with associated classes
+  identify else where in the query as 'p' and 'n' hydrated.
+
+- All scalars. For example:
+    ``SELECT u.name, u.address FROM Users u...``
+  In this case, the result will be an array of arrays.  In the
+  example above, each element of the result array would be an
+  array of the scalar name and address values. 
+
+  You can select scalars from any entity in the query. 
+
+- Mixed.  For example:
+    ``SELECT u, p.quantity FROM Users u...``
+  Here, the result will again be an array of arrays, with each
+  element being an array made up of a User object and the scalar
+  value p.quantity.
+
+Multiple FROM clauses are allowed, which would cause the result
+array elements to cycle through the classes included in the
+multiple FROM clauses.
+
+.. note::
+
+    You cannot select other entities unless you also select the
+    root of the selection (the first entity in FROM).
+
+    Doctrine tells you you have violated this constraint with the
+    exception "Cannot select entity through identification
+    variables without choosing at least one root entity alias."
+
+It is possible to wrap both fields and identification values into
+aggregation and DQL functions. Numerical fields can be part of
+computations using mathematical operations.  See the sub-section
+on `Functions, Operators, Aggregates`_ for more information.
 
 Joins
 ~~~~~
