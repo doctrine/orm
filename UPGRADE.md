@@ -1,5 +1,9 @@
 # Upgrade to 2.6
 
+## Minor BC BREAK: `Doctrine\ORM\Tools\Console\ConsoleRunner` is now final
+
+Since it's just an utilitarian class and should not be inherited.
+
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
 
 Method `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported`
