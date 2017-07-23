@@ -203,7 +203,7 @@ class SchemaToolTest extends OrmTestCase
 
     public function testDerivedCompositeKey() : void
     {
-        $em         = $this->_getTestEntityManager();
+        $em         = $this->getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
         $schema = $schemaTool->getSchemaFromMetadata(
