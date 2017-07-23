@@ -55,8 +55,6 @@ class DDC6573Test extends OrmFunctionalTestCase
      */
     public function testShouldSupportsMultipleNewOperator($hydrationMode)
     {
-        $this->markTestSkipped('Feature does not exist.');
-
         $dql = "
             SELECT
                 new Doctrine\Tests\Models\DDC6573\DDC6573Money(
@@ -87,8 +85,6 @@ class DDC6573Test extends OrmFunctionalTestCase
      */
     public function testShouldSupportsMultipleNewOperatorWithHiddenKeyword($hydrationMode)
     {
-        $this->markTestSkipped('Feature does not exist.');
-
         $dql = "
             SELECT
                 new Doctrine\Tests\Models\DDC6573\DDC6573Currency(i.priceCurrency) as HIDDEN currency,
@@ -117,8 +113,6 @@ class DDC6573Test extends OrmFunctionalTestCase
 
     public function testShouldSupportsMultipleNewOperatorWithFunctionApplied()
     {
-        $this->markTestSkipped('Feature does not exist.');
-
         $dql = "
             SELECT
                 new Doctrine\Tests\Models\DDC6573\DDC6573Money(
