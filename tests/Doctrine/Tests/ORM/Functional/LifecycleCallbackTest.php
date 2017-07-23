@@ -305,9 +305,9 @@ DQL;
             ->createQuery($dql)->setParameter('entA_id', $entA->getId())
             ->getOneOrNullResult();
 
-        $this->assertTrue($fetchedA->postLoadCallbackInvoked);
+        self::assertTrue($fetchedA->postLoadCallbackInvoked);
         foreach ($fetchedA->entities as $fetchJoinedEntB) {
-            $this->assertTrue($fetchJoinedEntB->postLoadCallbackInvoked);
+            self::assertTrue($fetchJoinedEntB->postLoadCallbackInvoked);
         }
     }
 

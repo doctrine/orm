@@ -189,13 +189,13 @@ class SchemaToolTest extends OrmTestCase
 
         $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
 
-        $this->assertTrue($schema->hasTable('first_entity'));
+        self::assertTrue($schema->hasTable('first_entity'));
         $table = $schema->getTable('first_entity');
 
-        $this->assertTrue($table->hasColumn('discriminator'));
+        self::assertTrue($table->hasColumn('discriminator'));
         $column = $table->getColumn('discriminator');
 
-        $this->assertEquals(255, $column->getLength());
+        self::assertEquals(255, $column->getLength());
     }
 }
 

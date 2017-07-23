@@ -647,12 +647,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $group      = $this->em->find(CmsGroup::class, $this->groupId);
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($user->groups->removeElement($group));
+        self::assertTrue($user->groups->removeElement($group));
 
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), "Removing a persisted entity should cause one query to be executed.");
         self::assertFalse($user->groups->isInitialized(), "Post-Condition: Collection is not initialized.");
 
-        $this->assertFalse($user->groups->removeElement($group), "Removing an already removed element returns false");
+        self::assertFalse($user->groups->removeElement($group), "Removing an already removed element returns false");
 
         // Test Many to Many removal with Entity state as new
         $group = new CmsGroup();

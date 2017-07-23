@@ -299,13 +299,13 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         $result = $this->queryCache->get($key, $rsm);
 
-        $this->assertCount(2, $result);
-        $this->assertInstanceOf(Country::class, $result[0]);
-        $this->assertInstanceOf(Country::class, $result[1]);
-        $this->assertEquals(1, $result[0]->getId());
-        $this->assertEquals(2, $result[1]->getId());
-        $this->assertEquals('Foo', $result[0]->getName());
-        $this->assertEquals('Bar', $result[1]->getName());
+        self::assertCount(2, $result);
+        self::assertInstanceOf(Country::class, $result[0]);
+        self::assertInstanceOf(Country::class, $result[1]);
+        self::assertEquals(1, $result[0]->getId());
+        self::assertEquals(2, $result[1]->getId());
+        self::assertEquals('Foo', $result[0]->getName());
+        self::assertEquals('Bar', $result[1]->getName());
     }
 
     public function testGetWithAssociation()
