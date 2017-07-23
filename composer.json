@@ -14,7 +14,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "ext-pdo": "*",
         "doctrine/collections": "^1.4",
         "doctrine/dbal": "dev-develop as 3.x-dev",
