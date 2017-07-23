@@ -22,11 +22,13 @@ before_script:
   - if [[ $PHPSTAN = 1 ]]; then composer require --dev --prefer-stable phpstan/phpstan:^0.7 symfony/console:^3.0; fi
   - if [ "$MYSQL_VERSION" == "5.7" ]; then bash ./tests/travis/install-mysql-5.7.sh; fi;
   - if [[ $DB == "mysql" || $DB == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi;
+  - if [[ $PHPBENCH = 1 ]]; then wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey; fi
 
 script:
   - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib; fi
-  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
-  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
+  - if [[ $PHPBENCH = 1 ]]; then php phpbench.phar run -l dots --report=default; fi
+  - if [[ $DB != "none" ]]; then ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS; fi
+  - if [[ $DB != "none" ]]; then ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional; fi
 
 after_script:
   - if [[ "$PHPUNIT_FLAGS" != "" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
@@ -39,14 +41,15 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: 10.1
+
     - php: 7.1
       env:
         - DB=sqlite
         - DEPENDENCIES='low'
+
     - php: 7.1
       env:
         - DB=pgsql
-        - PHPSTAN=1
 
     - php: 7.1
       env: DB=mysql MYSQL_VERSION=5.7
@@ -54,6 +57,15 @@ matrix:
     - php: nightly
       env: DB=mysql MYSQL_VERSION=5.7
       sudo: required
+
+    - php: 7.1
+      env:
+        - DB=none
+        - PHPSTAN=1
+    - php: 7.1
+      env:
+        - DB=none
+        - PHPBENCH=1
 
   allow_failures:
     - php: nightly
