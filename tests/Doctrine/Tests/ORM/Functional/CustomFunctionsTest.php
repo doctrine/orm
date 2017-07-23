@@ -63,7 +63,7 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
 
         $usersCount = $query->getSingleScalarResult();
 
-        $this->assertEquals(1, $usersCount);
+        self::assertEquals(1, $usersCount);
     }
 }
 
