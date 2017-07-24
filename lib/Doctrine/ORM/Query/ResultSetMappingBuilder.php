@@ -280,6 +280,11 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryResultClassMapping(ClassMetadata $class, $resultClassName)
     {
+        $resultClassName = ($resultClassName === '__CLASS__')
+            ? $class->getClassName()
+            : $resultClassName
+        ;
+
         $classMetadata = $this->em->getClassMetadata($resultClassName);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
         $alias         = 'e0';
@@ -329,7 +334,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
         if (isset($resultMapping['entities'])) {
             foreach ($resultMapping['entities'] as $key => $entityMapping) {
-                $classMetadata  = $this->em->getClassMetadata($entityMapping['entityClass']);
+                $entityMapping['entityClass'] = ($entityMapping['entityClass'] === '__CLASS__')
+                    ? $class->getClassName()
+                    : $entityMapping['entityClass']
+                ;
+
+                $classMetadata = $this->em->getClassMetadata($entityMapping['entityClass']);
 
                 if ($class->getClassName() === $classMetadata->getClassName()) {
                     $this->addEntityResult($classMetadata->getClassName(), $rootAlias);

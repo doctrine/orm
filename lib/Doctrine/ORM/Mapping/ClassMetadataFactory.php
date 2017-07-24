@@ -572,9 +572,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 [
                     'name'             => $query['name'],
                     'query'            => $query['query'],
-                    'isSelfClass'      => $query['isSelfClass'],
                     'resultSetMapping' => $query['resultSetMapping'],
-                    'resultClass'      => $query['isSelfClass'] ? $subClass->getClassName() : $query['resultClass'],
+                    'resultClass'      => $query['resultClass'],
                 ]
             );
         }
@@ -602,9 +601,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             foreach ($mapping['entities'] as $entity) {
                 $entities[] = [
                     'fields'              => $entity['fields'],
-                    'isSelfClass'         => $entity['isSelfClass'],
                     'discriminatorColumn' => $entity['discriminatorColumn'],
-                    'entityClass'         => $entity['isSelfClass'] ? $subClass->getClassName() : $entity['entityClass'],
+                    'entityClass'         => $entity['entityClass'],
                 ];
             }
 

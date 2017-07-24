@@ -101,7 +101,7 @@ $metadata->addSqlResultSetMapping(
         'columns'   => [],
         'entities'  => [
             [
-                'entityClass' => CmsAddress::class,
+                'entityClass' => '__CLASS__',
                 'fields' => []
             ]
         ]

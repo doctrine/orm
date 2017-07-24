@@ -93,7 +93,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'a_id',
           ],
         ],
-        'entityClass'           => CmsUser::class,
+        'entityClass'           => '__CLASS__',
         'discriminatorColumn'   => null
         ],
     ],
@@ -182,7 +182,7 @@ $metadata->addSqlResultSetMapping(
                     'column'    => 'u_status',
                 ]
             ],
-            'entityClass'           => CmsUser::class,
+            'entityClass'           => '__CLASS__',
             'discriminatorColumn'   => null,
         ],
         [

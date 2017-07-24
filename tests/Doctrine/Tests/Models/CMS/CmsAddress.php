@@ -196,40 +196,40 @@ class CmsAddress
 
         $metadata->addSqlResultSetMapping(
             [
-            'name'      => 'mapping-find-all',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'fields' => [
-                  [
-                    'name'      => 'id',
-                    'column'    => 'id',
-                  ],
-                  [
-                    'name'      => 'city',
-                    'column'    => 'city',
-                  ],
-                  [
-                    'name'      => 'country',
-                    'column'    => 'country',
-                  ],
+                'name'      => 'mapping-find-all',
+                'columns'   => [],
+                'entities'  => [
+                    [
+                        'fields' => [
+                            [
+                                'name'      => 'id',
+                                'column'    => 'id',
+                            ],
+                            [
+                                'name'      => 'city',
+                                'column'    => 'city',
+                            ],
+                            [
+                                'name'      => 'country',
+                                'column'    => 'country',
+                            ],
+                        ],
+                        'entityClass' => CmsAddress::class,
+                    ],
                 ],
-                'entityClass' => CmsAddress::class,
-                ],
-            ],
             ]
         );
 
         $metadata->addSqlResultSetMapping(
             [
-            'name'      => 'mapping-without-fields',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'entityClass' => CmsAddress::class,
-                'fields' => []
+                'name'      => 'mapping-without-fields',
+                'columns'   => [],
+                'entities'  => [
+                    [
+                        'entityClass' => '__CLASS__',
+                        'fields' => []
+                    ]
                 ]
-            ]
             ]
         );
 

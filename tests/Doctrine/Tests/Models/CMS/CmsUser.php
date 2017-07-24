@@ -362,7 +362,7 @@ class CmsUser
                     'column'    => 'a_id',
                   ],
                 ],
-                'entityClass'           => CmsUser::class,
+                'entityClass'           => '__CLASS__',
                 'discriminatorColumn'   => null
                 ],
             ],
@@ -451,7 +451,7 @@ class CmsUser
                             'column'    => 'u_status',
                         ]
                     ],
-                    'entityClass'           => CmsUser::class,
+                    'entityClass'           => '__CLASS__',
                     'discriminatorColumn'   => null,
                 ],
                 [
