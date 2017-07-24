@@ -292,10 +292,7 @@ class NewAnnotationDriver implements MappingDriver
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
 
-                $classMetadata->addNamedQuery([
-                    'name'  => $namedQuery->name,
-                    'query' => $namedQuery->query,
-                ]);
+                $classMetadata->addNamedQuery($namedQuery->name, $namedQuery->query);
             }
         }
 

@@ -199,13 +199,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $this->addInheritedIndexes($class, $parent);
+            $this->addInheritedNamedQueries($class, $parent);
 
             if ($parent->getCache()) {
                 $class->setCache(clone $parent->getCache());
-            }
-
-            if ( ! empty($parent->namedQueries)) {
-                $this->addInheritedNamedQueries($class, $parent);
             }
 
             if ( ! empty($parent->namedNativeQueries)) {
@@ -545,17 +542,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
     {
-        foreach ($parentClass->namedQueries as $name => $query) {
-            if (isset($subClass->namedQueries[$name])) {
+        foreach ($parentClass->getNamedQueries() as $name => $query) {
+            if ($subClass->hasNamedQuery($name)) {
                 continue;
             }
 
-            $subClass->addNamedQuery(
-                [
-                    'name'  => $query['name'],
-                    'query' => $query['query']
-                ]
-            );
+            $subClass->addNamedQuery($name, $query);
         }
     }
 
