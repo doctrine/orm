@@ -690,7 +690,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\OneToOneAssociationMetadata($fieldName);
-        $targetEntity  = ltrim($classMetadata->fullyQualifiedClassName($oneToOneAnnot->targetEntity), '\\');
+        $targetEntity  = $classMetadata->fullyQualifiedClassName($oneToOneAnnot->targetEntity);
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -774,7 +774,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\ManyToOneAssociationMetadata($fieldName);
-        $targetEntity  = ltrim($classMetadata->fullyQualifiedClassName($manyToOneAnnot->targetEntity), '\\');
+        $targetEntity  = $classMetadata->fullyQualifiedClassName($manyToOneAnnot->targetEntity);
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -853,7 +853,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\OneToManyAssociationMetadata($fieldName);
-        $targetEntity  = ltrim($classMetadata->fullyQualifiedClassName($oneToManyAnnot->targetEntity), '\\');
+        $targetEntity  = $classMetadata->fullyQualifiedClassName($oneToManyAnnot->targetEntity);
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -914,7 +914,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\ManyToManyAssociationMetadata($fieldName);
-        $targetEntity  = ltrim($classMetadata->fullyQualifiedClassName($manyToManyAnnot->targetEntity), '\\');
+        $targetEntity  = $classMetadata->fullyQualifiedClassName($manyToManyAnnot->targetEntity);
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
