@@ -158,10 +158,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
 
-                $metadata->addNamedQuery([
-                    'name' => $namedQuery->name,
-                    'query' => $namedQuery->query
-                ]);
+                $metadata->addNamedQuery($namedQuery->name, $namedQuery->query);
             }
         }
 

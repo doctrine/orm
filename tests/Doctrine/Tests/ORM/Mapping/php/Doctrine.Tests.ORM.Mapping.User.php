@@ -48,12 +48,7 @@ $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
 $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
 $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
 
-$metadata->addNamedQuery(
-    [
-        'name'  => 'all',
-        'query' => 'SELECT u FROM __CLASS__ u'
-    ]
-);
+$metadata->addNamedQuery('all', 'SELECT u FROM __CLASS__ u');
 
 $fieldMetadata = new Mapping\FieldMetadata('id');
 
