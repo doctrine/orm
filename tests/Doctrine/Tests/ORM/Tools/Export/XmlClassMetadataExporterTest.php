@@ -113,7 +113,7 @@ XML;
         $metadata = $this->getMetadatasDCC2632Nonullable();
 
         $expetedResult = "<join-columnname=\"user_id\"referenced-column-name=\"id\"nullable=\"\"/></join-columns>";
-        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
     }
     /**
      * @group DDC-2632
@@ -124,6 +124,6 @@ XML;
         $metadata = $this->getMetadatasDCC2632Nullable();
 
         $expetedResult = "<join-columnname=\"user_id\"referenced-column-name=\"id\"/></join-columns>";
-        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
     }
 }

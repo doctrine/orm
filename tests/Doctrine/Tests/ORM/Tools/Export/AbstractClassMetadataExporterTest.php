@@ -400,7 +400,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      * @access
      * @return array
      */
-    protected function getMetadatasDCC2632Nonullable(){
+    protected function getMetadatasDCC2632Nonullable() {
         $metadata = array();
         $metadata['Ddc2059User'] = new ClassMetadataInfo('Ddc2059User');
         $metadata['Ddc2059User']->table['name'] = 'Ddc2059User';
@@ -432,7 +432,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      * @access
      * @return array
      */
-    protected function getMetadatasDCC2632Nullable(){
+    protected function getMetadatasDCC2632Nullable() {
         $metadata = array();
         $metadata['Ddc2059User'] = new ClassMetadataInfo('Ddc2059User');
         $metadata['Ddc2059User']->table['name'] = 'Ddc2059User';

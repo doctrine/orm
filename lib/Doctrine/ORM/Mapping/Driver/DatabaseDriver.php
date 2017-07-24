@@ -466,8 +466,7 @@ class DatabaseDriver implements MappingDriver
             }
             $sizeColumns = count($fkColumns);
             for ($i = 0; $i < $sizeColumns; $i++) {
-
-               $associationMapping['joinColumns'][] = $this->getForeignKeyAssociationMapping($foreignKey, $i);
+                $associationMapping['joinColumns'][] = $this->getForeignKeyAssociationMapping($foreignKey, $i);
             }
 
             // Here we need to check if $fkColumns are the same as $primaryKeys
@@ -488,7 +487,7 @@ class DatabaseDriver implements MappingDriver
      * @access
      * @return array
      */
-    private function getForeignKeyAssociationMapping(ForeignKeyConstraint $foreignKey, $columnIndex){
+    private function getForeignKeyAssociationMapping(ForeignKeyConstraint $foreignKey, $columnIndex) {
 
         $fkColumns          = $foreignKey->getColumns();
         $fkForeignColumns   = $foreignKey->getForeignColumns();

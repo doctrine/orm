@@ -2,10 +2,12 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
+use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
@@ -226,7 +228,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
      * @access
      * @return void
      */
-    public function testDCC2632Nullable(){
+    public function testDCC2632Nullable() {
         if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
@@ -239,9 +241,10 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertArrayHasKey('user', $metadata['Ddc2059Project']->associationMappings);
         $this->assertArrayHasKey('joinColumns', $metadata['Ddc2059Project']->associationMappings['user']);
         $this->assertArrayHasKey('referencedColumnName', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
-        $this->assertArrayNotHasKey('nullable',  $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
+        $this->assertArrayNotHasKey('nullable', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
 
     }
+
     /**
      * Test DCC2632: testing nullable option in a foreign key
      *
@@ -249,7 +252,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
      * @access
      * @return void
      */
-    public function testDCC2632NoNullable(){
+    public function testDCC2632NoNullable() {
         if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
             $this->markTestSkipped('Platform does not support foreign keys.');
         }
@@ -264,18 +267,18 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         $this->assertArrayHasKey('joinColumns', $metadata['Ddc2059Project']->associationMappings['user']);
         $this->assertArrayHasKey('referencedColumnName', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
 
-        $this->assertEquals(false,  $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]['nullable']);
+        $this->assertEquals(false, $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]['nullable']);
     }
 
 
-    private function getUserTable(){
+    private function getUserTable() {
         $user = new \Doctrine\DBAL\Schema\Table("ddc2059_user");
         $user->addColumn('id', 'integer', array('notnull' => true));
         $user->setPrimaryKey(array('id'));
         return $user;
     }
 
-    private function getProjectTable(){
+    private function getProjectTable() {
         $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
         $project->addColumn('id', 'integer', array('notnull' => false));
         $project->addColumn('user_id', 'integer', array('notnull' => true));
@@ -284,7 +287,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         return $project;
     }
 
-    private function getProjectTableUserIdNullable(){
+    private function getProjectTableUserIdNullable() {
         $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
         $project->addColumn('id', 'integer', array('notnull' => false));
         $project->addColumn('user_id', 'integer', array('notnull' => false));

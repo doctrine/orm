@@ -37,7 +37,7 @@ class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
             . "user_id:"
             . "referencedColumnName:id"
             . "nullable:false";
-        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
     }
     /**
      * @group DDC-2632
@@ -50,7 +50,7 @@ class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $expetedResult = "joinColumns:"
             . "user_id:"
             . "referencedColumnName:id";
-        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
     }
 
 }
