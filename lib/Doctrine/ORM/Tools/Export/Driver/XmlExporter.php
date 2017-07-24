@@ -316,7 +316,7 @@ class XmlExporter extends AbstractExporter
                     $joinColumnXml = $joinColumnsXml->addChild('join-column');
                     $joinColumnXml->addAttribute('name', $joinColumn['name']);
                     $joinColumnXml->addAttribute('referenced-column-name', $joinColumn['referencedColumnName']);
-                    if(isset($joinColumn['nullable'])){
+                    if(isset($joinColumn['nullable'])) {
                         $joinColumnXml->addAttribute('nullable', $joinColumn['nullable']);
                     }
                     if (isset($joinColumn['onDelete'])) {

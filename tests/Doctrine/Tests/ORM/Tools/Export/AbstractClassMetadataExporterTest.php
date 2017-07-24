@@ -392,6 +392,71 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
             return rmdir($path);
         }
     }
+
+    /**
+     * Returns the metadata generated for the issue DCC-2632
+     *
+     *
+     * @access
+     * @return array
+     */
+    protected function getMetadatasDCC2632Nonullable(){
+        $metadata = array();
+        $metadata['Ddc2059User'] = new ClassMetadataInfo('Ddc2059User');
+        $metadata['Ddc2059User']->table['name'] = 'Ddc2059User';
+        $metadata['Ddc2059User']->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+
+        $metadata['Ddc2059Project'] = new ClassMetadataInfo('Ddc2059Project');
+        $metadata['Ddc2059Project']->table['name'] = 'Ddc2059Project';
+        $metadata['Ddc2059Project']->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+
+        $metadata['Ddc2059Project']->mapManyToOne(
+            ['fieldName' => 'user_id', 'targetEntity' => 'Ddc2059User', 'mappedBy' => 'id',
+                'joinColumns' =>
+                    [
+                        0 =>
+                            [
+                                'name' => 'user_id',
+                                'referencedColumnName' => 'id',
+                                'nullable' => false,
+                            ],
+                    ]
+            ]
+        );
+        return $metadata;
+    }
+    /**
+     * Returns the metadata generated for the issue DCC-2632
+     *
+     *
+     * @access
+     * @return array
+     */
+    protected function getMetadatasDCC2632Nullable(){
+        $metadata = array();
+        $metadata['Ddc2059User'] = new ClassMetadataInfo('Ddc2059User');
+        $metadata['Ddc2059User']->table['name'] = 'Ddc2059User';
+        $metadata['Ddc2059User']->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+
+        $metadata['Ddc2059Project'] = new ClassMetadataInfo('Ddc2059Project');
+        $metadata['Ddc2059Project']->table['name'] = 'Ddc2059Project';
+        $metadata['Ddc2059Project']->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+
+        $metadata['Ddc2059Project']->mapManyToOne(
+            ['fieldName' => 'user_id', 'targetEntity' => 'Ddc2059User', 'mappedBy' => 'id',
+                'joinColumns' =>
+                    [
+                        0 =>
+                            [
+                                'name' => 'user_id',
+                                'referencedColumnName' => 'id'
+                            ],
+                    ]
+            ]
+        );
+        return $metadata;
+    }
+
 }
 
 class Address

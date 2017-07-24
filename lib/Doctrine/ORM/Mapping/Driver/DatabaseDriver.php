@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
@@ -450,7 +451,6 @@ class DatabaseDriver implements MappingDriver
         foreach ($foreignKeys as $foreignKey) {
             $foreignTableName   = $foreignKey->getForeignTableName();
             $fkColumns          = $foreignKey->getColumns();
-            $fkForeignColumns   = $foreignKey->getForeignColumns();
             $localColumn        = current($fkColumns);
             $associationMapping = [
                 'fieldName'    => $this->getFieldNameForColumn($tableName, $localColumn, true),
@@ -466,17 +466,8 @@ class DatabaseDriver implements MappingDriver
             }
             $sizeColumns = count($fkColumns);
             for ($i = 0; $i < $sizeColumns; $i++) {
-                $associationMappingParameters = array(
-                    'name'                 => $fkColumns[$i],
-                    'referencedColumnName' => $fkForeignColumns[$i]
-                );
-                $columns = $foreignKey->getLocalTable()->getColumns();
-                foreach ($columns as $column) {
-                     if (strtolower($column->getName()) === strtolower($fkColumns[$i]) && $column->getNotNull() === true) {
-                          $associationMappingParameters['nullable'] = false;
-                     }
-               }
-               $associationMapping['joinColumns'][] = $associationMappingParameters;
+
+               $associationMapping['joinColumns'][] = $this->getForeignKeyAssociationMapping($foreignKey, $i);
             }
 
             // Here we need to check if $fkColumns are the same as $primaryKeys
@@ -486,6 +477,33 @@ class DatabaseDriver implements MappingDriver
                 $metadata->mapManyToOne($associationMapping);
             }
         }
+    }
+
+    /**
+     * Return the asociation mapping array for the foreign key.
+     *
+     * @param \Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey
+     * @param int                                        $columnIndex
+     *
+     * @access
+     * @return array
+     */
+    private function getForeignKeyAssociationMapping(ForeignKeyConstraint $foreignKey, $columnIndex){
+
+        $fkColumns          = $foreignKey->getColumns();
+        $fkForeignColumns   = $foreignKey->getForeignColumns();
+
+        $associationMappingParameters = [
+            'name'                 => $fkColumns[$columnIndex],
+            'referencedColumnName' => $fkForeignColumns[$columnIndex]];
+
+        $columns = $foreignKey->getLocalTable()->getColumns();
+        foreach ($columns as $column) {
+            if (strtolower($column->getName()) === strtolower($fkColumns[$columnIndex]) && $column->getNotNull() === true) {
+                $associationMappingParameters['nullable'] = false;
+            }
+        }
+        return $associationMappingParameters;
     }
 
     /**
@@ -533,7 +551,7 @@ class DatabaseDriver implements MappingDriver
             return $this->namespace.$this->classNamesForTables[$tableName];
         }
 
-        return $this->namespace.Inflector::classify(strtolower($tableName));
+        return $this->namespace . Inflector::classify(strtolower($tableName));
     }
 
     /**

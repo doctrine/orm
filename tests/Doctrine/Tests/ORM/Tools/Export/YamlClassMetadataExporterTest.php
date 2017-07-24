@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Tools\Export;
 
+use Doctrine\ORM\Tools\Export\Driver\YamlExporter;
+
 /**
  * Test case for YamlClassMetadataExporterTest
  *
@@ -22,4 +24,33 @@ class YamlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 
         return 'yaml';
     }
+
+    /**
+     * @group DDC-2632
+     */
+    public function testFKDefaultValueOptionExportYamlNoNullable() {
+        $exporter = new YamlExporter();
+
+        $metadata = $this->getMetadatasDCC2632Nonullable();
+
+        $expetedResult = "joinColumns:"
+            . "user_id:"
+            . "referencedColumnName:id"
+            . "nullable:false";
+        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+    }
+    /**
+     * @group DDC-2632
+     */
+    public function testFKDefaultValueOptionExportYamlNullable() {
+        $exporter = new YamlExporter();
+
+        $metadata = $this->getMetadatasDCC2632Nullable();
+
+        $expetedResult = "joinColumns:"
+            . "user_id:"
+            . "referencedColumnName:id";
+        $this->assertContains($expetedResult,$string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+    }
+
 }
