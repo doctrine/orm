@@ -46,46 +46,12 @@ class DDC6558Test extends OrmFunctionalTestCase
     }
 
     /**
-     * Given the following class structure it is possible to fetch a Developer when using the repository form the second level node.
-     *
-     * - Person
-     *   - Manager
-     *   - Employee
-     *     - Staff
-     *     - Developer
+     * When using discrimination over multiple levels the properties of the 'middle layer' are not populated.
      */
-    public function testFetchUsingRepoFromSecondLevelNode()
+    public function testEmployeeIsPopulated()
     {
         $developer = new DDC6558Developer();
-        $developer->name = "Jeroen";
-        $developer->number = 1337;
-        $developer->emailAddress = "email@address.com";
-
-        $this->_em->persist($developer);
-        $this->_em->flush();
-        $this->_em->clear();
-
-        $persistedDeveloper = $this->_em->find(DDC6558Employee::class, $developer->id);
-
-        $this->assertSame($persistedDeveloper->emailAddress, $developer->emailAddress);
-    }
-
-    /**
-     * Given the following class structure it is NOT possible to fetch a Developer when using the repository form the root node.
-     *
-     * - Person
-     *   - Manager
-     *   - Employee
-     *     - Staff
-     *     - Developer
-     *
-     * The issue is that an Employee is being instantiated, which of course fails since it is an abstract class.
-     */
-    public function testFetchUsingRepoFromRootNode()
-    {
-        $developer = new DDC6558Developer();
-        $developer->name = "Jeroen";
-        $developer->number = 1337;
+        $developer->phoneNumber = 1231231231;
         $developer->emailAddress = "email@address.com";
 
         $this->_em->persist($developer);
@@ -94,7 +60,8 @@ class DDC6558Test extends OrmFunctionalTestCase
 
         $persistedDeveloper = $this->_em->find(DDC6558Person::class, $developer->id);
 
-        $this->assertSame($persistedDeveloper->emailAddress, $developer->emailAddress);
+        self::assertNotNull($persistedDeveloper->phoneNumber);
+        self::assertNotNull($persistedDeveloper->emailAddress);
     }
 }
 
@@ -102,41 +69,31 @@ class DDC6558Test extends OrmFunctionalTestCase
  * @Entity
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"manager" = "DDC6558Manager", "staff" = "DDC6558Employee", "developer" = "DDC6558Employee"})
+ * @DiscriminatorMap({"manager" = "DDC6558Manager", "staff" = "DDC6558Staff", "developer" = "DDC6558Developer"})
  */
 abstract class DDC6558Person
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
-
-    /** @Column(type="string") */
-    public $name;
 }
 
 /** @Entity */
 class DDC6558Manager extends DDC6558Person
 {
-    /** @Column(type="integer") */
-    public $parkingLotNumber;
 }
 
 /**
  * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"staff" = "DDC6558Staff", "developer" = "DDC6558Developer"})
  */
 abstract class DDC6558Employee extends DDC6558Person
 {
-    /** @Column(type="integer") */
-    public $number;
+    /** @Column(type="string") */
+    public $phoneNumber;
 }
 
 /** @Entity */
 class DDC6558Staff extends DDC6558Employee
 {
-    /** @Column(type="string") */
-    public $phoneNumber;
 }
 
 /** @Entity */
