@@ -493,11 +493,11 @@ class DatabaseDriver implements MappingDriver
         $fkForeignColumns   = $foreignKey->getForeignColumns();
 
         $associationMappingParameters = [
-            'name'                 => $fkColumns[$columnIndex],
-            'referencedColumnName' => $fkForeignColumns[$columnIndex]];
+            'name' => $fkColumns[$columnIndex],
+            'referencedColumnName' => $fkForeignColumns[$columnIndex]
+        ];
 
-        $columns = $foreignKey->getLocalTable()->getColumns();
-        foreach ($columns as $column) {
+        foreach ($foreignKey->getLocalTable()->getColumns() as $column) {
             if (strtolower($column->getName()) === strtolower($fkColumns[$columnIndex]) && $column->getNotNull() === true) {
                 $associationMappingParameters['nullable'] = false;
             }

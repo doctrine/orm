@@ -112,8 +112,19 @@ XML;
 
         $metadata = $this->getMetadatasDCC2632Nonullable();
 
-        $expetedResult = "<join-columnname=\"user_id\"referenced-column-name=\"id\"nullable=\"\"/></join-columns>";
-        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $expeted = '<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            .' xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">'
+            .'<entity name="Ddc2059Project" table="Ddc2059Project">'
+            .'<id name="id" type="integer" column="id"/>'
+            .'<many-to-one field="user_id" target-entity="Ddc2059User" mapped-by="id" fetch="LAZY">'
+            .'<join-columns>'
+            .'<join-column name="user_id" referenced-column-name="id" nullable=""/>'
+            .'</join-columns>'
+            .'</many-to-one>'
+            .'</entity>'
+            .'</doctrine-mapping>';
+
+        $this->assertXmlStringEqualsXmlString($expeted,$exporter->exportClassMetadata($metadata['Ddc2059Project']));
     }
     /**
      * @group DDC-2632
@@ -123,7 +134,18 @@ XML;
 
         $metadata = $this->getMetadatasDCC2632Nullable();
 
-        $expetedResult = "<join-columnname=\"user_id\"referenced-column-name=\"id\"/></join-columns>";
-        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $expeted = '<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            .' xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">'
+            .'<entity name="Ddc2059Project" table="Ddc2059Project">'
+            .'<id name="id" type="integer" column="id"/>'
+            .'<many-to-one field="user_id" target-entity="Ddc2059User" mapped-by="id" fetch="LAZY">'
+            .'<join-columns>'
+            .'<join-column name="user_id" referenced-column-name="id" />'
+            .'</join-columns>'
+            .'</many-to-one>'
+            .'</entity>'
+            .'</doctrine-mapping>';
+
+        $this->assertXmlStringEqualsXmlString($expeted,$exporter->exportClassMetadata($metadata['Ddc2059Project']));
     }
 }

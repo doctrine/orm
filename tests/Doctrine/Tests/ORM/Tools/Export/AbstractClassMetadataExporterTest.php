@@ -412,15 +412,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
 
         $metadata['Ddc2059Project']->mapManyToOne(
             ['fieldName' => 'user_id', 'targetEntity' => 'Ddc2059User', 'mappedBy' => 'id',
-                'joinColumns' =>
-                    [
-                        0 =>
-                            [
-                                'name' => 'user_id',
-                                'referencedColumnName' => 'id',
-                                'nullable' => false,
-                            ],
-                    ]
+                'joinColumns' =>[ 0 => [ 'name' => 'user_id', 'referencedColumnName' => 'id', 'nullable' => false],
+                                ]
             ]
         );
         return $metadata;

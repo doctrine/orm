@@ -35,8 +35,10 @@ class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterT
         $entityGenerator->setAnnotationPrefix("");
         $exporter->setEntityGenerator($entityGenerator);
 
-        $expetedResult = "@JoinColumn(name=\"user_id\",referencedColumnName=\"id\",nullable=false)";
-        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $expectedPattern = '/JoinColumn\(name="user_id", referencedColumnName="id", nullable=false\)/';
+
+        $this->assertRegExp($expectedPattern,$exporter->exportClassMetadata($metadata['Ddc2059Project']));
+
     }
     /**
      * @group DDC-2632
@@ -51,7 +53,8 @@ class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterT
         $entityGenerator->setAnnotationPrefix("");
         $exporter->setEntityGenerator($entityGenerator);
 
-        $expetedResult = "@JoinColumn(name=\"user_id\",referencedColumnName=\"id\")";
-        $this->assertContains($expetedResult, $string = trim(preg_replace('/\s+/', '', preg_replace('/\t/', '', $exporter->exportClassMetadata($metadata['Ddc2059Project'])))));
+        $expectedPattern = '/JoinColumn\(name="user_id", referencedColumnName="id"\)/';
+
+        $this->assertRegExp($expectedPattern,$exporter->exportClassMetadata($metadata['Ddc2059Project']));
     }
 }

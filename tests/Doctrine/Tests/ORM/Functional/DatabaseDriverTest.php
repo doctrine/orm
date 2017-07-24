@@ -221,9 +221,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     /**
      * Test DCC2632: testing nullable option in a foreign key
-     *
-     *
-     * @access
      * @return void
      */
     public function testDCC2632Nullable() {
@@ -245,9 +242,6 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
     /**
      * Test DCC2632: testing nullable option in a foreign key
-     *
-     *
-     * @access
      * @return void
      */
     public function testDCC2632NoNullable() {
