@@ -41,7 +41,7 @@ $metadata->addSqlResultSetMapping(
             'column'    => 'name',
           ],
         ],
-        'entityClass' => CompanyPerson::class,
+        'entityClass' => '__CLASS__',
         'discriminatorColumn' => 'discriminator',
         ],
     ],

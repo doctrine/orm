@@ -4,7 +4,7 @@
                          http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="Doctrine\Tests\Models\CMS\CmsAddress" table="cms_users">
-        
+
         <entity-listeners>
             <entity-listener class="CmsAddressListener"/>
         </entity-listeners>
@@ -33,7 +33,7 @@
             </sql-result-set-mapping>
 
             <sql-result-set-mapping name="mapping-without-fields">
-                <entity-result entity-class="CmsAddress"/>
+                <entity-result entity-class="__CLASS__"/>
             </sql-result-set-mapping>
 
             <sql-result-set-mapping name="mapping-count">

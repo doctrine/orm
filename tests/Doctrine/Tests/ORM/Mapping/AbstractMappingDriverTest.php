@@ -650,25 +650,27 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testNamedNativeQuery()
     {
-
         $class = $this->createClassMetadata(CmsAddress::class);
 
-        //named native query
+        // named native query
         self::assertCount(3, $class->namedNativeQueries);
         self::assertArrayHasKey('find-all', $class->namedNativeQueries);
         self::assertArrayHasKey('find-by-id', $class->namedNativeQueries);
 
         $findAllQuery = $class->getNamedNativeQuery('find-all');
+
         self::assertEquals('find-all', $findAllQuery['name']);
         self::assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
         self::assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
 
         $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
+
         self::assertEquals('find-by-id', $findByIdQuery['name']);
         self::assertEquals(CmsAddress::class,$findByIdQuery['resultClass']);
         self::assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
 
         $countQuery = $class->getNamedNativeQuery('count');
+
         self::assertEquals('count', $countQuery['name']);
         self::assertEquals('mapping-count', $countQuery['resultSetMapping']);
         self::assertEquals('SELECT COUNT(*) AS count FROM cms_addresses',  $countQuery['query']);
@@ -680,6 +682,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertArrayHasKey('mapping-without-fields', $class->sqlResultSetMappings);
 
         $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
+
         self::assertEquals('mapping-find-all', $findAllMapping['name']);
         self::assertEquals(CmsAddress::class, $findAllMapping['entities'][0]['entityClass']);
         self::assertEquals(['name'=>'id','column'=>'id'], $findAllMapping['entities'][0]['fields'][0]);
@@ -687,11 +690,13 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'country','column'=>'country'], $findAllMapping['entities'][0]['fields'][2]);
 
         $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
+
         self::assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
-        self::assertEquals(CmsAddress::class, $withoutFieldsMapping['entities'][0]['entityClass']);
+        self::assertEquals('__CLASS__', $withoutFieldsMapping['entities'][0]['entityClass']);
         self::assertEquals([], $withoutFieldsMapping['entities'][0]['fields']);
 
         $countMapping = $class->getSqlResultSetMapping('mapping-count');
+
         self::assertEquals('mapping-count', $countMapping['name']);
         self::assertEquals(['name'=>'count'], $countMapping['columns'][0]);
 
@@ -709,9 +714,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertCount(4, $userMetadata->getSqlResultSetMappings());
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
+
         self::assertEquals([],$mapping['columns']);
         self::assertEquals('mappingJoinedAddress', $mapping['name']);
+
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'id'],                   $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'],               $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'status'],           $mapping['entities'][0]['fields'][2]);
@@ -719,12 +727,15 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(['name'=>'address.city','column'=>'city'],       $mapping['entities'][0]['fields'][4]);
         self::assertEquals(['name'=>'address.country','column'=>'country'], $mapping['entities'][0]['fields'][5]);
         self::assertEquals(['name'=>'address.id','column'=>'a_id'],         $mapping['entities'][0]['fields'][6]);
-        self::assertEquals($userMetadata->getClassName(),                   $mapping['entities'][0]['entityClass']);
+        self::assertEquals('__CLASS__',                            $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
+
         self::assertEquals([],$mapping['columns']);
         self::assertEquals('mappingJoinedPhonenumber', $mapping['name']);
+
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'id'],                             $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'],                         $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'status'],                     $mapping['entities'][0]['fields'][2]);
@@ -732,23 +743,31 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($userMetadata->getClassName(),                             $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
+
         self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
         self::assertEquals('mappingUserPhonenumberCount', $mapping['name']);
+
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'id'],         $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'],     $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'status'], $mapping['entities'][0]['fields'][2]);
         self::assertEquals($userMetadata->getClassName(),         $mapping['entities'][0]['entityClass']);
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
+
         self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
         self::assertEquals('mappingMultipleJoinsEntityResults', $mapping['name']);
+
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'u_id'],           $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'u_name'],       $mapping['entities'][0]['fields'][1]);
         self::assertEquals(['name'=>'status','column'=>'u_status'],   $mapping['entities'][0]['fields'][2]);
-        self::assertEquals($userMetadata->getClassName(),             $mapping['entities'][0]['entityClass']);
+        self::assertEquals('__CLASS__',                      $mapping['entities'][0]['entityClass']);
+
         self::assertNull($mapping['entities'][1]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'a_id'],           $mapping['entities'][1]['fields'][0]);
         self::assertEquals(['name'=>'zip','column'=>'a_zip'],         $mapping['entities'][1]['fields'][1]);
         self::assertEquals(['name'=>'country','column'=>'a_country'], $mapping['entities'][1]['fields'][2]);
@@ -761,10 +780,12 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         self::assertEquals([], $mapping['columns']);
         self::assertEquals('mappingFetchAll', $mapping['name']);
-        self::assertEquals('discriminator',                   $mapping['entities'][0]['discriminatorColumn']);
+
+        self::assertEquals('discriminator', $mapping['entities'][0]['discriminatorColumn']);
+
         self::assertEquals(['name'=>'id','column'=>'id'],     $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'], $mapping['entities'][0]['fields'][1]);
-        self::assertEquals($personMetadata->getClassName(),   $mapping['entities'][0]['entityClass']);
+        self::assertEquals('__CLASS__',              $mapping['entities'][0]['entityClass']);
     }
 
     /*

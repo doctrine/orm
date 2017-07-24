@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\Internal\Hydration\HydrationException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query\Parameter;
@@ -716,54 +717,45 @@ class NativeQueryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1663
+     * @dataProvider provideDataForNamedNativeQueryInheritance
+     *
+     * @param $className
      */
-    public function testNamedNativeQueryInheritance()
+    public function testNamedNativeQueryInheritance($className)
     {
-        $contractMetadata   = $this->em->getClassMetadata(CompanyContract::class);
-        $flexMetadata       = $this->em->getClassMetadata(CompanyFlexContract::class);
+        $classMetadata        = $this->em->getClassMetadata($className);
+        $repository           = $this->em->getRepository($className);
+        $namedNativeQueries   = $classMetadata->getNamedNativeQueries();
+        $sqlResultSetMappings = $classMetadata->getSqlResultSetMappings();
 
-        $contractQueries    = $contractMetadata->getNamedNativeQueries();
-        $flexQueries        = $flexMetadata->getNamedNativeQueries();
+        // Native Query Mappings
+        self::assertEquals('all-contracts', $namedNativeQueries['all-contracts']['name']);
+        self::assertEquals('__CLASS__', $namedNativeQueries['all-contracts']['resultClass']);
 
-        $contractMappings   = $contractMetadata->getSqlResultSetMappings();
-        $flexMappings       = $flexMetadata->getSqlResultSetMappings();
+        self::assertEquals('all', $namedNativeQueries['all']['name']);
+        self::assertEquals('__CLASS__', $namedNativeQueries['all']['resultClass']);
 
-        // contract queries
-        self::assertEquals('all-contracts', $contractQueries['all-contracts']['name']);
-        self::assertEquals(CompanyContract::class, $contractQueries['all-contracts']['resultClass']);
+        // SQL ResultSet Mappings
+        self::assertEquals('mapping-all-contracts', $sqlResultSetMappings['mapping-all-contracts']['name']);
+        self::assertEquals('__CLASS__', $sqlResultSetMappings['mapping-all-contracts']['entities'][0]['entityClass']);
 
-        self::assertEquals('all', $contractQueries['all']['name']);
-        self::assertEquals(CompanyContract::class, $contractQueries['all']['resultClass']);
+        self::assertEquals('mapping-all', $sqlResultSetMappings['mapping-all']['name']);
+        self::assertEquals('__CLASS__', $sqlResultSetMappings['mapping-all-contracts']['entities'][0]['entityClass']);
 
+        // Resolved Native Query Mappings
+        $allContractsNativeNamedQuery = $repository->createNativeNamedQuery('all-contracts');
+        $allNativeNamedQuery          = $repository->createNativeNamedQuery('all');
 
-        // flex contract queries
-        self::assertEquals('all-contracts', $flexQueries['all-contracts']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all-contracts']['resultClass']);
+        self::assertEquals($className, $this->getResultSetMapping($allContractsNativeNamedQuery)->getClassName('e0'));
+        self::assertEquals($className, $this->getResultSetMapping($allNativeNamedQuery)->getClassName('e0'));
+    }
 
-        self::assertEquals('all-flex', $flexQueries['all-flex']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all-flex']['resultClass']);
-
-        self::assertEquals('all', $flexQueries['all']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexQueries['all']['resultClass']);
-
-
-        // contract result mapping
-        self::assertEquals('mapping-all-contracts', $contractMappings['mapping-all-contracts']['name']);
-        self::assertEquals(CompanyContract::class, $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all', $contractMappings['mapping-all']['name']);
-        self::assertEquals(CompanyContract::class, $contractMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        // flex contract result mapping
-        self::assertEquals('mapping-all-contracts', $flexMappings['mapping-all-contracts']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all-contracts']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all', $flexMappings['mapping-all']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all']['entities'][0]['entityClass']);
-
-        self::assertEquals('mapping-all-flex', $flexMappings['mapping-all-flex']['name']);
-        self::assertEquals(CompanyFlexContract::class, $flexMappings['mapping-all-flex']['entities'][0]['entityClass']);
-
+    public function provideDataForNamedNativeQueryInheritance()
+    {
+        return [
+            [CompanyContract::class],
+            [CompanyFlexContract::class],
+        ];
     }
 
     /**
@@ -856,5 +848,15 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $selectClause = $rsm->generateSelectClause(['u' => 'u1', 'c' => 'c1']);
 
         self::assertSQLEquals('u1.id as id, c1.discr as discr', $selectClause);
+    }
+
+    protected function getResultSetMapping(AbstractQuery $query) : ResultSetMapping
+    {
+        $reflClass  = new \ReflectionClass($query);
+        $reflMethod = $reflClass->getMethod('getResultSetMapping');
+
+        $reflMethod->setAccessible(true);
+
+        return $reflMethod->invoke($query);
     }
 }

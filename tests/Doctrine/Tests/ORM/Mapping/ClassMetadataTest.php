@@ -846,14 +846,16 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         $mapping = $cm->getNamedNativeQuery('find-all');
+
         self::assertEquals('SELECT * FROM cms_users', $mapping['query']);
         self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
         self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
 
         $mapping = $cm->getNamedNativeQuery('find-by-id');
+
         self::assertEquals('SELECT * FROM cms_users WHERE id = ?', $mapping['query']);
         self::assertEquals('result-mapping-name', $mapping['resultSetMapping']);
-        self::assertEquals(CMS\CmsUser::class, $mapping['resultClass']);
+        self::assertEquals('__CLASS__', $mapping['resultClass']);
     }
 
     /**
@@ -901,7 +903,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $mapping = $cm->getSqlResultSetMapping('find-all');
 
-        self::assertEquals(CMS\CmsUser::class, $mapping['entities'][0]['entityClass']);
+        self::assertEquals('__CLASS__', $mapping['entities'][0]['entityClass']);
         self::assertEquals(['name'=>'id','column'=>'id'], $mapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'name','column'=>'name'], $mapping['entities'][0]['fields'][1]);
 
@@ -1284,7 +1286,7 @@ class ClassMetadataTest extends OrmTestCase
      * @group DDC-1955
      *
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
+     * @expectedExceptionMessage Entity Listener "InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
     public function testInvalidEntityListenerClassException()
     {
@@ -1298,7 +1300,7 @@ class ClassMetadataTest extends OrmTestCase
      * @group DDC-1955
      *
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "\Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
+     * @expectedExceptionMessage Entity Listener "Doctrine\Tests\Models\Company\CompanyContractListener" declared on "Doctrine\Tests\Models\CMS\CmsUser" has no method "invalidMethod".
      */
     public function testInvalidEntityListenerMethodException()
     {

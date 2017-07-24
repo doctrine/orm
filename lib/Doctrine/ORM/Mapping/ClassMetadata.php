@@ -130,11 +130,11 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     //public $embeddedClasses = [];
 
     /**
-     * READ-ONLY: The named queries allowed to be called directly from Repository.
+     * The named queries allowed to be called directly from Repository.
      *
      * @var array
      */
-    public $namedQueries = [];
+    protected $namedQueries = [];
 
     /**
      * READ-ONLY: The named native queries allowed to be called directly from Repository.
@@ -759,7 +759,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      */
     public function getSqlResultSetMapping($name)
     {
-        if ( ! isset($this->sqlResultSetMappings[$name])) {
+        if (! isset($this->sqlResultSetMappings[$name])) {
             throw MappingException::resultMappingNotFound($this->name, $name);
         }
 
@@ -872,7 +872,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             throw MappingException::missingTargetEntity($fieldName);
         }
 
-        $targetEntity = ltrim($this->fullyQualifiedClassName($targetEntity), '\\');
+        $targetEntity = $this->fullyQualifiedClassName($targetEntity);
 
         $property->setSourceEntity($this->name);
         $property->setOwningSide($property->getMappedBy() === null);
@@ -1607,7 +1607,8 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      * INTERNAL:
      * Adds a named query to this class.
      *
-     * @param array $queryMapping
+     * @param string $name
+     * @param string $query
      *
      * @return void
      *
@@ -1650,17 +1651,8 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
         }
 
-        $queryMapping['isSelfClass'] = false;
-
-        if (isset($queryMapping['resultClass'])) {
-            if ($queryMapping['resultClass'] === '__CLASS__') {
-
-                $queryMapping['isSelfClass'] = true;
-                $queryMapping['resultClass'] = $this->name;
-            }
-
+        if (isset($queryMapping['resultClass']) && $queryMapping['resultClass'] !== '__CLASS__') {
             $queryMapping['resultClass'] = $this->fullyQualifiedClassName($queryMapping['resultClass']);
-            $queryMapping['resultClass'] = ltrim($queryMapping['resultClass'], '\\');
         }
 
         $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
@@ -1688,30 +1680,24 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
 
         if (isset($resultMapping['entities'])) {
             foreach ($resultMapping['entities'] as $key => $entityResult) {
-                if (!isset($entityResult['entityClass'])) {
+                if (! isset($entityResult['entityClass'])) {
                     throw MappingException::missingResultSetMappingEntity($this->name, $resultMapping['name']);
                 }
 
-                $entityResult['isSelfClass'] = false;
-                if ($entityResult['entityClass'] === '__CLASS__') {
+                $entityClassName = ($entityResult['entityClass'] !== '__CLASS__')
+                    ? $this->fullyQualifiedClassName($entityResult['entityClass'])
+                    : $entityResult['entityClass']
+                ;
 
-                    $entityResult['isSelfClass'] = true;
-                    $entityResult['entityClass'] = $this->name;
-
-                }
-
-                $entityResult['entityClass'] = $this->fullyQualifiedClassName($entityResult['entityClass']);
-
-                $resultMapping['entities'][$key]['entityClass'] = ltrim($entityResult['entityClass'], '\\');
-                $resultMapping['entities'][$key]['isSelfClass'] = $entityResult['isSelfClass'];
+                $resultMapping['entities'][$key]['entityClass'] = $entityClassName;
 
                 if (isset($entityResult['fields'])) {
                     foreach ($entityResult['fields'] as $k => $field) {
-                        if (!isset($field['name'])) {
+                        if (! isset($field['name'])) {
                             throw MappingException::missingResultSetMappingFieldName($this->name, $resultMapping['name']);
                         }
 
-                        if (!isset($field['column'])) {
+                        if (! isset($field['column'])) {
                             $fieldName = $field['name'];
 
                             if (strpos($fieldName, '.')) {
@@ -1814,17 +1800,16 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     public function addEntityListener($eventName, $class, $method)
     {
         $class    = $this->fullyQualifiedClassName($class);
-
         $listener = [
             'class'  => $class,
             'method' => $method,
         ];
 
-        if ( ! class_exists($class)) {
+        if (! class_exists($class)) {
             throw MappingException::entityListenerClassNotFound($class, $this->name);
         }
 
-        if ( ! method_exists($class, $method)) {
+        if (! method_exists($class, $method)) {
             throw MappingException::entityListenerMethodNotFound($class, $method, $this->name);
         }
 
@@ -1891,7 +1876,6 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
     public function addDiscriminatorMapClass($name, $className)
     {
         $className = $this->fullyQualifiedClassName($className);
-        $className = ltrim($className, '\\');
 
         $this->discriminatorMap[$name] = $className;
 
@@ -1901,7 +1885,7 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
             return;
         }
 
-        if ( ! (class_exists($className) || interface_exists($className))) {
+        if (! (class_exists($className) || interface_exists($className))) {
             throw MappingException::invalidClassInDiscriminatorMap($className, $this->name);
         }
 
@@ -1988,10 +1972,10 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
         $namespace = $this->reflectionClass->getNamespaceName();
 
         if ($className !== null && strpos($className, '\\') === false && $namespace) {
-            return $namespace . '\\' . $className;
+            return ltrim($namespace . '\\' . $className, '\\');
         }
 
-        return $className;
+        return ltrim($className, '\\');
     }
 
     /**

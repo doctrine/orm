@@ -64,7 +64,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     protected $subClasses = [];
 
     /**
-     * READ-ONLY: The named queries allowed to be called directly from Repository.
+     * The named queries allowed to be called directly from Repository.
      *
      * @var array
      */
@@ -286,6 +286,23 @@ abstract class EntityClassMetadata extends ComponentMetadata
     }
 
     /**
+     * Adds a named query.
+     *
+     * @param string $name
+     * @param string $dqlQuery
+     *
+     * @throws MappingException
+     */
+    public function addNamedQuery(string $name, string $dqlQuery)
+    {
+        if (isset($this->namedQueries[$name])) {
+            throw MappingException::duplicateQueryMapping($this->entityName, $name);
+        }
+
+        $this->namedQueries[$name] = $dqlQuery;
+    }
+
+    /**
      * Gets a named query.
      *
      * @param string $queryName The query name.
@@ -346,18 +363,18 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * Gets the result set mapping.
      *
-     * @see ClassMetadata::$sqlResultSetMappings
-     *
      * @param string $name The result set mapping name.
      *
      * @return array
      *
      * @throws MappingException
+     *
+     * @todo guilhermeblanco This should return an object instead
      */
-    public function getSqlResultSetMapping($name)
+    public function getSqlResultSetMapping($name) : array
     {
-        if ( ! isset($this->sqlResultSetMappings[$name])) {
-            throw MappingException::resultMappingNotFound($this->name, $name);
+        if (! isset($this->sqlResultSetMappings[$name])) {
+            throw MappingException::resultMappingNotFound($this->entityName, $name);
         }
 
         return $this->sqlResultSetMappings[$name];
@@ -368,7 +385,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @return array
      */
-    public function getSqlResultSetMappings()
+    public function getSqlResultSetMappings() : array
     {
         return $this->sqlResultSetMappings;
     }
