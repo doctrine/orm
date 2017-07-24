@@ -176,7 +176,7 @@ class DatabaseDriver implements MappingDriver
         $this->reverseEngineerMappingFromDatabase();
 
         if ( ! isset($this->classToTableNames[$className])) {
-            throw new \InvalidArgumentException("Unknown class ".$className);
+            throw new \InvalidArgumentException("Unknown class " . $className);
         }
 
         $tableName = $this->classToTableNames[$className];
