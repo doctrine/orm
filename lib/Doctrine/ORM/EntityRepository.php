@@ -109,7 +109,10 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function createNamedQuery($queryName)
     {
-        return $this->em->createQuery($this->class->getNamedQuery($queryName));
+        $namedQuery    = $this->class->getNamedQuery($queryName);
+        $resolvedQuery = str_replace('__CLASS__', $this->class->getClassName(), $namedQuery);
+
+        return $this->em->createQuery($resolvedQuery);
     }
 
     /**

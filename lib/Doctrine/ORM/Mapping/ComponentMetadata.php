@@ -25,8 +25,10 @@ namespace Doctrine\ORM\Mapping;
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
  *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @package Doctrine\ORM\Mapping
  * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 abstract class ComponentMetadata
 {
@@ -67,14 +69,6 @@ abstract class ComponentMetadata
     {
         $this->className = $className;
         $this->parent    = $parent;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRootClassName() : string
-    {
-        return $this->parent ? $this->parent->getRootClassName() : $this->className;
     }
 
     /**

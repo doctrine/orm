@@ -31,6 +31,8 @@ use Doctrine\ORM\Reflection\ReflectionService;
  * @since 3.0
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ *
+ * @property MappedSuperClassMetadata $parent
  */
 class EmbeddedClassMetadata extends ComponentMetadata implements Property
 {
@@ -49,11 +51,11 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * EmbeddedClassMetadata constructor.
      *
-     * @param string                     $name
-     * @param string                     $className
-     * @param EmbeddedClassMetadata|null $parent
+     * @param string                        $name
+     * @param string                        $className
+     * @param MappedSuperClassMetadata|null $parent
      */
-    public function __construct(string $name, string $className, ?EmbeddedClassMetadata $parent = null)
+    public function __construct(string $name, string $className, ?MappedSuperClassMetadata $parent = null)
     {
         parent::__construct($className, $parent);
 
