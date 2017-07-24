@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -54,7 +55,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setCustomRepositoryClassName("UserRepository");
         $cm->setDiscriminatorColumn($discrColumn);
         $cm->asReadOnly();
-        $cm->addNamedQuery(['name' => 'dql', 'query' => 'foo']);
+        $cm->addNamedQuery('dql', 'foo');
 
         $association = new Mapping\OneToOneAssociationMetadata('phonenumbers');
 
@@ -88,7 +89,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CMS\UserRepository::class, $cm->getCustomRepositoryClassName());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
-        self::assertEquals(['dql' => ['name'=>'dql','query'=>'foo','dql'=>'foo']], $cm->namedQueries);
+        self::assertEquals(['dql' => 'foo'], $cm->getNamedQueries());
         self::assertCount(1, $cm->getProperties());
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->getProperty('phonenumbers'));
 
@@ -776,12 +777,7 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertEquals(0, count($cm->getNamedQueries()));
 
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
-            ]
-        );
+        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
 
         self::assertEquals(1, count($cm->getNamedQueries()));
     }
@@ -817,12 +813,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
 
-        $cm->addNamedQuery(
-            [
-            'name'  => 'all',
-            'query' => 'SELECT u FROM __CLASS__ u'
-            ]
-        );
+        $cm->addNamedQuery('all', 'SELECT u FROM __CLASS__ u');
 
         self::assertTrue($cm->hasNamedQuery('all'));
         self::assertFalse($cm->hasNamedQuery('userById'));
@@ -970,15 +961,14 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
+        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
 
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
-            ]
-        );
+        self::assertEquals('SELECT u FROM __CLASS__ u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
 
-        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
+        // Named queries are only resolved when created
+        $repo = new EntityRepository($this->getTestEntityManager(), $cm);
+
+        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $repo->createNamedQuery('userById')->getDQL());
     }
 
     /**
@@ -1029,19 +1019,8 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
-            ]
-        );
-
-        $cm->addNamedQuery(
-            [
-                'name'  => 'userById',
-                'query' => 'SELECT u FROM __CLASS__ u WHERE u.id = ?1'
-            ]
-        );
+        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
+        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
     }
 
     /**
@@ -1153,44 +1132,6 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CMS\CmsUser::class . "#address'.");
 
         $cm->validateAssociations();
-    }
-
-    /**
-     * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
-     */
-    public function testNameIsMandatoryForNamedQueryMappingException()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedQuery(
-            [
-            'query' => 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u',
-            ]
-        );
-    }
-
-    /**
-     * @group DDC-1663
-     *
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query name on entity class 'Doctrine\Tests\Models\CMS\CmsUser' is not defined.
-     */
-    public function testNameIsMandatoryForNameNativeQueryMappingException()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
-
-        $cm->addNamedQuery(
-            [
-            'query'             => 'SELECT * FROM cms_users',
-            'resultClass'       => CMS\CmsUser::class,
-            'resultSetMapping'  => 'result-mapping-name'
-            ]
-        );
     }
 
     /**

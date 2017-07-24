@@ -699,11 +699,11 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      */
     public function getNamedQuery($queryName)
     {
-        if ( ! isset($this->namedQueries[$queryName])) {
+        if (! isset($this->namedQueries[$queryName])) {
             throw MappingException::queryNotFound($this->name, $queryName);
         }
 
-        return $this->namedQueries[$queryName]['dql'];
+        return $this->namedQueries[$queryName];
     }
 
     /**
@@ -1613,29 +1613,13 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      *
      * @throws MappingException
      */
-    public function addNamedQuery(array $queryMapping)
+    public function addNamedQuery(string $name, string $query)
     {
-        if (!isset($queryMapping['name'])) {
-            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
+        if (isset($this->namedQueries[$name])) {
+            throw MappingException::duplicateQueryMapping($this->name, $name);
         }
 
-        if (isset($this->namedQueries[$queryMapping['name']])) {
-            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (!isset($queryMapping['query'])) {
-            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        $name   = $queryMapping['name'];
-        $query  = $queryMapping['query'];
-        $dql    = str_replace('__CLASS__', $this->name, $query);
-
-        $this->namedQueries[$name] = [
-            'name'  => $name,
-            'query' => $query,
-            'dql'   => $dql,
-        ];
+        $this->namedQueries[$name] = $query;
     }
 
     /**

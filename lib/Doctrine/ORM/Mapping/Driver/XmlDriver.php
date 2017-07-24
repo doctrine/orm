@@ -155,12 +155,7 @@ class XmlDriver extends FileDriver
         // Evaluate named queries
         if (isset($xmlRoot->{'named-queries'})) {
             foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
-                $metadata->addNamedQuery(
-                    [
-                        'name'  => (string) $namedQueryElement['name'],
-                        'query' => (string) $namedQueryElement['query']
-                    ]
-                );
+                $metadata->addNamedQuery((string) $namedQueryElement['name'], (string) $namedQueryElement['query']);
             }
         }
 
