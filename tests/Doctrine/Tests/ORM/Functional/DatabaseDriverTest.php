@@ -2,12 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
-use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 
 class DatabaseDriverTest extends DatabaseDriverTestCase
 {
