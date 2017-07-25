@@ -244,9 +244,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultClass()
     {
-        $cm = new ClassMetadata(CmsUser::class);
-
-        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm = $this->em->getClassMetadata(CmsUser::class);
 
         $cm->addNamedNativeQuery(
             'find-all',
