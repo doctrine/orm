@@ -828,20 +828,20 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultSetMapping'  => 'result-mapping-name',
-                'resultClass'       => CMS\CmsUser::class,
+                'resultSetMapping' => 'result-mapping-name',
+                'resultClass'      => CMS\CmsUser::class,
             ]
         );
 
         $cm->addNamedNativeQuery(
+            'find-by-id',
+            'SELECT * FROM cms_users WHERE id = ?',
             [
-                'name'              => 'find-by-id',
-                'query'             => 'SELECT * FROM cms_users WHERE id = ?',
-                'resultClass'       => '__CLASS__',
-                'resultSetMapping'  => 'result-mapping-name',
+                'resultClass'      => '__CLASS__',
+                'resultSetMapping' => 'result-mapping-name',
             ]
         );
 
@@ -946,11 +946,10 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name'
+                'resultClass' => CMS\CmsUser::class,
             ]
         );
 
@@ -984,11 +983,10 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(0, count($cm->getNamedNativeQueries()));
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-                'name'              => 'find-all',
-                'query'             => 'SELECT * FROM cms_users',
-                'resultClass'       => CMS\CmsUser::class,
-                'resultSetMapping'  => 'result-mapping-name'
+                'resultClass' => CMS\CmsUser::class,
             ]
         );
 
@@ -1037,20 +1035,18 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT * FROM cms_users',
-            'resultClass'       => CMS\CmsUser::class,
-            'resultSetMapping'  => 'result-mapping-name'
+                'resultClass' => CMS\CmsUser::class,
             ]
         );
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT * FROM cms_users',
-            'resultClass'       => CMS\CmsUser::class,
-            'resultSetMapping'  => 'result-mapping-name'
+                'resultClass' => CMS\CmsUser::class,
             ]
         );
     }

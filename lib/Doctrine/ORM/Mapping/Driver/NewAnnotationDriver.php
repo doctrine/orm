@@ -257,12 +257,14 @@ class NewAnnotationDriver implements MappingDriver
             $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
 
             foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $classMetadata->addNamedNativeQuery([
-                    'name'              => $namedNativeQuery->name,
-                    'query'             => $namedNativeQuery->query,
-                    'resultClass'       => $namedNativeQuery->resultClass,
-                    'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
-                ]);
+                $classMetadata->addNamedNativeQuery(
+                    $namedNativeQuery->name,
+                    $namedNativeQuery->query,
+                    [
+                        'resultClass'       => $namedNativeQuery->resultClass,
+                        'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
+                    ]
+                );
             }
         }
 

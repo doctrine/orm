@@ -45,26 +45,26 @@ $association->setTargetEntity('CmsUser');
 $metadata->addProperty($association);
 
 $metadata->addNamedNativeQuery(
+    'find-all',
+    'SELECT id, country, city FROM cms_addresses',
     [
-        'name'              => 'find-all',
-        'query'             => 'SELECT id, country, city FROM cms_addresses',
-        'resultSetMapping'  => 'mapping-find-all',
+        'resultSetMapping' => 'mapping-find-all',
     ]
 );
 
 $metadata->addNamedNativeQuery(
+    'find-by-id',
+    'SELECT * FROM cms_addresses WHERE id = ?',
     [
-        'name'              => 'find-by-id',
-        'query'             => 'SELECT * FROM cms_addresses WHERE id = ?',
-        'resultClass'       => CmsAddress::class,
+        'resultClass' => CmsAddress::class,
     ]
 );
 
 $metadata->addNamedNativeQuery(
+    'count',
+    'SELECT COUNT(*) AS count FROM cms_addresses',
     [
-        'name'              => 'count',
-        'query'             => 'SELECT COUNT(*) AS count FROM cms_addresses',
-        'resultSetMapping'  => 'mapping-count',
+        'resultSetMapping' => 'mapping-count',
     ]
 );
 

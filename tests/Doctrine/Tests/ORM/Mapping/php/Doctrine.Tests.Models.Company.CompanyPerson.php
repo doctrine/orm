@@ -10,18 +10,18 @@ $tableMetadata->setName('company_person');
 $metadata->setTable($tableMetadata);
 
 $metadata->addNamedNativeQuery(
+    'fetchAllWithResultClass',
+    'SELECT id, name, discr FROM company_persons ORDER BY name',
     [
-        'name'              => 'fetchAllWithResultClass',
-        'query'             => 'SELECT id, name, discr FROM company_persons ORDER BY name',
-        'resultClass'       => CompanyPerson::class,
+        'resultClass' => CompanyPerson::class,
     ]
 );
 
 $metadata->addNamedNativeQuery(
+    'fetchAllWithSqlResultSetMapping',
+    'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
     [
-        'name'              => 'fetchAllWithSqlResultSetMapping',
-        'query'             => 'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-        'resultSetMapping'  => 'mappingFetchAll',
+        'resultSetMapping' => 'mappingFetchAll',
     ]
 );
 

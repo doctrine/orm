@@ -729,18 +729,18 @@ class NativeQueryTest extends OrmFunctionalTestCase
         $sqlResultSetMappings = $classMetadata->getSqlResultSetMappings();
 
         // Native Query Mappings
-        self::assertEquals('all-contracts', $namedNativeQueries['all-contracts']['name']);
+        self::assertArrayHasKey('all-contracts', $namedNativeQueries);
         self::assertEquals('__CLASS__', $namedNativeQueries['all-contracts']['resultClass']);
 
-        self::assertEquals('all', $namedNativeQueries['all']['name']);
+        self::assertArrayHasKey('all', $namedNativeQueries);
         self::assertEquals('__CLASS__', $namedNativeQueries['all']['resultClass']);
 
         // SQL ResultSet Mappings
-        self::assertEquals('mapping-all-contracts', $sqlResultSetMappings['mapping-all-contracts']['name']);
+        self::assertArrayHasKey('mapping-all-contracts', $sqlResultSetMappings);
         self::assertEquals('__CLASS__', $sqlResultSetMappings['mapping-all-contracts']['entities'][0]['entityClass']);
 
-        self::assertEquals('mapping-all', $sqlResultSetMappings['mapping-all']['name']);
-        self::assertEquals('__CLASS__', $sqlResultSetMappings['mapping-all-contracts']['entities'][0]['entityClass']);
+        self::assertArrayHasKey('mapping-all', $sqlResultSetMappings);
+        self::assertEquals('__CLASS__', $sqlResultSetMappings['mapping-all']['entities'][0]['entityClass']);
 
         // Resolved Native Query Mappings
         $allContractsNativeNamedQuery = $repository->createNativeNamedQuery('all-contracts');
