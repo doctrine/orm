@@ -569,9 +569,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->addNamedNativeQuery(
+                $name,
+                $query['query'],
                 [
-                    'name'             => $query['name'],
-                    'query'            => $query['query'],
                     'resultSetMapping' => $query['resultSetMapping'],
                     'resultClass'      => $query['resultClass'],
                 ]
