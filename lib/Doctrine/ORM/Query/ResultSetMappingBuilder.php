@@ -264,58 +264,18 @@ class ResultSetMappingBuilder extends ResultSetMapping
     public function addNamedNativeQueryMapping(ClassMetadata $class, array $queryMapping)
     {
         if (isset($queryMapping['resultClass'])) {
-            return $this->addNamedNativeQueryResultClassMapping($class, $queryMapping['resultClass']);
+            $entityClass = ($queryMapping['resultClass'] === '__CLASS__')
+                ? $class
+                : $this->em->getClassMetadata($queryMapping['resultClass'])
+            ;
+
+            $this->addEntityResult($entityClass->getClassName(), 'e0');
+            $this->addNamedNativeQueryEntityResultMapping($entityClass, [], 'e0');
+
+            return $this;
         }
 
         return $this->addNamedNativeQueryResultSetMapping($class, $queryMapping['resultSetMapping']);
-    }
-
-    /**
-     * Adds the class mapping of the results of native SQL queries to the result set.
-     *
-     * @param ClassMetadata $class
-     * @param string        $resultClassName
-     *
-     * @return  ResultSetMappingBuilder
-     */
-    public function addNamedNativeQueryResultClassMapping(ClassMetadata $class, $resultClassName)
-    {
-        $resultClassName = ($resultClassName === '__CLASS__')
-            ? $class->getClassName()
-            : $resultClassName
-        ;
-
-        $classMetadata = $this->em->getClassMetadata($resultClassName);
-        $platform      = $this->em->getConnection()->getDatabasePlatform();
-        $alias         = 'e0';
-
-        $this->addEntityResult($class->getClassName(), $alias);
-
-        if ($classMetadata->discriminatorColumn) {
-            $discrColumn     = $classMetadata->discriminatorColumn;
-            $discrColumnName = $discrColumn->getColumnName();
-            $discrColumnType = $discrColumn->getType();
-
-            $this->setDiscriminatorColumn($alias, $discrColumnName);
-            $this->addMetaResult($alias, $discrColumnName, $discrColumnName, false, $discrColumnType);
-        }
-
-        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-            $property    = $classMetadata->getProperty($propertyName);
-            $columnAlias = $platform->getSQLResultCasing($columnName);
-
-            if ($property instanceof FieldMetadata) {
-                $this->addFieldResult($alias, $columnAlias, $propertyName);
-
-                continue;
-            }
-
-            $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
-
-            $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
-        }
-
-        return $this;
     }
 
     /**
@@ -345,7 +305,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                     $this->addEntityResult($classMetadata->getClassName(), $rootAlias);
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $rootAlias);
                 } else {
-                    $joinAlias = 'e' . ++ $counter;
+                    $joinAlias = 'e' . ++$counter;
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
