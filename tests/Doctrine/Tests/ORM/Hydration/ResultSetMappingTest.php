@@ -123,10 +123,10 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm->addProperty($association);
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             [
-                'name'              => 'find-all',
-                'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
-                'resultSetMapping'  => 'find-all',
+                'resultSetMapping' => 'find-all',
             ]
         );
 
@@ -199,10 +199,10 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
             [
-            'name'              => 'find-all',
-            'query'             => 'SELECT u.id AS user_id, e.id AS email_id, u.name, e.email, u.id + e.id AS scalarColumn FROM cms_users u INNER JOIN cms_emails e ON e.id = u.email_id',
-            'resultSetMapping'  => 'find-all',
+                'resultSetMapping' => 'find-all',
             ]
         );
 
@@ -249,10 +249,10 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
+            'find-all',
+            'SELECT * FROM cms_users',
             [
-            'name'              => 'find-all',
-            'resultClass'       => '__CLASS__',
-            'query'             => 'SELECT * FROM cms_users',
+                'resultClass' => '__CLASS__',
             ]
         );
 

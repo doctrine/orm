@@ -124,11 +124,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
 
             foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
                 $metadata->addNamedNativeQuery(
+                    $namedNativeQuery->name,
+                    $namedNativeQuery->query,
                     [
-                        'name'              => $namedNativeQuery->name,
-                        'query'             => $namedNativeQuery->query,
-                        'resultClass'       => $namedNativeQuery->resultClass,
-                        'resultSetMapping'  => $namedNativeQuery->resultSetMapping,
+                        'resultClass'      => $namedNativeQuery->resultClass,
+                        'resultSetMapping' => $namedNativeQuery->resultSetMapping,
                     ]
                 );
             }

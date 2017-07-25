@@ -659,19 +659,16 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $findAllQuery = $class->getNamedNativeQuery('find-all');
 
-        self::assertEquals('find-all', $findAllQuery['name']);
         self::assertEquals('mapping-find-all', $findAllQuery['resultSetMapping']);
         self::assertEquals('SELECT id, country, city FROM cms_addresses', $findAllQuery['query']);
 
         $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
 
-        self::assertEquals('find-by-id', $findByIdQuery['name']);
         self::assertEquals(CmsAddress::class,$findByIdQuery['resultClass']);
         self::assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
 
         $countQuery = $class->getNamedNativeQuery('count');
 
-        self::assertEquals('count', $countQuery['name']);
         self::assertEquals('mapping-count', $countQuery['resultSetMapping']);
         self::assertEquals('SELECT COUNT(*) AS count FROM cms_addresses',  $countQuery['query']);
 
@@ -683,7 +680,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $findAllMapping = $class->getSqlResultSetMapping('mapping-find-all');
 
-        self::assertEquals('mapping-find-all', $findAllMapping['name']);
         self::assertEquals(CmsAddress::class, $findAllMapping['entities'][0]['entityClass']);
         self::assertEquals(['name'=>'id','column'=>'id'], $findAllMapping['entities'][0]['fields'][0]);
         self::assertEquals(['name'=>'city','column'=>'city'], $findAllMapping['entities'][0]['fields'][1]);
@@ -691,13 +687,11 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $withoutFieldsMapping = $class->getSqlResultSetMapping('mapping-without-fields');
 
-        self::assertEquals('mapping-without-fields', $withoutFieldsMapping['name']);
         self::assertEquals('__CLASS__', $withoutFieldsMapping['entities'][0]['entityClass']);
         self::assertEquals([], $withoutFieldsMapping['entities'][0]['fields']);
 
         $countMapping = $class->getSqlResultSetMapping('mapping-count');
 
-        self::assertEquals('mapping-count', $countMapping['name']);
         self::assertEquals(['name'=>'count'], $countMapping['columns'][0]);
 
     }

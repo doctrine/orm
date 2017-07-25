@@ -217,27 +217,6 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    public static function emptyQueryMapping($entity, $queryName)
-    {
-        return new self('Query named "'.$queryName.'" in "'.$entity.'" could not be empty.');
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function nameIsMandatoryForQueryMapping($className)
-    {
-        return new self("Query name on entity class '$className' is not defined.");
-    }
-
-    /**
-     * @param string $entity
-     * @param string $queryName
-     *
-     * @return MappingException
-     */
     public static function missingQueryMapping($entity, $queryName)
     {
         return new self('Query named "'.$queryName.'" in "'.$entity.' requires a result class or result set mapping.');

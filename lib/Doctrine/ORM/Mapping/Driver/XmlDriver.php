@@ -163,11 +163,11 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'named-native-queries'})) {
             foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} as $nativeQueryElement) {
                 $metadata->addNamedNativeQuery(
+                    isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
+                    isset($nativeQueryElement->query) ? (string) $nativeQueryElement->query : null,
                     [
-                        'name'              => isset($nativeQueryElement['name']) ? (string) $nativeQueryElement['name'] : null,
-                        'query'             => isset($nativeQueryElement->query) ? (string) $nativeQueryElement->query : null,
-                        'resultClass'       => isset($nativeQueryElement['result-class']) ? (string) $nativeQueryElement['result-class'] : null,
-                        'resultSetMapping'  => isset($nativeQueryElement['result-set-mapping']) ? (string) $nativeQueryElement['result-set-mapping'] : null,
+                        'resultClass'      => isset($nativeQueryElement['result-class']) ? (string) $nativeQueryElement['result-class'] : null,
+                        'resultSetMapping' => isset($nativeQueryElement['result-set-mapping']) ? (string) $nativeQueryElement['result-set-mapping'] : null,
                     ]
                 );
             }

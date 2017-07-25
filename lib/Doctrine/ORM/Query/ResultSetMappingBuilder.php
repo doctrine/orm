@@ -393,16 +393,19 @@ class ResultSetMappingBuilder extends ResultSetMapping
      */
     public function addNamedNativeQueryEntityResultMapping(ClassMetadata $classMetadata, array $entityMapping, $alias)
     {
-        if (isset($entityMapping['discriminatorColumn']) && $entityMapping['discriminatorColumn']) {
+        $platform = $this->em->getConnection()->getDatabasePlatform();
+
+        // Always fetch discriminator column. It's required for Proxy loading. We only adjust naming if provided
+        if ($classMetadata->discriminatorColumn) {
             $discrColumn     = $classMetadata->discriminatorColumn;
-            $discrColumnName = $entityMapping['discriminatorColumn'];
+            $discrColumnName = $entityMapping['discriminatorColumn'] ?? $discrColumn->getColumnName();
             $discrColumnType = $discrColumn->getType();
 
             $this->setDiscriminatorColumn($alias, $discrColumnName);
             $this->addMetaResult($alias, $discrColumnName, $discrColumnName, false, $discrColumnType);
         }
 
-        if (isset($entityMapping['fields']) && !empty($entityMapping['fields'])) {
+        if (isset($entityMapping['fields']) && ! empty($entityMapping['fields'])) {
             foreach ($entityMapping['fields'] as $field) {
                 $fieldName = $field['name'];
                 $relation  = null;
@@ -442,12 +445,19 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 }
             }
         } else {
-            foreach ($classMetadata->getProperties() as $property) {
-                if (! ($property instanceof FieldMetadata)) {
+            foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
+                $property    = $classMetadata->getProperty($propertyName);
+                $columnAlias = $platform->getSQLResultCasing($columnName);
+
+                if ($property instanceof FieldMetadata) {
+                    $this->addFieldResult($alias, $columnAlias, $propertyName);
+
                     continue;
                 }
 
-                $this->addFieldResult($alias, $property->getColumnName(), $property->getName());
+                $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
+
+                $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
             }
         }
 
