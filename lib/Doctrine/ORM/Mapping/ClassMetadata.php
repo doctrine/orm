@@ -1627,35 +1627,29 @@ class ClassMetadata implements TableOwner, \Doctrine\Common\Persistence\Mapping\
      * INTERNAL:
      * Adds a named native query to this class.
      *
-     * @param array $queryMapping
+     * @param string $name
+     * @param string $query
+     * @param array  $queryMapping
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function addNamedNativeQuery(array $queryMapping)
+    public function addNamedNativeQuery(string $name, string $query, array $queryMapping)
     {
-        if (!isset($queryMapping['name'])) {
-            throw MappingException::nameIsMandatoryForQueryMapping($this->name);
+        if (isset($this->namedNativeQueries[$name])) {
+            throw MappingException::duplicateQueryMapping($this->name, $name);
         }
 
-        if (isset($this->namedNativeQueries[$queryMapping['name']])) {
-            throw MappingException::duplicateQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (!isset($queryMapping['query'])) {
-            throw MappingException::emptyQueryMapping($this->name, $queryMapping['name']);
-        }
-
-        if (!isset($queryMapping['resultClass']) && !isset($queryMapping['resultSetMapping'])) {
-            throw MappingException::missingQueryMapping($this->name, $queryMapping['name']);
+        if (! isset($queryMapping['resultClass']) && ! isset($queryMapping['resultSetMapping'])) {
+            throw MappingException::missingQueryMapping($this->name, $name);
         }
 
         if (isset($queryMapping['resultClass']) && $queryMapping['resultClass'] !== '__CLASS__') {
             $queryMapping['resultClass'] = $this->fullyQualifiedClassName($queryMapping['resultClass']);
         }
 
-        $this->namedNativeQueries[$queryMapping['name']] = $queryMapping;
+        $this->namedNativeQueries[$name] = array_merge(['query' => $query], $queryMapping);
     }
 
     /**

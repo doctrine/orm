@@ -40,7 +40,7 @@ use Doctrine\ORM\Mapping;
  *          name    = "mapping-all",
  *          entities= {
  *              @ORM\EntityResult(
- *                  entityClass         = "CompanyFlexContract",
+ *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
  *                      @ORM\FieldResult("id"),
