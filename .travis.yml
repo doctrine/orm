@@ -4,68 +4,79 @@ language: php
 
 php:
   - 7.1
+  - 7.2
   - nightly
 
 env:
+  - DB=sqlite
   - DB=mysql
   - DB=pgsql
-  - DB=sqlite
 
-before_script:
-  - if [[ $TRAVIS_PHP_VERSION = '7.1' && $DB = 'sqlite' && "$DEPENDENCIES" != "low" ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ "$PHPUNIT_FLAGS" == "" ]]; then phpenv config-rm xdebug.ini || echo "xdebug not available"; fi
-  - if [[ $PHPSTAN = 1 ]]; then echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini; fi
+before_install:
+  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
   - composer self-update
-  - composer install --prefer-source
-  - if [ "$DEPENDENCIES" != "low" ]; then composer update; fi;
-  - if [ "$DEPENDENCIES" == "low" ]; then composer update --prefer-lowest; fi;
-  - if [[ $PHPSTAN = 1 ]]; then composer require --dev --prefer-stable phpstan/phpstan:^0.7 symfony/console:^3.0; fi
-  - if [ "$MYSQL_VERSION" == "5.7" ]; then bash ./tests/travis/install-mysql-5.7.sh; fi;
-  - if [[ $DB == "mysql" || $DB == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi;
-  - if [[ $PHPBENCH = 1 ]]; then wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey; fi
+
+install: travis_retry composer update --prefer-dist
 
 script:
-  - if [[ $PHPSTAN = 1 ]]; then vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib; fi
-  - if [[ $PHPBENCH = 1 ]]; then php phpbench.phar run -l dots --report=default; fi
-  - if [[ $DB != "none" ]]; then ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS; fi
-  - if [[ $DB != "none" ]]; then ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional; fi
+  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
+  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
+  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
-after_script:
-  - if [[ "$PHPUNIT_FLAGS" != "" ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [[ "$PHPUNIT_FLAGS" != "" ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
-
-matrix:
-  fast_finish: true
+jobs:
   include:
-    - php: 7.1
+    - stage: Test
       env: DB=mariadb
       addons:
         mariadb: 10.1
 
-    - php: 7.1
-      env:
-        - DB=sqlite
-        - DEPENDENCIES='low'
-
-    - php: 7.1
-      env:
-        - DB=pgsql
-
-    - php: 7.1
+    - stage: Test
       env: DB=mysql MYSQL_VERSION=5.7
-      sudo: required
-    - php: nightly
-      env: DB=mysql MYSQL_VERSION=5.7
+      php: 7.1
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
       sudo: required
 
-    - php: 7.1
-      env:
-        - DB=none
-        - PHPSTAN=1
-    - php: 7.1
-      env:
-        - DB=none
-        - PHPBENCH=1
+    - stage: Test
+      env: DB=mysql MYSQL_VERSION=5.7
+      php: 7.2
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      sudo: required
+
+    - stage: Test
+      env: DB=mysql MYSQL_VERSION=5.7
+      php: nightly
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      sudo: required
+
+    - stage: Test
+      env: DB=sqlite DEPENDENCIES=low
+      install: travis_retry composer update --prefer-dist --prefer-lowest
+
+    - stage: Lint
+      env: DB=none
+      before_script:
+        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.7 symfony/console:^3.0
+      script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
+
+    - stage: Coverage
+      env: DB=sqlite
+      before_script:
+        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
+      script:
+        - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+
+    - stage: Benchmark
+      env: DB=none
+      before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
+      script: php phpbench.phar run -l dots --report=default
 
   allow_failures:
     - php: nightly
