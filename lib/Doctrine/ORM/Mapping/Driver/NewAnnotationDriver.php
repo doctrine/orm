@@ -20,9 +20,7 @@
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
@@ -79,9 +77,11 @@ class NewAnnotationDriver implements MappingDriver
     /**
      * {@inheritdoc}
      *
+     * @return Mapping\ClassMetadata
+     *
      * @throws Mapping\MappingException
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, Mapping\ClassMetadata $metadata)
     {
         // IMPORTANT: We're handling $metadata as "parent" metadata here, while building the $className ClassMetadata.
         $reflectionClass  = new \ReflectionClass($className);

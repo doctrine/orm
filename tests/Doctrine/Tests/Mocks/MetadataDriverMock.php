@@ -2,8 +2,8 @@
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Mock class for MappingDriver.

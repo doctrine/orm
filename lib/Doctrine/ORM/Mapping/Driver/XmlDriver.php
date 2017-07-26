@@ -19,26 +19,9 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\CacheMetadata;
-use Doctrine\ORM\Mapping\CacheUsage;
-use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
-use Doctrine\ORM\Mapping\DiscriminatorColumnMetadata;
-use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
-use Doctrine\ORM\Mapping\InheritanceType;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Mapping\JoinTableMetadata;
-use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
-use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
-use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use Doctrine\ORM\Mapping;
 use SimpleXMLElement;
 
 /**
@@ -67,9 +50,8 @@ class XmlDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass($className, Mapping\ClassMetadata $metadata)
     {
-        /* @var \Doctrine\ORM\Mapping\ClassMetadata $metadata */
         /* @var \SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
 
@@ -88,7 +70,7 @@ class XmlDriver extends FileDriver
         } else if ($xmlRoot->getName() === 'embeddable') {
             $metadata->isEmbeddedClass = true;
         } else {
-            throw MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
+            throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
         // Evaluate <entity...> attributes
@@ -220,11 +202,11 @@ class XmlDriver extends FileDriver
             $inheritanceType = strtoupper((string) $xmlRoot['inheritance-type']);
 
             $metadata->setInheritanceType(
-                constant(sprintf('%s::%s', InheritanceType::class, $inheritanceType))
+                constant(sprintf('%s::%s', Mapping\InheritanceType::class, $inheritanceType))
             );
 
-            if ($metadata->inheritanceType !== InheritanceType::NONE) {
-                $discriminatorColumn = new DiscriminatorColumnMetadata();
+            if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
+                $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 
                 $discriminatorColumn->setTableName($metadata->getTableName());
                 $discriminatorColumn->setColumnName('dtype');
@@ -271,7 +253,7 @@ class XmlDriver extends FileDriver
             $changeTrackingPolicy = strtoupper((string) $xmlRoot['change-tracking-policy']);
 
             $metadata->setChangeTrackingPolicy(
-                constant(sprintf('%s::%s', ChangeTrackingPolicy::class, $changeTrackingPolicy))
+                constant(sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $changeTrackingPolicy))
             );
         }
 
@@ -328,7 +310,7 @@ class XmlDriver extends FileDriver
                     : 'AUTO'
                 ;
 
-                $idGeneratorType = constant(sprintf('%s::%s', GeneratorType::class, strtoupper($strategy)));
+                $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, strtoupper($strategy)));
                 $fieldMetadata->setIdentifierGeneratorType($idGeneratorType);
             }
 
@@ -352,7 +334,7 @@ class XmlDriver extends FileDriver
                     ]
                 );
             } else if (isset($idElement->{'table-generator'})) {
-                throw MappingException::tableIdGeneratorNotImplemented($className);
+                throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
             }
 
             $metadata->addProperty($fieldMetadata);
@@ -361,7 +343,7 @@ class XmlDriver extends FileDriver
         // Evaluate <one-to-one ...> mappings
         if (isset($xmlRoot->{'one-to-one'})) {
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
-                $association = new OneToOneAssociationMetadata((string) $oneToOneElement['field']);
+                $association = new Mapping\OneToOneAssociationMetadata((string) $oneToOneElement['field']);
 
                 $association->setTargetEntity((string) $oneToOneElement['target-entity']);
 
@@ -371,7 +353,7 @@ class XmlDriver extends FileDriver
 
                 if (isset($oneToOneElement['fetch'])) {
                     $association->setFetchMode(
-                        constant(sprintf('%s::%s', FetchMode::class, (string) $oneToOneElement['fetch']))
+                        constant(sprintf('%s::%s', Mapping\FetchMode::class, (string) $oneToOneElement['fetch']))
                     );
                 }
 
@@ -421,14 +403,14 @@ class XmlDriver extends FileDriver
         // Evaluate <one-to-many ...> mappings
         if (isset($xmlRoot->{'one-to-many'})) {
             foreach ($xmlRoot->{'one-to-many'} as $oneToManyElement) {
-                $association = new OneToManyAssociationMetadata((string) $oneToManyElement['field']);
+                $association = new Mapping\OneToManyAssociationMetadata((string) $oneToManyElement['field']);
 
                 $association->setTargetEntity((string) $oneToManyElement['target-entity']);
                 $association->setMappedBy((string) $oneToManyElement['mapped-by']);
 
                 if (isset($oneToManyElement['fetch'])) {
                     $association->setFetchMode(
-                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $oneToManyElement['fetch'])
+                        constant(sprintf('%s::%s', Mapping\FetchMode::class, (string) $oneToManyElement['fetch']))
                     );
                 }
 
@@ -474,7 +456,7 @@ class XmlDriver extends FileDriver
         // Evaluate <many-to-one ...> mappings
         if (isset($xmlRoot->{'many-to-one'})) {
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
-                $association = new ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
+                $association = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
 
                 $association->setTargetEntity((string) $manyToOneElement['target-entity']);
 
@@ -526,13 +508,13 @@ class XmlDriver extends FileDriver
         // Evaluate <many-to-many ...> mappings
         if (isset($xmlRoot->{'many-to-many'})) {
             foreach ($xmlRoot->{'many-to-many'} as $manyToManyElement) {
-                $association = new ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
+                $association = new Mapping\ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
 
                 $association->setTargetEntity((string) $manyToManyElement['target-entity']);
 
                 if (isset($manyToManyElement['fetch'])) {
                     $association->setFetchMode(
-                        constant('Doctrine\ORM\Mapping\FetchMode::' . (string) $manyToManyElement['fetch'])
+                        constant(sprintf('%s::%s', Mapping\FetchMode::class, (string) $manyToManyElement['fetch']))
                     );
                 }
 
@@ -548,7 +530,7 @@ class XmlDriver extends FileDriver
                     }
 
                     $joinTableElement = $manyToManyElement->{'join-table'};
-                    $joinTable        = new JoinTableMetadata();
+                    $joinTable        = new Mapping\JoinTableMetadata();
 
                     if (isset($joinTableElement['name'])) {
                         $joinTable->setName((string) $joinTableElement['name']);
@@ -632,7 +614,7 @@ class XmlDriver extends FileDriver
                 $property  = $metadata->getProperty($fieldName);
 
                 if (! $property) {
-                    throw MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
+                    throw Mapping\MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
                 }
 
                 $existingClass = get_class($property);
@@ -652,7 +634,7 @@ class XmlDriver extends FileDriver
                 // Check for join-table
                 if ($overrideElement->{'join-table'}) {
                     $joinTableElement   = $overrideElement->{'join-table'};
-                    $joinTable          = new JoinTableMetadata();
+                    $joinTable          = new Mapping\JoinTableMetadata();
 
                     if (isset($joinTableElement['name'])) {
                         $joinTable->setName((string) $joinTableElement['name']);
@@ -713,7 +695,7 @@ class XmlDriver extends FileDriver
                 $listenerClassName = $metadata->fullyQualifiedClassName((string) $listenerElement['class']);
 
                 if (! class_exists($listenerClassName)) {
-                    throw MappingException::entityListenerClassNotFound(
+                    throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
                         $metadata->getClassName()
                     );
@@ -783,13 +765,13 @@ class XmlDriver extends FileDriver
      * @param string           $fieldName
      * @param bool             $isVersioned
      *
-     * @return FieldMetadata
+     * @return Mapping\FieldMetadata
      */
     private function convertFieldElementToFieldMetadata(SimpleXMLElement $fieldElement, string $fieldName, bool $isVersioned)
     {
         $fieldMetadata = $isVersioned
-            ? new VersionFieldMetadata($fieldName)
-            : new FieldMetadata($fieldName)
+            ? new Mapping\VersionFieldMetadata($fieldName)
+            : new Mapping\FieldMetadata($fieldName)
         ;
 
         $fieldMetadata->setType(Type::getType('string'));
@@ -839,11 +821,11 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $joinColumnElement The XML element.
      *
-     * @return JoinColumnMetadata
+     * @return Mapping\JoinColumnMetadata
      */
     private function convertJoinColumnElementToJoinColumnMetadata(SimpleXMLElement $joinColumnElement)
     {
-        $joinColumnMetadata = new JoinColumnMetadata();
+        $joinColumnMetadata = new Mapping\JoinColumnMetadata();
 
         $joinColumnMetadata->setColumnName((string) $joinColumnElement['name']);
         $joinColumnMetadata->setReferencedColumnName((string) $joinColumnElement['referenced-column-name']);
@@ -874,24 +856,28 @@ class XmlDriver extends FileDriver
     /**
      * Parse the given Cache as CacheMetadata
      *
-     * @param \SimpleXMLElement $cacheMapping
-     * @param ClassMetadata     $metadata
-     * @param null|string       $fieldName
+     * @param \SimpleXMLElement     $cacheMapping
+     * @param Mapping\ClassMetadata $metadata
+     * @param null|string           $fieldName
      *
-     * @return CacheMetadata
+     * @return Mapping\CacheMetadata
      */
-    private function convertCacheElementToCacheMetadata(SimpleXMLElement $cacheMapping, ClassMetadata $metadata, $fieldName = null)
+    private function convertCacheElementToCacheMetadata(
+        SimpleXMLElement $cacheMapping,
+        Mapping\ClassMetadata $metadata,
+        $fieldName = null
+    )
     {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
         $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
         $usage  = isset($cacheMapping['usage'])
-            ? constant(sprintf('%s::%s', CacheUsage::class, strtoupper($cacheMapping['usage'])))
-            : CacheUsage::READ_ONLY
+            ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper($cacheMapping['usage'])))
+            : Mapping\CacheUsage::READ_ONLY
         ;
 
-        return new CacheMetadata($usage, $region);
+        return new Mapping\CacheMetadata($usage, $region);
     }
 
     /**
@@ -932,7 +918,7 @@ class XmlDriver extends FileDriver
         $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
 
         if ($usage) {
-            $usage = constant(sprintf('%s::%s', CacheUsage::class, $usage));
+            $usage = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $usage));
         }
 
         return [

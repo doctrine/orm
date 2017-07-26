@@ -53,7 +53,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $targetPlatform;
 
     /**
-     * @var \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+     * @var Driver\MappingDriver
      */
     private $driver;
 

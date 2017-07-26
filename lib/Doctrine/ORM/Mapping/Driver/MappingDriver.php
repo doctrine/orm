@@ -19,26 +19,43 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\SymfonyFileLocator;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * XmlDriver that additionally looks for mapping information in a global file.
+ * Contract for metadata drivers.
  *
- * @author Fabien Potencier <fabien@symfony.com>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @license MIT
+ * @package Doctrine\ORM\Mapping\Driver
+ * @since  3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Jonathan H. Wage <jonwage@gmail.com>
  */
-class SimplifiedXmlDriver extends XmlDriver
+interface MappingDriver
 {
-    const DEFAULT_FILE_EXTENSION = '.orm.xml';
+    /**
+     * Loads the metadata for the specified class into the provided container.
+     *
+     * @param string        $className
+     * @param ClassMetadata $metadata
+     *
+     * @return void
+     */
+    public function loadMetadataForClass($className, ClassMetadata $metadata);
 
     /**
-     * {@inheritDoc}
+     * Gets the names of all mapped classes known to this driver.
+     *
+     * @return array The names of all mapped classes known to this driver.
      */
-    public function __construct($prefixes, $fileExtension = self::DEFAULT_FILE_EXTENSION)
-    {
-        $locator = new SymfonyFileLocator((array) $prefixes, $fileExtension);
+    public function getAllClassNames();
 
-        parent::__construct($locator, $fileExtension);
-    }
+    /**
+     * Returns whether the class with the specified name should have its metadata loaded.
+     * This is only the case if it is either mapped as an Entity or a MappedSuperclass.
+     *
+     * @param string $className
+     *
+     * @return boolean
+     */
+    public function isTransient($className);
 }
