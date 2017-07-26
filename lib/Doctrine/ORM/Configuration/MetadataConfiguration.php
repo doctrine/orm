@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Configuration;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Factory\AbstractClassMetadataFactory;
 use Doctrine\ORM\Mapping\Factory\ClassMetadataResolver;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
