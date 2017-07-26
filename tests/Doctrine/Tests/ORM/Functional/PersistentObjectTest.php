@@ -2,7 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Persistence\PersistentObject;
+use Doctrine\ORM\PersistentObject;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -27,7 +27,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         } catch (\Exception $e) {
         }
 
-        PersistentObject::setObjectManager($this->em);
+        PersistentObject::setEntityManager($this->em);
     }
 
     public function testPersist()

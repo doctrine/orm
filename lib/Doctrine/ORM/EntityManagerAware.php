@@ -17,59 +17,35 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Event;
+namespace Doctrine\ORM;
 
-use Doctrine\Common\EventArgs;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
- * Class that holds event arguments for a loadMetadata event.
+ * Makes a Persistent Objects aware of its own object-manager.
  *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since  2.0
+ * Using this interface the managing object manager and class metadata instances
+ * are injected into the persistent object after construction. This allows
+ * you to implement ActiveRecord functionality on top of the persistence-ignorance
+ * that Doctrine propagates.
+ *
+ * Word of Warning: This is a very powerful hook to change how you can work with your domain models.
+ * Using this hook will break the Single Responsibility Principle inside your Domain Objects
+ * and increase the coupling of database and objects.
+ *
+ * Every EntityManager has to implement this functionality itself.
+ *
+ * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
-class LoadClassMetadataEventArgs extends EventArgs
+interface EntityManagerAware
 {
     /**
-     * @var ClassMetadata
-     */
-    private $classMetadata;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * Constructor.
+     * Injects responsible EntityManager and the ClassMetadata into this persistent object.
      *
-     * @param ClassMetadata          $classMetadata
      * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(ClassMetadata $classMetadata, EntityManagerInterface $entityManager)
-    {
-        $this->classMetadata = $classMetadata;
-        $this->entityManager = $entityManager;
-    }
-
-    /**
-     * Retrieves the associated ClassMetadata.
+     * @param ClassMetadata          $classMetadata
      *
-     * @return ClassMetadata
+     * @return void
      */
-    public function getClassMetadata() : ClassMetadata
-    {
-        return $this->classMetadata;
-    }
-
-    /**
-     * Retrieve associated EntityManager.
-     *
-     * @return EntityManagerInterface
-     */
-    public function getEntityManager() : EntityManagerInterface
-    {
-        return $this->entityManager;
-    }
+    public function injectEntityManager(EntityManagerInterface $entityManager, ClassMetadata $classMetadata) : void;
 }

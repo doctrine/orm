@@ -66,6 +66,6 @@ class PHPDriver extends FileDriver
 
         include $file;
 
-        return [$metadata->getName() => $metadata];
+        return [$metadata->getClassName() => $metadata];
     }
 }

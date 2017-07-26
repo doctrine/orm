@@ -2452,14 +2452,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class
      *
-     * @return \Doctrine\Common\Persistence\ObjectManagerAware|object
+     * @return EntityManagerAware|object
      */
     public function newInstance(ClassMetadata $class)
     {
         $entity = $this->instantiator->instantiate($class->getClassName());
 
-        if ($entity instanceof \Doctrine\Common\Persistence\ObjectManagerAware) {
-            $entity->injectObjectManager($this->em, $class);
+        if ($entity instanceof EntityManagerAware) {
+            $entity->injectEntityManager($this->em, $class);
         }
 
         return $entity;
