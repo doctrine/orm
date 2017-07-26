@@ -413,7 +413,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $test          = $this;
 
-        /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
+        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
         $metadata      = $this->createMock(ClassMetadata::class);
         $cmf           = new ClassMetadataFactory();
         $mockDriver    = new MetadataDriverMock();

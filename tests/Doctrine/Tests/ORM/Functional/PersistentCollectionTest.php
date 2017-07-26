@@ -4,8 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\Common\Persistence\PersistentObject;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\PersistentObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class PersistentCollectionTest extends OrmFunctionalTestCase
@@ -13,17 +13,17 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
         try {
-            $this->schemaTool->createSchema(
-                [
+            $this->schemaTool->createSchema([
                 $this->em->getClassMetadata(PersistentCollectionHolder::class),
                 $this->em->getClassMetadata(PersistentCollectionContent::class),
-                ]
-            );
+            ]);
         } catch (\Exception $e) {
 
         }
-        PersistentObject::setObjectManager($this->em);
+
+        PersistentObject::setEntityManager($this->em);
     }
 
     public function testPersist()
