@@ -2,10 +2,10 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerAware;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -16,7 +16,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        
+
         $this->schemaTool->createSchema([
             $this->em->getClassMetadata(DDC2231EntityY::class),
         ]);
@@ -45,7 +45,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 
 /** @ORM\Entity @ORM\Table(name="ddc2231_y") */
-class DDC2231EntityY implements ObjectManagerAware
+class DDC2231EntityY implements EntityManagerAware
 {
     /**
      * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
@@ -54,7 +54,7 @@ class DDC2231EntityY implements ObjectManagerAware
 
     public $om;
 
-    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    public function injectEntityManager(EntityManagerInterface $objectManager, ClassMetadata $classMetadata) : void
     {
         $this->om = $objectManager;
     }
