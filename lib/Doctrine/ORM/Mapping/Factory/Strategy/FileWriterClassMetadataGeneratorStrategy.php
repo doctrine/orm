@@ -20,7 +20,10 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Mapping\Factory\Strategy;
+
+use Doctrine\ORM\Mapping\Factory\ClassMetadataDefinition;
+use Doctrine\ORM\Mapping\Factory\ClassMetadataGenerator;
 
 class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
 {
