@@ -62,7 +62,9 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $driver     = $this->loadDriver();
         $em         = $em ?: $this->getTestEntityManager();
         $factory    = new ClassMetadataFactory();
+
         $em->getConfiguration()->setMetadataDriverImpl($driver);
+
         $factory->setEntityManager($em);
 
         return $factory;

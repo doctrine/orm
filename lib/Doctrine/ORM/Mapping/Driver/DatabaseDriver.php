@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
-use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
@@ -175,7 +173,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadataInterface $metadata)
+    public function loadMetadataForClass($className, ClassMetadata $metadata)
     {
         $this->reverseEngineerMappingFromDatabase();
 

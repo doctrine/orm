@@ -3,11 +3,11 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\NativeQuery;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\ORMInvalidArgumentException;
@@ -30,6 +30,7 @@ class EntityManagerTest extends OrmTestCase
     public function setUp()
     {
         parent::setUp();
+
         $this->em = $this->getTestEntityManager();
     }
 
