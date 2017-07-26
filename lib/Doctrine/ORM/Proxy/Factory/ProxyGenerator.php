@@ -40,20 +40,6 @@ class ProxyGenerator
     const PATTERN_MATCH_ID_METHOD = '((public\s+)?(function\s+%s\s*\(\)\s*)\s*(?::\s*\??\s*\\\\?[a-z_\x7f-\xff][\w\x7f-\xff]*(?:\\\\[a-z_\x7f-\xff][\w\x7f-\xff]*)*\s*)?{\s*return\s*\$this->%s;\s*})i';
 
     /**
-     * The namespace that contains all proxy classes.
-     *
-     * @var string
-     */
-    private $proxyNamespace;
-
-    /**
-     * The directory that contains all proxy classes.
-     *
-     * @var string
-     */
-    private $proxyDirectory;
-
-    /**
      * Map of callables used to fill in placeholders set in the template.
      *
      * @var string[]|callable[]
@@ -170,29 +156,6 @@ class <proxyShortClassName> extends \<className> implements \<baseProxyInterface
 ';
 
     /**
-     * Initializes a new instance of the <tt>ProxyFactory</tt> class that is
-     * connected to the given <tt>EntityManager</tt>.
-     *
-     * @param string $proxyDirectory The directory to use for the proxy classes. It must exist.
-     * @param string $proxyNamespace The namespace to use for the proxy classes.
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function __construct($proxyDirectory, $proxyNamespace)
-    {
-        if (! $proxyDirectory) {
-            throw new \InvalidArgumentException('You must configure a proxy directory. See docs for details');
-        }
-
-        if (! $proxyNamespace) {
-            throw new \InvalidArgumentException('You must configure a proxy namespace');
-        }
-
-        $this->proxyDirectory = $proxyDirectory;
-        $this->proxyNamespace = $proxyNamespace;
-    }
-
-    /**
      * Sets a placeholder to be replaced in the template.
      *
      * @param string          $name
@@ -222,47 +185,17 @@ class <proxyShortClassName> extends \<className> implements \<baseProxyInterface
     }
 
     /**
-     * Generates a proxy class file.
+     * Generates proxy class code.
      *
-     * @param string|null     $proxyClassPath Filename (full path) for the generated class. If null given, eval() is used.
-     * @param ProxyDefinition $definition     Definition for the original ClassMetadata.
+     * @param ProxyDefinition $definition
      *
-     * @throws \InvalidArgumentException
-     * @throws \UnexpectedValueException
+     * @return string
      */
-    public function generate(?string $proxyClassPath, ProxyDefinition $definition)
+    public function generate(ProxyDefinition $definition) : string
     {
         $this->verifyClassCanBeProxied($definition->entityClassMetadata);
 
-        $proxyCode = $this->renderTemplate($this->proxyClassTemplate, $definition, $this->placeholders);
-
-        if (! $proxyClassPath) {
-            if ( ! class_exists($definition->proxyClassName)) {
-                eval(substr($proxyCode, 5));
-            }
-
-            return;
-        }
-
-        $parentDirectory = dirname($proxyClassPath);
-
-        if (! is_dir($parentDirectory) && (false === @mkdir($parentDirectory, 0775, true))) {
-            throw new \UnexpectedValueException(
-                sprintf('Your proxy directory "%s" must be writable', $this->proxyDirectory)
-            );
-        }
-
-        if (! is_writable($parentDirectory)) {
-            throw new \UnexpectedValueException(
-                sprintf('Your proxy directory "%s" must be writable', $this->proxyDirectory)
-            );
-        }
-
-        $tmpFileName = $proxyClassPath . '.' . uniqid('', true);
-
-        file_put_contents($tmpFileName, $proxyCode);
-        @chmod($tmpFileName, 0664);
-        rename($tmpFileName, $proxyClassPath);
+        return $this->renderTemplate($this->proxyClassTemplate, $definition, $this->placeholders);
     }
 
     /**
