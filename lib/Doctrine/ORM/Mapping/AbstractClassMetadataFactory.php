@@ -144,7 +144,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Returns the mapping driver implementation.
      *
-     * @return \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+     * @return Driver\MappingDriver
      */
     abstract protected function getDriver();
 

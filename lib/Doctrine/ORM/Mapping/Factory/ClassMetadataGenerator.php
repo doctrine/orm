@@ -22,7 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Exporter\ClassMetadataExporter;
 
 /**
