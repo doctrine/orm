@@ -22,9 +22,9 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
-use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Factory\Strategy\ConditionalFileWriterProxyGeneratorStrategy;
 use Doctrine\ORM\Proxy\Proxy;
 
 /**
@@ -66,14 +66,14 @@ class StaticProxyFactory implements ProxyFactory
     public function __construct(EntityManagerInterface $entityManager, ProxyConfiguration $configuration)
     {
         $resolver          = $configuration->getResolver();
-        $autoGenerate      = $configuration->getAutoGenerate();
-        $generator         = new ProxyGenerator($configuration->getDirectory(), $configuration->getNamespace());
-        $definitionFactory = new ProxyDefinitionFactory($entityManager, $resolver, $generator, $autoGenerate);
+        //$autoGenerate      = $configuration->getAutoGenerate();
+        $generator         = new ProxyGenerator();
+        $generatorStrategy = new Strategy\ConditionalFileWriterProxyGeneratorStrategy($generator);
+        $definitionFactory = new ProxyDefinitionFactory($entityManager, $resolver, $generatorStrategy);
 
         $generator->setPlaceholder('baseProxyInterface', Proxy::class);
 
         $this->entityManager     = $entityManager;
-        $this->generator         = $generator;
         $this->definitionFactory = $definitionFactory;
     }
 

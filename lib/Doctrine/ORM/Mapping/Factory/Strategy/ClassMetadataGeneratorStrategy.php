@@ -20,15 +20,17 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Mapping\Factory\Strategy;
 
-class FileLoaderClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
+use Doctrine\ORM\Mapping\Factory\ClassMetadataDefinition;
+
+interface ClassMetadataGeneratorStrategy
 {
     /**
-     * {@inheritdoc}
+     * @param string                  $filePath
+     * @param ClassMetadataDefinition $definition
+     *
+     * @return void
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition): void
-    {
-        require $filePath;
-    }
+    public function generate(string $filePath, ClassMetadataDefinition $definition) : void;
 }

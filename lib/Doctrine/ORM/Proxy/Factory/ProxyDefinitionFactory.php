@@ -24,6 +24,7 @@ namespace Doctrine\ORM\Proxy\Factory;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Proxy\Factory\Strategy\ProxyGeneratorStrategy;
 
 class ProxyDefinitionFactory
 {
@@ -38,9 +39,9 @@ class ProxyDefinitionFactory
     private $resolver;
 
     /**
-     * @var ProxyGenerator
+     * @var ProxyGeneratorStrategy
      */
-    private $generator;
+    private $generatorStrategy;
 
     /**
      * @var int
@@ -52,20 +53,17 @@ class ProxyDefinitionFactory
      *
      * @param EntityManagerInterface $entityManager
      * @param ProxyResolver          $resolver
-     * @param ProxyGenerator         $generator
-     * @param int                    $autoGenerate
+     * @param ProxyGeneratorStrategy $generatorStrategy
      */
     public function __construct(
         EntityManagerInterface $entityManager,
         ProxyResolver $resolver,
-        ProxyGenerator $generator,
-        int $autoGenerate
+        ProxyGeneratorStrategy $generatorStrategy
     )
     {
-        $this->entityManager = $entityManager;
-        $this->resolver = $resolver;
-        $this->generator = $generator;
-        $this->autoGenerate = $autoGenerate;
+        $this->entityManager     = $entityManager;
+        $this->resolver          = $resolver;
+        $this->generatorStrategy = $generatorStrategy;
     }
 
     /**
@@ -80,33 +78,7 @@ class ProxyDefinitionFactory
         if (! class_exists($definition->proxyClassName, false)) {
             $proxyClassPath = $this->resolver->resolveProxyClassPath($classMetadata->getClassName());
 
-            switch ($this->autoGenerate) {
-                case ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
-                    if (! file_exists($proxyClassPath)) {
-                        $this->generator->generate($proxyClassPath, $definition);
-                    }
-
-                    require $proxyClassPath;
-
-                    break;
-
-                case ProxyFactory::AUTOGENERATE_ALWAYS:
-                    $this->generator->generate($proxyClassPath, $definition);
-
-                    require $proxyClassPath;
-
-                    break;
-
-                case ProxyFactory::AUTOGENERATE_EVAL:
-                    $this->generator->generate(null, $definition);
-
-                    break;
-
-                case ProxyFactory::AUTOGENERATE_NEVER:
-                    require $proxyClassPath;
-
-                    break;
-            }
+            $this->generatorStrategy->generate($proxyClassPath, $definition);
         }
 
         return $definition;
