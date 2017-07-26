@@ -21,7 +21,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Instantiator\Instantiator;
@@ -2446,14 +2445,14 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param ClassMetadata $class
      *
-     * @return \Doctrine\Common\Persistence\ObjectManagerAware|object
+     * @return EntityManagerAware|object
      */
     public function newInstance(ClassMetadata $class)
     {
         $entity = $this->instantiator->instantiate($class->getClassName());
 
-        if ($entity instanceof \Doctrine\Common\Persistence\ObjectManagerAware) {
-            $entity->injectObjectManager($this->em, $class);
+        if ($entity instanceof EntityManagerAware) {
+            $entity->injectEntityManager($this->em, $class);
         }
 
         return $entity;
@@ -2523,9 +2522,9 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             if ($overrideLocalValues) {
-                // inject ObjectManager upon refresh.
-                if ($entity instanceof ObjectManagerAware) {
-                    $entity->injectObjectManager($this->em, $class);
+                // inject EntityManager upon refresh.
+                if ($entity instanceof EntityManagerAware) {
+                    $entity->injectEntityManager($this->em, $class);
                 }
 
                 $this->originalEntityData[$oid] = $data;
