@@ -20,21 +20,24 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Proxy\Factory\Strategy;
 
-class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGeneratorStrategy
+use Doctrine\ORM\Proxy\Factory\ProxyDefinition;
+use Doctrine\ORM\Proxy\Factory\ProxyGenerator;
+
+class EvaluatingProxyGeneratorStrategy implements ProxyGeneratorStrategy
 {
     /**
-     * @var ClassMetadataGenerator
+     * @var ProxyGenerator
      */
     private $generator;
 
     /**
-     * EvaluatingClassMetadataGeneratorStrategy constructor.
+     * EvaluatingProxyGeneratorStrategy constructor.
      *
-     * @param ClassMetadataGenerator $generator
+     * @param ProxyGenerator $generator
      */
-    public function __construct(ClassMetadataGenerator $generator)
+    public function __construct(ProxyGenerator $generator)
     {
         $this->generator = $generator;
     }
@@ -42,7 +45,7 @@ class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition): void
+    public function generate(string $filePath, ProxyDefinition $definition): void
     {
         $sourceCode = $this->generator->generate($definition);
 

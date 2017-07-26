@@ -27,6 +27,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Configuration\MetadataConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Factory\Strategy\ConditionalFileWriterClassMetadataGeneratorStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
@@ -91,9 +92,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     {
         $mappingDriver     = $configuration->getMappingDriver();
         $resolver          = $configuration->getResolver();
-        $autoGenerate      = $configuration->getAutoGenerate();
+        //$autoGenerate      = $configuration->getAutoGenerate();
         $generator         = new ClassMetadataGenerator($mappingDriver);
-        $definitionFactory = new ClassMetadataDefinitionFactory($resolver, $generator, $autoGenerate);
+        $generatorStrategy = new ConditionalFileWriterClassMetadataGeneratorStrategy($generator);
+        $definitionFactory = new ClassMetadataDefinitionFactory($resolver, $generatorStrategy);
 
         $this->mappingDriver     = $mappingDriver;
         $this->definitionFactory = $definitionFactory;
@@ -176,7 +178,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     {
         /** @var ClassMetadata $classMetadata */
         $metadataFqcn  = $definition->metadataClassName;
-        $classMetadata = new $metadataFqcn($definition->parent);
+        $classMetadata = new $metadataFqcn($definition->parentClassMetadata);
 
         $classMetadata->wakeupReflection($this->getReflectionService());
 

@@ -58,6 +58,8 @@ class ClassMetadataGenerator
     }
 
     /**
+     * Generates class metadata code.
+     *
      * @param ClassMetadataDefinition $definition
      *
      * @return string

@@ -20,15 +20,23 @@ declare(strict_types = 1);
  * <http://www.doctrine-project.org>.
  */
 
-namespace Doctrine\ORM\Mapping\Factory;
+namespace Doctrine\ORM\Proxy\Factory\Strategy;
 
-interface ClassMetadataGeneratorStrategy
+use Doctrine\ORM\Proxy\Factory\ProxyDefinition;
+
+class ConditionalFileWriterProxyGeneratorStrategy extends FileWriterProxyGeneratorStrategy
 {
     /**
-     * @param string                  $filePath
-     * @param ClassMetadataDefinition $definition
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition) : void;
+    public function generate(string $filePath, ProxyDefinition $definition): void
+    {
+        if (! file_exists($filePath)) {
+            parent::generate($filePath, $definition);
+
+            return;
+        }
+
+        require $filePath;
+    }
 }

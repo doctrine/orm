@@ -22,12 +22,7 @@ declare(strict_types = 1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\MappedSuperClassMetadata;
-use Doctrine\ORM\Mapping\Property;
-use Doctrine\ORM\Mapping\TableMetadata;
-use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use Doctrine\ORM\Mapping;
 
 class ClassMetadataExporter implements Exporter
 {
@@ -38,7 +33,7 @@ class ClassMetadataExporter implements Exporter
      */
     public function export($value, int $indentationLevel = 0) : string
     {
-        /** @var ClassMetadata $value */
+        /** @var Mapping\ClassMetadata $value */
         $reflectionClass = $value->getReflectionClass();
         $namespace       = $reflectionClass->getNamespaceName();
         $lines           = [];
@@ -52,7 +47,7 @@ class ClassMetadataExporter implements Exporter
         }
 
         $shortClassName    = $reflectionClass->getShortName();
-        $extendedClassName = ($value instanceof MappedSuperClassMetadata)
+        $extendedClassName = ($value instanceof Mapping\MappedSuperClassMetadata)
             ? 'MappedSuperClassMetadata'
             : 'ClassMetadata'
         ;
@@ -70,12 +65,12 @@ class ClassMetadataExporter implements Exporter
     }
 
     /**
-     * @param ClassMetadata $metadata
-     * @param int           $indentationLevel
+     * @param Mapping\ClassMetadata $metadata
+     * @param int                   $indentationLevel
      *
      * @return string
      */
-    private function exportClassBody(ClassMetadata $metadata, int $indentationLevel) : string
+    private function exportClassBody(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $lines = [];
 
@@ -87,12 +82,12 @@ class ClassMetadataExporter implements Exporter
     }
 
     /**
-     * @param ClassMetadata $metadata
-     * @param int           $indentationLevel
+     * @param Mapping\ClassMetadata $metadata
+     * @param int                   $indentationLevel
      *
      * @return string
      */
-    private function exportConstructor(ClassMetadata $metadata, int $indentationLevel) : string
+    private function exportConstructor(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -107,12 +102,12 @@ class ClassMetadataExporter implements Exporter
     }
 
     /**
-     * @param ClassMetadata $metadata
-     * @param int           $indentationLevel
+     * @param Mapping\ClassMetadata $metadata
+     * @param int                   $indentationLevel
      *
      * @return string
      */
-    private function exportInitialize(ClassMetadata $metadata, int $indentationLevel) : string
+    private function exportInitialize(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -173,12 +168,12 @@ class ClassMetadataExporter implements Exporter
     }
 
     /**
-     * @param ClassMetadata $metadata
-     * @param int           $indentationLevel
+     * @param Mapping\ClassMetadata $metadata
+     * @param int                   $indentationLevel
      *
      * @return string
      */
-    private function exportDiscriminatorMetadata(ClassMetadata $metadata, int $indentationLevel) : string
+    private function exportDiscriminatorMetadata(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $variableExporter      = new VariableExporter();
         $discriminatorExporter = new DiscriminatorColumnMetadataExporter();
@@ -200,12 +195,12 @@ class ClassMetadataExporter implements Exporter
     }
 
     /**
-     * @param TableMetadata $table
-     * @param int           $indentationLevel
+     * @param Mapping\TableMetadata $table
+     * @param int                   $indentationLevel
      *
      * @return string
      */
-    private function exportTableMetadata(TableMetadata $table, int $indentationLevel) : string
+    private function exportTableMetadata(Mapping\TableMetadata $table, int $indentationLevel) : string
     {
         $tableExporter   = new TableMetadataExporter();
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
@@ -214,33 +209,47 @@ class ClassMetadataExporter implements Exporter
 
         $lines[] = $tableExporter->export($table, $indentationLevel);
         $lines[] = null;
-        $lines[] = $objectReference . '->table = ' . $tableExporter::VARIABLE . ';';
+        $lines[] = $objectReference . '->setTable(' . $tableExporter::VARIABLE . ');';
 
         return implode(PHP_EOL, $lines);
     }
 
     /**
-     * @param Property $property
-     * @param int      $indentationLevel
+     * @param Mapping\Property $property
+     * @param int              $indentationLevel
      *
      * @return string
      */
-    private function exportProperty(Property $property, int $indentationLevel) : string
+    private function exportProperty(Mapping\Property $property, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference = $indentation . static::VARIABLE;
         $lines           = [];
 
         switch (true) {
-            case ($property instanceof VersionFieldMetadata):
+            case ($property instanceof Mapping\VersionFieldMetadata):
                 $propertyExporter = new VersionFieldMetadataExporter();
                 break;
 
-            case ($property instanceof FieldMetadata):
+            case ($property instanceof Mapping\FieldMetadata):
                 $propertyExporter = new FieldMetadataExporter();
                 break;
 
-            // @todo guilhermeblanco Create AssociationMetadataExporters
+            case ($property instanceof Mapping\OneToOneAssociationMetadata):
+                $propertyExporter = new OneToOneAssociationMetadataExporter();
+                break;
+
+            case ($property instanceof Mapping\OneToManyAssociationMetadata):
+                $propertyExporter = new OneToManyAssociationMetadataExporter();
+                break;
+
+            case ($property instanceof Mapping\ManyToOneAssociationMetadata):
+                $propertyExporter = new ManyToOneAssociationMetadataExporter();
+                break;
+
+            case ($property instanceof Mapping\ManyToManyAssociationMetadata):
+                $propertyExporter = new ManyToManyAssociationMetadataExporter();
+                break;
 
             default:
                 $propertyExporter = new TransientMetadataExporter();

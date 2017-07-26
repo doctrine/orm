@@ -104,6 +104,8 @@ class ProxyConfiguration
     }
 
     /**
+     * @todo guilhermeblanco Get rid of this method and associated constants. Use the generator strategy instead.
+     *
      * @return int
      */
     public function getAutoGenerate() : int
