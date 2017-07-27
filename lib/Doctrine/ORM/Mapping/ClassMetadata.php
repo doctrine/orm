@@ -342,23 +342,6 @@ class ClassMetadata implements TableOwner
     }
 
     /**
-     * Populates the entity identifier of an entity.
-     *
-     * @param object $entity
-     * @param array  $id
-     *
-     * @return void
-     */
-    public function assignIdentifier($entity, array $id)
-    {
-        foreach ($id as $idField => $idValue) {
-            $property = $this->getProperty($idField);
-
-            $property->setValue($entity, $idValue);
-        }
-    }
-
-    /**
      * Handles metadata cloning nicely.
      */
     public function __clone()

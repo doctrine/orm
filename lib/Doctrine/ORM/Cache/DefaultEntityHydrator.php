@@ -71,7 +71,7 @@ class DefaultEntityHydrator implements EntityHydrator
         $persister           = $this->uow->getEntityPersister($metadata->getClassName());
 
         $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $persister->getIdentifierValues($entity)); // why update has no identifier values ?
+        $data = array_merge($data, $persister->getIdentifier($entity)); // why update has no identifier values ?
 
         foreach ($metadata->getProperties() as $name => $association) {
             if (! isset($data[$name]) || $association instanceof FieldMetadata) {
@@ -94,7 +94,7 @@ class DefaultEntityHydrator implements EntityHydrator
                     : $association;
                 $associationIds      = $identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
-                    $targetPersister->getIdentifierValues($data[$name])
+                    $targetPersister->getIdentifier($data[$name])
                 );
 
                 unset($data[$name]);
@@ -147,7 +147,7 @@ class DefaultEntityHydrator implements EntityHydrator
             // handle association identifier
             $targetId = $this->em->getIdentifierFlattener()->flattenIdentifier(
                 $targetClassMetadata,
-                $targetPersister->getIdentifierValues($data[$name])
+                $targetPersister->getIdentifier($data[$name])
             );
 
             $data[$name] = new AssociationCacheEntry($targetEntity, $targetId);

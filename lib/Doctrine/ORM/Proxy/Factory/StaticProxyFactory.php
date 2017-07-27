@@ -102,11 +102,11 @@ class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(string $className, array $identifier) : Proxy
     {
-        $proxyDefinition    = $this->getOrCreateProxyDefinition($className);
-        $proxyInstance      = $this->createProxyInstance($proxyDefinition);
-        $proxyClassMetadata = $proxyDefinition->entityClassMetadata;
+        $proxyDefinition = $this->getOrCreateProxyDefinition($className);
+        $proxyInstance   = $this->createProxyInstance($proxyDefinition);
+        $proxyPersister  = $proxyDefinition->entityPersister;
 
-        $proxyClassMetadata->assignIdentifier($proxyInstance, $identifier);
+        $proxyPersister->setIdentifier($proxyInstance, $identifier);
 
         return $proxyInstance;
     }

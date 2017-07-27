@@ -217,7 +217,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierValues($entity): array
+    public function getIdentifier($entity): array
     {
         $id = [];
 
@@ -231,6 +231,23 @@ class BasicEntityPersister implements EntityPersister
         }
 
         return $id;
+    }
+
+    /**
+     * Populates the entity identifier of an entity.
+     *
+     * @param object $entity
+     * @param array  $id
+     *
+     * @return void
+     */
+    public function setIdentifier($entity, array $id) : void
+    {
+        foreach ($id as $idField => $idValue) {
+            $property = $this->class->getProperty($idField);
+
+            $property->setValue($entity, $idValue);
+        }
     }
 
     /**
@@ -268,7 +285,7 @@ class BasicEntityPersister implements EntityPersister
                 $this->class->getSingleIdentifierFieldName() => $generatedId,
             ];
         } else {
-            $id = $this->getIdentifierValues($entity);
+            $id = $this->getIdentifier($entity);
         }
 
         if ($this->class->isVersioned()) {
@@ -2056,7 +2073,7 @@ class BasicEntityPersister implements EntityPersister
             if ($class->isIdentifierComposite()) {
                 $newValue = [];
 
-                foreach ($persister->getIdentifierValues($value) as $innerValue) {
+                foreach ($persister->getIdentifier($value) as $innerValue) {
                     $newValue = array_merge($newValue, $this->getValues($innerValue));
                 }
 
@@ -2088,7 +2105,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function exists($entity, Criteria $extraConditions = null)
     {
-        $criteria = $this->getIdentifierValues($entity);
+        $criteria = $this->getIdentifier($entity);
 
         if ( ! $criteria) {
             return false;
