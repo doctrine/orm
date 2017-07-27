@@ -236,10 +236,10 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     private function deleteJoinedEntityCollection(PersistentCollection $collection)
     {
-        $association = $collection->getMapping();
-        $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
-        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-        $rootClass   = $this->em->getClassMetadata($targetClass->getRootClassName());
+        $association     = $collection->getMapping();
+        $targetClass     = $this->em->getClassMetadata($association->getTargetEntity());
+        $rootClass       = $this->em->getClassMetadata($targetClass->getRootClassName());
+        $sourcePersister = $this->uow->getEntityPersister($association->getSourceEntity());
 
         // 1) Build temporary table DDL
         $tempTable         = $this->platform->getTemporaryTableName($rootClass->getTemporaryIdTableName());
@@ -267,7 +267,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $query = $this->em->createQuery($dql)->setParameter('owner', $collection->getOwner());
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ') ' . $query->getSQL();
-        $parameters = array_values($sourceClass->getIdentifierValues($collection->getOwner()));
+        $parameters = array_values($sourcePersister->getIdentifierValues($collection->getOwner()));
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy

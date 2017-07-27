@@ -78,10 +78,10 @@ class ProxyFactoryTest extends OrmTestCase
 
         $classMetaData = $this->emMock->getClassMetadata(ECommerceFeature::class);
 
-        $persister  = $this
+        $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->emMock, $classMetaData])
+            ->setMethods(['load'])
             ->getMock();
 
         $persister
@@ -89,11 +89,6 @@ class ProxyFactoryTest extends OrmTestCase
             ->method('load')
             ->with($this->equalTo($identifier), $this->isInstanceOf($proxyClass))
             ->will($this->returnValue(new \stdClass()));
-
-        $persister
-            ->expects(self::any())
-            ->method('getClassMetadata')
-            ->willReturn($classMetaData);
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -153,19 +148,14 @@ class ProxyFactoryTest extends OrmTestCase
 
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->emMock, $classMetaData])
+            ->setMethods(['load'])
             ->getMock();
 
         $persister
             ->expects($this->atLeastOnce())
             ->method('load')
             ->will($this->returnValue(null));
-
-        $persister
-            ->expects(self::any())
-            ->method('getClassMetadata')
-            ->willReturn($classMetaData);
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -190,19 +180,14 @@ class ProxyFactoryTest extends OrmTestCase
 
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->emMock, $classMetaData])
+            ->setMethods(['load'])
             ->getMock();
 
         $persister
             ->expects($this->atLeastOnce())
             ->method('load')
             ->will($this->returnValue(null));
-
-        $persister
-            ->expects(self::any())
-            ->method('getClassMetadata')
-            ->willReturn($classMetaData);
 
         $this->uowMock->setEntityPersister(ECommerceFeature::class, $persister);
 
@@ -234,19 +219,14 @@ class ProxyFactoryTest extends OrmTestCase
 
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
-            ->setMethods(['load', 'getClassMetadata'])
-            ->disableOriginalConstructor()
+            ->setConstructorArgs([$this->emMock, $classMetaData])
+            ->setMethods(['load'])
             ->getMock();
 
         $persister
             ->expects(self::atLeastOnce())
             ->method('load')
             ->willReturn($companyEmployee);
-
-        $persister
-            ->expects(self::any())
-            ->method('getClassMetadata')
-            ->willReturn($classMetaData);
 
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
 
