@@ -68,9 +68,10 @@ class DefaultEntityHydrator implements EntityHydrator
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
     {
         $identifierFlattener = $this->em->getIdentifierFlattener();
+        $persister           = $this->uow->getEntityPersister($metadata->getClassName());
 
         $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
+        $data = array_merge($data, $persister->getIdentifierValues($entity)); // why update has no identifier values ?
 
         foreach ($metadata->getProperties() as $name => $association) {
             if (! isset($data[$name]) || $association instanceof FieldMetadata) {
@@ -85,6 +86,7 @@ class DefaultEntityHydrator implements EntityHydrator
 
             $targetEntity        = $association->getTargetEntity();
             $targetClassMetadata = $this->em->getClassMetadata($targetEntity);
+            $targetPersister     = $this->uow->getEntityPersister($targetEntity);
 
             if (! $association->getCache()) {
                 $owningAssociation   = ! $association->isOwningSide()
@@ -92,7 +94,7 @@ class DefaultEntityHydrator implements EntityHydrator
                     : $association;
                 $associationIds      = $identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
-                    $targetClassMetadata->getIdentifierValues($data[$name])
+                    $targetPersister->getIdentifierValues($data[$name])
                 );
 
                 unset($data[$name]);
@@ -145,7 +147,7 @@ class DefaultEntityHydrator implements EntityHydrator
             // handle association identifier
             $targetId = $this->em->getIdentifierFlattener()->flattenIdentifier(
                 $targetClassMetadata,
-                $targetClassMetadata->getIdentifierValues($data[$name])
+                $targetPersister->getIdentifierValues($data[$name])
             );
 
             $data[$name] = new AssociationCacheEntry($targetEntity, $targetId);

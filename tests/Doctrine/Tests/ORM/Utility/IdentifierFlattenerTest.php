@@ -68,9 +68,10 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $firstEntity = $this->em->getRepository(FirstRelatedEntity::class)
             ->findOneBy(['name' => 'Fred']);
 
-        $class = $this->em->getClassMetadata(FirstRelatedEntity::class);
+        $class     = $this->em->getClassMetadata(FirstRelatedEntity::class);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(FirstRelatedEntity::class);
 
-        $id = $class->getIdentifierValues($firstEntity);
+        $id = $persister->getIdentifierValues($firstEntity);
 
         self::assertCount(1, $id, 'We should have 1 identifier');
 
@@ -108,8 +109,9 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->em->persist($flight);
         $this->em->flush();
 
-        $class = $this->em->getClassMetadata(Flight::class);
-        $id = $class->getIdentifierValues($flight);
+        $class     = $this->em->getClassMetadata(Flight::class);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(Flight::class);
+        $id        = $persister->getIdentifierValues($flight);
 
         self::assertCount(2, $id);
 

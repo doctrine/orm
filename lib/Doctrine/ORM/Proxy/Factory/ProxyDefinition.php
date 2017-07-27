@@ -106,7 +106,7 @@ class ProxyDefinition
         }
 
         $classMetadata = $this->entityClassMetadata;
-        $identifier    = $classMetadata->getIdentifierValues($proxy);
+        $identifier    = $this->entityPersister->getIdentifierValues($proxy);
         $original      = $this->entityPersister->loadById($identifier, $proxy);
 
         if (null === $original) {
@@ -146,7 +146,7 @@ class ProxyDefinition
         $proxy->__setInitialized(true);
 
         $classMetadata = $this->entityClassMetadata;
-        $identifier    = $classMetadata->getIdentifierValues($proxy);
+        $identifier    = $this->entityPersister->getIdentifierValues($proxy);
         $original      = $this->entityPersister->loadById($identifier);
 
         if (null === $original) {

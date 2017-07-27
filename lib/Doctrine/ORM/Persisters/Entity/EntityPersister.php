@@ -49,6 +49,18 @@ interface EntityPersister
     public function getResultSetMapping();
 
     /**
+     * Extracts the identifier values of an entity that relies on this persister.
+     *
+     * For composite identifiers, the identifier values are returned as an array
+     * with the same order as the field order in {@link ClassMetadata#identifier}.
+     *
+     * @param object $entity
+     *
+     * @return array
+     */
+    public function getIdentifierValues($entity) : array;
+
+    /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
      * @param array|\Doctrine\Common\Collections\Criteria $criteria

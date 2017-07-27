@@ -82,11 +82,14 @@ final class IdentifierFlattener
 
             if (isset($id[$field]) && is_object($id[$field])) {
                 /* @var $targetClassMetadata ClassMetadata */
-                $targetClassMetadata = $this->metadataFactory->getMetadataFor($property->getTargetEntity());
+                $targetClassMetadata  = $this->metadataFactory->getMetadataFor($property->getTargetEntity());
+                $targetClassPersister = $this->unitOfWork->getEntityPersister($property->getTargetEntity());
                 $identifiers         = $this->unitOfWork->isInIdentityMap($id[$field])
                     ? $this->unitOfWork->getEntityIdentifier($id[$field])
-                    : $targetClassMetadata->getIdentifierValues($id[$field]);
-                $associatedId        = $this->flattenIdentifier($targetClassMetadata, $identifiers);
+                    : $targetClassPersister->getIdentifierValues($id[$field])
+                ;
+
+                $associatedId = $this->flattenIdentifier($targetClassMetadata, $identifiers);
 
                 $flatId[$field] = implode(' ', $associatedId);
 
