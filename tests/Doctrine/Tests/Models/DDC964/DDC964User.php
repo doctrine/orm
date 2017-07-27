@@ -140,7 +140,7 @@ class DDC964User
         $association = new Mapping\ManyToOneAssociationMetadata('address');
 
         $association->setJoinColumns($joinColumns);
-        $association->setTargetEntity('DDC964Address');
+        $association->setTargetEntity(DDC964Address::class);
         $association->setCascade(['persist', 'merge']);
 
         $metadata->addProperty($association);
@@ -165,7 +165,7 @@ class DDC964User
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
         $association->setJoinTable($joinTable);
-        $association->setTargetEntity('DDC964Group');
+        $association->setTargetEntity(DDC964Group::class);
         $association->setInversedBy('users');
         $association->setCascade(['persist', 'merge', 'detach']);
 

@@ -342,7 +342,7 @@ class SqlWalker implements TreeWalker
         $baseTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
         // INNER JOIN parent class tables
-        foreach ($class->parentClasses as $parentClassName) {
+        foreach ($class->getParentClasses() as $parentClassName) {
             $parentClass = $this->em->getClassMetadata($parentClassName);
             $tableName   = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias  = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
@@ -373,7 +373,7 @@ class SqlWalker implements TreeWalker
         }
 
         // LEFT JOIN child class tables
-        foreach ($class->subClasses as $subClassName) {
+        foreach ($class->getSubClasses() as $subClassName) {
             $subClass   = $this->em->getClassMetadata($subClassName);
             $tableName  = $subClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
@@ -454,7 +454,7 @@ class SqlWalker implements TreeWalker
                 $values[] = $conn->quote($class->discriminatorValue);
             }
 
-            foreach ($class->subClasses as $subclassName) {
+            foreach ($class->getSubClasses() as $subclassName) {
                 $values[] = $conn->quote($this->em->getClassMetadata($subclassName)->discriminatorValue);
             }
 
@@ -803,7 +803,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of subclasses
-            foreach ($class->subClasses as $subClassName) {
+            foreach ($class->getSubClasses() as $subClassName) {
                 $subClass      = $this->em->getClassMetadata($subClassName);
                 $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
 
@@ -1460,7 +1460,7 @@ class SqlWalker implements TreeWalker
                 // 2) on Class Table Inheritance only if partial objects are disallowed,
                 //    since it requires outer joining subtables.
                 if ($class->inheritanceType === InheritanceType::SINGLE_TABLE || ! $this->query->getHint(Query::HINT_FORCE_PARTIAL_LOAD)) {
-                    foreach ($class->subClasses as $subClassName) {
+                    foreach ($class->getSubClasses() as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
                         foreach ($subClass->getProperties() as $fieldName => $property) {

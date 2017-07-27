@@ -5,6 +5,7 @@ namespace Doctrine\Tests\Models\CMS;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
+use Doctrine\Tests\Models\CMS\CmsAddressListener;
 
 /**
  * CmsAddress
@@ -166,7 +167,7 @@ class CmsAddress
         $association = new Mapping\OneToOneAssociationMetadata('user');
 
         $association->setJoinColumns($joinColumns);
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CmsUser::class);
 
         $metadata->addProperty($association);
 
@@ -242,16 +243,16 @@ class CmsAddress
             ]
         );
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CmsAddressListener', 'postPersist');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CmsAddressListener', 'prePersist');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, CmsAddressListener::class, 'postPersist');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, CmsAddressListener::class, 'prePersist');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CmsAddressListener', 'postUpdate');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CmsAddressListener', 'preUpdate');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, CmsAddressListener::class, 'postUpdate');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, CmsAddressListener::class, 'preUpdate');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CmsAddressListener', 'postRemove');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CmsAddressListener', 'preRemove');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, CmsAddressListener::class, 'postRemove');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, CmsAddressListener::class, 'preRemove');
 
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CmsAddressListener', 'preFlush');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CmsAddressListener', 'postLoad');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, CmsAddressListener::class, 'preFlush');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, CmsAddressListener::class, 'postLoad');
     }
 }

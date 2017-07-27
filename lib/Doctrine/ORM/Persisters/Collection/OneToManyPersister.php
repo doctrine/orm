@@ -271,7 +271,11 @@ class OneToManyPersister extends AbstractCollectionPersister
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge($targetClass->parentClasses, [$targetClass->getClassName()], $targetClass->subClasses);
+        $classNames = array_merge(
+            $targetClass->getParentClasses(),
+            [$targetClass->getClassName()],
+            $targetClass->getSubClasses()
+        );
 
         foreach (array_reverse($classNames) as $className) {
             $parentClass = $this->em->getClassMetadata($className);

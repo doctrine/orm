@@ -225,7 +225,9 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent);
 
         if ($entityAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
+            $classMetadata->setCustomRepositoryClassName(
+                $classMetadata->fullyQualifiedClassName($entityAnnot->repositoryClass)
+            );
         }
 
         if ($entityAnnot->readOnly) {
@@ -376,8 +378,14 @@ class NewAnnotationDriver implements MappingDriver
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     /** @var Annotation\DiscriminatorMap $discriminatorMapAnnotation */
                     $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
+                    $discriminatorMap           = array_map(
+                        function ($className) use ($classMetadata) {
+                            return $classMetadata->fullyQualifiedClassName($className);
+                        },
+                        $discriminatorMapAnnotation->value
+                    );
 
-                    $classMetadata->setDiscriminatorMap($discriminatorMapAnnotation->value);
+                    $classMetadata->setDiscriminatorMap($discriminatorMap);
                 }
             }
         }
@@ -403,7 +411,9 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata         = new Mapping\MappedSuperClassMetadata($reflectionClass->getName(), $parent);
 
         if ($mappedSuperclassAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
+            $classMetadata->setCustomRepositoryClassName(
+                $classMetadata->fullyQualifiedClassName($mappedSuperclassAnnot->repositoryClass)
+            );
         }
 
         return $classMetadata;

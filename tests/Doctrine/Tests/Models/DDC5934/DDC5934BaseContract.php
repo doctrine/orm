@@ -44,7 +44,7 @@ class DDC5934BaseContract
 
         $association = new Mapping\ManyToManyAssociationMetadata('members');
 
-        $association->setTargetEntity('DDC5934Member');
+        $association->setTargetEntity(DDC5934Member::class);
 
         $metadata->addProperty($association);
     }

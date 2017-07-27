@@ -67,7 +67,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $columnList[] = $discrColumnType->convertToDatabaseValueSQL($tableAlias . '.' . $quotedColumnName, $this->platform);
 
         // Append subclass columns
-        foreach ($this->class->subClasses as $subClassName) {
+        foreach ($this->class->getSubClasses() as $subClassName) {
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Subclass columns
@@ -171,7 +171,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $discrValues = array_flip($this->class->discriminatorMap);
 
-        foreach ($this->class->subClasses as $subclassName) {
+        foreach ($this->class->getSubClasses() as $subclassName) {
             $values[] = $this->conn->quote($discrValues[$subclassName]);
         }
 

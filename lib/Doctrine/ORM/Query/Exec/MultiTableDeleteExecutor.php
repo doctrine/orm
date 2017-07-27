@@ -92,7 +92,11 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
 
         // 3. Create and store DELETE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->getClassName()], $primaryClass->subClasses);
+        $classNames = array_merge(
+            $primaryClass->getParentClasses(),
+            [$primaryClass->getClassName()],
+            $primaryClass->getSubClasses()
+        );
 
         foreach (array_reverse($classNames) as $className) {
             $parentClass = $em->getClassMetadata($className);

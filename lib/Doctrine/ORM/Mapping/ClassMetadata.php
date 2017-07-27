@@ -109,18 +109,18 @@ class ClassMetadata implements TableOwner
     private $readOnly = false;
 
     /**
-     * READ-ONLY: The names of the parent classes (ancestors).
+     * The names of the parent classes (ancestors).
      *
      * @var array
      */
-    public $parentClasses = [];
+    protected $parentClasses = [];
 
     /**
-     * READ-ONLY: The names of all subclasses (descendants).
+     * The names of all subclasses (descendants).
      *
      * @var array
      */
-    public $subClasses = [];
+    protected $subClasses = [];
 
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
@@ -872,8 +872,6 @@ class ClassMetadata implements TableOwner
             throw MappingException::missingTargetEntity($fieldName);
         }
 
-        $targetEntity = $this->fullyQualifiedClassName($targetEntity);
-
         $property->setSourceEntity($this->name);
         $property->setOwningSide($property->getMappedBy() === null);
         $property->setTargetEntity($targetEntity);
@@ -1310,6 +1308,8 @@ class ClassMetadata implements TableOwner
     /**
      * Sets the mapped subclasses of this class.
      *
+     * @todo guilhermeblanco Only used for ClassMetadataTest. Remove if possible!
+     *
      * @param array $subclasses The names of all mapped subclasses.
      *
      * @return void
@@ -1317,8 +1317,16 @@ class ClassMetadata implements TableOwner
     public function setSubclasses(array $subclasses)
     {
         foreach ($subclasses as $subclass) {
-            $this->subClasses[] = $this->fullyQualifiedClassName($subclass);
+            $this->subClasses[] = $subclass;
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getSubClasses() : array
+    {
+        return $this->subClasses;
     }
 
     /**
@@ -1337,6 +1345,14 @@ class ClassMetadata implements TableOwner
         if (count($classNames) > 0) {
             $this->rootEntityName = array_pop($classNames);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getParentClasses() : array
+    {
+        return $this->parentClasses;
     }
 
     /**
@@ -1717,7 +1733,7 @@ class ClassMetadata implements TableOwner
      */
     public function setCustomRepositoryClassName(?string $repositoryClassName)
     {
-        $this->customRepositoryClassName = $this->fullyQualifiedClassName($repositoryClassName);
+        $this->customRepositoryClassName = $repositoryClassName;
     }
 
     /**
@@ -1793,7 +1809,6 @@ class ClassMetadata implements TableOwner
      */
     public function addEntityListener($eventName, $class, $method)
     {
-        $class    = $this->fullyQualifiedClassName($class);
         $listener = [
             'class'  => $class,
             'method' => $method,
@@ -1869,8 +1884,6 @@ class ClassMetadata implements TableOwner
      */
     public function addDiscriminatorMapClass($name, $className)
     {
-        $className = $this->fullyQualifiedClassName($className);
-
         $this->discriminatorMap[$name] = $className;
 
         if ($this->name === $className) {
