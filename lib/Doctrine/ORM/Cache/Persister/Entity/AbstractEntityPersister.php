@@ -197,7 +197,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function exists($entity, Criteria $extraConditions = null)
     {
         if (null === $extraConditions) {
-            $key = new EntityCacheKey($this->class->getRootClassName(), $this->getIdentifierValues($entity));
+            $key = new EntityCacheKey($this->class->getRootClassName(), $this->getIdentifier($entity));
 
             if ($this->region->contains($key)) {
                 return true;
@@ -363,9 +363,17 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
-    public function getIdentifierValues($entity) : array
+    public function getIdentifier($entity) : array
     {
-        return $this->persister->getIdentifierValues($entity);
+        return $this->persister->getIdentifier($entity);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setIdentifier($entity, array $id) : void
+    {
+        $this->persister->setIdentifier($entity, $id);
     }
 
     /**

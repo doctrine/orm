@@ -267,7 +267,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $query = $this->em->createQuery($dql)->setParameter('owner', $collection->getOwner());
 
         $statement  = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ') ' . $query->getSQL();
-        $parameters = array_values($sourcePersister->getIdentifierValues($collection->getOwner()));
+        $parameters = array_values($sourcePersister->getIdentifier($collection->getOwner()));
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
         // 3) Delete records on each table in the hierarchy

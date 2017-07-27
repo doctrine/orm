@@ -58,7 +58,17 @@ interface EntityPersister
      *
      * @return array
      */
-    public function getIdentifierValues($entity) : array;
+    public function getIdentifier($entity) : array;
+
+    /**
+     * Populates the entity identifier of an entity.
+     *
+     * @param object $entity
+     * @param array  $id
+     *
+     * @return void
+     */
+    public function setIdentifier($entity, array $id);
 
     /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
