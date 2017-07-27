@@ -16,10 +16,12 @@ use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\Tests\Models\CMS;
 use Doctrine\Tests\Models\Company\CompanyContract;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
 use Doctrine\Tests\Models\DDC6412\DDC6412File;
+use Doctrine\Tests\Models\DDC964\DDC964Address;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
@@ -39,8 +41,8 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
         self::assertEquals(CMS\CmsUser::class, $cm->getRootClassName());
-        self::assertEquals([], $cm->subClasses);
-        self::assertEquals([], $cm->parentClasses);
+        self::assertEquals([], $cm->getSubClasses());
+        self::assertEquals([], $cm->getParentClasses());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm->inheritanceType);
 
         // Customize state
@@ -50,16 +52,20 @@ class ClassMetadataTest extends OrmTestCase
         $discrColumn->setType(Type::getType('integer'));
 
         $cm->setInheritanceType(Mapping\InheritanceType::SINGLE_TABLE);
-        $cm->setSubclasses(["One", "Two", "Three"]);
         $cm->setParentClasses(["UserParent"]);
-        $cm->setCustomRepositoryClassName("UserRepository");
+        $cm->setSubclasses([
+            'Doctrine\Tests\Models\CMS\One',
+            'Doctrine\Tests\Models\CMS\Two',
+            'Doctrine\Tests\Models\CMS\Three'
+        ]);
+        $cm->setCustomRepositoryClassName('Doctrine\Tests\Models\CMS\UserRepository');
         $cm->setDiscriminatorColumn($discrColumn);
         $cm->asReadOnly();
         $cm->addNamedQuery('dql', 'foo');
 
         $association = new Mapping\OneToOneAssociationMetadata('phonenumbers');
 
-        $association->setTargetEntity('CmsAddress');
+        $association->setTargetEntity(CMS\CmsAddress::class);
         $association->setMappedBy('foo');
 
         $cm->addProperty($association);
@@ -74,19 +80,16 @@ class ClassMetadataTest extends OrmTestCase
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
         self::assertEquals('UserParent', $cm->getRootClassName());
-        self::assertEquals([CMS\One::class, CMS\Two::class, CMS\Three::class], $cm->subClasses);
-        self::assertEquals(['UserParent'], $cm->parentClasses);
-        self::assertEquals(CMS\UserRepository::class, $cm->getCustomRepositoryClassName());
+        self::assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->getCustomRepositoryClassName());
         self::assertEquals(
             [
                 'Doctrine\Tests\Models\CMS\One',
                 'Doctrine\Tests\Models\CMS\Two',
                 'Doctrine\Tests\Models\CMS\Three'
             ],
-            $cm->subClasses
+            $cm->getSubClasses()
         );
-        self::assertEquals(['UserParent'], $cm->parentClasses);
-        self::assertEquals(CMS\UserRepository::class, $cm->getCustomRepositoryClassName());
+        self::assertEquals(['UserParent'], $cm->getParentClasses());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
         self::assertEquals(['dql' => 'foo'], $cm->getNamedQueries());
@@ -186,7 +189,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
-        $association->setTargetEntity('CmsGroup');
+        $association->setTargetEntity(CMS\CmsGroup::class);
 
         $cm->addProperty($association);
 
@@ -226,7 +229,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
-        $association->setTargetEntity('CmsGroup');
+        $association->setTargetEntity(CMS\CmsGroup::class);
 
         $cm->addProperty($association);
 
@@ -266,7 +269,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setSubclasses(['DoctrineGlobal_Article']);
 
-        self::assertEquals("DoctrineGlobal_Article", $cm->subClasses[0]);
+        self::assertEquals("DoctrineGlobal_Article", $cm->getSubClasses()[0]);
     }
 
     /**
@@ -328,8 +331,8 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('foo');
 
         $association->setDeclaringClass($cm);
-        $association->setSourceEntity('stdClass');
-        $association->setTargetEntity('stdClass');
+        $association->setSourceEntity(\stdClass::class);
+        $association->setTargetEntity(\stdClass::class);
         $association->setMappedBy('foo');
 
         $cm->addInheritedProperty($association);
@@ -339,8 +342,8 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('foo');
 
         $association->setDeclaringClass($cm);
-        $association->setSourceEntity('stdClass');
-        $association->setTargetEntity('stdClass');
+        $association->setSourceEntity(\stdClass::class);
+        $association->setTargetEntity(\stdClass::class);
         $association->setMappedBy('foo');
 
         $cm->addInheritedProperty($association);
@@ -426,7 +429,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\OneToOneAssociationMetadata('name');
 
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $metadata->addProperty($association);
     }
@@ -438,7 +441,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\OneToOneAssociationMetadata('name');
 
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $metadata->addProperty($association);
 
@@ -497,7 +500,7 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\ManyToManyAssociationMetadata('user');
 
         $association->setJoinTable($joinTable);
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
         $association->setInversedBy('users');
 
         $cm->addProperty($association);
@@ -525,7 +528,7 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('user');
 
         $association->setJoinColumns($joinColumns);
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $cm->addProperty($association);
 
@@ -554,7 +557,7 @@ class ClassMetadataTest extends OrmTestCase
         $association = new Mapping\ManyToManyAssociationMetadata('user');
 
         $association->setJoinTable($joinTable);
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
         $association->setInversedBy('users');
 
         $cm->addProperty($association);
@@ -580,7 +583,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\OneToOneAssociationMetadata('user');
 
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $metadata->addProperty($association);
 
@@ -602,7 +605,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToManyAssociationMetadata('user');
 
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $metadata->addProperty($association);
 
@@ -1001,8 +1004,8 @@ class ClassMetadataTest extends OrmTestCase
         $metadata = new ClassMetadata(CompanyContract::class);
 
         $metadata->initializeReflection(new RuntimeReflectionService());
-        $metadata->addEntityListener(Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
-        $metadata->addEntityListener(Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
+        $metadata->addEntityListener(Events::prePersist, CompanyContractListener::class, 'prePersistHandler');
+        $metadata->addEntityListener(Events::postPersist, CompanyContractListener::class, 'postPersistHandler');
 
         $serialize   = serialize($metadata);
         $unserialize = unserialize($serialize);
@@ -1127,7 +1130,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm->addProperty($association);
 
         $this->expectException(MappingException::class);
-        $this->expectExceptionMessage("The target-entity Doctrine\\Tests\\Models\\CMS\\UnknownClass cannot be found in '" . CMS\CmsUser::class . "#address'.");
+        $this->expectExceptionMessage("The target-entity 'UnknownClass' cannot be found in '" . CMS\CmsUser::class . "#address'.");
 
         $cm->validateAssociations();
     }
@@ -1173,7 +1176,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToManyAssociationMetadata('user');
 
-        $association->setTargetEntity('CmsUser');
+        $association->setTargetEntity(CMS\CmsUser::class);
 
         $addressMetadata->addProperty($association);
 
@@ -1250,7 +1253,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToOneAssociationMetadata('address');
 
-        $association->setTargetEntity('DDC964Address');
+        $association->setTargetEntity(DDC964Address::class);
 
         $cm->addProperty($association);
 
@@ -1282,7 +1285,7 @@ class ClassMetadataTest extends OrmTestCase
      * @group DDC-1955
      *
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Entity Listener "InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
+     * @expectedExceptionMessage Entity Listener "\InvalidClassName" declared on "Doctrine\Tests\Models\CMS\CmsUser" not found.
      */
     public function testInvalidEntityListenerClassException()
     {
@@ -1303,7 +1306,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        $cm->addEntityListener(Events::postLoad, '\Doctrine\Tests\Models\Company\CompanyContractListener', 'invalidMethod');
+        $cm->addEntityListener(Events::postLoad, 'Doctrine\Tests\Models\Company\CompanyContractListener', 'invalidMethod');
     }
 
     public function testManyToManySelfReferencingNamingStrategyDefaults()
@@ -1313,7 +1316,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $association = new Mapping\ManyToManyAssociationMetadata('friendsWithMe');
 
-        $association->setTargetEntity('CustomTypeParent');
+        $association->setTargetEntity(CustomTypeParent::class);
 
         $cm->addProperty($association);
 

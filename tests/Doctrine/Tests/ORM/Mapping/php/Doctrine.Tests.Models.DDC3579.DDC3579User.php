@@ -24,6 +24,6 @@ $metadata->addProperty($fieldMetadata);
 
 $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
-$association->setTargetEntity('DDC3579Group');
+$association->setTargetEntity(\Doctrine\Tests\Models\DDC3579\DDC3579Group::class);
 
 $metadata->addProperty($association);

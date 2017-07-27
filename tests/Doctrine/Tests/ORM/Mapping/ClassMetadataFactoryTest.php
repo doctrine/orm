@@ -52,7 +52,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->setMetadataFor($cm1->getClassName(), $cm1);
 
         // Prechecks
-        self::assertEquals([], $cm1->parentClasses);
+        self::assertEquals([], $cm1->getParentClasses());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
         self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getIdentifierGeneratorType());
         self::assertTrue($cm1->hasField('name'));
@@ -64,7 +64,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertSame($cm1, $cmMap1);
         self::assertEquals('group', $cmMap1->table->getName());
-        self::assertEquals([], $cmMap1->parentClasses);
+        self::assertEquals([], $cmMap1->getParentClasses());
         self::assertTrue($cmMap1->hasField('name'));
     }
 
@@ -306,7 +306,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // and a mapped association
         $association = new Mapping\OneToOneAssociationMetadata('other');
 
-        $association->setTargetEntity('TestEntity1');
+        $association->setTargetEntity(TestEntity1::class);
         $association->setMappedBy('this');
 
         $cm1->addProperty($association);
@@ -324,7 +324,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $association = new Mapping\OneToOneAssociationMetadata('association');
 
         $association->setJoinColumns($joinColumns);
-        $association->setTargetEntity('TestEntity1');
+        $association->setTargetEntity(TestEntity1::class);
 
         $cm1->addProperty($association);
 

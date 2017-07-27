@@ -104,7 +104,7 @@ class DDC3579User
 
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
-        $association->setTargetEntity('DDC3579Group');
+        $association->setTargetEntity(DDC3579Group::class);
 
         $metadata->addProperty($association);
     }

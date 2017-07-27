@@ -526,7 +526,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
             return ($entity instanceof $className) ? $entity : null;
         }
 
-        if ($class->subClasses) {
+        if ($class->getSubClasses()) {
             return $this->find($entityName, $sortedId);
         }
 

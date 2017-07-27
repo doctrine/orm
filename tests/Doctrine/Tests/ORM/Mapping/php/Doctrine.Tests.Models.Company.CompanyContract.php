@@ -3,6 +3,8 @@
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\Models\Company;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
 
 $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('company_contracts');
@@ -20,9 +22,9 @@ $metadata->setDiscriminatorColumn($discrColumn);
 
 $metadata->setDiscriminatorMap(
     [
-        "fix"       => "CompanyFixContract",
-        "flexible"  => "CompanyFlexContract",
-        "flexultra" => "CompanyFlexUltraContract"
+        "fix"       => Company\CompanyFixContract::class,
+        "flexible"  => Company\CompanyFlexContract::class,
+        "flexultra" => Company\CompanyFlexUltraContract::class
     ]
 );
 
@@ -37,14 +39,14 @@ $fieldMetadata->setType(Type::getType('boolean'));
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, CompanyContractListener::class, 'postPersistHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, CompanyContractListener::class, 'prePersistHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, CompanyContractListener::class, 'postUpdateHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, CompanyContractListener::class, 'preUpdateHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, CompanyContractListener::class, 'postRemoveHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, CompanyContractListener::class, 'preRemoveHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, CompanyContractListener::class, 'preFlushHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, CompanyContractListener::class, 'postLoadHandler');
