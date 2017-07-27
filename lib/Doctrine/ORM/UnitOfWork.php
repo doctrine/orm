@@ -1423,8 +1423,9 @@ class UnitOfWork implements PropertyChangedListener
         // Note that you can not remember the NEW or DETACHED state in _entityStates since
         // the UoW does not hold references to such objects and the object hash can be reused.
         // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
-        $class = $this->em->getClassMetadata(get_class($entity));
-        $id    = $class->getIdentifierValues($entity);
+        $class     = $this->em->getClassMetadata(get_class($entity));
+        $persister = $this->getEntityPersister($class->getClassName());
+        $id        = $persister->getIdentifierValues($entity);
 
         if (! $id) {
             return self::STATE_NEW;
@@ -1784,7 +1785,8 @@ class UnitOfWork implements PropertyChangedListener
             return $managedCopy;
         }
 
-        $class = $this->em->getClassMetadata(get_class($entity));
+        $class     = $this->em->getClassMetadata(get_class($entity));
+        $persister = $this->getEntityPersister($class->getClassName());
 
         // First we assume DETACHED, although it can still be NEW but we can avoid
         // an extra db-roundtrip this way. If it is not MANAGED but has an identity,
@@ -1794,7 +1796,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             // Try to look the entity up in the identity map.
-            $id = $class->getIdentifierValues($entity);
+            $id = $persister->getIdentifierValues($entity);
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
@@ -2889,7 +2891,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function getSingleIdentifierValue($entity)
     {
-        $class = $this->em->getClassMetadata(get_class($entity));
+        $class     = $this->em->getClassMetadata(get_class($entity));
+        $persister = $this->getEntityPersister($class->getClassName());
 
         if ($class->isIdentifierComposite()) {
             throw ORMInvalidArgumentException::invalidCompositeIdentifier();
@@ -2897,7 +2900,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $values = $this->isInIdentityMap($entity)
             ? $this->getEntityIdentifier($entity)
-            : $class->getIdentifierValues($entity);
+            : $persister->getIdentifierValues($entity);
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
@@ -3291,7 +3294,8 @@ class UnitOfWork implements PropertyChangedListener
             return true;
         }
 
-        $class = $this->em->getClassMetadata(get_class($entity1));
+        $class     = $this->em->getClassMetadata(get_class($entity1));
+        $persister = $this->getEntityPersister($class->getClassName());
 
         if ($class !== $this->em->getClassMetadata(get_class($entity2))) {
             return false;
@@ -3304,10 +3308,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $id1 = isset($this->entityIdentifiers[$oid1])
             ? $this->entityIdentifiers[$oid1]
-            : $identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifierValues($entity1));
         $id2 = isset($this->entityIdentifiers[$oid2])
             ? $this->entityIdentifiers[$oid2]
-            : $identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
+            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
@@ -3375,9 +3379,10 @@ class UnitOfWork implements PropertyChangedListener
 
                     if (! in_array('merge', $property->getCascade())) {
                         if ($this->getEntityState($other) === self::STATE_DETACHED) {
-                            $targetEntity = $property->getTargetEntity();
-                            $targetClass  = $this->em->getClassMetadata($targetEntity);
-                            $relatedId    = $targetClass->getIdentifierValues($other);
+                            $targetEntity    = $property->getTargetEntity();
+                            $targetClass     = $this->em->getClassMetadata($targetEntity);
+                            $targetPersister = $this->getEntityPersister($targetEntity);
+                            $relatedId       = $targetPersister->getIdentifierValues($other);
 
                             if ($targetClass->getSubClasses()) {
                                 $other = $this->em->find($targetClass->getClassName(), $relatedId);
