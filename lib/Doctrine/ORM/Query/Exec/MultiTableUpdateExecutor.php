@@ -100,7 +100,12 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
 
         // 3. Create and store UPDATE statements
-        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->getClassName()], $primaryClass->subClasses);
+        $classNames = array_merge(
+            $primaryClass->getParentClasses(),
+            [$primaryClass->getClassName()],
+            $primaryClass->getSubClasses()
+        );
+
         $i = -1;
 
         foreach (array_reverse($classNames) as $className) {

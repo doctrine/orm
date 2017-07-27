@@ -287,7 +287,9 @@ class AnnotationDriver implements MappingDriver
                 $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
                 if ($entityAnnot->repositoryClass !== null) {
-                    $metadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
+                    $metadata->setCustomRepositoryClassName(
+                        $metadata->fullyQualifiedClassName($entityAnnot->repositoryClass)
+                    );
                 }
 
                 if ($entityAnnot->readOnly) {
@@ -299,7 +301,11 @@ class AnnotationDriver implements MappingDriver
             case isset($classAnnotations[Annotation\MappedSuperclass::class]):
                 $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
-                $metadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
+                if ($mappedSuperclassAnnot->repositoryClass !== null) {
+                    $metadata->setCustomRepositoryClassName(
+                        $metadata->fullyQualifiedClassName($mappedSuperclassAnnot->repositoryClass)
+                    );
+                }
 
                 $metadata->isMappedSuperclass = true;
                 $metadata->isEmbeddedClass = false;
@@ -415,8 +421,14 @@ class AnnotationDriver implements MappingDriver
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
+                    $discriminatorMap           = array_map(
+                        function ($className) use ($metadata) {
+                            return $metadata->fullyQualifiedClassName($className);
+                        },
+                        $discriminatorMapAnnotation->value
+                    );
 
-                    $metadata->setDiscriminatorMap($discriminatorMapAnnotation->value);
+                    $metadata->setDiscriminatorMap($discriminatorMap);
                 }
             }
         }
@@ -785,8 +797,9 @@ class AnnotationDriver implements MappingDriver
         $fieldName     = $reflProperty->getName();
         $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
         $assocMetadata = new Mapping\OneToOneAssociationMetadata($fieldName);
+        $targetEntity  = $metadata->fullyQualifiedClassName($oneToOneAnnot->targetEntity);
 
-        $assocMetadata->setTargetEntity($oneToOneAnnot->targetEntity);
+        $assocMetadata->setTargetEntity($targetEntity);
         $assocMetadata->setCascade($oneToOneAnnot->cascade);
         $assocMetadata->setOrphanRemoval($oneToOneAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToOneAnnot->fetch));
@@ -848,8 +861,9 @@ class AnnotationDriver implements MappingDriver
         $fieldName      = $reflProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
         $assocMetadata  = new Mapping\ManyToOneAssociationMetadata($fieldName);
+        $targetEntity  = $metadata->fullyQualifiedClassName($manyToOneAnnot->targetEntity);
 
-        $assocMetadata->setTargetEntity($manyToOneAnnot->targetEntity);
+        $assocMetadata->setTargetEntity($targetEntity);
         $assocMetadata->setCascade($manyToOneAnnot->cascade);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToOneAnnot->fetch));
 
@@ -906,8 +920,9 @@ class AnnotationDriver implements MappingDriver
         $fieldName      = $reflProperty->getName();
         $oneToManyAnnot = $propertyAnnotations[Annotation\OneToMany::class];
         $assocMetadata  = new Mapping\OneToManyAssociationMetadata($fieldName);
+        $targetEntity  = $metadata->fullyQualifiedClassName($oneToManyAnnot->targetEntity);
 
-        $assocMetadata->setTargetEntity($oneToManyAnnot->targetEntity);
+        $assocMetadata->setTargetEntity($targetEntity);
         $assocMetadata->setCascade($oneToManyAnnot->cascade);
         $assocMetadata->setOrphanRemoval($oneToManyAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToManyAnnot->fetch));
@@ -953,8 +968,9 @@ class AnnotationDriver implements MappingDriver
         $fieldName       = $reflProperty->getName();
         $manyToManyAnnot = $propertyAnnotations[Annotation\ManyToMany::class];
         $assocMetadata   = new Mapping\ManyToManyAssociationMetadata($fieldName);
+        $targetEntity    = $metadata->fullyQualifiedClassName($manyToManyAnnot->targetEntity);
 
-        $assocMetadata->setTargetEntity($manyToManyAnnot->targetEntity);
+        $assocMetadata->setTargetEntity($targetEntity);
         $assocMetadata->setCascade($manyToManyAnnot->cascade);
         $assocMetadata->setOrphanRemoval($manyToManyAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToManyAnnot->fetch));

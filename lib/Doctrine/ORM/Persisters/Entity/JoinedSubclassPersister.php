@@ -68,7 +68,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $subTableStmts[$this->class->getTableName()] = $this->conn->prepare($this->getInsertSQL());
         }
 
-        foreach ($this->class->parentClasses as $parentClassName) {
+        foreach ($this->class->getParentClasses() as $parentClassName) {
             $parentClass = $this->em->getClassMetadata($parentClassName);
             $parentTableName = $parentClass->getTableName();
 
@@ -211,7 +211,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         $affectedRows = $this->conn->delete($rootTable, $id);
 
-        foreach ($this->class->parentClasses as $parentClass) {
+        foreach ($this->class->getParentClasses() as $parentClass) {
             $parentMetadata = $this->em->getClassMetadata($parentClass);
             $parentTable    = $parentMetadata->table->getQuotedQualifiedName($this->platform);
 
@@ -328,7 +328,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $baseTableAlias     = $this->getSQLTableAlias($this->class->getTableName());
 
         // INNER JOIN parent tables
-        foreach ($this->class->parentClasses as $parentClassName) {
+        foreach ($this->class->getParentClasses() as $parentClassName) {
             $conditions   = [];
             $parentClass  = $this->em->getClassMetadata($parentClassName);
             $tableName    = $parentClass->table->getQuotedQualifiedName($this->platform);
@@ -403,7 +403,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         );
 
         // sub tables
-        foreach ($this->class->subClasses as $subClassName) {
+        foreach ($this->class->getSubClasses() as $subClassName) {
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Add columns
@@ -448,7 +448,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
     {
         // Identifier columns must always come first in the column list of subclasses.
         $columns = [];
-        $parentColumns = $this->class->parentClasses
+        $parentColumns = $this->class->getParentClasses()
             ? $this->class->getIdentifierColumns($this->em)
             : [];
 
@@ -525,7 +525,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $identifierColumns = $this->class->getIdentifierColumns($this->em);
 
         // INNER JOIN parent tables
-        foreach ($this->class->parentClasses as $parentClassName) {
+        foreach ($this->class->getParentClasses() as $parentClassName) {
             $conditions   = [];
             $parentClass  = $this->em->getClassMetadata($parentClassName);
             $tableName    = $parentClass->table->getQuotedQualifiedName($this->platform);
@@ -542,7 +542,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         }
 
         // OUTER JOIN sub tables
-        foreach ($this->class->subClasses as $subClassName) {
+        foreach ($this->class->getSubClasses() as $subClassName) {
             $conditions  = [];
             $subClass    = $this->em->getClassMetadata($subClassName);
             $tableName   = $subClass->table->getQuotedQualifiedName($this->platform);

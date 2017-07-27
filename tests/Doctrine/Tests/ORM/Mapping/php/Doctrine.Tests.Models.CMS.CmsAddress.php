@@ -5,6 +5,7 @@ use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsAddressListener;
 
 $tableMetadata = new Mapping\TableMetadata();
 $tableMetadata->setName('company_person');
@@ -40,7 +41,7 @@ $joinColumns[] = $joinColumn;
 $association = new Mapping\OneToOneAssociationMetadata('user');
 
 $association->setJoinColumns($joinColumns);
-$association->setTargetEntity('CmsUser');
+$association->setTargetEntity(\Doctrine\Tests\Models\CMS\CmsUser::class);
 
 $metadata->addProperty($association);
 
@@ -119,14 +120,14 @@ $metadata->addSqlResultSetMapping(
     ]
 );
 
-$metadata->addEntityListener(Events::postPersist, 'CmsAddressListener', 'postPersist');
-$metadata->addEntityListener(Events::prePersist, 'CmsAddressListener', 'prePersist');
+$metadata->addEntityListener(Events::postPersist, CmsAddressListener::class, 'postPersist');
+$metadata->addEntityListener(Events::prePersist, CmsAddressListener::class, 'prePersist');
 
-$metadata->addEntityListener(Events::postUpdate, 'CmsAddressListener', 'postUpdate');
-$metadata->addEntityListener(Events::preUpdate, 'CmsAddressListener', 'preUpdate');
+$metadata->addEntityListener(Events::postUpdate, CmsAddressListener::class, 'postUpdate');
+$metadata->addEntityListener(Events::preUpdate, CmsAddressListener::class, 'preUpdate');
 
-$metadata->addEntityListener(Events::postRemove, 'CmsAddressListener', 'postRemove');
-$metadata->addEntityListener(Events::preRemove, 'CmsAddressListener', 'preRemove');
+$metadata->addEntityListener(Events::postRemove, CmsAddressListener::class, 'postRemove');
+$metadata->addEntityListener(Events::preRemove, CmsAddressListener::class, 'preRemove');
 
-$metadata->addEntityListener(Events::preFlush, 'CmsAddressListener', 'preFlush');
-$metadata->addEntityListener(Events::postLoad, 'CmsAddressListener', 'postLoad');
+$metadata->addEntityListener(Events::preFlush, CmsAddressListener::class, 'preFlush');
+$metadata->addEntityListener(Events::postLoad, CmsAddressListener::class, 'postLoad');

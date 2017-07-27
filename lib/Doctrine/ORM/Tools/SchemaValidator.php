@@ -103,7 +103,7 @@ class SchemaValidator
             $ce = array_merge($ce, $this->validateAssociation($class, $association));
         }
 
-        foreach ($class->subClasses as $subClass) {
+        foreach ($class->getSubClasses() as $subClass) {
             if (!in_array($class->getClassName(), class_parents($subClass))) {
                 $message = "According to the discriminator map class, '%s' has to be a child of '%s', but these entities are not related through inheritance.";
 
