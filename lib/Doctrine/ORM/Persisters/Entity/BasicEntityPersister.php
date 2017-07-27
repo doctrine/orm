@@ -217,6 +217,25 @@ class BasicEntityPersister implements EntityPersister
     /**
      * {@inheritdoc}
      */
+    public function getIdentifierValues($entity): array
+    {
+        $id = [];
+
+        foreach ($this->class->getIdentifier() as $fieldName) {
+            $property = $this->class->getProperty($fieldName);
+            $value    = $property->getValue($entity);
+
+            if (null !== $value) {
+                $id[$fieldName] = $value;
+            }
+        }
+
+        return $id;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function insert($entity)
     {
         $postInsertIds       = [];
@@ -249,7 +268,7 @@ class BasicEntityPersister implements EntityPersister
                 $this->class->getSingleIdentifierFieldName() => $generatedId,
             ];
         } else {
-            $id = $this->class->getIdentifierValues($entity);
+            $id = $this->getIdentifierValues($entity);
         }
 
         if ($this->class->isVersioned()) {
@@ -2010,13 +2029,17 @@ class BasicEntityPersister implements EntityPersister
             return [$newValue];
         }
 
-        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            $class = $this->em->getClassMetadata(get_class($value));
+        $metadataFactory = $this->em->getMetadataFactory();
+        $unitOfWork      = $this->em->getUnitOfWork();
+
+        if (is_object($value) && $metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+            $class     = $metadataFactory->getMetadataFor(get_class($value));
+            $persister = $unitOfWork->getEntityPersister($class->getClassName());
 
             if ($class->isIdentifierComposite()) {
                 $newValue = [];
 
-                foreach ($class->getIdentifierValues($value) as $innerValue) {
+                foreach ($persister->getIdentifierValues($value) as $innerValue) {
                     $newValue = array_merge($newValue, $this->getValues($innerValue));
                 }
 
@@ -2048,7 +2071,7 @@ class BasicEntityPersister implements EntityPersister
      */
     public function exists($entity, Criteria $extraConditions = null)
     {
-        $criteria = $this->class->getIdentifierValues($entity);
+        $criteria = $this->getIdentifierValues($entity);
 
         if ( ! $criteria) {
             return false;

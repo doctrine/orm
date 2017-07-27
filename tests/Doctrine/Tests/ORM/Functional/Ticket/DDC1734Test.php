@@ -80,11 +80,13 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private function getProxy($object)
     {
-        $metadataFactory = $this->em->getMetadataFactory();
-        $className       = get_class($object);
-        $identifier      = $metadataFactory->getMetadataFor($className)->getIdentifierValues($object);
+        $unitOfWork   = $this->em->getUnitOfWork();
+        $proxyFactory = $this->em->getProxyFactory();
+        $className    = get_class($object);
+        $persister    = $unitOfWork->getEntityPersister($className);
+        $identifier   = $persister->getIdentifierValues($object);
 
-        return $this->em->getProxyFactory()->getProxy($className, $identifier);
+        return $proxyFactory->getProxy($className, $identifier);
     }
 
 }
