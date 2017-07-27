@@ -84,7 +84,7 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $proxyFactory = $this->em->getProxyFactory();
         $className    = get_class($object);
         $persister    = $unitOfWork->getEntityPersister($className);
-        $identifier   = $persister->getIdentifierValues($object);
+        $identifier   = $persister->getIdentifier($object);
 
         return $proxyFactory->getProxy($className, $identifier);
     }
