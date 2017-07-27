@@ -1132,11 +1132,11 @@ class UnitOfWork implements PropertyChangedListener
                 $calc->addDependency($targetClass->getClassName(), $class->getClassName(), $weight);
 
                 // If the target class has mapped subclasses, these share the same dependency.
-                if ( ! $targetClass->subClasses) {
+                if ( ! $targetClass->getSubClasses()) {
                     continue;
                 }
 
-                foreach ($targetClass->subClasses as $subClassName) {
+                foreach ($targetClass->getSubClasses() as $subClassName) {
                     $targetSubClass = $this->em->getClassMetadata($subClassName);
 
                     if ( ! $calc->hasNode($subClassName)) {
@@ -1215,7 +1215,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @throws ORMInvalidArgumentException
      */
-    public function scheduleForUpdate($entity)
+    public function scheduleForUpdate($entity) : void
     {
         $oid = spl_object_hash($entity);
 
@@ -1246,7 +1246,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return void
      */
-    public function scheduleExtraUpdate($entity, array $changeset)
+    public function scheduleExtraUpdate($entity, array $changeset) : void
     {
         $oid         = spl_object_hash($entity);
         $extraUpdate = [$entity, $changeset];
@@ -1269,7 +1269,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return boolean
      */
-    public function isScheduledForUpdate($entity)
+    public function isScheduledForUpdate($entity) : bool
     {
         return isset($this->entityUpdates[spl_object_hash($entity)]);
     }
@@ -2707,7 +2707,7 @@ class UnitOfWork implements PropertyChangedListener
 
                     break;
 
-                case ($targetClass->subClasses):
+                case ($targetClass->getSubClasses()):
                     // If it might be a subtype, it can not be lazy. There isn't even
                     // a way to solve this with deferred eager loading, which means putting
                     // an entity with subclasses at a *-to-one location is really bad! (performance-wise)
@@ -3370,7 +3370,7 @@ class UnitOfWork implements PropertyChangedListener
                             $targetClass  = $this->em->getClassMetadata($targetEntity);
                             $relatedId    = $targetClass->getIdentifierValues($other);
 
-                            if ($targetClass->subClasses) {
+                            if ($targetClass->getSubClasses()) {
                                 $other = $this->em->find($targetClass->getClassName(), $relatedId);
                             } else {
                                 $other = $this->em->getProxyFactory()->getProxy($targetEntity, $relatedId);

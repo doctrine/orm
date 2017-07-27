@@ -699,7 +699,7 @@ class EntityGeneratorTest extends OrmTestCase
         $association = new Mapping\ManyToManyAssociationMetadata('centroCustos');
 
         $association->setJoinTable($joinTable);
-        $association->setTargetEntity('DDC2079CentroCusto');
+        $association->setTargetEntity($this->namespace . '\\DDC2079CentroCusto');
 
         $metadata->addProperty($association);
 

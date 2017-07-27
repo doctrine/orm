@@ -781,7 +781,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
     {
-        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
+        return new self("The target-entity '" . $targetEntity . "' cannot be found in '" . $sourceEntity."#".$associationName."'.");
     }
 
     /**

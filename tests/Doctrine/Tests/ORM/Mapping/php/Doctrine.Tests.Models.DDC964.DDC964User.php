@@ -35,7 +35,7 @@ $joinColumns[] = $joinColumn;
 $association = new Mapping\ManyToOneAssociationMetadata('address');
 
 $association->setJoinColumns($joinColumns);
-$association->setTargetEntity('DDC964Address');
+$association->setTargetEntity(\Doctrine\Tests\Models\DDC964\DDC964Address::class);
 $association->setCascade(['persist', 'merge']);
 
 $metadata->addProperty($association);
@@ -60,7 +60,7 @@ $joinTable->addInverseJoinColumn($joinColumn);
 $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
 $association->setJoinTable($joinTable);
-$association->setTargetEntity('DDC964Group');
+$association->setTargetEntity(\Doctrine\Tests\Models\DDC964\DDC964Group::class);
 $association->setInversedBy('user');
 $association->setCascade(['persist','merge','detach']);
 

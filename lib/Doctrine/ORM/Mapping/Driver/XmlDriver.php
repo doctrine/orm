@@ -57,15 +57,21 @@ class XmlDriver extends FileDriver
 
         if ($xmlRoot->getName() === 'entity') {
             if (isset($xmlRoot['repository-class'])) {
-                $metadata->setCustomRepositoryClassName((string) $xmlRoot['repository-class']);
+                $metadata->setCustomRepositoryClassName(
+                    $metadata->fullyQualifiedClassName((string) $xmlRoot['repository-class'])
+                );
             }
+
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
                 $metadata->asReadOnly();
             }
         } else if ($xmlRoot->getName() === 'mapped-superclass') {
-            $metadata->setCustomRepositoryClassName(
-                isset($xmlRoot['repository-class']) ? (string) $xmlRoot['repository-class'] : null
-            );
+            if (isset($xmlRoot['repository-class'])) {
+                $metadata->setCustomRepositoryClassName(
+                    $metadata->fullyQualifiedClassName((string) $xmlRoot['repository-class'])
+                );
+            }
+
             $metadata->isMappedSuperclass = true;
         } else if ($xmlRoot->getName() === 'embeddable') {
             $metadata->isEmbeddedClass = true;
@@ -239,7 +245,7 @@ class XmlDriver extends FileDriver
                     $map = [];
 
                     foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
-                        $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
+                        $map[(string) $discrMapElement['value']] = $metadata->fullyQualifiedClassName((string) $discrMapElement['class']);
                     }
 
                     $metadata->setDiscriminatorMap($map);
@@ -343,9 +349,10 @@ class XmlDriver extends FileDriver
         // Evaluate <one-to-one ...> mappings
         if (isset($xmlRoot->{'one-to-one'})) {
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
-                $association = new Mapping\OneToOneAssociationMetadata((string) $oneToOneElement['field']);
+                $association  = new Mapping\OneToOneAssociationMetadata((string) $oneToOneElement['field']);
+                $targetEntity = $metadata->fullyQualifiedClassName((string) $oneToOneElement['target-entity']);
 
-                $association->setTargetEntity((string) $oneToOneElement['target-entity']);
+                $association->setTargetEntity($targetEntity);
 
                 if (isset($associationIds[$association->getName()])) {
                     $association->setPrimaryKey(true);
@@ -403,9 +410,10 @@ class XmlDriver extends FileDriver
         // Evaluate <one-to-many ...> mappings
         if (isset($xmlRoot->{'one-to-many'})) {
             foreach ($xmlRoot->{'one-to-many'} as $oneToManyElement) {
-                $association = new Mapping\OneToManyAssociationMetadata((string) $oneToManyElement['field']);
+                $association  = new Mapping\OneToManyAssociationMetadata((string) $oneToManyElement['field']);
+                $targetEntity = $metadata->fullyQualifiedClassName((string) $oneToManyElement['target-entity']);
 
-                $association->setTargetEntity((string) $oneToManyElement['target-entity']);
+                $association->setTargetEntity($targetEntity);
                 $association->setMappedBy((string) $oneToManyElement['mapped-by']);
 
                 if (isset($oneToManyElement['fetch'])) {
@@ -456,9 +464,10 @@ class XmlDriver extends FileDriver
         // Evaluate <many-to-one ...> mappings
         if (isset($xmlRoot->{'many-to-one'})) {
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
-                $association = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
+                $association  = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
+                $targetEntity = $metadata->fullyQualifiedClassName((string) $manyToOneElement['target-entity']);
 
-                $association->setTargetEntity((string) $manyToOneElement['target-entity']);
+                $association->setTargetEntity($targetEntity);
 
                 if (isset($associationIds[$association->getName()])) {
                     $association->setPrimaryKey(true);
@@ -508,9 +517,10 @@ class XmlDriver extends FileDriver
         // Evaluate <many-to-many ...> mappings
         if (isset($xmlRoot->{'many-to-many'})) {
             foreach ($xmlRoot->{'many-to-many'} as $manyToManyElement) {
-                $association = new Mapping\ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
+                $association  = new Mapping\ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
+                $targetEntity = $metadata->fullyQualifiedClassName((string) $manyToManyElement['target-entity']);
 
-                $association->setTargetEntity((string) $manyToManyElement['target-entity']);
+                $association->setTargetEntity($targetEntity);
 
                 if (isset($manyToManyElement['fetch'])) {
                     $association->setFetchMode(
@@ -903,28 +913,6 @@ class XmlDriver extends FileDriver
         return array_filter($events, function ($eventName) use ($method) {
             return $eventName === $method->getName();
         });
-    }
-
-    /**
-     * Parse / Normalize the cache configuration
-     *
-     * @param SimpleXMLElement $cacheMapping
-     *
-     * @return array
-     */
-    private function cacheToArray(SimpleXMLElement $cacheMapping)
-    {
-        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : null;
-        $usage  = isset($cacheMapping['usage']) ? strtoupper($cacheMapping['usage']) : null;
-
-        if ($usage) {
-            $usage = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $usage));
-        }
-
-        return [
-            'usage'  => $usage,
-            'region' => $region,
-        ];
     }
 
     /**

@@ -11,7 +11,7 @@ $metadata->setCache(
 
 $association = new Mapping\ManyToOneAssociationMetadata('foo');
 
-$association->setTargetEntity('PHPSLCFoo');
+$association->setTargetEntity(PHPSLCFoo::class);
 $association->setPrimaryKey(true);
 
 $metadata->addProperty($association);

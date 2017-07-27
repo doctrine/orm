@@ -3,6 +3,8 @@
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\Models\Company\CompanyContractListener;
+use Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener;
 
 /* @var $metadata ClassMetadata */
 $fieldMetadata = new Mapping\FieldMetadata('maxPrice');
@@ -12,17 +14,17 @@ $fieldMetadata->setColumnName('maxPrice');
 
 $metadata->addProperty($fieldMetadata);
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, CompanyContractListener::class, 'postPersistHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, CompanyContractListener::class, 'prePersistHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, CompanyContractListener::class, 'postUpdateHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, CompanyContractListener::class, 'preUpdateHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, CompanyContractListener::class, 'postRemoveHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, CompanyContractListener::class, 'preRemoveHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
-$metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, CompanyContractListener::class, 'preFlushHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, CompanyContractListener::class, 'postLoadHandler');
 
-$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyFlexUltraContractListener', 'prePersistHandler1');
-$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyFlexUltraContractListener', 'prePersistHandler2');
+$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, CompanyFlexUltraContractListener::class, 'prePersistHandler1');
+$metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, CompanyFlexUltraContractListener::class, 'prePersistHandler2');

@@ -42,8 +42,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass::class);
 
-        self::assertEmpty($class->subClasses);
-        self::assertEmpty($class->parentClasses);
+        self::assertEmpty($class->getSubClasses());
+        self::assertEmpty($class->getParentClasses());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -53,8 +53,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     {
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
 
-        self::assertEmpty($class->subClasses);
-        self::assertEmpty($class->parentClasses);
+        self::assertEmpty($class->getSubClasses());
+        self::assertEmpty($class->getParentClasses());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));

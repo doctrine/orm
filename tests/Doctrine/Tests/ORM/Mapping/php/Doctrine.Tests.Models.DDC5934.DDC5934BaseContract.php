@@ -15,6 +15,6 @@ $metadata->addProperty($fieldMetadata);
 
 $association = new Mapping\ManyToManyAssociationMetadata('members');
 
-$association->setTargetEntity('DDC5934Member');
+$association->setTargetEntity(\Doctrine\Tests\Models\DDC5934\DDC5934Member::class);
 
 $metadata->addProperty($association);

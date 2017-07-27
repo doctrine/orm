@@ -172,12 +172,12 @@ class SchemaTool
                     $this->addDiscriminatorColumnDefinition($class, $table);
 
                     // Aggregate all the information from all classes in the hierarchy
-                    foreach ($class->parentClasses as $parentClassName) {
+                    foreach ($class->getParentClasses() as $parentClassName) {
                         // Parent class information is already contained in this class
                         $processedClasses[$parentClassName] = true;
                     }
 
-                    foreach ($class->subClasses as $subClassName) {
+                    foreach ($class->getSubClasses() as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
                         $this->gatherColumns($subClass, $table);
@@ -462,7 +462,7 @@ class SchemaTool
             ],
         ];
 
-        if ($classMetadata->inheritanceType === InheritanceType::SINGLE_TABLE && count($classMetadata->parentClasses) > 0) {
+        if ($classMetadata->inheritanceType === InheritanceType::SINGLE_TABLE && count($classMetadata->getParentClasses()) > 0) {
             $options['notnull'] = false;
         }
 
