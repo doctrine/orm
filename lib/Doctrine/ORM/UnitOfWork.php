@@ -845,13 +845,14 @@ class UnitOfWork implements PropertyChangedListener
             $idValue = $idGen->generate($this->em, $entity);
 
             if (!$idGen instanceof AssignedGenerator) {
+                $persister = $this->getEntityPersister($class->getClassName());
                 $idField = $class->getSingleIdentifierFieldName();
                 $property = $class->getProperty($idField);
                 $platform = $this->em->getConnection()->getDatabasePlatform();
                 $idValue = $property->getType()->convertToPHPValue($idValue, $platform);
                 $idValue = [$idField => $idValue];
 
-                $class->assignIdentifier($entity, $idValue);
+                $persister->setIdentifier($entity, $idValue);
             }
 
             $this->entityIdentifiers[$oid] = $idValue;
@@ -1425,7 +1426,7 @@ class UnitOfWork implements PropertyChangedListener
         // More generally because the state may "change" between NEW/DETACHED without the UoW being aware of it.
         $class     = $this->em->getClassMetadata(get_class($entity));
         $persister = $this->getEntityPersister($class->getClassName());
-        $id        = $persister->getIdentifierValues($entity);
+        $id        = $persister->getIdentifier($entity);
 
         if (! $id) {
             return self::STATE_NEW;
@@ -1796,7 +1797,7 @@ class UnitOfWork implements PropertyChangedListener
 
         if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             // Try to look the entity up in the identity map.
-            $id = $persister->getIdentifierValues($entity);
+            $id = $persister->getIdentifier($entity);
 
             // If there is no ID, it is actually NEW.
             if ( ! $id) {
@@ -1831,7 +1832,8 @@ class UnitOfWork implements PropertyChangedListener
                     }
 
                     $managedCopy = $this->newInstance($class);
-                    $class->assignIdentifier($managedCopy, $id);
+
+                    $persister->setIdentifier($managedCopy, $id);
 
                     $this->mergeEntityStateIntoManagedCopy($entity, $managedCopy);
                     $this->persistNew($class, $managedCopy);
@@ -2900,7 +2902,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $values = $this->isInIdentityMap($entity)
             ? $this->getEntityIdentifier($entity)
-            : $persister->getIdentifierValues($entity);
+            : $persister->getIdentifier($entity);
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
     }
@@ -3308,10 +3310,10 @@ class UnitOfWork implements PropertyChangedListener
 
         $id1 = isset($this->entityIdentifiers[$oid1])
             ? $this->entityIdentifiers[$oid1]
-            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifierValues($entity1));
+            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifier($entity1));
         $id2 = isset($this->entityIdentifiers[$oid2])
             ? $this->entityIdentifiers[$oid2]
-            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifierValues($entity2));
+            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifier($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }
@@ -3382,7 +3384,7 @@ class UnitOfWork implements PropertyChangedListener
                             $targetEntity    = $property->getTargetEntity();
                             $targetClass     = $this->em->getClassMetadata($targetEntity);
                             $targetPersister = $this->getEntityPersister($targetEntity);
-                            $relatedId       = $targetPersister->getIdentifierValues($other);
+                            $relatedId       = $targetPersister->getIdentifier($other);
 
                             if ($targetClass->getSubClasses()) {
                                 $other = $this->em->find($targetClass->getClassName(), $relatedId);

@@ -86,7 +86,7 @@ final class IdentifierFlattener
                 $targetClassPersister = $this->unitOfWork->getEntityPersister($property->getTargetEntity());
                 $identifiers         = $this->unitOfWork->isInIdentityMap($id[$field])
                     ? $this->unitOfWork->getEntityIdentifier($id[$field])
-                    : $targetClassPersister->getIdentifierValues($id[$field])
+                    : $targetClassPersister->getIdentifier($id[$field])
                 ;
 
                 $associatedId = $this->flattenIdentifier($targetClassMetadata, $identifiers);

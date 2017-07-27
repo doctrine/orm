@@ -583,9 +583,10 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
             return ($entity instanceof $className) ? $entity : null;
         }
 
-        $entity = $this->unitOfWork->newInstance($class);
+        $persister = $this->unitOfWork->getEntityPersister($class->getClassName());
+        $entity    = $this->unitOfWork->newInstance($class);
 
-        $class->assignIdentifier($entity, $sortedId);
+        $persister->setIdentifier($entity, $sortedId);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
         $this->unitOfWork->markReadOnly($entity);
