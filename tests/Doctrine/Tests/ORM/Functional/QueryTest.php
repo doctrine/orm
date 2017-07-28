@@ -870,8 +870,9 @@ class QueryTest extends OrmFunctionalTestCase
 
     public function testProcessParameterValueWithObjects()
     {
-        $query  = $this->_em->createQuery();
+        $query = $this->_em->createQuery();
 
+        // non-mapped class
         $dt = new \DateTime();
         $this->assertSame(
             $dt,
@@ -887,6 +888,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $this->assertEquals(true, $this->_em->getMetadataFactory()->hasMetadataFor(CmsUser::class));
 
+        // non-loaded metadata
         $this->assertEquals(
             $user->getId(),
             $query->processParameterValue($user)
@@ -895,6 +897,7 @@ class QueryTest extends OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setMetadataFor(CmsUser::class, null);
         $this->assertEquals(false, $this->_em->getMetadataFactory()->hasMetadataFor(CmsUser::class));
 
+        // loaded metadata
         $this->assertEquals(
             $user->getId(),
             $query->processParameterValue($user)
