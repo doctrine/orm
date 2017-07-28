@@ -417,11 +417,19 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->_em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
-            $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+        if (is_object($value)) {
+            try {
+                $this->_em->getMetadataFactory()->getMetadataFor(ClassUtils::getClass($value));
+            } catch (\Exception $e) {
 
-            if ($value === null) {
-                throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+            }
+
+            if (!isset($e)) {
+                $value = $this->_em->getUnitOfWork()->getSingleIdentifierValue($value);
+
+                if ($value === null) {
+                    throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
+                }
             }
         }
 

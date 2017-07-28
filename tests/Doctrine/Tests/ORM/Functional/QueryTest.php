@@ -867,4 +867,37 @@ class QueryTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CmsUser::class, $users[2]);
         $this->assertNull($users[3]);
     }
+
+    public function testProcessParameterValueWithObjects()
+    {
+        $query  = $this->_em->createQuery();
+
+        $dt = new \DateTime();
+        $this->assertSame(
+            $dt,
+            $query->processParameterValue($dt)
+        );
+
+        $user = new CmsUser();
+        $user->name = 'Thomas';
+        $user->username = 'fancyweb';
+
+        $this->_em->persist($user);
+        $this->_em->flush();
+
+        $this->assertEquals(true, $this->_em->getMetadataFactory()->hasMetadataFor(CmsUser::class));
+
+        $this->assertEquals(
+            $user->getId(),
+            $query->processParameterValue($user)
+        );
+
+        $this->_em->getMetadataFactory()->setMetadataFor(CmsUser::class, null);
+        $this->assertEquals(false, $this->_em->getMetadataFactory()->hasMetadataFor(CmsUser::class));
+
+        $this->assertEquals(
+            $user->getId(),
+            $query->processParameterValue($user)
+        );
+    }
 }
