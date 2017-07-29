@@ -866,11 +866,23 @@ class SqlWalker implements TreeWalker
      * Walks down a RangeVariableDeclaration AST node, thereby generating the appropriate SQL.
      *
      * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
+     *
+     * @return string
+     */
+    public function walkRangeVariableDeclaration($rangeVariableDeclaration)
+    {
+        return $this->generateRangeVariableDeclarationSQL($rangeVariableDeclaration, false);
+    }
+
+    /**
+     * Generate appropriate SQL for RangeVariableDeclaration AST node
+     *
+     * @param AST\RangeVariableDeclaration $rangeVariableDeclaration
      * @param bool $buildNestedJoins
      *
      * @return string
      */
-    public function walkRangeVariableDeclaration($rangeVariableDeclaration, $buildNestedJoins = false)
+    private function generateRangeVariableDeclarationSQL($rangeVariableDeclaration, $buildNestedJoins)
     {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;
@@ -1126,16 +1138,17 @@ class SqlWalker implements TreeWalker
             : ' INNER JOIN ';
 
         switch (true) {
-            case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\RangeVariableDeclaration):
+            case ($joinDeclaration instanceof AST\RangeVariableDeclaration):
                 $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
                 $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
                 $condition = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
-                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER && empty($conditions))
+                $isUnconditionalJoin = empty($conditions);
+                $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER && $isUnconditionalJoin)
                     ? ' AND '
                     : ' ON ';
 
-                $sql .= $this->walkRangeVariableDeclaration($joinDeclaration, !empty($conditions));
+                $sql .= $this->generateRangeVariableDeclarationSQL($joinDeclaration, !$isUnconditionalJoin);
 
                 $conditions = array($condition);
 
@@ -1156,7 +1169,7 @@ class SqlWalker implements TreeWalker
                 $sql .= $condExprConjunction . implode(' AND ', $conditions);
                 break;
 
-            case ($joinDeclaration instanceof \Doctrine\ORM\Query\AST\JoinAssociationDeclaration):
+            case ($joinDeclaration instanceof AST\JoinAssociationDeclaration):
                 $sql .= $this->walkJoinAssociationDeclaration($joinDeclaration, $joinType, $join->conditionalExpression);
                 break;
         }
