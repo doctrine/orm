@@ -33,10 +33,7 @@ class GH6464Test extends OrmFunctionalTestCase
      */
     public function testIssue()
     {
-
-        $qb = $this->_em->createQueryBuilder();
-
-        $query = $qb
+        $query = $this->_em->createQueryBuilder()
             ->select('p', 'a')
             ->from(GH6464Post::class, 'p')
             ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
@@ -61,12 +58,6 @@ class GH6464Post
 
     /** @Column(type="integer") */
     public $authorId;
-
-    /** @Column(length=100) */
-    public $title;
-
-    /** @Column(type="text") */
-    public $text;
 }
 
 /**
@@ -84,6 +75,4 @@ abstract class GH6464User
 /** @Entity */
 class GH6464Author extends GH6464User
 {
-    /** @Column(length=50) */
-    public $displayName;
 }
