@@ -60,7 +60,7 @@ by itself.
 .. code-block:: php
 
     <?php
-    $cacheDriver = new \Doctrine\Common\Cache\ApcuCache();
+    $cacheDriver = new \Doctrine\Common\Cache\ApcCache();
     $cacheDriver->save('cache_id', 'my_data');
 
 APCu
