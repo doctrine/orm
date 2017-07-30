@@ -63,6 +63,24 @@ by itself.
     $cacheDriver = new \Doctrine\Common\Cache\ApcCache();
     $cacheDriver->save('cache_id', 'my_data');
 
+APCu
+~~~
+
+In order to use the APCu cache driver you must have it compiled and
+enabled in your php.ini. You can read about APCu
+`in the PHP Documentation <http://us2.php.net/apcu>`_. It will give
+you a little background information about what it is and how you
+can use it as well as how to install it.
+
+Below is a simple example of how you could use the APCu cache driver
+by itself.
+
+.. code-block:: php
+
+    <?php
+    $cacheDriver = new \Doctrine\Common\Cache\ApcuCache();
+    $cacheDriver->save('cache_id', 'my_data');
+
 Memcache
 ~~~~~~~~
 
