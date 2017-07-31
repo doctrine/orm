@@ -471,6 +471,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $where      = [];
+        // @todo guilhermeblanco Bring this back: $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $identifier = $this->getIdentifier($entity);
 
         foreach ($this->class->identifier as $idField) {
