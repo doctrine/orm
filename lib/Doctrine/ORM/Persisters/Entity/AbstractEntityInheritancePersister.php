@@ -39,7 +39,7 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     /**
      * {@inheritdoc}
      */
-    protected function prepareInsertData($entity)
+    protected function prepareInsertData($entity) : array
     {
         $data = parent::prepareInsertData($entity);
 

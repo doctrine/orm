@@ -375,6 +375,71 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function delete($entity)
+    {
+        $class      = $this->class;
+        $unitOfWork = $this->em->getUnitOfWork();
+        $identifier = $unitOfWork->getEntityIdentifier($entity);
+        $tableName  = $class->table->getQuotedQualifiedName($this->platform);
+
+        $types = [];
+        $id = [];
+
+        foreach ($class->identifier as $field) {
+            $property = $class->getProperty($field);
+
+            if ($property instanceof FieldMetadata) {
+                $columnName       = $property->getColumnName();
+                $quotedColumnName = $this->platform->quoteIdentifier($columnName);
+
+                $id[$quotedColumnName] = $identifier[$field];
+                $types[] = $property->getType();
+
+                continue;
+            }
+
+            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+            $joinColumns = $property instanceof ManyToManyAssociationMetadata
+                ? $property->getTable()->getJoinColumns()
+                : $property->getJoinColumns()
+            ;
+
+            $associationValue = null;
+
+            if (($value = $identifier[$field]) !== null) {
+                // @todo guilhermeblanco Make sure we do not have flat association values.
+                if (! is_array($value)) {
+                    $value = [$targetClass->identifier[0] => $value];
+                }
+
+                $associationValue = $value;
+            }
+
+            foreach ($joinColumns as $joinColumn) {
+                $joinColumnName       = $joinColumn->getColumnName();
+                $referencedColumnName = $joinColumn->getReferencedColumnName();
+                $quotedJoinColumnName = $this->platform->quoteIdentifier($joinColumnName);
+                $targetField          = $targetClass->fieldNames[$referencedColumnName];
+
+                if (! $joinColumn->getType()) {
+                    $joinColumn->setType(
+                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
+                    );
+                }
+
+                $id[$quotedJoinColumnName] = $associationValue ? $associationValue[$targetField] : null;
+                $types[] = $joinColumn->getType();
+            }
+        }
+
+        $this->deleteJoinTableRecords($identifier);
+
+        return (bool) $this->conn->delete($tableName, $id, $types);
+    }
+
+    /**
      * Performs an UPDATE statement for an entity on a specific table.
      * The UPDATE can optionally be versioned, which requires the entity to have a version field.
      *
@@ -406,7 +471,7 @@ class BasicEntityPersister implements EntityPersister
         }
 
         $where      = [];
-        $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+        $identifier = $this->getIdentifier($entity);
 
         foreach ($this->class->identifier as $idField) {
             $property = $this->class->getProperty($idField);
@@ -419,19 +484,27 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-            $joinColumns = $property->getJoinColumns();
-            $joinColumn  = reset($joinColumns);
+            /** @var ToOneAssociationMetadata $property */
+            $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
 
-            if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
-                );
+            foreach ($property->getJoinColumns() as $joinColumn) {
+                /** @var JoinColumnMetadata $joinColumn */
+                $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+                if (! $joinColumn->getType()) {
+                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                    $joinColumn->setType(
+                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
+                    );
+                }
+
+                $value = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
+
+                $params[] = $value;
+                $where[]  = $joinColumn->getColumnName();
+                $types[]  = $joinColumn->getType();
             }
-
-            $params[] = $identifier[$idField];
-            $where[] = $joinColumn->getColumnName();
-            $types[] = $joinColumn->getType();
         }
 
         if ($versioned) {
@@ -539,68 +612,18 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * {@inheritdoc}
+     * Prepares the data changeset of a managed entity for database insertion (initial INSERT).
+     * The changeset of the entity is obtained from the currently running UnitOfWork.
+     *
+     * The default insert data preparation is the same as for updates.
+     *
+     * @param object $entity The entity for which to prepare the data.
+     *
+     * @return array The prepared data for the tables to update.
      */
-    public function delete($entity)
+    protected function prepareInsertData($entity) : array
     {
-        $class      = $this->class;
-        $unitOfWork = $this->em->getUnitOfWork();
-        $identifier = $unitOfWork->getEntityIdentifier($entity);
-        $tableName  = $class->table->getQuotedQualifiedName($this->platform);
-
-        $types = [];
-        $id = [];
-
-        foreach ($class->identifier as $field) {
-            $property = $class->getProperty($field);
-
-            if ($property instanceof FieldMetadata) {
-                $columnName       = $property->getColumnName();
-                $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-
-                $id[$quotedColumnName] = $identifier[$field];
-                $types[] = $property->getType();
-
-                continue;
-            }
-
-            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-            $joinColumns = $property instanceof ManyToManyAssociationMetadata
-                ? $property->getTable()->getJoinColumns()
-                : $property->getJoinColumns()
-            ;
-
-            $associationValue = null;
-
-            if (($value = $identifier[$field]) !== null) {
-                // @todo guilhermeblanco Make sure we do not have flat association values.
-                if (! is_array($value)) {
-                    $value = [$targetClass->identifier[0] => $value];
-                }
-
-                $associationValue = $value;
-            }
-
-            foreach ($joinColumns as $joinColumn) {
-                $joinColumnName       = $joinColumn->getColumnName();
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-                $quotedJoinColumnName = $this->platform->quoteIdentifier($joinColumnName);
-                $targetField          = $targetClass->fieldNames[$referencedColumnName];
-
-                if (! $joinColumn->getType()) {
-                    $joinColumn->setType(
-                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                    );
-                }
-
-                $id[$quotedJoinColumnName] = $associationValue ? $associationValue[$targetField] : null;
-                $types[] = $joinColumn->getType();
-            }
-        }
-
-        $this->deleteJoinTableRecords($identifier);
-
-        return (bool) $this->conn->delete($tableName, $id, $types);
+        return $this->prepareUpdateData($entity);
     }
 
     /**
@@ -633,27 +656,20 @@ class BasicEntityPersister implements EntityPersister
             : null
         ;
 
-        foreach ($uow->getEntityChangeSet($entity) as $field => $change) {
-            if ($versionPropertyName === $field) {
+        // @todo guilhermeblanco This should check column insertability/updateability instead of field changeset
+        foreach ($uow->getEntityChangeSet($entity) as $propertyName => $propertyChangeSet) {
+            if ($versionPropertyName === $propertyName) {
                 continue;
             }
 
-            $property = $this->class->getProperty($field);
-
-            /*if (isset($this->class->embeddedClasses[$field])) {
-                continue;
-            }*/
-
-            $newVal = $change[1];
+            $property = $this->class->getProperty($propertyName);
+            $newValue = $propertyChangeSet[1];
 
             if ($property instanceof FieldMetadata) {
-                // @todo this should be used instead
-                $tableName  = $property->getTableName();
-                $columnName = $property->getColumnName();
+                // @todo guilhermeblanco Please remove this in the future for good...
+                $this->columns[$property->getColumnName()] = $property;
 
-                $this->columns[$columnName] = $property;
-
-                $result[$tableName][$columnName] = $newVal;
+                $result[$property->getTableName()][$property->getColumnName()] = $newValue;
 
                 continue;
             }
@@ -663,38 +679,35 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if ($newVal !== null && $uow->isScheduledForInsert($newVal)) {
-                // The associated entity $newVal is not yet persisted, so we must
-                // set $newVal = null, in order to insert a null value and schedule an
-                // extra update on the UnitOfWork.
-                $uow->scheduleExtraUpdate($entity, [$field => [null, $newVal]]);
+            // The associated entity $newVal is not yet persisted, so we must
+            // set $newVal = null, in order to insert a null value and schedule an
+            // extra update on the UnitOfWork.
+            if ($newValue !== null && $uow->isScheduledForInsert($newValue)) {
+                $uow->scheduleExtraUpdate($entity, [$propertyName => [null, $newValue]]);
 
-                $newVal = null;
+                $newValue = null;
             }
 
-            $newValId = null;
-
-            if ($newVal !== null) {
-                $newValId = $uow->getEntityIdentifier($newVal);
-            }
-
-            $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+            $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
+            $targetPersister = $uow->getEntityPersister($targetClass->getClassName());
 
             foreach ($property->getJoinColumns() as $joinColumn) {
-                $tableName            = $joinColumn->getTableName();
-                $columnName           = $joinColumn->getColumnName();
+                /** @var JoinColumnMetadata $joinColumn */
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
-                $targetField          = $targetClass->fieldNames[$referencedColumnName];
 
                 if (! $joinColumn->getType()) {
-                    $joinColumn->setType(
-                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                    );
+                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                 }
 
-                $this->columns[$columnName] = $joinColumn;
+                // @todo guilhermeblanco Please remove this in the future for good...
+                $this->columns[$joinColumn->getColumnName()] = $joinColumn;
 
-                $result[$tableName][$columnName] = $newValId ? $newValId[$targetField] : null;
+                $result[$joinColumn->getTableName()][$joinColumn->getColumnName()] = $newValue !== null
+                    ? $targetPersister->getColumnValue($newValue, $referencedColumnName)
+                    : null
+                ;
             }
         }
 
@@ -702,20 +715,49 @@ class BasicEntityPersister implements EntityPersister
     }
 
     /**
-     * Prepares the data changeset of a managed entity for database insertion (initial INSERT).
-     * The changeset of the entity is obtained from the currently running UnitOfWork.
+     * @param object $entity
+     * @param string $columnName
      *
-     * The default insert data preparation is the same as for updates.
-     *
-     * @param object $entity The entity for which to prepare the data.
-     *
-     * @return array The prepared data for the tables to update.
-     *
-     * @see prepareUpdateData
+     * @return mixed|null
      */
-    protected function prepareInsertData($entity)
+    public function getColumnValue($entity, string $columnName)
     {
-        return $this->prepareUpdateData($entity);
+        // Looking for fields by column is the easiest way to look at local columns or x-1 owning side associations
+        $propertyName = $this->class->fieldNames[$columnName];
+        $property     = $this->class->getProperty($propertyName);
+
+        if (! $property) {
+            return null;
+        }
+
+        $propertyValue = $property->getValue($entity);
+
+        if ($property instanceof LocalColumnMetadata) {
+            return $propertyValue;
+        }
+
+        /* @var ToOneAssociationMetadata $property */
+        $unitOfWork      = $this->em->getUnitOfWork();
+        $targetPersister = $unitOfWork->getEntityPersister($property->getTargetEntity());
+
+        foreach ($property->getJoinColumns() as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+            }
+
+            if ($joinColumn->getColumnName() !== $columnName) {
+                continue;
+            }
+
+            return $targetPersister->getColumnValue($propertyValue, $referencedColumnName);
+        }
+
+        return null;
     }
 
     /**

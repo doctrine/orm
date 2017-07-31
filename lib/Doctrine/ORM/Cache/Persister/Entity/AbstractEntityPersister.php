@@ -377,6 +377,14 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * {@inheritdoc}
      */
+    public function getColumnValue($entity, string $columnName)
+    {
+        return $this->persister->getColumnValue($entity, $columnName);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function insert($entity)
     {
         $this->queuedCache['insert'][] = $entity;
