@@ -67,8 +67,10 @@ class BasicEntityPersisterTypeValueSqlTest extends OrmTestCase
     public function testUpdateUsesTypeValuesSQL()
     {
         $child = new CustomTypeChild();
+        $child->id = 1;
 
         $parent = new CustomTypeParent();
+        $parent->id = 1;
         $parent->customInteger = 1;
         $parent->child = $child;
 
