@@ -152,6 +152,7 @@ The recommended implementations for production are:
 
 
 -  ``Doctrine\Common\Cache\ApcCache``
+-  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
 -  ``Doctrine\Common\Cache\RedisCache``
@@ -183,6 +184,7 @@ The recommended implementations for production are:
 
 
 -  ``Doctrine\Common\Cache\ApcCache``
+-  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
 -  ``Doctrine\Common\Cache\RedisCache``

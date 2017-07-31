@@ -63,6 +63,24 @@ by itself.
     $cacheDriver = new \Doctrine\Common\Cache\ApcCache();
     $cacheDriver->save('cache_id', 'my_data');
 
+APCu
+~~~~
+
+In order to use the APCu cache driver you must have it compiled and
+enabled in your php.ini. You can read about APCu
+`in the PHP Documentation <http://us2.php.net/apcu>`_. It will give
+you a little background information about what it is and how you
+can use it as well as how to install it.
+
+Below is a simple example of how you could use the APCu cache driver
+by itself.
+
+.. code-block:: php
+
+    <?php
+    $cacheDriver = new \Doctrine\Common\Cache\ApcuCache();
+    $cacheDriver->save('cache_id', 'my_data');
+
 Memcache
 ~~~~~~~~
 
@@ -287,7 +305,7 @@ use on your ORM configuration.
 
     <?php
     $config = new \Doctrine\ORM\Configuration();
-    $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Result Cache
 ~~~~~~~~~~~~
@@ -300,7 +318,7 @@ cache implementation.
 .. code-block:: php
 
     <?php
-    $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Now when you're executing DQL queries you can configure them to use
 the result cache.
@@ -317,7 +335,7 @@ result cache driver.
 .. code-block:: php
 
     <?php
-    $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcCache());
+    $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcuCache());
 
 .. note::
 
@@ -369,7 +387,7 @@ first.
 .. code-block:: php
 
     <?php
-    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Now the metadata information will only be parsed once and stored in
 the cache driver.
