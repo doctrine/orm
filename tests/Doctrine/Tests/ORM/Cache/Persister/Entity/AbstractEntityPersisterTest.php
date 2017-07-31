@@ -67,6 +67,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
         'getSelectConditionStatementSQL',
         'getIdentifier',
         'setIdentifier',
+        'getColumnValue',
         'insert',
         'update',
         'delete',

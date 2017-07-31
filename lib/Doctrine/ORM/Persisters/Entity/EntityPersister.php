@@ -70,7 +70,15 @@ interface EntityPersister
      *
      * @return void
      */
-    public function setIdentifier($entity, array $id);
+    public function setIdentifier($entity, array $id) : void;
+
+    /**
+     * @param object $entity
+     * @param string $columnName
+     *
+     * @return mixed|null
+     */
+    public function getColumnValue($entity, string $columnName);
 
     /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
