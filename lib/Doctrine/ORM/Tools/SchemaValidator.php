@@ -80,7 +80,7 @@ class SchemaValidator
     {
         $ce = [];
 
-        foreach ($class->getProperties() as $fieldName => $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $association) {
             if (! ($association instanceof AssociationMetadata)) {
                 continue;
             }

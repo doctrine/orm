@@ -26,17 +26,6 @@ class MappedSuperClassMetadata extends ComponentMetadata
     protected $declaredVersion;
 
     /**
-     * MappedSuperClassMetadata constructor.
-     *
-     * @param string                        $className
-     * @param MappedSuperClassMetadata|null $parent
-     */
-    public function __construct(string $className, ?MappedSuperClassMetadata $parent = null)
-    {
-        parent::__construct($className, $parent);
-    }
-
-    /**
      * @return null|string
      */
     public function getCustomRepositoryClassName() : ?string
@@ -47,7 +36,7 @@ class MappedSuperClassMetadata extends ComponentMetadata
     /**
      * @param null|string customRepositoryClassName
      */
-    public function setCustomRepositoryClassName(?string $customRepositoryClassName)
+    public function setCustomRepositoryClassName(?string $customRepositoryClassName) : void
     {
         $this->customRepositoryClassName = $customRepositoryClassName;
     }
@@ -63,7 +52,7 @@ class MappedSuperClassMetadata extends ComponentMetadata
     /**
      * @param Property $property
      */
-    public function setDeclaredVersion(Property $property)
+    public function setDeclaredVersion(Property $property) : void
     {
         $this->declaredVersion = $property;
     }
@@ -95,7 +84,7 @@ class MappedSuperClassMetadata extends ComponentMetadata
     /**
      * {@inheritdoc}
      */
-    public function addDeclaredProperty(Property $property)
+    public function addDeclaredProperty(Property $property) : void
     {
         parent::addDeclaredProperty($property);
 

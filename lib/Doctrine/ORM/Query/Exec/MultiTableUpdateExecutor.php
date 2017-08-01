@@ -81,39 +81,36 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
         $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
-        // 2. Create ID subselect statement used in UPDATE ... WHERE ... IN (subselect)
-        $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
-
-        // 3. Create and store UPDATE statements
-        $classNames = array_merge(
-            $primaryClass->getParentClasses(),
-            [$primaryClass->getClassName()],
-            $primaryClass->getSubClasses()
+        // 2. Create statement used in UPDATE ... WHERE ... IN (subselect)
+        $updateSQLTemplate = sprintf(
+            'UPDATE %%s SET %%s WHERE (%s) IN (SELECT %s FROM %s)',
+            $idColumnNameList,
+            $idColumnNameList,
+            $tempTable
         );
 
-        $i = -1;
+        // 3. Create and store UPDATE statements
+        $hierarchyClasses = array_merge(
+            array_map(
+                function ($className) use ($em) { return $em->getClassMetadata($className); },
+                array_reverse($primaryClass->getSubClasses())
+            ),
+            [$primaryClass],
+            $primaryClass->getAncestorsIterator()->getArrayCopy()
+        );
 
-        foreach (array_reverse($classNames) as $className) {
-            $affected  = false;
-            $class     = $em->getClassMetadata($className);
-            $tableName = $class->table->getQuotedQualifiedName($platform);
-            $updateSql = 'UPDATE ' . $tableName . ' SET ';
+        $i = 0;
+
+        foreach ($hierarchyClasses as $class) {
+            $updateSQLParts = [];
 
             foreach ($updateItems as $updateItem) {
                 $field    = $updateItem->pathExpression->field;
                 $property = $class->getProperty($field);
 
                 if ($property && ! $class->isInheritedProperty($field)) {
-                    $newValue = $updateItem->newValue;
-
-                    if ( ! $affected) {
-                        $affected = true;
-                        ++$i;
-                    } else {
-                        $updateSql .= ', ';
-                    }
-
-                    $updateSql .= $sqlWalker->walkUpdateItem($updateItem);
+                    $updateSQLParts[] = $sqlWalker->walkUpdateItem($updateItem);
+                    $newValue         = $updateItem->newValue;
 
                     if ($newValue instanceof AST\InputParameter) {
                         $this->sqlParameters[$i][] = $newValue->name;
@@ -123,8 +120,14 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 }
             }
 
-            if ($affected) {
-                $this->sqlStatements[$i] = $updateSql . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
+            if ($updateSQLParts) {
+                $this->sqlStatements[$i] = sprintf(
+                    $updateSQLTemplate,
+                    $class->table->getQuotedQualifiedName($platform),
+                    implode(', ', $updateSQLParts)
+                );
+
+                $i++;
             }
         }
 

@@ -7,6 +7,14 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
 
+/**
+ * Class AssociationMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class AssociationMetadata implements Property
 {
     /** @var ClassMetadata */
@@ -30,7 +38,7 @@ class AssociationMetadata implements Property
     /** @var string */
     private $sourceEntity;
 
-    /** @var string */
+    /** @var null|string */
     private $mappedBy;
 
     /** @var null|string */
@@ -61,15 +69,15 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getDeclaringClass()
+    public function getDeclaringClass() : ComponentMetadata
     {
         return $this->declaringClass;
     }
 
     /**
-     * @param ClassMetadata $declaringClass
+     * @param ComponentMetadata $declaringClass
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass)
+    public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
     }
@@ -77,7 +85,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -85,7 +93,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setName($name)
+    public function setName($name) : void
     {
         $this->name = $name;
     }
@@ -93,7 +101,7 @@ class AssociationMetadata implements Property
     /**
      * @param bool $isPrimaryKey
      */
-    public function setPrimaryKey(bool $isPrimaryKey)
+    public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
@@ -101,7 +109,7 @@ class AssociationMetadata implements Property
     /**
      * @return bool
      */
-    public function isPrimaryKey()
+    public function isPrimaryKey() : bool
     {
         return $this->primaryKey;
     }
@@ -109,7 +117,7 @@ class AssociationMetadata implements Property
     /**
      * @return string
      */
-    public function getTargetEntity()
+    public function getTargetEntity() : string
     {
         return $this->targetEntity;
     }
@@ -117,7 +125,7 @@ class AssociationMetadata implements Property
     /**
      * @param string $targetEntity
      */
-    public function setTargetEntity(string $targetEntity)
+    public function setTargetEntity(string $targetEntity) : void
     {
         $this->targetEntity = $targetEntity;
     }
@@ -125,7 +133,7 @@ class AssociationMetadata implements Property
     /**
      * @return string
      */
-    public function getSourceEntity()
+    public function getSourceEntity() : string
     {
         return $this->sourceEntity;
     }
@@ -133,7 +141,7 @@ class AssociationMetadata implements Property
     /**
      * @param string $sourceEntity
      */
-    public function setSourceEntity(string $sourceEntity)
+    public function setSourceEntity(string $sourceEntity) : void
     {
         $this->sourceEntity = $sourceEntity;
     }
@@ -141,7 +149,7 @@ class AssociationMetadata implements Property
     /**
      * @return array
      */
-    public function getCascade()
+    public function getCascade() : array
     {
         return $this->cascade;
     }
@@ -149,7 +157,7 @@ class AssociationMetadata implements Property
     /**
      * @param array $cascade
      */
-    public function setCascade(array $cascade)
+    public function setCascade(array $cascade) : void
     {
         $this->cascade = $cascade;
     }
@@ -157,7 +165,7 @@ class AssociationMetadata implements Property
     /**
      * @param bool $owningSide
      */
-    public function setOwningSide(bool $owningSide)
+    public function setOwningSide(bool $owningSide) : void
     {
         $this->owningSide = $owningSide;
     }
@@ -165,7 +173,7 @@ class AssociationMetadata implements Property
     /**
      * @return bool
      */
-    public function isOwningSide()
+    public function isOwningSide() : bool
     {
         return $this->owningSide;
     }
@@ -173,7 +181,7 @@ class AssociationMetadata implements Property
     /**
      * @return string
      */
-    public function getFetchMode()
+    public function getFetchMode() : string
     {
         return $this->fetchMode;
     }
@@ -181,15 +189,15 @@ class AssociationMetadata implements Property
     /**
      * @param string $fetchMode
      */
-    public function setFetchMode(string $fetchMode)
+    public function setFetchMode(string $fetchMode) : void
     {
         $this->fetchMode = $fetchMode;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getMappedBy()
+    public function getMappedBy() : ?string
     {
         return $this->mappedBy;
     }
@@ -197,7 +205,7 @@ class AssociationMetadata implements Property
     /**
      * @param string $mappedBy
      */
-    public function setMappedBy(string $mappedBy)
+    public function setMappedBy(string $mappedBy) : void
     {
         $this->mappedBy = $mappedBy;
     }
@@ -205,7 +213,7 @@ class AssociationMetadata implements Property
     /**
      * @return null|string
      */
-    public function getInversedBy()
+    public function getInversedBy() : ?string
     {
         return $this->inversedBy;
     }
@@ -213,7 +221,7 @@ class AssociationMetadata implements Property
     /**
      * @param null|string $inversedBy
      */
-    public function setInversedBy(string $inversedBy = null)
+    public function setInversedBy(string $inversedBy = null) : void
     {
         $this->inversedBy = $inversedBy;
     }
@@ -221,7 +229,7 @@ class AssociationMetadata implements Property
     /**
      * @param bool $orphanRemoval
      */
-    public function setOrphanRemoval(bool $orphanRemoval)
+    public function setOrphanRemoval(bool $orphanRemoval) : void
     {
         $this->orphanRemoval = $orphanRemoval;
     }
@@ -229,7 +237,7 @@ class AssociationMetadata implements Property
     /**
      * @return bool
      */
-    public function isOrphanRemoval()
+    public function isOrphanRemoval() : bool
     {
         return $this->orphanRemoval;
     }
@@ -237,7 +245,7 @@ class AssociationMetadata implements Property
     /**
      * @return null|CacheMetadata
      */
-    public function getCache()
+    public function getCache() : ?CacheMetadata
     {
         return $this->cache;
     }
@@ -245,7 +253,7 @@ class AssociationMetadata implements Property
     /**
      * @param null|CacheMetadata $cache
      */
-    public function setCache(CacheMetadata $cache = null)
+    public function setCache(CacheMetadata $cache = null) : void
     {
         $this->cache = $cache;
     }
@@ -253,7 +261,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setValue($object, $value)
+    public function setValue($object, $value) : void
     {
         $this->reflection->setValue($object, $value);
     }
@@ -269,7 +277,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function isAssociation()
+    public function isAssociation() : bool
     {
         return true;
     }
@@ -277,7 +285,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function isField()
+    public function isField() : bool
     {
         return false;
     }
@@ -285,7 +293,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty)
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }
@@ -293,7 +301,7 @@ class AssociationMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function wakeupReflection(ReflectionService $reflectionService)
+    public function wakeupReflection(ReflectionService $reflectionService) : void
     {
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)

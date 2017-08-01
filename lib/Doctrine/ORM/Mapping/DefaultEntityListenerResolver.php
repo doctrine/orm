@@ -8,7 +8,9 @@ namespace Doctrine\ORM\Mapping;
 /**
  * The default DefaultEntityListener
  *
- * @since   2.4
+ * @package Doctrine\ORM\Mapping
+ * @since 2.4
+ *
  * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultEntityListenerResolver implements EntityListenerResolver

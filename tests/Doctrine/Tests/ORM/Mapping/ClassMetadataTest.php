@@ -34,27 +34,48 @@ require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 
 class ClassMetadataTest extends OrmTestCase
 {
-    public function testClassMetadataInstanceSerialization()
+    /**
+     * @var Mapping\ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $metadataBuildingContext;
+
+    public function setUp()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        parent::setUp();
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class)
+        );
+    }
+
+    public function testClassMetadataInstanceSimpleState()
+    {
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
+
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        // Test initial state
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
         self::assertEquals(CMS\CmsUser::class, $cm->getRootClassName());
         self::assertEquals([], $cm->getSubClasses());
-        self::assertEquals([], $cm->getParentClasses());
+        self::assertCount(0, $cm->getAncestorsIterator());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm->inheritanceType);
+    }
 
-        // Customize state
+    public function testClassMetadataInstanceSerialization()
+    {
+        $parent = new ClassMetadata(CMS\CmsEmployee::class, $this->metadataBuildingContext);
+        $cm     = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
+
+        $cm->setParent($parent);
+        $cm->initializeReflection(new RuntimeReflectionService());
+
         $discrColumn = new DiscriminatorColumnMetadata();
 
         $discrColumn->setColumnName('disc');
         $discrColumn->setType(Type::getType('integer'));
 
         $cm->setInheritanceType(Mapping\InheritanceType::SINGLE_TABLE);
-        $cm->setParentClasses(["UserParent"]);
         $cm->setSubclasses([
             'Doctrine\Tests\Models\CMS\One',
             'Doctrine\Tests\Models\CMS\Two',
@@ -72,7 +93,7 @@ class ClassMetadataTest extends OrmTestCase
 
         $cm->addProperty($association);
 
-        self::assertCount(1, $cm->getProperties());
+        self::assertCount(1, $cm->getDeclaredPropertiesIterator());
 
         $serialized = serialize($cm);
         $cm = unserialize($serialized);
@@ -81,7 +102,7 @@ class ClassMetadataTest extends OrmTestCase
         // Check state
         self::assertInstanceOf(\ReflectionClass::class, $cm->getReflectionClass());
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
-        self::assertEquals('UserParent', $cm->getRootClassName());
+        self::assertEquals(CMS\CmsEmployee::class, $cm->getRootClassName());
         self::assertEquals('Doctrine\Tests\Models\CMS\UserRepository', $cm->getCustomRepositoryClassName());
         self::assertEquals(
             [
@@ -91,11 +112,12 @@ class ClassMetadataTest extends OrmTestCase
             ],
             $cm->getSubClasses()
         );
-        self::assertEquals(['UserParent'], $cm->getParentClasses());
+        self::assertCount(1, $cm->getAncestorsIterator());
+        self::assertEquals(CMS\CmsEmployee::class, $cm->getAncestorsIterator()->current()->getClassName());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
         self::assertEquals(['dql' => 'foo'], $cm->getNamedQueries());
-        self::assertCount(1, $cm->getProperties());
+        self::assertCount(1, $cm->getDeclaredPropertiesIterator());
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->getProperty('phonenumbers'));
 
         $oneOneMapping = $cm->getProperty('phonenumbers');
@@ -106,7 +128,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testFieldIsNullable()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         // Explicit Nullable
@@ -155,7 +177,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
-        $cm = new ClassMetadata(DoctrineGlobal_Article::class);
+        $cm = new ClassMetadata(DoctrineGlobal_Article::class, $this->metadataBuildingContext);
 
         $cm->initializeReflection(new RuntimeReflectionService());
 
@@ -186,7 +208,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testMapManyToManyJoinTableDefaults()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
@@ -226,7 +248,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testSerializeManyToManyJoinTableCascade()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToManyAssociationMetadata('groups');
@@ -252,7 +274,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
+        $cm = new ClassMetadata('DoctrineGlobal_User', $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setDiscriminatorMap(['descr' => 'DoctrineGlobal_Article', 'foo' => 'DoctrineGlobal_User']);
 
@@ -267,7 +289,7 @@ class ClassMetadataTest extends OrmTestCase
     {
         require_once __DIR__."/../../Models/Global/GlobalNamespaceModel.php";
 
-        $cm = new ClassMetadata('DoctrineGlobal_User');
+        $cm = new ClassMetadata('DoctrineGlobal_User', $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setSubclasses(['DoctrineGlobal_Article']);
 
@@ -279,7 +301,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testSetInvalidVersionMapping_ThrowsException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $property = new Mapping\VersionFieldMetadata('foo'); //new FieldMetadata('foo', 'foo', Type::getType('string'));
 
         $property->setDeclaringClass($metadata);
@@ -295,7 +317,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testGetSingleIdentifierFieldName_MultipleIdentifierEntity_ThrowsException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -317,7 +339,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testGetSingleIdentifierFieldName_NoIdEntity_ThrowsException()
     {
-        $cm = new ClassMetadata(DDC6412File::class);
+        $cm = new ClassMetadata(DDC6412File::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
@@ -327,7 +349,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateAssociationMappingException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\OneToOneAssociationMetadata('foo');
@@ -353,7 +375,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateColumnName_ThrowsMappingException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -374,7 +396,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateColumnName_DiscriminatorColumn_ThrowsMappingException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -396,7 +418,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateColumnName_DiscriminatorColumn2_ThrowsMappingException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $discrColumn = new DiscriminatorColumnMetadata();
@@ -418,7 +440,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateFieldAndAssociationMapping1_ThrowsException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -438,7 +460,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDuplicateFieldAndAssociationMapping2_ThrowsException()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\OneToOneAssociationMetadata('name');
@@ -461,7 +483,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testGetTemporaryTableNameSchema()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $tableMetadata = new Mapping\TableMetadata();
@@ -476,14 +498,14 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDefaultTableName()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // When table's name is not given
         self::assertEquals('CmsUser', $cm->getTableName());
         self::assertEquals('CmsUser', $cm->table->getName());
 
-        $cm = new ClassMetadata(CMS\CmsAddress::class);
+        $cm = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // When joinTable's name is not given
@@ -514,7 +536,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testDefaultJoinColumnName()
     {
-        $cm = new ClassMetadata(CMS\CmsAddress::class);
+        $cm = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         // this is really dirty, but it's the simplest way to test whether
@@ -540,7 +562,7 @@ class ClassMetadataTest extends OrmTestCase
 
         self::assertEquals('user_id', $joinColumn->getColumnName());
 
-        $cm = new ClassMetadata(CMS\CmsAddress::class);
+        $cm = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $joinTable = new Mapping\JoinTableMetadata();
@@ -581,7 +603,13 @@ class ClassMetadataTest extends OrmTestCase
     public function testOneToOneUnderscoreNamingStrategyDefaults()
     {
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
-        $metadata       = new ClassMetadata(CMS\CmsAddress::class, $namingStrategy);
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $namingStrategy
+        );
+
+        $metadata    = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
 
         $association = new Mapping\OneToOneAssociationMetadata('user');
 
@@ -603,7 +631,13 @@ class ClassMetadataTest extends OrmTestCase
     public function testManyToManyUnderscoreNamingStrategyDefaults()
     {
         $namingStrategy = new UnderscoreNamingStrategy(CASE_UPPER);
-        $metadata       = new ClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress', $namingStrategy);
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $namingStrategy
+        );
+
+        $metadata       = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
 
         $association = new Mapping\ManyToManyAssociationMetadata('user');
 
@@ -626,7 +660,7 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals('CMS_USER_ID', $inverseJoinColumn->getColumnName());
         self::assertEquals('ID', $inverseJoinColumn->getReferencedColumnName());
 
-        $cm = new ClassMetadata('DoctrineGlobal_Article', $namingStrategy);
+        $cm = new ClassMetadata('DoctrineGlobal_Article', $this->metadataBuildingContext);
 
         $association = new Mapping\ManyToManyAssociationMetadata('author');
 
@@ -644,7 +678,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testSetMultipleIdentifierSetsComposite()
     {
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -666,7 +700,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testJoinTableMappingDefaults()
     {
-        $metadata = new ClassMetadata('DoctrineGlobal_Article');
+        $metadata = new ClassMetadata('DoctrineGlobal_Article', $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToManyAssociationMetadata('author');
@@ -685,7 +719,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testMapIdentifierAssociation()
     {
-        $cm = new ClassMetadata(DDC117ArticleDetails::class);
+        $cm = new ClassMetadata(DDC117ArticleDetails::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\OneToOneAssociationMetadata('article');
@@ -703,7 +737,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testOrphanRemovalIdentifierAssociation()
     {
-        $cm = new ClassMetadata(DDC117ArticleDetails::class);
+        $cm = new ClassMetadata(DDC117ArticleDetails::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(MappingException::class);
@@ -723,7 +757,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInverseIdentifierAssociation()
     {
-        $cm = new ClassMetadata(DDC117ArticleDetails::class);
+        $cm = new ClassMetadata(DDC117ArticleDetails::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(MappingException::class);
@@ -743,7 +777,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testIdentifierAssociationManyToMany()
     {
-        $cm = new ClassMetadata(DDC117ArticleDetails::class);
+        $cm = new ClassMetadata(DDC117ArticleDetails::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(MappingException::class);
@@ -765,7 +799,7 @@ class ClassMetadataTest extends OrmTestCase
         $this->expectException(MappingException::class);
         $this->expectExceptionMessage("The field or association mapping misses the 'fieldName' attribute in entity '" . CMS\CmsUser::class . "'.");
 
-        $metadata = new ClassMetadata(CMS\CmsUser::class);
+        $metadata = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('');
@@ -777,7 +811,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testRetrievalOfNamedQueries()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         self::assertEquals(0, count($cm->getNamedQueries()));
@@ -792,7 +826,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testRetrievalOfResultSetMappings()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
 
@@ -814,7 +848,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testExistanceOfNamedQuery()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
 
@@ -829,7 +863,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testRetrieveOfNamedNativeQuery()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
@@ -868,7 +902,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testRetrieveOfSqlResultSetMapping()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addSqlResultSetMapping(
@@ -924,7 +958,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testExistanceOfSqlResultSetMapping()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addSqlResultSetMapping(
@@ -947,7 +981,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testExistanceOfNamedNativeQuery()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
@@ -964,7 +998,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testRetrieveOfNamedQuery()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
@@ -982,7 +1016,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testRetrievalOfNamedNativeQueries()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         self::assertEquals(0, count($cm->getNamedNativeQueries()));
@@ -1003,7 +1037,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testSerializeEntityListeners()
     {
-        $metadata = new ClassMetadata(CompanyContract::class);
+        $metadata = new ClassMetadata(CompanyContract::class, $this->metadataBuildingContext);
 
         $metadata->initializeReflection(new RuntimeReflectionService());
         $metadata->addEntityListener(Events::prePersist, CompanyContractListener::class, 'prePersistHandler');
@@ -1021,7 +1055,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testNamingCollisionNamedQueryShouldThrowException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
@@ -1036,7 +1070,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testNamingCollisionNamedNativeQueryShouldThrowException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
@@ -1064,7 +1098,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testNamingCollisionSqlResultSetMappingShouldThrowException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addSqlResultSetMapping(
@@ -1096,7 +1130,7 @@ class ClassMetadataTest extends OrmTestCase
     public function testClassCaseSensitivity()
     {
         $user = new CMS\CmsUser();
-        $cm = new ClassMetadata(strtoupper(CMS\CmsUser::class));
+        $cm = new ClassMetadata(strtoupper(CMS\CmsUser::class), $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         self::assertEquals(CMS\CmsUser::class, $cm->getClassName());
@@ -1107,7 +1141,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testLifecycleCallbackNotFound()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->addLifecycleCallback('notfound', 'postLoad');
 
@@ -1122,7 +1156,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testTargetEntityNotFound()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToOneAssociationMetadata('address');
@@ -1145,7 +1179,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testNameIsMandatoryForEntityNameSqlResultSetMappingException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addSqlResultSetMapping(
@@ -1167,10 +1201,16 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategy()
     {
-        $namingStrategy     = new MyNamespacedNamingStrategy();
-        $addressMetadata    = new ClassMetadata(CMS\CmsAddress::class, $namingStrategy);
-        $articleMetadata    = new ClassMetadata(DoctrineGlobal_Article::class, $namingStrategy);
-        $routingMetadata    = new ClassMetadata(RoutingLeg::class, $namingStrategy);
+        $namingStrategy = new MyNamespacedNamingStrategy();
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $namingStrategy
+        );
+
+        $addressMetadata    = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
+        $articleMetadata    = new ClassMetadata(DoctrineGlobal_Article::class, $this->metadataBuildingContext);
+        $routingMetadata    = new ClassMetadata(RoutingLeg::class, $this->metadataBuildingContext);
 
         $addressMetadata->initializeReflection(new RuntimeReflectionService());
         $articleMetadata->initializeReflection(new RuntimeReflectionService());
@@ -1200,7 +1240,13 @@ class ClassMetadataTest extends OrmTestCase
     public function testFullyQualifiedClassNameShouldBeGivenToNamingStrategyPropertyToColumnName()
     {
         $namingStrategy = new MyPrefixNamingStrategy();
-        $metadata       = new ClassMetadata(CMS\CmsAddress::class, $namingStrategy);
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $namingStrategy
+        );
+
+        $metadata = new ClassMetadata(CMS\CmsAddress::class, $this->metadataBuildingContext);
 
         $metadata->initializeReflection(new RuntimeReflectionService());
 
@@ -1232,7 +1278,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidCascade()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToOneAssociationMetadata('address');
@@ -1250,7 +1296,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidPropertyAssociationOverrideNameException()
     {
-        $cm = new ClassMetadata(DDC964Admin::class);
+        $cm = new ClassMetadata(DDC964Admin::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToOneAssociationMetadata('address');
@@ -1269,7 +1315,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidPropertyAttributeOverrideNameException()
     {
-        $metadata = new ClassMetadata(DDC964Guest::class);
+        $metadata = new ClassMetadata(DDC964Guest::class, $this->metadataBuildingContext);
         $metadata->initializeReflection(new RuntimeReflectionService());
 
         $fieldMetadata = new Mapping\FieldMetadata('name');
@@ -1291,7 +1337,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidEntityListenerClassException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addEntityListener(Events::postLoad, '\InvalidClassName', 'postLoadHandler');
@@ -1305,7 +1351,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testInvalidEntityListenerMethodException()
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addEntityListener(Events::postLoad, 'Doctrine\Tests\Models\Company\CompanyContractListener', 'invalidMethod');
@@ -1313,7 +1359,7 @@ class ClassMetadataTest extends OrmTestCase
 
     public function testManyToManySelfReferencingNamingStrategyDefaults()
     {
-        $cm = new ClassMetadata(CustomTypeParent::class);
+        $cm = new ClassMetadata(CustomTypeParent::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $association = new Mapping\ManyToManyAssociationMetadata('friendsWithMe');
@@ -1357,9 +1403,9 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testQuotedSequenceName() : void
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class);
-
+        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
+
         $id = new Mapping\FieldMetadata('id');
         $id->setValueGenerator(new Mapping\ValueGeneratorMetadata(
             Mapping\GeneratorType::SEQUENCE,
@@ -1381,7 +1427,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testIsIdentifierMappedSuperClass()
     {
-        $class = new ClassMetadata(DDC2700MappedSuperClass::class);
+        $class = new ClassMetadata(DDC2700MappedSuperClass::class, $this->metadataBuildingContext);
 
         self::assertFalse($class->isIdentifier('foo'));
     }
@@ -1391,7 +1437,7 @@ class ClassMetadataTest extends OrmTestCase
      */
     public function testWakeupReflectionWithEmbeddableAndStaticReflectionService()
     {
-        $metadata = new ClassMetadata(TestEntity1::class);
+        $metadata = new ClassMetadata(TestEntity1::class, $this->metadataBuildingContext);
 
         $metadata->mapEmbedded(
             [

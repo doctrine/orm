@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -33,12 +35,20 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     private $rsm;
 
+    /**
+     * @var ClassMetadataBuildingContext
+     */
+    private $metadataBuildingContext;
+
     protected function setUp()
     {
         parent::setUp();
 
-        $this->em  = $this->getTestEntityManager();
-        $this->rsm = new ResultSetMapping;
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
+        $this->em                      = $this->getTestEntityManager();
+        $this->rsm                     = new ResultSetMapping;
     }
 
     /**
@@ -109,7 +119,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultSetMapping()
     {
-        $cm = new ClassMetadata(CmsUser::class);
+        $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $joinColumn = new JoinColumnMetadata();
@@ -197,7 +207,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
-        $cm = new ClassMetadata(CmsUser::class);
+        $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(

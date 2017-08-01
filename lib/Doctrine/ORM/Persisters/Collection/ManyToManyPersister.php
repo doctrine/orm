@@ -7,8 +7,11 @@ namespace Doctrine\ORM\Persisters\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
@@ -40,7 +43,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $types     = [];
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
-            $types[] = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em);
+            /** @var JoinColumnMetadata $joinColumn */
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $class, $this->em));
+            }
+
+            $types[] = $joinColumn->getType();
         }
 
         $sql    = $this->getDeleteSQL($collection);
@@ -114,7 +124,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $params            = [];
         $types             = [];
         $association       = $collection->getMapping();
-        $id                = $this->uow->getEntityIdentifier($collection->getOwner());
+        $identifier        = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass       = $this->em->getClassMetadata($association->getSourceEntity());
         $targetClass       = $this->em->getClassMetadata($association->getTargetEntity());
         $owningAssociation = ! $association->isOwningSide()
@@ -130,15 +140,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
         ;
 
         foreach ($joinColumns as $joinColumn) {
-            $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $referencedName   = $joinColumn->getReferencedColumnName();
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedName, $sourceClass, $this->em));
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
-            $conditions[]   = 't.' . $quotedColumnName . ' = ?';
-            $params[]       = $id[$sourceClass->fieldNames[$referencedName]];
+            $conditions[]   = sprintf('t.%s = ?', $quotedColumnName);
+            $params[]       = $identifier[$sourceClass->fieldNames[$referencedColumnName]];
             $types[]        = $joinColumn->getType();
         }
 
@@ -254,17 +265,16 @@ class ManyToManyPersister extends AbstractCollectionPersister
         }
 
         foreach ($joinColumns as $joinColumn) {
-            $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $referencedName   = $joinColumn->getReferencedColumnName();
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($referencedName, $ownerMetadata, $this->em)
-                );
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $ownerMetadata, $this->em));
             }
 
             $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
-            $params[] = $identifier[$ownerMetadata->fieldNames[$referencedName]];
+            $params[] = $identifier[$ownerMetadata->fieldNames[$referencedColumnName]];
             $types[] = $joinColumn->getType();
         }
 
@@ -465,13 +475,29 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
-            $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em);
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $class, $this->em));
+            }
+
+            $columns[] = $quotedColumnName;
+            $types[]   = $joinColumn->getType();
         }
 
         foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
-            $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+            }
+
+            $columns[] = $quotedColumnName;
+            $types[]   = $joinColumn->getType();
         }
 
         return [
@@ -516,13 +542,29 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
-            $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em);
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $class, $this->em));
+            }
+
+            $columns[] = $quotedColumnName;
+            $types[]   = $joinColumn->getType();
         }
 
         foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
-            $columns[] = $this->platform->quoteIdentifier($joinColumn->getColumnName());
-            $types[]   = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
+            if (! $joinColumn->getType()) {
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+            }
+
+            $columns[] = $quotedColumnName;
+            $types[]   = $joinColumn->getType();
         }
 
         $columnNamesAsString  = implode(', ', $columns);
@@ -600,7 +642,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $association       = $collection->getMapping();
         $owningAssociation = $association;
         $indexBy           = $owningAssociation->getIndexedBy();
-        $id                = $this->uow->getEntityIdentifier($collection->getOwner());
+        $identifier        = $this->uow->getEntityIdentifier($collection->getOwner());
         $sourceClass       = $this->em->getClassMetadata($owningAssociation->getSourceEntity());
         $targetClass       = $this->em->getClassMetadata($owningAssociation->getTargetEntity());
 
@@ -626,6 +668,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $joinConditions = [];
 
             foreach ($joinColumns as $joinColumn) {
+                /** @var JoinColumnMetadata $joinColumn */
                 $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                 $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
@@ -634,34 +677,48 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
             $quotedJoinTable .= ' JOIN ' . $tableName . ' tr ON ' . implode(' AND ', $joinConditions);
-            $columnName       = $targetClass->getProperty($indexBy)->getColumnName();
+            $indexByProperty  = $targetClass->getProperty($indexBy);
 
-            $whereClauses[] = 'tr.' . $this->platform->quoteIdentifier($columnName) . ' = ?';
-            $params[]       = $key;
-            $types[]        = PersisterHelper::getTypeOfColumn($columnName, $targetClass, $this->em);
+            switch (true) {
+                case ($indexByProperty instanceof FieldMetadata):
+                    $quotedColumnName = $this->platform->quoteIdentifier($indexByProperty->getColumnName());
+
+                    $whereClauses[] = sprintf('tr.%s = ?', $quotedColumnName);
+                    $params[]       = $key;
+                    $types[]        = $indexByProperty->getType();
+                    break;
+
+                case ($indexByProperty instanceof ToOneAssociationMetadata && $indexByProperty->isOwningSide()):
+                    // Cannot be supported because PHP does not accept objects as keys. =(
+                    break;
+            }
         }
 
         foreach ($inverseJoinColumns as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
+            $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $sourceClass, $this->em)
-                );
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
-            $whereClauses[] = 't.' . $this->platform->quoteIdentifier($joinColumn->getColumnName()) . ' = ?';
-            $params[]       = $id[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
+            $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
+            $params[]       = $identifier[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
             $types[]        = $joinColumn->getType();
         }
 
-        if ( ! $joinNeeded) {
+        if (! $joinNeeded) {
             foreach ($joinColumns as $joinColumn) {
+                /** @var JoinColumnMetadata $joinColumn */
+                $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                $referencedColumnName = $joinColumn->getReferencedColumnName();
+
                 if (! $joinColumn->getType()) {
-                    $joinColumn->setType(
-                        PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
-                    );
+                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                 }
 
-                $whereClauses[] = 't.' . $this->platform->quoteIdentifier($joinColumn->getColumnName()) . ' = ?';
+                $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
                 $params[]       = $key;
                 $types[]        = $joinColumn->getType();
             }
@@ -696,17 +753,17 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $owningAssociation = $association;
 
         if (! $association->isOwningSide()) {
-            $sourceClass = $this->em->getClassMetadata($association->getTargetEntity());
-            $targetClass = $this->em->getClassMetadata($association->getSourceEntity());
-            $sourceId = $this->uow->getEntityIdentifier($element);
-            $targetId = $this->uow->getEntityIdentifier($collection->getOwner());
+            $sourceClass      = $this->em->getClassMetadata($association->getTargetEntity());
+            $targetClass      = $this->em->getClassMetadata($association->getSourceEntity());
+            $sourceIdentifier = $this->uow->getEntityIdentifier($element);
+            $targetIdentifier = $this->uow->getEntityIdentifier($collection->getOwner());
 
             $owningAssociation = $sourceClass->getProperty($association->getMappedBy());
         } else {
-            $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
-            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
-            $sourceId = $this->uow->getEntityIdentifier($collection->getOwner());
-            $targetId = $this->uow->getEntityIdentifier($element);
+            $sourceClass      = $this->em->getClassMetadata($association->getSourceEntity());
+            $targetClass      = $this->em->getClassMetadata($association->getTargetEntity());
+            $sourceIdentifier = $this->uow->getEntityIdentifier($collection->getOwner());
+            $targetIdentifier = $this->uow->getEntityIdentifier($element);
         }
 
         $joinTable       = $owningAssociation->getJoinTable();
@@ -717,32 +774,30 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $types           = [];
 
         foreach ($joinTable->getJoinColumns() as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em)
-                );
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
-            $params[]       = $sourceId[$sourceClass->fieldNames[$referencedColumnName]];
+            $params[]       = $sourceIdentifier[$sourceClass->fieldNames[$referencedColumnName]];
             $types[]        = $joinColumn->getType();
         }
 
         foreach ($joinTable->getInverseJoinColumns() as $joinColumn) {
+            /** @var JoinColumnMetadata $joinColumn */
             $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                );
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
             }
 
             $whereClauses[] = ($addFilters ? 't.' : '') . $quotedColumnName . ' = ?';
-            $params[]       = $targetId[$targetClass->fieldNames[$referencedColumnName]];
+            $params[]       = $targetIdentifier[$targetClass->fieldNames[$referencedColumnName]];
             $types[]        = $joinColumn->getType();
         }
 

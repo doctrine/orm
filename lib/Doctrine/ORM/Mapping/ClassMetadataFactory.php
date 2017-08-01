@@ -59,9 +59,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function loadMetadata($name)
+    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext)
     {
-        $loaded = parent::loadMetadata($name);
+        $loaded = parent::loadMetadata($name, $metadataBuildingContext);
 
         array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
 
@@ -89,13 +89,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata($className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
-        if ( ! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return;
         }
 
-        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $metadataBuildingContext, $this->em);
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
 
@@ -103,17 +103,19 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function doLoadMetadata(
         ClassMetadata $class,
-        ClassMetadata $parent = null,
-        bool $rootEntityFound,
-        array $nonSuperclassParents
-    )
+        ClassMetadataBuildingContext $metadataBuildingContext,
+        bool $rootEntityFound
+    ) : void
     {
+
         /* @var $class ClassMetadata */
-        /* @var $parent ClassMetadata */
+        /* @var $parent ClassMetadata|null */
+        $parent = $class->getParent();
+
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
                 $class->setTable($parent->table);
@@ -141,7 +143,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         // Invoke driver
         try {
-            $this->driver->loadMetadataForClass($class->getClassName(), $class);
+            $this->driver->loadMetadataForClass($class->getClassName(), $class, $metadataBuildingContext);
         } catch (ReflectionException $e) {
             throw MappingException::reflectionFailure($class->getClassName(), $e);
         }
@@ -207,8 +209,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        $class->setParentClasses($nonSuperclassParents);
-
         if ($class->isRootEntity() && $class->inheritanceType !== InheritanceType::NONE && ! $class->discriminatorMap) {
             $this->addDefaultDiscriminatorMap($class);
         }
@@ -248,7 +248,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $tableName = $class->getTableName();
 
         // Resolve column table names
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             if ($property instanceof FieldMetadata) {
                 $property->setTableName($property->getTableName() ?? $tableName);
 
@@ -312,11 +312,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    protected function newClassMetadataInstance($className)
+    protected function newClassMetadataInstance(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata
     {
-        return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+        return new ClassMetadata($className, $metadataBuildingContext);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function newClassMetadataBuildingContext() : ClassMetadataBuildingContext
+    {
+        return new ClassMetadataBuildingContext($this, $this->em->getConfiguration()->getNamingStrategy());
     }
 
     /**
@@ -427,7 +438,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $isAbstract = $parentClass->isMappedSuperclass;
 
-        foreach ($parentClass->getProperties() as $fieldName => $property) {
+        foreach ($parentClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if ($isAbstract && $property instanceof ToManyAssociationMetadata && ! $property->isOwningSide()) {
                 throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->getClassName(), $fieldName);
             }
@@ -618,7 +629,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     private function completeIdentifierGeneratorMappings(ClassMetadata $class)
     {
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             if ( ! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
                 continue;
             }
@@ -755,33 +766,38 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private function buildValueGenerationPlan(ClassMetadata $class): void
     {
         /** @var LocalColumnMetadata[] $generatedProperties */
-        $generatedProperties = array_filter($class->getProperties(), function (Property $property): bool {
-            return $property instanceof LocalColumnMetadata && $property->hasValueGenerator();
-        });
-        $propertiesCount = count($generatedProperties);
+        $generatedProperties = [];
 
-        if ($propertiesCount === 0) {
-            $class->setValueGenerationPlan(new NoopValueGenerationPlan());
-            return;
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            if (! ($property instanceof LocalColumnMetadata && $property->hasValueGenerator())) {
+                continue;
+            }
+
+            $generatedProperties[] = $property;
         }
 
-        if ($propertiesCount === 1) {
-            $property = reset($generatedProperties);
+        switch (count($generatedProperties)) {
+            case 0:
+                $class->setValueGenerationPlan(new NoopValueGenerationPlan());
+                break;
 
-            $class->setValueGenerationPlan(new SingleValueGenerationPlan(
-                $class,
-                new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property))
-            ));
+            case 1:
+                $property  = reset($generatedProperties);
+                $executor  = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
 
-            return;
+                $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executor));
+                break;
+
+            default:
+                $executors = [];
+
+                foreach ($generatedProperties as $property) {
+                    $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+                }
+
+                $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
+                break;
         }
-
-        $executors = [];
-        foreach ($generatedProperties as $property) {
-            $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
-        }
-
-        $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
     }
 
     private function createPropertyValueGenerator(ClassMetadata $class, LocalColumnMetadata $property): Sequencing\Generator

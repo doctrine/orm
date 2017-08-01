@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 
 /**
  * Contract for metadata drivers.
@@ -20,12 +21,17 @@ interface MappingDriver
     /**
      * Loads the metadata for the specified class into the provided container.
      *
-     * @param string        $className
-     * @param ClassMetadata $metadata
+     * @param string                       $className
+     * @param ClassMetadata                $metadata
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return void
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata);
+    public function loadMetadataForClass(
+        string $className,
+        ClassMetadata $metadata, // ComponentMetadata $parent
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ); // : ComponentMetadata
 
     /**
      * Gets the names of all mapped classes known to this driver.

@@ -9,9 +9,17 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Generator;
 
+/**
+ * Class FieldMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class FieldMetadata extends LocalColumnMetadata implements Property
 {
-    /** @var ClassMetadata */
+    /** @var ComponentMetadata */
     protected $declaringClass;
 
     /** @var \ReflectionProperty */
@@ -44,15 +52,15 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getDeclaringClass()
+    public function getDeclaringClass() : ComponentMetadata
     {
         return $this->declaringClass;
     }
 
     /**
-     * @param ClassMetadata $declaringClass
+     * @param ComponentMetadata $declaringClass
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass)
+    public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
     }
@@ -60,7 +68,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -68,7 +76,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setValue($object, $value)
+    public function setValue($object, $value) : void
     {
         $this->reflection->setValue($object, $value);
     }
@@ -84,7 +92,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function isAssociation()
+    public function isAssociation() : bool
     {
         return false;
     }
@@ -92,7 +100,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function isField()
+    public function isField() : bool
     {
         return true;
     }
@@ -100,7 +108,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty)
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }
@@ -108,7 +116,7 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function wakeupReflection(ReflectionService $reflectionService)
+    public function wakeupReflection(ReflectionService $reflectionService) : void
     {
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)

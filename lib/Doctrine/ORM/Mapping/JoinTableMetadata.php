@@ -5,6 +5,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+/**
+ * Class JoinTableMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 final class JoinTableMetadata extends TableMetadata
 {
     /** @var array<JoinColumnMetadata> */
@@ -16,7 +24,7 @@ final class JoinTableMetadata extends TableMetadata
     /**
      * @return bool
      */
-    public function hasColumns()
+    public function hasColumns() : bool
     {
         return $this->joinColumns || $this->inverseJoinColumns;
     }
@@ -24,7 +32,7 @@ final class JoinTableMetadata extends TableMetadata
     /**
      * @return array<JoinColumnMetadata>
      */
-    public function getJoinColumns()
+    public function getJoinColumns() : array
     {
         return $this->joinColumns;
     }
@@ -32,7 +40,7 @@ final class JoinTableMetadata extends TableMetadata
     /**
      * @param JoinColumnMetadata $joinColumn
      */
-    public function addJoinColumn(JoinColumnMetadata $joinColumn)
+    public function addJoinColumn(JoinColumnMetadata $joinColumn) : void
     {
         $this->joinColumns[] = $joinColumn;
     }
@@ -40,7 +48,7 @@ final class JoinTableMetadata extends TableMetadata
     /**
      * @return array<JoinColumnMetadata>
      */
-    public function getInverseJoinColumns()
+    public function getInverseJoinColumns() : array
     {
         return $this->inverseJoinColumns;
     }
@@ -48,7 +56,7 @@ final class JoinTableMetadata extends TableMetadata
     /**
      * @param JoinColumnMetadata $joinColumn
      */
-    public function addInverseJoinColumn(JoinColumnMetadata $joinColumn)
+    public function addInverseJoinColumn(JoinColumnMetadata $joinColumn) : void
     {
         $this->inverseJoinColumns[] = $joinColumn;
     }

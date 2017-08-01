@@ -246,7 +246,11 @@ class AnnotationDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
         $reflClass = $metadata->getReflectionClass();
 

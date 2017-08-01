@@ -74,22 +74,26 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
             $this->insertSql .= $sqlWalker->walkWhereClause($AST->whereClause);
         }
 
-        // 2. Create ID subselect statement used in DELETE ... WHERE ... IN (subselect)
-        $idSubselect = 'SELECT ' . $idColumnNameList . ' FROM ' . $tempTable;
-
-        // 3. Create and store DELETE statements
-        $classNames = array_merge(
-            $primaryClass->getParentClasses(),
-            [$primaryClass->getClassName()],
-            $primaryClass->getSubClasses()
+        // 2. Create statement used in DELETE ... WHERE ... IN (subselect)
+        $deleteSQLTemplate = sprintf(
+            'DELETE FROM %%s WHERE (%s) IN (SELECT %s FROM %s)',
+            $idColumnNameList,
+            $idColumnNameList,
+            $tempTable
         );
 
-        foreach (array_reverse($classNames) as $className) {
-            $parentClass = $em->getClassMetadata($className);
-            $tableName   = $parentClass->table->getQuotedQualifiedName($platform);
+        // 3. Create and store DELETE statements
+        $hierarchyClasses = array_merge(
+            array_map(
+                function ($className) use ($em) { return $em->getClassMetadata($className); },
+                array_reverse($primaryClass->getSubClasses())
+            ),
+            [$primaryClass],
+            $primaryClass->getAncestorsIterator()->getArrayCopy()
+        );
 
-            $this->sqlStatements[] = 'DELETE FROM ' . $tableName
-                . ' WHERE (' . $idColumnNameList . ') IN (' . $idSubselect . ')';
+        foreach ($hierarchyClasses as $class) {
+            $this->sqlStatements[] = sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($platform));
         }
 
         // 4. Store DDL for temporary identifier table.

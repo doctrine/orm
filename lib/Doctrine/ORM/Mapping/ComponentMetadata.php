@@ -35,7 +35,7 @@ abstract class ComponentMetadata
     /**
      * @var CacheMetadata|null
      */
-    protected $cache = null;
+    protected $cache;
 
     /**
      * @var array<string, Property>
@@ -46,12 +46,10 @@ abstract class ComponentMetadata
      * ComponentMetadata constructor.
      *
      * @param string                 $className
-     * @param ComponentMetadata|null $parent
      */
-    public function __construct(string $className, ?ComponentMetadata $parent = null)
+    public function __construct(string $className)
     {
         $this->className = $className;
-        $this->parent    = $parent;
     }
 
     /**
@@ -60,6 +58,14 @@ abstract class ComponentMetadata
     public function getClassName() : string
     {
         return $this->className;
+    }
+
+    /**
+     * @param ComponentMetadata $parent
+     */
+    public function setParent(ComponentMetadata $parent) : void
+    {
+        $this->parent = $parent;
     }
 
     /**
@@ -83,7 +89,7 @@ abstract class ComponentMetadata
      *
      * @return void
      */
-    public function setCache(?CacheMetadata $cache = null)
+    public function setCache(?CacheMetadata $cache = null) : void
     {
         $this->cache = $cache;
     }
@@ -97,9 +103,9 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \Iterator
+     * @return \ArrayIterator
      */
-    public function getDeclaredPropertiesIterator() : \Iterator
+    public function getDeclaredPropertiesIterator() : \ArrayIterator
     {
         return new \ArrayIterator($this->declaredProperties);
     }
@@ -109,11 +115,12 @@ abstract class ComponentMetadata
      *
      * @throws MappingException
      */
-    public function addDeclaredProperty(Property $property)
+    public function addDeclaredProperty(Property $property) : void
     {
         $propertyName = $property->getName();
 
-        if ($this->hasProperty($propertyName)) {
+        // @todo guilhermeblanco Switch to hasProperty once inherited properties are not being mapped on child classes
+        if ($this->hasDeclaredProperty($propertyName)) {
             throw MappingException::duplicateProperty($this->getClassName(), $this->getProperty($propertyName));
         }
 
@@ -185,6 +192,33 @@ abstract class ComponentMetadata
         }
 
         return $this->parent && $this->parent->hasProperty($propertyName);
+    }
+
+    /**
+     * @return \ArrayIterator
+     */
+    public function getColumnsIterator() : \ArrayIterator
+    {
+        $iterator = new \ArrayIterator();
+
+        // @todo guilhermeblanco Must be switched to getPropertiesIterator once class only has its declared properties
+        foreach ($this->getDeclaredPropertiesIterator() as $property) {
+            switch (true) {
+                case ($property instanceof FieldMetadata):
+                    $iterator->offsetSet($property->getColumnName(), $property);
+                    break;
+
+                case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $iterator->offsetSet($joinColumn->getColumnName(), $joinColumn);
+                    }
+
+                    break;
+            }
+        }
+
+        return $iterator;
     }
 
     /**

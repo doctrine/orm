@@ -118,12 +118,12 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * MappedSuperClassMetadata constructor.
      *
-     * @param string                 $className
-     * @param ComponentMetadata|null $parent
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      */
-    public function __construct(string $className, ?ComponentMetadata $parent = null)
+    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
-        parent::__construct($className, $parent);
+        parent::__construct($className);
 
         $this->entityName = $className;
     }
@@ -139,7 +139,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * @param string $entityName
      */
-    public function setEntityName(string $entityName)
+    public function setEntityName(string $entityName) : void
     {
         $this->entityName = $entityName;
     }
@@ -155,7 +155,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * @param null|string customRepositoryClassName
      */
-    public function setCustomRepositoryClassName(?string $customRepositoryClassName)
+    public function setCustomRepositoryClassName(?string $customRepositoryClassName) : void
     {
         $this->customRepositoryClassName = $customRepositoryClassName;
     }
@@ -171,7 +171,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * @param Property $property
      */
-    public function setDeclaredVersion(Property $property)
+    public function setDeclaredVersion(Property $property) : void
     {
         $this->declaredVersion = $property;
     }
@@ -203,7 +203,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * @param bool $readOnly
      */
-    public function setReadOnly(bool $readOnly)
+    public function setReadOnly(bool $readOnly) : void
     {
         $this->readOnly = $readOnly;
     }
@@ -221,7 +221,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @throws MappingException
      */
-    public function addSubClass(SubClassMetadata $subClassMetadata)
+    public function addSubClass(SubClassMetadata $subClassMetadata) : void
     {
         $superClassMetadata = $this->getSuperClass();
 
@@ -276,7 +276,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @throws MappingException
      */
-    public function addNamedQuery(string $name, string $dqlQuery)
+    public function addNamedQuery(string $name, string $dqlQuery) : void
     {
         if (isset($this->namedQueries[$name])) {
             throw MappingException::duplicateQueryMapping($this->entityName, $name);
@@ -376,7 +376,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * {@inheritdoc}
      */
-    public function addDeclaredProperty(Property $property)
+    public function addDeclaredProperty(Property $property) : void
     {
         parent::addDeclaredProperty($property);
 
