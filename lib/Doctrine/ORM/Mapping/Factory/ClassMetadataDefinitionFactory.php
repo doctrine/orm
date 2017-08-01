@@ -23,6 +23,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\Factory\Strategy\ClassMetadataGeneratorStrategy;
 
 class ClassMetadataDefinitionFactory
 {

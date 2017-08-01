@@ -126,9 +126,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loaded[$entityClassName];
         }
 
-        $parentClassNameList   = $this->getParentClassNameList($className);
-        $parentClassNameList[] = $className;
-        $parent                = null;
+        $metadataBuildingContext = new ClassMetadataBuildingContext($this);
+        $parentClassNameList     = $this->getParentClassNameList($entityClassName);
+        $parentClassNameList[]   = $entityClassName;
+        $parent                  = null;
 
         foreach ($parentClassNameList as $parentClassName) {
             if (isset($this->loaded[$parentClassName])) {
@@ -137,10 +138,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                 continue;
             }
 
-            $definition = $this->getOrCreateClassMetadataDefinition($entityClassName, $parent);
+            $definition = $this->getOrCreateClassMetadataDefinition($parentClassName, $parent);
 
-            $parent = $this->loaded[$entityClassName] = $this->createClassMetadata($definition);
+            $parent = $this->loaded[$parentClassName] = $this->createClassMetadata($definition);
         }
+
+        $metadataBuildingContext->validate();
 
         return $this->loaded[$entityClassName];
     }
