@@ -66,7 +66,11 @@ class NewAnnotationDriver implements MappingDriver
      *
      * @throws Mapping\MappingException
      */
-    public function loadMetadataForClass($className, Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
         // IMPORTANT: We're handling $metadata as "parent" metadata here, while building the $className ClassMetadata.
         $reflectionClass  = new \ReflectionClass($className);

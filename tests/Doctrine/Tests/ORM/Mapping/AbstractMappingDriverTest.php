@@ -42,15 +42,30 @@ use Doctrine\Tests\OrmTestCase;
 
 abstract class AbstractMappingDriverTest extends OrmTestCase
 {
+    /**
+     * @var Mapping\ClassMetadataBuildingContext
+     */
+    protected $metadataBuildingContext;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
+    }
+
     abstract protected function loadDriver();
 
     public function createClassMetadata($entityClassName)
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata($entityClassName);
+        $class = new ClassMetadata($entityClassName, $this->metadataBuildingContext);
+
         $class->initializeReflection(new RuntimeReflectionService());
-        $mappingDriver->loadMetadataForClass($entityClassName, $class);
+        $mappingDriver->loadMetadataForClass($entityClassName, $class, $this->metadataBuildingContext);
 
         return $class;
     }
@@ -217,7 +232,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testProperties($class)
     {
-        self::assertCount(7, $class->getProperties());
+        self::assertCount(7, $class->getDeclaredPropertiesIterator());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -356,7 +371,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testOwningOneToOneAssociation($class)
     {
-        self::assertArrayHasKey('address', $class->getProperties());
+        self::assertArrayHasKey('address', $class->getDeclaredPropertiesIterator());
 
         $association = $class->getProperty('address');
 
@@ -374,7 +389,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testInverseOneToManyAssociation($class)
     {
-        self::assertArrayHasKey('phonenumbers', $class->getProperties());
+        self::assertArrayHasKey('phonenumbers', $class->getDeclaredPropertiesIterator());
 
         $association = $class->getProperty('phonenumbers');
 
@@ -396,7 +411,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testManyToManyAssociationWithCascadeAll($class)
     {
-        self::assertArrayHasKey('groups', $class->getProperties());
+        self::assertArrayHasKey('groups', $class->getDeclaredPropertiesIterator());
 
         $association = $class->getProperty('groups');
 
@@ -796,8 +811,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $guestMetadata  = $factory->getMetadataFor(DDC964Guest::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', $guestMetadata->getProperties());
-        self::assertArrayHasKey('groups', $adminMetadata->getProperties());
+        self::assertArrayHasKey('groups', $guestMetadata->getDeclaredPropertiesIterator());
+        self::assertArrayHasKey('groups', $adminMetadata->getDeclaredPropertiesIterator());
 
         $guestGroups = $guestMetadata->getProperty('groups');
         $adminGroups = $adminMetadata->getProperty('groups');
@@ -833,8 +848,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals('admingroup_id', $adminGroupsInverseJoinColumn->getColumnName());
 
         // assert address association mappings
-        self::assertArrayHasKey('address', $guestMetadata->getProperties());
-        self::assertArrayHasKey('address', $adminMetadata->getProperties());
+        self::assertArrayHasKey('address', $guestMetadata->getDeclaredPropertiesIterator());
+        self::assertArrayHasKey('address', $adminMetadata->getDeclaredPropertiesIterator());
 
         $guestAddress = $guestMetadata->getProperty('address');
         $adminAddress = $adminMetadata->getProperty('address');
@@ -869,7 +884,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $adminMetadata  = $factory->getMetadataFor(DDC3579Admin::class);
 
         // assert groups association mappings
-        self::assertArrayHasKey('groups', $adminMetadata->getProperties());
+        self::assertArrayHasKey('groups', $adminMetadata->getDeclaredPropertiesIterator());
 
         $adminGroups = $adminMetadata->getProperty('groups');
 
@@ -885,7 +900,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         // check override metadata
         $contractMetadata = $this->createClassMetadataFactory()->getMetadataFor(DDC5934Contract::class);
 
-        self::assertArrayHasKey('members', $contractMetadata->getProperties());
+        self::assertArrayHasKey('members', $contractMetadata->getDeclaredPropertiesIterator());
 
         $contractMembers = $contractMetadata->getProperty('members');
 
@@ -933,6 +948,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
             [
                 'guest_id' => 'id',
                 'guest_name' => 'name',
+                'address_id' => 'address',
             ],
             $guestMetadata->fieldNames
         );
@@ -1084,7 +1100,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $class->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city', $class->getCache()->getRegion());
 
-        self::assertArrayHasKey('state', $class->getProperties());
+        self::assertArrayHasKey('state', $class->getDeclaredPropertiesIterator());
 
         $stateAssociation = $class->getProperty('state');
 
@@ -1092,7 +1108,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals(Mapping\CacheUsage::READ_ONLY, $stateAssociation->getCache()->getUsage());
         self::assertEquals('doctrine_tests_models_cache_city__state', $stateAssociation->getCache()->getRegion());
 
-        self::assertArrayHasKey('attractions', $class->getProperties());
+        self::assertArrayHasKey('attractions', $class->getDeclaredPropertiesIterator());
 
         $attractionsAssociation = $class->getProperty('attractions');
 

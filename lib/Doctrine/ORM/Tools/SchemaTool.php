@@ -157,9 +157,11 @@ class SchemaTool
                     $this->addDiscriminatorColumnDefinition($class, $table);
 
                     // Aggregate all the information from all classes in the hierarchy
-                    foreach ($class->getParentClasses() as $parentClassName) {
+                    $parentClass = $class;
+
+                    while (($parentClass = $parentClass->getParent()) !== null) {
                         // Parent class information is already contained in this class
-                        $processedClasses[$parentClassName] = true;
+                        $processedClasses[$parent->getClassName()] = true;
                     }
 
                     foreach ($class->getSubClasses() as $subClassName) {
@@ -177,7 +179,7 @@ class SchemaTool
                     // Add all non-inherited fields as columns
                     $pkColumns = [];
 
-                    foreach ($class->getProperties() as $fieldName => $property) {
+                    foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
                         if (! ($property instanceof FieldMetadata)) {
                             continue;
                         }
@@ -322,7 +324,7 @@ class SchemaTool
 
             $processedClasses[$class->getClassName()] = true;
 
-            foreach ($class->getProperties() as $property) {
+            foreach ($class->getDeclaredPropertiesIterator() as $property) {
                 if (! $property instanceof FieldMetadata
                     || ! $property->hasValueGenerator()
                     || $property->getValueGenerator()->getType() !== GeneratorType::SEQUENCE
@@ -332,7 +334,7 @@ class SchemaTool
 
                 $quotedName = $this->platform->quoteIdentifier($property->getValueGenerator()->getDefinition()['sequenceName']);
 
-                if ( ! $schema->hasSequence($quotedName)) {
+                if (! $schema->hasSequence($quotedName)) {
                     $schema->createSequence($quotedName, $property->getValueGenerator()->getDefinition()['allocationSize']);
                 }
             }
@@ -407,7 +409,7 @@ class SchemaTool
     {
         $pkColumns = [];
 
-        foreach ($class->getProperties() as $fieldName => $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if (! ($property instanceof FieldMetadata)) {
                 continue;
             }
@@ -447,7 +449,7 @@ class SchemaTool
             ],
         ];
 
-        if ($classMetadata->inheritanceType === InheritanceType::SINGLE_TABLE && count($classMetadata->getParentClasses()) > 0) {
+        if ($classMetadata->inheritanceType === InheritanceType::SINGLE_TABLE && $classMetadata->getParent()) {
             $options['notnull'] = false;
         }
 
@@ -525,7 +527,7 @@ class SchemaTool
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
-        foreach ($class->getProperties() as $fieldName => $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if (! ($property instanceof AssociationMetadata)) {
                 continue;
             }
@@ -614,10 +616,10 @@ class SchemaTool
     private function getDefiningClass($class, $referencedColumnName)
     {
         if (isset($class->fieldNames[$referencedColumnName])) {
-            $referencedFieldName = $class->fieldNames[$referencedColumnName];
+            $propertyName = $class->fieldNames[$referencedColumnName];
 
-            if ($class->hasField($referencedFieldName)) {
-                return [$class, $referencedFieldName];
+            if ($class->hasField($propertyName)) {
+                return [$class, $propertyName];
             }
         }
 

@@ -255,23 +255,31 @@ class OneToManyPersister extends AbstractCollectionPersister
         $parameters = array_values($sourcePersister->getIdentifier($collection->getOwner()));
         $numDeleted = $this->conn->executeUpdate($statement, $parameters);
 
-        // 3) Delete records on each table in the hierarchy
-        $classNames = array_merge(
-            $targetClass->getParentClasses(),
-            [$targetClass->getClassName()],
-            $targetClass->getSubClasses()
+        // 3) Create statement used in DELETE ... WHERE ... IN (subselect)
+        $deleteSQLTemplate = sprintf(
+            'DELETE FROM %%s WHERE (%s) IN (SELECT %s FROM %s)',
+            $idColumnNameList,
+            $idColumnNameList,
+            $tempTable
         );
 
-        foreach (array_reverse($classNames) as $className) {
-            $parentClass = $this->em->getClassMetadata($className);
-            $tableName   = $parentClass->table->getQuotedQualifiedName($this->platform);
-            $statement   = 'DELETE FROM ' . $tableName . ' WHERE (' . $idColumnNameList . ')'
-                . ' IN (SELECT ' . $idColumnNameList . ' FROM ' . $tempTable . ')';
+        // 4) Delete records on each table in the hierarchy
+        $hierarchyClasses = array_merge(
+            array_map(
+                function ($className) { return $this->em->getClassMetadata($className); },
+                array_reverse($targetClass->getSubClasses())
+            ),
+            [$targetClass],
+            $targetClass->getAncestorsIterator()->getArrayCopy()
+        );
+
+        foreach ($hierarchyClasses as $class) {
+            $statement = sprintf($deleteSQLTemplate, $class->table->getQuotedQualifiedName($this->platform));
 
             $this->conn->executeUpdate($statement);
         }
 
-        // 4) Drop temporary table
+        // 5) Drop temporary table
         $statement = $this->platform->getDropTemporaryTableSQL($tempTable);
 
         $this->conn->executeUpdate($statement);

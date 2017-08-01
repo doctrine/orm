@@ -7,6 +7,14 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
 
+/**
+ * Class TransientMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class TransientMetadata implements Property
 {
     /** @var ClassMetadata */
@@ -31,15 +39,15 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getDeclaringClass()
+    public function getDeclaringClass() : ComponentMetadata
     {
         return $this->declaringClass;
     }
 
     /**
-     * @param ClassMetadata $declaringClass
+     * @param ComponentMetadata $declaringClass
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass)
+    public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
     }
@@ -47,7 +55,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -55,7 +63,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function isPrimaryKey()
+    public function isPrimaryKey() : bool
     {
         return false;
     }
@@ -63,7 +71,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setValue($object, $value)
+    public function setValue($object, $value) : void
     {
         $this->reflection->setValue($object, $value);
     }
@@ -79,7 +87,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty)
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }
@@ -87,7 +95,7 @@ class TransientMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function wakeupReflection(ReflectionService $reflectionService)
+    public function wakeupReflection(ReflectionService $reflectionService) : void
     {
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)

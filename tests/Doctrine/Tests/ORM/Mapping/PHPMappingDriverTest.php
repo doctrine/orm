@@ -45,7 +45,8 @@ class PHPMappingDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(Mapping\PHPSLC::class);
-        $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class);
+        $class = new ClassMetadata(Mapping\PHPSLC::class, $this->metadataBuildingContext);
+
+        $mappingDriver->loadMetadataForClass(Mapping\PHPSLC::class, $class, $this->metadataBuildingContext);
     }
 }

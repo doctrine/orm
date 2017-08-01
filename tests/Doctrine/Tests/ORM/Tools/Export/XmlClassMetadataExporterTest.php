@@ -45,9 +45,13 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
     /**
      * @group DDC-3428
      */
-    public function testSequenceGenerator() {
+    public function testSequenceGenerator()
+    {
+        $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class)
+        );
         $exporter = new XmlExporter();
-        $metadata = new ClassMetadata('entityTest');
+        $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -86,9 +90,13 @@ XML;
      * @group 1216
      * @group DDC-3439
      */
-    public function testFieldOptionsExport() {
+    public function testFieldOptionsExport()
+    {
+        $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(Mapping\ClassMetadataFactory::class)
+        );
         $exporter = new XmlExporter();
-        $metadata = new ClassMetadata('entityTest');
+        $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
 
         $fieldMetadata = new Mapping\FieldMetadata('myField');
         $fieldMetadata->setType(Type::getType('string'));

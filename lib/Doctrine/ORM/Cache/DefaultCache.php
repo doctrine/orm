@@ -204,7 +204,7 @@ class DefaultCache implements Cache
         $metadatas = $this->em->getMetadataFactory()->getAllMetadata();
 
         foreach ($metadatas as $metadata) {
-            foreach ($metadata->getProperties() as $association) {
+            foreach ($metadata->getDeclaredPropertiesIterator() as $association) {
                 if (! $association instanceof ToManyAssociationMetadata) {
                     continue;
                 }

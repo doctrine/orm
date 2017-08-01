@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping;
 
 /**
  * The StaticPHPDriver calls a static loadMetadata() method on your entity
@@ -60,9 +59,13 @@ class StaticPHPDriver implements MappingDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
-        $className::loadMetadata($metadata);
+        $className::loadMetadata($metadata, $metadataBuildingContext);
     }
 
     /**
@@ -76,7 +79,7 @@ class StaticPHPDriver implements MappingDriver
         }
 
         if (!$this->paths) {
-            throw MappingException::pathRequired();
+            throw Mapping\MappingException::pathRequired();
         }
 
         $classes = [];
@@ -84,7 +87,7 @@ class StaticPHPDriver implements MappingDriver
 
         foreach ($this->paths as $path) {
             if (!is_dir($path)) {
-                throw MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
+                throw Mapping\MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
             $iterator = new \RecursiveIteratorIterator(

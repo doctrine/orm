@@ -11,13 +11,7 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
-use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Mapping\JoinTableMetadata;
-use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Mapping\ValueGeneratorMetadata;
+use Doctrine\ORM\Mapping;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.
@@ -159,7 +153,11 @@ class DatabaseDriver implements MappingDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
         $this->reverseEngineerMappingFromDatabase();
 
@@ -208,7 +206,7 @@ class DatabaseDriver implements MappingDriver
 
                 if (current($manyTable->getColumns())->getName() === $localColumn) {
                     $associationMapping['inversedBy'] = $this->getFieldNameForColumn($manyTable->getName(), current($myFk->getColumns()), true);
-                    $associationMapping['joinTable']  = new JoinTableMetadata();
+                    $associationMapping['joinTable']  = new Mapping\JoinTableMetadata();
 
                     $joinTable = $associationMapping['joinTable'];
                     $joinTable->setName(strtolower($manyTable->getName()));
@@ -217,7 +215,7 @@ class DatabaseDriver implements MappingDriver
                     $cols   = $myFk->getColumns();
 
                     for ($i = 0, $l = count($cols); $i < $l; $i++) {
-                        $joinColumn = new JoinColumnMetadata();
+                        $joinColumn = new Mapping\JoinColumnMetadata();
 
                         $joinColumn->setColumnName($cols[$i]);
                         $joinColumn->setReferencedColumnName($fkCols[$i]);
@@ -229,7 +227,7 @@ class DatabaseDriver implements MappingDriver
                     $cols = $otherFk->getColumns();
 
                     for ($i = 0, $l = count($cols); $i < $l; $i++) {
-                        $joinColumn = new JoinColumnMetadata();
+                        $joinColumn = new Mapping\JoinColumnMetadata();
 
                         $joinColumn->setColumnName($cols[$i]);
                         $joinColumn->setReferencedColumnName($fkCols[$i]);
@@ -250,7 +248,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * @return void
      *
-     * @throws \Doctrine\ORM\Mapping\MappingException
+     * @throws Mapping\MappingException
      */
     private function reverseEngineerMappingFromDatabase()
     {
@@ -278,7 +276,7 @@ class DatabaseDriver implements MappingDriver
             }
 
             if ( ! $table->hasPrimaryKey()) {
-                throw new MappingException(
+                throw new Mapping\MappingException(
                     "Table " . $table->getName() . " has no primary key. Doctrine does not ".
                     "support reverse engineering from tables that don't have a primary key."
                 );
@@ -305,9 +303,9 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build table from a class metadata.
      *
-     * @param ClassMetadata $metadata
+     * @param Mapping\ClassMetadata $metadata
      */
-    private function buildTable(ClassMetadata $metadata)
+    private function buildTable(Mapping\ClassMetadata $metadata)
     {
         $tableName    = $this->classToTableNames[$metadata->getClassName()];
         $indexes      = $this->tables[$tableName]->getIndexes();
@@ -333,9 +331,9 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build field mapping from class metadata.
      *
-     * @param ClassMetadata $metadata
+     * @param Mapping\ClassMetadata $metadata
      */
-    private function buildFieldMappings(ClassMetadata $metadata)
+    private function buildFieldMappings(Mapping\ClassMetadata $metadata)
     {
         $tableName      = $metadata->getTableName();
         $columns        = $this->tables[$tableName]->getColumns();
@@ -368,7 +366,7 @@ class DatabaseDriver implements MappingDriver
 
         // We need to check for the columns here, because we might have associations as id as well.
         if ($ids && count($primaryKeys) === 1) {
-            $ids[0]->setValueGenerator(new ValueGeneratorMetadata(GeneratorType::AUTO));
+            $ids[0]->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
         }
     }
 
@@ -379,12 +377,12 @@ class DatabaseDriver implements MappingDriver
      * @param Column $column
      * @param string $fieldName
      *
-     * @return FieldMetadata
+     * @return Mapping\FieldMetadata
      */
     private function convertColumnAnnotationToFieldMetadata(string $tableName, Column $column, string $fieldName)
     {
         $options       = [];
-        $fieldMetadata = new FieldMetadata($fieldName);
+        $fieldMetadata = new Mapping\FieldMetadata($fieldName);
 
         $fieldMetadata->setType($column->getType());
         $fieldMetadata->setTableName($tableName);
@@ -438,9 +436,9 @@ class DatabaseDriver implements MappingDriver
     /**
      * Build to one (one to one, many to one) association mapping from class metadata.
      *
-     * @param ClassMetadata $metadata
+     * @param Mapping\ClassMetadata $metadata
      */
-    private function buildToOneAssociationMappings(ClassMetadata $metadata)
+    private function buildToOneAssociationMappings(Mapping\ClassMetadata $metadata)
     {
         $tableName   = $metadata->getTableName();
         $primaryKeys = $this->getTablePrimaryKeys($this->tables[$tableName]);
@@ -465,7 +463,7 @@ class DatabaseDriver implements MappingDriver
             }
 
             for ($i = 0, $l = count($fkColumns); $i < $l; $i++) {
-                $joinColumn = new JoinColumnMetadata();
+                $joinColumn = new Mapping\JoinColumnMetadata();
 
                 $joinColumn->setColumnName($fkColumns[$i]);
                 $joinColumn->setReferencedColumnName($fkForeignColumns[$i]);

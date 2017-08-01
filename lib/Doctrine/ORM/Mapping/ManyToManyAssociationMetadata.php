@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+/**
+ * Class ManyToManyAssociationMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class ManyToManyAssociationMetadata extends ToManyAssociationMetadata
 {
     /** @var null|JoinTableMetadata */
@@ -12,7 +20,7 @@ class ManyToManyAssociationMetadata extends ToManyAssociationMetadata
     /**
      * @param null|JoinTableMetadata $joinTable
      */
-    public function setJoinTable(JoinTableMetadata $joinTable = null)
+    public function setJoinTable(JoinTableMetadata $joinTable = null) : void
     {
         $this->joinTable = $joinTable;
     }
@@ -20,7 +28,7 @@ class ManyToManyAssociationMetadata extends ToManyAssociationMetadata
     /**
      * @return JoinTableMetadata|null
      */
-    public function getJoinTable()
+    public function getJoinTable() : ?JoinTableMetadata
     {
         return $this->joinTable;
     }

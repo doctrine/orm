@@ -9,10 +9,10 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class TableMetadata
 {
-    /** @var string */
+    /** @var string|null */
     protected $schema;
 
-    /** @var string */
+    /** @var string|null */
     protected $name;
 
     /** @var array */
@@ -25,9 +25,9 @@ class TableMetadata
     protected $uniqueConstraints = [];
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getSchema()
+    public function getSchema() : ?string
     {
         return $this->schema;
     }
@@ -35,7 +35,7 @@ class TableMetadata
     /**
      * @param string $schema
      */
-    public function setSchema(string $schema)
+    public function setSchema(string $schema) : void
     {
         $this->schema = $schema;
     }
@@ -43,15 +43,15 @@ class TableMetadata
     /**
      * @param string $name
      */
-    public function setName(string $name)
+    public function setName(string $name) : void
     {
         $this->name = $name;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName()
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -61,7 +61,7 @@ class TableMetadata
      *
      * @return string
      */
-    public function getQuotedQualifiedName(AbstractPlatform $platform)
+    public function getQuotedQualifiedName(AbstractPlatform $platform) : string
     {
         if (!$this->schema) {
             return $platform->quoteIdentifier($this->name);
@@ -75,7 +75,7 @@ class TableMetadata
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions() : array
     {
         return $this->options;
     }
@@ -83,7 +83,7 @@ class TableMetadata
     /**
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options) : void
     {
         $this->options = $options;
     }
@@ -103,7 +103,7 @@ class TableMetadata
      *
      * @return bool
      */
-    public function hasOption(string $name)
+    public function hasOption(string $name) : bool
     {
         return isset($this->options[$name]);
     }
@@ -112,7 +112,7 @@ class TableMetadata
      * @param string $name
      * @param mixed  $value
      */
-    public function addOption(string $name, $value)
+    public function addOption(string $name, $value) : void
     {
         $this->options[$name] = $value;
     }
@@ -120,7 +120,7 @@ class TableMetadata
     /**
      * @return array
      */
-    public function getIndexes()
+    public function getIndexes() : array
     {
         return $this->indexes;
     }
@@ -130,7 +130,7 @@ class TableMetadata
      *
      * @return array
      */
-    public function getIndex(string $name)
+    public function getIndex(string $name) : array
     {
         return $this->indexes[$name];
     }
@@ -140,7 +140,7 @@ class TableMetadata
      *
      * @return bool
      */
-    public function hasIndex(string $name)
+    public function hasIndex(string $name) : bool
     {
         return isset($this->indexes[$name]);
     }
@@ -148,7 +148,7 @@ class TableMetadata
     /**
      * @param array $index
      */
-    public function addIndex(array $index)
+    public function addIndex(array $index) : void
     {
         if (! isset($index['name'])) {
             $this->indexes[] = $index;
@@ -162,7 +162,7 @@ class TableMetadata
     /**
      * @return array
      */
-    public function getUniqueConstraints()
+    public function getUniqueConstraints() : array
     {
         return $this->uniqueConstraints;
     }
@@ -172,7 +172,7 @@ class TableMetadata
      *
      * @return array
      */
-    public function getUniqueConstraint(string $name)
+    public function getUniqueConstraint(string $name) : array
     {
         return $this->uniqueConstraints[$name];
     }
@@ -182,7 +182,7 @@ class TableMetadata
      *
      * @return bool
      */
-    public function hasUniqueConstraint(string $name)
+    public function hasUniqueConstraint(string $name) : bool
     {
         return isset($this->uniqueConstraints[$name]);
     }
@@ -190,7 +190,7 @@ class TableMetadata
     /**
      * @param array $constraint
      */
-    public function addUniqueConstraint(array $constraint)
+    public function addUniqueConstraint(array $constraint) : void
     {
         if (! isset($constraint['name'])) {
             $this->uniqueConstraints[] = $constraint;

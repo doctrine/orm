@@ -22,5 +22,5 @@ interface TableOwner
      *
      * @return void
      */
-    public function setTable(TableMetadata $table);
+    public function setTable(TableMetadata $table) : void;
 }

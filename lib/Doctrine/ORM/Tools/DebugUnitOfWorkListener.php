@@ -84,7 +84,7 @@ class DebugUnitOfWorkListener
 
                 $cm = $em->getClassMetadata($className);
 
-                foreach ($cm->getProperties() as $field => $association) {
+                foreach ($cm->getDeclaredPropertiesIterator() as $field => $association) {
                     if (! ($association instanceof AssociationMetadata)) {
                         continue;
                     }

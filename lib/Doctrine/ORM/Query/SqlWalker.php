@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
@@ -327,8 +328,9 @@ class SqlWalker implements TreeWalker
         $baseTableAlias = $this->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
         // INNER JOIN parent class tables
-        foreach ($class->getParentClasses() as $parentClassName) {
-            $parentClass = $this->em->getClassMetadata($parentClassName);
+        $parentClass = $class;
+
+        while (($parentClass = $parentClass->getParent()) !== null) {
             $tableName   = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias  = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
 
@@ -757,7 +759,7 @@ class SqlWalker implements TreeWalker
             }
 
             // Add foreign key columns of class and also parent classes
-            foreach ($class->getProperties() as $association) {
+            foreach ($class->getDeclaredPropertiesIterator() as $association) {
                 if (! ($association instanceof ToOneAssociationMetadata && $association->isOwningSide())
                     || ( ! $addMetaColumns && ! $association->isPrimaryKey())) {
                     continue;
@@ -766,11 +768,16 @@ class SqlWalker implements TreeWalker
                 $targetClass  = $this->em->getClassMetadata($association->getTargetEntity());
 
                 foreach ($association->getJoinColumns() as $joinColumn) {
-                    $columnName       = $joinColumn->getColumnName();
-                    $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-                    $columnAlias      = $this->getSQLColumnAlias();
-                    $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
-                    $sqlTableAlias    = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
+                    /** @var JoinColumnMetadata $joinColumn */
+                    $columnName           = $joinColumn->getColumnName();
+                    $referencedColumnName = $joinColumn->getReferencedColumnName();
+                    $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
+                    $columnAlias          = $this->getSQLColumnAlias();
+                    $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
+
+                    if (! $joinColumn->getType()) {
+                        $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+                    }
 
                     $sqlSelectExpressions[] = sprintf(
                         '%s.%s AS %s',
@@ -779,7 +786,7 @@ class SqlWalker implements TreeWalker
                         $columnAlias
                     );
 
-                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $association->isPrimaryKey(), $columnType);
+                    $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $association->isPrimaryKey(), $joinColumn->getType());
                 }
             }
 
@@ -790,10 +797,9 @@ class SqlWalker implements TreeWalker
 
             // Add foreign key columns of subclasses
             foreach ($class->getSubClasses() as $subClassName) {
-                $subClass      = $this->em->getClassMetadata($subClassName);
-                $sqlTableAlias = $this->getSQLTableAlias($subClass->getTableName(), $dqlAlias);
+                $subClass = $this->em->getClassMetadata($subClassName);
 
-                foreach ($subClass->getProperties() as $association) {
+                foreach ($subClass->getDeclaredPropertiesIterator() as $association) {
                     // Skip if association is inherited
                     if ($subClass->isInheritedProperty($association->getName())) {
                         continue;
@@ -806,10 +812,16 @@ class SqlWalker implements TreeWalker
                     $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
                     foreach ($association->getJoinColumns() as $joinColumn) {
-                        $columnName       = $joinColumn->getColumnName();
-                        $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-                        $columnAlias      = $this->getSQLColumnAlias();
-                        $columnType       = PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em);
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
+                        $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
+                        $columnAlias          = $this->getSQLColumnAlias();
+                        $sqlTableAlias        = $this->getSQLTableAlias($joinColumn->getTableName(), $dqlAlias);
+
+                        if (! $joinColumn->getType()) {
+                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+                        }
 
                         $sqlSelectExpressions[] = sprintf(
                             '%s.%s AS %s',
@@ -818,7 +830,7 @@ class SqlWalker implements TreeWalker
                             $columnAlias
                         );
 
-                        $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $association->isPrimaryKey(), $columnType);
+                        $this->rsm->addMetaResult($dqlAlias, $columnAlias, $columnName, $association->isPrimaryKey(), $joinColumn->getType());
                     }
                 }
             }
@@ -1432,7 +1444,7 @@ class SqlWalker implements TreeWalker
                 $sqlParts = [];
 
                 // Select all fields from the queried class
-                foreach ($class->getProperties() as $fieldName => $property) {
+                foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
                     if (! ($property instanceof FieldMetadata)) {
                         continue;
                     }
@@ -1467,7 +1479,7 @@ class SqlWalker implements TreeWalker
                     foreach ($class->getSubClasses() as $subClassName) {
                         $subClass = $this->em->getClassMetadata($subClassName);
 
-                        foreach ($subClass->getProperties() as $fieldName => $property) {
+                        foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
                             if (! ($property instanceof FieldMetadata)) {
                                 continue;
                             }
@@ -1734,19 +1746,28 @@ class SqlWalker implements TreeWalker
         }
 
         // IdentificationVariable
+        /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->queryComponents[$groupByItem]['metadata'];
         $sqlParts      = [];
 
-        foreach ($classMetadata->fieldNames as $fieldName) {
-            $type = $classMetadata->hasField($fieldName)
-                ? AST\PathExpression::TYPE_STATE_FIELD
-                : AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-            ;
+        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+            switch (true) {
+                case ($property instanceof FieldMetadata):
+                    $type       = AST\PathExpression::TYPE_STATE_FIELD;
+                    $item       = new AST\PathExpression($type, $groupByItem, $property->getName());
+                    $item->type = $type;
 
-            $item       = new AST\PathExpression($type, $groupByItem, $fieldName);
-            $item->type = $type;
+                    $sqlParts[] = $this->walkPathExpression($item);
+                    break;
 
-            $sqlParts[] = $this->walkPathExpression($item);
+                case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                    $type       = AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION;
+                    $item       = new AST\PathExpression($type, $groupByItem, $property->getName());
+                    $item->type = $type;
+
+                    $sqlParts[] = $this->walkPathExpression($item);
+                    break;
+            }
         }
 
         return implode(', ', $sqlParts);

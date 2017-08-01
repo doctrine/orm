@@ -194,7 +194,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
         }
 
-        $loadingException = null;
+        $metadataBuildingContext = $this->newClassMetadataBuildingContext();
+        $loadingException        = null;
 
         try {
             if ($this->cacheDriver) {
@@ -205,7 +206,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
                     $this->wakeupReflection($cached, $this->getReflectionService());
                 } else {
-                    foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
+                    foreach ($this->loadMetadata($realClassName, $metadataBuildingContext) as $loadedClassName) {
                         $this->cacheDriver->save(
                             $loadedClassName . $this->cacheSalt,
                             $this->loadedMetadata[$loadedClassName],
@@ -214,10 +215,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                     }
                 }
             } else {
-                $this->loadMetadata($realClassName);
+                $this->loadMetadata($realClassName, $metadataBuildingContext);
             }
         } catch (MappingException $loadingException) {
-            if (! $fallbackMetadataResponse = $this->onNotFoundMetadata($realClassName)) {
+            if (! $fallbackMetadataResponse = $this->onNotFoundMetadata($realClassName, $metadataBuildingContext)) {
                 throw $loadingException;
             }
 
@@ -228,6 +229,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             // We do not have the alias name in the map, include it
             $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
         }
+
+        $metadataBuildingContext->validate();
 
         return $this->loadedMetadata[$className];
     }
@@ -290,11 +293,13 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * {@see Doctrine\Common\Persistence\Mapping\ReflectionService} interface
      * should be used for reflection.
      *
-     * @param string $name The name of the class for which the metadata should get loaded.
+     * @param string                       $name                    The name of the class for which the metadata should
+     *                                                              get loaded.
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return array
      */
-    protected function loadMetadata($name)
+    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext)
     {
         if ( ! $this->initialized) {
             $this->initialize();
@@ -308,7 +313,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         // Move down the hierarchy of parent classes, starting from the topmost class
         $parent = null;
         $rootEntityFound = false;
-        $visited = [];
         $reflService = $this->getReflectionService();
 
         foreach ($parentClasses as $className) {
@@ -317,16 +321,19 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
                 if ($this->isEntity($parent)) {
                     $rootEntityFound = true;
-                    array_unshift($visited, $className);
                 }
 
                 continue;
             }
 
-            $class = $this->newClassMetadataInstance($className);
+            $class = $this->newClassMetadataInstance($className, $metadataBuildingContext);
+
+            if ($parent) {
+                $class->setParent($parent);
+            }
 
             $this->initializeReflection($class, $reflService);
-            $this->doLoadMetadata($class, $parent, $rootEntityFound, $visited);
+            $this->doLoadMetadata($class, $metadataBuildingContext, $rootEntityFound);
 
             $this->loadedMetadata[$className] = $class;
 
@@ -334,8 +341,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
             if ($this->isEntity($class)) {
                 $rootEntityFound = true;
-
-                array_unshift($visited, $className);
             }
 
             $this->wakeupReflection($class, $reflService);
@@ -351,11 +356,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * Override this method to implement a fallback strategy for failed metadata loading
      *
-     * @param string $className
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata|null
      */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata($className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
         return null;
     }
@@ -363,34 +369,42 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Actually loads the metadata from the underlying metadata.
      *
-     * @param ClassMetadata      $class
-     * @param ClassMetadata|null $parent
-     * @param bool               $rootEntityFound
-     * @param array              $nonSuperclassParents All parent class names
-     *                                                 that are not marked as mapped superclasses.
+     * @param ClassMetadata                $class
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
+     * @param bool                         $rootEntityFound
      *
      * @return void
      */
     abstract protected function doLoadMetadata(
         ClassMetadata $class,
-        ClassMetadata $parent = null,
-        bool $rootEntityFound,
-        array $nonSuperclassParents
-    );
+        ClassMetadataBuildingContext $metadataBuildingContext,
+        bool $rootEntityFound
+    ) : void;
 
     /**
      * Creates a new ClassMetadata instance for the given class name.
      *
-     * @param string $className
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return ClassMetadata
      */
-    abstract protected function newClassMetadataInstance($className);
+    abstract protected function newClassMetadataInstance(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata;
+
+    /**
+     * Creates a new ClassMetadataBuildingContext instance.
+     *
+     * @return ClassMetadataBuildingContext
+     */
+    abstract protected function newClassMetadataBuildingContext() : ClassMetadataBuildingContext;
 
     /**
      * {@inheritDoc}
      */
-    public function isTransient($class)
+    public function isTransient($class) : bool
     {
         if ( ! $this->initialized) {
             $this->initialize();

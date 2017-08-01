@@ -9,20 +9,20 @@ use Doctrine\ORM\Reflection\ReflectionService;
 interface Property
 {
     /**
-     * @param ClassMetadata $declaringClass
+     * @param ComponentMetadata $declaringClass
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass);
+    public function setDeclaringClass(ComponentMetadata $declaringClass) : void;
 
     /**
-     * @return ClassMetadata
+     * @return ComponentMetadata
      */
-    public function getDeclaringClass();
+    public function getDeclaringClass() : ComponentMetadata;
 
     /**
      * @param object $object
      * @param mixed  $value
      */
-    public function setValue($object, $value);
+    public function setValue($object, $value) : void;
 
     /**
      * @param object $object
@@ -34,20 +34,20 @@ interface Property
     /**
      * @return string
      */
-    public function getName();
+    public function getName() : string;
 
     /**
      * @return bool
      */
-    public function isPrimaryKey();
+    public function isPrimaryKey() : bool;
 
     /**
      * @param \ReflectionProperty $reflectionProperty
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty);
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void;
 
     /**
      * @param ReflectionService $reflectionService
      */
-    public function wakeupReflection(ReflectionService $reflectionService);
+    public function wakeupReflection(ReflectionService $reflectionService) : void;
 }

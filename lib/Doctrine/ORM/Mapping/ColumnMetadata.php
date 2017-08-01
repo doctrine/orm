@@ -7,25 +7,33 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 
+/**
+ * Class ColumnMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 abstract class ColumnMetadata
 {
     /**
-     * @var string
+     * @var string|null
      */
     protected $tableName;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $columnName;
 
     /**
-     * @var Type
+     * @var Type|null
      */
     protected $type;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $columnDefinition;
 
@@ -64,9 +72,9 @@ abstract class ColumnMetadata
     }*/
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getTableName()
+    public function getTableName() : ?string
     {
         return $this->tableName;
     }
@@ -76,15 +84,15 @@ abstract class ColumnMetadata
      *
      * @param string $tableName
      */
-    public function setTableName(/*string*/ $tableName)
+    public function setTableName(/*string*/ $tableName) : void
     {
         $this->tableName = $tableName;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getColumnName()
+    public function getColumnName() : ?string
     {
         return $this->columnName;
     }
@@ -92,15 +100,15 @@ abstract class ColumnMetadata
     /**
      * @param string $columnName
      */
-    public function setColumnName(string $columnName)
+    public function setColumnName(string $columnName) : void
     {
         $this->columnName = $columnName;
     }
 
     /**
-     * @return Type
+     * @return Type|null
      */
-    public function getType()
+    public function getType() : ?Type
     {
         return $this->type;
     }
@@ -108,7 +116,7 @@ abstract class ColumnMetadata
     /**
      * @param Type $type
      */
-    public function setType(Type $type)
+    public function setType(Type $type) : void
     {
         $this->type = $type;
     }
@@ -116,15 +124,15 @@ abstract class ColumnMetadata
     /**
      * @return string
      */
-    public function getTypeName()
+    public function getTypeName() : string
     {
         return $this->type->getName();
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getColumnDefinition()
+    public function getColumnDefinition() : ?string
     {
         return $this->columnDefinition;
     }
@@ -132,7 +140,7 @@ abstract class ColumnMetadata
     /**
      * @param string $columnDefinition
      */
-    public function setColumnDefinition(string $columnDefinition)
+    public function setColumnDefinition(string $columnDefinition) : void
     {
         $this->columnDefinition = $columnDefinition;
     }
@@ -140,7 +148,7 @@ abstract class ColumnMetadata
     /**
      * @return array
      */
-    public function getOptions()
+    public function getOptions() : array
     {
         return $this->options;
     }
@@ -148,7 +156,7 @@ abstract class ColumnMetadata
     /**
      * @param array $options
      */
-    public function setOptions(array $options)
+    public function setOptions(array $options) : void
     {
         $this->options = $options;
     }
@@ -156,7 +164,7 @@ abstract class ColumnMetadata
     /**
      * @param bool $isPrimaryKey
      */
-    public function setPrimaryKey(bool $isPrimaryKey)
+    public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
@@ -164,7 +172,7 @@ abstract class ColumnMetadata
     /**
      * @return bool
      */
-    public function isPrimaryKey()
+    public function isPrimaryKey() : bool
     {
         return $this->primaryKey;
     }
@@ -172,7 +180,7 @@ abstract class ColumnMetadata
     /**
      * @param bool $isNullable
      */
-    public function setNullable(bool $isNullable)
+    public function setNullable(bool $isNullable) : void
     {
         $this->nullable = $isNullable;
     }
@@ -180,7 +188,7 @@ abstract class ColumnMetadata
     /**
      * @return bool
      */
-    public function isNullable()
+    public function isNullable() : bool
     {
         return $this->nullable;
     }
@@ -188,7 +196,7 @@ abstract class ColumnMetadata
     /**
      * @param bool $isUnique
      */
-    public function setUnique(bool $isUnique)
+    public function setUnique(bool $isUnique) : void
     {
         $this->unique = $isUnique;
     }
@@ -196,7 +204,7 @@ abstract class ColumnMetadata
     /**
      * @return bool
      */
-    public function isUnique()
+    public function isUnique() : bool
     {
         return $this->unique;
     }

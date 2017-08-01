@@ -7,7 +7,9 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use Doctrine\ORM\Mapping\ComponentMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\TableMetadata;
 use Symfony\Component\Console\Command\Command;
@@ -72,7 +74,8 @@ EOT
 
         $table->setHeaders(['Field', 'Value']);
 
-        $metadata = $this->getClassMetadata($entityName, $entityManager);
+        $metadata    = $this->getClassMetadata($entityName, $entityManager);
+        $parentValue = $metadata->getParent() === null ? '<comment>None</comment>' : '';
 
         array_map(
             [$table, 'addRow'],
@@ -83,7 +86,10 @@ EOT
                     $this->formatField('Custom repository class', $metadata->getCustomRepositoryClassName()),
                     $this->formatField('Mapped super class?', $metadata->isMappedSuperclass),
                     $this->formatField('Embedded class?', $metadata->isEmbeddedClass),
-                    $this->formatField('Parent classes', $metadata->getParentClasses()),
+                    $this->formatField('Parent classes', $parentValue),
+                ],
+                $this->formatParentClasses($metadata),
+                [
                     $this->formatField('Sub classes', $metadata->getSubClasses()),
                     $this->formatField('Embedded classes', $metadata->getSubClasses()),
                     $this->formatField('Named queries', $metadata->getNamedQueries()),
@@ -91,7 +97,7 @@ EOT
                     $this->formatField('SQL result set mappings', $metadata->getSqlResultSetMappings()),
                     $this->formatField('Identifier', $metadata->getIdentifier()),
                     $this->formatField('Inheritance type', $metadata->inheritanceType),
-                    $this->formatField('Discriminator column', '')
+                    $this->formatField('Discriminator column', ''),
                 ],
                 $this->formatColumn($metadata->discriminatorColumn),
                 [
@@ -110,7 +116,7 @@ EOT
                     $this->formatEntityListeners($metadata->entityListeners),
                 ],
                 [$this->formatField('Property mappings:', '')],
-                $this->formatPropertyMappings($metadata->getProperties())
+                $this->formatPropertyMappings($metadata->getDeclaredPropertiesIterator())
             )
         );
 
@@ -179,6 +185,49 @@ EOT
         }
 
         return $entityManager->getClassMetadata(current($matches));
+    }
+
+    /**
+     * @param ComponentMetadata $metadata
+     *
+     * @return array
+     */
+    private function formatParentClasses(ComponentMetadata $metadata)
+    {
+        $output      = [];
+        $parentClass = $metadata;
+
+        while (($parentClass = $parentClass->getParent()) !== null) {
+            /** @var ClassMetadata $parentClass */
+            $attributes = [];
+
+            if ($parentClass->isEmbeddedClass) {
+                $attributes[] = 'Embedded';
+            }
+
+            if ($parentClass->isMappedSuperclass) {
+                $attributes[] = 'Mapped superclass';
+            }
+
+            if ($parentClass->inheritanceType) {
+                $attributes[] = ucfirst(strtolower($parentClass->inheritanceType));
+            }
+
+            if ($parentClass->isReadOnly()) {
+                $attributes[] = 'Read-only';
+            }
+
+            if ($parentClass->isVersioned()) {
+                $attributes[] = 'Versioned';
+            }
+
+            $output[] = $this->formatField(
+                sprintf('  %s', $parentClass->getParent()),
+                ($parentClass->isRootEntity() ? '(Root) ' : '') . $this->formatValue($attributes)
+            );
+        }
+
+        return $output;
     }
 
     /**
@@ -268,11 +317,11 @@ EOT
     /**
      * Format the property mappings
      *
-     * @param array $propertyMappings
+     * @param iterable $propertyMappings
      *
      * @return array
      */
-    private function formatPropertyMappings(array $propertyMappings)
+    private function formatPropertyMappings(iterable $propertyMappings)
     {
         $output = [];
 

@@ -12,6 +12,8 @@ use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
@@ -61,14 +63,22 @@ class UnitOfWorkTest extends OrmTestCase
      */
     private $eventManager;
 
+    /**
+     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $metadataBuildingContext;
+
     protected function setUp()
     {
         parent::setUp();
 
-        $this->connectionMock = new ConnectionMock([], new DriverMock());
-        $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->emMock         = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
-        $this->unitOfWork     = new UnitOfWorkMock($this->emMock);
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
+        $this->connectionMock          = new ConnectionMock([], new DriverMock());
+        $this->eventManager            = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->emMock                  = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
+        $this->unitOfWork              = new UnitOfWorkMock($this->emMock);
 
         $this->emMock->setUnitOfWork($this->unitOfWork);
     }
@@ -777,7 +787,7 @@ class UnitOfWorkTest extends OrmTestCase
      */
     public function testCanInstantiateInternalPhpClassSubclass()
     {
-        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class);
+        $classMetadata = new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext);
 
         self::assertInstanceOf(MyArrayObjectEntity::class, $this->unitOfWork->newInstance($classMetadata));
     }
@@ -788,7 +798,11 @@ class UnitOfWorkTest extends OrmTestCase
     public function testCanInstantiateInternalPhpClassSubclassFromUnserializedMetadata()
     {
         /* @var $classMetadata ClassMetadata */
-        $classMetadata = unserialize(serialize(new ClassMetadata(MyArrayObjectEntity::class)));
+        $classMetadata = unserialize(
+            serialize(
+                new ClassMetadata(MyArrayObjectEntity::class, $this->metadataBuildingContext)
+            )
+        );
 
         $classMetadata->wakeupReflection(new RuntimeReflectionService());
 

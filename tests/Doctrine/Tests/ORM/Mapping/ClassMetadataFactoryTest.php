@@ -53,11 +53,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $cmf->setMetadataFor($cm1->getClassName(), $cm1);
 
         // Prechecks
-        self::assertEquals([], $cm1->getParentClasses());
+        self::assertCount(0, $cm1->getAncestorsIterator());
         self::assertEquals(Mapping\InheritanceType::NONE, $cm1->inheritanceType);
         self::assertEquals(Mapping\GeneratorType::AUTO, $cm1->getProperty('id')->getValueGenerator()->getType());
         self::assertTrue($cm1->hasField('name'));
-        self::assertCount(4, $cm1->getProperties()); // 2 fields + 2 associations
+        self::assertCount(4, $cm1->getDeclaredPropertiesIterator()); // 2 fields + 2 associations
         self::assertEquals('group', $cm1->table->getName());
 
         // Go
@@ -65,7 +65,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
 
         self::assertSame($cm1, $cmMap1);
         self::assertEquals('group', $cmMap1->table->getName());
-        self::assertEquals([], $cmMap1->getParentClasses());
+        self::assertCount(0, $cmMap1->getAncestorsIterator());
         self::assertTrue($cmMap1->hasField('name'));
     }
 
@@ -73,13 +73,15 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $cm1 = $this->createValidClassMetadata();
 
-        $cm1->getProperty('id')->setValueGenerator(new Mapping\ValueGeneratorMetadata(
-            Mapping\GeneratorType::CUSTOM,
-            [
-                'class' => 'NotExistingGenerator',
-                'arguments' => [],
-            ]
-        ));
+        $cm1->getProperty('id')->setValueGenerator(
+            new Mapping\ValueGeneratorMetadata(
+                Mapping\GeneratorType::CUSTOM,
+                [
+                    'class' => 'NotExistingGenerator',
+                    'arguments' => [],
+                ]
+            )
+        );
 
         $cmf = $this->createTestFactory();
 
@@ -93,9 +95,15 @@ class ClassMetadataFactoryTest extends OrmTestCase
     public function testGetMetadataFor_ThrowsExceptionOnMissingCustomGeneratorDefinition()
     {
         $cm1 = $this->createValidClassMetadata();
-        $cm1->getProperty('id')->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::CUSTOM));
+
+        $cm1->getProperty('id')->setValueGenerator(
+            new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::CUSTOM)
+        );
+
         $cmf = $this->createTestFactory();
+
         $cmf->setMetadataForClass($cm1->getClassName(), $cm1);
+
         $this->expectException(ORMException::class);
 
         $actual = $cmf->getMetadataFor($cm1->getClassName());
@@ -262,7 +270,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
     protected function createValidClassMetadata()
     {
         // Self-made metadata
-        $cm1 = new ClassMetadata(TestEntity1::class);
+        $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
+        $cm1 = new ClassMetadata(TestEntity1::class, $metadataBuildingContext);
         $cm1->initializeReflection(new RuntimeReflectionService());
 
         $tableMetadata = new Mapping\TableMetadata();
@@ -488,12 +499,17 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     private $requestedClasses = [];
 
     /** @override */
-    protected function newClassMetadataInstance($className)
+    protected function newClassMetadataInstance(
+        string $className,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata
     {
         $this->requestedClasses[] = $className;
+
         if ( ! isset($this->mockMetadata[$className])) {
             throw new \InvalidArgumentException("No mock metadata found for class $className.");
         }
+
         return $this->mockMetadata[$className];
     }
 

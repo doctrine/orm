@@ -48,8 +48,8 @@ class DDC2359Test extends DoctrineTestCase
 
         $mockMetadata
             ->expects($this->any())
-            ->method('getProperties')
-            ->will($this->returnValue([]));
+            ->method('getDeclaredPropertiesIterator')
+            ->will($this->returnValue(new \ArrayIterator([])));
 
         $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
         $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));

@@ -26,13 +26,13 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testLoadMetadataForNonEntityThrowsException()
     {
-        $cm = new ClassMetadata('stdClass');
+        $cm = new ClassMetadata('stdClass', $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
         $reader = new AnnotationReader();
         $annotationDriver = new AnnotationDriver($reader);
 
         $this->expectException(MappingException::class);
-        $annotationDriver->loadMetadataForClass('stdClass', $cm);
+        $annotationDriver->loadMetadataForClass('stdClass', $cm, $this->metadataBuildingContext);
     }
 
     /**
@@ -43,8 +43,8 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(AnnotationSLC::class);
-        $mappingDriver->loadMetadataForClass(AnnotationSLC::class, $class);
+        $class = new ClassMetadata(AnnotationSLC::class, $this->metadataBuildingContext);
+        $mappingDriver->loadMetadataForClass(AnnotationSLC::class, $class, $this->metadataBuildingContext);
     }
 
     /**
@@ -52,11 +52,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
      */
     public function testColumnWithMissingTypeDefaultsToString()
     {
-        $cm = new ClassMetadata(ColumnWithoutType::class);
+        $cm = new ClassMetadata(ColumnWithoutType::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
         $annotationDriver = $this->loadDriver();
 
-        $annotationDriver->loadMetadataForClass(ColumnWithoutType::class, $cm);
+        $annotationDriver->loadMetadataForClass(ColumnWithoutType::class, $cm, $this->metadataBuildingContext);
 
         self::assertNotNull($cm->getProperty('id'));
 
@@ -152,11 +152,11 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
         $factory->setEntityManager($em);
 
         $classPage = $factory->getMetadataFor(File::class);
-        self::assertArrayHasKey('parentDirectory', $classPage->getProperties());
+        self::assertArrayHasKey('parentDirectory', $classPage->getDeclaredPropertiesIterator());
         self::assertEquals(File::class, $classPage->getProperty('parentDirectory')->getSourceEntity());
 
         $classDirectory = $factory->getMetadataFor(Directory::class);
-        self::assertArrayHasKey('parentDirectory', $classDirectory->getProperties());
+        self::assertArrayHasKey('parentDirectory', $classDirectory->getDeclaredPropertiesIterator());
         self::assertEquals(Directory::class, $classDirectory->getProperty('parentDirectory')->getSourceEntity());
     }
 
