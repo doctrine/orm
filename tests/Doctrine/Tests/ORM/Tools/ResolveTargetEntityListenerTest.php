@@ -109,6 +109,20 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
                 ->getSQL()
         );
     }
+
+    public function testResolveTargetEntityListenerCanRetrieveTargetEntityByAbstractClass()
+    {
+        $this->listener->addResolveTargetEntity(AbstractMappedSuperclass::class, ConcreteClass::class, []);
+        $this->listener->addResolveTargetEntity(TheInterface::class, ConcreteClass::class, []);
+
+        $this->em->getEventManager()->addEventSubscriber($this->listener);
+
+//        $this->factory->getMetadataFor(TheInterface::class);
+
+        $this->assertSame($this->em->getRepository(AbstractMappedSuperclass::class)->getClassName(), ConcreteClass::class);
+        $this->assertSame($this->em->getRepository(TheInterface::class)->getClassName(), ConcreteClass::class);
+        $this->assertSame($this->em->getRepository(ConcreteClass::class)->getClassName(), ConcreteClass::class);
+    }
 }
 
 interface ResolveTargetInterface
@@ -175,4 +189,32 @@ class TargetEntity implements TargetInterface
     {
         return $this->id;
     }
+}
+
+/**
+ * @MappedSuperclass
+ */
+abstract class AbstractMappedSuperclass
+{
+    /**
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+}
+
+interface TheInterface
+{
+}
+
+/**
+ * @Entity
+ */
+class ConcreteClass extends AbstractMappedSuperclass implements TheInterface
+{
+    /**
+     * @Column(type="string")
+     */
+    private $title;
 }
