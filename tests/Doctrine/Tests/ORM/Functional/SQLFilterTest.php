@@ -10,6 +10,8 @@ use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\FilterCollection;
@@ -297,15 +299,18 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testSQLFilterAddConstraint()
     {
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data
-        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem');
+        $metadata = new ClassMetadata('MyEntity\SoftDeleteNewsItem', $metadataBuildingContext);
 
         self::assertEquals('t1_.deleted = 0', $filter->addFilterConstraint($metadata, 't1_'));
 
         // Test for an entity that doesn't get extra filter data
-        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem');
+        $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', $metadataBuildingContext);
 
         self::assertEquals('', $filter->addFilterConstraint($metadata, 't1_'));
 

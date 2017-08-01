@@ -5,12 +5,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+/**
+ * Class JoinColumnMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class JoinColumnMetadata extends ColumnMetadata
 {
-    /** @var string */
+    /** @var string|null */
     protected $referencedColumnName;
 
-    /** @var string */
+    /** @var string|null */
     protected $aliasedName;
 
     /** @var boolean */
@@ -20,9 +28,9 @@ class JoinColumnMetadata extends ColumnMetadata
     protected $onDelete = '';
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getReferencedColumnName()
+    public function getReferencedColumnName() : ?string
     {
         return $this->referencedColumnName;
     }
@@ -30,15 +38,15 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $referencedColumnName
      */
-    public function setReferencedColumnName(string $referencedColumnName)
+    public function setReferencedColumnName(string $referencedColumnName) : void
     {
         $this->referencedColumnName = $referencedColumnName;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getAliasedName()
+    public function getAliasedName() : ?string
     {
         return $this->aliasedName;
     }
@@ -46,7 +54,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $aliasedName
      */
-    public function setAliasedName(string $aliasedName)
+    public function setAliasedName(string $aliasedName) : void
     {
         $this->aliasedName = $aliasedName;
     }
@@ -54,7 +62,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @return string
      */
-    public function getOnDelete()
+    public function getOnDelete() : string
     {
         return $this->onDelete;
     }
@@ -62,7 +70,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @param string $onDelete
      */
-    public function setOnDelete(string $onDelete)
+    public function setOnDelete(string $onDelete) : void
     {
         $this->onDelete = strtoupper($onDelete);
     }
@@ -70,7 +78,7 @@ class JoinColumnMetadata extends ColumnMetadata
     /**
      * @return bool
      */
-    public function isOnDeleteCascade()
+    public function isOnDeleteCascade() : bool
     {
         return $this->onDelete === 'CASCADE';
     }

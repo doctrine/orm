@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Configuration\ProxyConfiguration;
@@ -48,15 +50,23 @@ class ProxyFactoryTest extends OrmTestCase
     private $proxyFactory;
 
     /**
+     * @var ClassMetadataBuildingContext
+     */
+    private $metadataBuildingContext;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp()
     {
         parent::setUp();
 
-        $this->connectionMock = new ConnectionMock([], new DriverMock());
-        $this->emMock         = EntityManagerMock::create($this->connectionMock);
-        $this->uowMock        = new UnitOfWorkMock($this->emMock);
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
+        $this->connectionMock          = new ConnectionMock([], new DriverMock());
+        $this->emMock                  = EntityManagerMock::create($this->connectionMock);
+        $this->uowMock                 = new UnitOfWorkMock($this->emMock);
 
         $this->emMock->setUnitOfWork($this->uowMock);
 
@@ -104,7 +114,7 @@ class ProxyFactoryTest extends OrmTestCase
      */
     public function testSkipAbstractClassesOnGeneration()
     {
-        $cm = new ClassMetadata(AbstractClass::class);
+        $cm = new ClassMetadata(AbstractClass::class, $this->metadataBuildingContext);
         $cm->initializeReflection(new RuntimeReflectionService());
 
         self::assertNotNull($cm->getReflectionClass());

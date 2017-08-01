@@ -160,7 +160,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        $properties = $metadata->getProperties();
+        $properties = iterator_to_array($metadata->getDeclaredPropertiesIterator());
         $id         = [];
 
         foreach ($properties as $name => $property) {
@@ -207,6 +207,8 @@ class XmlExporter extends AbstractExporter
             ManyToOneAssociationMetadata::class,
             ManyToManyAssociationMetadata::class,
         ];
+
+
 
         uasort($properties, function($m1, $m2) use (&$orderMap) {
             $a1 = array_search(get_class($m1), $orderMap);

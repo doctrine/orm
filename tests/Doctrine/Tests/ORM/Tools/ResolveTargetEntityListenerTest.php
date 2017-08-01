@@ -50,7 +50,7 @@ class ResolveTargetEntityListenerTest extends OrmTestCase
         $evm->addEventSubscriber($this->listener);
 
         $cm   = $this->factory->getMetadataFor(ResolveTargetEntity::class);
-        $meta = $cm->getProperties();
+        $meta = $cm->getDeclaredPropertiesIterator();
 
         self::assertSame(TargetEntity::class, $meta['manyToMany']->getTargetEntity());
         self::assertSame(ResolveTargetEntity::class, $meta['manyToOne']->getTargetEntity());

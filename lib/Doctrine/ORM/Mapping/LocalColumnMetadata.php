@@ -5,20 +5,28 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+/**
+ * Class LocalColumnMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 abstract class LocalColumnMetadata extends ColumnMetadata
 {
     /**
-     * @var integer
+     * @var int|null
      */
     protected $length;
 
     /**
-     * @var integer
+     * @var int|null
      */
     protected $scale;
 
     /**
-     * @var integer
+     * @var int|null
      */
     protected $precision;
 
@@ -28,9 +36,9 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     protected $valueGenerator;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getLength()
+    public function getLength() : ?int
     {
         return $this->length;
     }
@@ -38,15 +46,15 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     /**
      * @param int $length
      */
-    public function setLength(int $length)
+    public function setLength(int $length) : void
     {
         $this->length = $length;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getScale()
+    public function getScale() : ?int
     {
         return $this->scale;
     }
@@ -54,15 +62,15 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     /**
      * @param int $scale
      */
-    public function setScale(int $scale)
+    public function setScale(int $scale) : void
     {
         $this->scale = $scale;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getPrecision()
+    public function getPrecision() : ?int
     {
         return $this->precision;
     }
@@ -70,22 +78,31 @@ abstract class LocalColumnMetadata extends ColumnMetadata
     /**
      * @param int $precision
      */
-    public function setPrecision(int $precision)
+    public function setPrecision(int $precision) : void
     {
         $this->precision = $precision;
     }
 
-    public function hasValueGenerator(): bool
+    /**
+     * @return bool
+     */
+    public function hasValueGenerator() : bool
     {
         return $this->valueGenerator !== null;
     }
 
-    public function getValueGenerator(): ?ValueGeneratorMetadata
+    /**
+     * @return ValueGeneratorMetadata|null
+     */
+    public function getValueGenerator() : ?ValueGeneratorMetadata
     {
         return $this->valueGenerator;
     }
 
-    public function setValueGenerator(?ValueGeneratorMetadata $valueGenerator): void
+    /**
+     * @param ValueGeneratorMetadata|null $valueGenerator
+     */
+    public function setValueGenerator(?ValueGeneratorMetadata $valueGenerator) : void
     {
         $this->valueGenerator = $valueGenerator;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping;
 
 /**
  * The PHPDriver includes php files which just populate ClassMetadataInfo
@@ -20,7 +20,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class PHPDriver extends FileDriver
 {
     /**
-     * @var ClassMetadata
+     * @var Mapping\ClassMetadata
      */
     protected $metadata;
 
@@ -35,7 +35,11 @@ class PHPDriver extends FileDriver
     /**
      * {@inheritDoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
         $this->metadata = $metadata;
 

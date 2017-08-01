@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -36,11 +37,9 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
 
         $columnList[] = parent::getSelectColumnsSQL();
 
-        $rootClass  = $this->em->getClassMetadata($this->class->getRootClassName());
-        $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
-
          // Append discriminator column
         $discrColumn      = $this->class->discriminatorColumn;
+        $discrTableAlias  = $this->getSQLTableAlias($discrColumn->getTableName());
         $discrColumnName  = $discrColumn->getColumnName();
         $discrColumnType  = $discrColumn->getType();
         $resultColumnName = $this->platform->getSQLResultCasing($discrColumnName);
@@ -49,14 +48,14 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
         $this->currentPersisterContext->rsm->setDiscriminatorColumn('r', $resultColumnName);
         $this->currentPersisterContext->rsm->addMetaResult('r', $resultColumnName, $discrColumnName, false, $discrColumnType);
 
-        $columnList[] = $discrColumnType->convertToDatabaseValueSQL($tableAlias . '.' . $quotedColumnName, $this->platform);
+        $columnList[] = $discrColumnType->convertToDatabaseValueSQL($discrTableAlias . '.' . $quotedColumnName, $this->platform);
 
         // Append subclass columns
         foreach ($this->class->getSubClasses() as $subClassName) {
             $subClass = $this->em->getClassMetadata($subClassName);
 
             // Subclass columns
-            foreach ($subClass->getProperties() as $fieldName => $property) {
+            foreach ($subClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
                 if ($subClass->isInheritedProperty($fieldName)) {
                     continue;
                 }
@@ -66,14 +65,15 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                         $columnList[] = $this->getSelectColumnSQL($fieldName, $subClass);
                         break;
 
-                    case ($property instanceof ToOneAssociationMetadata):
+                    case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
                         $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
                         foreach ($property->getJoinColumns() as $joinColumn) {
+                            /** @var JoinColumnMetadata $joinColumn */
+                            $referencedColumnName = $joinColumn->getReferencedColumnName();
+
                             if (! $joinColumn->getType()) {
-                                $joinColumn->setType(
-                                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
-                                );
+                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                             }
 
                             $columnList[] = $this->getSelectJoinColumnSQL($joinColumn);

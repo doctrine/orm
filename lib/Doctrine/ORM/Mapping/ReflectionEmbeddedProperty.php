@@ -69,7 +69,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     /**
      * {@inheritDoc}
      */
-    public function setValue($object, $value = null)
+    public function setValue($object, $value = null) : void
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 

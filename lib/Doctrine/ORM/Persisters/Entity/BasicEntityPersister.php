@@ -401,18 +401,16 @@ class BasicEntityPersister implements EntityPersister
             }
 
             foreach ($joinColumns as $joinColumn) {
-                $joinColumnName       = $joinColumn->getColumnName();
+                /** @var JoinColumnMetadata $joinColumn */
+                $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
-                $quotedJoinColumnName = $this->platform->quoteIdentifier($joinColumnName);
                 $targetField          = $targetClass->fieldNames[$referencedColumnName];
 
                 if (! $joinColumn->getType()) {
-                    $joinColumn->setType(
-                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                    );
+                    $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                 }
 
-                $id[$quotedJoinColumnName] = $associationValue ? $associationValue[$targetField] : null;
+                $id[$quotedColumnName] = $associationValue ? $associationValue[$targetField] : null;
                 $types[] = $joinColumn->getType();
             }
         }
@@ -448,46 +446,45 @@ class BasicEntityPersister implements EntityPersister
             $type             = $column->getType();
             $placeholder      = $type->convertToDatabaseValueSQL('?', $this->platform);
 
-            $set[]    = $quotedColumnName . ' = ' . $placeholder;
+            $set[]    = sprintf('%s = %s', $quotedColumnName, $placeholder);
             $params[] = $value;
-            $types[]  = $type;
+            $types[]  = $column->getType();
         }
 
-        $where      = [];
         // @todo guilhermeblanco Bring this back: $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         $identifier = $this->getIdentifier($entity);
+        $where      = [];
 
         foreach ($this->class->identifier as $idField) {
             $property = $this->class->getProperty($idField);
 
-            if ($property instanceof FieldMetadata) {
-                $params[] = $identifier[$idField];
-                $types[] = $property->getType();
-                $where[] = $this->platform->quoteIdentifier($property->getColumnName());
+            switch (true) {
+                case ($property instanceof FieldMetadata):
+                    $where[]  = $this->platform->quoteIdentifier($property->getColumnName());
+                    $params[] = $identifier[$idField];
+                    $types[]  = $property->getType();
+                    break;
 
-                continue;
-            }
-
-            /** @var ToOneAssociationMetadata $property */
-            $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
-
-            foreach ($property->getJoinColumns() as $joinColumn) {
-                /** @var JoinColumnMetadata $joinColumn */
-                $referencedColumnName = $joinColumn->getReferencedColumnName();
-
-                if (! $joinColumn->getType()) {
+                case ($property instanceof ToOneAssociationMetadata):
                     $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+                    $targetPersister = $this->em->getUnitOfWork()->getEntityPersister($property->getTargetEntity());
 
-                    $joinColumn->setType(
-                        PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                    );
-                }
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $quotedColumnName     = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
 
-                $value = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
+                        if (! $joinColumn->getType()) {
+                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+                        }
 
-                $params[] = $value;
-                $where[]  = $joinColumn->getColumnName();
-                $types[]  = $joinColumn->getType();
+                        $value = $targetPersister->getColumnValue($identifier[$idField], $referencedColumnName);
+
+                        $where[]  = $quotedColumnName;
+                        $params[] = $value;
+                        $types[]  = $joinColumn->getType();
+                    }
+                    break;
             }
         }
 
@@ -533,7 +530,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function deleteJoinTableRecords($identifier)
     {
-        foreach ($this->class->getProperties() as $association) {
+        foreach ($this->class->getDeclaredPropertiesIterator() as $association) {
             if (! ($association instanceof ManyToManyAssociationMetadata)) {
                 continue;
             }
@@ -680,8 +677,6 @@ class BasicEntityPersister implements EntityPersister
                 $referencedColumnName = $joinColumn->getReferencedColumnName();
 
                 if (! $joinColumn->getType()) {
-                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
                     $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                 }
 
@@ -722,6 +717,7 @@ class BasicEntityPersister implements EntityPersister
 
         /* @var ToOneAssociationMetadata $property */
         $unitOfWork      = $this->em->getUnitOfWork();
+        $targetClass     = $this->em->getClassMetadata($property->getTargetEntity());
         $targetPersister = $unitOfWork->getEntityPersister($property->getTargetEntity());
 
         foreach ($property->getJoinColumns() as $joinColumn) {
@@ -729,8 +725,6 @@ class BasicEntityPersister implements EntityPersister
             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
             if (! $joinColumn->getType()) {
-                $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
-
                 $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
             }
 
@@ -1290,7 +1284,7 @@ class BasicEntityPersister implements EntityPersister
         $eagerAliasCounter = 0;
         $columnList        = [];
 
-        foreach ($this->class->getProperties() as $fieldName => $property) {
+        foreach ($this->class->getDeclaredPropertiesIterator() as $fieldName => $property) {
             switch (true) {
                 case ($property instanceof FieldMetadata):
                     $columnList[] = $this->getSelectColumnSQL($fieldName, $this->class);
@@ -1325,16 +1319,17 @@ class BasicEntityPersister implements EntityPersister
 
                     $this->currentPersisterContext->rsm->addJoinedEntityResult($targetEntity, $assocAlias, 'r', $fieldName);
 
-                    foreach ($eagerEntity->fieldNames as $field) {
-                        $columnSQL = $eagerEntity->hasField($field)
-                            ? $this->getSelectColumnSQL($field, $eagerEntity, $assocAlias)
-                            : $this->getSelectColumnAssociationSQL(
-                                $field, $eagerEntity->getProperty($field), $eagerEntity, $assocAlias
-                            )
-                        ;
+                    foreach ($eagerEntity->getDeclaredPropertiesIterator() as $eagerProperty) {
+                        switch (true) {
+                            case ($eagerProperty instanceof FieldMetadata):
+                                $columnList[] = $this->getSelectColumnSQL($eagerProperty->getName(), $eagerEntity, $assocAlias);
+                                break;
 
-                        if ($columnSQL) {
-                            $columnList[] = $columnSQL;
+                            case ($eagerProperty instanceof ToOneAssociationMetadata && $eagerProperty->isOwningSide()):
+                                $columnList[] = $this->getSelectColumnAssociationSQL(
+                                    $eagerProperty->getName(), $eagerProperty, $eagerEntity, $assocAlias
+                                );
+                                break;
                         }
                     }
 
@@ -1407,14 +1402,14 @@ class BasicEntityPersister implements EntityPersister
         $sqlTableAlias = $this->getSQLTableAlias($class->getTableName(), ($alias == 'r' ? '' : $alias));
 
         foreach ($association->getJoinColumns() as $joinColumn) {
-            $columnName       = $joinColumn->getColumnName();
-            $quotedColumnName = $this->platform->quoteIdentifier($columnName);
-            $resultColumnName = $this->getSQLColumnAlias();
+            /** @var JoinColumnMetadata $joinColumn */
+            $columnName           = $joinColumn->getColumnName();
+            $quotedColumnName     = $this->platform->quoteIdentifier($columnName);
+            $referencedColumnName = $joinColumn->getReferencedColumnName();
+            $resultColumnName     = $this->getSQLColumnAlias();
 
             if (! $joinColumn->getType()) {
-                $joinColumn->setType(
-                    PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $targetClass, $this->em)
-                );
+                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
             }
 
             $this->currentPersisterContext->rsm->addMetaResult(
@@ -1525,7 +1520,7 @@ class BasicEntityPersister implements EntityPersister
             : null
         ;
 
-        foreach ($this->class->getProperties() as $name => $property) {
+        foreach ($this->class->getDeclaredPropertiesIterator() as $name => $property) {
             /*if (isset($this->class->embeddedClasses[$name])) {
                 continue;
             }*/
@@ -1558,13 +1553,12 @@ class BasicEntityPersister implements EntityPersister
                         $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
 
                         foreach ($property->getJoinColumns() as $joinColumn) {
+                            /** @var JoinColumnMetadata $joinColumn */
                             $columnName           = $joinColumn->getColumnName();
                             $referencedColumnName = $joinColumn->getReferencedColumnName();
 
                             if (! $joinColumn->getType()) {
-                                $joinColumn->setType(
-                                    PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em)
-                                );
+                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
                             }
 
                             $columns[] = $columnName;
@@ -2038,10 +2032,11 @@ class BasicEntityPersister implements EntityPersister
                 ;
 
                 foreach ($joinColumns as $joinColumn) {
+                    /** @var JoinColumnMetadata $joinColumn */
+                    $referencedColumnName = $joinColumn->getReferencedColumnName();
+
                     if (! $joinColumn->getType()) {
-                        $joinColumn->setType(
-                            PersisterHelper::getTypeOfColumn($joinColumn->getReferencedColumnName(), $class, $this->em)
-                        );
+                        $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $class, $this->em));
                     }
 
                     $types[] = $joinColumn->getType();
