@@ -1,7 +1,11 @@
 <?php
 
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Tests\ORM\Tools\Export;
+use Doctrine\Tests\ORM\Tools\Export\AddressListener;
+use Doctrine\Tests\ORM\Tools\Export\GroupListener;
+use Doctrine\Tests\ORM\Tools\Export\UserListener;
 
 $metadata->setInheritanceType(ClassMetadataInfo::INHERITANCE_TYPE_NONE);
 $metadata->setPrimaryTable(
@@ -11,9 +15,9 @@ $metadata->setPrimaryTable(
     ]
 );
 $metadata->setChangeTrackingPolicy(ClassMetadataInfo::CHANGETRACKING_DEFERRED_IMPLICIT);
-$metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
-$metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
-$metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
+$metadata->addLifecycleCallback('doStuffOnPrePersist', Events::prePersist);
+$metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', Events::prePersist);
+$metadata->addLifecycleCallback('doStuffOnPostPersist', Events::postPersist);
 $metadata->mapField(
     [
    'id' => true,
@@ -149,3 +153,7 @@ $metadata->mapManyToMany(
    'orderBy' => NULL,
     ]
 );
+$metadata->addEntityListener(Events::prePersist, UserListener::class, 'customPrePersist');
+$metadata->addEntityListener(Events::postPersist, UserListener::class, 'customPostPersist');
+$metadata->addEntityListener(Events::prePersist, GroupListener::class, 'prePersist');
+$metadata->addEntityListener(Events::postPersist, AddressListener::class, 'customPostPersist');

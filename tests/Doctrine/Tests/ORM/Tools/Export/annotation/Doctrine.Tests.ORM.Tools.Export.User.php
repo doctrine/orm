@@ -5,6 +5,11 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 /**
  * @Entity
  * @HasLifecycleCallbacks
+ * @EntityListeners({
+ *     Doctrine\Tests\ORM\Tools\Export\UserListener::class,
+ *     Doctrine\Tests\ORM\Tools\Export\GroupListener::class,
+ *     Doctrine\Tests\ORM\Tools\Export\AddressListener::class
+ * })
  * @Table(name="cms_users",options={"engine"="MyISAM","foo"={"bar"="baz"}})
  */
 class User
@@ -57,21 +62,21 @@ class User
     /**
      * @PrePersist
      */
-    public function doStuffOnPrePersist()
+    public function doStuffOnPrePersist(): void
     {
     }
 
     /**
      * @PrePersist
      */
-    public function doOtherStuffOnPrePersistToo()
+    public function doOtherStuffOnPrePersistToo(): void
     {
     }
 
     /**
      * @PostPersist
      */
-    public function doStuffOnPostPersist()
+    public function doStuffOnPostPersist(): void
     {
     }
 }

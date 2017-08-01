@@ -39,7 +39,7 @@ class YamlExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata): string
     {
         $array = [];
 
@@ -214,6 +214,8 @@ class YamlExporter extends AbstractExporter
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
 
+        $array = $this->processEntityListeners($metadata, $array);
+
         return $this->yamlDump([$metadata->name => $array], 10);
     }
 
@@ -228,8 +230,35 @@ class YamlExporter extends AbstractExporter
      *
      * @return string A YAML string representing the original PHP array
      */
-    protected function yamlDump($array, $inline = 2)
+    protected function yamlDump($array, $inline = 2): string
     {
         return Yaml::dump($array, $inline);
+    }
+
+    private function processEntityListeners(ClassMetadataInfo $metadata, array $array): array
+    {
+        if (0 === \count($metadata->entityListeners)) {
+            return $array;
+        }
+
+        $array['entityListeners'] = [];
+
+        foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+            $array = $this->processEntityListenerConfig($array, $entityListenerConfig, $event);
+        }
+
+        return $array;
+    }
+
+    private function processEntityListenerConfig(array $array, array $entityListenerConfig, string $event): array
+    {
+        foreach ($entityListenerConfig as $entityListener) {
+            if (!isset($array['entityListeners'][$entityListener['class']])) {
+                $array['entityListeners'][$entityListener['class']] = [];
+            }
+            $array['entityListeners'][$entityListener['class']][$event] = [$entityListener['method']];
+        }
+
+        return $array;
     }
 }

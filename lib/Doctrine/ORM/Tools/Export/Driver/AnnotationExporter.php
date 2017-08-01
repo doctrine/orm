@@ -44,7 +44,7 @@ class AnnotationExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata)
+    public function exportClassMetadata(ClassMetadataInfo $metadata): string
     {
         if ( ! $this->_entityGenerator) {
             throw new \RuntimeException('For the AnnotationExporter you must set an EntityGenerator instance with the setEntityGenerator() method.');
@@ -63,7 +63,7 @@ class AnnotationExporter extends AbstractExporter
      *
      * @return string
      */
-    protected function _generateOutputPath(ClassMetadataInfo $metadata)
+    protected function _generateOutputPath(ClassMetadataInfo $metadata): string
     {
         return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
     }
@@ -73,7 +73,7 @@ class AnnotationExporter extends AbstractExporter
      *
      * @return void
      */
-    public function setEntityGenerator(EntityGenerator $entityGenerator)
+    public function setEntityGenerator(EntityGenerator $entityGenerator): void
     {
         $this->_entityGenerator = $entityGenerator;
     }
