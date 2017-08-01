@@ -412,6 +412,8 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
+        $this->collectionDeletions = [];
+
         $this->dispatchPostFlushEvent();
 
         // Clear up
