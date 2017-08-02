@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\Cache\CollectionCacheKey;
@@ -35,7 +35,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
      * {@inheritdoc}
      */
     protected function createPersister(
-        EntityManager $em,
+        EntityManagerInterface $em,
         CollectionPersister $persister,
         Region $region,
         AssociationMetadata $association

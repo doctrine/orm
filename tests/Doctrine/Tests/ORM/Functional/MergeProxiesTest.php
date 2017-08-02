@@ -9,6 +9,7 @@ use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Logging\SQLLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\Models\Generic\DateTimeModel;
@@ -233,7 +234,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
     /**
      * @param SQLLogger $logger
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     private function createEntityManager(SQLLogger $logger)
     {

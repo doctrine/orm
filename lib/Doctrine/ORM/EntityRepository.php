@@ -48,7 +48,7 @@ class EntityRepository implements ObjectRepository, Selectable
     protected $entityName;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
@@ -60,8 +60,8 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Initializes a new <tt>EntityRepository</tt>.
      *
-     * @param EntityManager         $em    The EntityManager to use.
-     * @param Mapping\ClassMetadata $class The class descriptor.
+     * @param EntityManagerInterface $em    The EntityManager to use.
+     * @param Mapping\ClassMetadata  $class The class descriptor.
      */
     public function __construct(EntityManagerInterface $em, Mapping\ClassMetadata $class)
     {
@@ -266,7 +266,7 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     protected function getEntityManager()
     {

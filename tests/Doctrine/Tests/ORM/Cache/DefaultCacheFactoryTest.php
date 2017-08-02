@@ -41,7 +41,7 @@ class DefaultCacheFactoryTest extends OrmTestCase
     private $factory;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
