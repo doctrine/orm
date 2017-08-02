@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmTestCase;
 class AttachEntityListenersListenerTest extends OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

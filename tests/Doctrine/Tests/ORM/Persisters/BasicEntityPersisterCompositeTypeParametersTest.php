@@ -20,7 +20,7 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
     protected $persister;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
 

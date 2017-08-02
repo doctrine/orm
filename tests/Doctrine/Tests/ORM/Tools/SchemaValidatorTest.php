@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Tools;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaValidator;
 use Doctrine\Tests\OrmTestCase;
 
 class SchemaValidatorTest extends OrmTestCase
 {
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     private $em = null;
 

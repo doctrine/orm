@@ -25,7 +25,7 @@ class DefaultEntityHydratorTest extends OrmTestCase
     private $structure;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

@@ -39,7 +39,7 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $picture->setThumbnail($thumbnail);
 
 
-        /* @var $em \Doctrine\ORM\EntityManager */
+        /* @var $em \Doctrine\ORM\EntityManagerInterface */
         $em = $this->em;
         $em->persist($picture);
         $em->flush();

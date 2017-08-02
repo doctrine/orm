@@ -15,6 +15,7 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
@@ -51,7 +52,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     protected static $sharedConn;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
 
@@ -676,7 +677,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
     /**
      * Gets an EntityManager for testing purposes.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      *
      * @throws \Doctrine\ORM\ORMException
      */
