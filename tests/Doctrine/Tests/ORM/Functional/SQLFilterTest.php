@@ -8,7 +8,7 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
@@ -201,7 +201,7 @@ class SQLFilterTest extends OrmFunctionalTestCase
     protected function getMockEntityManager()
     {
         // Setup connection mock
-        $em = $this->getMockBuilder(EntityManager::class)
+        $em = $this->getMockBuilder(EntityManagerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 

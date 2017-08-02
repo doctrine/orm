@@ -28,7 +28,7 @@ use Doctrine\Tests\OrmTestCase;
 class QueryBuilderTest extends OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

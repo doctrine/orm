@@ -58,7 +58,7 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        /* @var $entityManager \Doctrine\ORM\EntityManager */
+        /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
         $entityClassNames = $entityManager->getConfiguration()

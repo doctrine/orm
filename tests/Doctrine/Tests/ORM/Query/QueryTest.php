@@ -6,9 +6,7 @@ namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\DBAL\Cache\QueryCacheProfile;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryException;
@@ -20,7 +18,7 @@ use Doctrine\Tests\OrmTestCase;
 
 class QueryTest extends OrmTestCase
 {
-    /** @var EntityManager */
+    /** @var EntityManagerInterface */
     protected $em = null;
 
     protected function setUp()

@@ -139,7 +139,7 @@ class Parser
     /**
      * The EntityManager.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -244,7 +244,7 @@ class Parser
     /**
      * Gets the EntityManager used by the parser.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     public function getEntityManager()
     {
