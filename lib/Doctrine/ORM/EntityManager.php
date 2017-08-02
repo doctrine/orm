@@ -64,7 +64,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-/* final */class EntityManager implements EntityManagerInterface
+final class EntityManager implements EntityManagerInterface
 {
     /**
      * The used Configuration.
