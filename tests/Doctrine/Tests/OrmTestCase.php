@@ -84,7 +84,7 @@ abstract class OrmTestCase extends DoctrineTestCase
      * @param \Doctrine\Common\EventManager|null $eventManager
      * @param bool                               $withSharedMetadata
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     protected function getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
     {

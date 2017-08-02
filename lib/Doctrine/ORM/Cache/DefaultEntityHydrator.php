@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class DefaultEntityHydrator implements EntityHydrator
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
