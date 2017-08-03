@@ -792,7 +792,7 @@ class QueryBuilderTest extends OrmTestCase
     public function testGetEntityManager()
     {
         $qb = $this->em->createQueryBuilder();
-        self::assertEquals($this->em, $qb->getEntityManager());
+        self::assertEquals($this->em->getEM(), $qb->getEntityManager());
     }
 
     public function testInitialStateIsClean()
