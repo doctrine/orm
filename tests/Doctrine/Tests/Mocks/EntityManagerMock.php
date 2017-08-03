@@ -46,12 +46,17 @@ class EntityManagerMock implements EntityManagerInterface
         $this->em = $em;
     }
 
+    public function getEM()
+    {
+        return $this->em;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
     {
-        return isset($this->uowMock) ? $this->uowMock : $this->em->getUnitOfWork();
+        return $this->uowMock ?? $this->em->getUnitOfWork();
     }
 
     /* Mock API */
@@ -83,7 +88,7 @@ class EntityManagerMock implements EntityManagerInterface
      */
     public function getProxyFactory()
     {
-        return isset($this->proxyFactoryMock) ? $this->proxyFactoryMock : $this->em->getProxyFactory();
+        return $this->proxyFactoryMock ?? $this->em->getProxyFactory();
     }
 
     /**
