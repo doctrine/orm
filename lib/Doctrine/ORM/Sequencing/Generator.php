@@ -22,19 +22,19 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 interface Generator
 {
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManager $em
-     * @param object        $entity
+     * @param EntityManagerInterface $em
+     * @param object                 $entity
      *
      * @return \Generator
      */
-    public function generate(EntityManager $em, $entity);
+    public function generate(EntityManagerInterface $em, $entity);
 
     /**
      * Gets whether this generator is a post-insert generator which means that

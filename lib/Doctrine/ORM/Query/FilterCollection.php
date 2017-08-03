@@ -52,7 +52,7 @@ class FilterCollection
     /**
      * The EntityManager that "owns" this FilterCollection instance.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

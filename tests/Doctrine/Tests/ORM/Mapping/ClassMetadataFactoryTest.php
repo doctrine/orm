@@ -8,7 +8,6 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
@@ -430,7 +429,7 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         $classMetadataFactory = new ClassMetadataFactory();
 
-        /* @var $entityManager EntityManager */
+        /* @var EntityManagerInterface EntityManager */
         $entityManager        = $this->createMock(EntityManagerInterface::class);
 
         $classMetadataFactory->setEntityManager($entityManager);
@@ -523,7 +522,7 @@ class CustomIdGenerator implements Generator
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity): \Generator
+    public function generate(EntityManagerInterface $em, $entity): \Generator
     {
     }
 

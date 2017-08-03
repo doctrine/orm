@@ -56,7 +56,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /* @var $entityManager \Doctrine\ORM\EntityManager */
+        /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
         $entityClassNames = $entityManager->getConfiguration()

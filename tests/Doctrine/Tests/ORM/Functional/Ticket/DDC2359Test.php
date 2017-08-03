@@ -8,7 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
@@ -28,7 +28,7 @@ class DDC2359Test extends DoctrineTestCase
     {
         $mockDriver      = $this->createMock(MappingDriver::class);
         $mockMetadata    = $this->createMock(ClassMetadata::class);
-        $entityManager   = $this->createMock(EntityManager::class);
+        $entityManager   = $this->createMock(EntityManagerInterface::class);
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
