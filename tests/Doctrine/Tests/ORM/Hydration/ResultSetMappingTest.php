@@ -24,7 +24,7 @@ use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

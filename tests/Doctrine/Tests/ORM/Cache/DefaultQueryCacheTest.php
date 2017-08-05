@@ -36,7 +36,7 @@ class DefaultQueryCacheTest extends OrmTestCase
     private $queryCache;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

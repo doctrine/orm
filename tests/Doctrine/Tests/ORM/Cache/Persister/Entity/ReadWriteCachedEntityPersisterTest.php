@@ -6,9 +6,9 @@ namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -34,7 +34,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
     {
         return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }

@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
@@ -36,7 +36,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     protected $entityPersister;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     protected $em;
 
@@ -88,14 +88,14 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
     ];
 
     /**
-     * @param \Doctrine\ORM\EntityManager                     $em
+     * @param \Doctrine\ORM\EntityManagerInterface            $em
      * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister
      * @param \Doctrine\ORM\Cache\Region                      $region
      * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata
      *
      * @return \Doctrine\ORM\Cache\Persister\Entity\AbstractEntityPersister
      */
-    abstract protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
+    abstract protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata);
 
     protected function setUp()
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
 
 /**
@@ -54,7 +54,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
         if ($this->maxValue === null || $this->nextValue == $this->maxValue) {
             // Allocate new values

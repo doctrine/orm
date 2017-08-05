@@ -262,7 +262,7 @@ class QueryBuilder
     /**
      * Gets the associated EntityManager for this query builder.
      *
-     * @return EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

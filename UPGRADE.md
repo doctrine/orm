@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC Break: ``EntityManagerInterface`` is now used instead of ``EntityManager`` in typehints
+
+`Sequencing\Generator#generate()` now takes ``EntityManagerInterface`` as its first argument instead of ``EntityManager``. If you have any custom generators, please update your code accordingly.
+
 ## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
 
 If your code relies on single entity flushing optimisations via

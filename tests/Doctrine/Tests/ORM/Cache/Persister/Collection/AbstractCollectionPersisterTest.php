@@ -9,7 +9,7 @@ use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\Persister\Collection\AbstractCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -32,7 +32,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     protected $collectionPersister;
 
     /**
-     * @var EntityManager
+     * @var EntityManagerInterface
      */
     protected $em;
 
@@ -67,15 +67,15 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
     ];
 
     /**
-     * @param EntityManager       $em
-     * @param CollectionPersister $persister
-     * @param Region              $region
-     * @param AssociationMetadata $association
+     * @param EntityManagerInterface $em
+     * @param CollectionPersister    $persister
+     * @param Region                 $region
+     * @param AssociationMetadata    $association
      *
      * @return AbstractCollectionPersister
      */
     abstract protected function createPersister(
-        EntityManager $em,
+        EntityManagerInterface $em,
         CollectionPersister $persister,
         Region $region,
         AssociationMetadata $association
