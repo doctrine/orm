@@ -412,8 +412,19 @@ class UnitOfWork implements PropertyChangedListener
             $coll->takeSnapshot();
         }
 
-        $this->dispatchPostFlushEvent();
-
+        $event = new PostFlushEventArgs(
+            $this->em,
+            $this->entityInsertions,
+            $this->entityUpdates,
+            $this->entityDeletions,
+            $this->extraUpdates,
+            $this->entityChangeSets,
+            $this->collectionUpdates,
+            $this->collectionDeletions,
+            $this->visitedCollections,
+            $this->scheduledForSynchronization,
+            $this->orphanRemovals
+        );
         // Clear up
         $this->entityInsertions =
         $this->entityUpdates =
@@ -425,6 +436,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->visitedCollections =
         $this->scheduledForSynchronization =
         $this->orphanRemovals = [];
+
+        $this->dispatchPostFlushEvent($event);
     }
 
     /**
@@ -3301,10 +3314,10 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
-    private function dispatchPostFlushEvent()
+    private function dispatchPostFlushEvent(PostFlushEventArgs $event = null)
     {
         if ($this->evm->hasListeners(Events::postFlush)) {
-            $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
+            $this->evm->dispatchEvent(Events::postFlush, $event ?: new PostFlushEventArgs($this->em));
         }
     }
 
