@@ -1,62 +1,61 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Performance;
+namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\Tests\OrmPerformanceTestCase;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2602
  */
-class DDC2602Test extends OrmPerformanceTestCase
+class DDC2602Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2602User::class),
-            $this->_em->getClassMetadata(DDC2602Biography::class),
-            $this->_em->getClassMetadata(DDC2602BiographyField::class),
-            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+                $this->_em->getClassMetadata(DDC2602User::class),
+                $this->_em->getClassMetadata(DDC2602Biography::class),
+                $this->_em->getClassMetadata(DDC2602BiographyField::class),
+                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
 
         $this->loadFixture();
     }
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         parent::tearDown();
 
         $this->_schemaTool->dropSchema(
             [
-            $this->_em->getClassMetadata(DDC2602User::class),
-            $this->_em->getClassMetadata(DDC2602Biography::class),
-            $this->_em->getClassMetadata(DDC2602BiographyField::class),
-            $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
+                $this->_em->getClassMetadata(DDC2602User::class),
+                $this->_em->getClassMetadata(DDC2602Biography::class),
+                $this->_em->getClassMetadata(DDC2602BiographyField::class),
+                $this->_em->getClassMetadata(DDC2602BiographyFieldChoice::class),
             ]
         );
     }
 
-    public function testIssue()
+    public function testPostLoadListenerShouldBeAbleToRunQueries() : void
     {
         $eventManager = $this->_em->getEventManager();
         $eventManager->addEventListener([Events::postLoad], new DDC2602PostLoadListener());
 
-        // Set maximum seconds this can run
-        $this->setMaxRunningTime(1);
+        $result = $this->_em->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Functional\Ticket\DDC2602User u JOIN u.biography b')
+                             ->getResult();
 
-        $this
-            ->_em
-            ->createQuery('SELECT u, b FROM Doctrine\Tests\ORM\Performance\DDC2602User u JOIN u.biography b')
-            ->getResult();
+        self::assertCount(2, $result);
+        self::assertCount(2, $result[0]->biography->fieldList);
+        self::assertCount(1, $result[1]->biography->fieldList);
     }
 
-    private function loadFixture()
+    private function loadFixture() : void
     {
         $user1                 = new DDC2602User();
         $user2                 = new DDC2602User();
@@ -127,7 +126,7 @@ class DDC2602Test extends OrmPerformanceTestCase
 
 class DDC2602PostLoadListener
 {
-    public function postLoad(LifecycleEventArgs $event)
+    public function postLoad(LifecycleEventArgs $event) : void
     {
         $entity = $event->getEntity();
 
@@ -138,7 +137,7 @@ class DDC2602PostLoadListener
         $entityManager = $event->getEntityManager();
         $query         = $entityManager->createQuery('
             SELECT f, fc
-              FROM Doctrine\Tests\ORM\Performance\DDC2602BiographyField f INDEX BY f.id
+              FROM Doctrine\Tests\ORM\Functional\Ticket\DDC2602BiographyField f INDEX BY f.id
               JOIN f.choiceList fc INDEX BY fc.id
         ');
 
