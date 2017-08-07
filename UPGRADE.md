@@ -1,12 +1,13 @@
 # Upgrade to 3.0
 
+## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+
+Final keyword has been added to the ``EntityManager::class`` in order to ensure that EntityManager is not used as valid extension point. Valid extension point should be EntityManagerInterface.
+
 ## BC Break: ``EntityManagerInterface`` is now used instead of ``EntityManager`` in typehints
 
 `Sequencing\Generator#generate()` now takes ``EntityManagerInterface`` as its first argument instead of ``EntityManager``. If you have any custom generators, please update your code accordingly.
 
-## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
-
-Final keyword has been added to the ``EntityManager::class`` in order to ensure that EntityManager is not used as valid extension point. Valid extension point should be EntityManagerInterface.
 ## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
 
 If your code relies on single entity flushing optimisations via
