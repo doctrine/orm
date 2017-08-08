@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 
@@ -24,9 +25,9 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 class DisconnectedClassMetadataFactory extends ClassMetadataFactory
 {
     /**
-     * @return StaticReflectionService
+     * @return ReflectionService
      */
-    public function getReflectionService()
+    public function getReflectionService() : ReflectionService
     {
         return new StaticReflectionService();
     }
