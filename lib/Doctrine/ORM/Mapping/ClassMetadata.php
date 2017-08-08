@@ -164,7 +164,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
-     * @var mixed
+     * @var array<string, string>
      *
      * @see discriminatorColumn
      */
