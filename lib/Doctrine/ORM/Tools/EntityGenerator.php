@@ -644,7 +644,7 @@ public function __construct(<params>)
 
         $collections = [];
 
-        foreach ($metadata->getProperties() as $association) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $association) {
             if ($association instanceof ToManyAssociationMetadata) {
                 $collections[] = sprintf('$this->%s = new \%s();', $association->getName(), ArrayCollection::class);
             }
@@ -673,7 +673,7 @@ public function __construct(<params>)
         $requiredFields = [];
         $optionalFields = [];
 
-        foreach ($metadata->getProperties() as $property) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $property) {
             if (! $property->isNullable()) {
                 $requiredFields[] = $property;
 
@@ -1143,7 +1143,7 @@ public function __construct(<params>)
             }
         }*/
 
-        foreach ($metadata->getProperties() as $fieldName => $property) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if ($property instanceof FieldMetadata) {
                 $nullable  = $property->isNullable() ? 'null' : null;
 
@@ -1240,7 +1240,7 @@ public function __construct(<params>)
     {
         $lines = [];
 
-        foreach ($metadata->getProperties() as $fieldName => $property) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if ($this->hasProperty($fieldName, $metadata) ||
                 $metadata->isInheritedProperty($fieldName) /*||
                 (

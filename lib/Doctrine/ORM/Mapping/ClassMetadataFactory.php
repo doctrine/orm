@@ -52,16 +52,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $evm;
 
     /**
-     * @var array
+     * {@inheritdoc}
      */
-    private $embeddablesActiveNesting = [];
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function loadMetadata($name)
+    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext) : array
     {
-        $loaded = parent::loadMetadata($name);
+        $loaded = parent::loadMetadata($name, $metadataBuildingContext);
 
         array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
 
@@ -77,9 +72,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
+     * @throws ORMException
      */
-    protected function initialize()
+    protected function initialize() : void
     {
         $this->driver = $this->em->getConfiguration()->getMetadataDriverImpl();
         $this->evm = $this->em->getEventManager();
@@ -87,15 +84,18 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ?ClassMetadata
     {
-        if ( ! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
-            return;
+        if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
+            return null;
         }
 
-        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $this->em);
+        $eventArgs = new OnClassMetadataNotFoundEventArgs($className, $metadataBuildingContext, $this->em);
 
         $this->evm->dispatchEvent(Events::onClassMetadataNotFound, $eventArgs);
 
@@ -103,24 +103,27 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
+     *
+     * @throws MappingException
+     * @throws ORMException
      */
     protected function doLoadMetadata(
         ClassMetadata $class,
-        ClassMetadata $parent = null,
-        bool $rootEntityFound,
-        array $nonSuperclassParents
-    )
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : void
     {
+
         /* @var $class ClassMetadata */
-        /* @var $parent ClassMetadata */
+        /* @var $parent ClassMetadata|null */
+        $parent = $class->getParent();
+
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
                 $class->setTable($parent->table);
             }
 
             $this->addInheritedProperties($class, $parent);
-            $this->addInheritedEmbeddedClasses($class, $parent);
 
             $class->setInheritanceType($parent->inheritanceType);
             $class->setIdentifier($parent->identifier);
@@ -141,46 +144,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
         // Invoke driver
         try {
-            $this->driver->loadMetadataForClass($class->getClassName(), $class);
+            $this->driver->loadMetadataForClass($class->getClassName(), $class, $metadataBuildingContext);
         } catch (ReflectionException $e) {
             throw MappingException::reflectionFailure($class->getClassName(), $e);
         }
 
         $this->completeIdentifierGeneratorMappings($class);
-
-        /*if ( ! $class->isMappedSuperclass) {
-            foreach ($class->embeddedClasses as $property => $embeddableClass) {
-                if (isset($embeddableClass['inherited'])) {
-                    continue;
-                }
-
-                if ( ! (isset($embeddableClass['class']) && $embeddableClass['class'])) {
-                    throw MappingException::missingEmbeddedClass($property);
-                }
-
-                if (isset($this->embeddablesActiveNesting[$embeddableClass['class']])) {
-                    throw MappingException::infiniteEmbeddableNesting($class->getClassName(), $property);
-                }
-
-                $this->embeddablesActiveNesting[$class->getClassName()] = true;
-
-                $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
-
-                if ($embeddableMetadata->isEmbeddedClass) {
-                    $this->addNestedEmbeddedClasses($embeddableMetadata, $class, $property);
-                }
-
-                $identifier = $embeddableMetadata->getIdentifier();
-
-                if (! empty($identifier)) {
-                    $this->inheritIdGeneratorMapping($class, $embeddableMetadata);
-                }
-
-                $class->inlineEmbeddable($property, $embeddableMetadata);
-
-                unset($this->embeddablesActiveNesting[$class->getClassName()]);
-            }
-        }*/
 
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
@@ -207,9 +176,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
         }
 
-        $class->setParentClasses($nonSuperclassParents);
-
-        if ($class->isRootEntity() && $class->inheritanceType !== InheritanceType::NONE && ! $class->discriminatorMap) {
+        if (! $class->discriminatorMap && $class->inheritanceType !== InheritanceType::NONE && $class->isRootEntity()) {
             $this->addDefaultDiscriminatorMap($class);
         }
 
@@ -231,7 +198,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return void
      */
-    protected function completeRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null)
+    protected function completeRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null) : void
     {
         if ( ! $parent) {
             return;
@@ -248,7 +215,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $tableName = $class->getTableName();
 
         // Resolve column table names
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             if ($property instanceof FieldMetadata) {
                 $property->setTableName($property->getTableName() ?? $tableName);
 
@@ -261,16 +228,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             // Resolve association join column table names
             foreach ($property->getJoinColumns() as $joinColumn) {
+                /** @var JoinColumnMetadata $joinColumn */
                 $joinColumn->setTableName($joinColumn->getTableName() ?? $tableName);
             }
         }
-
-        // Resolve embedded table names
-        /*foreach ($class->embeddedClasses as &$mapping) {
-            if ( ! isset($mapping['tableName'])) {
-                $mapping['tableName'] = $mapping['tableName'] ?? $tableName;
-            }
-        }*/
     }
 
     /**
@@ -283,7 +244,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null)
+    protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null) : void
     {
         if (! $class->getReflectionClass()) {
             // only validate if there is a reflection class instance
@@ -312,11 +273,22 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    protected function newClassMetadataInstance($className)
+    protected function newClassMetadataInstance(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata
     {
-        return new ClassMetadata($className, $this->em->getConfiguration()->getNamingStrategy());
+        return new ClassMetadata($className, $metadataBuildingContext);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function newClassMetadataBuildingContext() : ClassMetadataBuildingContext
+    {
+        return new ClassMetadataBuildingContext($this, $this->em->getConfiguration()->getNamingStrategy());
     }
 
     /**
@@ -327,9 +299,11 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return void
      *
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
      * @throws MappingException
      */
-    private function resolveDiscriminatorValue(ClassMetadata $metadata)
+    private function resolveDiscriminatorValue(ClassMetadata $metadata) : void
     {
         if ($metadata->discriminatorValue || ! $metadata->discriminatorMap || $metadata->isMappedSuperclass ||
             ! $metadata->getReflectionClass() || $metadata->getReflectionClass()->isAbstract()) {
@@ -371,7 +345,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws MappingException
      */
-    private function addDefaultDiscriminatorMap(ClassMetadata $class)
+    private function addDefaultDiscriminatorMap(ClassMetadata $class) : void
     {
         $allClasses = $this->driver->getAllClassNames();
         $fqcn       = $class->getClassName();
@@ -404,7 +378,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return string
      */
-    private function getShortName($className)
+    private function getShortName($className) : string
     {
         if (strpos($className, "\\") === false) {
             return strtolower($className);
@@ -418,75 +392,24 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited fields to the subclass mapping.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      *
      * @return void
+     *
+     * @throws MappingException
      */
-    private function addInheritedProperties(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedProperties(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         $isAbstract = $parentClass->isMappedSuperclass;
 
-        foreach ($parentClass->getProperties() as $fieldName => $property) {
+        foreach ($parentClass->getDeclaredPropertiesIterator() as $fieldName => $property) {
             if ($isAbstract && $property instanceof ToManyAssociationMetadata && ! $property->isOwningSide()) {
                 throw MappingException::illegalToManyAssociationOnMappedSuperclass($parentClass->getClassName(), $fieldName);
             }
 
             $subClass->addInheritedProperty($property);
         }
-    }
-
-    /**
-     * Adds inherited embedded mappings to the subclass mapping.
-     *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
-     *
-     * @return void
-     */
-    private function addInheritedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass)
-    {
-        /*foreach ($parentClass->embeddedClasses as $field => $embeddedClass) {
-            if ( ! isset($embeddedClass['tableName'])) {
-                $embeddedClass['tableName'] = ! $parentClass->isMappedSuperclass ? $parentClass->getTableName() : null;
-            }
-
-            if ( ! isset($embeddedClass['inherited']) && ! $parentClass->isMappedSuperclass) {
-                $embeddedClass['inherited'] = $parentClass->getClassName();
-            }
-
-            $subClass->embeddedClasses[$field] = $embeddedClass;
-        }*/
-    }
-
-    /**
-     * Adds nested embedded classes metadata to a parent class.
-     *
-     * @param ClassMetadata $subClass    Sub embedded class metadata to add nested embedded classes metadata from.
-     * @param ClassMetadata $parentClass Parent class to add nested embedded classes metadata to.
-     * @param string        $prefix      Embedded classes' prefix to use for nested embedded classes field names.
-     */
-    private function addNestedEmbeddedClasses(ClassMetadata $subClass, ClassMetadata $parentClass, $prefix)
-    {
-        /*foreach ($subClass->embeddedClasses as $property => $embeddableClass) {
-            if (isset($embeddableClass['inherited'])) {
-                continue;
-            }
-
-            $embeddableMetadata = $this->getMetadataFor($embeddableClass['class']);
-
-            $parentClass->mapEmbedded(
-                [
-                    'fieldName' => $prefix . '.' . $property,
-                    'class' => $embeddableMetadata->getClassName(),
-                    'columnPrefix' => $embeddableClass['columnPrefix'],
-                    'declaredField' => $embeddableClass['declaredField']
-                            ? $prefix . '.' . $embeddableClass['declaredField']
-                            : $prefix,
-                    'originalField' => $embeddableClass['originalField'] ?: $property,
-                ]
-            );
-        }*/
     }
 
     /**
@@ -497,7 +420,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @return void
      */
-    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         if ( ! $parentClass->isMappedSuperclass) {
             return;
@@ -525,12 +448,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @since 2.2
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      *
      * @return void
+     *
+     * @throws MappingException
      */
-    private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->getNamedQueries() as $name => $query) {
             if ($subClass->hasNamedQuery($name)) {
@@ -546,12 +471,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @since 2.3
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      *
      * @return void
+     *
+     * @throws MappingException
      */
-    private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedNamedNativeQueries(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->namedNativeQueries as $name => $query) {
             if (isset($subClass->namedNativeQueries[$name])) {
@@ -574,12 +501,14 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @since 2.3
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $subClass
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $parentClass
+     * @param ClassMetadata $subClass
+     * @param ClassMetadata $parentClass
      *
      * @return void
+     *
+     * @throws MappingException
      */
-    private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass)
+    private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
             if (isset ($subClass->sqlResultSetMappings[$name])) {
@@ -616,9 +545,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      *
      * @throws ORMException
      */
-    private function completeIdentifierGeneratorMappings(ClassMetadata $class)
+    private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             if ( ! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
                 continue;
             }
@@ -659,7 +588,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 }
 
                 // @todo guilhermeblanco Move sequence generation to DBAL
-                $sequencePrefix = $platform->getSequencePrefix($class->getTableName(), $class->getSchemaName());
+                $sequencePrefix = $platform->getSequencePrefix($field->getTableName(), $field->getSchemaName());
                 $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $field->getColumnName());
                 $sequenceName   = $platform->fixSchemaElementName($idSequenceName);
 
@@ -703,7 +632,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService)
+    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService) : void
     {
         $class->wakeupReflection($reflService);
     }
@@ -711,7 +640,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService)
+    protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService) : void
     {
         $class->initializeReflection($reflService);
     }
@@ -719,7 +648,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName)
+    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string
     {
         return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
     }
@@ -727,7 +656,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function getDriver()
+    protected function getDriver() : Driver\MappingDriver
     {
         return $this->driver;
     }
@@ -735,7 +664,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function isEntity(ClassMetadata $class)
+    protected function isEntity(ClassMetadata $class) : bool
     {
         return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }
@@ -743,7 +672,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * @return Platforms\AbstractPlatform
      */
-    private function getTargetPlatform()
+    private function getTargetPlatform() : Platforms\AbstractPlatform
     {
         if (!$this->targetPlatform) {
             $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
@@ -752,39 +681,58 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $this->targetPlatform;
     }
 
-    private function buildValueGenerationPlan(ClassMetadata $class): void
+    /**
+     * @param ClassMetadata $class
+     *
+     * @return void
+     */
+    private function buildValueGenerationPlan(ClassMetadata $class) : void
     {
         /** @var LocalColumnMetadata[] $generatedProperties */
-        $generatedProperties = array_filter($class->getProperties(), function (Property $property): bool {
-            return $property instanceof LocalColumnMetadata && $property->hasValueGenerator();
-        });
-        $propertiesCount = count($generatedProperties);
+        $generatedProperties = [];
 
-        if ($propertiesCount === 0) {
-            $class->setValueGenerationPlan(new NoopValueGenerationPlan());
-            return;
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            if (! ($property instanceof LocalColumnMetadata && $property->hasValueGenerator())) {
+                continue;
+            }
+
+            $generatedProperties[] = $property;
         }
 
-        if ($propertiesCount === 1) {
-            $property = reset($generatedProperties);
+        switch (count($generatedProperties)) {
+            case 0:
+                $class->setValueGenerationPlan(new NoopValueGenerationPlan());
+                break;
 
-            $class->setValueGenerationPlan(new SingleValueGenerationPlan(
-                $class,
-                new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property))
-            ));
+            case 1:
+                $property  = reset($generatedProperties);
+                $executor  = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
 
-            return;
+                $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executor));
+                break;
+
+            default:
+                $executors = [];
+
+                foreach ($generatedProperties as $property) {
+                    $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+                }
+
+                $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
+                break;
         }
-
-        $executors = [];
-        foreach ($generatedProperties as $property) {
-            $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
-        }
-
-        $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
     }
 
-    private function createPropertyValueGenerator(ClassMetadata $class, LocalColumnMetadata $property): Sequencing\Generator
+    /**
+     * @param ClassMetadata $class
+     * @param LocalColumnMetadata $property
+     *
+     * @return Sequencing\Generator
+     */
+    private function createPropertyValueGenerator(
+        ClassMetadata $class,
+        LocalColumnMetadata $property
+    ) : Sequencing\Generator
     {
         $platform = $this->getTargetPlatform();
 

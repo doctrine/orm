@@ -511,7 +511,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $actualData = [];
 
-        foreach ($class->getProperties() as $name => $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $name => $property) {
             $value = $property->getValue($entity);
 
             if ($property instanceof ToManyAssociationMetadata && $value !== null) {
@@ -648,7 +648,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Look for changes in associations of the entity
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             if (! ($property instanceof AssociationMetadata) || ($value = $property->getValue($entity)) === null) {
                 continue;
             }
@@ -845,12 +845,13 @@ class UnitOfWork implements PropertyChangedListener
      * @return void
      *
      * @throws ORMInvalidArgumentException If the passed entity is not MANAGED.
+     * @throws \RuntimeException
      */
-    public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity)
+    public function recomputeSingleEntityChangeSet(ClassMetadata $class, $entity) : void
     {
         $oid = spl_object_hash($entity);
 
-        if ( ! isset($this->entityStates[$oid]) || $this->entityStates[$oid] != self::STATE_MANAGED) {
+        if (! isset($this->entityStates[$oid]) || $this->entityStates[$oid] !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
@@ -865,7 +866,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $actualData = [];
 
-        foreach ($class->getProperties() as $name => $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $name => $property) {
             switch (true) {
                 case ($property instanceof VersionFieldMetadata):
                     // Ignore version field
@@ -915,11 +916,11 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity insertions for entities of the specified type.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param ClassMetadata $class
      *
      * @return void
      */
-    private function executeInserts($class)
+    private function executeInserts(ClassMetadata $class) : void
     {
         $className      = $class->getClassName();
         $persister      = $this->getEntityPersister($className);
@@ -1077,7 +1078,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Calculate dependencies for new nodes
         while ($class = array_pop($newNodes)) {
-            foreach ($class->getProperties() as $property) {
+            foreach ($class->getDeclaredPropertiesIterator() as $property) {
                 if (! ($property instanceof ToOneAssociationMetadata && $property->isOwningSide())) {
                     continue;
                 }
@@ -1220,7 +1221,7 @@ class UnitOfWork implements PropertyChangedListener
         $extraUpdate = [$entity, $changeset];
 
         if (isset($this->extraUpdates[$oid])) {
-            list(, $changeset2) = $this->extraUpdates[$oid];
+            [$unused, $changeset2] = $this->extraUpdates[$oid];
 
             $extraUpdate = [$entity, $changeset + $changeset2];
         }
@@ -1249,7 +1250,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return boolean
      */
-    public function isScheduledForDirtyCheck($entity)
+    public function isScheduledForDirtyCheck($entity) : bool
     {
         $rootEntityName = $this->em->getClassMetadata(get_class($entity))->getRootClassName();
 
@@ -2016,15 +2017,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeRefresh($entity, array &$visited)
     {
-        $class        = $this->em->getClassMetadata(get_class($entity));
-        $associations = array_filter(
-            $class->getProperties(),
-            function (Property $property) {
-                return $property instanceof AssociationMetadata && in_array('refresh', $property->getCascade());
-            }
-        );
+        $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($associations as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            if (! ($association instanceof AssociationMetadata && in_array('refresh', $association->getCascade()))) {
+                continue;
+            }
+
             $relatedEntities = $association->getValue($entity);
 
             switch (true) {
@@ -2060,15 +2059,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeDetach($entity, array &$visited)
     {
-        $class        = $this->em->getClassMetadata(get_class($entity));
-        $associations = array_filter(
-            $class->getProperties(),
-            function (Property $property) {
-                return $property instanceof AssociationMetadata && in_array('detach', $property->getCascade());
-            }
-        );
+        $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($associations as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            if (! ($association instanceof AssociationMetadata && in_array('detach', $association->getCascade()))) {
+                continue;
+            }
+
             $relatedEntities = $association->getValue($entity);
 
             switch (true) {
@@ -2105,15 +2102,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadeMerge($entity, $managedCopy, array &$visited)
     {
-        $class        = $this->em->getClassMetadata(get_class($entity));
-        $associations = array_filter(
-            $class->getProperties(),
-            function (Property $property) {
-                return $property instanceof AssociationMetadata && in_array('merge', $property->getCascade());
-            }
-        );
+        $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($associations as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            if (! ($association instanceof AssociationMetadata && in_array('merge', $association->getCascade()))) {
+                continue;
+            }
+
             /** @var AssociationMetadata $association */
             $relatedEntities = $association->getValue($entity);
 
@@ -2146,15 +2141,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function cascadePersist($entity, array &$visited)
     {
-        $class        = $this->em->getClassMetadata(get_class($entity));
-        $associations = array_filter(
-            $class->getProperties(),
-            function (Property $property) {
-                return $property instanceof AssociationMetadata && in_array('persist', $property->getCascade());
-            }
-        );
+        $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($associations as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            if (! ($association instanceof AssociationMetadata && in_array('persist', $association->getCascade()))) {
+                continue;
+            }
+
             /** @var AssociationMetadata $association */
             $relatedEntities = $association->getValue($entity);
             $targetEntity    = $association->getTargetEntity();
@@ -2211,14 +2204,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         $entitiesToCascade = [];
         $class             = $this->em->getClassMetadata(get_class($entity));
-        $associations      = array_filter(
-            $class->getProperties(),
-            function (Property $property) {
-                return $property instanceof AssociationMetadata && in_array('remove', $property->getCascade());
-            }
-        );
 
-        foreach ($associations as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
+            if (! ($association instanceof AssociationMetadata && in_array('remove', $association->getCascade()))) {
+                continue;
+            }
+
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__load();
             }
@@ -2541,7 +2532,7 @@ class UnitOfWork implements PropertyChangedListener
             return $entity;
         }
 
-        foreach ($class->getProperties() as $field => $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $field => $association) {
             if (! ($association instanceof AssociationMetadata)) {
                 continue;
             }
@@ -2626,6 +2617,7 @@ class UnitOfWork implements PropertyChangedListener
 
             // TODO: Is this even computed right in all cases of composite keys?
             foreach ($association->getJoinColumns() as $joinColumn) {
+                /** @var JoinColumnMetadata $joinColumn */
                 $joinColumnName = $joinColumn->getColumnName();
                 $joinColumnValue = isset($data[$joinColumnName]) ? $data[$joinColumnName] : null;
                 $targetField     = $targetClass->fieldNames[$joinColumn->getReferencedColumnName()];
@@ -2640,7 +2632,7 @@ class UnitOfWork implements PropertyChangedListener
                 $associatedId[$targetField] = $joinColumnValue;
             }
 
-            if (!$associatedId) {
+            if (! $associatedId) {
                 // Foreign key is NULL
                 $association->setValue($entity, null);
                 $this->originalEntityData[$oid][$field] = null;
@@ -3312,7 +3304,7 @@ class UnitOfWork implements PropertyChangedListener
 
         $class = $this->em->getClassMetadata(get_class($entity));
 
-        foreach ($class->getProperties() as $property) {
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
             switch (true) {
                 case ($property instanceof FieldMetadata):
                     if (! $property->isPrimaryKey()) {

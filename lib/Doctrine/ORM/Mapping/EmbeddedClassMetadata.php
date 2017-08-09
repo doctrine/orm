@@ -48,15 +48,15 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getDeclaringClass()
+    public function getDeclaringClass() : ComponentMetadata
     {
         return $this->declaringClass;
     }
 
     /**
-     * @param ClassMetadata $declaringClass
+     * @param ComponentMetadata $declaringClass
      */
-    public function setDeclaringClass(ClassMetadata $declaringClass)
+    public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
     }
@@ -64,7 +64,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -72,7 +72,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setName($name)
+    public function setName($name) : void
     {
         $this->name = $name;
     }
@@ -80,7 +80,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * @param bool $isPrimaryKey
      */
-    public function setPrimaryKey(bool $isPrimaryKey)
+    public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
@@ -88,7 +88,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * @return bool
      */
-    public function isPrimaryKey()
+    public function isPrimaryKey() : bool
     {
         return $this->primaryKey;
     }
@@ -96,7 +96,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setValue($object, $value)
+    public function setValue($object, $value) : void
     {
         $this->reflection->setValue($object, $value);
     }
@@ -112,7 +112,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function setReflectionProperty(\ReflectionProperty $reflectionProperty)
+    public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void
     {
         $this->reflection = $reflectionProperty;
     }
@@ -120,7 +120,7 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /**
      * {@inheritdoc}
      */
-    public function wakeupReflection(ReflectionService $reflectionService)
+    public function wakeupReflection(ReflectionService $reflectionService) : void
     {
         $this->setReflectionProperty(
             $reflectionService->getAccessibleProperty($this->declaringClass->getClassName(), $this->name)

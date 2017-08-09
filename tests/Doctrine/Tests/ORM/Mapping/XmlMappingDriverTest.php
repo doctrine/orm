@@ -27,9 +27,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(CTI::class);
+        $class = new ClassMetadata(CTI::class, $this->metadataBuildingContext);
         $class->initializeReflection(new RuntimeReflectionService());
-        $mappingDriver->loadMetadataForClass(CTI::class, $class);
+        $mappingDriver->loadMetadataForClass(CTI::class, $class, $this->metadataBuildingContext);
 
         $expectedMap = [
             'foo' => CTIFoo::class,
@@ -49,8 +49,9 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     {
         $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(XMLSLC::class);
-        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class);
+        $class = new ClassMetadata(XMLSLC::class, $this->metadataBuildingContext);
+
+        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class, $this->metadataBuildingContext);
     }
 
     public function testIdentifierWithAssociationKey()
@@ -65,7 +66,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
         self::assertEquals(['language', 'article'], $class->identifier);
-        self::assertArrayHasKey('article', $class->getProperties());
+        self::assertArrayHasKey('article', $class->getDeclaredPropertiesIterator());
 
         $association = $class->getProperty('article');
 

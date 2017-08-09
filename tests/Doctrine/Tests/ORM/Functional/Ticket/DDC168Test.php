@@ -12,15 +12,13 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     protected function setUp() {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->oldMetadata = $this->em->getClassMetadata(CompanyEmployee::class);
 
-        $metadata   = clone $this->oldMetadata;
-        $properties = $metadata->getProperties();
-        
-        ksort($properties);
-        
+        $metadata = clone $this->oldMetadata;
+
         $this->em->getMetadataFactory()->setMetadataFor(CompanyEmployee::class, $metadata);
     }
 

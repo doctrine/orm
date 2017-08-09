@@ -128,7 +128,7 @@ class PhpExporter extends AbstractExporter
             }
         }
 
-        foreach ($metadata->getProperties() as $property) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $property) {
             if ($property instanceof FieldMetadata) {
                 $this->exportFieldMetadata($metadata, $property, $lines);
             } else if ($property instanceof AssociationMetadata) {

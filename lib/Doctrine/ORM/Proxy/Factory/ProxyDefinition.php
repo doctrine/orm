@@ -149,7 +149,7 @@ class ProxyDefinition
             );*/
         }
 
-        foreach ($classMetadata->getProperties() as $property) {
+        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
             /** @var Property $property */
             $property->setValue($proxy, $property->getValue($original));
         }

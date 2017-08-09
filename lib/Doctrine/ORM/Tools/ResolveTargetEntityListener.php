@@ -90,7 +90,7 @@ class ResolveTargetEntityListener implements EventSubscriber
             }
         }
 
-        foreach ($class->getProperties() as $association) {
+        foreach ($class->getDeclaredPropertiesIterator() as $association) {
             if ($association instanceof AssociationMetadata &&
                 isset($this->resolveTargetEntities[$association->getTargetEntity()])) {
                 $targetEntity = $this->resolveTargetEntities[$association->getTargetEntity()];

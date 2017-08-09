@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -15,7 +16,11 @@ class MetadataDriverMock implements MappingDriver
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        ClassMetadata $metadata,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
     }
 

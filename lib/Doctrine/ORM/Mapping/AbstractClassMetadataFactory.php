@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
-use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Reflection\ReflectionService;
@@ -52,7 +52,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * @var ReflectionService|null
      */
-    private $reflectionService = null;
+    private $reflectionService;
 
     /**
      * Sets the cache driver used by the factory to cache ClassMetadata instances.
@@ -61,7 +61,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    public function setCacheDriver(Cache $cacheDriver = null)
+    public function setCacheDriver(?Cache $cacheDriver = null) : void
     {
         $this->cacheDriver = $cacheDriver;
     }
@@ -69,9 +69,9 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Gets the cache driver used by the factory to cache ClassMetadata instances.
      *
-     * @return \Doctrine\Common\Cache\Cache|null
+     * @return Cache|null
      */
-    public function getCacheDriver()
+    public function getCacheDriver() : ?Cache
     {
         return $this->cacheDriver;
     }
@@ -81,7 +81,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return ClassMetadata[]
      */
-    public function getLoadedMetadata()
+    public function getLoadedMetadata() : array
     {
         return $this->loadedMetadata;
     }
@@ -91,8 +91,12 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * mapping driver.
      *
      * @return array The ClassMetadata instances of all mapped classes.
+     *
+     * @throws \InvalidArgumentException
+     * @throws \ReflectionException
+     * @throws MappingException
      */
-    public function getAllMetadata()
+    public function getAllMetadata() : array
     {
         if (! $this->initialized) {
             $this->initialize();
@@ -114,7 +118,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    abstract protected function initialize();
+    abstract protected function initialize() : void;
 
     /**
      * Gets the fully qualified class-name from the namespace alias.
@@ -124,14 +128,14 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return string
      */
-    abstract protected function getFqcnFromAlias($namespaceAlias, $simpleClassName);
+    abstract protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string;
 
     /**
      * Returns the mapping driver implementation.
      *
      * @return Driver\MappingDriver
      */
-    abstract protected function getDriver();
+    abstract protected function getDriver() : Driver\MappingDriver;
 
     /**
      * Wakes up reflection after ClassMetadata gets unserialized from cache.
@@ -141,7 +145,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    abstract protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService);
+    abstract protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService) : void;
 
     /**
      * Initializes Reflection after ClassMetadata was constructed.
@@ -151,7 +155,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    abstract protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService);
+    abstract protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService) : void;
 
     /**
      * Checks whether the class metadata is an entity.
@@ -160,9 +164,9 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @param ClassMetadata $class
      *
-     * @return boolean
+     * @return bool
      */
-    abstract protected function isEntity(ClassMetadata $class);
+    abstract protected function isEntity(ClassMetadata $class) : bool;
 
     /**
      * Gets the class metadata descriptor for a class.
@@ -171,10 +175,11 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return ClassMetadata
      *
+     * @throws \InvalidArgumentException
      * @throws ReflectionException
      * @throws MappingException
      */
-    public function getMetadataFor($className)
+    public function getMetadataFor($className) : ClassMetadata
     {
         if (isset($this->loadedMetadata[$className])) {
             return $this->loadedMetadata[$className];
@@ -182,7 +187,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
         // Check for namespace alias
         if (strpos($className, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $className, 2);
+            [$namespaceAlias, $simpleClassName] = explode(':', $className, 2);
 
             $realClassName = $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
         } else {
@@ -194,7 +199,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
         }
 
-        $loadingException = null;
+        $metadataBuildingContext = $this->newClassMetadataBuildingContext();
+        $loadingException        = null;
 
         try {
             if ($this->cacheDriver) {
@@ -205,7 +211,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
                     $this->wakeupReflection($cached, $this->getReflectionService());
                 } else {
-                    foreach ($this->loadMetadata($realClassName) as $loadedClassName) {
+                    foreach ($this->loadMetadata($realClassName, $metadataBuildingContext) as $loadedClassName) {
                         $this->cacheDriver->save(
                             $loadedClassName . $this->cacheSalt,
                             $this->loadedMetadata[$loadedClassName],
@@ -214,10 +220,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                     }
                 }
             } else {
-                $this->loadMetadata($realClassName);
+                $this->loadMetadata($realClassName, $metadataBuildingContext);
             }
-        } catch (MappingException $loadingException) {
-            if (! $fallbackMetadataResponse = $this->onNotFoundMetadata($realClassName)) {
+        } catch (CommonMappingException $loadingException) {
+            if (! $fallbackMetadataResponse = $this->onNotFoundMetadata($realClassName, $metadataBuildingContext)) {
                 throw $loadingException;
             }
 
@@ -229,6 +235,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             $this->loadedMetadata[$className] = $this->loadedMetadata[$realClassName];
         }
 
+        $metadataBuildingContext->validate();
+
         return $this->loadedMetadata[$className];
     }
 
@@ -237,9 +245,9 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @param string $className
      *
-     * @return boolean TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
+     * @return bool TRUE if the metadata of the class in question is already loaded, FALSE otherwise.
      */
-    public function hasMetadataFor($className)
+    public function hasMetadataFor($className) : bool
     {
         return isset($this->loadedMetadata[$className]);
     }
@@ -254,7 +262,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    public function setMetadataFor($className, $class)
+    public function setMetadataFor($className, $class) : void
     {
         $this->loadedMetadata[$className] = $class;
     }
@@ -265,8 +273,10 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @param string $name
      *
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
-    protected function getParentClasses($name)
+    protected function getParentClasses($name) : array
     {
         // Collect parent classes, ignoring transient (not-mapped) classes.
         $parentClasses = [];
@@ -290,11 +300,15 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * {@see Doctrine\Common\Persistence\Mapping\ReflectionService} interface
      * should be used for reflection.
      *
-     * @param string $name The name of the class for which the metadata should get loaded.
+     * @param string $name The name of the class for which the metadata should
+     *                                                              get loaded.
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return array
+     *
+     * @throws \InvalidArgumentException
      */
-    protected function loadMetadata($name)
+    protected function loadMetadata(string $name, ClassMetadataBuildingContext $metadataBuildingContext) : array
     {
         if ( ! $this->initialized) {
             $this->initialize();
@@ -306,37 +320,28 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         $parentClasses[] = $name;
 
         // Move down the hierarchy of parent classes, starting from the topmost class
-        $parent = null;
-        $rootEntityFound = false;
-        $visited = [];
+        $parent      = null;
         $reflService = $this->getReflectionService();
 
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
                 $parent = $this->loadedMetadata[$className];
 
-                if ($this->isEntity($parent)) {
-                    $rootEntityFound = true;
-                    array_unshift($visited, $className);
-                }
-
                 continue;
             }
 
-            $class = $this->newClassMetadataInstance($className);
+            $class = $this->newClassMetadataInstance($className, $metadataBuildingContext);
+
+            if ($parent) {
+                $class->setParent($parent);
+            }
 
             $this->initializeReflection($class, $reflService);
-            $this->doLoadMetadata($class, $parent, $rootEntityFound, $visited);
+            $this->doLoadMetadata($class, $metadataBuildingContext);
 
             $this->loadedMetadata[$className] = $class;
 
             $parent = $class;
-
-            if ($this->isEntity($class)) {
-                $rootEntityFound = true;
-
-                array_unshift($visited, $className);
-            }
 
             $this->wakeupReflection($class, $reflService);
 
@@ -351,11 +356,15 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * Override this method to implement a fallback strategy for failed metadata loading
      *
-     * @param string $className
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata|null
      */
-    protected function onNotFoundMetadata($className)
+    protected function onNotFoundMetadata(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ?ClassMetadata
     {
         return null;
     }
@@ -363,34 +372,40 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * Actually loads the metadata from the underlying metadata.
      *
-     * @param ClassMetadata      $class
-     * @param ClassMetadata|null $parent
-     * @param bool               $rootEntityFound
-     * @param array              $nonSuperclassParents All parent class names
-     *                                                 that are not marked as mapped superclasses.
+     * @param ClassMetadata                $class
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return void
      */
     abstract protected function doLoadMetadata(
         ClassMetadata $class,
-        ClassMetadata $parent = null,
-        bool $rootEntityFound,
-        array $nonSuperclassParents
-    );
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : void;
 
     /**
      * Creates a new ClassMetadata instance for the given class name.
      *
-     * @param string $className
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      *
      * @return ClassMetadata
      */
-    abstract protected function newClassMetadataInstance($className);
+    abstract protected function newClassMetadataInstance(
+        string $className,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    ) : ClassMetadata;
+
+    /**
+     * Creates a new ClassMetadataBuildingContext instance.
+     *
+     * @return ClassMetadataBuildingContext
+     */
+    abstract protected function newClassMetadataBuildingContext() : ClassMetadataBuildingContext;
 
     /**
      * {@inheritDoc}
      */
-    public function isTransient($class)
+    public function isTransient($class) : bool
     {
         if ( ! $this->initialized) {
             $this->initialize();
@@ -398,7 +413,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
         // Check for namespace alias
         if (strpos($class, ':') !== false) {
-            list($namespaceAlias, $simpleClassName) = explode(':', $class, 2);
+            [$namespaceAlias, $simpleClassName] = explode(':', $class, 2);
 
             $class = $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
         }
@@ -413,7 +428,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return void
      */
-    public function setReflectionService(ReflectionService $reflectionService)
+    public function setReflectionService(ReflectionService $reflectionService) : void
     {
         $this->reflectionService = $reflectionService;
     }
@@ -423,7 +438,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      *
      * @return ReflectionService
      */
-    public function getReflectionService()
+    public function getReflectionService() : ReflectionService
     {
         if ($this->reflectionService === null) {
             $this->reflectionService = new RuntimeReflectionService();

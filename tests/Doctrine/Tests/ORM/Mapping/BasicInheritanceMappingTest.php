@@ -46,7 +46,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(EntitySubClass::class);
 
         self::assertEmpty($class->getSubClasses());
-        self::assertEmpty($class->getParentClasses());
+        self::assertCount(0, $class->getAncestorsIterator());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -57,7 +57,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         $class = $this->cmf->getMetadataFor(EntitySubClass2::class);
 
         self::assertEmpty($class->getSubClasses());
-        self::assertEmpty($class->getParentClasses());
+        self::assertCount(0, $class->getAncestorsIterator());
 
         self::assertNotNull($class->getProperty('id'));
         self::assertNotNull($class->getProperty('name'));
@@ -70,7 +70,7 @@ class BasicInheritanceMappingTest extends OrmTestCase
         self::assertNotNull($class->getProperty('transient'));
         self::assertInstanceOf(TransientMetadata::class, $class->getProperty('transient'));
 
-        self::assertArrayHasKey('mappedRelated1', $class->getProperties());
+        self::assertArrayHasKey('mappedRelated1', $class->getDeclaredPropertiesIterator());
     }
 
     /**

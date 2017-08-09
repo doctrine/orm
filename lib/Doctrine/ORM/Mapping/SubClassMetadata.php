@@ -18,17 +18,6 @@ namespace Doctrine\ORM\Mapping;
 class SubClassMetadata extends EntityClassMetadata
 {
     /**
-     * SubClassMetadata constructor.
-     *
-     * @param string              $className
-     * @param EntityClassMetadata $parent
-     */
-    public function __construct(string $className, EntityClassMetadata $parent)
-    {
-        parent::__construct($className, $parent);
-    }
-
-    /**
      * @return RootClassMetadata
      */
     public function getRootClass() : RootClassMetadata

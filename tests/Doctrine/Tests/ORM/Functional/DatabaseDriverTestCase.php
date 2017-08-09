@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -15,14 +17,20 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
     protected function convertToClassMetadata(array $entityTables, array $manyTables = [])
     {
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
         $sm = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
         $metadatas = [];
+
         foreach ($driver->getAllClassNames() AS $className) {
-            $class = new ClassMetadata($className);
-            $driver->loadMetadataForClass($className, $class);
+            $class = new ClassMetadata($className, $metadataBuildingContext);
+
+            $driver->loadMetadataForClass($className, $class, $metadataBuildingContext);
+
             $metadatas[$className] = $class;
         }
 
@@ -35,6 +43,9 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
      */
     protected function extractClassMetadata(array $classNames)
     {
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
         $classNames = array_map('strtolower', $classNames);
         $metadatas = [];
 
@@ -45,8 +56,11 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
             if (!in_array(strtolower($className), $classNames)) {
                 continue;
             }
-            $class = new ClassMetadata($className);
+
+            $class = new ClassMetadata($className, $metadataBuildingContext);
+
             $driver->loadMetadataForClass($className, $class);
+
             $metadatas[$className] = $class;
         }
 

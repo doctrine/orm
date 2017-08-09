@@ -10,7 +10,9 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
+use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -86,13 +88,17 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addRootEntityFromClassMetadata($class, $alias, $renamedColumns = [], $renameMode = null)
+    public function addRootEntityFromClassMetadata(
+        string $class,
+        string $alias,
+        array $renamedColumns = [],
+        int $renameMode = null
+    )
     {
-        $renameMode     = $renameMode ?: $this->defaultRenameMode;
-        $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
+        $renameMode = $renameMode ?: (empty($renamedColumns) ? $this->defaultRenameMode : self::COLUMN_RENAMING_CUSTOM);
 
         $this->addEntityResult($class, $alias);
-        $this->addAllClassFields($class, $alias, $columnAliasMap);
+        $this->addAllClassFields($class, $alias, $renamedColumns, $renameMode);
     }
 
     /**
@@ -108,13 +114,19 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @return void
      */
-    public function addJoinedEntityFromClassMetadata($class, $alias, $parentAlias, $relation, $renamedColumns = [], $renameMode = null)
+    public function addJoinedEntityFromClassMetadata(
+        string $class,
+        string $alias,
+        string $parentAlias,
+        string $relation,
+        array $renamedColumns = [],
+        int $renameMode = null
+    )
     {
-        $renameMode     = $renameMode ?: $this->defaultRenameMode;
-        $columnAliasMap = $this->getColumnAliasMap($class, $renameMode, $renamedColumns);
+        $renameMode = $renameMode ?: (empty($renamedColumns) ? $this->defaultRenameMode : self::COLUMN_RENAMING_CUSTOM);
 
         $this->addJoinedEntityResult($class, $alias, $parentAlias, $relation);
-        $this->addAllClassFields($class, $alias, $columnAliasMap);
+        $this->addAllClassFields($class, $alias, $renamedColumns, $renameMode);
     }
 
     /**
@@ -122,51 +134,66 @@ class ResultSetMappingBuilder extends ResultSetMapping
      *
      * @param string $class
      * @param string $alias
-     * @param array  $columnAliasMap
+     * @param array  $customRenameColumns
      *
      * @return void
      *
      * @throws \InvalidArgumentException
      */
-    protected function addAllClassFields($class, $alias, $columnAliasMap = [])
+    protected function addAllClassFields(string $class, string $alias, array $customRenameColumns, int $renameMode) : void
     {
         /** @var ClassMetadata $classMetadata */
         $classMetadata = $this->em->getClassMetadata($class);
         $platform      = $this->em->getConnection()->getDatabasePlatform();
 
-        if ( ! $this->isInheritanceSupported($classMetadata)) {
+        if (! $this->isInheritanceSupported($classMetadata)) {
             throw new \InvalidArgumentException(
                 'ResultSetMapping builder does not currently support your inheritance scheme.'
             );
         }
 
-        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-            $property    = $classMetadata->getProperty($propertyName);
-            $columnAlias = $platform->getSQLResultCasing($columnAliasMap[$columnName]);
+        foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+            switch (true) {
+                case ($property instanceof FieldMetadata):
+                    $columnName  = $property->getColumnName();
+                    $columnAlias = $platform->getSQLResultCasing(
+                        $this->getColumnAlias($columnName, $renameMode, $customRenameColumns)
+                    );
 
-            if ($property instanceof FieldMetadata) {
-                if (isset($this->fieldMappings[$columnAlias])) {
-                    throw new \InvalidArgumentException(sprintf(
-                        "The column '%s' conflicts with another column in the mapper.",
-                        $columnName
-                    ));
-                }
+                    if (isset($this->fieldMappings[$columnAlias])) {
+                        throw new \InvalidArgumentException(
+                            sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                        );
+                    }
 
-                $this->addFieldResult($alias, $columnAlias, $propertyName);
+                    $this->addFieldResult($alias, $columnAlias, $property->getName());
+                    break;
 
-                continue;
+                case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                    $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                    foreach ($property->getJoinColumns() as $joinColumn) {
+                        /** @var JoinColumnMetadata $joinColumn */
+                        $columnName           = $joinColumn->getColumnName();
+                        $referencedColumnName = $joinColumn->getReferencedColumnName();
+                        $columnAlias          = $platform->getSQLResultCasing(
+                            $this->getColumnAlias($columnName, $renameMode, $customRenameColumns)
+                        );
+
+                        if (isset($this->metaMappings[$columnAlias])) {
+                            throw new \InvalidArgumentException(
+                                sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                            );
+                        }
+
+                        if (! $joinColumn->getType()) {
+                            $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+                        }
+
+                        $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $joinColumn->getType());
+                    }
+                    break;
             }
-
-            if (isset($this->metaMappings[$columnAlias])) {
-                throw new \InvalidArgumentException(sprintf(
-                    "The column '%s' conflicts with another column in the mapper.",
-                    $columnAlias
-                ));
-            }
-
-            $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
-
-            $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
         }
     }
 
@@ -203,40 +230,12 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 return $columnName . $this->sqlCounter++;
 
             case self::COLUMN_RENAMING_CUSTOM:
-                return isset($customRenameColumns[$columnName])
-                    ? $customRenameColumns[$columnName] : $columnName;
+                return $customRenameColumns[$columnName] ?? $columnName;
 
             case self::COLUMN_RENAMING_NONE:
                 return $columnName;
 
         }
-    }
-
-    /**
-     * Retrieves a class columns and join columns aliases that are used in the SELECT clause.
-     *
-     * This depends on the renaming mode selected by the user.
-     *
-     * @param string $className
-     * @param int    $mode
-     * @param array  $customRenameColumns
-     *
-     * @return array
-     */
-    private function getColumnAliasMap($className, $mode, array $customRenameColumns)
-    {
-        if ($customRenameColumns) { // for BC with 2.2-2.3 API
-            $mode = self::COLUMN_RENAMING_CUSTOM;
-        }
-
-        $columnAlias   = [];
-        $classMetadata = $this->em->getClassMetadata($className);
-
-        foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-            $columnAlias[$columnName] = $this->getColumnAlias($columnName, $mode, $customRenameColumns);
-        }
-
-        return $columnAlias;
     }
 
     /**
@@ -295,7 +294,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
                     $this->addNamedNativeQueryEntityResultMapping($classMetadata, $entityMapping, $joinAlias);
 
-                    foreach ($class->getProperties() as $fieldName => $association) {
+                    foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $association) {
                         if (! ($association instanceof AssociationMetadata)) {
                             continue;
                         }
@@ -313,11 +312,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
 
         if (isset($resultMapping['columns'])) {
             foreach ($resultMapping['columns'] as $entityMapping) {
-                $type = isset($class->fieldNames[$entityMapping['name']])
-                    ? $class->fieldNames[$entityMapping['name']]['type']
-                    : Type::getType('string');
-
-                $this->addScalarResult($entityMapping['name'], $entityMapping['name'], $type);
+                // @todo guilhermeblanco Collect type information from mapped column
+                $this->addScalarResult($entityMapping['name'], $entityMapping['name'], Type::getType('string'));
             }
         }
 
@@ -390,19 +386,44 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 }
             }
         } else {
-            foreach ($classMetadata->fieldNames as $columnName => $propertyName) {
-                $property    = $classMetadata->getProperty($propertyName);
-                $columnAlias = $platform->getSQLResultCasing($columnName);
+            foreach ($classMetadata->getDeclaredPropertiesIterator() as $property) {
+                switch (true) {
+                    case ($property instanceof FieldMetadata):
+                        $columnName  = $property->getColumnName();
+                        $columnAlias = $platform->getSQLResultCasing($columnName);
 
-                if ($property instanceof FieldMetadata) {
-                    $this->addFieldResult($alias, $columnAlias, $propertyName);
+                        if (isset($this->fieldMappings[$columnAlias])) {
+                            throw new \InvalidArgumentException(
+                                sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                            );
+                        }
 
-                    continue;
+                        $this->addFieldResult($alias, $columnAlias, $property->getName());
+                        break;
+
+                    case ($property instanceof ToOneAssociationMetadata && $property->isOwningSide()):
+                        $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
+
+                        foreach ($property->getJoinColumns() as $joinColumn) {
+                            /** @var JoinColumnMetadata $joinColumn */
+                            $columnName           = $joinColumn->getColumnName();
+                            $referencedColumnName = $joinColumn->getReferencedColumnName();
+                            $columnAlias          = $platform->getSQLResultCasing($columnName);
+
+                            if (isset($this->metaMappings[$columnAlias])) {
+                                throw new \InvalidArgumentException(
+                                    sprintf("The column '%s' conflicts with another column in the mapper.", $columnName)
+                                );
+                            }
+
+                            if (! $joinColumn->getType()) {
+                                $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $targetClass, $this->em));
+                            }
+
+                            $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $joinColumn->getType());
+                        }
+                        break;
                 }
-
-                $columnType = PersisterHelper::getTypeOfColumn($columnName, $classMetadata, $this->em);
-
-                $this->addMetaResult($alias, $columnAlias, $columnName, $property->isPrimaryKey(), $columnType);
             }
         }
 

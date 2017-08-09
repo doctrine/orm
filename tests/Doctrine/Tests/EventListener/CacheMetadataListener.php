@@ -31,7 +31,7 @@ class CacheMetadataListener
         $em = $event->getObjectManager();
 
         /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        if (strstr($metadata->name, 'Doctrine\Tests\Models\Cache')) {
+        if (strstr($metadata->getClassName(), 'Doctrine\Tests\Models\Cache')) {
             return;
         }
 

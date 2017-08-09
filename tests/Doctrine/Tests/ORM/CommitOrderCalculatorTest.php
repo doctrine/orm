@@ -6,6 +6,8 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -17,20 +19,31 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
+    /**
+     * @var CommitOrderCalculator
+     */
     private $calc;
+
+    /**
+     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $metadataBuildingContext;
 
     protected function setUp()
     {
-        $this->calc = new CommitOrderCalculator();
+        $this->calc                    = new CommitOrderCalculator();
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
     }
 
     public function testCommitOrdering1()
     {
-        $class1 = new ClassMetadata(NodeClass1::class);
-        $class2 = new ClassMetadata(NodeClass2::class);
-        $class3 = new ClassMetadata(NodeClass3::class);
-        $class4 = new ClassMetadata(NodeClass4::class);
-        $class5 = new ClassMetadata(NodeClass5::class);
+        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
+        $class3 = new ClassMetadata(NodeClass3::class, $this->metadataBuildingContext);
+        $class4 = new ClassMetadata(NodeClass4::class, $this->metadataBuildingContext);
+        $class5 = new ClassMetadata(NodeClass5::class, $this->metadataBuildingContext);
 
         $this->calc->addNode($class1->getClassName(), $class1);
         $this->calc->addNode($class2->getClassName(), $class2);
@@ -53,8 +66,8 @@ class CommitOrderCalculatorTest extends OrmTestCase
 
     public function testCommitOrdering2()
     {
-        $class1 = new ClassMetadata(NodeClass1::class);
-        $class2 = new ClassMetadata(NodeClass2::class);
+        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
 
         $this->calc->addNode($class1->getClassName(), $class1);
         $this->calc->addNode($class2->getClassName(), $class2);

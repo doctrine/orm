@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\Tests\DoctrineTestCase;
 
 /**
@@ -18,13 +21,16 @@ class OnClassMetadataNotFoundEventArgsTest extends DoctrineTestCase
 {
     public function testEventArgsMutability()
     {
-        /* @var $objectManager \Doctrine\Common\Persistence\ObjectManager */
-        $objectManager = $this->createMock(ObjectManager::class);
+        $entityManager = $this->createMock(EntityManager::class);
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class)
+        );
 
-        $args = new OnClassMetadataNotFoundEventArgs('foo', $objectManager);
+        $args = new OnClassMetadataNotFoundEventArgs('foo', $metadataBuildingContext, $entityManager);
 
         self::assertSame('foo', $args->getClassName());
-        self::assertSame($objectManager, $args->getObjectManager());
+        self::assertSame($metadataBuildingContext, $args->getClassMetadataBuildingContext());
+        self::assertSame($entityManager, $args->getObjectManager());
 
         self::assertNull($args->getFoundMetadata());
 
