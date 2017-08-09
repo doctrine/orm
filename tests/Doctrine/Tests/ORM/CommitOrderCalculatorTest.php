@@ -8,6 +8,7 @@ use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -33,7 +34,8 @@ class CommitOrderCalculatorTest extends OrmTestCase
     {
         $this->calc                    = new CommitOrderCalculator();
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
     }
 

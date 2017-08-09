@@ -8,6 +8,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * @group DDC-3103
@@ -22,9 +23,12 @@ class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->markTestSkipped('Embeddables are ommitted for now');
 
         $driver = $this->createAnnotationDriver();
+
         $metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
+
         $classMetadata = new ClassMetadata(DDC3103ArticleId::class, $metadataBuildingContext);
 
         $driver->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata, $metadataBuildingContext);

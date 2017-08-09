@@ -24,6 +24,7 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
+use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * Class ClassMetadataBuildingContext
@@ -37,6 +38,9 @@ class ClassMetadataBuildingContext
 {
     /** @var AbstractClassMetadataFactory */
     private $classMetadataFactory;
+
+    /** @var ReflectionService */
+    private $reflectionService;
 
     /** @var NamingStrategy */
     private $namingStrategy;
@@ -55,14 +59,17 @@ class ClassMetadataBuildingContext
      * ClassMetadataBuildingContext constructor.
      *
      * @param AbstractClassMetadataFactory $classMetadataFactory
+     * @param ReflectionService            $reflectionService
      * @param NamingStrategy|null          $namingStrategy
      */
     public function __construct(
         AbstractClassMetadataFactory $classMetadataFactory,
+        ReflectionService $reflectionService,
         ?NamingStrategy $namingStrategy = null
     )
     {
         $this->classMetadataFactory = $classMetadataFactory;
+        $this->reflectionService    = $reflectionService;
         $this->namingStrategy       = $namingStrategy ?: new DefaultNamingStrategy();
     }
 
@@ -72,6 +79,14 @@ class ClassMetadataBuildingContext
     public function getClassMetadataFactory() : AbstractClassMetadataFactory
     {
         return $this->classMetadataFactory;
+    }
+
+    /**
+     * @return ReflectionService
+     */
+    public function getReflectionService() : ReflectionService
+    {
+        return $this->reflectionService;
     }
 
     /**

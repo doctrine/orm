@@ -226,7 +226,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         ClassMetadataBuildingContext $metadataBuildingContext
     )
     {
-        parent::__construct($entityName);
+        parent::__construct($entityName, $metadataBuildingContext);
 
         $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
 
@@ -404,77 +404,24 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Restores some state that can not be serialized/unserialized.
      *
-     * @param ReflectionService $reflService
+     * @param ReflectionService $reflectionService
      *
      * @return void
      */
-    public function wakeupReflection(ReflectionService $reflService) : void
+    public function wakeupReflection(ReflectionService $reflectionService) : void
     {
         // Restore ReflectionClass and properties
-        $this->reflectionClass = $reflService->getClass($this->className);
+        $this->reflectionClass = $reflectionService->getClass($this->className);
 
         if (! $this->reflectionClass) {
             return;
         }
 
-        /*$parentReflFields = [];
+        $this->className = $this->reflectionClass->getName();
 
-        foreach ($this->embeddedClasses as $property => $embeddedClass) {
-            if (isset($embeddedClass['declaredField'])) {
-                $parentReflFields[$property] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$embeddedClass['declaredField']],
-                    $reflService->getAccessibleProperty(
-                        $this->embeddedClasses[$embeddedClass['declaredField']]['class'],
-                        $embeddedClass['originalField']
-                    ),
-                    $this->embeddedClasses[$embeddedClass['declaredField']]['class']
-                );
-
-                continue;
-            }
-
-            $fieldRefl = $reflService->getAccessibleProperty(
-                isset($embeddedClass['declared']) ? $embeddedClass['declared'] : $this->getClassName(),
-                $property
-            );
-
-            // @todo guilhermeblanco Handle reflection initialization once embeddables are back.
-            $parentReflFields[$property] = $fieldRefl;
-        }*/
-
-        foreach ($this->declaredProperties as $field => $property) {
+        foreach ($this->declaredProperties as $property) {
             /** @var Property $property */
-
-            /*if (isset($mapping['declaredField']) && isset($parentReflFields[$mapping['declaredField']])) {
-                // @todo guilhermeblanco Handle reflection initialization once embeddables are back.
-                $this->reflection[$field] = new ReflectionEmbeddedProperty(
-                    $parentReflFields[$mapping['declaredField']],
-                    $reflService->getAccessibleProperty($mapping['originalClass'], $mapping['originalField']),
-                    $mapping['originalClass']
-                );
-                continue;
-            }*/
-
-            $property->wakeupReflection($reflService);
-        }
-    }
-
-    /**
-     * Initializes a new ClassMetadata instance that will hold the object-relational mapping
-     * metadata of the class with the given name.
-     *
-     * @param ReflectionService $reflService The reflection service.
-     *
-     * @return void
-     */
-    public function initializeReflection(ReflectionService $reflService) : void
-    {
-        $entityReflClass = $reflService->getClass($this->className);
-
-        $this->reflectionClass = $entityReflClass;
-
-        if ($entityReflClass) {
-            $this->className = $this->reflectionClass->getName();
+            $property->wakeupReflection($reflectionService);
         }
     }
 
@@ -535,18 +482,18 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Validates lifecycle callbacks.
      *
-     * @param ReflectionService $reflService
+     * @param ReflectionService $reflectionService
      *
      * @return void
      *
      * @throws MappingException
      */
-    public function validateLifecycleCallbacks(ReflectionService $reflService) : void
+    public function validateLifecycleCallbacks(ReflectionService $reflectionService) : void
     {
         foreach ($this->lifecycleCallbacks as $callbacks) {
             /** @var array $callbacks */
             foreach ($callbacks as $callbackFuncName) {
-                if (! $reflService->hasPublicMethod($this->className, $callbackFuncName)) {
+                if (! $reflectionService->hasPublicMethod($this->className, $callbackFuncName)) {
                     throw MappingException::lifecycleCallbackMethodNotFound($this->className, $callbackFuncName);
                 }
             }
@@ -1465,7 +1412,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 $this->validateAndCompleteManyToManyMapping($property);
                 break;
 
-            // Transient properties are ignored on purpose here! =)
+            default:
+                // Transient properties are ignored on purpose here! =)
+                break;
         }
 
         $this->addDeclaredProperty($property);

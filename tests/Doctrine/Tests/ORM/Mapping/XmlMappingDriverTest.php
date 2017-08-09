@@ -28,7 +28,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
         $mappingDriver = $this->loadDriver();
 
         $class = new ClassMetadata(CTI::class, $this->metadataBuildingContext);
-        $class->initializeReflection(new RuntimeReflectionService());
+
         $mappingDriver->loadMetadataForClass(CTI::class, $class, $this->metadataBuildingContext);
 
         $expectedMap = [

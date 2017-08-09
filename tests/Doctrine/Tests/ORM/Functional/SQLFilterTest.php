@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\Query\FilterCollection;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsGroup;
@@ -300,8 +301,10 @@ class SQLFilterTest extends OrmFunctionalTestCase
     public function testSQLFilterAddConstraint()
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
+
         $filter = new MySoftDeleteFilter($this->getMockEntityManager());
 
         // Test for an entity that gets extra filter data

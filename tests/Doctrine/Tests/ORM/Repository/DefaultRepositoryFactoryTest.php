@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
@@ -47,7 +48,8 @@ class DefaultRepositoryFactoryTest extends DoctrineTestCase
     protected function setUp()
     {
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
         $this->configuration           = $this->createMock(Configuration::class);
         $this->entityManager           = $this->createEntityManager();

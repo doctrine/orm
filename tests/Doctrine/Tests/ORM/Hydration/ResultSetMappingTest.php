@@ -45,10 +45,12 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         parent::setUp();
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
-        $this->em                      = $this->getTestEntityManager();
-        $this->rsm                     = new ResultSetMapping;
+
+        $this->em  = $this->getTestEntityManager();
+        $this->rsm = new ResultSetMapping;
     }
 
     /**
@@ -120,7 +122,6 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMapping()
     {
         $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
 
         $joinColumn = new JoinColumnMetadata();
         $joinColumn->setReferencedColumnName('id');
@@ -208,7 +209,6 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
         $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
 
         $cm->addNamedNativeQuery(
             'find-all',

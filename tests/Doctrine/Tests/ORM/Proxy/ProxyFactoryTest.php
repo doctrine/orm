@@ -62,7 +62,8 @@ class ProxyFactoryTest extends OrmTestCase
         parent::setUp();
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
         $this->connectionMock          = new ConnectionMock([], new DriverMock());
         $this->emMock                  = EntityManagerMock::create($this->connectionMock);
@@ -142,7 +143,6 @@ class ProxyFactoryTest extends OrmTestCase
     public function testSkipAbstractClassesOnGeneration()
     {
         $cm = new ClassMetadata(AbstractClass::class, $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
 
         self::assertNotNull($cm->getReflectionClass());
 

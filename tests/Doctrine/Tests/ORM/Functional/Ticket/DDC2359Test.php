@@ -22,7 +22,7 @@ class DDC2359Test extends DoctrineTestCase
 
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
-     * not called twice when loading metadata from a driver
+     * not called when loading metadata from a driver
      */
     public function testIssue()
     {
@@ -32,7 +32,7 @@ class DDC2359Test extends DoctrineTestCase
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
-                                ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
+                                ->setMethods(['doLoadMetadata', 'wakeupReflection'])
                                 ->getMock();
 
         $configuration = $this->getMockBuilder(Configuration::class)
@@ -51,15 +51,29 @@ class DDC2359Test extends DoctrineTestCase
             ->method('getDeclaredPropertiesIterator')
             ->will($this->returnValue(new \ArrayIterator([])));
 
-        $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
-        $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));
+        $entityManager
+            ->expects($this->any())
+            ->method('getConfiguration')
+            ->will($this->returnValue($configuration));
+
+        $entityManager
+            ->expects($this->any())
+            ->method('getConnection')
+            ->will($this->returnValue($connection));
+
         $entityManager
             ->expects($this->any())
             ->method('getEventManager')
             ->will($this->returnValue($this->createMock(EventManager::class)));
 
-        $metadataFactory->expects($this->any())->method('newClassMetadataInstance')->will($this->returnValue($mockMetadata));
-        $metadataFactory->expects($this->once())->method('wakeupReflection');
+        $metadataFactory
+            ->expects($this->any())
+            ->method('doLoadMetadata')
+            ->will($this->returnValue($mockMetadata));
+
+        $metadataFactory
+            ->expects($this->never())
+            ->method('wakeupReflection');
 
         $metadataFactory->setEntityManager($entityManager);
 
