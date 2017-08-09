@@ -1,6 +1,6 @@
 # Upgrade to 3.0
 
-## BC Break: Removed `EntityManager#flush($entity)` and `EntityManager#flush($entities)`
+## BC Break: Added the final keyword for  `EntityManager`
 
 Final keyword has been added to the ``EntityManager::class`` in order to ensure that EntityManager is not used as valid extension point. Valid extension point should be EntityManagerInterface.
 
