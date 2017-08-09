@@ -52,7 +52,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         parent::setUp();
 
         $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
     }
 
@@ -64,7 +65,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $class = new ClassMetadata($entityClassName, $this->metadataBuildingContext);
 
-        $class->initializeReflection(new RuntimeReflectionService());
         $mappingDriver->loadMetadataForClass($entityClassName, $class, $this->metadataBuildingContext);
 
         return $class;

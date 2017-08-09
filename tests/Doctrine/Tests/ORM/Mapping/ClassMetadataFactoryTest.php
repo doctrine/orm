@@ -271,10 +271,11 @@ class ClassMetadataFactoryTest extends OrmTestCase
     {
         // Self-made metadata
         $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
+
         $cm1 = new ClassMetadata(TestEntity1::class, $metadataBuildingContext);
-        $cm1->initializeReflection(new RuntimeReflectionService());
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('group');
@@ -498,9 +499,9 @@ class ClassMetadataFactoryTestSubject extends ClassMetadataFactory
     private $mockMetadata = [];
     private $requestedClasses = [];
 
-    /** @override */
     protected function newClassMetadataInstance(
         string $className,
+        ?Mapping\ClassMetadata $parent,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
     ) : ClassMetadata
     {

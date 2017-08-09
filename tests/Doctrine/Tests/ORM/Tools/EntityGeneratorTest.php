@@ -12,10 +12,12 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Reflection\StaticReflectionService;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
+use SebastianBergmann\Environment\Runtime;
 
 class EntityGeneratorTest extends OrmTestCase
 {
@@ -29,13 +31,25 @@ class EntityGeneratorTest extends OrmTestCase
     /**
      * @var Mapping\ClassMetadataBuildingContext
      */
-    private $metadataBuildingContext;
+    private $staticMetadataBuildingContext;
+
+    /**
+     * @var Mapping\ClassMetadataBuildingContext
+     */
+    private $runtimeMetadataBuildingContext;
 
     public function setUp()
     {
-        $this->metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+        $this->staticMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            new StaticReflectionService()
         );
+
+        $this->runtimeMetadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
+        );
+
         $this->namespace = uniqid("doctrine_", false);
         $this->tmpDir = sys_get_temp_dir();
 
@@ -71,7 +85,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function generateBookEntityFixture(array $embeddedClasses = [])
     {
-        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook', $this->staticMetadataBuildingContext);
 
         $metadata->setCustomRepositoryClassName($this->namespace . '\EntityGeneratorBookRepository');
 
@@ -192,7 +206,7 @@ class EntityGeneratorTest extends OrmTestCase
 
     private function generateEntityTypeFixture(array $field)
     {
-        $metadata = new ClassMetadata($this->namespace . '\EntityType', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\EntityType', $this->staticMetadataBuildingContext);
 
         $tableMetadata = new Mapping\TableMetadata();
         $tableMetadata->setName('entity_type');
@@ -225,7 +239,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null)
     {
-        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorIsbn', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorIsbn', $this->staticMetadataBuildingContext);
         $metadata->isEmbeddedClass = true;
 
         $fieldMetadata = new Mapping\FieldMetadata('prefix');
@@ -283,7 +297,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     private function generateTestEmbeddableFixture()
     {
-        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorTestEmbeddable', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorTestEmbeddable', $this->staticMetadataBuildingContext);
 
         $metadata->isEmbeddedClass = true;
 
@@ -559,19 +573,14 @@ class EntityGeneratorTest extends OrmTestCase
 
     public function testLoadMetadata()
     {
-        $reflectionService = new RuntimeReflectionService();
-
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
         $metadata         = $this->generateBookEntityFixture(['isbn' => $embeddedMetadata]);
         $book             = $this->newInstance($metadata);
 
-        $metadata->initializeReflection($reflectionService);
-
-        $cm = new ClassMetadata($metadata->getClassName(), $this->metadataBuildingContext);
-        $cm->initializeReflection($reflectionService);
+        $cm = new ClassMetadata($metadata->getClassName(), $this->runtimeMetadataBuildingContext);
 
         $driver = $this->createAnnotationDriver();
-        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->metadataBuildingContext);
+        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->runtimeMetadataBuildingContext);
 
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
@@ -584,8 +593,7 @@ class EntityGeneratorTest extends OrmTestCase
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //
-//        $cm = new ClassMetadata($embeddedMetadata->getClassName());
-//        $cm->initializeReflection($reflectionService);
+//        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
 //
 //        $driver->loadMetadataForClass($cm->getClassName(), $cm);
 //
@@ -603,10 +611,9 @@ class EntityGeneratorTest extends OrmTestCase
 
         $book = $this->newInstance($metadata);
 
-        $cm = new ClassMetadata($metadata->getClassName(), $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm = new ClassMetadata($metadata->getClassName(), $this->runtimeMetadataBuildingContext);
 
-        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->metadataBuildingContext);
+        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->runtimeMetadataBuildingContext);
 
         self::assertEquals($cm->getTableName(), $metadata->getTableName());
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
@@ -615,8 +622,7 @@ class EntityGeneratorTest extends OrmTestCase
 
 //        $isbn = $this->newInstance($embeddedMetadata);
 //
-//        $cm = new ClassMetadata($embeddedMetadata->getClassName());
-//        $cm->initializeReflection($reflectionService);
+//        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
 //
 //        $driver->loadMetadataForClass($cm->getClassName(), $cm);
 //
@@ -629,7 +635,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testMappedSuperclassAnnotationGeneration()
     {
-        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorBook', $this->staticMetadataBuildingContext);
 
         $metadata->isMappedSuperclass = true;
 
@@ -638,10 +644,9 @@ class EntityGeneratorTest extends OrmTestCase
         $this->newInstance($metadata); // force instantiation (causes autoloading to kick in)
 
         $driver = new AnnotationDriver(new AnnotationReader(), []);
-        $cm     = new ClassMetadata($metadata->getClassName(), $this->metadataBuildingContext);
+        $cm     = new ClassMetadata($metadata->getClassName(), $this->runtimeMetadataBuildingContext);
 
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->metadataBuildingContext);
+        $driver->loadMetadataForClass($cm->getClassName(), $cm, $this->runtimeMetadataBuildingContext);
 
         self::assertTrue($cm->isMappedSuperclass);
     }
@@ -667,7 +672,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithSequenceGenerator()
     {
-        $metadata = new ClassMetadata($this->namespace . '\DDC1784Entity', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\DDC1784Entity', $this->staticMetadataBuildingContext);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -705,7 +710,7 @@ class EntityGeneratorTest extends OrmTestCase
      */
     public function testGenerateEntityWithMultipleInverseJoinColumns()
     {
-        $metadata = new ClassMetadata($this->namespace . '\DDC2079Entity', $this->metadataBuildingContext);
+        $metadata = new ClassMetadata($this->namespace . '\DDC2079Entity', $this->staticMetadataBuildingContext);
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));

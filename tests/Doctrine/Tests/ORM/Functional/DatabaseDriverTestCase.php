@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\ORM\Mapping\ClassMetadata;
 
@@ -18,7 +19,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     protected function convertToClassMetadata(array $entityTables, array $manyTables = [])
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
         $sm = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
@@ -44,7 +46,8 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
     protected function extractClassMetadata(array $classNames)
     {
         $metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
         $classNames = array_map('strtolower', $classNames);
         $metadatas = [];

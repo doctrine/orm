@@ -73,7 +73,8 @@ class UnitOfWorkTest extends OrmTestCase
         parent::setUp();
 
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
-            $this->createMock(ClassMetadataFactory::class)
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
         );
         $this->connectionMock          = new ConnectionMock([], new DriverMock());
         $this->eventManager            = $this->getMockBuilder(EventManager::class)->getMock();

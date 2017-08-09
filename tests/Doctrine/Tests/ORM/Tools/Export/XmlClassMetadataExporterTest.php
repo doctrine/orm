@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
 
 /**
@@ -48,7 +49,8 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
     public function testSequenceGenerator()
     {
         $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(Mapping\ClassMetadataFactory::class)
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
@@ -93,7 +95,8 @@ XML;
     public function testFieldOptionsExport()
     {
         $metadataBuildingContext = new Mapping\ClassMetadataBuildingContext(
-            $this->createMock(Mapping\ClassMetadataFactory::class)
+            $this->createMock(Mapping\ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
         );
         $exporter = new XmlExporter();
         $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
