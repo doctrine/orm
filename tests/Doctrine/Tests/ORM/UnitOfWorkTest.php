@@ -75,10 +75,11 @@ class UnitOfWorkTest extends OrmTestCase
         $this->metadataBuildingContext = new ClassMetadataBuildingContext(
             $this->createMock(ClassMetadataFactory::class)
         );
-        $this->connectionMock          = new ConnectionMock([], new DriverMock());
-        $this->eventManager            = $this->getMockBuilder(EventManager::class)->getMock();
-        $this->emMock                  = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
-        $this->unitOfWork              = new UnitOfWorkMock($this->emMock);
+
+        $this->eventManager   = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->connectionMock = new ConnectionMock([], new DriverMock(), null, $this->eventManager);
+        $this->emMock         = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
+        $this->unitOfWork     = new UnitOfWorkMock($this->emMock);
 
         $this->emMock->setUnitOfWork($this->unitOfWork);
     }

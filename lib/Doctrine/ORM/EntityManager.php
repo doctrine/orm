@@ -139,7 +139,7 @@ final class EntityManager implements EntityManagerInterface
      * @param \Doctrine\ORM\Configuration   $config
      * @param \Doctrine\Common\EventManager $eventManager
      */
-    public function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
+    protected function __construct(Connection $conn, Configuration $config, EventManager $eventManager)
     {
         $this->conn              = $conn;
         $this->config            = $config;
