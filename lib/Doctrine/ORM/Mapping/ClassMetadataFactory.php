@@ -58,7 +58,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     {
         $loaded = parent::loadMetadata($name, $metadataBuildingContext);
 
-        array_map([$this, 'resolveDiscriminatorValue'], array_map([$this, 'getMetadataFor'], $loaded));
+        array_map([$this, 'resolveDiscriminatorValue'], $loaded);
 
         return $loaded;
     }
@@ -109,87 +109,88 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * @throws ORMException
      */
     protected function doLoadMetadata(
-        ClassMetadata $class,
+        string $className,
+        ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void
+    ) : ClassMetadata
     {
-
-        /* @var $class ClassMetadata */
-        /* @var $parent ClassMetadata|null */
-        $parent = $class->getParent();
+        $classMetadata = new ClassMetadata($className, $metadataBuildingContext);
 
         if ($parent) {
+            $classMetadata->setParent($parent);
+
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $class->setTable($parent->table);
+                $classMetadata->setTable($parent->table);
             }
 
-            $this->addInheritedProperties($class, $parent);
+            $this->addInheritedProperties($classMetadata, $parent);
 
-            $class->setInheritanceType($parent->inheritanceType);
-            $class->setIdentifier($parent->identifier);
+            $classMetadata->setInheritanceType($parent->inheritanceType);
+            $classMetadata->setIdentifier($parent->identifier);
 
             if ($parent->discriminatorColumn) {
-                $class->setDiscriminatorColumn($parent->discriminatorColumn);
-                $class->setDiscriminatorMap($parent->discriminatorMap);
+                $classMetadata->setDiscriminatorColumn($parent->discriminatorColumn);
+                $classMetadata->setDiscriminatorMap($parent->discriminatorMap);
             }
 
-            $class->setLifecycleCallbacks($parent->lifecycleCallbacks);
-            $class->setChangeTrackingPolicy($parent->changeTrackingPolicy);
+            $classMetadata->setLifecycleCallbacks($parent->lifecycleCallbacks);
+            $classMetadata->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if ($parent->isMappedSuperclass && ! $class->getCustomRepositoryClassName()) {
-                $class->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
+            if ($parent->isMappedSuperclass && ! $classMetadata->getCustomRepositoryClassName()) {
+                $classMetadata->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
             }
-
         }
 
         // Invoke driver
         try {
-            $this->driver->loadMetadataForClass($class->getClassName(), $class, $metadataBuildingContext);
+            $this->driver->loadMetadataForClass($classMetadata->getClassName(), $classMetadata, $metadataBuildingContext);
         } catch (ReflectionException $e) {
-            throw MappingException::reflectionFailure($class->getClassName(), $e);
+            throw MappingException::reflectionFailure($classMetadata->getClassName(), $e);
         }
 
-        $this->completeIdentifierGeneratorMappings($class);
+        $this->completeIdentifierGeneratorMappings($classMetadata);
 
         if ($parent) {
             if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $class->setTable($parent->table);
+                $classMetadata->setTable($parent->table);
             }
 
-            $this->addInheritedIndexes($class, $parent);
-            $this->addInheritedNamedQueries($class, $parent);
+            $this->addInheritedIndexes($classMetadata, $parent);
+            $this->addInheritedNamedQueries($classMetadata, $parent);
 
             if ($parent->getCache()) {
-                $class->setCache(clone $parent->getCache());
+                $classMetadata->setCache(clone $parent->getCache());
             }
 
             if ( ! empty($parent->namedNativeQueries)) {
-                $this->addInheritedNamedNativeQueries($class, $parent);
+                $this->addInheritedNamedNativeQueries($classMetadata, $parent);
             }
 
             if ( ! empty($parent->sqlResultSetMappings)) {
-                $this->addInheritedSqlResultSetMappings($class, $parent);
+                $this->addInheritedSqlResultSetMappings($classMetadata, $parent);
             }
 
-            if ( ! empty($parent->entityListeners) && empty($class->entityListeners)) {
-                $class->entityListeners = $parent->entityListeners;
+            if ( ! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
+                $classMetadata->entityListeners = $parent->entityListeners;
             }
         }
 
-        if (! $class->discriminatorMap && $class->inheritanceType !== InheritanceType::NONE && $class->isRootEntity()) {
-            $this->addDefaultDiscriminatorMap($class);
+        if (! $classMetadata->discriminatorMap && $classMetadata->inheritanceType !== InheritanceType::NONE && $classMetadata->isRootEntity()) {
+            $this->addDefaultDiscriminatorMap($classMetadata);
         }
 
-        $this->completeRuntimeMetadata($class, $parent);
+        $this->completeRuntimeMetadata($classMetadata, $parent);
 
         if ($this->evm->hasListeners(Events::loadClassMetadata)) {
-            $eventArgs = new LoadClassMetadataEventArgs($class, $this->em);
+            $eventArgs = new LoadClassMetadataEventArgs($classMetadata, $this->em);
 
             $this->evm->dispatchEvent(Events::loadClassMetadata, $eventArgs);
         }
 
-        $this->buildValueGenerationPlan($class);
-        $this->validateRuntimeMetadata($class, $parent);
+        $this->buildValueGenerationPlan($classMetadata);
+        $this->validateRuntimeMetadata($classMetadata, $parent);
+
+        return $classMetadata;
     }
 
     /**
@@ -200,11 +201,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function completeRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null) : void
     {
-        if ( ! $parent) {
-            return;
-        }
-
-        if ( ! $parent->isMappedSuperclass) {
+        if (! $parent || ! $parent->isMappedSuperclass) {
             return;
         }
 
@@ -275,20 +272,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritdoc}
      */
-    protected function newClassMetadataInstance(
-        string $className,
-        ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ClassMetadata
-    {
-        return new ClassMetadata($className, $metadataBuildingContext);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     protected function newClassMetadataBuildingContext() : ClassMetadataBuildingContext
     {
-        return new ClassMetadataBuildingContext($this, $this->em->getConfiguration()->getNamingStrategy());
+        return new ClassMetadataBuildingContext(
+            $this,
+            $this->getReflectionService(),
+            $this->em->getConfiguration()->getNamingStrategy()
+        );
     }
 
     /**
@@ -635,14 +625,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService) : void
     {
         $class->wakeupReflection($reflService);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function initializeReflection(ClassMetadata $class, ReflectionService $reflService) : void
-    {
-        $class->initializeReflection($reflService);
     }
 
     /**

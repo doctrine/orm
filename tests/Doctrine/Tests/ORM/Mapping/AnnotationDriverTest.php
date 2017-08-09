@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Common\Annotations\AnnotationException;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithoutOverride;
 use Doctrine\Tests\Models\DDC1872\DDC1872ExampleEntityWithOverride;
@@ -27,12 +24,12 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testLoadMetadataForNonEntityThrowsException()
     {
         $cm = new ClassMetadata('stdClass', $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $reader = new AnnotationReader();
-        $annotationDriver = new AnnotationDriver($reader);
+
+        $mappingDriver = $this->loadDriver();
 
         $this->expectException(MappingException::class);
-        $annotationDriver->loadMetadataForClass('stdClass', $cm, $this->metadataBuildingContext);
+
+        $mappingDriver->loadMetadataForClass('stdClass', $cm, $this->metadataBuildingContext);
     }
 
     /**
@@ -53,10 +50,10 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     public function testColumnWithMissingTypeDefaultsToString()
     {
         $cm = new ClassMetadata(ColumnWithoutType::class, $this->metadataBuildingContext);
-        $cm->initializeReflection(new RuntimeReflectionService());
-        $annotationDriver = $this->loadDriver();
 
-        $annotationDriver->loadMetadataForClass(ColumnWithoutType::class, $cm, $this->metadataBuildingContext);
+        $mappingDriver = $this->loadDriver();
+
+        $mappingDriver->loadMetadataForClass(ColumnWithoutType::class, $cm, $this->metadataBuildingContext);
 
         self::assertNotNull($cm->getProperty('id'));
 

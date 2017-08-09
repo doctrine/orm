@@ -4,6 +4,7 @@
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
+use Doctrine\ORM\Reflection\RuntimePublicReflectionProperty;
 
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
@@ -45,11 +46,15 @@ abstract class ComponentMetadata
     /**
      * ComponentMetadata constructor.
      *
-     * @param string                 $className
+     * @param string                       $className
+     * @param ClassMetadataBuildingContext $metadataBuildingContext
      */
-    public function __construct(string $className)
+    public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
-        $this->className = $className;
+        $reflectionService = $metadataBuildingContext->getReflectionService();
+
+        $this->reflectionClass = $reflectionService->getClass($className);
+        $this->className       = $this->reflectionClass ? $this->reflectionClass->getName() : $className;
     }
 
     /**
@@ -113,21 +118,31 @@ abstract class ComponentMetadata
     /**
      * @param Property $property
      *
+     * @throws \ReflectionException
      * @throws MappingException
      */
     public function addDeclaredProperty(Property $property) : void
     {
+        $className    = $this->getClassName();
         $propertyName = $property->getName();
 
         // @todo guilhermeblanco Switch to hasProperty once inherited properties are not being mapped on child classes
         if ($this->hasDeclaredProperty($propertyName)) {
-            throw MappingException::duplicateProperty($this->getClassName(), $this->getProperty($propertyName));
+            throw MappingException::duplicateProperty($className, $this->getProperty($propertyName));
         }
 
         $property->setDeclaringClass($this);
 
         if ($this->reflectionClass) {
-            $property->setReflectionProperty($this->reflectionClass->getProperty($propertyName));
+            $reflectionProperty = new \ReflectionProperty($className, $propertyName);
+
+            if ($reflectionProperty->isPublic()) {
+                $reflectionProperty = new RuntimePublicReflectionProperty($className, $propertyName);
+            }
+
+            $reflectionProperty->setAccessible(true);
+
+            $property->setReflectionProperty($reflectionProperty);
         }
 
         $this->declaredProperties[$propertyName] = $property;

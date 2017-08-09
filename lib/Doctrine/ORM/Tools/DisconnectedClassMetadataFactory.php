@@ -29,6 +29,10 @@ class DisconnectedClassMetadataFactory extends ClassMetadataFactory
      */
     public function getReflectionService() : ReflectionService
     {
-        return new StaticReflectionService();
+        if ($this->reflectionService === null) {
+            $this->reflectionService = new StaticReflectionService();
+        }
+
+        return $this->reflectionService;
     }
 }

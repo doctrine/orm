@@ -7,6 +7,16 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 
+/**
+ * Class TableMetadata
+ *
+ * @package Doctrine\ORM\Mapping
+ * @since 3.0
+ *
+ * @todo guilhermeblanco Add constructor requiring tableName and optional schemaName
+ *
+ * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ */
 class TableMetadata
 {
     /** @var string|null */
