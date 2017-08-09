@@ -105,9 +105,11 @@ class EntityManagerMock implements EntityManagerInterface
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([]));
         }
         if (null === $eventManager) {
-            $eventManager = new EventManager();
+            $eventManager = $conn->getEventManager();
         }
-        return new EntityManagerMock(new EntityManager($conn, $config, $eventManager));
+
+        $em = EntityManager::create($conn, $config, $eventManager);
+        return new EntityManagerMock($em);
     }
 
     /**
