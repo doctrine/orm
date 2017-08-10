@@ -250,71 +250,29 @@ class AnnotationDriver implements MappingDriver
         string $className,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
+    ) : Mapping\ClassMetadata
     {
-        $reflClass = $metadata->getReflectionClass();
+        $reflectionClass = $metadata->getReflectionClass();
 
-        if (! $reflClass) {
+        if (! $reflectionClass) {
             // this happens when running annotation driver in combination with
             // static reflection services. This is not the nicest fix
-            $reflClass = new \ReflectionClass($metadata->getClassName());
+            $reflectionClass = new \ReflectionClass($metadata->getClassName());
         }
 
-        $classAnnotations = $this->reader->getClassAnnotations($reflClass);
-
-        foreach ($classAnnotations as $key => $annot) {
-            if ( ! is_numeric($key)) {
-                continue;
-            }
-
-            $classAnnotations[get_class($annot)] = $annot;
-        }
-
-        // Evaluate Entity annotation
-        switch (true) {
-            case isset($classAnnotations[Annotation\Entity::class]):
-                $entityAnnot = $classAnnotations[Annotation\Entity::class];
-
-                if ($entityAnnot->repositoryClass !== null) {
-                    $metadata->setCustomRepositoryClassName(
-                        $metadata->fullyQualifiedClassName($entityAnnot->repositoryClass)
-                    );
-                }
-
-                if ($entityAnnot->readOnly) {
-                    $metadata->asReadOnly();
-                }
-
-                break;
-
-            case isset($classAnnotations[Annotation\MappedSuperclass::class]):
-                $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
-
-                if ($mappedSuperclassAnnot->repositoryClass !== null) {
-                    $metadata->setCustomRepositoryClassName(
-                        $metadata->fullyQualifiedClassName($mappedSuperclassAnnot->repositoryClass)
-                    );
-                }
-
-                $metadata->isMappedSuperclass = true;
-                $metadata->isEmbeddedClass = false;
-                break;
-
-            case isset($classAnnotations[Annotation\Embeddable::class]):
-                $metadata->isEmbeddedClass = true;
-                $metadata->isMappedSuperclass = false;
-                break;
-
-            default:
-                throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
-        }
+        $classAnnotations = $this->getClassAnnotations($reflectionClass);
+        $classMetadata    = $this->convertClassAnnotationsToClassMetadata(
+            $classAnnotations,
+            $reflectionClass,
+            $metadata
+        );
 
         // Evaluate Table annotation
         if (isset($classAnnotations[Annotation\Table::class])) {
             $tableAnnot = $classAnnotations[Annotation\Table::class];
             $table      = $this->convertTableAnnotationToTableMetadata($tableAnnot);
 
-            $metadata->setTable($table);
+            $classMetadata->setTable($table);
         }
 
         // Evaluate @Cache annotation
@@ -322,7 +280,7 @@ class AnnotationDriver implements MappingDriver
             $cacheAnnot = $classAnnotations[Annotation\Cache::class];
             $cache      = $this->convertCacheAnnotationToCacheMetadata($cacheAnnot, $metadata);
 
-            $metadata->setCache($cache);
+            $classMetadata->setCache($cache);
         }
 
         // Evaluate NamedNativeQueries annotation
@@ -330,7 +288,7 @@ class AnnotationDriver implements MappingDriver
             $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
 
             foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $metadata->addNamedNativeQuery(
+                $classMetadata->addNamedNativeQuery(
                     $namedNativeQuery->name,
                     $namedNativeQuery->query,
                     [
@@ -348,7 +306,7 @@ class AnnotationDriver implements MappingDriver
             foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
                 $sqlResultSetMapping = $this->convertSqlResultSetMapping($resultSetMapping);
 
-                $metadata->addSqlResultSetMapping($sqlResultSetMapping);
+                $classMetadata->addSqlResultSetMapping($sqlResultSetMapping);
             }
         }
 
@@ -365,7 +323,7 @@ class AnnotationDriver implements MappingDriver
                     throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
                 }
 
-                $metadata->addNamedQuery($namedQuery->name, $namedQuery->query);
+                $classMetadata->addNamedQuery($namedQuery->name, $namedQuery->query);
             }
         }
 
@@ -373,14 +331,14 @@ class AnnotationDriver implements MappingDriver
         if (isset($classAnnotations[Annotation\InheritanceType::class])) {
             $inheritanceTypeAnnot = $classAnnotations[Annotation\InheritanceType::class];
 
-            $metadata->setInheritanceType(
+            $classMetadata->setInheritanceType(
                 constant(sprintf('%s::%s', Mapping\InheritanceType::class, $inheritanceTypeAnnot->value))
             );
 
-            if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
+            if ($classMetadata->inheritanceType !== Mapping\InheritanceType::NONE) {
                 $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 
-                $discriminatorColumn->setTableName($metadata->getTableName());
+                $discriminatorColumn->setTableName($classMetadata->getTableName());
                 $discriminatorColumn->setColumnName('dtype');
                 $discriminatorColumn->setType(Type::getType('string'));
                 $discriminatorColumn->setLength(255);
@@ -405,19 +363,19 @@ class AnnotationDriver implements MappingDriver
                     }
                 }
 
-                $metadata->setDiscriminatorColumn($discriminatorColumn);
+                $classMetadata->setDiscriminatorColumn($discriminatorColumn);
 
                 // Evaluate DiscriminatorMap annotation
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
                     $discriminatorMap           = array_map(
-                        function ($className) use ($metadata) {
-                            return $metadata->fullyQualifiedClassName($className);
+                        function ($className) use ($classMetadata) {
+                            return $classMetadata->fullyQualifiedClassName($className);
                         },
                         $discriminatorMapAnnotation->value
                     );
 
-                    $metadata->setDiscriminatorMap($discriminatorMap);
+                    $classMetadata->setDiscriminatorMap($discriminatorMap);
                 }
             }
         }
@@ -426,7 +384,7 @@ class AnnotationDriver implements MappingDriver
         if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
             $changeTrackingAnnot = $classAnnotations[Annotation\ChangeTrackingPolicy::class];
 
-            $metadata->setChangeTrackingPolicy(
+            $classMetadata->setChangeTrackingPolicy(
                 constant(sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $changeTrackingAnnot->value))
             );
         }
@@ -442,7 +400,7 @@ class AnnotationDriver implements MappingDriver
                 if (! class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
-                        $reflClass->getName()
+                        $classMetadata->getClassName()
                     );
                 }
 
@@ -451,7 +409,7 @@ class AnnotationDriver implements MappingDriver
                 /* @var $method \ReflectionMethod */
                 foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                     foreach ($this->getMethodCallbacks($method) as $callback) {
-                        $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
+                        $classMetadata->addEntityListener($callback, $listenerClassName, $method->getName());
                     }
                 }
             }
@@ -460,29 +418,21 @@ class AnnotationDriver implements MappingDriver
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
             /* @var $method \ReflectionMethod */
-            foreach ($reflClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
+            foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
                 foreach ($this->getMethodCallbacks($method) as $callback) {
-                    $metadata->addLifecycleCallback($method->getName(), $callback);
+                    $classMetadata->addLifecycleCallback($method->getName(), $callback);
                 }
             }
         }
 
         // Evaluate annotations on properties/fields
         /* @var $reflProperty \ReflectionProperty */
-        foreach ($reflClass->getProperties() as $reflProperty) {
-            if ($reflProperty->getDeclaringClass()->getName() !== $reflClass->getName()) {
+        foreach ($reflectionClass->getProperties() as $reflProperty) {
+            if ($reflProperty->getDeclaringClass()->getName() !== $reflectionClass->getName()) {
                 continue;
             }
 
-            $propertyAnnotations = $this->reader->getPropertyAnnotations($reflProperty);
-
-            foreach ($propertyAnnotations as $key => $annot) {
-                if (!is_numeric($key)) {
-                    continue;
-                }
-
-                $propertyAnnotations[get_class($annot)] = $annot;
-            }
+            $propertyAnnotations = $this->getPropertyAnnotations($reflProperty);
 
             // Field can only be annotated with one of:
             // @Column, @OneToOne, @OneToMany, @ManyToOne, @ManyToMany, @Embedded
@@ -494,7 +444,7 @@ class AnnotationDriver implements MappingDriver
                         $propertyAnnotations
                     );
 
-                    $metadata->addProperty($fieldMetadata);
+                    $classMetadata->addProperty($fieldMetadata);
                     break;
 
                 case isset($propertyAnnotations[Annotation\OneToOne::class]):
@@ -504,7 +454,7 @@ class AnnotationDriver implements MappingDriver
                         $metadata
                     );
 
-                    $metadata->addProperty($assocMetadata);
+                    $classMetadata->addProperty($assocMetadata);
                     break;
 
                 case isset($propertyAnnotations[Annotation\ManyToOne::class]):
@@ -514,7 +464,7 @@ class AnnotationDriver implements MappingDriver
                         $metadata
                     );
 
-                    $metadata->addProperty($assocMetadata);
+                    $classMetadata->addProperty($assocMetadata);
                     break;
 
                 case isset($propertyAnnotations[Annotation\OneToMany::class]):
@@ -524,7 +474,7 @@ class AnnotationDriver implements MappingDriver
                         $metadata
                     );
 
-                    $metadata->addProperty($assocMetadata);
+                    $classMetadata->addProperty($assocMetadata);
                     break;
 
                 case isset($propertyAnnotations[Annotation\ManyToMany::class]):
@@ -534,7 +484,7 @@ class AnnotationDriver implements MappingDriver
                         $metadata
                     );
 
-                    $metadata->addProperty($assocMetadata);
+                    $classMetadata->addProperty($assocMetadata);
                     break;
 
                 case isset($propertyAnnotations[Annotation\Embedded::class]):
@@ -544,13 +494,13 @@ class AnnotationDriver implements MappingDriver
                     $mapping['class']        = $embeddedAnnot->class;
                     $mapping['columnPrefix'] = $embeddedAnnot->columnPrefix;
 
-                    $metadata->mapEmbedded($mapping);
+                    $classMetadata->mapEmbedded($mapping);
                     break;
 
                 default:
                     $property = new Mapping\TransientMetadata($reflProperty->getName());
 
-                    $metadata->addProperty($property);
+                    $classMetadata->addProperty($property);
                     break;
             }
         }
@@ -561,10 +511,10 @@ class AnnotationDriver implements MappingDriver
 
             foreach ($associationOverridesAnnot->value as $associationOverride) {
                 $fieldName = $associationOverride->name;
-                $property  = $metadata->getProperty($fieldName);
+                $property  = $classMetadata->getProperty($fieldName);
 
                 if (! $property) {
-                    throw Mapping\MappingException::invalidOverrideFieldName($metadata->getClassName(), $fieldName);
+                    throw Mapping\MappingException::invalidOverrideFieldName($classMetadata->getClassName(), $fieldName);
                 }
 
                 $existingClass = get_class($property);
@@ -601,7 +551,7 @@ class AnnotationDriver implements MappingDriver
                     );
                 }
 
-                $metadata->setPropertyOverride($override);
+                $classMetadata->setPropertyOverride($override);
             }
         }
 
@@ -616,63 +566,125 @@ class AnnotationDriver implements MappingDriver
                     false
                 );
 
-                $metadata->setPropertyOverride($fieldMetadata);
+                $classMetadata->setPropertyOverride($fieldMetadata);
             }
+        }
+
+        return $classMetadata;
+    }
+
+    private function convertClassAnnotationsToClassMetadata(
+        array $classAnnotations,
+        \ReflectionClass $reflectionClass,
+        Mapping\ClassMetadata $metadata
+    ) : Mapping\ClassMetadata
+    {
+        switch (true) {
+            case isset($classAnnotations[Annotation\Entity::class]):
+                return $this->convertClassAnnotationsToEntityClassMetadata(
+                    $classAnnotations,
+                    $reflectionClass,
+                    $metadata
+                );
+
+                break;
+
+            case isset($classAnnotations[Annotation\MappedSuperclass::class]):
+                return $this->convertClassAnnotationsToMappedSuperClassMetadata(
+                    $classAnnotations,
+                    $reflectionClass,
+                    $metadata
+                );
+
+            case isset($classAnnotations[Annotation\Embeddable::class]):
+                return $this->convertClassAnnotationsToEmbeddableClassMetadata(
+                    $classAnnotations,
+                    $reflectionClass,
+                    $metadata
+                );
+
+            default:
+                throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($reflectionClass->getName());
         }
     }
 
     /**
-     * Attempts to resolve the fetch mode.
+     * @param array                 $classAnnotations
+     * @param \ReflectionClass      $reflectionClass
+     * @param Mapping\ClassMetadata $metadata
      *
-     * @param string $className The class name.
-     * @param string $fetchMode The fetch mode.
+     * @return Mapping\ClassMetadata
      *
-     * @return integer The fetch mode as defined in ClassMetadata.
-     *
-     * @throws Mapping\MappingException If the fetch mode is not valid.
+     * @throws Mapping\MappingException
+     * @throws \UnexpectedValueException
      */
-    private function getFetchMode($className, $fetchMode)
+    private function convertClassAnnotationsToEntityClassMetadata(
+        array $classAnnotations,
+        \ReflectionClass $reflectionClass,
+        Mapping\ClassMetadata $metadata
+    )
     {
-        $fetchModeConstant = sprintf('%s::%s', Mapping\FetchMode::class, $fetchMode);
+        /** @var Annotation\Entity $entityAnnot */
+        $entityAnnot  = $classAnnotations[Annotation\Entity::class];
 
-        if ( ! defined($fetchModeConstant)) {
-            throw Mapping\MappingException::invalidFetchMode($className, $fetchMode);
+        if ($entityAnnot->repositoryClass !== null) {
+            $metadata->setCustomRepositoryClassName(
+                $metadata->fullyQualifiedClassName($entityAnnot->repositoryClass)
+            );
         }
 
-        return constant($fetchModeConstant);
+        if ($entityAnnot->readOnly) {
+            $metadata->asReadOnly();
+        }
+
+        return $metadata;
     }
 
     /**
-     * Parses the given method.
+     * @param array                 $classAnnotations
+     * @param \ReflectionClass      $reflectionClass
+     * @param Mapping\ClassMetadata $metadata
      *
-     * @param \ReflectionMethod $method
-     *
-     * @return array
+     * @return Mapping\ClassMetadata
      */
-    private function getMethodCallbacks(\ReflectionMethod $method)
+    private function convertClassAnnotationsToMappedSuperClassMetadata(
+        array $classAnnotations,
+        \ReflectionClass $reflectionClass,
+        Mapping\ClassMetadata $metadata
+    ) : Mapping\ClassMetadata
     {
-        $annotations = $this->getMethodAnnotations($method);
-        $events      = [
-            Events::prePersist  => Annotation\PrePersist::class,
-            Events::postPersist => Annotation\PostPersist::class,
-            Events::preUpdate   => Annotation\PreUpdate::class,
-            Events::postUpdate  => Annotation\PostUpdate::class,
-            Events::preRemove   => Annotation\PreRemove::class,
-            Events::postRemove  => Annotation\PostRemove::class,
-            Events::postLoad    => Annotation\PostLoad::class,
-            Events::preFlush    => Annotation\PreFlush::class,
-        ];
+        /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
+        $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
-        // Check for callbacks
-        $callbacks = [];
-
-        foreach ($events as $eventName => $annotationClassName) {
-            if (isset($annotations[$annotationClassName]) || $method->getName() === $eventName) {
-                $callbacks[] = $eventName;
-            }
+        if ($mappedSuperclassAnnot->repositoryClass !== null) {
+            $metadata->setCustomRepositoryClassName(
+                $metadata->fullyQualifiedClassName($mappedSuperclassAnnot->repositoryClass)
+            );
         }
 
-        return $callbacks;
+        $metadata->isMappedSuperclass = true;
+        $metadata->isEmbeddedClass = false;
+
+        return $metadata;
+    }
+
+    /**
+     * @param array                 $classAnnotations
+     * @param \ReflectionClass      $reflectionClass
+     * @param Mapping\ClassMetadata $metadata
+     *
+     * @return Mapping\ClassMetadata
+     */
+    private function convertClassAnnotationsToEmbeddableClassMetadata(
+        array $classAnnotations,
+        \ReflectionClass $reflectionClass,
+        Mapping\ClassMetadata $metadata
+    ) : Mapping\ClassMetadata
+    {
+        $metadata->isMappedSuperclass = false;
+        $metadata->isEmbeddedClass = true;
+
+        return $metadata;
     }
 
     /**
@@ -793,7 +805,7 @@ class AnnotationDriver implements MappingDriver
         $targetEntity  = $metadata->fullyQualifiedClassName($oneToOneAnnot->targetEntity);
 
         $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($oneToOneAnnot->cascade);
+        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $oneToOneAnnot->cascade));
         $assocMetadata->setOrphanRemoval($oneToOneAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToOneAnnot->fetch));
 
@@ -857,7 +869,7 @@ class AnnotationDriver implements MappingDriver
         $targetEntity  = $metadata->fullyQualifiedClassName($manyToOneAnnot->targetEntity);
 
         $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($manyToOneAnnot->cascade);
+        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $manyToOneAnnot->cascade));
         $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToOneAnnot->fetch));
 
         if (! empty($manyToOneAnnot->inversedBy)) {
@@ -916,7 +928,7 @@ class AnnotationDriver implements MappingDriver
         $targetEntity  = $metadata->fullyQualifiedClassName($oneToManyAnnot->targetEntity);
 
         $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($oneToManyAnnot->cascade);
+        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $oneToManyAnnot->cascade));
         $assocMetadata->setOrphanRemoval($oneToManyAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $oneToManyAnnot->fetch));
 
@@ -964,7 +976,7 @@ class AnnotationDriver implements MappingDriver
         $targetEntity    = $metadata->fullyQualifiedClassName($manyToManyAnnot->targetEntity);
 
         $assocMetadata->setTargetEntity($targetEntity);
-        $assocMetadata->setCascade($manyToManyAnnot->cascade);
+        $assocMetadata->setCascade($this->getCascade($className, $fieldName, $manyToManyAnnot->cascade));
         $assocMetadata->setOrphanRemoval($manyToManyAnnot->orphanRemoval);
         $assocMetadata->setFetchMode($this->getFetchMode($className, $manyToManyAnnot->fetch));
 
@@ -1020,7 +1032,11 @@ class AnnotationDriver implements MappingDriver
      *
      * @return Mapping\FieldMetadata
      */
-    private function convertColumnAnnotationToFieldMetadata(Annotation\Column $columnAnnot, string $fieldName, bool $isVersioned)
+    private function convertColumnAnnotationToFieldMetadata(
+        Annotation\Column $columnAnnot,
+        string $fieldName,
+        bool $isVersioned
+    ) : Mapping\FieldMetadata
     {
         $fieldMetadata = $isVersioned
             ? new Mapping\VersionFieldMetadata($fieldName)
@@ -1060,7 +1076,9 @@ class AnnotationDriver implements MappingDriver
      *
      * @return Mapping\TableMetadata
      */
-    private function convertTableAnnotationToTableMetadata(Annotation\Table $tableAnnot)
+    private function convertTableAnnotationToTableMetadata(
+        Annotation\Table $tableAnnot
+    ) : Mapping\TableMetadata
     {
         $table = new Mapping\TableMetadata();
 
@@ -1105,7 +1123,9 @@ class AnnotationDriver implements MappingDriver
      *
      * @return Mapping\JoinTableMetadata
      */
-    private function convertJoinTableAnnotationToJoinTableMetadata(Annotation\JoinTable $joinTableAnnot)
+    private function convertJoinTableAnnotationToJoinTableMetadata(
+        Annotation\JoinTable $joinTableAnnot
+    ) : Mapping\JoinTableMetadata
     {
         $joinTable = new Mapping\JoinTableMetadata();
 
@@ -1139,7 +1159,9 @@ class AnnotationDriver implements MappingDriver
      *
      * @return Mapping\JoinColumnMetadata
      */
-    private function convertJoinColumnAnnotationToJoinColumnMetadata(Annotation\JoinColumn $joinColumnAnnot)
+    private function convertJoinColumnAnnotationToJoinColumnMetadata(
+        Annotation\JoinColumn $joinColumnAnnot
+    ) : Mapping\JoinColumnMetadata
     {
         $joinColumn = new Mapping\JoinColumnMetadata();
 
@@ -1183,7 +1205,7 @@ class AnnotationDriver implements MappingDriver
         Annotation\Cache $cacheAnnot,
         Mapping\ClassMetadata $metadata,
         $fieldName = null
-    )
+    ) : Mapping\CacheMetadata
     {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
@@ -1195,11 +1217,134 @@ class AnnotationDriver implements MappingDriver
     }
 
     /**
+     * Attempts to resolve the cascade modes.
+     *
+     * @param string $className        The class name.
+     * @param string $fieldName        The field name.
+     * @param array  $originalCascades The original unprocessed field cascades.
+     *
+     * @return array The processed field cascades.
+     *
+     * @throws Mapping\MappingException If a cascade option is not valid.
+     */
+    private function getCascade(string $className, string $fieldName, array $originalCascades)
+    {
+        $cascadeTypes = ['remove', 'persist', 'refresh', 'merge', 'detach'];
+        $cascades     = array_map('strtolower', $originalCascades);
+
+        if (in_array('all', $cascades)) {
+            $cascades = $cascadeTypes;
+        }
+
+        if (count($cascades) !== count(array_intersect($cascades, $cascadeTypes))) {
+            $diffCascades = array_diff($cascades, array_intersect($cascades, $cascadeTypes));
+
+            throw Mapping\MappingException::invalidCascadeOption($diffCascades, $className, $fieldName);
+        }
+
+        return $cascades;
+    }
+
+    /**
+     * Attempts to resolve the fetch mode.
+     *
+     * @param string $className The class name.
+     * @param string $fetchMode The fetch mode.
+     *
+     * @return string The fetch mode as defined in ClassMetadata.
+     *
+     * @throws Mapping\MappingException If the fetch mode is not valid.
+     */
+    private function getFetchMode($className, $fetchMode) : string
+    {
+        $fetchModeConstant = sprintf('%s::%s', Mapping\FetchMode::class, $fetchMode);
+
+        if ( ! defined($fetchModeConstant)) {
+            throw Mapping\MappingException::invalidFetchMode($className, $fetchMode);
+        }
+
+        return constant($fetchModeConstant);
+    }
+
+    /**
+     * Parses the given method.
+     *
+     * @param \ReflectionMethod $method
+     *
+     * @return array
+     */
+    private function getMethodCallbacks(\ReflectionMethod $method) : array
+    {
+        $annotations = $this->getMethodAnnotations($method);
+        $events      = [
+            Events::prePersist  => Annotation\PrePersist::class,
+            Events::postPersist => Annotation\PostPersist::class,
+            Events::preUpdate   => Annotation\PreUpdate::class,
+            Events::postUpdate  => Annotation\PostUpdate::class,
+            Events::preRemove   => Annotation\PreRemove::class,
+            Events::postRemove  => Annotation\PostRemove::class,
+            Events::postLoad    => Annotation\PostLoad::class,
+            Events::preFlush    => Annotation\PreFlush::class,
+        ];
+
+        // Check for callbacks
+        $callbacks = [];
+
+        foreach ($events as $eventName => $annotationClassName) {
+            if (isset($annotations[$annotationClassName]) || $method->getName() === $eventName) {
+                $callbacks[] = $eventName;
+            }
+        }
+
+        return $callbacks;
+    }
+
+    /**
+     * @param \ReflectionClass $reflectionClass
+     *
+     * @return array
+     */
+    private function getClassAnnotations(\ReflectionClass $reflectionClass) : array
+    {
+        $classAnnotations = $this->reader->getClassAnnotations($reflectionClass);
+
+        foreach ($classAnnotations as $key => $annot) {
+            if (! is_numeric($key)) {
+                continue;
+            }
+
+            $classAnnotations[get_class($annot)] = $annot;
+        }
+
+        return $classAnnotations;
+    }
+
+    /**
+     * @param \ReflectionProperty $reflectionProperty
+     *
+     * @return array
+     */
+    private function getPropertyAnnotations(\ReflectionProperty $reflectionProperty) : array
+    {
+        $propertyAnnotations = $this->reader->getPropertyAnnotations($reflectionProperty);
+
+        foreach ($propertyAnnotations as $key => $annot) {
+            if (! is_numeric($key)) {
+                continue;
+            }
+
+            $propertyAnnotations[get_class($annot)] = $annot;
+        }
+
+        return $propertyAnnotations;
+    }
+
+    /**
      * @param \ReflectionMethod $reflectionMethod
      *
      * @return array
      */
-    private function getMethodAnnotations(\ReflectionMethod $reflectionMethod)
+    private function getMethodAnnotations(\ReflectionMethod $reflectionMethod) : array
     {
         $methodAnnotations = $this->reader->getMethodAnnotations($reflectionMethod);
 

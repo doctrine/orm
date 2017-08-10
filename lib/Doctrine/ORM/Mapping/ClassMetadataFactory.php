@@ -10,7 +10,6 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
@@ -136,7 +135,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             $classMetadata->setLifecycleCallbacks($parent->lifecycleCallbacks);
             $classMetadata->setChangeTrackingPolicy($parent->changeTrackingPolicy);
 
-            if ($parent->isMappedSuperclass && ! $classMetadata->getCustomRepositoryClassName()) {
+            if ($parent->isMappedSuperclass) {
                 $classMetadata->setCustomRepositoryClassName($parent->getCustomRepositoryClassName());
             }
         }
@@ -617,14 +616,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             default:
                 throw new ORMException("Unknown generator type: " . $generator->getType());
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService) : void
-    {
-        $class->wakeupReflection($reflService);
     }
 
     /**

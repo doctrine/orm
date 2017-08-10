@@ -182,14 +182,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->loadedMetadata[$className];
         }
 
-        // Check for namespace alias
-        if (strpos($className, ':') !== false) {
-            [$namespaceAlias, $simpleClassName] = explode(':', $className, 2);
-
-            $realClassName = $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
-        } else {
-            $realClassName = ClassUtils::getRealClass($className);
-        }
+        $realClassName = $this->normalizeClassName($className);
 
         if (isset($this->loadedMetadata[$realClassName])) {
             // We do not have the alias name in the map, include it
@@ -206,7 +199,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                 if ($cached instanceof ClassMetadata) {
                     $this->loadedMetadata[$realClassName] = $cached;
 
-                    $this->wakeupReflection($cached, $this->getReflectionService());
+                    $cached->wakeupReflection($metadataBuildingContext->getReflectionService());
                 } else {
                     foreach ($this->loadMetadata($realClassName, $metadataBuildingContext) as $loadedClass) {
                         $loadedClassName = $loadedClass->getClassName();
@@ -265,8 +258,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
         $parentClasses[] = $name;
 
         // Move down the hierarchy of parent classes, starting from the topmost class
-        $parent      = null;
-        $reflService = $this->getReflectionService();
+        $parent = null;
 
         foreach ($parentClasses as $className) {
             if (isset($this->loadedMetadata[$className])) {
@@ -290,20 +282,13 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    public function isTransient($class) : bool
+    public function isTransient($className) : bool
     {
         if ( ! $this->initialized) {
             $this->initialize();
         }
 
-        // Check for namespace alias
-        if (strpos($class, ':') !== false) {
-            [$namespaceAlias, $simpleClassName] = explode(':', $class, 2);
-
-            $class = $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
-        }
-
-        return $this->getDriver()->isTransient($class);
+        return $this->getDriver()->isTransient($this->normalizeClassName($className));
     }
 
     /**
@@ -348,6 +333,22 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     }
 
     /**
+     * @param string $className
+     *
+     * @return string
+     */
+    private function normalizeClassName(string $className) : string
+    {
+        if (strpos($className, ':') !== false) {
+            [$namespaceAlias, $simpleClassName] = explode(':', $className, 2);
+
+            return $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
+        }
+
+        return ClassUtils::getRealClass($className);
+    }
+
+    /**
      * Lazy initialization of this stuff, especially the metadata driver,
      * since these are not needed at all when a metadata cache is active.
      *
@@ -371,16 +372,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * @return Driver\MappingDriver
      */
     abstract protected function getDriver() : Driver\MappingDriver;
-
-    /**
-     * Wakes up reflection after ClassMetadata gets unserialized from cache.
-     *
-     * @param ClassMetadata     $class
-     * @param ReflectionService $reflService
-     *
-     * @return void
-     */
-    abstract protected function wakeupReflection(ClassMetadata $class, ReflectionService $reflService) : void;
 
     /**
      * Checks whether the class metadata is an entity.

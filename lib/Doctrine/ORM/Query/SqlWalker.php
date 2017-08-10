@@ -660,10 +660,6 @@ class SqlWalker implements TreeWalker
                     $sql .= $this->walkIdentificationVariable($dqlAlias, $fieldName) . '.';
                 }
 
-                if ($property instanceof AssociationMetadata) {
-                    var_dump($property);
-                }
-
                 $sql .= $this->platform->quoteIdentifier($property->getColumnName());
                 break;
 
