@@ -103,9 +103,8 @@ class StaticProxyFactory implements ProxyFactory
     {
         /** @var Proxy $classMetadata */
         $proxyClassName = $definition->proxyClassName;
-        $proxyInstance  = new $proxyClassName($definition);
 
-        return $proxyInstance;
+        return new $proxyClassName($definition);
     }
 
     /**
