@@ -22,21 +22,4 @@ class SchemaAndTableInTableName
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $tableMetadata = new Mapping\TableMetadata();
-
-        $tableMetadata->setName('implicit_table');
-        $tableMetadata->setSchema('implicit_schema');
-
-        $metadata->setTable($tableMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-    }
 }

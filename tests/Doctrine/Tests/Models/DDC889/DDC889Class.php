@@ -16,15 +16,4 @@ class DDC889Class extends DDC889SuperClass
      * @ORM\GeneratedValue
      */
     protected $id;
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
-
-        $metadata->addProperty($fieldMetadata);
-    }
-
 }

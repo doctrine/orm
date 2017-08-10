@@ -16,12 +16,4 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class DDC5934Contract extends DDC5934BaseContract
 {
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $association = new Mapping\ManyToManyAssociationMetadata('members');
-
-        $association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
-
-        $metadata->setPropertyOverride($association);
-    }
 }

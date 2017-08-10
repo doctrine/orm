@@ -33,14 +33,4 @@ class CompanyFixContract extends CompanyContract
     {
         $this->fixPrice = $fixPrice;
     }
-
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('fixPrice');
-
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setColumnName('fixPrice');
-
-        $metadata->addProperty($fieldMetadata);
-    }
 }

@@ -18,12 +18,4 @@ use Doctrine\ORM\Mapping;
  */
 class DDC3579Admin extends DDC3579User
 {
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $association = new Mapping\ManyToManyAssociationMetadata('groups');
-
-        $association->setInversedBy('admins');
-
-        $metadata->setPropertyOverride($association);
-    }
 }

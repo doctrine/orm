@@ -122,52 +122,5 @@ class CompanyPerson
             $this->spouse->setSpouse($this);
         }
     }
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $tableMetadata = new Mapping\TableMetadata();
-        $tableMetadata->setName('company_person');
-
-        $metadata->setTable($tableMetadata);
-
-        $metadata->addNamedNativeQuery(
-            'fetchAllWithResultClass',
-            'SELECT id, name, discr FROM company_persons ORDER BY name',
-            [
-                'resultClass' => CompanyPerson::class,
-            ]
-        );
-
-        $metadata->addNamedNativeQuery(
-            'fetchAllWithSqlResultSetMapping',
-            'SELECT id, name, discr AS discriminator FROM company_persons ORDER BY name',
-            [
-                'resultSetMapping' => 'mappingFetchAll',
-            ]
-        );
-
-        $metadata->addSqlResultSetMapping(
-            [
-            'name'      => 'mappingFetchAll',
-            'columns'   => [],
-            'entities'  => [
-                [
-                'fields' => [
-                  [
-                    'name'      => 'id',
-                    'column'    => 'id',
-                  ],
-                  [
-                    'name'      => 'name',
-                    'column'    => 'name',
-                  ],
-                ],
-                'entityClass'         => '__CLASS__',
-                'discriminatorColumn' => 'discriminator',
-                ],
-            ],
-            ]
-        );
-    }
 }
 
