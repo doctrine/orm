@@ -114,19 +114,4 @@ class CompanyFlexContract extends CompanyContract
     {
         $this->managers->removeElement($manager);
     }
-
-    static public function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('hoursWorked');
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setColumnName('hoursWorked');
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('pricePerHour');
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setColumnName('pricePerHour');
-
-        $metadata->addProperty($fieldMetadata);
-    }
 }

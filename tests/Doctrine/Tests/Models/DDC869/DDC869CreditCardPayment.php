@@ -15,14 +15,4 @@ class DDC869CreditCardPayment extends DDC869Payment
 {
     /** @ORM\Column(type="string") */
     protected $creditCardNumber;
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('creditCardNumber');
-
-        $fieldMetadata->setType(Type::getType('string'));
-
-        $metadata->addProperty($fieldMetadata);
-    }
-
 }

@@ -12,7 +12,4 @@ use Doctrine\ORM\Mapping;
  */
 class DDC889Entity extends DDC889SuperClass
 {
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-    }
 }

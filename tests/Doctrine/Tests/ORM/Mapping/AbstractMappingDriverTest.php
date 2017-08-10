@@ -1280,156 +1280,6 @@ class User
     {
 
     }
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $tableMetadata = new Mapping\TableMetadata();
-
-        $tableMetadata->setName('cms_users');
-        $tableMetadata->addIndex(
-            [
-                'name'    => 'name_idx',
-                'columns' => ['name'],
-                'unique'  => false,
-                'options' => [],
-                'flags'   => [],
-            ]
-        );
-
-        $tableMetadata->addIndex(
-            [
-                'name'    => null,
-                'columns' => ['user_email'],
-                'unique'  => false,
-                'options' => [],
-                'flags'   => [],
-            ]
-        );
-
-        $tableMetadata->addUniqueConstraint(
-            [
-                'name'    => 'search_idx',
-                'columns' => ['name', 'user_email'],
-                'options' => [],
-                'flags'   => [],
-            ]
-        );
-        $tableMetadata->addOption('foo', 'bar');
-        $tableMetadata->addOption('baz', ['key' => 'val']);
-
-        $metadata->setTable($tableMetadata);
-        $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
-        $metadata->setChangeTrackingPolicy(Mapping\ChangeTrackingPolicy::DEFERRED_IMPLICIT);
-
-        $metadata->addLifecycleCallback('doStuffOnPrePersist', 'prePersist');
-        $metadata->addLifecycleCallback('doOtherStuffOnPrePersistToo', 'prePersist');
-        $metadata->addLifecycleCallback('doStuffOnPostPersist', 'postPersist');
-
-        $metadata->addNamedQuery('all',  'SELECT u FROM __CLASS__ u');
-
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setOptions(['foo' => 'bar', 'unsigned' => false]);
-        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(
-            Mapping\GeneratorType::AUTO,
-            [
-                'sequenceName'   => 'tablename_seq',
-                'allocationSize' => 100,
-            ]
-        ));
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('name');
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setLength(50);
-        $fieldMetadata->setNullable(true);
-        $fieldMetadata->setUnique(true);
-        $fieldMetadata->setOptions(
-            [
-                'foo' => 'bar',
-                'baz' => [
-                    'key' => 'val',
-                ],
-                'fixed' => false,
-            ]
-        );
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('email');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setColumnName('user_email');
-        $fieldMetadata->setColumnDefinition('CHAR(32) NOT NULL');
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\VersionFieldMetadata('version');
-
-        $fieldMetadata->setType(Type::getType('integer'));
-
-        $metadata->addProperty($fieldMetadata);
-
-        $joinColumns = [];
-
-        $joinColumn = new Mapping\JoinColumnMetadata();
-
-        $joinColumn->setColumnName('address_id');
-        $joinColumn->setReferencedColumnName('id');
-        $joinColumn->setOnDelete('CASCADE');
-
-        $joinColumns[] = $joinColumn;
-
-        $association = new Mapping\OneToOneAssociationMetadata('address');
-
-        $association->setJoinColumns($joinColumns);
-        $association->setTargetEntity(Address::class);
-        $association->setInversedBy('user');
-        $association->setCascade(['remove']);
-        $association->setOrphanRemoval(false);
-
-        $metadata->addProperty($association);
-
-        $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
-
-        $association->setTargetEntity(Phonenumber::class);
-        $association->setMappedBy('user');
-        $association->setCascade(['persist']);
-        $association->setOrderBy(['number' => 'ASC']);
-        $association->setOrphanRemoval(true);
-
-        $metadata->addProperty($association);
-
-        $joinTable = new Mapping\JoinTableMetadata();
-        $joinTable->setName('cms_users_groups');
-
-        $joinColumn = new Mapping\JoinColumnMetadata();
-
-        $joinColumn->setColumnName('user_id');
-        $joinColumn->setReferencedColumnName('id');
-        $joinColumn->setNullable(false);
-        $joinColumn->setUnique(false);
-
-        $joinTable->addJoinColumn($joinColumn);
-
-        $joinColumn = new Mapping\JoinColumnMetadata();
-
-        $joinColumn->setColumnName('group_id');
-        $joinColumn->setReferencedColumnName('id');
-        $joinColumn->setColumnDefinition('INT NULL');
-
-        $joinTable->addInverseJoinColumn($joinColumn);
-
-        $association = new Mapping\ManyToManyAssociationMetadata('groups');
-
-        $association->setJoinTable($joinTable);
-        $association->setTargetEntity(Group::class);
-        $association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
-
-        $metadata->addProperty($association);
-    }
 }
 
 /**
@@ -1445,37 +1295,16 @@ abstract class Animal
      * @ORM\CustomIdGenerator(class="stdClass")
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $id = new Mapping\FieldMetadata('id');
-        $id->setValueGenerator(new Mapping\ValueGeneratorMetadata(
-            Mapping\GeneratorType::CUSTOM,
-            [
-                'class'     => 'stdClass',
-                'arguments' => [],
-            ]
-        ));
-        $metadata->addProperty($id);
-    }
 }
 
 /** @ORM\Entity */
 class Cat extends Animal
 {
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-
-    }
 }
 
 /** @ORM\Entity */
 class Dog extends Animal
 {
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-
-    }
 }
 
 /**
@@ -1519,24 +1348,6 @@ class DDC1170Entity
         return $this->value;
     }
 
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setColumnDefinition('INT unsigned NOT NULL');
-        $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('value');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setColumnDefinition('VARCHAR(255) NOT NULL');
-
-        $metadata->addProperty($fieldMetadata);
-    }
-
 }
 
 /**
@@ -1553,25 +1364,6 @@ class DDC807Entity
      * @ORM\GeneratedValue(strategy="NONE")
      **/
     public $id;
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-        $discrColumn = new Mapping\DiscriminatorColumnMetadata();
-
-        $discrColumn->setTableName($metadata->getTableName());
-        $discrColumn->setColumnName('dtype');
-        $discrColumn->setType(Type::getType('string'));
-        $discrColumn->setColumnDefinition("ENUM('ONE','TWO')");
-
-        $metadata->setDiscriminatorColumn($discrColumn);
-    }
 }
 
 class DDC807SubClasse1 {}
@@ -1591,31 +1383,6 @@ class Comment
      * @ORM\Column(type="text")
      */
     private $content;
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $tableMetadata = new Mapping\TableMetadata();
-
-        $tableMetadata->addIndex(
-            [
-                'name'    => null,
-                'unique'  => false,
-                'columns' => ['content'],
-                'flags'   => ['fulltext'],
-                'options' => ['where' => 'content IS NOT NULL'],
-            ]
-        );
-
-        $metadata->setTable($tableMetadata);
-        $metadata->setInheritanceType(Mapping\InheritanceType::NONE);
-
-        $fieldMetadata = new Mapping\FieldMetadata('content');
-        $fieldMetadata->setType(Type::getType('text'));
-        $fieldMetadata->setNullable(false);
-        $fieldMetadata->setUnique(false);
-
-        $metadata->addProperty($fieldMetadata);
-    }
 }
 
 /**
@@ -1634,16 +1401,6 @@ class SingleTableEntityNoDiscriminatorColumnMapping
      * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-    }
 }
 
 /**
@@ -1673,17 +1430,6 @@ class SingleTableEntityIncompleteDiscriminatorColumnMapping
      * @ORM\GeneratedValue(strategy="NONE")
      */
     public $id;
-
-    public static function loadMetadata(ClassMetadata $metadata)
-    {
-        // @todo: String != Integer and this should not work
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-        $fieldMetadata->setType(Type::getType('string'));
-        $fieldMetadata->setPrimaryKey(true);
-
-        $metadata->addProperty($fieldMetadata);
-
-    }
 }
 
 class SingleTableEntityIncompleteDiscriminatorColumnMappingSub1

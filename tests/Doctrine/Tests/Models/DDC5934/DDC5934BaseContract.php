@@ -32,22 +32,4 @@ class DDC5934BaseContract
     {
         $this->members = new ArrayCollection();
     }
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setColumnName('id');
-        $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
-
-        $metadata->addProperty($fieldMetadata);
-
-        $association = new Mapping\ManyToManyAssociationMetadata('members');
-
-        $association->setTargetEntity(DDC5934Member::class);
-
-        $metadata->addProperty($association);
-    }
 }
