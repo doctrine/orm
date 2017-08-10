@@ -214,6 +214,11 @@ class ResultSetMapping
         return $this;
     }
 
+    public function setDiscriminatorValue($value, $discrColumn)
+    {
+        $this->columnOwnerMap[$discrColumn] = $value;
+    }
+
     /**
      * Sets a field to use for indexing an entity result or joined entity result.
      *
