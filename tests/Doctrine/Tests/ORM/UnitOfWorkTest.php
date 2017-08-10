@@ -76,8 +76,8 @@ class UnitOfWorkTest extends OrmTestCase
             $this->createMock(ClassMetadataFactory::class),
             new RuntimeReflectionService()
         );
-        $this->connectionMock          = new ConnectionMock([], new DriverMock());
         $this->eventManager            = $this->getMockBuilder(EventManager::class)->getMock();
+        $this->connectionMock          = new ConnectionMock([], new DriverMock(), null, $this->eventManager);
         $this->emMock                  = EntityManagerMock::create($this->connectionMock, null, $this->eventManager);
         $this->unitOfWork              = new UnitOfWorkMock($this->emMock);
 

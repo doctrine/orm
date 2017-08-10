@@ -106,7 +106,6 @@ abstract class OrmTestCase extends DoctrineTestCase
         );
 
         if ($this->isSecondLevelCacheEnabled) {
-
             $cacheConfig    = new CacheConfiguration();
             $cache          = $this->getSharedSecondLevelCacheDriverImpl();
             $factory        = new DefaultCacheFactory($cacheConfig->getRegionsConfiguration(), $cache);
@@ -131,7 +130,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return Mocks\EntityManagerMock::create($conn, $config, $eventManager);
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager)->getEM();
     }
 
     protected function enableSecondLevelCache($log = true)

@@ -217,6 +217,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         // DDC-3551
         $conn = $this->createMock(Connection::class);
         $mockDriver    = new MetadataDriverMock();
+        $conn->expects($this->any())
+            ->method('getEventManager')
+            ->willReturn(new EventManager());
         $em = $this->createEntityManager($mockDriver, $conn);
 
         $conn->expects($this->any())
@@ -240,11 +243,10 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        $eventManager = new EventManager();
-
         if (!$conn) {
-            $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
+            $conn = new ConnectionMock([], $driverMock, $config, new EventManager());
         }
+        $eventManager = $conn->getEventManager();
 
         $config->setMetadataDriverImpl($metadataDriver);
 
