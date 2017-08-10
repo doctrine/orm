@@ -22,23 +22,4 @@ class DDC869Payment
 
     /** @ORM\Column(type="float") */
     protected $value;
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('id');
-        $fieldMetadata->setType(Type::getType('integer'));
-        $fieldMetadata->setPrimaryKey(true);
-        $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::AUTO));
-
-        $metadata->addProperty($fieldMetadata);
-
-        $fieldMetadata = new Mapping\FieldMetadata('value');
-        $fieldMetadata->setType(Type::getType('float'));
-
-        $metadata->addProperty($fieldMetadata);
-
-        $metadata->isMappedSuperclass = true;
-
-        $metadata->setCustomRepositoryClassName(DDC869PaymentRepository::class);
-    }
 }

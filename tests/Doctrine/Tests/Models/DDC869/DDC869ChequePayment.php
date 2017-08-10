@@ -13,17 +13,6 @@ use Doctrine\ORM\Mapping;
  */
 class DDC869ChequePayment extends DDC869Payment
 {
-
     /** @ORM\Column(type="string") */
     protected $serialNumber;
-
-    public static function loadMetadata(Mapping\ClassMetadata $metadata)
-    {
-        $fieldMetadata = new Mapping\FieldMetadata('serialNumber');
-
-        $fieldMetadata->setType(Type::getType('string'));
-
-        $metadata->addProperty($fieldMetadata);
-    }
-
 }

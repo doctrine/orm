@@ -60,7 +60,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     protected function createMetadataDriver($type, $path)
     {
         $mappingDriver = [
-            'php'        => PHPDriver::class,
             'annotation' => AnnotationDriver::class,
             'xml'        => XmlDriver::class,
         ];
