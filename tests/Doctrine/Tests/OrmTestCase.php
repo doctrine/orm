@@ -80,13 +80,17 @@ abstract class OrmTestCase extends DoctrineTestCase
      * for a particular test,
      *
      * @param \Doctrine\DBAL\Connection|array    $conn
-     * @param mixed                              $conf
      * @param \Doctrine\Common\EventManager|null $eventManager
      * @param bool                               $withSharedMetadata
      *
      * @return \Doctrine\ORM\EntityManagerInterface
      */
-    protected function getTestEntityManager($conn = null, $conf = null, $eventManager = null, $withSharedMetadata = true)
+    protected function getTestEntityManager(
+        $conn = null,
+        $conf = null,
+        $eventManager = null,
+        $withSharedMetadata = true
+    )
     {
         $metadataCache = $withSharedMetadata
             ? self::getSharedMetadataCacheImpl()
@@ -130,7 +134,7 @@ abstract class OrmTestCase extends DoctrineTestCase
             $conn = DriverManager::getConnection($conn, $config, $eventManager);
         }
 
-        return Mocks\EntityManagerMock::create($conn, $config, $eventManager)->getEM();
+        return Mocks\EntityManagerMock::create($conn, $config, $eventManager)->getWrappedEntityManager();
     }
 
     protected function enableSecondLevelCache($log = true)
