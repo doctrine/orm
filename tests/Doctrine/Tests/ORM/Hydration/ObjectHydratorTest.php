@@ -1033,7 +1033,8 @@ class ObjectHydratorTest extends HydrationTestCase
                      ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
                      ->will($this->returnValue($proxyInstance));
 
-        $this->em->setProxyFactory($proxyFactory);
+        // @todo guilhermeblanco This should never have happened... replace this Reflection injection with proper API.
+        $this->swapPrivateProperty($this->em, 'proxyFactory', $proxyFactory);
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
@@ -1082,7 +1083,8 @@ class ObjectHydratorTest extends HydrationTestCase
                      ->with($this->equalTo(ECommerceShipping::class), ['id' => 42])
                      ->will($this->returnValue($proxyInstance));
 
-        $this->em->setProxyFactory($proxyFactory);
+        // @todo guilhermeblanco This should never have happened... replace this Reflection injection with proper API.
+        $this->swapPrivateProperty($this->em, 'proxyFactory', $proxyFactory);
 
         // configuring lazy loading
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
@@ -2005,5 +2007,20 @@ class ObjectHydratorTest extends HydrationTestCase
         self::assertInstanceOf(PersistentCollection::class, $result[0]->collection);
         self::assertCount(1, $result[0]->collection);
         self::assertInstanceOf(SimpleEntity::class, $result[0]->collection[0]);
+    }
+
+    /**
+     * @param object $object
+     * @param string $propertyName
+     * @param mixed  $newValue
+     */
+    private function swapPrivateProperty($object, string $propertyName, $newValue)
+    {
+        $reflectionClass    = new \ReflectionClass($object);
+        $reflectionProperty = $reflectionClass->getProperty($propertyName);
+
+        $reflectionProperty->setAccessible(true);
+
+        $reflectionProperty->setValue($object, $newValue);
     }
 }
