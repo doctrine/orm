@@ -449,7 +449,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 && $property->hasValueGenerator();
         });
 
-        if ($this->isIdentifierComposite() && count($explicitlyGeneratedProperties) !== 0) {
+        if ($explicitlyGeneratedProperties && $this->isIdentifierComposite()) {
             throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->className);
         }
     }
