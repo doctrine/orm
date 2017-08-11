@@ -16,13 +16,11 @@ class GH6464Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH6464Post::class),
-                $this->_em->getClassMetadata(GH6464User::class),
-                $this->_em->getClassMetadata(GH6464Author::class),
-            ]
-        );
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(GH6464Post::class),
+            $this->_em->getClassMetadata(GH6464User::class),
+            $this->_em->getClassMetadata(GH6464Author::class),
+        ]);
     }
 
     /**
@@ -34,7 +32,7 @@ class GH6464Test extends OrmFunctionalTestCase
     public function testIssue()
     {
         $query = $this->_em->createQueryBuilder()
-            ->select('p', 'a')
+            ->select('p')
             ->from(GH6464Post::class, 'p')
             ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
             ->getQuery();
