@@ -312,7 +312,7 @@ abstract class AbstractQuery
             }
         );
 
-        return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
+        return $filteredParameters->isEmpty() ? null : $filteredParameters->first();
     }
 
     /**
@@ -750,11 +750,11 @@ abstract class AbstractQuery
             return $result;
         }
 
-        if (count($result) > 1) {
+        if (isset($result[1])) {
             throw new NonUniqueResultException;
         }
 
-        return array_shift($result);
+        return $result[0];
     }
 
     /**
@@ -784,11 +784,11 @@ abstract class AbstractQuery
             return $result;
         }
 
-        if (count($result) > 1) {
+        if (isset($result[1])) {
             throw new NonUniqueResultException;
         }
 
-        return array_shift($result);
+        return $result[0];
     }
 
     /**
