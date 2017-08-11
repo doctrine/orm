@@ -17,9 +17,9 @@ class GH6464Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6464Post::class),
-            $this->_em->getClassMetadata(GH6464User::class),
-            $this->_em->getClassMetadata(GH6464Author::class),
+            $this->_em->getClassMetadata(GH6464Post::CLASS_NAME),
+            $this->_em->getClassMetadata(GH6464User::CLASS_NAME),
+            $this->_em->getClassMetadata(GH6464Author::CLASS_NAME),
         ]);
     }
 
@@ -33,8 +33,8 @@ class GH6464Test extends OrmFunctionalTestCase
     {
         $query = $this->_em->createQueryBuilder()
             ->select('p')
-            ->from(GH6464Post::class, 'p')
-            ->innerJoin(GH6464Author::class, 'a', 'WITH', 'p.authorId = a.id')
+            ->from(GH6464Post::CLASS_NAME, 'p')
+            ->innerJoin(GH6464Author::CLASS_NAME, 'a', 'WITH', 'p.authorId = a.id')
             ->getQuery();
 
         $this->assertNotRegExp(
@@ -51,6 +51,8 @@ class GH6464Test extends OrmFunctionalTestCase
 /** @Entity */
 class GH6464Post
 {
+    const CLASS_NAME = __CLASS__;
+
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
@@ -66,6 +68,8 @@ class GH6464Post
  */
 abstract class GH6464User
 {
+    const CLASS_NAME = __CLASS__;
+
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 }
@@ -73,4 +77,5 @@ abstract class GH6464User
 /** @Entity */
 class GH6464Author extends GH6464User
 {
+    const CLASS_NAME = __CLASS__;
 }
