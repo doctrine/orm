@@ -533,7 +533,11 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function isEmpty()
     {
-        return $this->collection->isEmpty() && $this->count() === 0;
+        if ($this->initialized) {
+            return $this->collection->isEmpty();
+        }
+
+        return $this->collection->isEmpty() && ! $this->count();
     }
 
     /**
