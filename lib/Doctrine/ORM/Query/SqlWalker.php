@@ -461,7 +461,7 @@ class SqlWalker implements TreeWalker
 
         $sql = implode(' AND ', $sqlParts);
 
-        return (count($sqlParts) > 1) ? '(' . $sql . ')' : $sql;
+        return isset($sqlParts[1]) ? '(' . $sql . ')' : $sql;
     }
 
     /**
