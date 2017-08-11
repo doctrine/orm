@@ -47,15 +47,27 @@ class DDC6613Test extends OrmFunctionalTestCase
 
         self::assertInstanceOf(PersistentCollection::class, $phones);
         self::assertFalse($phones->isInitialized());
+        self::assertFalse($phones->isDirty());
 
         $phones->add($item1);
+
+        self::assertFalse($phones->isInitialized());
+        self::assertTrue($phones->isDirty());
+
         $this->_em->flush();
 
+        self::assertFalse($phones->isInitialized());
+        self::assertFalse($phones->isDirty());
+
         $phones->add($item2);
+
+        self::assertFalse($phones->isInitialized());
+        self::assertTrue($phones->isDirty());
 
         $phones->initialize();
 
         self::assertTrue($phones->isInitialized());
+        self::assertFalse($phones->isDirty(), 'Possibly wrong assertion');
         self::assertCount(2, $phones);
 
         $this->_em->flush();
