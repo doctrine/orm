@@ -781,7 +781,7 @@ class Parser
 
                 // Build the error message
                 $semanticalError  = 'Invalid PathExpression. ';
-                $semanticalError .= (count($expectedStringTypes) == 1)
+                $semanticalError .= \count($expectedStringTypes) === 1
                     ? 'Must be a ' . $expectedStringTypes[0] . '.'
                     : implode(' or ', $expectedStringTypes) . ' expected.';
 
@@ -798,7 +798,7 @@ class Parser
      */
     private function processRootEntityAliasSelected()
     {
-        if ( ! count($this->identVariableExpressions)) {
+        if ( ! $this->identVariableExpressions) {
             return;
         }
 
@@ -2382,7 +2382,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalExpression
         // if only one AST\ConditionalTerm is defined
-        if (count($conditionalTerms) == 1) {
+        if (\count($conditionalTerms) === 1) {
             return $conditionalTerms[0];
         }
 
@@ -2407,7 +2407,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalTerm
         // if only one AST\ConditionalFactor is defined
-        if (count($conditionalFactors) == 1) {
+        if (\count($conditionalFactors) === 1) {
             return $conditionalFactors[0];
         }
 
@@ -2730,7 +2730,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\SimpleArithmeticExpression
         // if only one AST\ArithmeticTerm is defined
-        if (count($terms) == 1) {
+        if (\count($terms) === 1) {
             return $terms[0];
         }
 
@@ -2756,7 +2756,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticTerm
         // if only one AST\ArithmeticFactor is defined
-        if (count($factors) == 1) {
+        if (\count($factors) === 1) {
             return $factors[0];
         }
 
