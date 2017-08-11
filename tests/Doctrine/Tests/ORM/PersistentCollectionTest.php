@@ -3,7 +3,6 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -150,7 +149,7 @@ class PersistentCollectionTest extends OrmTestCase
      * @group 6614
      * @group 6616
      */
-    public function testWillKeepNewItemsInDirtyCollectionAfterInitialization()
+    public function testWillKeepNewItemsInDirtyCollectionAfterInitialization() : void
     {
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -169,7 +168,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->expects(self::once())
             ->method('loadCollection')
             ->with($this->collection)
-            ->willReturnCallback(function (PersistentCollection $persistentCollection) use ($persistedElement) {
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use ($persistedElement) : void {
                 $persistentCollection->unwrap()->add($persistedElement);
             });
 
@@ -185,7 +184,7 @@ class PersistentCollectionTest extends OrmTestCase
      * @group 6614
      * @group 6616
      */
-    public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization()
+    public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization() : void
     {
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -209,7 +208,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
                 $newElementThatIsAlsoPersisted
-            ) {
+            ) : void {
                 $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
                 $persistentCollection->unwrap()->add($persistedElement);
             });
@@ -229,7 +228,7 @@ class PersistentCollectionTest extends OrmTestCase
      * @group 6614
      * @group 6616
      */
-    public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded()
+    public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded() : void
     {
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -251,7 +250,7 @@ class PersistentCollectionTest extends OrmTestCase
             ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
                 $persistedElement,
                 $newElementThatIsAlsoPersisted
-            ) {
+            ) : void {
                 $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
                 $persistentCollection->unwrap()->add($persistedElement);
             });
