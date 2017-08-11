@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Closure;
 use Doctrine\Common\Collections\AbstractLazyCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -685,23 +684,41 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     protected function doInitialize()
     {
         // Has NEW objects added through add(). Remember them.
-        $newObjects = array();
+        $newlyAddedDirtyObjects = array();
 
         if ($this->isDirty) {
-            $newObjects = $this->collection->toArray();
+            $newlyAddedDirtyObjects = $this->collection->toArray();
         }
 
         $this->collection->clear();
         $this->em->getUnitOfWork()->loadCollection($this);
         $this->takeSnapshot();
 
-        // Reattach NEW objects added through add(), if any.
-        if ($newObjects) {
-            foreach ($newObjects as $obj) {
-                $this->collection->add($obj);
-            }
-
-            $this->isDirty = true;
+        if ($newlyAddedDirtyObjects) {
+            $this->restoreNewObjectsInDirtyCollection($newlyAddedDirtyObjects);
         }
+    }
+
+    /**
+     * @param object[] $newObjects
+     *
+     * @return void
+     *
+     * Note: the only reason why this entire looping/complexity is performed via `spl_object_hash`
+     *       is because we want to prevent using `array_udiff()`, which is likely to cause very
+     *       high overhead (complexity of O(n^2)). `array_diff_key()` performs the operation in
+     *       core, which is faster than using a callback for comparisons
+     */
+    private function restoreNewObjectsInDirtyCollection(array $newObjects)
+    {
+        $loadedObjects               = $this->collection->toArray();
+        $newObjectsByOid             = array_combine(array_map('spl_object_hash', $newObjects), $newObjects);
+        $loadedObjectsByOid          = array_combine(array_map('spl_object_hash', $loadedObjects), $loadedObjects);
+        $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
+
+        // Reattach NEW objects added through add(), if any.
+        array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
+
+        $this->isDirty = true;
     }
 }
