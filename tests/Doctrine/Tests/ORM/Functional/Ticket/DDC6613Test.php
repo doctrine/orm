@@ -76,22 +76,13 @@ class DDC6613Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc6613_user")
- */
+/** @Entity */
 class DDC6613User
 {
-    /**
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="string")
-     */
+    /** @Id @Column(type="string") */
     public $id;
 
-    /**
-     * @ManyToMany(targetEntity=DDC6613Phone::class, fetch="LAZY", cascade={"remove", "detach"})
-     */
+    /** @ManyToMany(targetEntity=DDC6613Phone::class) */
     public $phones;
 
     public function __construct()
@@ -101,18 +92,11 @@ class DDC6613User
     }
 }
 
-/**
- * @Entity
- * @Table(name="ddc6613_phone")
- */
+/** @Entity */
 class DDC6613Phone
 {
-    /**
-     * @Id
-     * @GeneratedValue(strategy="NONE")
-     * @Column(type="integer")
-     */
-    public $id;
+    /** @Id @Column(type="integer") */
+    private $id;
 
     public function __construct()
     {
