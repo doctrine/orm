@@ -179,27 +179,6 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
     }
 
     /**
-     * @group DDC-1050
-     */
-    public function testInvalidMappedSuperClassWithInheritanceInformation()
-    {
-        $annotationDriver = $this->loadDriver();
-
-        $em = $this->getTestEntityManager();
-        $em->getConfiguration()->setMetadataDriverImpl($annotationDriver);
-        $factory = new ClassMetadataFactory();
-        $factory->setEntityManager($em);
-
-        $this->expectException(MappingException::class);
-        $this->expectExceptionMessage(
-            "It is not supported to define inheritance information on a mapped " .
-            "superclass '" . MappedSuperClassInheritance::class . "'."
-        );
-
-        $usingInvalidMsc = $factory->getMetadataFor(MappedSuperClassInheritance::class);
-    }
-
-    /**
      * @group DDC-1034
      */
     public function testInheritanceSkipsParentLifecycleCallbacks()
@@ -299,19 +278,9 @@ class UsingInvalidMappedSuperClass extends InvalidMappedSuperClass
 }
 
 /**
- * @ORM\MappedSuperclass
- * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"test" = "ColumnWithoutType"})
- */
-class MappedSuperClassInheritance
-{
-
-}
-
-/**
  * @ORM\Entity
  */
-class ColumnWithoutType extends MappedSuperClassInheritance
+class ColumnWithoutType
 {
     /** @ORM\Id @ORM\Column */
     public $id;
