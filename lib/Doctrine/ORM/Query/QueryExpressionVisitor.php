@@ -131,10 +131,11 @@ class QueryExpressionVisitor extends ExpressionVisitor
         }
 
         $parameterName = str_replace('.', '_', $comparison->getField());
+        $parameterCount = \count($this->parameters);
 
         foreach ($this->parameters as $parameter) {
             if ($parameter->getName() === $parameterName) {
-                $parameterName .= '_' . count($this->parameters);
+                $parameterName .= '_' . $parameterCount;
                 break;
             }
         }
