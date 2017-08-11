@@ -23,41 +23,41 @@ class DDC6613Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->setUpEntitySchema([
-            DDC6613Phone::class,
-            DDC6613User::class,
+            DDC6613InverseSide::class,
+            DDC6613OwningSide::class,
         ]);
     }
 
     public function testFail()
     {
-        $newUser = new DDC6613User();
+        $owningSide = new DDC6613OwningSide();
 
-        $this->_em->persist($newUser);
+        $this->_em->persist($owningSide);
         $this->_em->flush();
         $this->_em->clear();
 
-        $phone1 = new DDC6613Phone();
-        $phone2 = new DDC6613Phone();
+        $item1 = new DDC6613InverseSide();
+        $item2 = new DDC6613InverseSide();
 
-        $this->_em->persist($phone1);
-        $this->_em->persist($phone2);
+        $this->_em->persist($item1);
+        $this->_em->persist($item2);
         $this->_em->flush();
 
-        /* @var DDC6613User $user */
-        $user = $this->_em->find(DDC6613User::class, $newUser->id);
+        /* @var DDC6613OwningSide $foundOwningSide */
+        $foundOwningSide = $this->_em->find(DDC6613OwningSide::class, $owningSide->id);
 
-        self::assertInstanceOf(DDC6613User::class, $user);
+        self::assertInstanceOf(DDC6613OwningSide::class, $foundOwningSide);
 
         /* @var $phones PersistentCollection */
-        $phones = $user->phones;
+        $phones = $foundOwningSide->phones;
 
         self::assertInstanceOf(PersistentCollection::class, $phones);
         self::assertFalse($phones->isInitialized());
 
-        $phones->add($phone1);
+        $phones->add($item1);
         $this->_em->flush();
 
-        $phones->add($phone2);
+        $phones->add($item2);
 
         $phones->initialize();
 
@@ -68,17 +68,17 @@ class DDC6613Test extends OrmFunctionalTestCase
 
         self::assertFalse($phones->isDirty());
         self::assertTrue($phones->isInitialized());
-        self::assertCount(2, $user->phones);
+        self::assertCount(2, $foundOwningSide->phones);
     }
 }
 
 /** @Entity */
-class DDC6613User
+class DDC6613OwningSide
 {
     /** @Id @Column(type="string") */
     public $id;
 
-    /** @ManyToMany(targetEntity=DDC6613Phone::class) */
+    /** @ManyToMany(targetEntity=DDC6613InverseSide::class) */
     public $phones;
 
     public function __construct()
@@ -89,7 +89,7 @@ class DDC6613User
 }
 
 /** @Entity */
-class DDC6613Phone
+class DDC6613InverseSide
 {
     /** @Id @Column(type="string") */
     private $id;
