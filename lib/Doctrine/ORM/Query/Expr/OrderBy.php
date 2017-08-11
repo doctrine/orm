@@ -68,7 +68,7 @@ class OrderBy
      */
     public function count()
     {
-        return count($this->parts);
+        return \count($this->parts);
     }
 
     /**
