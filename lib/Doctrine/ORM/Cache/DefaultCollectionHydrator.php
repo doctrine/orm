@@ -82,12 +82,12 @@ class DefaultCollectionHydrator implements CollectionHydrator
         foreach ($entityEntries as $index => $entityEntry) {
             $data = $entityEntry->resolveAssociationEntries($this->em);
 
-            $list[$index] = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
-        }
+            $entity = $this->uow->createEntity($entityEntry->class, $data, self::$hints);
 
-        array_walk($list, function($entity, $index) use ($collection) {
             $collection->hydrateSet($index, $entity);
-        });
+
+            $list[$index] = $entity;
+        }
 
         $this->uow->hydrationComplete();
 
