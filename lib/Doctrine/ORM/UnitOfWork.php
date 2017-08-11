@@ -1154,7 +1154,11 @@ class UnitOfWork implements PropertyChangedListener
 
                 $joinColumns = reset($assoc['joinColumns']);
 
-                $calc->addDependency($targetClass->name, $class->name, (int) ! ( ! isset($joinColumns['nullable']) || $joinColumns['nullable'] === true));
+                $calc->addDependency(
+                    $targetClass->name,
+                    $class->name,
+                    (int) (($joinColumns['nullable'] ?? true) === false)
+                );
 
                 // If the target class has mapped subclasses, these share the same dependency.
                 if ( ! $targetClass->subClasses) {
