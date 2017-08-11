@@ -1249,8 +1249,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function getCommitOrder(): array
     {
-        $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
-        $calc            = $this->getCommitOrderCalculator();
+        $calc = $this->getCommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
         // commit order graph yet (don't have a node).
@@ -1259,7 +1258,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = [];
 
-        foreach ($entityChangeSet as $entity) {
+        foreach (array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
             if ($calc->hasNode($class->name)) {
