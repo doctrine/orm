@@ -118,10 +118,12 @@ class PersistentCollectionTest extends OrmTestCase
     {
         $this->setUpPersistentCollection();
 
-        $this->collection->add('dummy');
-        $this->collection->removeElement('dummy');
+        $dummy = new \stdClass();
+
+        $this->collection->add($dummy);
+        $this->collection->removeElement($dummy);
         $this->collection->clear();
-        $this->collection->add('dummy');
+        $this->collection->add($dummy);
         $this->assertEquals([0], array_keys($this->collection->toArray()));
     }
 }
