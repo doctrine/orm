@@ -92,7 +92,7 @@ abstract class Base
      */
     public function count()
     {
-        return count($this->parts);
+        return \count($this->parts);
     }
 
     /**
@@ -100,7 +100,7 @@ abstract class Base
      */
     public function __toString()
     {
-        if ($this->count() == 1) {
+        if (1 === $this->count()) {
             return (string) $this->parts[0];
         }
 
