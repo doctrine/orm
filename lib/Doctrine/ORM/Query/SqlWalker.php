@@ -888,7 +888,7 @@ class SqlWalker implements TreeWalker
      *
      * @return string
      */
-    private function generateRangeVariableDeclarationSQL($rangeVariableDeclaration, $buildNestedJoins)
+    private function generateRangeVariableDeclarationSQL($rangeVariableDeclaration, bool $buildNestedJoins) : string
     {
         $class    = $this->em->getClassMetadata($rangeVariableDeclaration->abstractSchemaName);
         $dqlAlias = $rangeVariableDeclaration->aliasIdentificationVariable;

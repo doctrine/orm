@@ -12,7 +12,7 @@ class GH6464Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
@@ -29,7 +29,7 @@ class GH6464Test extends OrmFunctionalTestCase
      * SqlWalker needs to generate nested INNER JOIN statements, otherwise there would be INNER JOIN
      * statements without an ON clause, which are valid on e.g. MySQL but rejected by PostgreSQL.
      */
-    public function testIssue()
+    public function testIssue() : void
     {
         $query = $this->_em->createQueryBuilder()
             ->select('p')
