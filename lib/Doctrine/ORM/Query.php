@@ -398,18 +398,19 @@ final class Query extends AbstractQuery
             }
 
             $sqlPositions = $paramMappings[$key];
+            $sqlPositionsCount = count($sqlPositions);
 
             // optimized multi value sql positions away for now,
             // they are not allowed in DQL anyways.
             $value = [$value];
             $countValue = count($value);
 
-            for ($i = 0, $l = count($sqlPositions); $i < $l; $i++) {
+            for ($i = 0, $l = $sqlPositionsCount; $i < $l; $i++) {
                 $sqlParams[$sqlPositions[$i]] = $value[($i % $countValue)];
             }
         }
 
-        if (count($sqlParams) != count($types)) {
+        if (count($sqlParams) !== count($types)) {
             throw QueryException::parameterTypeMismatch();
         }
 
