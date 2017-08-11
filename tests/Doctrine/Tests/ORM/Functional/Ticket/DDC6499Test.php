@@ -30,12 +30,10 @@ class DDC6499Test extends OrmFunctionalTestCase
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(
-            [
-                $this->_em->getClassMetadata(DDC6499A::class),
-                $this->_em->getClassMetadata(DDC6499B::class),
-            ]
-        );
+        $this->_schemaTool->dropSchema([
+            $this->_em->getClassMetadata(DDC6499A::class),
+            $this->_em->getClassMetadata(DDC6499B::class),
+        ]);
     }
 
     /**
