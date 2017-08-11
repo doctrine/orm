@@ -712,13 +712,15 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private function restoreNewObjectsInDirtyCollection(array $newObjects)
     {
         $loadedObjects               = $this->collection->toArray();
-        $newObjectsByOid             = array_combine(array_map('spl_object_hash', $newObjects), $newObjects);
-        $loadedObjectsByOid          = array_combine(array_map('spl_object_hash', $loadedObjects), $loadedObjects);
-        $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
+        $newObjectsByOid             = \array_combine(\array_map('spl_object_hash', $newObjects), $newObjects);
+        $loadedObjectsByOid          = \array_combine(\array_map('spl_object_hash', $loadedObjects), $loadedObjects);
+        $newObjectsThatWereNotLoaded = \array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
-        // Reattach NEW objects added through add(), if any.
-        array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
+        if ($newObjectsThatWereNotLoaded) {
+            // Reattach NEW objects added through add(), if any.
+            \array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
 
-        $this->isDirty = (bool) $newObjectsThatWereNotLoaded;
+            $this->isDirty = true;
+        }
     }
 }
