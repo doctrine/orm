@@ -1,10 +1,4 @@
 <?php
-/**
- *
- * User: Uladzimir Struts <Sysaninster@gmail.com>
- * Date: 11.08.2017
- * Time: 12:28
- */
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
