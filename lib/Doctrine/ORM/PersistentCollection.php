@@ -240,11 +240,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function getDeleteDiff()
     {
-        return array_udiff_assoc(
-            $this->snapshot,
-            $this->collection->toArray(),
-            function($a, $b) { return $a === $b ? 0 : 1; }
-        );
+        $collectionItems = $this->collection->toArray();
+
+        return \array_values(\array_diff_key(
+            \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot),
+            \array_combine(\array_map('spl_object_hash', $collectionItems), $collectionItems)
+        ));
     }
 
     /**
@@ -255,11 +256,12 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function getInsertDiff()
     {
-        return array_udiff_assoc(
-            $this->collection->toArray(),
-            $this->snapshot,
-            function($a, $b) { return $a === $b ? 0 : 1; }
-        );
+        $collectionItems = $this->collection->toArray();
+
+        return \array_values(\array_diff_key(
+            \array_combine(\array_map('spl_object_hash', $collectionItems), $collectionItems),
+            \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot)
+        ));
     }
 
     /**
