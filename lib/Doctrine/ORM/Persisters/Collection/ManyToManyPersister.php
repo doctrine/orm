@@ -369,7 +369,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
         $filterSql = implode(' AND ', $filterClauses);
 
-        return count($filterClauses) > 1
+        return isset($filterClauses[1])
             ? '(' . $filterSql . ')'
             : $filterSql
         ;
