@@ -526,7 +526,7 @@ class QueryBuilder
             }
         );
 
-        if (count($filteredParameters)) {
+        if (! $filteredParameters->isEmpty()) {
             /* @var Query\Parameter $parameter */
             $parameter = $filteredParameters->first();
             $parameter->setValue($value, $type);
@@ -607,7 +607,7 @@ class QueryBuilder
             }
         );
 
-        return count($filteredParameters) ? $filteredParameters->first() : null;
+        return $filteredParameters->isEmpty() ? null : $filteredParameters->first();
     }
 
     /**
