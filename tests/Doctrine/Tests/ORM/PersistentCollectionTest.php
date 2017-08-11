@@ -3,7 +3,9 @@
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -23,7 +25,7 @@ class PersistentCollectionTest extends OrmTestCase
     protected $collection;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerMock
      */
     private $_emMock;
 
@@ -125,5 +127,42 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->clear();
         $this->collection->add($dummy);
         $this->assertEquals([0], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6613
+     * @group 6614
+     * @group 6616
+     */
+    public function testWillKeepNewItemsAfterInitialization()
+    {
+        /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $this->setUpPersistentCollection();
+
+        $newElement       = new \stdClass();
+        $persistedElement = new \stdClass();
+
+        $this->collection->add($newElement);
+
+        self::assertFalse($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+
+        $unitOfWork
+            ->expects(self::once())
+            ->method('loadCollection')
+            ->with($this->collection)
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use ($persistedElement) {
+                $persistentCollection->unwrap()->add($persistedElement);
+            });
+
+        $this->collection->initialize();
+
+        self::assertSame([$persistedElement, $newElement], $this->collection->toArray());
+        self::assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
     }
 }
