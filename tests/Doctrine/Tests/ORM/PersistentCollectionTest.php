@@ -134,7 +134,7 @@ class PersistentCollectionTest extends OrmTestCase
      * @group 6614
      * @group 6616
      */
-    public function testWillKeepNewItemsAfterInitialization()
+    public function testWillKeepNewItemsInDirtyCollectionAfterInitialization()
     {
         /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
         $unitOfWork = $this->createMock(UnitOfWork::class);
@@ -162,6 +162,52 @@ class PersistentCollectionTest extends OrmTestCase
         $this->collection->initialize();
 
         self::assertSame([$persistedElement, $newElement], $this->collection->toArray());
+        self::assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+    }
+
+    /**
+     * @group 6613
+     * @group 6614
+     * @group 6616
+     */
+    public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization()
+    {
+        /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $this->setUpPersistentCollection();
+
+        $newElement                    = new \stdClass();
+        $newElementThatIsAlsoPersisted = new \stdClass();
+        $persistedElement              = new \stdClass();
+
+        $this->collection->add($newElementThatIsAlsoPersisted);
+        $this->collection->add($newElement);
+
+        self::assertFalse($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+
+        $unitOfWork
+            ->expects(self::once())
+            ->method('loadCollection')
+            ->with($this->collection)
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
+                $persistedElement,
+                $newElementThatIsAlsoPersisted
+            ) {
+                $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
+                $persistentCollection->unwrap()->add($persistedElement);
+            });
+
+        $this->collection->initialize();
+
+        self::assertSame(
+            [$newElementThatIsAlsoPersisted, $persistedElement, $newElement],
+            $this->collection->toArray()
+        );
         self::assertTrue($this->collection->isInitialized());
         self::assertTrue($this->collection->isDirty());
     }
