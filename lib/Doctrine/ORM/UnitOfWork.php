@@ -1045,16 +1045,10 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets the commit order.
      *
-     * @param array|null $entityChangeSet
-     *
      * @return array
      */
-    private function getCommitOrder(array $entityChangeSet = null)
+    private function getCommitOrder()
     {
-        if ($entityChangeSet === null) {
-            $entityChangeSet = array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions);
-        }
-
         $calc = new Internal\CommitOrderCalculator();
 
         // See if there are any new classes in the changeset, that are not in the
@@ -1064,7 +1058,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = [];
 
-        foreach ($entityChangeSet as $entity) {
+        foreach (\array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
             if ($calc->hasNode($class->getClassName())) {
