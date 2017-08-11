@@ -128,7 +128,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
-     * @var array
+     * @var string[]
      */
     public $identifier = [];
 
@@ -537,7 +537,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function isIdentifierComposite() : bool
     {
-        return count($this->identifier) > 1;
+        return isset($this->identifier[1]);
     }
 
     /**
