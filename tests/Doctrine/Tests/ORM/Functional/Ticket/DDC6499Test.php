@@ -44,9 +44,12 @@ class DDC6499Test extends OrmFunctionalTestCase
     public function testIssue() : void
     {
         $b = new DDC6499B();
-        $a = new DDC6499A($b);
+        $a = new DDC6499A();
 
         $this->_em->persist($a);
+
+        $a->b = $b;
+
         $this->_em->persist($b);
 
         $this->_em->flush();
@@ -58,7 +61,9 @@ class DDC6499Test extends OrmFunctionalTestCase
     public function testIssueReversed() : void
     {
         $b = new DDC6499B();
-        $a = new DDC6499A($b);
+        $a = new DDC6499A();
+
+        $a->b = $b;
 
         $this->_em->persist($b);
         $this->_em->persist($a);
@@ -78,11 +83,6 @@ class DDC6499A
 
     /** @JoinColumn(nullable=false) @OneToOne(targetEntity=DDC6499B::class) */
     public $b;
-
-    public function __construct(DDC6499B $b)
-    {
-        $this->b = $b;
-    }
 }
 
 /** @Entity */
