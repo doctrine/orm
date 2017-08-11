@@ -31,9 +31,6 @@ class User
      */
     public $phones;
 
-    /**
-     * User constructor.
-     */
     public function __construct()
     {
         $this->id     = uniqid('user', true);
