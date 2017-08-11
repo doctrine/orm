@@ -719,6 +719,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         // Reattach NEW objects added through add(), if any.
         array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
 
-        $this->isDirty = true;
+        $this->isDirty = (bool) $newObjectsThatWereNotLoaded;
     }
 }
