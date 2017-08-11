@@ -1705,7 +1705,7 @@ class BasicEntityPersister implements EntityPersister
         $selectedColumns = [];
         $columns         = $this->getSelectConditionStatementColumnSQL($field, $association);
 
-        if (in_array($comparison, [Comparison::IN, Comparison::NIN]) && count($columns) > 1) {
+        if (in_array($comparison, [Comparison::IN, Comparison::NIN]) && isset($columns[1])) {
             // @todo try to support multi-column IN expressions. Example: (col1, col2) IN (('val1A', 'val2A'), ...)
             throw ORMException::cantUseInOperatorOnCompositeKeys();
         }
