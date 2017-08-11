@@ -6,7 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * @group DDC-6499
+ * @group #6499
+ *
+ *
+ * Specifically, DDC6499B has a dependency on DDC6499A, and DDC6499A
+ * has a dependency on DDC6499B. Since DDC6499A#b is not nullable,
+ * the DDC6499B should be inserted first.
  */
 class DDC6499Test extends OrmFunctionalTestCase
 {
@@ -36,69 +41,56 @@ class DDC6499Test extends OrmFunctionalTestCase
         ]);
     }
 
-    /**
-     * Test for the bug described in issue #6499.
-     */
     public function testIssue() : void
     {
-        $a = new DDC6499A();
-        $this->_em->persist($a);
-
         $b = new DDC6499B();
-        $a->b = $b;
+        $a = new DDC6499A($b);
+
+        $this->_em->persist($a);
         $this->_em->persist($b);
 
         $this->_em->flush();
-        $this->_em->clear();
 
-        self::assertEquals($this->_em->find(DDC6499A::class, $a->id)->b->id, $b->id, "Issue #6499 will result in a Integrity constraint violation before reaching this point.");
+        self::assertInternalType('integer', $a->id);
+        self::assertInternalType('integer', $b->id);
     }
 
-    /**
-     * Test for the bug described in issue #6499 (reversed order).
-     */
     public function testIssueReversed() : void
     {
-        $a = new DDC6499A();
-
         $b = new DDC6499B();
-        $a->b = $b;
+        $a = new DDC6499A($b);
 
         $this->_em->persist($b);
         $this->_em->persist($a);
 
         $this->_em->flush();
-        $this->_em->clear();
 
-        self::assertEquals($this->_em->find(DDC6499A::class, $a->id)->b->id, $b->id, "Issue #6499 will result in a Integrity constraint violation before reaching this point.");
+        self::assertInternalType('integer', $a->id);
+        self::assertInternalType('integer', $b->id);
     }
 }
 
 /** @Entity */
 class DDC6499A
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="DDC6499B")
-     * @JoinColumn(nullable=false)
-     */
+    /** @JoinColumn(nullable=false) @OneToOne(targetEntity=DDC6499B::class) */
     public $b;
+
+    public function __construct(DDC6499B $b)
+    {
+        $this->b = $b;
+    }
 }
 
 /** @Entity */
 class DDC6499B
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 
-    /**
-     * @ManyToOne(targetEntity="DDC6499A", inversedBy="bs")
-     */
-    public $a;
+    /** @ManyToOne(targetEntity="DDC6499A") */
+    private $a;
 }
