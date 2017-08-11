@@ -757,11 +757,11 @@ abstract class AbstractQuery
             return $result;
         }
 
-        if (isset($result[1])) {
+        if (count($result) > 1) {
             throw new NonUniqueResultException;
         }
 
-        return $result[0];
+        return array_shift($result);
     }
 
     /**
@@ -791,11 +791,11 @@ abstract class AbstractQuery
             return $result;
         }
 
-        if (isset($result[1])) {
+        if (count($result) > 1) {
             throw new NonUniqueResultException;
         }
 
-        return $result[0];
+        return array_shift($result);
     }
 
     /**
