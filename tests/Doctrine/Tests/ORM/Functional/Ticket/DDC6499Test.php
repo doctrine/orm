@@ -17,12 +17,10 @@ class DDC6499Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
+        $this->_schemaTool->createSchema([
             $this->_em->getClassMetadata(DDC6499A::class),
             $this->_em->getClassMetadata(DDC6499B::class),
-            ]
-        );
+        ]);
     }
 
     /**
