@@ -595,7 +595,7 @@ class QueryBuilder
             }
         );
 
-        return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
+        return $filteredParameters->isEmpty() ? null : $filteredParameters->first();
     }
 
     /**
