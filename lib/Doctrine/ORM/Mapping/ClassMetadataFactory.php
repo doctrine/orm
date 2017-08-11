@@ -254,7 +254,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // verify inheritance
         if ( ! $class->isMappedSuperclass && $class->inheritanceType !== InheritanceType::NONE) {
             if ( ! $parent) {
-                if (count($class->discriminatorMap) === 0) {
+                if (! $class->discriminatorMap) {
                     throw MappingException::missingDiscriminatorMap($class->getClassName());
                 }
 
