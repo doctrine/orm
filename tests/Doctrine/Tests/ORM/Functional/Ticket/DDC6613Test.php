@@ -10,10 +10,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Schema\SchemaException;
-use Doctrine\ORM\Mapping\Column;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\GeneratedValue;
-use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -40,14 +36,17 @@ class DDC6613Test extends OrmFunctionalTestCase
 
     public function testFail()
     {
-        $user = new DDC6613User();
-        $this->_em->persist($user);
+        $newUser = new DDC6613User();
+        $this->_em->persist($newUser);
         $this->_em->flush();
 
         $this->_em->clear();
 
-        /** @var User $user */
-        $user   = $this->_em->find(User::class, 1);
+        /** @var DDC6613User $user */
+        $user   = $this->_em->find(DDC6613User::class, $newUser->id);
+
+        self::assertInstanceOf(DDC6613User::class, $user);
+
         $phone1 = new DDC6613Phone();
         $phones = $user->phones;
         $user->phones->add($phone1);
@@ -88,10 +87,10 @@ class DDC6613User
      * @GeneratedValue(strategy="NONE")
      * @Column(type="string")
      */
-    private $id;
+    public $id;
 
     /**
-     * @ManyToMany(targetEntity="Phone", fetch="LAZY", cascade={"remove", "detach"})
+     * @ManyToMany(targetEntity=DDC6613Phone::class, fetch="LAZY", cascade={"remove", "detach"})
      */
     public $phones;
 
@@ -103,6 +102,7 @@ class DDC6613User
 }
 
 /**
+ * @Entity
  * @Table(name="ddc6613_phone")
  */
 class DDC6613Phone
