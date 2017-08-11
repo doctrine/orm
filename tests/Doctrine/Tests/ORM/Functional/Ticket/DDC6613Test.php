@@ -67,7 +67,7 @@ class DDC6613Test extends OrmFunctionalTestCase
         $phones->initialize();
 
         self::assertTrue($phones->isInitialized());
-        self::assertFalse($phones->isDirty(), 'Possibly wrong assertion');
+        self::assertTrue($phones->isDirty());
         self::assertCount(2, $phones);
 
         $this->_em->flush();
