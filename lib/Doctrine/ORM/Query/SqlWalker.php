@@ -1851,7 +1851,7 @@ class SqlWalker implements TreeWalker
                 }
             }
 
-            if (count($filterClauses)) {
+            if ($filterClauses) {
                 if ($condSql) {
                     $condSql = '(' . $condSql . ') AND ';
                 }
