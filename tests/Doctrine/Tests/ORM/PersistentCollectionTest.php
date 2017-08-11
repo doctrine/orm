@@ -34,6 +34,8 @@ class PersistentCollectionTest extends OrmTestCase
         parent::setUp();
 
         $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
+
+        $this->setUpPersistentCollection();
     }
 
     /**
@@ -60,7 +62,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testCurrentInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->current();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -70,7 +71,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testKeyInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->key();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -80,7 +80,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testNextInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -90,8 +89,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testRemovingElementsAlsoRemovesKeys()
     {
-        $this->setUpPersistentCollection();
-
         $dummy = new \stdClass();
 
         $this->collection->add($dummy);
@@ -106,8 +103,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoClearKeys()
     {
-        $this->setUpPersistentCollection();
-
         $this->collection->add(new \stdClass());
         $this->collection->clear();
         $this->assertEquals([], array_keys($this->collection->toArray()));
@@ -118,8 +113,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoResetKeyPositions()
     {
-        $this->setUpPersistentCollection();
-
         $dummy = new \stdClass();
 
         $this->collection->add($dummy);
@@ -140,8 +133,6 @@ class PersistentCollectionTest extends OrmTestCase
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->_emMock->setUnitOfWork($unitOfWork);
-
-        $this->setUpPersistentCollection();
 
         $newElement       = new \stdClass();
         $persistedElement = new \stdClass();
@@ -177,8 +168,6 @@ class PersistentCollectionTest extends OrmTestCase
         $unitOfWork = $this->createMock(UnitOfWork::class);
 
         $this->_emMock->setUnitOfWork($unitOfWork);
-
-        $this->setUpPersistentCollection();
 
         $newElement                    = new \stdClass();
         $newElementThatIsAlsoPersisted = new \stdClass();
