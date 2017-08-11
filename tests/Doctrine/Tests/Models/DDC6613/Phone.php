@@ -10,7 +10,6 @@ namespace Doctrine\Tests\Models\DDC6613;
 
 
 /**
- * @Entity(readOnly=true)
  * @Table(name="ddc6613_phone")
  */
 
@@ -19,9 +18,13 @@ class Phone
 
     /**
      * @Id
-     * @GeneratedValue
+     * @GeneratedValue(strategy="NONE")
      * @Column(type="integer")
      */
     public $id;
 
+    public function __construct()
+    {
+        $this->id = uniqid('phone', true);
+    }
 }

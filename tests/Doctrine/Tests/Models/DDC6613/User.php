@@ -20,10 +20,10 @@ class User
 
     /**
      * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @GeneratedValue(strategy="NONE")
+     * @Column(type="string")
      */
-    public $id;
+    private $id;
 
 
     /**
@@ -36,6 +36,7 @@ class User
      */
     public function __construct()
     {
+        $this->id     = uniqid('user', true);
         $this->phones = new ArrayCollection();
     }
 
