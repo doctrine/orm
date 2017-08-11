@@ -63,7 +63,12 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @ORM\MappedSuperclass
+ * @ORM\Entity()
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
+ *     "parent" = "DDC1404ParentEntity",
+ *     "child" = "DDC1404ChildEntity"
+ * })
  *
  * @ORM\NamedQueries({
  *      @ORM\NamedQuery(name="all",     query="SELECT p FROM __CLASS__ p"),
@@ -72,7 +77,6 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC1404ParentEntity
 {
-
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -87,7 +91,6 @@ class DDC1404ParentEntity
     {
         return $this->id;
     }
-
 }
 
 /**
@@ -100,7 +103,6 @@ class DDC1404ParentEntity
  */
 class DDC1404ChildEntity extends DDC1404ParentEntity
 {
-
     /**
      * @ORM\Column(type="string")
      */
@@ -129,5 +131,4 @@ class DDC1404ChildEntity extends DDC1404ParentEntity
     {
         $this->name = $name;
     }
-
 }

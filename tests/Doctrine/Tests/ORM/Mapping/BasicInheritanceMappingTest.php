@@ -190,22 +190,6 @@ class BasicInheritanceMappingTest extends OrmTestCase
             $class->getProperty('id')->getValueGenerator()->getDefinition()
         );
     }
-
-    /**
-     * Ensure indexes are inherited from the mapped superclass.
-     *
-     * @group DDC-3418
-     */
-    public function testMappedSuperclassIndex()
-    {
-        /* @var $ClassMetadata class */
-        $class = $this->cmf->getMetadataFor(EntityIndexSubClass::class);
-
-        self::assertNotNull($class->getProperty('mapped1'));
-        self::assertArrayHasKey('IDX_NAME_INDEX', $class->table->getUniqueConstraints());
-        self::assertArrayHasKey('IDX_MAPPED1_INDEX', $class->table->getUniqueConstraints());
-        self::assertArrayHasKey('IDX_MAPPED2_INDEX', $class->table->getIndexes());
-    }
 }
 
 class TransientBaseClass {
@@ -247,10 +231,6 @@ class EntitySubClass2 extends MappedSuperclassBase {
 
 /**
  * @ORM\MappedSuperclass
- * @ORM\Table(
- *  uniqueConstraints={@ORM\UniqueConstraint(name="IDX_MAPPED1_INDEX",columns={"mapped1"})},
- *  indexes={@ORM\Index(name="IDX_MAPPED2_INDEX", columns={"mapped2"})}
- * )
  */
 class MappedSuperclassBaseIndex {
     /** @ORM\Column(type="string") */
