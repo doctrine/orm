@@ -1021,7 +1021,7 @@ public function __construct(<params>)
      */
     protected function generateTableAnnotation(ClassMetadata $metadata)
     {
-        if ($metadata->isEmbeddedClass) {
+        if ($metadata->isEmbeddedClass || $metadata->isMappedSuperclass) {
             return '';
         }
 

@@ -52,8 +52,11 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
             $this->createMock(Mapping\ClassMetadataFactory::class),
             $this->createMock(ReflectionService::class)
         );
+
         $exporter = new XmlExporter();
+
         $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
+        $metadata->setTable(new Mapping\TableMetadata('entityTest'));
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -98,8 +101,11 @@ XML;
             $this->createMock(Mapping\ClassMetadataFactory::class),
             $this->createMock(ReflectionService::class)
         );
+
         $exporter = new XmlExporter();
+
         $metadata = new ClassMetadata('entityTest', $metadataBuildingContext);
+        $metadata->setTable(new Mapping\TableMetadata('entityTest'));
 
         $fieldMetadata = new Mapping\FieldMetadata('myField');
         $fieldMetadata->setType(Type::getType('string'));

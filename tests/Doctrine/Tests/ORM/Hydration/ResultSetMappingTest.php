@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\TableMetadata;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -122,6 +123,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMapping()
     {
         $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
+        $cm->setTable(new TableMetadata("cms_users"));
 
         $joinColumn = new JoinColumnMetadata();
         $joinColumn->setReferencedColumnName('id');
@@ -209,6 +211,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
         $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);
+        $cm->setTable(new TableMetadata("cms_users"));
 
         $cm->addNamedNativeQuery(
             'find-all',

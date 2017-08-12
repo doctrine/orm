@@ -35,6 +35,18 @@ class TableMetadata
     protected $uniqueConstraints = [];
 
     /**
+     * TableMetadata constructor.
+     *
+     * @param null|string $name
+     * @param null|string $schema
+     */
+    public function __construct(?string $name = null, ?string $schema = null)
+    {
+        $this->name   = $name;
+        $this->schema = $schema;
+    }
+
+    /**
      * @return string|null
      */
     public function getSchema() : ?string

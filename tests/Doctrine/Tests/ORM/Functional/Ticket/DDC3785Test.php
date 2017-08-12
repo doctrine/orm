@@ -30,6 +30,7 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @group embedded
      * @group DDC-3785
      */
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
