@@ -68,58 +68,72 @@ class XmlDriver extends FileDriver
             throw Mapping\MappingException::classIsNotAValidEntityOrMappedSuperClass($className);
         }
 
-        // Evaluate <entity...> attributes
-        if (isset($xmlRoot['table'])) {
-            $metadata->table->setName((string) $xmlRoot['table']);
-        }
+        // Process table information
+        $parent = $metadata->getParent();
 
-        if (isset($xmlRoot['schema'])) {
-            $metadata->table->setSchema((string) $xmlRoot['schema']);
-        }
+        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
+            $metadata->setTable($parent->table);
+        } else {
+            $namingStrategy = $metadataBuildingContext->getNamingStrategy();
+            $tableMetadata  = new Mapping\TableMetadata();
 
-        if (isset($xmlRoot->options)) {
-            $options = $this->parseOptions($xmlRoot->options->children());
+            $tableMetadata->setName($namingStrategy->classToTableName($metadata->getClassName()));
 
-            foreach ($options as $optionName => $optionValue) {
-                $metadata->table->addOption($optionName, $optionValue);
+            // Evaluate <entity...> attributes
+            if (isset($xmlRoot['table'])) {
+                $tableMetadata->setName((string) $xmlRoot['table']);
             }
-        }
 
-        // Evaluate <indexes...>
-        if (isset($xmlRoot->indexes)) {
-            foreach ($xmlRoot->indexes->index as $indexXml) {
-                $indexName = isset($indexXml['name']) ? (string) $indexXml['name'] : null;
-                $columns   = explode(',', (string) $indexXml['columns']);
-                $isUnique  = isset($indexXml['unique']) && $indexXml['unique'];
-                $options   = isset($indexXml->options) ? $this->parseOptions($indexXml->options->children()) : [];
-                $flags     = isset($indexXml['flags']) ? explode(',', (string) $indexXml['flags']) : [];
-
-                $metadata->table->addIndex([
-                    'name'    => $indexName,
-                    'columns' => $columns,
-                    'unique'  => $isUnique,
-                    'options' => $options,
-                    'flags'   => $flags,
-                ]);
+            if (isset($xmlRoot['schema'])) {
+                $tableMetadata->setSchema((string) $xmlRoot['schema']);
             }
-        }
 
-        // Evaluate <unique-constraints..>
+            if (isset($xmlRoot->options)) {
+                $options = $this->parseOptions($xmlRoot->options->children());
 
-        if (isset($xmlRoot->{'unique-constraints'})) {
-            foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
-                $indexName = isset($uniqueXml['name']) ? (string) $uniqueXml['name'] : null;
-                $columns   = explode(',', (string) $uniqueXml['columns']);
-                $options   = isset($uniqueXml->options) ? $this->parseOptions($uniqueXml->options->children()) : [];
-                $flags     = isset($uniqueXml['flags']) ? explode(',', (string) $uniqueXml['flags']) : [];
-
-                $metadata->table->addUniqueConstraint([
-                    'name'    => $indexName,
-                    'columns' => $columns,
-                    'options' => $options,
-                    'flags'   => $flags,
-                ]);
+                foreach ($options as $optionName => $optionValue) {
+                    $tableMetadata->addOption($optionName, $optionValue);
+                }
             }
+
+            // Evaluate <indexes...>
+            if (isset($xmlRoot->indexes)) {
+                foreach ($xmlRoot->indexes->index as $indexXml) {
+                    $indexName = isset($indexXml['name']) ? (string) $indexXml['name'] : null;
+                    $columns   = explode(',', (string) $indexXml['columns']);
+                    $isUnique  = isset($indexXml['unique']) && $indexXml['unique'];
+                    $options   = isset($indexXml->options) ? $this->parseOptions($indexXml->options->children()) : [];
+                    $flags     = isset($indexXml['flags']) ? explode(',', (string) $indexXml['flags']) : [];
+
+                    $tableMetadata->addIndex([
+                        'name'    => $indexName,
+                        'columns' => $columns,
+                        'unique'  => $isUnique,
+                        'options' => $options,
+                        'flags'   => $flags,
+                    ]);
+                }
+            }
+
+            // Evaluate <unique-constraints..>
+
+            if (isset($xmlRoot->{'unique-constraints'})) {
+                foreach ($xmlRoot->{'unique-constraints'}->{'unique-constraint'} as $uniqueXml) {
+                    $indexName = isset($uniqueXml['name']) ? (string) $uniqueXml['name'] : null;
+                    $columns   = explode(',', (string) $uniqueXml['columns']);
+                    $options   = isset($uniqueXml->options) ? $this->parseOptions($uniqueXml->options->children()) : [];
+                    $flags     = isset($uniqueXml['flags']) ? explode(',', (string) $uniqueXml['flags']) : [];
+
+                    $tableMetadata->addUniqueConstraint([
+                        'name'    => $indexName,
+                        'columns' => $columns,
+                        'options' => $options,
+                        'flags'   => $flags,
+                    ]);
+                }
+            }
+
+            $metadata->setTable($tableMetadata);
         }
 
         // Evaluate second level cache
@@ -404,6 +418,10 @@ class XmlDriver extends FileDriver
                 $association->setTargetEntity($targetEntity);
                 $association->setMappedBy((string) $oneToManyElement['mapped-by']);
 
+                if (isset($associationIds[$association->getName()])) {
+                    throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $association->getName());
+                }
+
                 if (isset($oneToManyElement['fetch'])) {
                     $association->setFetchMode(
                         constant(sprintf('%s::%s', Mapping\FetchMode::class, (string) $oneToManyElement['fetch']))
@@ -509,6 +527,10 @@ class XmlDriver extends FileDriver
                 $targetEntity = $metadata->fullyQualifiedClassName((string) $manyToManyElement['target-entity']);
 
                 $association->setTargetEntity($targetEntity);
+
+                if (isset($associationIds[$association->getName()])) {
+                    throw Mapping\MappingException::illegalToManyIdentifierAssociation($className, $association->getName());
+                }
 
                 if (isset($manyToManyElement['fetch'])) {
                     $association->setFetchMode(

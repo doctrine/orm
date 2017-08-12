@@ -229,8 +229,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         parent::__construct($entityName, $metadataBuildingContext);
 
         $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
-
-        $this->setTable(new TableMetadata());
     }
 
     /**
@@ -730,11 +728,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $property->setOwningSide($property->getMappedBy() === null);
         $property->setTargetEntity($targetEntity);
 
-        // Mandatory and optional attributes for either side
-        if ($property->getMappedBy()) {
-            $property->setOwningSide(false);
-        }
-
         // Complete id mapping
         if ($property->isPrimaryKey()) {
             if ($property->isOrphanRemoval()) {
@@ -874,9 +867,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     protected function validateAndCompleteToManyAssociationMetadata(ToManyAssociationMetadata $property)
     {
-        if ($property->isPrimaryKey()) {
-            throw MappingException::illegalToManyIdentifierAssociation($this->className, $property->getName());
-        }
+        // Do nothing
     }
 
     /**

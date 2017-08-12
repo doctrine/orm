@@ -307,10 +307,11 @@ class DatabaseDriver implements MappingDriver
      */
     private function buildTable(Mapping\ClassMetadata $metadata)
     {
-        $tableName    = $this->classToTableNames[$metadata->getClassName()];
-        $indexes      = $this->tables[$tableName]->getIndexes();
+        $tableName      = $this->classToTableNames[$metadata->getClassName()];
+        $indexes        = $this->tables[$tableName]->getIndexes();
+        $tableMetadata  = new Mapping\TableMetadata();
 
-        $metadata->table->setName($this->classToTableNames[$metadata->getClassName()]);
+        $tableMetadata->setName($this->classToTableNames[$metadata->getClassName()]);
 
         foreach ($indexes as $index) {
             /** @var Index $index */
@@ -318,7 +319,7 @@ class DatabaseDriver implements MappingDriver
                 continue;
             }
 
-            $metadata->table->addIndex([
+            $tableMetadata->addIndex([
                 'name'    => $index->getName(),
                 'columns' => $index->getColumns(),
                 'unique'  => $index->isUnique(),
@@ -326,6 +327,8 @@ class DatabaseDriver implements MappingDriver
                 'flags'   => $index->getFlags(),
             ]);
         }
+
+        $metadata->setTable($tableMetadata);
     }
 
     /**
