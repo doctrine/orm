@@ -1142,7 +1142,7 @@ class SqlWalker implements TreeWalker
                 $class      = $this->em->getClassMetadata($joinDeclaration->abstractSchemaName);
                 $dqlAlias   = $joinDeclaration->aliasIdentificationVariable;
                 $tableAlias = $this->getSQLTableAlias($class->table['name'], $dqlAlias);
-                $condition = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
+                $conditions = '(' . $this->walkConditionalExpression($join->conditionalExpression) . ')';
                 $isUnconditionalJoin = empty($conditions);
                 $condExprConjunction = ($class->isInheritanceTypeJoined() && $joinType != AST\Join::JOIN_TYPE_LEFT && $joinType != AST\Join::JOIN_TYPE_LEFTOUTER && $isUnconditionalJoin)
                     ? ' AND '
