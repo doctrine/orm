@@ -368,8 +368,12 @@ class UnitOfWork implements PropertyChangedListener
 
             // Entity deletions come last and need to be in reverse commit order
             if ($this->entityDeletions) {
-                for ($count = count($commitOrder), $i = $count - 1; $i >= 0 && $this->entityDeletions; --$i) {
-                    $this->executeDeletions($commitOrder[$i]);
+                foreach (array_reverse($commitOrder) as $committedEntityName) {
+                    if (! $this->entityDeletions) {
+                        break; // just a performance optimisation
+                    }
+
+                    $this->executeDeletions($committedEntityName);
                 }
             }
 
@@ -1091,12 +1095,10 @@ class UnitOfWork implements PropertyChangedListener
                     $newNodes[] = $targetClass;
                 }
 
-                $weight = count(
-                    array_filter(
-                        $property->getJoinColumns(),
-                        function (JoinColumnMetadata $joinColumn) { return $joinColumn->isNullable(); }
-                    )
-                ) === 0;
+                $weight = ! array_filter(
+                    $property->getJoinColumns(),
+                    function (JoinColumnMetadata $joinColumn) { return $joinColumn->isNullable(); }
+                );
 
                 $calc->addDependency($targetClass->getClassName(), $class->getClassName(), $weight);
 

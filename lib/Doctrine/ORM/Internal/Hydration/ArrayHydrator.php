@@ -53,13 +53,16 @@ class ArrayHydrator extends AbstractHydrator
      */
     protected function prepare()
     {
-        $this->isSimpleQuery = count($this->rsm->aliasMap) <= 1;
+        $simpleQuery = 0;
 
         foreach ($this->rsm->aliasMap as $dqlAlias => $className) {
             $this->identifierMap[$dqlAlias]  = [];
             $this->resultPointers[$dqlAlias] = [];
             $this->idTemplate[$dqlAlias]     = '';
+            $simpleQuery                    += 1; // avoiding counting the alias map
         }
+
+        $this->isSimpleQuery = $simpleQuery < 2;
     }
 
     /**
@@ -233,13 +236,14 @@ class ArrayHydrator extends AbstractHydrator
             }
 
             $scalarCount = (isset($rowData['scalars'])? count($rowData['scalars']): 0);
+            $onlyOneRootAlias = 0 === $scalarCount && 1 === count($rowData['newObjects']);
 
             foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];
                 $args   = $newObject['args'];
                 $obj    = $class->newInstanceArgs($args);
 
-                if (count($args) == $scalarCount || ($scalarCount == 0 && count($rowData['newObjects']) == 1)) {
+                if ($onlyOneRootAlias || \count($args) === $scalarCount) {
                     $result[$resultKey] = $obj;
 
                     continue;

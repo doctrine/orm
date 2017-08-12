@@ -312,7 +312,7 @@ abstract class AbstractQuery
             }
         );
 
-        return count($filteredParameters) ? $filteredParameters->first() : null;
+        return $filteredParameters->isEmpty() ? null : $filteredParameters->first();
     }
 
     /**
@@ -361,7 +361,7 @@ abstract class AbstractQuery
             }
         );
 
-        if (count($filteredParameters)) {
+        if (! $filteredParameters->isEmpty()) {
             $parameter = $filteredParameters->first();
             $parameter->setValue($value, $type);
 

@@ -249,7 +249,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     public function hasSubClasses() : bool
     {
-        return count($this->subClasses) > 0;
+        return (bool) $this->subClasses;
     }
 
     /**

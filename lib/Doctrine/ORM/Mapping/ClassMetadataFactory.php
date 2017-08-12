@@ -254,7 +254,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         // verify inheritance
         if ( ! $class->isMappedSuperclass && $class->inheritanceType !== InheritanceType::NONE) {
             if ( ! $parent) {
-                if (count($class->discriminatorMap) === 0) {
+                if (! $class->discriminatorMap) {
                     throw MappingException::missingDiscriminatorMap($class->getClassName());
                 }
 
@@ -262,7 +262,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     throw MappingException::missingDiscriminatorColumn($class->getClassName());
                 }
             }
-        } else if ($class->isMappedSuperclass && $class->isRootEntity() && (count($class->discriminatorMap) || $class->discriminatorColumn)) {
+        } else if (($class->discriminatorMap || $class->discriminatorColumn) && $class->isMappedSuperclass && $class->isRootEntity()) {
             // second condition is necessary for mapped superclasses in the middle of an inheritance hierarchy
             throw MappingException::noInheritanceOnMappedSuperClass($class->getClassName());
         }
