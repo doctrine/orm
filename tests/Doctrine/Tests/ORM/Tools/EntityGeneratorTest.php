@@ -240,6 +240,7 @@ class EntityGeneratorTest extends OrmTestCase
     private function generateIsbnEmbeddableFixture(array $embeddedClasses = [], $columnPrefix = null)
     {
         $metadata = new ClassMetadata($this->namespace . '\EntityGeneratorIsbn', $this->staticMetadataBuildingContext);
+
         $metadata->isEmbeddedClass = true;
 
         $fieldMetadata = new Mapping\FieldMetadata('prefix');
@@ -522,6 +523,7 @@ class EntityGeneratorTest extends OrmTestCase
     }
 
     /**
+     * @group embedded
      * @group DDC-2121
      */
     public function testMethodDocBlockShouldStartWithBackSlash()
@@ -541,12 +543,16 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertPhpDocReturnType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'getAuthor'));
         self::assertPhpDocParamType('\Doctrine\Tests\ORM\Tools\EntityGeneratorAuthor|null', new \ReflectionMethod($book, 'setAuthor'));
 
-//        $expectedClassName = '\\' . $embeddedMetadata->getClassName();
-//        self::assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));
-//        self::assertPhpDocReturnType($expectedClassName, new \ReflectionMethod($book, 'getIsbn'));
-//        self::assertPhpDocParamType($expectedClassName, new \ReflectionMethod($book, 'setIsbn'));
+        $expectedClassName = '\\' . $embeddedMetadata->getClassName();
+
+        self::assertPhpDocVarType($expectedClassName, new \ReflectionProperty($book, 'isbn'));
+        self::assertPhpDocReturnType($expectedClassName, new \ReflectionMethod($book, 'getIsbn'));
+        self::assertPhpDocParamType($expectedClassName, new \ReflectionMethod($book, 'setIsbn'));
     }
 
+    /**
+     * @group embedded
+     */
     public function testEntityExtendsStdClass()
     {
         $this->generator->setClassToExtend('stdClass');
@@ -571,6 +577,9 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertTrue($reflClass->hasMethod('willBeRemoved'), "Check for preRemove lifecycle callback.");
     }
 
+    /**
+     * @group embedded
+     */
     public function testLoadMetadata()
     {
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
@@ -586,21 +595,24 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->lifecycleCallbacks, $metadata->lifecycleCallbacks);
         self::assertEquals($cm->identifier, $metadata->identifier);
         self::assertEquals($cm->getCustomRepositoryClassName(), $metadata->getCustomRepositoryClassName());
-//        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
-//        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
+        self::assertEquals($cm->embeddedClasses, $metadata->embeddedClasses);
+        self::assertEquals($cm->isEmbeddedClass, $metadata->isEmbeddedClass);
 
         self::assertEquals(Mapping\FetchMode::EXTRA_LAZY, $cm->getProperty('comments')->getFetchMode());
 
-//        $isbn = $this->newInstance($embeddedMetadata);
-//
-//        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
-//
-//        $driver->loadMetadataForClass($cm->getClassName(), $cm);
-//
-//        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
-//        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
+        $isbn = $this->newInstance($embeddedMetadata);
+
+        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
+
+        $driver->loadMetadataForClass($cm->getClassName(), $cm);
+
+        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
+        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
 
+    /**
+     * @group embedded
+     */
     public function testLoadPrefixedMetadata()
     {
         $embeddedMetadata = $this->generateIsbnEmbeddableFixture();
@@ -620,14 +632,14 @@ class EntityGeneratorTest extends OrmTestCase
         self::assertEquals($cm->identifier, $metadata->identifier);
         self::assertEquals($cm->getCustomRepositoryClassName(), $metadata->getCustomRepositoryClassName());
 
-//        $isbn = $this->newInstance($embeddedMetadata);
-//
-//        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
-//
-//        $driver->loadMetadataForClass($cm->getClassName(), $cm);
-//
-//        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
-//        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
+        $isbn = $this->newInstance($embeddedMetadata);
+
+        $cm = new ClassMetadata($embeddedMetadata->getClassName(), $this->runtimeMetadataBuildingContext);
+
+        $driver->loadMetadataForClass($cm->getClassName(), $cm);
+
+        self::assertEquals($cm->embeddedClasses, $embeddedMetadata->embeddedClasses);
+        self::assertEquals($cm->isEmbeddedClass, $embeddedMetadata->isEmbeddedClass);
     }
 
     /**
@@ -673,6 +685,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testGenerateEntityWithSequenceGenerator()
     {
         $metadata = new ClassMetadata($this->namespace . '\DDC1784Entity', $this->staticMetadataBuildingContext);
+        $metadata->setTable(new Mapping\TableMetadata('ddc1784_entity'));
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));
@@ -711,6 +724,7 @@ class EntityGeneratorTest extends OrmTestCase
     public function testGenerateEntityWithMultipleInverseJoinColumns()
     {
         $metadata = new ClassMetadata($this->namespace . '\DDC2079Entity', $this->staticMetadataBuildingContext);
+        $metadata->setTable(new Mapping\TableMetadata('ddc2079_entity'));
 
         $fieldMetadata = new Mapping\FieldMetadata('id');
         $fieldMetadata->setType(Type::getType('integer'));

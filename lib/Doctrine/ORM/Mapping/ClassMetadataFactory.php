@@ -118,10 +118,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         if ($parent) {
             $classMetadata->setParent($parent);
 
-            if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $classMetadata->setTable($parent->table);
-            }
-
             $this->addInheritedProperties($classMetadata, $parent);
 
             $classMetadata->setInheritanceType($parent->inheritanceType);
@@ -150,11 +146,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->completeIdentifierGeneratorMappings($classMetadata);
 
         if ($parent) {
-            if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
-                $classMetadata->setTable($parent->table);
-            }
-
-            $this->addInheritedIndexes($classMetadata, $parent);
             $this->addInheritedNamedQueries($classMetadata, $parent);
 
             if ($parent->getCache()) {
@@ -398,37 +389,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->addInheritedProperty($property);
-        }
-    }
-
-    /**
-     * Copy the table indices from the parent class superclass to the child class
-     *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
-     *
-     * @return void
-     */
-    private function addInheritedIndexes(ClassMetadata $subClass, ClassMetadata $parentClass) : void
-    {
-        if ( ! $parentClass->isMappedSuperclass) {
-            return;
-        }
-
-        foreach ($parentClass->table->getIndexes() as $indexName => $index) {
-            if ($subClass->table->hasIndex($indexName)) {
-                continue;
-            }
-
-            $subClass->table->addIndex($index);
-        }
-
-        foreach ($parentClass->table->getUniqueConstraints() as $constraintName => $constraint) {
-            if ($subClass->table->hasUniqueConstraint($constraintName)) {
-                continue;
-            }
-
-            $subClass->table->addUniqueConstraint($constraint);
         }
     }
 
