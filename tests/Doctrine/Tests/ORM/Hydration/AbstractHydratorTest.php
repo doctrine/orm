@@ -52,6 +52,17 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
             ->method('removeEventListener')
             ->with([Events::onClear], $mockAbstractHydrator);
 
+        $mockEventManager
+            ->expects(self::at(2))
+            ->method('addEventListener')
+            ->with([Events::onClear], $mockAbstractHydrator);
+
+        $mockEventManager
+            ->expects(self::at(3))
+            ->method('removeEventListener')
+            ->with([Events::onClear], $mockAbstractHydrator);
+
         iterator_to_array($mockAbstractHydrator->iterate($mockStatement, $mockResultMapping));
+        $mockAbstractHydrator->hydrateAll($mockStatement, $mockResultMapping);
     }
 }
