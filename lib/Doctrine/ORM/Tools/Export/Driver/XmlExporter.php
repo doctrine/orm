@@ -41,10 +41,10 @@ class XmlExporter extends AbstractExporter
      */
     public function exportClassMetadata(ClassMetadataInfo $metadata): string
     {
-        $xml = new SimpleXmlElement("<?xml version=\"1.0\" encoding=\"utf-8\"?><doctrine-mapping ".
-            "xmlns=\"http://doctrine-project.org/schemas/orm/doctrine-mapping\" " .
-            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ".
-            "xsi:schemaLocation=\"http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd\" />");
+        $xml = new SimpleXmlElement('<?xml version="1.0" encoding="utf-8"?><doctrine-mapping ' .
+            'xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" ' .
+            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
+            'xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd" />');
 
         if ($metadata->isMappedSuperclass) {
             $root = $xml->addChild('mapped-superclass');
@@ -98,7 +98,7 @@ class XmlExporter extends AbstractExporter
 
         $trackingPolicy = $this->_getChangeTrackingPolicyString($metadata->changeTrackingPolicy);
 
-        if ( $trackingPolicy != 'DEFERRED_IMPLICIT') {
+        if ($trackingPolicy != 'DEFERRED_IMPLICIT') {
             $root->addChild('change-tracking-policy', $trackingPolicy);
         }
 
@@ -144,7 +144,7 @@ class XmlExporter extends AbstractExporter
             }
         }
 
-        if ( ! $metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
+        if (!$metadata->isIdentifierComposite && $idGeneratorType = $this->_getIdGeneratorTypeString($metadata->generatorType)) {
             $id[$metadata->getSingleIdentifierFieldName()]['generator']['strategy'] = $idGeneratorType;
         }
 
@@ -430,7 +430,7 @@ class XmlExporter extends AbstractExporter
     {
         $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
 
-        if (! ($metadata->generatorType === ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
+        if (!($metadata->generatorType === ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE && $sequenceDefinition)) {
             return;
         }
 
