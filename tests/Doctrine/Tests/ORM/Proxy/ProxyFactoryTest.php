@@ -75,6 +75,26 @@ class ProxyFactoryTest extends OrmTestCase
         $proxy->getDescription();
     }
 
+    public function testSkipMappedSuperClassesOnGeneration()
+    {
+        $cm = new ClassMetadata(\stdClass::class);
+        $cm->isMappedSuperclass = true;
+
+        $num = $this->proxyFactory->generateProxyClasses([$cm]);
+
+        $this->assertEquals(0, $num, "No proxies generated.");
+    }
+
+    public function testSkipEmbeddableClassesOnGeneration()
+    {
+        $cm = new ClassMetadata(\stdClass::class);
+        $cm->isEmbeddedClass = true;
+
+        $num = $this->proxyFactory->generateProxyClasses([$cm]);
+
+        $this->assertEquals(0, $num, "No proxies generated.");
+    }
+
     /**
      * @group DDC-1771
      */
