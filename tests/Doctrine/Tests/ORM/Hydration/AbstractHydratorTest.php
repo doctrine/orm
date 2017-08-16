@@ -2,12 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Common\EventManager;
-use Doctrine\DBAL\Driver\Statement;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -37,7 +32,7 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
 
         /* @var $mockAbstractHydrator AbstractHydrator */
         $mockAbstractHydrator = $this
-            ->getMockBuilder(AbstractHydrator::class)
+            ->getMockBuilder('Doctrine\ORM\Internal\Hydration\AbstractHydrator')
             ->setConstructorArgs([$mockEntityManagerInterface])
             ->setMethods(['hydrateAllData'])
             ->getMock();
