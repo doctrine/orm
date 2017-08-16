@@ -143,8 +143,7 @@ abstract class AbstractHydrator
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
 
-        $evm = $this->_em->getEventManager();
-        $evm->addEventListener(array(Events::onClear), $this);
+        $this->_em->getEventManager()->addEventListener([Events::onClear], $this);
 
         $this->prepare();
 
