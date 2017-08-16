@@ -71,6 +71,33 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $proxy->getDescription();
     }
 
+    public function testSkipMappedSuperClassesOnGeneration()
+    {
+        $cm = new ClassMetadata('stdClass');
+        $cm->isMappedSuperclass = true;
+
+        self::assertSame(
+            0,
+            $this->proxyFactory->generateProxyClasses([$cm]),
+            'No proxies generated.'
+        );
+    }
+
+    /**
+     * @group 6625
+     */
+    public function testSkipEmbeddableClassesOnGeneration()
+    {
+        $cm = new ClassMetadata('stdClass');
+        $cm->isEmbeddedClass = true;
+
+        self::assertSame(
+            0,
+            $this->proxyFactory->generateProxyClasses([$cm]),
+            'No proxies generated.'
+        );
+    }
+
     /**
      * @group DDC-1771
      */
