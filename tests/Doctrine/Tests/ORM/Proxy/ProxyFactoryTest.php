@@ -71,9 +71,9 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
         $proxy->getDescription();
     }
 
-    public function testSkipMappedSuperClassesOnGeneration(): void
+    public function testSkipMappedSuperClassesOnGeneration()
     {
-        $cm = new ClassMetadata(\stdClass::class);
+        $cm = new ClassMetadata('stdClass');
         $cm->isMappedSuperclass = true;
 
         self::assertSame(
@@ -86,9 +86,9 @@ class ProxyFactoryTest extends \Doctrine\Tests\OrmTestCase
     /**
      * @group 6625
      */
-    public function testSkipEmbeddableClassesOnGeneration(): void
+    public function testSkipEmbeddableClassesOnGeneration()
     {
-        $cm = new ClassMetadata(\stdClass::class);
+        $cm = new ClassMetadata('stdClass');
         $cm->isEmbeddedClass = true;
 
         self::assertSame(
