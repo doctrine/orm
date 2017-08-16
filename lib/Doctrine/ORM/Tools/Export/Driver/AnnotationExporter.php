@@ -58,21 +58,11 @@ class AnnotationExporter extends AbstractExporter
         return $this->_entityGenerator->generateEntityClass($metadata);
     }
 
-    /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
-     *
-     * @return string
-     */
     protected function _generateOutputPath(ClassMetadataInfo $metadata): string
     {
         return $this->_outputDir . '/' . str_replace('\\', '/', $metadata->name) . $this->_extension;
     }
 
-    /**
-     * @param \Doctrine\ORM\Tools\EntityGenerator $entityGenerator
-     *
-     * @return void
-     */
     public function setEntityGenerator(EntityGenerator $entityGenerator): void
     {
         $this->_entityGenerator = $entityGenerator;
