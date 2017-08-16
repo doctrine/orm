@@ -82,6 +82,8 @@ class PhpExporter extends AbstractExporter
             }
         }
 
+        $lines = array_merge($lines, $this->processEntityListeners($metadata));
+
         foreach ($metadata->fieldMappings as $fieldMapping) {
             $lines[] = '$metadata->mapField(' . $this->_varExport($fieldMapping) . ');';
         }
@@ -176,5 +178,23 @@ class PhpExporter extends AbstractExporter
         $export = str_replace('  ', ' ', $export);
 
         return $export;
+    }
+
+    private function processEntityListeners(ClassMetadataInfo $metadata) : array
+    {
+        $lines = [];
+
+        foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+            foreach ($entityListenerConfig as $entityListener) {
+                $lines[] = \sprintf(
+                    '$metadata->addEntityListener(%s, %s, %s);',
+                    \var_export($event, true),
+                    \var_export($entityListener['class'], true),
+                    \var_export($entityListener['method'], true)
+                );
+            }
+        }
+
+        return $lines;
     }
 }

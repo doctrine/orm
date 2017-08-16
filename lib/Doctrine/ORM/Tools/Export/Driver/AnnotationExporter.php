@@ -59,7 +59,7 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata
+     * @param ClassMetadataInfo $metadata
      *
      * @return string
      */
@@ -69,7 +69,7 @@ class AnnotationExporter extends AbstractExporter
     }
 
     /**
-     * @param \Doctrine\ORM\Tools\EntityGenerator $entityGenerator
+     * @param EntityGenerator $entityGenerator
      *
      * @return void
      */
