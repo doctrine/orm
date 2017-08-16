@@ -185,11 +185,11 @@ class PhpExporter extends AbstractExporter
 
         foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
             foreach ($entityListenerConfig as $entityListener) {
-                $lines[] = sprintf(
+                $lines[] = \sprintf(
                     '$metadata->addEntityListener(%s, %s, %s);',
-                    var_export($event, true),
-                    var_export($entityListener['class'], true),
-                    var_export($entityListener['method'], true)
+                    \var_export($event, true),
+                    \var_export($entityListener['class'], true),
+                    \var_export($entityListener['method'], true)
                 );
             }
         }
