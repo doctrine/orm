@@ -75,6 +75,7 @@ class ProxyFactoryTest extends OrmTestCase
         $proxy->getDescription();
     }
 
+
     public function testSkipMappedSuperClassesOnGeneration(): void
     {
         $cm = new ClassMetadata(\stdClass::class);
@@ -82,7 +83,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        self::assertSame(0, $num, "No proxies generated.");
+        self::assertSame(0, $num, 'No proxies generated.');
     }
 
     /**
@@ -95,7 +96,7 @@ class ProxyFactoryTest extends OrmTestCase
 
         $num = $this->proxyFactory->generateProxyClasses([$cm]);
 
-        self::assertSame(0, $num, "No proxies generated.");
+        self::assertSame(0, $num, 'No proxies generated.');
     }
 
     /**
