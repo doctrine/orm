@@ -1414,7 +1414,7 @@ public function __construct(<params>)
     protected function generateLifecycleCallbackMethod($name, $methodName, ClassMetadataInfo $metadata)
     {
         if ($this->hasMethod($methodName, $metadata)) {
-            return null;
+            return '';
         }
 
         $this->staticReflection[$metadata->name]['methods'][] = $methodName;
