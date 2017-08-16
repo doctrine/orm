@@ -39,7 +39,7 @@ class YamlExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata): string
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $array = [];
 
@@ -230,12 +230,12 @@ class YamlExporter extends AbstractExporter
      *
      * @return string A YAML string representing the original PHP array
      */
-    protected function yamlDump($array, $inline = 2): string
+    protected function yamlDump($array, $inline = 2)
     {
         return Yaml::dump($array, $inline);
     }
 
-    private function processEntityListeners(ClassMetadataInfo $metadata, array $array): array
+    private function processEntityListeners(ClassMetadataInfo $metadata, array $array) : array
     {
         if (0 === \count($metadata->entityListeners)) {
             return $array;
@@ -250,12 +250,13 @@ class YamlExporter extends AbstractExporter
         return $array;
     }
 
-    private function processEntityListenerConfig(array $array, array $entityListenerConfig, string $event): array
+    private function processEntityListenerConfig(array $array, array $entityListenerConfig, string $event) : array
     {
         foreach ($entityListenerConfig as $entityListener) {
-            if (!isset($array['entityListeners'][$entityListener['class']])) {
+            if (! isset($array['entityListeners'][$entityListener['class']])) {
                 $array['entityListeners'][$entityListener['class']] = [];
             }
+
             $array['entityListeners'][$entityListener['class']][$event] = [$entityListener['method']];
         }
 

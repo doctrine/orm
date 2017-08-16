@@ -39,7 +39,7 @@ class XmlExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata): string
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $xml = new SimpleXmlElement('<?xml version="1.0" encoding="utf-8"?><doctrine-mapping ' .
             'xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" ' .
@@ -402,7 +402,7 @@ class XmlExporter extends AbstractExporter
      * @param SimpleXMLElement $parentXml
      * @param array            $options
      */
-    private function exportTableOptions(SimpleXMLElement $parentXml, array $options): void
+    private function exportTableOptions(SimpleXMLElement $parentXml, array $options) : void
     {
         foreach ($options as $name => $option) {
             $isArray   = is_array($option);
@@ -426,7 +426,7 @@ class XmlExporter extends AbstractExporter
      *
      * @return void
      */
-    private function exportSequenceInformation(SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata): void
+    private function exportSequenceInformation(SimpleXMLElement $identifierXmlNode, ClassMetadataInfo $metadata) : void
     {
         $sequenceDefinition = $metadata->sequenceGeneratorDefinition;
 
@@ -441,7 +441,7 @@ class XmlExporter extends AbstractExporter
         $sequenceGeneratorXml->addAttribute('initial-value', $sequenceDefinition['initialValue']);
     }
 
-    private function _asXml(SimpleXMLElement $simpleXml): string
+    private function _asXml(SimpleXMLElement $simpleXml) : string
     {
         $dom = new \DOMDocument('1.0', 'UTF-8');
         $dom->loadXML($simpleXml->asXML());

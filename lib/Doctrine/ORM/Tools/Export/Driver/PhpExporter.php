@@ -38,7 +38,7 @@ class PhpExporter extends AbstractExporter
     /**
      * {@inheritdoc}
      */
-    public function exportClassMetadata(ClassMetadataInfo $metadata): string
+    public function exportClassMetadata(ClassMetadataInfo $metadata)
     {
         $lines = [];
         $lines[] = '<?php';
@@ -161,7 +161,12 @@ class PhpExporter extends AbstractExporter
         return implode("\n", $lines);
     }
 
-    protected function _varExport($var): string
+    /**
+     * @param mixed $var
+     *
+     * @return string
+     */
+    protected function _varExport($var)
     {
         $export = var_export($var, true);
         $export = str_replace("\n", PHP_EOL . str_repeat(' ', 8), $export);
@@ -175,13 +180,9 @@ class PhpExporter extends AbstractExporter
         return $export;
     }
 
-    private function processEntityListeners(ClassMetadataInfo $metadata): array
+    private function processEntityListeners(ClassMetadataInfo $metadata) : array
     {
         $lines = [];
-
-        if (0 === \count($metadata->entityListeners)) {
-            return $lines;
-        }
 
         foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
             foreach ($entityListenerConfig as $entityListener) {
