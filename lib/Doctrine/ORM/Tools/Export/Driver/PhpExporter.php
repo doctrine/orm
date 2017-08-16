@@ -161,11 +161,6 @@ class PhpExporter extends AbstractExporter
         return implode("\n", $lines);
     }
 
-    /**
-     * @param mixed $var
-     *
-     * @return string
-     */
     protected function _varExport($var): string
     {
         $export = var_export($var, true);
