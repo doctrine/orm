@@ -109,7 +109,7 @@ class DefaultQueryCache implements QueryCache
 
         // @TODO - move to cache hydration component
         foreach ($entry->result as $index => $entry) {
-            $entityEntry = is_array($entries) && array_key_exists($index, $entries) ? $entries[$index] : null;
+            $entityEntry = is_array($entries) ? ($entries[$index] ?? null) : null;
 
             if ($entityEntry === null) {
                 if ($this->cacheLogger !== null) {
@@ -182,7 +182,7 @@ class DefaultQueryCache implements QueryCache
                 $collection = [];
 
                 foreach ($assoc['list'] as $assocIndex => $assocId) {
-                    $assocEntry = is_array($assocEntries) && array_key_exists($assocIndex, $assocEntries) ? $assocEntries[$assocIndex] : null;
+                    $assocEntry = is_array($assocEntries) ? ($assocEntries[$assocIndex] ?? null) : null;
 
                     if ($assocEntry === null) {
                         if ($this->cacheLogger !== null) {
