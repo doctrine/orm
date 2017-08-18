@@ -169,6 +169,13 @@ class ResultSetMapping
     public $metadataParameterMapping = [];
 
     /**
+     * Contains query parameter names to be resolved as discriminator values
+     *
+     * @var array
+     */
+    public $discriminatorParameters = [];
+
+    /**
      * Adds an entity result to this ResultSetMapping.
      *
      * @param string      $class       The class name of the entity.

@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -37,7 +38,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * @author Alexander <iam.asm89@gmail.com>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @since  2.0
- * @todo Rename: SQLWalker
  */
 class SqlWalker implements TreeWalker
 {
@@ -2035,6 +2035,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * {@inheritdoc}
+     * @throws \Doctrine\ORM\Query\QueryException
      */
     public function walkInstanceOfExpression($instanceOfExpr)
     {
@@ -2052,36 +2053,7 @@ class SqlWalker implements TreeWalker
         }
 
         $sql .= $class->discriminatorColumn['name'] . ($instanceOfExpr->not ? ' NOT IN ' : ' IN ');
-
-        $sqlParameterList = [];
-
-        foreach ($instanceOfExpr->value as $parameter) {
-            if ($parameter instanceof AST\InputParameter) {
-                $this->rsm->addMetadataParameterMapping($parameter->name, 'discriminatorValue');
-
-                $sqlParameterList[] = $this->walkInputParameter($parameter);
-
-                continue;
-            }
-
-            // Get name from ClassMetadata to resolve aliases.
-            $entityClassName    = $this->em->getClassMetadata($parameter)->name;
-            $discriminatorValue = $class->discriminatorValue;
-
-            if ($entityClassName !== $class->name) {
-                $discrMap = array_flip($class->discriminatorMap);
-
-                if ( ! isset($discrMap[$entityClassName])) {
-                    throw QueryException::instanceOfUnrelatedClass($entityClassName, $class->rootEntityName);
-                }
-
-                $discriminatorValue = $discrMap[$entityClassName];
-            }
-
-            $sqlParameterList[] = $this->conn->quote($discriminatorValue);
-        }
-
-        $sql .= '(' . implode(', ', $sqlParameterList) . ')';
+        $sql .= $this->getChildDiscriminatorsFromClassMetadata($discrClass, $instanceOfExpr);
 
         return $sql;
     }
@@ -2314,5 +2286,38 @@ class SqlWalker implements TreeWalker
         }
 
         return $resultAlias;
+    }
+
+    /**
+     * @param ClassMetadataInfo $rootClass
+     * @param AST\InstanceOfExpression $instanceOfExpr
+     * @return string The list in parentheses of valid child discriminators from the given class
+     * @throws QueryException
+     */
+    private function getChildDiscriminatorsFromClassMetadata(ClassMetadataInfo $rootClass, AST\InstanceOfExpression $instanceOfExpr): string
+    {
+        $sqlParameterList = [];
+        $discriminators = [];
+        foreach ($instanceOfExpr->value as $parameter) {
+            if ($parameter instanceof AST\InputParameter) {
+                $this->rsm->discriminatorParameters[$parameter->name] = $parameter->name;
+                $sqlParameterList[] = $this->walkInParameter($parameter);
+                continue;
+            }
+
+            $metadata = $this->em->getClassMetadata($parameter);
+
+            if ($metadata->getName() !== $rootClass->name && ! $metadata->getReflectionClass()->isSubclassOf($rootClass->name)) {
+                throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->name);
+            }
+
+            $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);
+        }
+
+        foreach (array_keys($discriminators) as $dis) {
+            $sqlParameterList[] = $this->conn->quote($dis);
+        }
+
+        return '(' . implode(', ', $sqlParameterList) . ')';
     }
 }

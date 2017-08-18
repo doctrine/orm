@@ -27,6 +27,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 
 /**
  * A Query object represents a DQL query.
@@ -396,6 +397,10 @@ final class Query extends AbstractQuery
 
             if (isset($rsm->metadataParameterMapping[$key]) && $value instanceof ClassMetadata) {
                 $value = $value->getMetadataValue($rsm->metadataParameterMapping[$key]);
+            }
+
+            if (isset($rsm->discriminatorParameters[$key]) && $value instanceof ClassMetadata) {
+                $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->_em));
             }
 
             $value = $this->processParameterValue($value);
