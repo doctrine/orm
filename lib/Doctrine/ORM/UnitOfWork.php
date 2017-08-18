@@ -418,12 +418,10 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param null|object|array $entity
+     * @param null|object|object[] $entity
      */
-    private function postCommitClear($entity = null)
+    private function postCommitClear($entity) : void
     {
-
-        // Clear up
         $this->entityInsertions =
         $this->entityUpdates =
         $this->entityDeletions =
@@ -431,22 +429,24 @@ class UnitOfWork implements PropertyChangedListener
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->orphanRemovals = array();
+        $this->orphanRemovals = [];
 
         if (null === $entity) {
             $this->entityChangeSets = $this->scheduledForSynchronization = [];
+
             return;
         }
 
-        if (is_object($entity)) {
-            $entity = [$entity];
-        }
+        $entities = \is_object($entity)
+            ? [$entity]
+            : $entity;
 
-        foreach ($entity as $object) {
-            $oid = spl_object_hash($object);
-            $class = $this->em->getClassMetadata(get_class($object));
+        foreach ($entities as $object) {
+            $oid = \spl_object_hash($object);
+
             $this->clearEntityChangeSet($oid);
-            $this->clearScheduledForSynchronization($class, $oid);
+
+            unset($this->scheduledForSynchronization[$this->em->getClassMetadata(\get_class($object))->rootEntityName][$oid]);
         }
     }
 
@@ -3125,15 +3125,6 @@ class UnitOfWork implements PropertyChangedListener
     private function clearEntityChangeSet($oid)
     {
         $this->entityChangeSets[$oid] = [];
-    }
-
-    /**
-     * @param $class
-     * @param string $oid
-     */
-    private function clearScheduledForSynchronization($class, $oid)
-    {
-        unset($this->scheduledForSynchronization[$class->rootEntityName][$oid]);
     }
 
     /* PropertyChangedListener implementation */
