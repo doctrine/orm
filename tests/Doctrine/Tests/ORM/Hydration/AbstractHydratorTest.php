@@ -20,11 +20,11 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
      */
     public function testOnClearEventListenerIsDetachedOnCleanup()
     {
-        $mockConnection             = $this->createMock('Doctrine\DBAL\Connection');
-        $mockEntityManagerInterface = $this->createMock('Doctrine\ORM\EntityManagerInterface');
-        $mockEventManager           = $this->createMock('Doctrine\Common\EventManager');
-        $mockStatement              = $this->createMock('Doctrine\DBAL\Driver\Statement');
-        $mockResultMapping          = $this->getMockBuilder('Doctrine\ORM\Query\ResultSetMapping');
+        $mockConnection             = $this->getMockBuilder('Doctrine\DBAL\Connection')->disableOriginalConstructor()->getMock();
+        $mockEntityManagerInterface = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $mockEventManager           = $this->getMock('Doctrine\Common\EventManager');
+        $mockStatement              = $this->getMock('Doctrine\DBAL\Driver\Statement');
+        $mockResultMapping          = $this->getMock('Doctrine\ORM\Query\ResultSetMapping');
 
         $mockEntityManagerInterface->expects(self::any())->method('getEventManager')->willReturn($mockEventManager);
         $mockEntityManagerInterface->expects(self::any())->method('getConnection')->willReturn($mockConnection);
