@@ -49,13 +49,6 @@ SELECT queries
 DQL SELECT clause
 ~~~~~~~~~~~~~~~~~
 
-The SELECT clause of a DQL query specifies what gets hydrated in
-the query result. You are always returned usable objects, but any
-associated objects not included in the SELECT clause will be
-proxies (ie. unhydrated).  They get hydrated by Doctrine when
-they're read by your code, but that means at least one additional
-database access. 
-
 Here is an example that selects all users with an age > 20:
 
 .. code-block:: php
@@ -86,30 +79,43 @@ Lets examine the query:
 The result of this query would be a list of User objects where all
 users are older than 20.
 
+Result format
+~~~~~~~~~~~~~
 The composition of the expressions in the SELECT clause also
 influences the nature of the query result. There are three
 cases:
 
-- All objects. For example:
-    ``SELECT u, p, n FROM Users u...``
-  In this case, the result array will be made up of objects of
-  the type in the FROM clause.  In the example above, the query
-  will return an array of User objects, with associated classes
-  identify else where in the query as 'p' and 'n' hydrated.
+**All objects**
 
-- All scalars. For example:
-    ``SELECT u.name, u.address FROM Users u...``
-  In this case, the result will be an array of arrays.  In the
-  example above, each element of the result array would be an
-  array of the scalar name and address values. 
+.. code-block:: sql
 
-  You can select scalars from any entity in the query. 
+    SELECT u, p, n FROM Users u...
 
-- Mixed.  For example:
+In this case, the result will be an array of User objects because of
+the FROM clause, with children ``p`` and ``n`` hydrated because of
+their inclusion in the SELECT clause.
+
+**All scalars**
+
+.. code-block:: sql
+
+    SELECT u.name, u.address FROM Users u...
+
+In this case, the result will be an array of arrays.  In the example
+above, each element of the result array would be an array of the
+scalar name and address values. 
+
+You can select scalars from any entity in the query. 
+
+**Mixed**
+
+.. code-block:: sql
+
     ``SELECT u, p.quantity FROM Users u...``
-  Here, the result will again be an array of arrays, with each
-  element being an array made up of a User object and the scalar
-  value p.quantity.
+
+Here, the result will again be an array of arrays, with each element
+being an array made up of a User object and the scalar value
+``p.quantity``.
 
 Multiple FROM clauses are allowed, which would cause the result
 array elements to cycle through the classes included in the
@@ -118,16 +124,13 @@ multiple FROM clauses.
 .. note::
 
     You cannot select other entities unless you also select the
-    root of the selection (the first entity in FROM).
+    root of the selection (which is the first entity in FROM).
 
-    Doctrine tells you you have violated this constraint with the
-    exception "Cannot select entity through identification
-    variables without choosing at least one root entity alias."
+    For example, ``SELECT p,n FROM Users u...`` would be wrong because
+    ``u`` is not part of the SELECT
 
-It is possible to wrap both fields and identification values into
-aggregation and DQL functions. Numerical fields can be part of
-computations using mathematical operations.  See the sub-section
-on `Functions, Operators, Aggregates`_ for more information.
+    Doctrine throws an exception if you violate this constraint.
+
 
 Joins
 ~~~~~
@@ -496,10 +499,11 @@ Joins between entities without associations were not possible until version
 
     - WHERE is applied to the results of an entire query
     - WITH is applied to a join as an additional condition. For
-    arbitrary joins (SELECT f, b FROM Foo f, Bar b WITH f.id = b.id)
-    the WITH is required, even if it is 1 = 1
+      arbitrary joins (SELECT f, b FROM Foo f, Bar b WITH f.id = b.id)
+      the WITH is required, even if it is 1 = 1
     - HAVING is applied to the results of a query after
-    aggregation (GROUP BY)
+      aggregation (GROUP BY)
+
 
 Partial Object Syntax
 ^^^^^^^^^^^^^^^^^^^^^
@@ -656,6 +660,9 @@ The same restrictions apply for the reference of related entities.
 
 Functions, Operators, Aggregates
 --------------------------------
+It is possible to wrap both fields and identification values into
+aggregation and DQL functions. Numerical fields can be part of
+computations using mathematical operations.
 
 DQL Functions
 ~~~~~~~~~~~~~
@@ -1430,11 +1437,11 @@ Given that there are 10 users and corresponding addresses in the database the ex
 
 .. note::
     Changing the fetch mode during a query mostly makes sense for one-to-one and many-to-one relations. In that case, 
-    all the necessary IDs are available after the root entity (``user`` in the above example) has been loaded. So, one
-    query per association can be executed to fetch all the referred-to entities (``address``).
+    all the necessary IDs are available after the root entity (``user`` in the above example) has been loaded. So, one
+    query per association can be executed to fetch all the referred-to entities (``address``).
     
     For one-to-many relations, changing the fetch mode to eager will cause to execute one query **for every root entity
-    loaded**. This gives no improvement over the ``lazy`` fetch mode which will also initialize the associations on
+    loaded**. This gives no improvement over the ``lazy`` fetch mode which will also initialize the associations on
     a one-by-one basis once they are accessed.
 
 
