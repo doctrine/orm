@@ -324,7 +324,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes done since last commit.
-        if ($entity === null) {
+        if (null === $entity) {
             $this->computeChangeSets();
         } elseif (is_object($entity)) {
             $this->computeSingleEntityChangeSet($entity);
@@ -414,17 +414,40 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchPostFlushEvent();
 
-        // Clear up
+        $this->postCommitCleanup($entity);
+    }
+
+    /**
+     * @param null|object|object[] $entity
+     */
+    private function postCommitCleanup($entity) : void
+    {
         $this->entityInsertions =
         $this->entityUpdates =
         $this->entityDeletions =
         $this->extraUpdates =
-        $this->entityChangeSets =
         $this->collectionUpdates =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->scheduledForSynchronization =
         $this->orphanRemovals = [];
+
+        if (null === $entity) {
+            $this->entityChangeSets = $this->scheduledForSynchronization = [];
+
+            return;
+        }
+
+        $entities = \is_object($entity)
+            ? [$entity]
+            : $entity;
+
+        foreach ($entities as $object) {
+            $oid = \spl_object_hash($object);
+
+            $this->clearEntityChangeSet($oid);
+
+            unset($this->scheduledForSynchronization[$this->em->getClassMetadata(\get_class($object))->rootEntityName][$oid]);
+        }
     }
 
     /**
@@ -3101,7 +3124,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearEntityChangeSet($oid)
     {
-        $this->entityChangeSets[$oid] = [];
+        unset($this->entityChangeSets[$oid]);
     }
 
     /* PropertyChangedListener implementation */

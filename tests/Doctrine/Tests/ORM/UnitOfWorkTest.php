@@ -163,7 +163,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity);
 
         $this->_unitOfWork->commit();
-        $this->assertEquals(1, count($persister->getInserts()));
+        $this->assertCount(1, $persister->getInserts());
+
         $persister->reset();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
@@ -358,6 +359,49 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
         $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+    }
+
+    /**
+     * @group #5579
+     */
+    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity() : void
+    {
+        $entity1 = new NotifyChangedEntity;
+        $entity2 = new NotifyChangedEntity;
+
+        $entity1->setData('thedata');
+        $entity2->setData('thedata');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+
+        $this->_unitOfWork->commit($entity1);
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+    }
+
+    /**
+     * @group #5579
+     */
+    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities() : void
+    {
+        $entity1 = new NotifyChangedEntity;
+        $entity2 = new NotifyChangedEntity;
+        $entity3 = new NotifyChangedEntity;
+
+        $entity1->setData('thedata');
+        $entity2->setData('thedata');
+        $entity3->setData('thedata');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+        $this->_unitOfWork->persist($entity3);
+
+        $this->_unitOfWork->commit([$entity1, $entity3]);
+
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
