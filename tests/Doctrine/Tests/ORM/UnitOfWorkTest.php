@@ -376,8 +376,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity2);
 
         $this->_unitOfWork->commit($entity1);
-        $this->assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
@@ -399,9 +399,9 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->commit([$entity1, $entity3]);
 
-        $this->assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        $this->assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
-        $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
