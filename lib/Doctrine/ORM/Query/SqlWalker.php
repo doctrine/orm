@@ -25,6 +25,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
@@ -2292,7 +2293,7 @@ class SqlWalker implements TreeWalker
                 throw QueryException::instanceOfUnrelatedClass($parameter, $rootClass->name);
             }
 
-            $discriminators = $discriminators + $this->getAllDiscriminators($metadata);
+            $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($metadata, $this->em);
         }
 
         foreach (array_keys($discriminators) as $dis) {
@@ -2300,24 +2301,5 @@ class SqlWalker implements TreeWalker
         }
 
         return '(' . implode(', ', $sqlParameterList) . ')';
-    }
-
-    private function getAllDiscriminators(ClassMetadata $classMetadata)
-    {
-        // FIXME: this code is identical to Query->getAllDiscriminators()
-        $hierarchyClasses = $classMetadata->subClasses;
-        $hierarchyClasses[] = $classMetadata->name;
-
-        $discriminators = [];
-        foreach ($hierarchyClasses as $class) {
-            $currentMetadata = $this->em->getClassMetadata($class);
-            $currentDiscriminator = $currentMetadata->discriminatorValue;
-
-            if (null !== $currentDiscriminator) {
-                $discriminators[$currentDiscriminator] = null;
-            }
-        }
-
-        return $discriminators;
     }
 }

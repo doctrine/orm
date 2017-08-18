@@ -27,6 +27,7 @@ use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 
 /**
  * A Query object represents a DQL query.
@@ -371,25 +372,6 @@ final class Query extends AbstractQuery
         $this->_em->getCache()->evictEntityRegion($className);
     }
 
-    private function getAllDiscriminators(ClassMetadata $classMetadata)
-    {
-        // FIXME: this code is copied from SqlWalker->getAllDiscriminators()
-        $hierarchyClasses = $classMetadata->subClasses;
-        $hierarchyClasses[] = $classMetadata->name;
-
-        $discriminators = [];
-        foreach ($hierarchyClasses as $class) {
-            $currentMetadata = $this->getEntityManager()->getClassMetadata($class);
-            $currentDiscriminator = $currentMetadata->discriminatorValue;
-
-            if (null !== $currentDiscriminator) {
-                $discriminators[$currentDiscriminator] = null;
-            }
-        }
-
-        return $discriminators;
-    }
-
     /**
      * Processes query parameter mappings.
      *
@@ -418,7 +400,7 @@ final class Query extends AbstractQuery
             }
 
             if (isset($rsm->discriminatorParameters[$key]) && $value instanceof ClassMetadata) {
-                $value = array_keys($this->getAllDiscriminators($value));
+                $value = array_keys(HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($value, $this->_em));
             }
 
             $value = $this->processParameterValue($value);
