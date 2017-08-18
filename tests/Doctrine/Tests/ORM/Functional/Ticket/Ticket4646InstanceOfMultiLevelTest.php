@@ -6,7 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -17,7 +17,7 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testInstanceOf()
+    public function testInstanceOf(): void
     {
         $this->_em->persist(new PersonTicket4646MultiLevel());
         $this->_em->persist(new EmployeeTicket4646MultiLevel());
@@ -29,8 +29,8 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(3, $result);
-        $this->assertContainsOnlyInstancesOf(PersonTicket4646MultiLevel::class, $result);
+        self::assertCount(3, $result);
+        self::assertContainsOnlyInstancesOf(PersonTicket4646MultiLevel::class, $result);
     }
 }
 
@@ -54,7 +54,7 @@ class PersonTicket4646MultiLevel
      */
     private $id;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

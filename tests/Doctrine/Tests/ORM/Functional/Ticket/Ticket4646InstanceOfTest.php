@@ -6,7 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -16,7 +16,7 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testInstanceOf()
+    public function testInstanceOf(): void
     {
         $this->_em->persist(new PersonTicket4646());
         $this->_em->persist(new EmployeeTicket4646());
@@ -27,8 +27,8 @@ class Ticket4646InstanceOfTest extends OrmFunctionalTestCase
         $query = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        $this->assertCount(2, $result);
-        $this->assertContainsOnlyInstancesOf(PersonTicket4646::class, $result);
+        self::assertCount(2, $result);
+        self::assertContainsOnlyInstancesOf(PersonTicket4646::class, $result);
     }
 }
 
@@ -51,7 +51,7 @@ class PersonTicket4646
      */
     private $id;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

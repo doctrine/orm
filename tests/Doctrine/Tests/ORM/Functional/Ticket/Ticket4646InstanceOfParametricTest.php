@@ -6,7 +6,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->_schemaTool->createSchema([
@@ -15,7 +15,7 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
         ]);
     }
 
-    public function testInstanceOf()
+    public function testInstanceOf(): void
     {
         $this->_em->persist(new PersonTicket4646Parametric());
         $this->_em->persist(new EmployeeTicket4646Parametric());
@@ -28,8 +28,8 @@ class Ticket4646InstanceOfParametricTest extends OrmFunctionalTestCase
             $this->_em->getClassMetadata(PersonTicket4646Parametric::class)
         );
         $result = $query->getResult();
-        $this->assertCount(2, $result);
-        $this->assertContainsOnlyInstancesOf(PersonTicket4646Parametric::class, $result);
+        self::assertCount(2, $result);
+        self::assertContainsOnlyInstancesOf(PersonTicket4646Parametric::class, $result);
     }
 }
 
@@ -52,7 +52,7 @@ class PersonTicket4646Parametric
      */
     private $id;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
