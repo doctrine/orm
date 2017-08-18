@@ -294,6 +294,14 @@ abstract class AbstractHydrator
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
 
+                    if(
+                        isset($cacheKeyInfo['discriminatorColumn']) && 
+                        isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
+                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
+                    ){
+                        break;
+                    }
+
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
                     // Per definition it cannot be that a field is defined several times and has several values.
@@ -375,13 +383,23 @@ abstract class AbstractHydrator
                 $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
                 $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
+                $ownerMap      = $this->_rsm->columnOwnerMap[$key];
 
-                return $this->_cache[$key] = [
-                    'isIdentifier' => in_array($fieldName, $classMetadata->identifier),
-                    'fieldName'    => $fieldName,
-                    'type'         => Type::getType($fieldMapping['type']),
-                    'dqlAlias'     => $this->_rsm->columnOwnerMap[$key],
+                $returnArray = [
+                    'isIdentifier'        => in_array($fieldName, $classMetadata->identifier),
+                    'fieldName'           => $fieldName,
+                    'type'                => Type::getType($fieldMapping['type']),
+                    'dqlAlias'            => $ownerMap,
+                    
                 ];
+                if( !empty($classMetadata->parentClasses) && isset($this->_rsm->discriminatorColumns[$ownerMap])){
+                    $returnArray += [
+                        'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
+                        'discriminatorValue'  => $classMetadata->discriminatorValue
+                    ];
+                }
+
+                return $this->_cache[$key] = $returnArray;
 
             case (isset($this->_rsm->newObjectMappings[$key])):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
