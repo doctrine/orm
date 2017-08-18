@@ -625,9 +625,9 @@ class Expr
     /**
      * Creates an instance of BETWEEN() function, with the given argument.
      *
-     * @param mixed   $val Valued to be inspected by range values.
-     * @param integer $x   Starting range value to be used in BETWEEN() function.
-     * @param integer $y   End point value to be used in BETWEEN() function.
+     * @param mixed          $val Valued to be inspected by range values.
+     * @param integer|string $x   Starting range value to be used in BETWEEN() function.
+     * @param integer|string $y   End point value to be used in BETWEEN() function.
      *
      * @return Expr\Func A BETWEEN expression.
      */
