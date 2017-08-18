@@ -362,31 +362,29 @@ class UnitOfWorkTest extends OrmTestCase
     }
 
     /**
-     * @group 5579
+     * @group #5579
      */
-    public function testEntityChangeSetNotClearAfterFlushOnEntityOrArrayOfEntity()
+    public function testEntityChangeSetIsNotClearedAfterFlushOnEntityOrArrayOfEntity() : void
     {
-        // Create and Set first entity
         $entity1 = new NotifyChangedEntity;
-        $entity1->setData('thedata');
-        $this->_unitOfWork->persist($entity1);
-
-        // Create and Set second entity
         $entity2 = new NotifyChangedEntity;
+        $entity3 = new NotifyChangedEntity;
+
+        $entity1->setData('thedata');
         $entity2->setData('thedata');
+        $entity3->setData('thedata');
+
+        $this->_unitOfWork->persist($entity1);
         $this->_unitOfWork->persist($entity2);
 
         $this->_unitOfWork->commit($entity1);
+        $this->assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
         $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
 
-        // Create and Set third entity
-        $entity3 = new NotifyChangedEntity;
-        $entity3->setData('thedata');
         $this->_unitOfWork->persist($entity3);
 
-        $this->_unitOfWork->commit([$entity1,$entity2]);
+        $this->_unitOfWork->commit([$entity1, $entity2]);
         $this->assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity3));
-
     }
 
     /**
