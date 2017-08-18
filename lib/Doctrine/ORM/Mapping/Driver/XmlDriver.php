@@ -811,7 +811,7 @@ class XmlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         $result = array();
-        $xmlElement = simplexml_load_file($file);
+        $xmlElement = simplexml_load_string(file_get_contents($file));
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
