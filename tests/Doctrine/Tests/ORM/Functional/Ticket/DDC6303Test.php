@@ -55,38 +55,39 @@ class DDC6303Test extends OrmFunctionalTestCase
             $b->id => $bData,
         ];
 
-        $contracts = $repository
+        /* @var $entities DDC6303ChildA[]|DDC6303ChildB[] */
+        $entities = $repository
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
             ->setParameter('ids', array_keys($dataMap))
             ->getQuery()->getResult();
 
-        foreach ($contracts as $contract) {
-            static::assertEquals(
-                $contract->originalData,
-                $dataMap[$contract->id],
-                'contract ' . get_class($contract) . ' not equals to original'
+        foreach ($entities as $entity) {
+            self::assertEquals(
+                $entity->originalData,
+                $dataMap[$entity->id],
+                get_class($entity) . ' not equals to original'
             );
         }
     }
 
     public function testEmptyValuesInJoinedInheritance()
     {
-        $contractStringEmptyData = '';
-        $contractStringZeroData  = 0;
-        $contractArrayEmptyData  = [];
+        $stringEmptyData = '';
+        $stringZeroData  = 0;
+        $arrayEmptyData  = [];
 
-        $contractStringEmpty = new DDC6303ChildA();
-        $contractStringZero  = new DDC6303ChildA();
-        $contractArrayEmpty  = new DDC6303ChildB();
+        $stringEmpty = new DDC6303ChildA();
+        $stringZero  = new DDC6303ChildA();
+        $arrayEmpty  = new DDC6303ChildB();
 
-        $contractStringEmpty->originalData = $contractStringEmptyData;
-        $contractStringZero->originalData  = $contractStringZeroData;
-        $contractArrayEmpty->originalData  = $contractArrayEmptyData;
+        $stringEmpty->originalData = $stringEmptyData;
+        $stringZero->originalData  = $stringZeroData;
+        $arrayEmpty->originalData  = $arrayEmptyData;
 
-        $this->_em->persist($contractStringZero);
-        $this->_em->persist($contractStringEmpty);
-        $this->_em->persist($contractArrayEmpty);
+        $this->_em->persist($stringZero);
+        $this->_em->persist($stringEmpty);
+        $this->_em->persist($arrayEmpty);
 
         $this->_em->flush();
 
@@ -96,24 +97,24 @@ class DDC6303Test extends OrmFunctionalTestCase
 
         $repository = $this->_em->getRepository(DDC6303BaseClass::class);
         $dataMap    = [
-            $contractStringZero->id  => $contractStringZeroData,
-            $contractStringEmpty->id => $contractStringEmptyData,
-            $contractArrayEmpty->id  => $contractArrayEmptyData,
+            $stringZero->id  => $stringZeroData,
+            $stringEmpty->id => $stringEmptyData,
+            $arrayEmpty->id  => $arrayEmptyData,
         ];
 
-        /* @var $contracts DDC6303ChildA[]|DDC6303ChildB[] */
-        $contracts = $repository
+        /* @var $entities DDC6303ChildA[]|DDC6303ChildB[] */
+        $entities = $repository
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
             ->setParameter('ids', array_keys($dataMap))
             ->getQuery()
             ->getResult();
 
-        foreach ($contracts as $contract) {
-            static::assertEquals(
-                $contract->originalData,
-                $dataMap[$contract->id],
-                'contract ' . get_class($contract) . ' not equals to original'
+        foreach ($entities as $entity) {
+            self::assertEquals(
+                $entity->originalData,
+                $dataMap[$entity->id],
+                get_class($entity) . ' not equals to original'
             );
         }
     }
