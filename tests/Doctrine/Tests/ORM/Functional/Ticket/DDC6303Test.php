@@ -26,95 +26,51 @@ class DDC6303Test extends OrmFunctionalTestCase
 
     public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
     {
-        $a = new DDC6303ChildA();
-        $b = new DDC6303ChildB();
-
-        $aData = 'authorized';
-        $bData = ['accepted', 'authorized'];
-
         // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
         // but one has a string originalData and the second has an array, since the fields
         // are mapped differently
-        $a->originalData = $aData;
-        $b->originalData = $bData;
+        $this->assertHydratedEntitiesSameToPersistedOnes([
+            'a' => new DDC6303ChildA('a', 'authorized'),
+            'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
+        ]);
 
-        $this->_em->persist($a);
-        $this->_em->persist($b);
-
-        $this->_em->flush();
-
-        // clear entity manager so that $repository->find actually fetches them and uses the hydrator
-        // instead of just returning the existing managed entities
-        $this->_em->clear();
-
-        $repository = $this->_em->getRepository(DDC6303BaseClass::class);
-
-        $dataMap = [
-            $a->id => $aData,
-            $b->id => $bData,
-        ];
-
-        /* @var $entities DDC6303ChildA[]|DDC6303ChildB[] */
-        $entities = $repository
-            ->createQueryBuilder('p')
-            ->where('p.id IN(:ids)')
-            ->setParameter('ids', array_keys($dataMap))
-            ->getQuery()->getResult();
-
-        foreach ($entities as $entity) {
-            self::assertEquals(
-                $entity->originalData,
-                $dataMap[$entity->id],
-                get_class($entity) . ' not equals to original'
-            );
-        }
     }
 
     public function testEmptyValuesInJoinedInheritance() : void
     {
-        $stringEmptyData = '';
-        $stringZeroData  = 0;
-        $arrayEmptyData  = [];
+        $this->assertHydratedEntitiesSameToPersistedOnes([
+            'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
+            'stringZero'  => new DDC6303ChildA('stringZero', 0),
+            'arrayEmpty'  => new DDC6303ChildB('arrayEmpty', []),
+        ]);
+    }
 
-        $stringEmpty = new DDC6303ChildA();
-        $stringZero  = new DDC6303ChildA();
-        $arrayEmpty  = new DDC6303ChildB();
-
-        $stringEmpty->originalData = $stringEmptyData;
-        $stringZero->originalData  = $stringZeroData;
-        $arrayEmpty->originalData  = $arrayEmptyData;
-
-        $this->_em->persist($stringZero);
-        $this->_em->persist($stringEmpty);
-        $this->_em->persist($arrayEmpty);
-
+    /**
+     * @param DDC6303ChildA[]|DDC6303ChildB[] $persistedEntities indexed by identifier
+     *
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
+    {
+        array_walk($persistedEntities, [$this->_em, 'persist']);
         $this->_em->flush();
-
-        // clear entity manager so that $repository->find actually fetches them and uses the hydrator
-        // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(DDC6303BaseClass::class);
-        $dataMap    = [
-            $stringZero->id  => $stringZeroData,
-            $stringEmpty->id => $stringEmptyData,
-            $arrayEmpty->id  => $arrayEmptyData,
-        ];
-
         /* @var $entities DDC6303ChildA[]|DDC6303ChildB[] */
-        $entities = $repository
+        $entities = $this
+            ->_em
+            ->getRepository(DDC6303BaseClass::class)
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
-            ->setParameter('ids', array_keys($dataMap))
-            ->getQuery()
-            ->getResult();
+            ->setParameter('ids', array_keys($persistedEntities))
+            ->getQuery()->getResult();
+
+        self::assertCount(count($persistedEntities), $entities);
 
         foreach ($entities as $entity) {
-            self::assertEquals(
-                $entity->originalData,
-                $dataMap[$entity->id],
-                get_class($entity) . ' not equals to original'
-            );
+            self::assertEquals($entity, $persistedEntities[$entity->id]);
         }
     }
 }
@@ -131,7 +87,7 @@ class DDC6303Test extends OrmFunctionalTestCase
  */
 abstract class DDC6303BaseClass
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 }
 
@@ -140,6 +96,12 @@ class DDC6303ChildA extends DDC6303BaseClass
 {
     /** @Column(type="string", nullable=true) */
     public $originalData;
+
+    public function __construct(string $id, string $originalData)
+    {
+        $this->id           = $id;
+        $this->originalData = $originalData;
+    }
 }
 
 /** @Entity @Table */
@@ -147,4 +109,10 @@ class DDC6303ChildB extends DDC6303BaseClass
 {
     /** @Column(type="simple_array", nullable=true) */
     public $originalData;
+
+    public function __construct(string $id, array $originalData)
+    {
+        $this->id           = $id;
+        $this->originalData = $originalData;
+    }
 }
