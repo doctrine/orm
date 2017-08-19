@@ -2,109 +2,120 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
 /**
- * @group DDC6303
+ * @group #6303
  */
-class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC6303Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
-                [
+            $this->_schemaTool->createSchema([
                 $this->_em->getClassMetadata(DDC6303Contract::class),
                 $this->_em->getClassMetadata(DDC6303ContractA::class),
-                $this->_em->getClassMetadata(DDC6303ContractB::class)
-                ]
-            );
-        } catch (\Exception $ignored) {}
+                $this->_em->getClassMetadata(DDC6303ContractB::class),
+            ]);
+        } catch (SchemaException $ignored) {
+        }
     }
-    
+
     public function testMixedTypeHydratedCorrectlyInJoinedInheritance()
     {
-        $contractA = new DDC6303ContractA();
-        $contractAData = 'authorized';
+        $contractA               = new DDC6303ContractA();
+        $contractAData           = 'authorized';
         $contractA->originalData = $contractAData;
 
         $contractB = new DDC6303ContractB();
         //contractA and contractB have an inheritance from Contract, but one has a string originalData and the second has an array
-        $contractBData = ['accepted', 'authorized'];
+        $contractBData           = ['accepted', 'authorized'];
         $contractB->originalData = $contractBData;
 
         $this->_em->persist($contractA);
         $this->_em->persist($contractB);
 
         $this->_em->flush();
-        
+
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
         // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(DDC6303Contract::class);               
+        $repository = $this->_em->getRepository(DDC6303Contract::class);
 
         $dataMap = [
             $contractA->id => $contractAData,
-            $contractB->id => $contractBData
-        ];              
+            $contractB->id => $contractBData,
+        ];
 
-        $contracts = $repository->createQueryBuilder('p')
+        $contracts = $repository
+            ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
             ->setParameter('ids', array_keys($dataMap))
-            ->getQuery()->getResult(); 
+            ->getQuery()->getResult();
 
-        foreach( $contracts as $contract ){
-            static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
+        foreach ($contracts as $contract) {
+            static::assertEquals(
+                $contract->originalData,
+                $dataMap[$contract->id],
+                'contract ' . get_class($contract) . ' not equals to original'
+            );
         }
-     }
+    }
 
-     public function testEmptyValuesInJoinedInheritance()
+    public function testEmptyValuesInJoinedInheritance()
     {
         $contractStringEmptyData = '';
-        $contractStringZeroData = 0;
-        $contractArrayEmptyData = [];        
+        $contractStringZeroData  = 0;
+        $contractArrayEmptyData  = [];
 
         $contractStringEmpty = new DDC6303ContractA();
+        $contractStringZero  = new DDC6303ContractA();
+        $contractArrayEmpty  = new DDC6303ContractB();
+
         $contractStringEmpty->originalData = $contractStringEmptyData;
-
-        $contractStringZero = new DDC6303ContractA();
-        $contractStringZero->originalData = $contractStringZeroData;
-
-        $contractArrayEmpty = new DDC6303ContractB();
-        $contractArrayEmpty->originalData = $contractArrayEmptyData;
+        $contractStringZero->originalData  = $contractStringZeroData;
+        $contractArrayEmpty->originalData  = $contractArrayEmptyData;
 
         $this->_em->persist($contractStringZero);
         $this->_em->persist($contractStringEmpty);
         $this->_em->persist($contractArrayEmpty);
 
         $this->_em->flush();
-        
+
         // clear entity manager so that $repository->find actually fetches them and uses the hydrator
         // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(DDC6303Contract::class); 
-        $dataMap = [
-            $contractStringZero->id => $contractStringZeroData,
+        $repository = $this->_em->getRepository(DDC6303Contract::class);
+        $dataMap    = [
+            $contractStringZero->id  => $contractStringZeroData,
             $contractStringEmpty->id => $contractStringEmptyData,
-            $contractArrayEmpty->id => $contractArrayEmptyData,
-        ];              
+            $contractArrayEmpty->id  => $contractArrayEmptyData,
+        ];
 
-        $contracts = $repository->createQueryBuilder('p')
+        $contracts = $repository
+            ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
             ->setParameter('ids', array_keys($dataMap))
-            ->getQuery()->getResult(); 
+            ->getQuery()
+            ->getResult();
 
-        foreach( $contracts as $contract ){
-            static::assertEquals($contract->originalData, $dataMap[$contract->id], 'contract ' . get_class($contract) . ' not equals to original');
+        foreach ($contracts as $contract) {
+            static::assertEquals(
+                $contract->originalData,
+                $dataMap[$contract->id],
+                'contract ' . get_class($contract) . ' not equals to original'
+            );
         }
-     }
+    }
 }
-
 
 /**
  * @Entity
- * @Table(name="ddc6303_contract")
+ * @Table
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
@@ -115,40 +126,20 @@ class DDC6303Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC6303Contract
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 }
 
-
-/**
- * @Entity
- * @Table(name="ddc6303_contracts_a")
- */
+/** @Entity @Table */
 class DDC6303ContractA extends DDC6303Contract
 {
-    /**
-     * @Column(type="string", nullable=true)
-     *
-     * @var string
-     */
+    /** @Column(type="string", nullable=true) */
     public $originalData;
 }
 
-
-/**
- * @Entity
- * @Table(name="ddc6303_contracts_b")
- */
+/** @Entity @Table */
 class DDC6303ContractB extends DDC6303Contract
 {
-    /**
-     * @Column(type="simple_array", nullable=true)
-     *
-     * @var array
-     */
+    /** @Column(type="simple_array", nullable=true) */
     public $originalData;
 }
