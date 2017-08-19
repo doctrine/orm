@@ -297,8 +297,9 @@ abstract class AbstractHydrator
                     if(
                         isset($cacheKeyInfo['discriminatorColumn']) && 
                         isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
+                        // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
                         $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
-                    ){
+                    ) {
                         break;
                     }
 
