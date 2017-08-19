@@ -311,8 +311,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Person::class,
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
-        ]
-
+        ],
     ];
 
     /**
