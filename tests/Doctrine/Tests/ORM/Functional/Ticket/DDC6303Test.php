@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Schema\SchemaException;
+use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -13,29 +14,33 @@ class DDC6303Test extends OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema([
-                $this->_em->getClassMetadata(DDC6303Contract::class),
-                $this->_em->getClassMetadata(DDC6303ContractA::class),
-                $this->_em->getClassMetadata(DDC6303ContractB::class),
+                $this->_em->getClassMetadata(DDC6303BaseClass::class),
+                $this->_em->getClassMetadata(DDC6303ChildA::class),
+                $this->_em->getClassMetadata(DDC6303ChildB::class),
             ]);
-        } catch (SchemaException $ignored) {
+        } catch (ToolsException $ignored) {
         }
     }
 
     public function testMixedTypeHydratedCorrectlyInJoinedInheritance()
     {
-        $contractA               = new DDC6303ContractA();
-        $contractAData           = 'authorized';
-        $contractA->originalData = $contractAData;
+        $a = new DDC6303ChildA();
+        $b = new DDC6303ChildB();
 
-        $contractB = new DDC6303ContractB();
-        //contractA and contractB have an inheritance from Contract, but one has a string originalData and the second has an array
-        $contractBData           = ['accepted', 'authorized'];
-        $contractB->originalData = $contractBData;
+        $aData = 'authorized';
+        $bData = ['accepted', 'authorized'];
 
-        $this->_em->persist($contractA);
-        $this->_em->persist($contractB);
+        // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
+        // but one has a string originalData and the second has an array, since the fields
+        // are mapped differently
+        $a->originalData = $aData;
+        $b->originalData = $bData;
+
+        $this->_em->persist($a);
+        $this->_em->persist($b);
 
         $this->_em->flush();
 
@@ -43,11 +48,11 @@ class DDC6303Test extends OrmFunctionalTestCase
         // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(DDC6303Contract::class);
+        $repository = $this->_em->getRepository(DDC6303BaseClass::class);
 
         $dataMap = [
-            $contractA->id => $contractAData,
-            $contractB->id => $contractBData,
+            $a->id => $aData,
+            $b->id => $bData,
         ];
 
         $contracts = $repository
@@ -71,9 +76,9 @@ class DDC6303Test extends OrmFunctionalTestCase
         $contractStringZeroData  = 0;
         $contractArrayEmptyData  = [];
 
-        $contractStringEmpty = new DDC6303ContractA();
-        $contractStringZero  = new DDC6303ContractA();
-        $contractArrayEmpty  = new DDC6303ContractB();
+        $contractStringEmpty = new DDC6303ChildA();
+        $contractStringZero  = new DDC6303ChildA();
+        $contractArrayEmpty  = new DDC6303ChildB();
 
         $contractStringEmpty->originalData = $contractStringEmptyData;
         $contractStringZero->originalData  = $contractStringZeroData;
@@ -89,13 +94,14 @@ class DDC6303Test extends OrmFunctionalTestCase
         // instead of just returning the existing managed entities
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(DDC6303Contract::class);
+        $repository = $this->_em->getRepository(DDC6303BaseClass::class);
         $dataMap    = [
             $contractStringZero->id  => $contractStringZeroData,
             $contractStringEmpty->id => $contractStringEmptyData,
             $contractArrayEmpty->id  => $contractArrayEmptyData,
         ];
 
+        /* @var $contracts DDC6303ChildA[]|DDC6303ChildB[] */
         $contracts = $repository
             ->createQueryBuilder('p')
             ->where('p.id IN(:ids)')
@@ -119,26 +125,25 @@ class DDC6303Test extends OrmFunctionalTestCase
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *      "contract"    = "DDC6303Contract",
- *      "contract_b"  = "DDC6303ContractB",
- *      "contract_a"  = "DDC6303ContractA"
+ *      DDC6303ChildA::class = DDC6303ChildA::class,
+ *      DDC6303ChildB::class = DDC6303ChildB::class,
  * })
  */
-class DDC6303Contract
+abstract class DDC6303BaseClass
 {
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
 }
 
 /** @Entity @Table */
-class DDC6303ContractA extends DDC6303Contract
+class DDC6303ChildA extends DDC6303BaseClass
 {
     /** @Column(type="string", nullable=true) */
     public $originalData;
 }
 
 /** @Entity @Table */
-class DDC6303ContractB extends DDC6303Contract
+class DDC6303ChildB extends DDC6303BaseClass
 {
     /** @Column(type="simple_array", nullable=true) */
     public $originalData;
