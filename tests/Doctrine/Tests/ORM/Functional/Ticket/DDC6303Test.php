@@ -82,9 +82,11 @@ class DDC6303Test extends OrmFunctionalTestCase
  * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({
- *      DDC6303ChildA::class = DDC6303ChildA::class,
  *      DDC6303ChildB::class = DDC6303ChildB::class,
+ *      DDC6303ChildA::class = DDC6303ChildA::class,
  * })
+ *
+ * Note: discriminator map order *IS IMPORTANT* for this test
  */
 abstract class DDC6303BaseClass
 {
@@ -108,7 +110,7 @@ class DDC6303ChildA extends DDC6303BaseClass
 /** @Entity @Table */
 class DDC6303ChildB extends DDC6303BaseClass
 {
-    /** @Column(type="array") */
+    /** @Column(type="simple_array", nullable=true) */
     private $originalData;
 
     public function __construct(string $id, array $originalData)
