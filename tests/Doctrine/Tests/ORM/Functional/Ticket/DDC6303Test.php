@@ -24,24 +24,24 @@ class DDC6303Test extends OrmFunctionalTestCase
         } catch (ToolsException $ignored) {
         }
     }
-//
-//    public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
-//    {
-//        // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
-//        // but one has a string originalData and the second has an array, since the fields
-//        // are mapped differently
-//        $this->assertHydratedEntitiesSameToPersistedOnes([
-//            'a' => new DDC6303ChildA('a', 'authorized'),
-//            'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
-//        ]);
-//
-//    }
-//
+
+    public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
+    {
+        // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
+        // but one has a string originalData and the second has an array, since the fields
+        // are mapped differently
+        $this->assertHydratedEntitiesSameToPersistedOnes([
+            'a' => new DDC6303ChildA('a', 'authorized'),
+            'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
+        ]);
+
+    }
+
     public function testEmptyValuesInJoinedInheritance() : void
     {
         $this->assertHydratedEntitiesSameToPersistedOnes([
-//            'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
-//            'stringZero'  => new DDC6303ChildA('stringZero', 0),
+            'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
+            'stringZero'  => new DDC6303ChildA('stringZero', 0),
             'arrayEmpty'  => new DDC6303ChildB('arrayEmpty', []),
         ]);
     }
