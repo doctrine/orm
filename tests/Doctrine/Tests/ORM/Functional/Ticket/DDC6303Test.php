@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
@@ -97,7 +98,7 @@ class DDC6303ChildA extends DDC6303BaseClass
     /** @Column(type="string", nullable=true) */
     public $originalData;
 
-    public function __construct(string $id, string $originalData)
+    public function __construct(string $id, $originalData)
     {
         $this->id           = $id;
         $this->originalData = $originalData;
