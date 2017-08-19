@@ -96,7 +96,7 @@ abstract class DDC6303BaseClass
 class DDC6303ChildA extends DDC6303BaseClass
 {
     /** @Column(type="string", nullable=true) */
-    public $originalData;
+    private $originalData;
 
     public function __construct(string $id, $originalData)
     {
@@ -109,7 +109,7 @@ class DDC6303ChildA extends DDC6303BaseClass
 class DDC6303ChildB extends DDC6303BaseClass
 {
     /** @Column(type="simple_array", nullable=true) */
-    public $originalData;
+    private $originalData;
 
     public function __construct(string $id, array $originalData)
     {
