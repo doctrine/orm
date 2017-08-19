@@ -385,22 +385,24 @@ abstract class AbstractHydrator
                 $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
                 $ownerMap      = $this->_rsm->columnOwnerMap[$key];
-
-                $returnArray = [
-                    'isIdentifier'        => in_array($fieldName, $classMetadata->identifier),
-                    'fieldName'           => $fieldName,
-                    'type'                => Type::getType($fieldMapping['type']),
-                    'dqlAlias'            => $ownerMap,
-                    
+                $columnInfo    = [
+                    'isIdentifier' => \in_array($fieldName, $classMetadata->identifier, true),
+                    'fieldName'    => $fieldName,
+                    'type'         => Type::getType($fieldMapping['type']),
+                    'dqlAlias'     => $ownerMap,
                 ];
-                if( !empty($classMetadata->parentClasses) && isset($this->_rsm->discriminatorColumns[$ownerMap])){
-                    $returnArray += [
-                        'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
-                        'discriminatorValue'  => $classMetadata->discriminatorValue
-                    ];
+
+                if($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
+                    return $this->_cache[$key] = \array_merge(
+                        $columnInfo,
+                        [
+                            'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
+                            'discriminatorValue'  => $classMetadata->discriminatorValue
+                        ]
+                    );
                 }
 
-                return $this->_cache[$key] = $returnArray;
+                return $this->_cache[$key] = $columnInfo;
 
             case (isset($this->_rsm->newObjectMappings[$key])):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!
