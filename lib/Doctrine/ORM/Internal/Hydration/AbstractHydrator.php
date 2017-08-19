@@ -294,6 +294,8 @@ abstract class AbstractHydrator
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
 
+                    // If there are field name collisions in the child class, then we need
+                    // to only hydrate if we are looking at the correct discriminator value
                     if(
                         isset($cacheKeyInfo['discriminatorColumn']) && 
                         isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
@@ -392,7 +394,9 @@ abstract class AbstractHydrator
                     'dqlAlias'     => $ownerMap,
                 ];
 
-                if($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
+                // the current discriminator value must be saved in order to disambiguate fields hydration,
+                // should there be field name collisions
+                if ($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
                     return $this->_cache[$key] = \array_merge(
                         $columnInfo,
                         [
