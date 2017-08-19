@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -11,7 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class DDC6303Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         parent::setUp();
 
@@ -25,7 +24,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testMixedTypeHydratedCorrectlyInJoinedInheritance()
+    public function testMixedTypeHydratedCorrectlyInJoinedInheritance() : void
     {
         $a = new DDC6303ChildA();
         $b = new DDC6303ChildB();
@@ -71,7 +70,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testEmptyValuesInJoinedInheritance()
+    public function testEmptyValuesInJoinedInheritance() : void
     {
         $stringEmptyData = '';
         $stringZeroData  = 0;
