@@ -47,7 +47,7 @@ class DDC6303Test extends OrmFunctionalTestCase
     }
 
     /**
-     * @param DDC6303ChildA[]|DDC6303ChildB[] $persistedEntities indexed by identifier
+     * @param DDC6303BaseClass[] $persistedEntities indexed by identifier
      *
      * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      * @throws \Doctrine\ORM\ORMException
@@ -59,7 +59,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        /* @var $entities DDC6303ChildA[]|DDC6303ChildB[] */
+        /* @var $entities DDC6303BaseClass[] */
         $entities = $this
             ->_em
             ->getRepository(DDC6303BaseClass::class)
