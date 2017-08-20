@@ -179,6 +179,19 @@ class UnitOfWork implements PropertyChangedListener
     private $entityDeletions = [];
 
     /**
+     * New entities that were discovered through relationships that were not
+     * marked as cascade-persist. During flush, this array is populated and
+     * then pruned of any entities that were discovered through a valid
+     * cascade-persist path. (Leftovers cause an error.)
+     *
+     * Keys are OIDs, payload is a two-item array describing the association
+     * and the entity.
+     *
+     * @var array
+     */
+    private $newEntitiesWithoutCascade = array();
+
+    /**
      * All pending collection deletions.
      *
      * @var array
@@ -334,6 +347,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        $this->assertNoCascadingGaps();
+
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
                 $this->entityUpdates ||
@@ -427,6 +442,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityDeletions =
         $this->extraUpdates =
         $this->collectionUpdates =
+        $this->newEntitiesWithoutCascade =
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->orphanRemovals = [];
@@ -861,11 +877,17 @@ class UnitOfWork implements PropertyChangedListener
             switch ($state) {
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
-                        throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entry);
+                        /*
+                         * For now just record the details, because this may
+                         * not be an issue if we later discover another pathway
+                         * through the object-graph where cascade-persistence
+                         * is enabled for this object.
+                         */
+                        $this->newEntitiesWithoutCascade[spl_object_hash($entry)] = array($assoc,$entry);
+                    }else {
+                        $this->persistNew($targetClass, $entry);
+                        $this->computeChangeSet($targetClass, $entry);
                     }
-
-                    $this->persistNew($targetClass, $entry);
-                    $this->computeChangeSet($targetClass, $entry);
                     break;
 
                 case self::STATE_REMOVED:
@@ -2411,6 +2433,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityInsertions =
             $this->entityUpdates =
             $this->entityDeletions =
+            $this->newEntitiesWithoutCascade =
             $this->collectionDeletions =
             $this->collectionUpdates =
             $this->extraUpdates =
@@ -3362,6 +3385,26 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * Checks that there are no new entities found through non-cascade-persist
+     * paths which are not also scheduled for insertion through valid paths.
+     *
+     * @return void
+     * @throws ORMInvalidArgumentException
+     */
+    private function assertNoCascadingGaps()
+    {
+        /**
+         * Filter out any entities that we (successfully) managed to schedule
+         * for insertion.
+         */
+        $entitiesNeedingCascadePersist = array_diff_key($this->newEntitiesWithoutCascade, $this->entityInsertions);
+        if(count($entitiesNeedingCascadePersist) > 0){
+            list($assoc,$entity) = array_values($entitiesNeedingCascadePersist)[0];
+            throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entity);
+        }
     }
 
     /**
