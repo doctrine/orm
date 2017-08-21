@@ -187,9 +187,9 @@ class UnitOfWork implements PropertyChangedListener
      * Keys are OIDs, payload is a two-item array describing the association
      * and the entity.
      *
-     * @var array
+     * @var object[][]|array[][] indexed by respective object spl_object_hash()
      */
-    private $newEntitiesWithoutCascade = array();
+    private $nonCascadedNewDetectedEntities = [];
 
     /**
      * All pending collection deletions.
@@ -347,7 +347,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        $this->assertNoCascadingGaps();
+        // @TODO move this further down
+        $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
 
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
@@ -442,7 +443,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->entityDeletions =
         $this->extraUpdates =
         $this->collectionUpdates =
-        $this->newEntitiesWithoutCascade =
+        $this->nonCascadedNewDetectedEntities =
         $this->collectionDeletions =
         $this->visitedCollections =
         $this->orphanRemovals = [];
@@ -883,11 +884,14 @@ class UnitOfWork implements PropertyChangedListener
                          * through the object-graph where cascade-persistence
                          * is enabled for this object.
                          */
-                        $this->newEntitiesWithoutCascade[spl_object_hash($entry)] = array($assoc,$entry);
-                    }else {
-                        $this->persistNew($targetClass, $entry);
-                        $this->computeChangeSet($targetClass, $entry);
+                        $this->nonCascadedNewDetectedEntities[\spl_object_hash($entry)] = [$assoc, $entry];
+
+                        break;
                     }
+
+                    $this->persistNew($targetClass, $entry);
+                    $this->computeChangeSet($targetClass, $entry);
+
                     break;
 
                 case self::STATE_REMOVED:
@@ -2433,7 +2437,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityInsertions =
             $this->entityUpdates =
             $this->entityDeletions =
-            $this->newEntitiesWithoutCascade =
+            $this->nonCascadedNewDetectedEntities =
             $this->collectionDeletions =
             $this->collectionUpdates =
             $this->extraUpdates =
@@ -3388,21 +3392,16 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * Checks that there are no new entities found through non-cascade-persist
-     * paths which are not also scheduled for insertion through valid paths.
-     *
-     * @return void
      * @throws ORMInvalidArgumentException
      */
-    private function assertNoCascadingGaps()
+    private function assertThatThereAreNoUnintentionallyNonPersistedAssociations() : void
     {
-        /**
-         * Filter out any entities that we (successfully) managed to schedule
-         * for insertion.
-         */
-        $entitiesNeedingCascadePersist = array_diff_key($this->newEntitiesWithoutCascade, $this->entityInsertions);
-        if(count($entitiesNeedingCascadePersist) > 0){
-            list($assoc,$entity) = array_values($entitiesNeedingCascadePersist)[0];
+        $entitiesNeedingCascadePersist = \array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);
+
+        if($entitiesNeedingCascadePersist){
+            [$assoc, $entity] = \array_values($entitiesNeedingCascadePersist)[0];
+
+            // @TODO internal clean up here
             throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entity);
         }
     }
