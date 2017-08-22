@@ -54,7 +54,13 @@ final class GH6217Test extends OrmFunctionalTestCase
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217User
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     *
+     * @var string
+     */
     public $id;
 
     public function __construct()
@@ -66,7 +72,13 @@ class GH6217User
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217Profile
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     *
+     * @var string
+     */
     public $id;
 
     public function __construct()
@@ -78,7 +90,13 @@ class GH6217Profile
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217Category
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /**
+     * @Id
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
+     *
+     * @var string
+     */
     public $id;
 
     public function __construct()
@@ -93,10 +111,10 @@ class GH6217UserProfile
     /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217User::class) */
     public $user;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217Profile::class) */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217Profile::class, fetch="EAGER") */
     public $profile;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217Category::class) */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217Category::class, fetch="EAGER") */
     public $category;
 
     public function __construct(GH6217User $user, GH6217Profile $profile, GH6217Category $category)
