@@ -13,9 +13,9 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         $this->_schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6217User::class),
-                $this->_em->getClassMetadata(GH6217Category::class),
-                $this->_em->getClassMetadata(GH6217UserProfile::class),
+                $this->_em->getClassMetadata(GH6217LazyEntity::class),
+                $this->_em->getClassMetadata(GH6217EagerEntity::class),
+                $this->_em->getClassMetadata(GH6217FetchedEntity::class),
             ]
         );
     }
@@ -25,9 +25,9 @@ final class GH6217Test extends OrmFunctionalTestCase
      */
     public function testRetrievingCacheShouldNotThrowUndefinedIndexException()
     {
-        $user = new GH6217User();
-        $category = new GH6217Category();
-        $userProfile = new GH6217UserProfile($user, $category);
+        $user = new GH6217LazyEntity();
+        $category = new GH6217EagerEntity();
+        $userProfile = new GH6217FetchedEntity($user, $category);
 
         $this->_em->persist($category);
         $this->_em->persist($user);
@@ -35,7 +35,7 @@ final class GH6217Test extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $repository = $this->_em->getRepository(GH6217UserProfile::class);
+        $repository = $this->_em->getRepository(GH6217FetchedEntity::class);
         $filters    = ['category' => $category->id];
 
         $this->assertCount(1, $repository->findBy($filters));
@@ -43,11 +43,11 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        /* @var $found GH6217UserProfile[] */
+        /* @var $found GH6217FetchedEntity[] */
         $found = $repository->findBy($filters);
 
         $this->assertCount(1, $found);
-        $this->assertInstanceOf(GH6217UserProfile::class, $found[0]);
+        $this->assertInstanceOf(GH6217FetchedEntity::class, $found[0]);
         $this->assertSame($user->id, $found[0]->user->id);
         $this->assertSame($category->id, $found[0]->category->id);
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
@@ -55,7 +55,7 @@ final class GH6217Test extends OrmFunctionalTestCase
 }
 
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
-class GH6217User
+class GH6217LazyEntity
 {
     /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
@@ -67,7 +67,7 @@ class GH6217User
 }
 
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
-class GH6217Category
+class GH6217EagerEntity
 {
     /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
@@ -79,15 +79,15 @@ class GH6217Category
 }
 
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
-class GH6217UserProfile
+class GH6217FetchedEntity
 {
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217User::class) */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217LazyEntity::class) */
     public $user;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217Category::class, fetch="EAGER") */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217EagerEntity::class, fetch="EAGER") */
     public $category;
 
-    public function __construct(GH6217User $user, GH6217Category $category)
+    public function __construct(GH6217LazyEntity $user, GH6217EagerEntity $category)
     {
         $this->user = $user;
         $this->category = $category;
