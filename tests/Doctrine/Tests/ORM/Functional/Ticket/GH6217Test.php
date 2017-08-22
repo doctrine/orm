@@ -3,9 +3,12 @@ namespace Doctrine\Tests\Functional\Ticket;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @group #6217
+ */
 final class GH6217Test extends OrmFunctionalTestCase
 {
-    public function setUp()
+    public function setUp() : void
     {
         $this->enableSecondLevelCache();
 
@@ -18,37 +21,32 @@ final class GH6217Test extends OrmFunctionalTestCase
         ]);
     }
 
-    /**
-     * @group 6217
-     */
-    public function testLoadingOfSecondLevelCacheOnEagerAssociations()
+    public function testLoadingOfSecondLevelCacheOnEagerAssociations() : void
     {
-        $user = new GH6217LazyEntity();
-        $category = new GH6217EagerEntity();
-        $userProfile = new GH6217FetchedEntity($user, $category);
+        $lazy = new GH6217LazyEntity();
+        $eager = new GH6217EagerEntity();
+        $fetched = new GH6217FetchedEntity($lazy, $eager);
 
-        $this->_em->persist($category);
-        $this->_em->persist($user);
-        $this->_em->persist($userProfile);
+        $this->_em->persist($eager);
+        $this->_em->persist($lazy);
+        $this->_em->persist($fetched);
         $this->_em->flush();
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(GH6217FetchedEntity::class);
-        $filters    = ['category' => $category->id];
+        $filters    = ['eager' => $eager->id];
 
         $this->assertCount(1, $repository->findBy($filters));
         $queryCount = $this->getCurrentQueryCount();
-
-        $this->_em->clear();
 
         /* @var $found GH6217FetchedEntity[] */
         $found = $repository->findBy($filters);
 
         $this->assertCount(1, $found);
         $this->assertInstanceOf(GH6217FetchedEntity::class, $found[0]);
-        $this->assertSame($user->id, $found[0]->user->id);
-        $this->assertSame($category->id, $found[0]->category->id);
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        $this->assertSame($lazy->id, $found[0]->lazy->id);
+        $this->assertSame($eager->id, $found[0]->eager->id);
+        $this->assertEquals($queryCount, $this->getCurrentQueryCount(), 'No queries were executed in `findBy`');
     }
 }
 
@@ -80,14 +78,14 @@ class GH6217EagerEntity
 class GH6217FetchedEntity
 {
     /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217LazyEntity::class) */
-    public $user;
+    public $lazy;
 
     /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217EagerEntity::class, fetch="EAGER") */
-    public $category;
+    public $eager;
 
-    public function __construct(GH6217LazyEntity $user, GH6217EagerEntity $category)
+    public function __construct(GH6217LazyEntity $lazy, GH6217EagerEntity $eager)
     {
-        $this->user = $user;
-        $this->category = $category;
+        $this->lazy  = $lazy;
+        $this->eager = $eager;
     }
 }
