@@ -715,6 +715,9 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getIdentifierValues($entity)
     {
+        if ($entity instanceof AssociationCacheEntry) {
+            throw new \InvalidArgumentException('WTF DUDE: ' . $entity->class . ' - ' . \serialize($entity->identifier));
+        }
         if ($this->isIdentifierComposite) {
             $id = [];
 
