@@ -347,9 +347,6 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        // @TODO move this further down
-        $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
-
         if ( ! ($this->entityInsertions ||
                 $this->entityDeletions ||
                 $this->entityUpdates ||
@@ -361,6 +358,8 @@ class UnitOfWork implements PropertyChangedListener
 
             return; // Nothing to do.
         }
+
+        $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
 
         if ($this->orphanRemovals) {
             foreach ($this->orphanRemovals as $orphan) {
@@ -3398,11 +3397,12 @@ class UnitOfWork implements PropertyChangedListener
     {
         $entitiesNeedingCascadePersist = \array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);
 
-        if($entitiesNeedingCascadePersist){
-            [$assoc, $entity] = \array_values($entitiesNeedingCascadePersist)[0];
+        $this->nonCascadedNewDetectedEntities = [];
 
-            // @TODO internal clean up here
-            throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entity);
+        if ($entitiesNeedingCascadePersist) {
+            throw ORMInvalidArgumentException::newEntitiesFoundThroughRelationships(
+                \array_values($entitiesNeedingCascadePersist)
+            );
         }
     }
 
