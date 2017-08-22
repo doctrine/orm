@@ -26,9 +26,9 @@ final class GH6217Test extends OrmFunctionalTestCase
      */
     public function testRetrievingCacheShouldNotThrowUndefinedIndexException()
     {
-        $user = new GH6217User(1, 'user 1');
-        $profile = new GH6217Profile(1);
-        $category = new GH6217Category(1, 'category 1');
+        $user = new GH6217User(1);
+        $profile = new GH6217Profile();
+        $category = new GH6217Category(1);
         $userProfile = new GH6217UserProfile($user, $profile, $category);
 
         $this->_em->persist($category);
@@ -65,37 +65,27 @@ class GH6217User
      */
     public $id;
 
-    /**
-     * @Column(type="string", length=60, unique=true)
-     *
-     * @var string
-     */
-    public $username;
-
-    public function __construct(int $id, string $username)
+    public function __construct(int $id)
     {
         $this->id = $id;
-        $this->username = $username;
     }
 }
 
-/**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
- */
+/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217Profile
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
      *
-     * @var int
+     * @var string
      */
     public $id;
 
-    public function __construct(int $id)
+    public function __construct()
     {
-        $this->id = $id;
+        $this->id = uniqid(self::class, true);
     }
 }
 
