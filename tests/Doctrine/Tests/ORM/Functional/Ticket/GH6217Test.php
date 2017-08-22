@@ -15,16 +15,15 @@ final class GH6217Test extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema([
-            $this->_em->getClassMetadata(GH6217LazyEntity::class),
-            $this->_em->getClassMetadata(GH6217EagerEntity::class),
+            $this->_em->getClassMetadata(GH6217AssociatedEntity::class),
             $this->_em->getClassMetadata(GH6217FetchedEntity::class),
         ]);
     }
 
     public function testLoadingOfSecondLevelCacheOnEagerAssociations() : void
     {
-        $lazy = new GH6217LazyEntity();
-        $eager = new GH6217EagerEntity();
+        $lazy = new GH6217AssociatedEntity();
+        $eager = new GH6217AssociatedEntity();
         $fetched = new GH6217FetchedEntity($lazy, $eager);
 
         $this->_em->persist($eager);
@@ -63,7 +62,7 @@ class GH6217LazyEntity
 }
 
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
-class GH6217EagerEntity
+class GH6217AssociatedEntity
 {
     /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
@@ -77,13 +76,13 @@ class GH6217EagerEntity
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217FetchedEntity
 {
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217LazyEntity::class) */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class) */
     public $lazy;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217EagerEntity::class, fetch="EAGER") */
+    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER") */
     public $eager;
 
-    public function __construct(GH6217LazyEntity $lazy, GH6217EagerEntity $eager)
+    public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)
     {
         $this->lazy  = $lazy;
         $this->eager = $eager;
