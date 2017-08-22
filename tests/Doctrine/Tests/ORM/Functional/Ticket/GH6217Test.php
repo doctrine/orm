@@ -11,19 +11,17 @@ final class GH6217Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            [
-                $this->_em->getClassMetadata(GH6217LazyEntity::class),
-                $this->_em->getClassMetadata(GH6217EagerEntity::class),
-                $this->_em->getClassMetadata(GH6217FetchedEntity::class),
-            ]
-        );
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(GH6217LazyEntity::class),
+            $this->_em->getClassMetadata(GH6217EagerEntity::class),
+            $this->_em->getClassMetadata(GH6217FetchedEntity::class),
+        ]);
     }
 
     /**
      * @group 6217
      */
-    public function testRetrievingCacheShouldNotThrowUndefinedIndexException()
+    public function testLoadingOfSecondLevelCacheOnEagerAssociations()
     {
         $user = new GH6217LazyEntity();
         $category = new GH6217EagerEntity();
