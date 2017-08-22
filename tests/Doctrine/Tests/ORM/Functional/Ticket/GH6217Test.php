@@ -50,18 +50,6 @@ final class GH6217Test extends OrmFunctionalTestCase
 }
 
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
-class GH6217LazyEntity
-{
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
-    public $id;
-
-    public function __construct()
-    {
-        $this->id = uniqid(self::class, true);
-    }
-}
-
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217AssociatedEntity
 {
     /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
