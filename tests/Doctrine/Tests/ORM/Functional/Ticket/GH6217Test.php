@@ -36,14 +36,20 @@ final class GH6217Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(GH6217UserProfile::class);
-        $filters = ['user' => $user->id, 'category' => $category->id];
+        $filters    = ['category' => $category->id];
 
         $this->assertCount(1, $repository->findBy($filters));
         $queryCount = $this->getCurrentQueryCount();
 
         $this->_em->clear();
 
-        $this->assertCount(1, $repository->findBy($filters));
+        /* @var $found GH6217UserProfile[] */
+        $found = $repository->findBy($filters);
+
+        $this->assertCount(1, $found);
+        $this->assertInstanceOf(GH6217UserProfile::class, $found[0]);
+        $this->assertSame($user->id, $found[0]->user->id);
+        $this->assertSame($category->id, $found[0]->category->id);
         $this->assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 }
