@@ -54,13 +54,7 @@ final class GH6217Test extends OrmFunctionalTestCase
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217User
 {
-    /**
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
-     *
-     * @var string
-     */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
     public function __construct()
@@ -72,13 +66,7 @@ class GH6217User
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217Profile
 {
-    /**
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
-     *
-     * @var string
-     */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
     public function __construct()
@@ -90,13 +78,7 @@ class GH6217Profile
 /** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217Category
 {
-    /**
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
-     *
-     * @var string
-     */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
     public function __construct()
