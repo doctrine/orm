@@ -746,6 +746,7 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertEmpty($persister2->getInserts());
         }
 
+        $this->_unitOfWork->clear();
         $this->_unitOfWork->persist(new CascadePersistedEntity());
         $this->_unitOfWork->commit();
 
