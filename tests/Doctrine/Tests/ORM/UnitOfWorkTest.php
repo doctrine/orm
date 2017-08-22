@@ -746,13 +746,12 @@ class UnitOfWorkTest extends OrmTestCase
             self::assertEmpty($persister2->getInserts());
         }
 
-        $this->_unitOfWork->persist($cascadePersisted);
-        $this->_unitOfWork->persist($nonCascading);
+        $this->_unitOfWork->persist(new CascadePersistedEntity());
         $this->_unitOfWork->commit();
 
         // Persistence operations should just recover normally:
         self::assertCount(1, $persister1->getInserts());
-        self::assertCount(1, $persister2->getInserts());
+        self::assertCount(0, $persister2->getInserts());
     }
 }
 
