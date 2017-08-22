@@ -26,9 +26,9 @@ final class GH6217Test extends OrmFunctionalTestCase
      */
     public function testRetrievingCacheShouldNotThrowUndefinedIndexException()
     {
-        $user = new GH6217User(1);
+        $user = new GH6217User();
         $profile = new GH6217Profile();
-        $category = new GH6217Category(1);
+        $category = new GH6217Category();
         $userProfile = new GH6217UserProfile($user, $profile, $category);
 
         $this->_em->persist($category);
@@ -39,7 +39,7 @@ final class GH6217Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $repository = $this->_em->getRepository(GH6217UserProfile::class);
-        $filters = ['user' => 1, 'category' => 1];
+        $filters = ['user' => $user->id, 'category' => $category->id];
 
         $this->assertCount(1, $repository->findBy($filters));
         $queryCount = $this->getCurrentQueryCount();
@@ -59,15 +59,16 @@ class GH6217User
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
      *
-     * @var int
+     * @var string
      */
     public $id;
 
-    public function __construct(int $id)
+    public function __construct()
     {
-        $this->id = $id;
+        $this->id = uniqid(self::class, true);
     }
 }
 
@@ -97,15 +98,16 @@ class GH6217Category
 {
     /**
      * @Id
-     * @Column(type="integer")
+     * @Column(type="string")
+     * @GeneratedValue(strategy="NONE")
      *
-     * @var int
+     * @var string
      */
     public $id;
 
-    public function __construct(int $id)
+    public function __construct()
     {
-        $this->id = $id;
+        $this->id = uniqid(self::class, true);
     }
 }
 
@@ -119,7 +121,6 @@ class GH6217UserProfile
      * @Id
      * @Cache("NONSTRICT_READ_WRITE")
      * @ManyToOne(targetEntity="GH6217User")
-     * @JoinColumn(nullable=false)
      *
      * @var GH6217User
      */
