@@ -663,7 +663,6 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertCount(1, $persister3->getInserts());
     }
 
-
     /**
      * This test exhibits the bug describe in the ticket, where an object that
      * ought to be reachable causes errors.
@@ -713,6 +712,47 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertCount(1, $persister1->getInserts());
         self::assertCount(1, $persister2->getInserts());
         self::assertCount(1, $persister3->getInserts());
+    }
+
+
+    /**
+     * This test exhibits the bug describe in the ticket, where an object that
+     * ought to be reachable causes errors.
+     *
+     * @group DDC-2922
+     * @group #1521
+     */
+    public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits()
+    {
+        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister2);
+
+        $cascadePersisted = new CascadePersistedEntity();
+        $nonCascading     = new EntityWithNonCascadingAssociation();
+
+        // We explicitly cause the ORM to detect a non-persisted new entity in the association graph:
+        $nonCascading->nonCascaded = $cascadePersisted;
+
+        $this->_unitOfWork->persist($nonCascading);
+
+        try {
+            $this->_unitOfWork->commit();
+
+            self::fail('An exception was supposed to be raised');
+        } catch (ORMInvalidArgumentException $ignored) {
+            self::assertEmpty($persister1->getInserts());
+            self::assertEmpty($persister2->getInserts());
+        }
+
+        $this->_unitOfWork->persist($cascadePersisted);
+        $this->_unitOfWork->persist($nonCascading);
+        $this->_unitOfWork->commit();
+
+        // Persistence operations should just recover normally:
+        self::assertCount(1, $persister1->getInserts());
+        self::assertCount(1, $persister2->getInserts());
     }
 }
 
