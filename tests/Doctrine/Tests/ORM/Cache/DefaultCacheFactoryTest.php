@@ -318,6 +318,20 @@ class DefaultCacheFactoryTest extends OrmTestCase
         $this->assertSame('bar', $barRegion->getCache()->getNamespace());
     }
 
+    public function testInvalidNamespaceVersionCacheEntry()
+    {
+        $cache = clone $this->getSharedSecondLevelCacheDriverImpl();
+        $reflexion = new \ReflectionClass('Doctrine\Common\Cache\ArrayCache');
+        $doSave = $reflexion->getMethod('doSave');
+        $doSave->setAccessible(true);
+
+        $doctrineKey = sprintf(CacheProvider::DOCTRINE_NAMESPACE_CACHEKEY, '');
+        $doSave->invokeArgs($cache, array($doctrineKey, 'corruptedStringKey'));
+
+        // deleteAll call should succeed
+        $this->assertEquals(true, $cache->deleteAll());
+    }
+
     public function testAppendsNamespacedCacheInstancePerRegionInstanceWhenItsAlreadySet()
     {
         $cache = clone $this->getSharedSecondLevelCacheDriverImpl();
