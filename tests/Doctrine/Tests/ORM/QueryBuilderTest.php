@@ -293,6 +293,44 @@ class QueryBuilderTest extends OrmTestCase
         $this->assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = :uid AND u.id IN(1, 2, 3)');
     }
 
+    public function testBetween()
+    {
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('g')
+            ->from(CmsGroup::class, 'g')
+            ->where($qb->expr()->between('g.id', 1, 10));
+        $this->assertValidQueryBuilder($qb, 'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE g.id BETWEEN 1 AND 10');
+        $this->assertEquals($qb->getQuery()->getSQL(), 'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE c0_.id BETWEEN 1 AND 10');
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('g')
+            ->from(CmsGroup::class, 'g')
+            ->where($qb->expr()->between('CURRENT_TIMESTAMP()', 1, 10));
+        $this->assertValidQueryBuilder($qb, 'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE CURRENT_TIMESTAMP() BETWEEN 1 AND 10');
+        $this->assertEquals($qb->getQuery()->getSQL(), 'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE CURRENT_TIMESTAMP BETWEEN 1 AND 10');
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('g')
+            ->from(CmsGroup::class, 'g')
+            ->where($qb->expr()->between(5, 1, 10));
+        $this->assertValidQueryBuilder($qb, 'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE 5 BETWEEN 1 AND 10');
+        $this->assertEquals($qb->getQuery()->getSQL(), 'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE 5 BETWEEN 1 AND 10');
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('g')
+            ->from(CmsGroup::class, 'g')
+            ->where($qb->expr()->between('WeekDay(:weekdayParameter) + 1', 1, 10));
+        $this->assertValidQueryBuilder($qb, 'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE WeekDay(:weekdayParameter) + 1 BETWEEN 1 AND 10');
+        //$this->assertEquals($qb->getQuery()->getSQL(), 'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE WeekDay(CURRENT_TIMESTAMP()) BETWEEN 1 AND 10');
+
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('g')
+            ->from(CmsGroup::class, 'g')
+            ->where($qb->expr()->between('WeekDay(CURRENT_TIMESTAMP()) + 1', 1, 10));
+        $this->assertValidQueryBuilder($qb, 'SELECT g FROM Doctrine\Tests\Models\CMS\CmsGroup g WHERE WeekDay(CURRENT_TIMESTAMP()) + 1 BETWEEN 1 AND 10');
+        //$this->assertEquals($qb->getQuery()->getSQL(), 'SELECT c0_.id AS id_0, c0_.name AS name_1 FROM cms_groups c0_ WHERE WeekDay(CURRENT_TIMESTAMP()) BETWEEN 1 AND 10');
+    }
+
     public function testOrWhereIn()
     {
         $qb = $this->_em->createQueryBuilder();
