@@ -654,7 +654,7 @@ The same restrictions apply for the reference of related entities.
     DQL DELETE statements are ported directly into a
     Database DELETE statement and therefore bypass any events and checks for the
     version column if they are not explicitly added to the WHERE clause
-    of the query. Additionally Deletes of specifies entities are *NOT*
+    of the query. Additionally Deletes of specified entities are *NOT*
     cascaded to related entities even if specified in the metadata.
 
 
