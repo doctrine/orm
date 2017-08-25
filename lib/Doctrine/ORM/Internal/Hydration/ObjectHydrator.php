@@ -82,15 +82,15 @@ class ObjectHydrator extends AbstractHydrator
     private $existingCollections = [];
 
     /**
-     * @var LazyPropertyMap
+     * @var LazyPropertyMap|callable[]
      */
-    private $fetchEntityForIdentifierDataByEntityName;
+    private $entityTryGetCallbacksByEntityName;
 
     public function __construct(EntityManagerInterface $em)
     {
         parent::__construct($em);
 
-        $this->fetchEntityForIdentifierDataByEntityName = new LazyPropertyMap([$this, 'fetchEntityForIdentifierData']);
+        $this->entityTryGetCallbacksByEntityName = new LazyPropertyMap([$this, 'buildEntityTryGet']);
     }
 
     /**
@@ -292,7 +292,7 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        $managedEntity = ($this->fetchEntityForIdentifierDataByEntityName->{$className})($data);
+        $managedEntity = ($this->entityTryGetCallbacksByEntityName->{$className})($data);
 
         // If the entity is not existing in the UnitOfWork, then we
         // are the one creating it: let's track the object hash to
@@ -327,7 +327,7 @@ class ObjectHydrator extends AbstractHydrator
      *
      * @return callable
      */
-    public function fetchEntityForIdentifierData(string $className) : callable
+    public function buildEntityTryGet(string $className) : callable
     {
         /* @var $metadata ClassMetadata */
         $metadata       = $this->_metadataCache->{$className};
@@ -456,7 +456,7 @@ class ObjectHydrator extends AbstractHydrator
                         if ( ! $indexExists || ! $indexIsValid) {
                             if (isset($this->existingCollections[$collKey])) {
                                 // Collection exists, only look for the element in the identity map.
-                                if ($element = ($this->fetchEntityForIdentifierDataByEntityName->{$entityName})($data)) {
+                                if ($element = ($this->entityTryGetCallbacksByEntityName->{$entityName})($data)) {
                                     $this->resultPointers[$dqlAlias] = $element;
                                 } else {
                                     unset($this->resultPointers[$dqlAlias]);
