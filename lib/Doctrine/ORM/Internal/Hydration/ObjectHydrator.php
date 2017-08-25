@@ -45,6 +45,11 @@ class ObjectHydrator extends AbstractHydrator
     private $identifierMap = [];
 
     /**
+     * @var object[] indexed by oid
+     */
+    private $createdEntities = [];
+
+    /**
      * @var array
      */
     private $resultPointers = [];
@@ -268,7 +273,37 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        return $this->_uow->createEntity($className, $data, $this->_hints);
+        // super slow, but trying it out for now
+        $metadata  = $this->_metadataCache[$className] ?? $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
+        $idColumns = [];
+
+        foreach ($metadata->identifier as $idFieldName) {
+            $idColumns[] = isset($metadata->associationMappings[$idFieldName])
+                ? $metadata->associationMappings[$idFieldName]['joinColumns'][0]['name']
+                : $idFieldName;
+        }
+
+        $idKeys   = array_flip($idColumns);
+        $idValues = array_intersect_key(array_filter($data, function ($idValue) { return null !== $idValue; }), $idKeys);
+
+
+        if (count($idValues) === count($idKeys)) {
+            if (! $this->getEntityFromIdentityMap($className, $data)) {
+                $entity = $this->_uow->createEntity($className, $data, $this->_hints);
+
+                $this->createdEntities[\spl_object_hash($entity)] = true;
+
+                return $entity;
+            }
+        }
+
+        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
+
+        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+            $this->createdEntities[\spl_object_hash($entity)] = true;
+        }
+
+        return $entity;
     }
 
     /**
@@ -293,7 +328,9 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
-        } else if (isset($class->associationMappings[$class->identifier[0]])) {
+        }
+
+        if (isset($class->associationMappings[$class->identifier[0]])) {
             return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
         }
 
@@ -431,7 +468,8 @@ class ObjectHydrator extends AbstractHydrator
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
+                    if (isset($this->createdEntities[$oid]) || isset($this->_hints[Query::HINT_REFRESH])) {
+//                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {
