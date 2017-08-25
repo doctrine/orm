@@ -43,7 +43,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
         }
 
-        $this->class = $this->getClassMetadata(reset($this->_rsm->aliasMap));
+        $this->class = $this->_metadataCache->{reset($this->_rsm->aliasMap)};
     }
 
     /**

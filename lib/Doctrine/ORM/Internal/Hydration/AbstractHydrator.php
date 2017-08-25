@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Internal\Hydration;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Internal\Hydration\Cache\LazyPropertyMap;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use PDO;
 
@@ -67,9 +68,9 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var ClassMetadata[] indexed by class name
+     * @var ClassMetadata[]|LazyPropertyMap indexed by class name
      */
-    protected $_metadataCache = [];
+    protected $_metadataCache;
 
     /**
      * The cache used during row-by-row hydration.
@@ -102,6 +103,7 @@ abstract class AbstractHydrator
         $this->_em       = $em;
         $this->_platform = $em->getConnection()->getDatabasePlatform();
         $this->_uow      = $em->getUnitOfWork();
+        $this->_metadataCache = new LazyPropertyMap([$em, 'getClassMetadata']);
     }
 
     /**
@@ -212,7 +214,7 @@ abstract class AbstractHydrator
         $this->_stmt          = null;
         $this->_rsm           = null;
         $this->_cache         = [];
-        $this->_metadataCache = [];
+        $this->_metadataCache = new LazyPropertyMap([$this->_em, 'getClassMetadata']);
 
         $this
             ->_em
@@ -383,7 +385,8 @@ abstract class AbstractHydrator
         switch (true) {
             // NOTE: Most of the times it's a field mapping, so keep it first!!!
             case (isset($this->_rsm->fieldMappings[$key])):
-                $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
+                /* @var $classMetadata ClassMetadata */
+                $classMetadata = $this->_metadataCache->{$this->_rsm->declaringClasses[$key]};
                 $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
                 $ownerMap      = $this->_rsm->columnOwnerMap[$key];
@@ -438,7 +441,7 @@ abstract class AbstractHydrator
                     : null;
 
                 // Cache metadata fetch
-                $this->getClassMetadata($this->_rsm->aliasMap[$dqlAlias]);
+                $this->_metadataCache->{$this->_rsm->aliasMap[$dqlAlias]};
 
                 return $this->_cache[$key] = [
                     'isIdentifier' => isset($this->_rsm->isIdentifierColumn[$dqlAlias][$key]),
@@ -452,22 +455,6 @@ abstract class AbstractHydrator
         // this column is a left over, maybe from a LIMIT query hack for example in Oracle or DB2
         // maybe from an additional column that has not been defined in a NativeQuery ResultSetMapping.
         return null;
-    }
-
-    /**
-     * Retrieve ClassMetadata associated to entity class name.
-     *
-     * @param string $className
-     *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
-     */
-    protected function getClassMetadata($className)
-    {
-        if ( ! isset($this->_metadataCache[$className])) {
-            $this->_metadataCache[$className] = $this->_em->getClassMetadata($className);
-        }
-
-        return $this->_metadataCache[$className];
     }
 
     /**

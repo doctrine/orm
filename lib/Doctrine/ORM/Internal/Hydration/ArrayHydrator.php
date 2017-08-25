@@ -130,7 +130,7 @@ class ArrayHydrator extends AbstractHydrator
                 }
 
                 $relationAlias = $this->_rsm->relationMap[$dqlAlias];
-                $parentClass   = $this->_metadataCache[$this->_rsm->aliasMap[$parent]];
+                $parentClass   = $this->_metadataCache->{$this->_rsm->aliasMap[$parent]};
                 $relation      = $parentClass->associationMappings[$relationAlias];
 
                 // Check the type of the relation (many or single-valued)
