@@ -41,15 +41,15 @@ final class GH6638Test extends OrmFunctionalTestCase
 
         $customer = $repository->find($initialCustomer->id);
 
-        $this->assertInstanceOf(GH6638Cart::class, $customer->cart);
+        self::assertInstanceOf(GH6638Cart::class, $customer->cart);
 
         $customer->cart = null;
 
-        $this->assertNull($customer->cart);
+        self::assertNull($customer->cart);
 
         $repository->findBy(['id' => $initialCustomer->id]);
 
-        $this->assertNull($customer->cart);
+        self::assertNull($customer->cart);
     }
 
     public function testFindOneByDoesNotReHydrateAssociation() : void
@@ -69,15 +69,15 @@ final class GH6638Test extends OrmFunctionalTestCase
 
         $customer = $repository->find($initialCustomer->id);
 
-        $this->assertInstanceOf(GH6638Cart::class, $customer->cart);
+        self::assertInstanceOf(GH6638Cart::class, $customer->cart);
 
         $customer->cart = null;
 
-        $this->assertNull($customer->cart);
+        self::assertNull($customer->cart);
 
         $repository->findOneBy(['id' => $initialCustomer->id]);
 
-        $this->assertNull($customer->cart);
+        self::assertNull($customer->cart);
     }
 }
 
