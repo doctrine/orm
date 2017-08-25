@@ -292,32 +292,23 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        // super slow, but trying it out for now
-        /* @var $metadata ClassMetadata */
-        $metadata  = $this->_metadataCache->{$className};
-        $idColumns = [];
+        $managedEntity = ($this->fetchEntityForIdentifierDataByEntityName->{$className})($data);
 
-        foreach ($metadata->identifier as $idFieldName) {
-            $idColumns[] = isset($metadata->associationMappings[$idFieldName])
-                ? $metadata->associationMappings[$idFieldName]['joinColumns'][0]['name']
-                : $idFieldName;
-        }
+        // If the entity is not existing in the UnitOfWork, then we
+        // are the one creating it: let's track the object hash to
+        // allow writing to it
+        if (! $managedEntity) {
+            $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
-        $idKeys   = array_flip($idColumns);
-        $idValues = array_intersect_key(array_filter($data, function ($idValue) { return null !== $idValue; }), $idKeys);
-        
-        if (count($idValues) === count($idKeys)) {
-            if (! ($this->fetchEntityForIdentifierDataByEntityName->{$className})($data)) {
-                $entity = $this->_uow->createEntity($className, $data, $this->_hints);
+            $this->createdEntities[\spl_object_hash($entity)] = true;
 
-                $this->createdEntities[\spl_object_hash($entity)] = true;
-
-                return $entity;
-            }
+            return $entity;
         }
 
         $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
+        // If the entity is not created by us, we can only consider
+        // it to be created in here if it's a non-initialized proxy
         if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
             $this->createdEntities[\spl_object_hash($entity)] = true;
         }
