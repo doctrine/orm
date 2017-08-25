@@ -19,6 +19,8 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\Hydration\Cache\LazyPropertyMap;
 use Doctrine\ORM\UnitOfWork;
 use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -78,6 +80,18 @@ class ObjectHydrator extends AbstractHydrator
      * @var array
      */
     private $existingCollections = [];
+
+    /**
+     * @var LazyPropertyMap
+     */
+    private $fetchEntityForIdentifierDataByEntityName;
+
+    public function __construct(EntityManagerInterface $em)
+    {
+        parent::__construct($em);
+
+        $this->fetchEntityForIdentifierDataByEntityName = new LazyPropertyMap([$this, 'fetchEntityForIdentifierData']);
+    }
 
     /**
      * {@inheritdoc}
@@ -291,10 +305,9 @@ class ObjectHydrator extends AbstractHydrator
 
         $idKeys   = array_flip($idColumns);
         $idValues = array_intersect_key(array_filter($data, function ($idValue) { return null !== $idValue; }), $idKeys);
-
-
+        
         if (count($idValues) === count($idKeys)) {
-            if (! $this->getEntityFromIdentityMap($className, $data)) {
+            if (! ($this->fetchEntityForIdentifierDataByEntityName->{$className})($data)) {
                 $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
                 $this->createdEntities[\spl_object_hash($entity)] = true;
@@ -313,34 +326,43 @@ class ObjectHydrator extends AbstractHydrator
     }
 
     /**
-     * @param string $className
-     * @param array  $data
+     * @internal do not use this or you shall be punished with the wrath of the debugger
+     * @private
      *
-     * @return mixed
+     * @param string $className
+     *
+     * @return callable
      */
-    private function getEntityFromIdentityMap($className, array $data)
+    public function fetchEntityForIdentifierData(string $className) : callable
     {
-        // TODO: Abstract this code and UnitOfWork::createEntity() equivalent?
-        $class = $this->_metadataCache->{$className};
+        /* @var $metadata ClassMetadata */
+        $metadata       = $this->_metadataCache->{$className};
+        $rootEntityName = $metadata->rootEntityName;
+        /* @var $idColumns string[] of column names, indexed by field name */
+        $idColumns      = [];
 
-        /* @var $class ClassMetadata */
-        if ($class->isIdentifierComposite) {
-            $idHash = '';
+        foreach ($metadata->identifier as $idFieldName) {
+            $idColumns[$idFieldName] = isset($metadata->associationMappings[$idFieldName])
+                ? $metadata->associationMappings[$idFieldName]['joinColumns'][0]['name']
+                : $idFieldName;
+        }
 
-            foreach ($class->identifier as $fieldName) {
-                $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
-                    ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
-                    : $data[$fieldName]);
+        /**
+         * @return object|Proxy|null
+         */
+        return function (array $data) use ($idColumns, $rootEntityName) {
+            $idHashData = [];
+
+            foreach ($idColumns as $idColumn) {
+                if (! isset($data[$idColumn])) {
+                    return null;
+                }
+
+                $idHashData[] = $data[$idColumn];
             }
 
-            return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
-        }
-
-        if (isset($class->associationMappings[$class->identifier[0]])) {
-            return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
-        }
-
-        return $this->_uow->tryGetByIdHash($data[$class->identifier[0]], $class->rootEntityName);
+            return $this->_uow->tryGetByIdHash(implode(' ', $idHashData), $rootEntityName) ?: null;
+        };
     }
 
     /**
@@ -440,7 +462,7 @@ class ObjectHydrator extends AbstractHydrator
                         if ( ! $indexExists || ! $indexIsValid) {
                             if (isset($this->existingCollections[$collKey])) {
                                 // Collection exists, only look for the element in the identity map.
-                                if ($element = $this->getEntityFromIdentityMap($entityName, $data)) {
+                                if ($element = ($this->fetchEntityForIdentifierDataByEntityName->{$entityName})($data)) {
                                     $this->resultPointers[$dqlAlias] = $element;
                                 } else {
                                     unset($this->resultPointers[$dqlAlias]);
@@ -475,9 +497,7 @@ class ObjectHydrator extends AbstractHydrator
                     $reflFieldValue = $reflField->getValue($parentObject);
 
                     if (isset($this->createdEntities[$oid]) || isset($this->_hints[Query::HINT_REFRESH])) {
-//                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
-                        // we only need to take action if this value is null,
-                        // we refresh the entity or its an uninitialized proxy.
+                        // we only need to take action if `$parentObject` was not built or is not to be refreshed by this hydrator,
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);
