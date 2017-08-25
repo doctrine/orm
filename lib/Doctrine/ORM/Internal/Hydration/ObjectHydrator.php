@@ -296,7 +296,10 @@ class ObjectHydrator extends AbstractHydrator
 
         // If the entity is not existing in the UnitOfWork, then we
         // are the one creating it: let's track the object hash to
-        // allow writing to it
+        // allow writing to it. Note that we discard `$managedEntity`
+        // anyway, as we need to call `createEntity` with the data
+        // in any case to allow refreshing proxy information, for
+        // example
         if (! $managedEntity) {
             $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
