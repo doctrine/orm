@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Internal\Hydration\Cache;
  * Concept taken from ocramius/lazy-map
  *
  * @link https://github.com/Ocramius/LazyMap/blob/1.0.0/src/LazyMap/CallbackLazyMap.php
+ * @internal do not use: internal class only
  */
 final class LazyPropertyMap
 {
