@@ -24,7 +24,7 @@ final class GH6638Test extends OrmFunctionalTestCase
         }
     }
 
-    public function testFetchingOfOneToOneRelations() : void
+    public function testFindByDoesNotReHydrateAssociation() : void
     {
         $initialCustomer = new GH6638Customer();
         $initialCart     = new GH6638Cart();
@@ -48,6 +48,34 @@ final class GH6638Test extends OrmFunctionalTestCase
         $this->assertNull($customer->cart);
 
         $repository->findBy(['id' => $initialCustomer->id]);
+
+        $this->assertNull($customer->cart);
+    }
+
+    public function testFindOneByDoesNotReHydrateAssociation() : void
+    {
+        $initialCustomer = new GH6638Customer();
+        $initialCart     = new GH6638Cart();
+
+        $initialCustomer->cart = $initialCart;
+        $initialCart->customer = $initialCustomer;
+
+        $this->_em->persist($initialCustomer);
+        $this->_em->persist($initialCart);
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $repository = $this->_em->getRepository(GH6638Customer::class);
+
+        $customer = $repository->find($initialCustomer->id);
+
+        $this->assertInstanceOf(GH6638Cart::class, $customer->cart);
+
+        $customer->cart = null;
+
+        $this->assertNull($customer->cart);
+
+        $repository->findOneBy(['id' => $initialCustomer->id]);
 
         $this->assertNull($customer->cart);
     }
