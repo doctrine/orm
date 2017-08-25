@@ -332,11 +332,11 @@ class ObjectHydrator extends AbstractHydrator
         /* @var $metadata ClassMetadata */
         $metadata       = $this->_metadataCache->{$className};
         $rootEntityName = $metadata->rootEntityName;
-        /* @var $idColumns string[] of column names, indexed by field name */
+        /* @var $idColumns string[] */
         $idColumns      = [];
 
         foreach ($metadata->identifier as $idFieldName) {
-            $idColumns[$idFieldName] = isset($metadata->associationMappings[$idFieldName])
+            $idColumns[] = isset($metadata->associationMappings[$idFieldName])
                 ? $metadata->associationMappings[$idFieldName]['joinColumns'][0]['name']
                 : $idFieldName;
         }
@@ -355,7 +355,7 @@ class ObjectHydrator extends AbstractHydrator
                 $idHashData[] = $data[$idColumn];
             }
 
-            return $this->_uow->tryGetByIdHash(implode(' ', $idHashData), $rootEntityName) ?: null;
+            return $this->_uow->tryGetByIdHash(\implode(' ', $idHashData), $rootEntityName) ?: null;
         };
     }
 
