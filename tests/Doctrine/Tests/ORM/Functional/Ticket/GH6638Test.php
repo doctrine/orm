@@ -45,39 +45,34 @@ final class GH6638Test extends OrmFunctionalTestCase
     }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6638Customer
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
-    /**
-     * @OneToOne(targetEntity="GH6638Cart", mappedBy="customer")
-     */
+    /** @OneToOne(targetEntity=GH6638Cart::class, mappedBy="customer") */
     public $cart;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
 }
 
-/**
- * @Entity
- */
+/** @Entity */
 class GH6638Cart
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="GH6638Customer", inversedBy="cart")
-     * @JoinColumn()
+     * @OneToOne(targetEntity=GH6638Customer::class, inversedBy="cart")
      */
     public $customer;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
 }
