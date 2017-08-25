@@ -67,7 +67,7 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array
+     * @var ClassMetadata[] indexed by class name
      */
     protected $_metadataCache = [];
 
