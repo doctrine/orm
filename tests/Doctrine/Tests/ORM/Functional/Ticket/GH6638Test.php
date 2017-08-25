@@ -5,6 +5,10 @@ namespace Doctrine\Tests\Functional\Ticket;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
+/**
+ * @group #6638
+ * @group #6648
+ */
 final class GH6638Test extends OrmFunctionalTestCase
 {
     public function setUp() : void
