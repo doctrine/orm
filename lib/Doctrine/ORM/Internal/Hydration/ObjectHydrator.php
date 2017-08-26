@@ -49,7 +49,7 @@ class ObjectHydrator extends AbstractHydrator
     /**
      * @var object[] indexed by oid
      */
-    private $createdEntities = [];
+    private $trackedWritableEntities = [];
 
     /**
      * @var array
@@ -303,7 +303,7 @@ class ObjectHydrator extends AbstractHydrator
         if (! $managedEntity) {
             $entity = $this->_uow->createEntity($className, $data, $this->_hints);
 
-            $this->createdEntities[\spl_object_hash($entity)] = true;
+            $this->trackedWritableEntities[\spl_object_hash($entity)] = true;
 
             return $entity;
         }
@@ -313,7 +313,7 @@ class ObjectHydrator extends AbstractHydrator
         // If the entity is not created by us, we can only consider
         // it to be created in here if it's a non-initialized proxy
         if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-            $this->createdEntities[\spl_object_hash($entity)] = true;
+            $this->trackedWritableEntities[\spl_object_hash($entity)] = true;
         }
 
         return $entity;
@@ -490,7 +490,7 @@ class ObjectHydrator extends AbstractHydrator
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if (isset($this->createdEntities[$oid]) || isset($this->_hints[Query::HINT_REFRESH])) {
+                    if (isset($this->trackedWritableEntities[$oid]) || isset($this->_hints[Query::HINT_REFRESH])) {
                         // we only need to take action if `$parentObject` was not built or is not to be refreshed by this hydrator,
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
