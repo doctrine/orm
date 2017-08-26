@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Quote\Address;
 use Doctrine\Tests\Models\Quote\Group;
 use Doctrine\Tests\Models\Quote\User;
 
@@ -18,20 +17,11 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private $user;
 
-    protected function setUp()
+    protected function setUp() : void
     {
-        parent::setUp();
+        $this->useModelSet('quote');
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(User::class),
-                $this->_em->getClassMetadata(Group::class),
-                $this->_em->getClassMetadata(Address::class),
-                ]
-            );
-        } catch(\Exception $e) {
-        }
+        parent::setUp();
 
         $user           = new User();
         $user->name     = "FabioBatSilva";
