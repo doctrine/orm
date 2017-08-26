@@ -3,9 +3,7 @@
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -23,6 +21,11 @@ final class SimpleInsertPerformanceBench
      * @var CMS\CmsUser[]
      */
     private $users;
+
+    /**
+     * @var string
+     */
+    private $tableName;
 
     public function init()
     {
@@ -45,10 +48,17 @@ final class SimpleInsertPerformanceBench
 
             $this->users[$i] = $user;
         }
+
+        $this->tableName = $this->entityManager->getClassMetadata(CMS\CmsUser::class)->getTableName();
     }
 
     public function benchHydration()
     {
+        // Yes, this is a lot of overhead, but I have no better solution other than
+        // completely mocking out the DB, which would be silly (query impact is
+        // necessarily part of our benchmarks)
+        $this->entityManager->getConnection()->executeQuery('DELETE FROM ' . $this->tableName)->execute();
+
         foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);
 
