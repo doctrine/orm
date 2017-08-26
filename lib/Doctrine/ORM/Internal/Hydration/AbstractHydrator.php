@@ -100,10 +100,10 @@ abstract class AbstractHydrator
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em       = $em;
-        $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_uow      = $em->getUnitOfWork();
-        $this->_metadataCache = new LazyPropertyMap([$em, 'getClassMetadata']);
+        $this->_em            = $em;
+        $this->_platform      = $em->getConnection()->getDatabasePlatform();
+        $this->_uow           = $em->getUnitOfWork();
+        $this->_metadataCache = new LazyPropertyMap([$em->getMetadataFactory(), 'getMetadataFor']);
     }
 
     /**
