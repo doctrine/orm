@@ -103,7 +103,7 @@ abstract class AbstractHydrator
         $this->_em            = $em;
         $this->_platform      = $em->getConnection()->getDatabasePlatform();
         $this->_uow           = $em->getUnitOfWork();
-        $this->_metadataCache = new LazyPropertyMap([$em->getMetadataFactory(), 'getMetadataFor']);
+        $this->_metadataCache = new LazyPropertyMap([$em, 'getClassMetadata']);
     }
 
     /**
