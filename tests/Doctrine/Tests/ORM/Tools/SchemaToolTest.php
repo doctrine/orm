@@ -14,6 +14,9 @@ use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedChildClass;
+use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedIdentityClass;
+use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedDerivedRootClass;
 use Doctrine\Tests\Models\Forum\ForumAvatar;
 use Doctrine\Tests\Models\Forum\ForumUser;
 use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
@@ -183,6 +186,50 @@ class SchemaToolTest extends OrmTestCase
         $column = $table->getColumn('discriminator');
 
         $this->assertEquals(255, $column->getLength());
+    }
+
+    public function testDerivedCompositeKey() : void
+    {
+        $em         = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $schema = $schemaTool->getSchemaFromMetadata(
+            [
+                $em->getClassMetadata(JoinedDerivedIdentityClass::class),
+                $em->getClassMetadata(JoinedDerivedRootClass::class),
+                $em->getClassMetadata(JoinedDerivedChildClass::class),
+            ]
+        );
+
+        self::assertTrue($schema->hasTable('joined_derived_identity'));
+        self::assertTrue($schema->hasTable('joined_derived_root'));
+        self::assertTrue($schema->hasTable('joined_derived_child'));
+
+        $rootTable = $schema->getTable('joined_derived_root');
+        self::assertNotNull($rootTable->getPrimaryKey());
+        self::assertSame(['keyPart1_id', 'keyPart2'], $rootTable->getPrimaryKey()->getColumns());
+
+        $childTable = $schema->getTable('joined_derived_child');
+        self::assertNotNull($childTable->getPrimaryKey());
+        self::assertSame(['keyPart1_id', 'keyPart2'], $childTable->getPrimaryKey()->getColumns());
+
+        $childTableForeignKeys = $childTable->getForeignKeys();
+
+        self::assertCount(2, $childTableForeignKeys);
+
+        $expectedColumns = [
+            'joined_derived_identity' => [['keyPart1_id'], ['id']],
+            'joined_derived_root'     => [['keyPart1_id', 'keyPart2'], ['keyPart1_id', 'keyPart2']],
+        ];
+
+        foreach ($childTableForeignKeys as $foreignKey) {
+            self::assertArrayHasKey($foreignKey->getForeignTableName(), $expectedColumns);
+
+            [$localColumns, $foreignColumns] = $expectedColumns[$foreignKey->getForeignTableName()];
+
+            self::assertSame($localColumns, $foreignKey->getLocalColumns());
+            self::assertSame($foreignColumns, $foreignKey->getForeignColumns());
+        }
     }
 }
 
