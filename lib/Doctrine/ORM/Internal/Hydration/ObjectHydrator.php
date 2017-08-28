@@ -292,27 +292,9 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        $managedEntity = ($this->entityTryGetCallbacksByEntityName->{$className})($data);
+        [$entity, $writable] = $this->_uow->getOrCreateEntity($className, $data, $this->_hints);
 
-        // If the entity is not existing in the UnitOfWork, then we
-        // are the one creating it: let's track the object hash to
-        // allow writing to it. Note that we discard `$managedEntity`
-        // anyway, as we need to call `createEntity` with the data
-        // in any case to allow refreshing proxy information, for
-        // example
-        if (! $managedEntity) {
-            $entity = $this->_uow->createEntity($className, $data, $this->_hints);
-
-            $this->trackedWritableEntities[\spl_object_hash($entity)] = true;
-
-            return $entity;
-        }
-
-        $entity = $this->_uow->createEntity($className, $data, $this->_hints);
-
-        // If the entity is not created by us, we can only consider
-        // it to be created in here if it's a non-initialized proxy
-        if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+        if ($writable) {
             $this->trackedWritableEntities[\spl_object_hash($entity)] = true;
         }
 

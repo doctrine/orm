@@ -142,8 +142,8 @@ class SimpleObjectHydrator extends AbstractHydrator
             $this->registerManaged($this->class, $this->_hints[Query::HINT_REFRESH_ENTITY], $data);
         }
 
-        $uow    = $this->_em->getUnitOfWork();
-        $entity = $uow->createEntity($entityName, $data, $this->_hints);
+        $uow      = $this->_em->getUnitOfWork();
+        [$entity] = $uow->getOrCreateEntity($entityName, $data, $this->_hints);
 
         $result[] = $entity;
 

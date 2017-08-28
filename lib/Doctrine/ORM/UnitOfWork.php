@@ -2544,9 +2544,28 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return object The managed entity instance.
      *
-     * @todo Rename: getOrCreateEntity
+     * @deprecated this method is obsolete and will be removed in ORM v3
      */
     public function createEntity($className, array $data, &$hints = [])
+    {
+        return $this->getOrCreateEntity($className, $data, $hints)[0];
+    }
+
+    /**
+     * @internal Creates an entity. Used for reconstitution of persistent entities.
+     *
+     * Internal note: Highly performance-sensitive method.
+     *
+     * @ignore
+     *
+     * @param string $className The name of the entity class.
+     * @param array  $data      The data for the entity.
+     * @param array  $hints     Any hints to account for during reconstitution/lookup of the entity.
+     *
+     * @return object[]|bool[] a tuple containing the managed entity (first key) and whether the
+     *                         returned entity can be hydrated or not
+     */
+    public function getOrCreateEntity($className, array $data, &$hints = []) : array
     {
         $class = $this->em->getClassMetadata($className);
         //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
@@ -2573,7 +2592,7 @@ class UnitOfWork implements PropertyChangedListener
                     $class->reflFields[$fieldName]->setValue($unmanagedProxy, null);
                 }
 
-                return $unmanagedProxy;
+                return [$unmanagedProxy, false];
             }
 
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
@@ -2619,7 +2638,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         if ( ! $overrideLocalValues) {
-            return $entity;
+            return [$entity, false];
         }
 
         foreach ($data as $field => $value) {
@@ -2637,7 +2656,7 @@ class UnitOfWork implements PropertyChangedListener
 
         // Properly initialize any unfetched associations, if partial objects are not allowed.
         if (isset($hints[Query::HINT_FORCE_PARTIAL_LOAD])) {
-            return $entity;
+            return [$entity, true];
         }
 
         foreach ($class->associationMappings as $field => $assoc) {
@@ -2828,7 +2847,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
         }
 
-        return $entity;
+        return [$entity, true];
     }
 
     /**
