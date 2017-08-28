@@ -22,6 +22,7 @@
         "doctrine/common": "^2.7.1",
         "doctrine/cache": "~1.6",
         "doctrine/annotations": "~1.4",
+        "ocramius/package-versions": "^1.1.2",
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
