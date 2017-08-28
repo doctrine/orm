@@ -361,9 +361,6 @@ automatically:
    that are serialized and stored in some cache, i.e. when using the
    Query Result Cache).
 
-The ``detach`` operation is usually not as frequently needed and
-used as ``persist`` and ``remove``.
-
 Synchronization with the Database
 ---------------------------------
 
