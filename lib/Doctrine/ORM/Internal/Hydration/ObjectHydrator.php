@@ -332,11 +332,29 @@ class ObjectHydrator extends AbstractHydrator
         /* @var $metadata ClassMetadata */
         $metadata       = $this->_metadataCache->{$className};
         $rootEntityName = $metadata->rootEntityName;
-        /* @var $idColumns string[] */
-        $idColumns      = [];
+        /* @var $idKeys string[] */
+        $idKeys      = [];
+
+        // Optimisation if the identifier is not composite.
+        // This entire block can be removed and everything works like before, just with more function calls
+        if (! $metadata->isIdentifierComposite) {
+            $idKey = $metadata->associationMappings[$metadata->identifier[0]]['joinColumns'][0]['name']
+                ?? $metadata->identifier[0];
+
+            /**
+             * @return object|Proxy|null
+             */
+            return function (array $data) use ($idKey, $rootEntityName) {
+                if (! isset($data[$idKey])) {
+                    return null;
+                }
+
+                return $this->_uow->tryGetByIdHash((string) $data[$idKey], $rootEntityName) ?: null;
+            };
+        }
 
         foreach ($metadata->identifier as $idFieldName) {
-            $idColumns[] = isset($metadata->associationMappings[$idFieldName])
+            $idKeys[] = isset($metadata->associationMappings[$idFieldName])
                 ? $metadata->associationMappings[$idFieldName]['joinColumns'][0]['name']
                 : $idFieldName;
         }
@@ -344,10 +362,10 @@ class ObjectHydrator extends AbstractHydrator
         /**
          * @return object|Proxy|null
          */
-        return function (array $data) use ($idColumns, $rootEntityName) {
+        return function (array $data) use ($idKeys, $rootEntityName) {
             $idHashData = [];
 
-            foreach ($idColumns as $idColumn) {
+            foreach ($idKeys as $idColumn) {
                 if (! isset($data[$idColumn])) {
                     return null;
                 }
