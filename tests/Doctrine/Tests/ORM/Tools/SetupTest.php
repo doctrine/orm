@@ -9,9 +9,7 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Mapping\Driver\YamlDriver;
 use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\Version;
 use Doctrine\Tests\OrmTestCase;
 
 class SetupTest extends OrmTestCase
@@ -21,10 +19,6 @@ class SetupTest extends OrmTestCase
 
     public function setUp()
     {
-        if (strpos(Version::VERSION, "DEV") === false) {
-            $this->markTestSkipped("Test only runs in a dev-installation from Github");
-        }
-
         $this->originalAutoloaderCount = count(spl_autoload_functions());
         $this->originalIncludePath = get_include_path();
     }
@@ -37,10 +31,9 @@ class SetupTest extends OrmTestCase
 
         set_include_path($this->originalIncludePath);
         $loaders = spl_autoload_functions();
-        $numberOfLoaders = count($loaders);
-        for ($i = 0; $i < $numberOfLoaders; $i++) {
-            if ($i > $this->originalAutoloaderCount+1) {
-                spl_autoload_unregister($loaders[$i]);
+        foreach (spl_autoload_functions() as $i => $loader) {
+            if ($i > $this->originalAutoloaderCount + 1) {
+                spl_autoload_unregister($loader);
             }
         }
     }
