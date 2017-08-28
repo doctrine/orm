@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC Break: Removed `Doctrine\ORM\Version`
+
+The `Doctrine\ORM\Version` class is no longer available: please refrain from checking the ORM version at runtime.
+
 ## BC Break: Removed `EntityManager#merge()` and `EntityManager#detach()` methods
 
 Merge and detach semantics were a poor fit for the PHP "share-nothing" architecture.
