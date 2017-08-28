@@ -108,21 +108,14 @@
         <one-to-many field="phonenumbers" target-entity="CmsPhonenumber" mapped-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
-                <cascade-merge/>
             </cascade>
         </one-to-many>
 
-        <one-to-many field="articles" target-entity="CmsArticle" mapped-by="user">
-            <cascade>
-                <cascade-detach/>
-            </cascade>
-        </one-to-many>
-        
+        <one-to-many field="articles" target-entity="CmsArticle" mapped-by="user"/>
+
         <many-to-many field="groups" target-entity="CmsGroup">
             <cascade>
                 <cascade-persist/>
-                <cascade-merge/>
-                <cascade-detach/>
             </cascade>
             <join-table name="cms_users_groups">
                 <join-columns>

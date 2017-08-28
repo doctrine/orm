@@ -173,8 +173,8 @@ problems using the following approach:
     foreach ($iterableResult as $row) {
         // do stuff with the data in the row, $row[0] is always the object
     
-        // detach from Doctrine, so that it can be Garbage-Collected immediately
-        $this->_em->detach($row[0]);
+        // detach all entities from Doctrine, so that Garbage-Collection can kick in immediately
+        $this->_em->clear();
     }
 
 .. note::
@@ -183,5 +183,9 @@ problems using the following approach:
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
 
+Packages for easing Batch Processing
+------------------------------------
 
-
+You can implement batch processing yourself, or use an existing
+package such as `DoctrineBatchUtils <https://github.com/Ocramius/DoctrineBatchUtils>`_,
+which already provides the logic described above in an encapsulated format.

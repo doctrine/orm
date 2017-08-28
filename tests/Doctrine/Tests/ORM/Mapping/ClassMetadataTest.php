@@ -1279,7 +1279,7 @@ class ClassMetadataTest extends OrmTestCase
     /**
      * @group DDC-1746
      * @expectedException        \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage You have specified invalid cascade options for Doctrine\Tests\Models\CMS\CmsUser::$address: 'invalid'; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'
+     * @expectedExceptionMessage You have specified invalid cascade options for Doctrine\Tests\Models\CMS\CmsUser::$address: 'invalid'; available options: 'remove', 'persist', and 'refresh'
      */
     public function testInvalidCascade()
     {

@@ -101,7 +101,7 @@ $association = new Mapping\OneToManyAssociationMetadata('phonenumbers');
 
 $association->setTargetEntity(Export\Phonenumber::class);
 $association->setMappedBy('user');
-$association->setCascade(['persist', 'merge']);
+$association->setCascade(['persist']);
 $association->setFetchMode(Mapping\FetchMode::LAZY);
 $association->setOrphanRemoval(true);
 $association->setOrderBy(['number' => 'ASC']);
@@ -131,7 +131,7 @@ $association = new Mapping\ManyToManyAssociationMetadata('groups');
 
 $association->setJoinTable($joinTable);
 $association->setTargetEntity(Export\Group::class);
-$association->setCascade(['remove', 'persist', 'refresh', 'merge', 'detach']);
+$association->setCascade(['remove', 'persist', 'refresh']);
 $association->setFetchMode(Mapping\FetchMode::EXTRA_LAZY);
 
 $metadata->addProperty($association);

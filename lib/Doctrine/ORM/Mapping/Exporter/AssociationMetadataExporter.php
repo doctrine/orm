@@ -53,26 +53,15 @@ abstract class AssociationMetadataExporter implements Exporter
     }
 
     /**
-     * @param array $cascade
+     * @param string[] $cascade
      *
-     * @return array
+     * @return string[]
      */
-    private function resolveCascade(array $cascade)
+    private function resolveCascade(array $cascade) : array
     {
-        $resolvedCascade = ['remove', 'persist', 'refresh', 'merge', 'detach'];
-
-        foreach ($resolvedCascade as $key => $value) {
-            if (in_array($value, $cascade, true)) {
-                continue;
-            }
-
-            unset($resolvedCascade[$key]);
-        }
-
-        return count($resolvedCascade) === 5
-            ? ['all']
-            : $resolvedCascade
-        ;
+        return array_diff(['remove', 'persist', 'refresh'], $cascade)
+            ? $cascade
+            : ['all'];
     }
 
     /**

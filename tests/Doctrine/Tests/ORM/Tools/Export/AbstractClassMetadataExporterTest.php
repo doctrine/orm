@@ -245,8 +245,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertNotContains('merge', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
         self::assertTrue($property->isOrphanRemoval());
         self::assertEquals(FetchMode::EAGER, $property->getFetchMode());
 
@@ -283,8 +281,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
         self::assertTrue($property->isOrphanRemoval());
         self::assertEquals(FetchMode::LAZY, $property->getFetchMode());
 
@@ -321,8 +317,6 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertContains('remove', $property->getCascade());
         self::assertContains('persist', $property->getCascade());
         self::assertContains('refresh', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
-        self::assertContains('detach', $property->getCascade());
 
         self::assertEquals(FetchMode::EXTRA_LAZY, $property->getFetchMode());
 
@@ -358,10 +352,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         self::assertNotNull($property);
 
         self::assertContains('persist', $property->getCascade());
-        self::assertContains('merge', $property->getCascade());
         self::assertContains('remove', $property->getCascade());
         self::assertNotContains('refresh', $property->getCascade());
-        self::assertNotContains('detach', $property->getCascade());
 
         self::assertTrue($property->isOrphanRemoval());
 
@@ -387,14 +379,16 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         $type = $this->getType();
 
-        if ($type == 'xml') {
+        if ($type === 'xml') {
             $xml = simplexml_load_file(__DIR__ . '/export/'.$type.'/Doctrine.Tests.ORM.Tools.Export.ExportedUser.dcm.xml');
 
             $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
             $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:one-to-many[@field='interests']/d:cascade/d:*");
-            self::assertEquals(1, count($nodes));
+            self::assertCount(3, $nodes);
 
-            self::assertEquals('cascade-all', $nodes[0]->getName());
+            self::assertEquals('cascade-persist', $nodes[0]->getName());
+            self::assertEquals('cascade-remove', $nodes[1]->getName());
+            self::assertEquals('cascade-refresh', $nodes[2]->getName());
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }

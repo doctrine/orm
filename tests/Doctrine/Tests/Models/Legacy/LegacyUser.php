@@ -41,7 +41,7 @@ class LegacyUser
     public $references;
 
     /**
-     * @ORM\ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist", "merge"})
+     * @ORM\ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist"})
      * @ORM\JoinTable(name="legacy_users_cars",
      *      joinColumns={@ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="iCarId", referencedColumnName="iCarId")}

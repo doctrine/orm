@@ -44,7 +44,7 @@ class User
 
     /**
      *
-     * @ORM\OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist", "merge"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\Export\Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @ORM\OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
