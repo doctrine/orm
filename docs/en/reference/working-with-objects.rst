@@ -344,7 +344,7 @@ Example:
 The semantics of the detach operation, applied to an entity X are
 as follows:
 
--  If X is a managed entity, the detach operation causes it to
+-  If X is a managed entity, the ``clear`` operation causes it to
    become detached. Entities which previously referenced X
    will continue to reference X.
 -  If X is a new or detached entity, it is ignored by the detach
