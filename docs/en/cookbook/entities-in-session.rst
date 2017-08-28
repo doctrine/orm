@@ -33,6 +33,11 @@ the session into a managed Doctrine object looks like this:
     session_start();
     if (isset($_SESSION['user'])) {
         $user = $em->find(User::class, $_SESSION['user']);
+
+        if (! $user instanceof User) {
+            // user not found in the database
+            $_SESSION['user'] = null;
+        }
     }
 
 Serializing entities into the session
