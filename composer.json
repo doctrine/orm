@@ -24,9 +24,6 @@
         "doctrine/annotations": "~1.4",
         "symfony/console": "~3.0|~4.0"
     },
-    "conflict": {
-        "symfony/yaml": "<3.4"
-    },
     "require-dev": {
         "symfony/yaml": "~3.4|~4.0",
         "phpunit/phpunit": "^6.0"
