@@ -440,16 +440,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         if (! $this->identifier) {
             throw MappingException::identifierRequired($this->className);
         }
-
-        $explicitlyGeneratedProperties = array_filter($this->declaredProperties, function (Property $property) : bool {
-            return $property instanceof FieldMetadata
-                && $property->isPrimaryKey()
-                && $property->hasValueGenerator();
-        });
-
-        if ($explicitlyGeneratedProperties && $this->isIdentifierComposite()) {
-            throw MappingException::compositeKeyAssignedIdGeneratorRequired($this->className);
-        }
     }
 
     /**

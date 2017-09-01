@@ -315,6 +315,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Issue5989\Issue5989Employee::class,
             Models\Issue5989\Issue5989Manager::class,
         ],
+        'valueGenerators' => [
+            Models\ValueGenerators\CompositeGeneratedIdentifier::class,
+        ],
     ];
 
     /**
@@ -598,6 +601,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM issue5989_persons');
             $conn->executeUpdate('DELETE FROM issue5989_employees');
             $conn->executeUpdate('DELETE FROM issue5989_managers');
+        }
+
+        if (isset($this->usedModelSets['value_generators'])) {
+            $conn->executeUpdate('DELETE FROM vg_composite_generated_identifier');
         }
 
         $this->em->clear();

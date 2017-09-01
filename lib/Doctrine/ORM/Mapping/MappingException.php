@@ -748,16 +748,6 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function compositeKeyAssignedIdGeneratorRequired($className)
-    {
-        return new self("Entity '". $className . "' has a composite identifier but uses an ID generator other than manually assigning (Identity, Sequence). This is not supported.");
-    }
-
-    /**
      * @param string $targetEntity
      * @param string $sourceEntity
      * @param string $associationName

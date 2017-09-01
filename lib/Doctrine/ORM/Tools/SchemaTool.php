@@ -486,7 +486,10 @@ class SchemaTool
             $options['customSchemaOptions'] = $fieldOptions;
         }
 
-        if ($fieldMetadata->hasValueGenerator() && $fieldMetadata->getValueGenerator()->getType() === GeneratorType::IDENTITY && $classMetadata->getIdentifierFieldNames() == [$fieldName]) {
+        if ($fieldMetadata->hasValueGenerator()
+            && $fieldMetadata->getValueGenerator()->getType() === GeneratorType::IDENTITY
+            && in_array($fieldName, $classMetadata->getIdentifierFieldNames(), true)
+        ) {
             $options['autoincrement'] = true;
         }
 
