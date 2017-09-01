@@ -108,11 +108,13 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \ArrayIterator
+     * @return iterable
      */
-    public function getDeclaredPropertiesIterator() : \ArrayIterator
+    public function getDeclaredPropertiesIterator() : iterable
     {
-        return new \ArrayIterator($this->declaredProperties);
+        foreach ($this->declaredProperties as $name => $property) {
+            yield $name => $property;
+        }
     }
 
     /**
@@ -159,22 +161,15 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \Iterator
+     * @return iterable
      */
-    public function getPropertiesIterator() : \Iterator
+    public function getPropertiesIterator() : iterable
     {
-        $declaredPropertiesIterator = $this->getDeclaredPropertiesIterator();
-
-        if (! $this->parent) {
-            return $declaredPropertiesIterator;
+        if ($this->parent) {
+            yield from $this->parent->getPropertiesIterator();
         }
 
-        $iterator = new \AppendIterator();
-
-        $iterator->append($this->parent->getPropertiesIterator());
-        $iterator->append($declaredPropertiesIterator);
-
-        return $iterator;
+        yield from $this->getDeclaredPropertiesIterator();
     }
 
     /**

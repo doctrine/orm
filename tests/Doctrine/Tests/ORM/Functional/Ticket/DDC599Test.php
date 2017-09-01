@@ -68,7 +68,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $class = $this->em->getClassMetadata(DDC599Subitem::class);
 
-        self::assertArrayHasKey('children', $class->getDeclaredPropertiesIterator());
+        self::assertArrayHasKey('children', iterator_to_array($class->getDeclaredPropertiesIterator()));
         self::assertContains('remove', $class->getProperty('children')->getCascade());
     }
 }
