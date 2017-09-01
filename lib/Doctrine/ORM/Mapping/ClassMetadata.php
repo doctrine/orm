@@ -443,6 +443,32 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
+     * Validates field value generators.
+     */
+    public function validateValueGenerators() : void
+    {
+        foreach ($this->getPropertiesIterator() as $property) {
+            if (! $property instanceof FieldMetadata || ! $property->hasValueGenerator()) {
+                continue;
+            }
+
+            $generator = $property->getValueGenerator();
+
+            if ($generator->getType() !== GeneratorType::IDENTITY) {
+                continue;
+            }
+
+            if (! $property->isPrimaryKey()) {
+                throw MappingException::nonPrimaryidentityGeneratorNotSupported($this->className);
+            }
+
+            if ($this->isIdentifierComposite()) {
+                throw MappingException::compositeIdentityGeneratorNotSupported($this->className);
+            }
+        }
+    }
+
+    /**
      * Validates association targets actually exist.
      *
      * @return void

@@ -27,6 +27,7 @@ use Doctrine\Tests\Models\DDC964\DDC964Address;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\Models\ValueGenerators\DummyWithThreeProperties;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
 use SebastianBergmann\Environment\Runtime;
@@ -955,6 +956,54 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(['name'=>'email','column'=>'email'], $mapping['entities'][1]['fields'][1]);
 
         self::assertEquals('scalarColumn', $mapping['columns'][0]['name']);
+    }
+
+    /**
+     * @expectedException \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Entity 'Doctrine\Tests\Models\ValueGenerators\DummyWithThreeProperties' has a composite identifier with with an Identity strategy. This is not supported.
+     */
+    public function testCompositeIdentifierWithIdentityValueGenerator() : void
+    {
+        $classMetadata = new ClassMetadata(DummyWithThreeProperties::class, $this->metadataBuildingContext);
+        $classMetadata->setTable(new Mapping\TableMetadata());
+
+        $fooMetadata = new Mapping\FieldMetadata('a');
+        $fooMetadata->setType(Type::getType(Type::INTEGER));
+        $fooMetadata->setPrimaryKey(true);
+        $fooMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::NONE));
+        $classMetadata->addProperty($fooMetadata);
+
+        $barMetadata = new Mapping\FieldMetadata('b');
+        $barMetadata->setType(Type::getType(Type::INTEGER));
+        $barMetadata->setPrimaryKey(true);
+        $barMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::IDENTITY));
+        $classMetadata->addProperty($barMetadata);
+
+        $classMetadata->validateValueGenerators();
+    }
+
+    /**
+     * @expectedException \Doctrine\ORM\Mapping\MappingException
+     * @expectedExceptionMessage Entity 'Doctrine\Tests\Models\ValueGenerators\DummyWithThreeProperties' has a an Identity strategy defined on a non-primary field. This is not supported.
+     */
+    public function testNonPrimaryIdentityValueGenerator() : void
+    {
+        $classMetadata = new ClassMetadata(DummyWithThreeProperties::class, $this->metadataBuildingContext);
+        $classMetadata->setTable(new Mapping\TableMetadata());
+
+        $fooMetadata = new Mapping\FieldMetadata('a');
+        $fooMetadata->setType(Type::getType(Type::INTEGER));
+        $fooMetadata->setPrimaryKey(true);
+        $fooMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::NONE));
+        $classMetadata->addProperty($fooMetadata);
+
+        $barMetadata = new Mapping\FieldMetadata('b');
+        $barMetadata->setType(Type::getType(Type::INTEGER));
+        $barMetadata->setPrimaryKey(false);
+        $barMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata(Mapping\GeneratorType::IDENTITY));
+        $classMetadata->addProperty($barMetadata);
+
+        $classMetadata->validateValueGenerators();
     }
 
     /**

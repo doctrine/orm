@@ -748,6 +748,26 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
+     * @param string $className
+     *
+     * @return MappingException
+     */
+    public static function nonPrimaryidentityGeneratorNotSupported($className)
+    {
+        return new self("Entity '". $className . "' has a an Identity strategy defined on a non-primary field. This is not supported.");
+    }
+
+    /**
+     * @param string $className
+     *
+     * @return MappingException
+     */
+    public static function compositeIdentityGeneratorNotSupported($className)
+    {
+        return new self("Entity '". $className . "' has a composite identifier with with an Identity strategy. This is not supported.");
+    }
+
+    /**
      * @param string $targetEntity
      * @param string $sourceEntity
      * @param string $associationName
