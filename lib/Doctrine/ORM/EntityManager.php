@@ -241,11 +241,6 @@ use Doctrine\Common\Util\ClassUtils;
             $this->conn->rollBack();
 
             throw $e;
-        } catch (\Exception $e) { // PHP 5
-            $this->close();
-            $this->conn->rollBack();
-
-            throw $e;
         }
     }
 

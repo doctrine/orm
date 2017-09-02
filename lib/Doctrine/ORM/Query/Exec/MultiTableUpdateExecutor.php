@@ -194,10 +194,6 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
             // Re-throw exception
             throw $exception;
-        } catch (\Exception $exception) { // PHP 5
-            $conn->executeUpdate($this->_dropTempTableSql);
-
-            throw $exception;
         }
 
         // Drop temporary table

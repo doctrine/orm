@@ -76,10 +76,6 @@ EOT
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return 1;
-        } catch (\Exception $e) { // PHP 5
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
-
-            return 1;
         }
 
         $output->writeln('<info>Environment is correctly configured for production.</info>');

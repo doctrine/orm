@@ -745,9 +745,7 @@ class SchemaTool
             try {
                 $conn->executeQuery($sql);
             } catch (\Throwable $e) {
-
-            } catch (\Exception $e) { // PHP 5
-
+                // ignored
             }
         }
     }
