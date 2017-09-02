@@ -94,8 +94,6 @@ class SchemaTool
                 $conn->executeQuery($sql);
             } catch (\Throwable $e) {
                 throw ToolsException::schemaToolFailure($sql, $e);
-            } catch (\Exception $e) { // PHP 5
-                throw ToolsException::schemaToolFailure($sql, $e);
             }
         }
     }

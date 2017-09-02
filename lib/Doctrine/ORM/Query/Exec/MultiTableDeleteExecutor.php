@@ -23,6 +23,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Throwable;
 
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
@@ -129,7 +130,7 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
             foreach ($this->_sqlStatements as $sql) {
                 $conn->executeUpdate($sql);
             }
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             // FAILURE! Drop temporary table to avoid possible collisions
             $conn->executeUpdate($this->_dropTempTableSql);
 
