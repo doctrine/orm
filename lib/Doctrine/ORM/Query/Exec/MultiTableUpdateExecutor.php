@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Throwable;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -188,7 +189,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
                 $conn->executeUpdate($statement, $paramValues, $paramTypes);
             }
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             // FAILURE! Drop temporary table to avoid possible collisions
             $conn->executeUpdate($this->_dropTempTableSql);
 

@@ -20,6 +20,7 @@
 namespace Doctrine\ORM\Tools;
 
 use Doctrine\ORM\ORMException;
+use Throwable;
 
 /**
  * Tools related Exceptions.
@@ -28,13 +29,7 @@ use Doctrine\ORM\ORMException;
  */
 class ToolsException extends ORMException
 {
-    /**
-     * @param string     $sql
-     * @param \Exception $e
-     *
-     * @return ToolsException
-     */
-    public static function schemaToolFailure($sql, \Exception $e)
+    public static function schemaToolFailure(string $sql, Throwable $e) : self
     {
         return new self("Schema-Tool failed with Error '" . $e->getMessage() . "' while executing DDL: " . $sql, "0", $e);
     }

@@ -43,8 +43,8 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Exception;
 use InvalidArgumentException;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -411,7 +411,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $conn->commit();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->em->close();
             $conn->rollBack();
 
