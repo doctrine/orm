@@ -233,6 +233,24 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
+     * @group #5796
+     */
+    public function testTransactionalReThrowsThrowables()
+    {
+        try {
+            $this->_em->transactional(function () {
+                (function (array $value) {
+                    // this only serves as an IIFE that throws a `TypeError`
+                })(null);
+            });
+
+            self::fail('TypeError expected to be thrown');
+        } catch (\TypeError $ignored) {
+            self::assertFalse($this->_em->isOpen());
+        }
+    }
+
+    /**
      * @group 6017
      */
     public function testClearManagerWithObject()
