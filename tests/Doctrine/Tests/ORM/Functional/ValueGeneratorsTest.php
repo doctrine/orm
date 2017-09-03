@@ -6,6 +6,9 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Tests\Models\ValueGenerators\BarGenerator;
 use Doctrine\Tests\Models\ValueGenerators\CompositeGeneratedIdentifier;
 use Doctrine\Tests\Models\ValueGenerators\FooGenerator;
+use Doctrine\Tests\Models\ValueGenerators\InheritanceGeneratorsChildA;
+use Doctrine\Tests\Models\ValueGenerators\InheritanceGeneratorsChildB;
+use Doctrine\Tests\Models\ValueGenerators\InheritanceGeneratorsRoot;
 use Doctrine\Tests\Models\ValueGenerators\NonIdentifierGenerators;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -51,5 +54,32 @@ class ValueGeneratorsTest extends OrmFunctionalTestCase
 
         $entity = $this->getEntityManager()->find(NonIdentifierGenerators::class, $entity->getId());
         self::assertNotNull($entity);
+    }
+
+    public function testValueGeneratorsInInheritance() : void
+    {
+        $rootEntity = new InheritanceGeneratorsRoot();
+
+        $this->em->persist($rootEntity);
+        $this->em->flush();
+
+        $this->assertNotNull($rootEntity->getId());
+
+        $childAEntity = new InheritanceGeneratorsChildA();
+
+        $this->em->persist($childAEntity);
+        $this->em->flush();
+
+        $this->assertNotNull($childAEntity);
+        $this->assertSame(FooGenerator::VALUE, $childAEntity->getA());
+
+        $childBEntity = new InheritanceGeneratorsChildB();
+
+        $this->em->persist($childBEntity);
+        $this->em->flush();
+
+        $this->assertNotNull($childBEntity);
+        $this->assertSame(FooGenerator::VALUE, $childBEntity->getA());
+        $this->assertSame(BarGenerator::VALUE, $childBEntity->getB());
     }
 }
