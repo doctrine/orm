@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Tests\Models\ValueGenerators\AssociationIdentifier;
+use Doctrine\Tests\Models\ValueGenerators\AssociationIdentifierTarget;
 use Doctrine\Tests\Models\ValueGenerators\BarGenerator;
 use Doctrine\Tests\Models\ValueGenerators\CompositeGeneratedIdentifier;
 use Doctrine\Tests\Models\ValueGenerators\FooGenerator;
@@ -81,5 +83,23 @@ class ValueGeneratorsTest extends OrmFunctionalTestCase
         $this->assertNotNull($childBEntity);
         $this->assertSame(FooGenerator::VALUE, $childBEntity->getA());
         $this->assertSame(BarGenerator::VALUE, $childBEntity->getB());
+    }
+
+    public function testGeneratorsWithAssociationInIdentifier() : void
+    {
+        $entity = new AssociationIdentifier();
+
+        $this->em->persist($entity);
+        $this->em->flush();
+
+        $this->assertSame(FooGenerator::VALUE, $entity->getId());
+        $this->assertSame(BarGenerator::VALUE, $entity->getRegular());
+
+        $entity = $this->em->find(
+            AssociationIdentifier::class,
+            ['id' => FooGenerator::VALUE, 'target' => AssociationIdentifierTarget::ID]
+        );
+
+        $this->assertNotNull($entity);
     }
 }

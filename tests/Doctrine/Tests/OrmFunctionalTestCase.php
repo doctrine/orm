@@ -321,6 +321,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\ValueGenerators\InheritanceGeneratorsRoot::class,
             Models\ValueGenerators\InheritanceGeneratorsChildA::class,
             Models\ValueGenerators\InheritanceGeneratorsChildB::class,
+            Models\ValueGenerators\AssociationIdentifier::class,
+            Models\ValueGenerators\AssociationIdentifierTarget::class,
         ],
     ];
 
@@ -611,6 +613,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM vg_composite_generated_identifier');
             $conn->executeUpdate('DELETE FROM vg_non_identifier_generators');
             $conn->executeUpdate('DELETE FROM vg_inheritance_generators');
+            $conn->executeUpdate('DELETE FROM vg_association_identifier');
+            $conn->executeUpdate('DELETE FROM vg_association_identifier_target');
         }
 
         $this->em->clear();
