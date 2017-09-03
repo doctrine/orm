@@ -317,6 +317,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         ],
         'valueGenerators' => [
             Models\ValueGenerators\CompositeGeneratedIdentifier::class,
+            Models\ValueGenerators\NonIdentifierGenerators::class,
         ],
     ];
 
@@ -605,6 +606,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         if (isset($this->usedModelSets['value_generators'])) {
             $conn->executeUpdate('DELETE FROM vg_composite_generated_identifier');
+            $conn->executeUpdate('DELETE FROM vg_non_identifier_generators');
         }
 
         $this->em->clear();
