@@ -107,7 +107,7 @@ class QueryBuilder
     /**
      * The maximum number of results to retrieve.
      *
-     * @var integer
+     * @var integer|null
      */
     private $_maxResults = null;
 
@@ -653,7 +653,7 @@ class QueryBuilder
     /**
      * Sets the maximum number of results to retrieve (the "limit").
      *
-     * @param integer $maxResults The maximum number of results to retrieve.
+     * @param integer|null $maxResults The maximum number of results to retrieve.
      *
      * @return self
      */
@@ -668,7 +668,7 @@ class QueryBuilder
      * Gets the maximum number of results the query object was set to retrieve (the "limit").
      * Returns NULL if {@link setMaxResults} was not applied to this query builder.
      *
-     * @return integer Maximum number of results.
+     * @return integer|null Maximum number of results.
      */
     public function getMaxResults()
     {
