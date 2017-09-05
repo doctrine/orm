@@ -599,7 +599,7 @@ class UnitOfWorkTest extends OrmTestCase
         $mergedEntity    = new EntityWithRandomlyGeneratedField();
 
         $mergedEntity->id = $persistedEntity->id;
-        $mergedEntity->generatedField = mt_rand(
+        $mergedEntity->generatedField = random_int(
             $persistedEntity->generatedField + 1,
             $persistedEntity->generatedField + 1000
         );
@@ -915,7 +915,7 @@ class EntityWithRandomlyGeneratedField
     public function __construct()
     {
         $this->id             = uniqid('id', true);
-        $this->generatedField = mt_rand(0, 100000);
+        $this->generatedField = random_int(0, 100000);
     }
 }
 

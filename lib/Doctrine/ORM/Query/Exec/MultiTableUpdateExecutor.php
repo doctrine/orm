@@ -183,7 +183,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 if (isset($this->_sqlParameters[$key])) {
                     foreach ($this->_sqlParameters[$key] as $parameterKey => $parameterName) {
                         $paramValues[] = $params[$parameterKey];
-                        $paramTypes[]  = isset($types[$parameterKey]) ? $types[$parameterKey] : ParameterTypeInferer::inferType($params[$parameterKey]);
+                        $paramTypes[]  = $types[$parameterKey] ?? ParameterTypeInferer::inferType($params[$parameterKey]);
                     }
                 }
 

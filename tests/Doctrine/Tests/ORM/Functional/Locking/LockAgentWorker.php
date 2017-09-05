@@ -17,8 +17,8 @@ class LockAgentWorker
 
         $worker = new \GearmanWorker();
         $worker->addServer(
-            isset($_SERVER['GEARMAN_HOST']) ? $_SERVER['GEARMAN_HOST'] : null,
-            isset($_SERVER['GEARMAN_PORT']) ? $_SERVER['GEARMAN_PORT'] : 4730
+            $_SERVER['GEARMAN_HOST'] ?? null,
+            $_SERVER['GEARMAN_PORT'] ?? 4730
         );
         $worker->addFunction("findWithLock", [$lockAgent, "findWithLock"]);
         $worker->addFunction("dqlWithLock", [$lockAgent, "dqlWithLock"]);

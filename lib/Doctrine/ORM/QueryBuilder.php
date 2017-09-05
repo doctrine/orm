@@ -1441,12 +1441,12 @@ class QueryBuilder
         $queryPart = $this->getDQLPart($queryPartName);
 
         if (empty($queryPart)) {
-            return (isset($options['empty']) ? $options['empty'] : '');
+            return ($options['empty'] ?? '');
         }
 
-        return (isset($options['pre']) ? $options['pre'] : '')
+        return ($options['pre'] ?? '')
              . (is_array($queryPart) ? implode($options['separator'], $queryPart) : $queryPart)
-             . (isset($options['post']) ? $options['post'] : '');
+             . ($options['post'] ?? '');
     }
 
     /**

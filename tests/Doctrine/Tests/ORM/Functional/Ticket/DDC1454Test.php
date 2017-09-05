@@ -55,7 +55,7 @@ class DDC1454File
 
     public function __construct()
     {
-        $this->fileId = rand();
+        $this->fileId = random_int(0, getrandmax());
     }
 
     /**

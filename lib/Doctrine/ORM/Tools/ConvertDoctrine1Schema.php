@@ -214,7 +214,7 @@ class ConvertDoctrine1Schema
             $fieldMapping['id'] = true;
         }
 
-        $fieldMapping['fieldName'] = isset($column['alias']) ? $column['alias'] : $name;
+        $fieldMapping['fieldName'] = $column['alias'] ?? $name;
         $fieldMapping['columnName'] = $column['name'];
         $fieldMapping['type'] = $column['type'];
 
@@ -313,13 +313,13 @@ class ConvertDoctrine1Schema
                 $foreignType = 'many';
                 $joinColumns = [];
             } else {
-                $type = isset($relation['type']) ? $relation['type'] : 'one';
-                $foreignType = isset($relation['foreignType']) ? $relation['foreignType'] : 'many';
+                $type = $relation['type'] ?? 'one';
+                $foreignType = $relation['foreignType'] ?? 'many';
                 $joinColumns = [
                     [
                         'name' => $relation['local'],
                         'referencedColumnName' => $relation['foreign'],
-                        'onDelete' => isset($relation['onDelete']) ? $relation['onDelete'] : null,
+                        'onDelete' => $relation['onDelete'] ?? null,
                     ]
                 ];
             }
