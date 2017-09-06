@@ -244,6 +244,8 @@ class CmsAddress
         $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CmsAddressListener', 'preRemove');
 
         $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CmsAddressListener', 'preFlush');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::onFlush, 'CmsAddressListener', 'onFlushHandler');
+        $metadata->addEntityListener(\Doctrine\ORM\Events::postFlush, 'CmsAddressListener', 'postFlushHandler');
         $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CmsAddressListener', 'postLoad');
     }
 }

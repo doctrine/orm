@@ -940,6 +940,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertArrayHasKey(Events::postRemove, $metadata->entityListeners);
         $this->assertArrayHasKey(Events::preRemove, $metadata->entityListeners);
         $this->assertArrayHasKey(Events::postLoad, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::onFlush, $metadata->entityListeners);
+        $this->assertArrayHasKey(Events::postFlush, $metadata->entityListeners);
         $this->assertArrayHasKey(Events::preFlush, $metadata->entityListeners);
 
         $this->assertCount(1, $metadata->entityListeners[Events::postPersist]);
@@ -949,6 +951,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertCount(1, $metadata->entityListeners[Events::postRemove]);
         $this->assertCount(1, $metadata->entityListeners[Events::preRemove]);
         $this->assertCount(1, $metadata->entityListeners[Events::postLoad]);
+        $this->assertCount(1, $metadata->entityListeners[Events::onFlush]);
+        $this->assertCount(1, $metadata->entityListeners[Events::postFlush]);
         $this->assertCount(1, $metadata->entityListeners[Events::preFlush]);
 
         $postPersist = $metadata->entityListeners[Events::postPersist][0];
@@ -958,6 +962,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $postRemove  = $metadata->entityListeners[Events::postRemove][0];
         $preRemove   = $metadata->entityListeners[Events::preRemove][0];
         $postLoad    = $metadata->entityListeners[Events::postLoad][0];
+        $onFlush    = $metadata->entityListeners[Events::onFlush][0];
+        $postFlush    = $metadata->entityListeners[Events::postFlush][0];
         $preFlush    = $metadata->entityListeners[Events::preFlush][0];
 
 
@@ -968,6 +974,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals(CmsAddressListener::class, $postRemove['class']);
         $this->assertEquals(CmsAddressListener::class, $preRemove['class']);
         $this->assertEquals(CmsAddressListener::class, $postLoad['class']);
+        $this->assertEquals(CmsAddressListener::class, $onFlush['class']);
+        $this->assertEquals(CmsAddressListener::class, $postFlush['class']);
         $this->assertEquals(CmsAddressListener::class, $preFlush['class']);
 
         $this->assertEquals(Events::postPersist, $postPersist['method']);
@@ -977,6 +985,8 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $this->assertEquals(Events::postRemove, $postRemove['method']);
         $this->assertEquals(Events::preRemove, $preRemove['method']);
         $this->assertEquals(Events::postLoad, $postLoad['method']);
+        $this->assertEquals(Events::onFlush, $onFlush['method']);
+        $this->assertEquals(Events::postFlush, $postFlush['method']);
         $this->assertEquals(Events::preFlush, $preFlush['method']);
     }
 

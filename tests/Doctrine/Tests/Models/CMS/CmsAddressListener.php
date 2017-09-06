@@ -41,6 +41,16 @@ class CmsAddressListener
         $this->calls[__FUNCTION__][] = func_get_args();
     }
 
+    public function onFlush()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
+
+    public function postFlush()
+    {
+        $this->calls[__FUNCTION__][] = func_get_args();
+    }
+
     public function preFlush()
     {
         $this->calls[__FUNCTION__][] = func_get_args();

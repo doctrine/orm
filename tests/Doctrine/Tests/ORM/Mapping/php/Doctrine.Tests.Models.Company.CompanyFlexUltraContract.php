@@ -16,6 +16,8 @@ $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractLi
 $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
 
+$metadata->addEntityListener(\Doctrine\ORM\Events::onFlush, 'CompanyContractListener', 'onFlushHandler');
+$metadata->addEntityListener(\Doctrine\ORM\Events::postFlush, 'CompanyContractListener', 'postFlushHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
 $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
 

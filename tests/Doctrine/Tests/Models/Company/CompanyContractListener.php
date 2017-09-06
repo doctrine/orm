@@ -14,6 +14,8 @@ class CompanyContractListener
     public $preRemoveCalls;
 
     public $preFlushCalls;
+    public $onFlushCalls;
+    public $postFlushCalls;
 
     public $postLoadCalls;
 
@@ -71,6 +73,22 @@ class CompanyContractListener
     public function preFlushHandler(CompanyContract $contract)
     {
         $this->preFlushCalls[] = func_get_args();
+    }
+
+    /**
+     * @OnFlush
+     */
+    public function onFlushHandler(CompanyContract $contract)
+    {
+        $this->onFlushCalls[] = func_get_args();
+    }
+
+    /**
+     * @PostFlush
+     */
+    public function postFlushHandler(CompanyContract $contract)
+    {
+        $this->postFlushCalls[] = func_get_args();
     }
 
     /**

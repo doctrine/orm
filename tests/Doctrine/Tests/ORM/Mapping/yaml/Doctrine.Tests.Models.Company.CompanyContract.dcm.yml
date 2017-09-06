@@ -10,6 +10,9 @@ Doctrine\Tests\Models\Company\CompanyContract:
   entityListeners:
     CompanyContractListener:
 
+      onFlush: [onFlushHandler]
+      postFlush: [postFlushHandler]
+
       preFlush: [preFlushHandler]
       postLoad: [postLoadHandler]
 
