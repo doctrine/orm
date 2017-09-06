@@ -3343,11 +3343,31 @@ class UnitOfWork implements PropertyChangedListener
         }
     }
 
+    private function dispatchFlushEntityListener($event)
+    {
+        foreach ($this->identityMap as $className => $entities) {
+            $class = $this->em->getClassMetadata($className);
+            $invoke = $this->listenersInvoker->getSubscribedSystems($class, $event) & ~ListenersInvoker::INVOKE_MANAGER;
+            if (ListenersInvoker::INVOKE_NONE === $invoke) {
+                continue;
+            }
+            foreach ($entities as $entity) {
+                $oid = spl_object_hash($entity);
+                if (! isset($this->entityChangeSets[$oid])) {
+                    continue;
+                }
+                $argClass = 'Doctrine\\ORM\\Event\\'.ucfirst($event).'EventArgs';
+                $this->listenersInvoker->invoke($class, $event, $entity, new $argClass($this->em), $invoke);
+            }
+        }
+    }
+
     private function dispatchOnFlushEvent()
     {
         if ($this->evm->hasListeners(Events::onFlush)) {
             $this->evm->dispatchEvent(Events::onFlush, new OnFlushEventArgs($this->em));
         }
+        $this->dispatchFlushEntityListener(Events::onFlush);
     }
 
     private function dispatchPostFlushEvent()
@@ -3355,6 +3375,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($this->evm->hasListeners(Events::postFlush)) {
             $this->evm->dispatchEvent(Events::postFlush, new PostFlushEventArgs($this->em));
         }
+        $this->dispatchFlushEntityListener(Events::postFlush);
     }
 
     /**
