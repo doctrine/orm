@@ -21,94 +21,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-final class Query extends AbstractQuery
+final class Query extends AbstractQuery implements
+    Query\DQLCapable, Query\QueryCacheCapable, Query\Pageable, Query\Lockable
 {
-    /**
-     * A query object is in CLEAN state when it has NO unparsed/unprocessed DQL parts.
-     */
-    const STATE_CLEAN  = 1;
-
-    /**
-     * A query object is in state DIRTY when it has DQL parts that have not yet been
-     * parsed/processed. This is automatically defined as DIRTY when addDqlQueryPart
-     * is called.
-     */
-    const STATE_DIRTY = 2;
-
-    /* Query HINTS */
-
-    /**
-     * The refresh hint turns any query into a refresh query with the result that
-     * any local changes in entities are overridden with the fetched values.
-     *
-     * @var string
-     */
-    const HINT_REFRESH = 'doctrine.refresh';
-
-    /**
-     * @var string
-     */
-    const HINT_CACHE_ENABLED = 'doctrine.cache.enabled';
-
-    /**
-     * @var string
-     */
-    const HINT_CACHE_EVICT = 'doctrine.cache.evict';
-
-    /**
-     * Internal hint: is set to the proxy entity that is currently triggered for loading
-     *
-     * @var string
-     */
-    const HINT_REFRESH_ENTITY = 'doctrine.refresh.entity';
-
-    /**
-     * The forcePartialLoad query hint forces a particular query to return
-     * partial objects.
-     *
-     * @var string
-     * @todo Rename: HINT_OPTIMIZE
-     */
-    const HINT_FORCE_PARTIAL_LOAD = 'doctrine.forcePartialLoad';
-
-    /**
-     * The includeMetaColumns query hint causes meta columns like foreign keys and
-     * discriminator columns to be selected and returned as part of the query result.
-     *
-     * This hint does only apply to non-object queries.
-     *
-     * @var string
-     */
-    const HINT_INCLUDE_META_COLUMNS = 'doctrine.includeMetaColumns';
-
-    /**
-     * An array of class names that implement \Doctrine\ORM\Query\TreeWalker and
-     * are iterated and executed after the DQL has been parsed into an AST.
-     *
-     * @var string
-     */
-    const HINT_CUSTOM_TREE_WALKERS = 'doctrine.customTreeWalkers';
-
-    /**
-     * A string with a class name that implements \Doctrine\ORM\Query\TreeWalker
-     * and is used for generating the target SQL from any DQL AST tree.
-     *
-     * @var string
-     */
-    const HINT_CUSTOM_OUTPUT_WALKER = 'doctrine.customOutputWalker';
-
-    //const HINT_READ_ONLY = 'doctrine.readOnly';
-
-    /**
-     * @var string
-     */
-    const HINT_INTERNAL_ITERATION = 'doctrine.internal.iteration';
-
-    /**
-     * @var string
-     */
-    const HINT_LOCK_MODE = 'doctrine.lockMode';
-
     /**
      * The current state of this query.
      *

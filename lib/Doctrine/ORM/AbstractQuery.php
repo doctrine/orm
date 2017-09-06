@@ -22,35 +22,8 @@ use Doctrine\DBAL\Cache\QueryCacheProfile;
  * @author  Roman Borschel <roman@code-factory.org>
  * @author  Konsta Vesterinen <kvesteri@cc.hut.fi>
  */
-abstract class AbstractQuery
+abstract class AbstractQuery implements Query\SimpleQuery, Query\ResultCacheCapable, Query\SLCacheCapable
 {
-    /* Hydration mode constants */
-
-    /**
-     * Hydrates an object graph. This is the default behavior.
-     */
-    const HYDRATE_OBJECT = 1;
-
-    /**
-     * Hydrates an array graph.
-     */
-    const HYDRATE_ARRAY = 2;
-
-    /**
-     * Hydrates a flat, rectangular result set with scalar values.
-     */
-    const HYDRATE_SCALAR = 3;
-
-    /**
-     * Hydrates a single scalar value.
-     */
-    const HYDRATE_SINGLE_SCALAR = 4;
-
-    /**
-     * Very simple object hydrator (optimized for performance).
-     */
-    const HYDRATE_SIMPLEOBJECT = 5;
-
     /**
      * The parameter map of this query.
      *
