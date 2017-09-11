@@ -268,7 +268,7 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Cart ADD FOREIGN KEY (customer_id) REFERENCES Customer(id);
 
-We had a choice of sides on which to place the ``mappedBy`` attribute. Because it
+We had a choice of sides on which to place the ``inversedBy`` attribute. Because it
 is on the ``Cart``, that is the owning side of the relation, and thus holds the
 foreign key.
 
