@@ -283,13 +283,13 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], isset($indexData['options']) ? $indexData['options'] : []);
+                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], isset($indexData['options']) ? $indexData['options'] : []);
+                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -298,7 +298,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, isset($indexData['options']) ? $indexData['options'] : []);
+                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 
@@ -365,7 +365,7 @@ class SchemaTool
         }
 
         $options = [
-            'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
+            'length'    => $discrColumn['length'] ?? null,
             'notnull'   => true
         ];
 
@@ -417,7 +417,7 @@ class SchemaTool
         $columnType = $mapping['type'];
 
         $options = [];
-        $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
+        $options['length'] = $mapping['length'] ?? null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
         if ($class->isInheritanceTypeSingleTable() && $class->parentClasses) {
             $options['notnull'] = false;
@@ -474,7 +474,7 @@ class SchemaTool
             $table->addColumn($columnName, $columnType, $options);
         }
 
-        $isUnique = isset($mapping['unique']) ? $mapping['unique'] : false;
+        $isUnique = $mapping['unique'] ?? false;
         if ($isUnique) {
             $table->addUniqueIndex([$columnName]);
         }

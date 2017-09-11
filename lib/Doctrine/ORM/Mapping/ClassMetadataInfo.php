@@ -942,7 +942,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $fieldRefl = $reflService->getAccessibleProperty(
-                isset($embeddedClass['declared']) ? $embeddedClass['declared'] : $this->name,
+                $embeddedClass['declared'] ?? $this->name,
                 $property
             );
 
@@ -1617,9 +1617,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
-                $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
-                    ? $joinColumn['fieldName']
-                    : $joinColumn['name'];
+                $mapping['joinColumnFieldNames'][$joinColumn['name']] = $joinColumn['fieldName'] ?? $joinColumn['name'];
             }
 
             if ($uniqueConstraintColumns) {
@@ -3288,8 +3286,8 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
-            'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
-            'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'declaredField' => $mapping['declaredField'] ?? null,
+            'originalField' => $mapping['originalField'] ?? null,
         ];
     }
 
@@ -3302,15 +3300,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
-                ? $fieldMapping['originalClass']
-                : $embeddable->name;
+            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
             $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
                 : $property;
-            $fieldMapping['originalField'] = isset($fieldMapping['originalField'])
-                ? $fieldMapping['originalField']
-                : $fieldMapping['fieldName'];
+            $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {
