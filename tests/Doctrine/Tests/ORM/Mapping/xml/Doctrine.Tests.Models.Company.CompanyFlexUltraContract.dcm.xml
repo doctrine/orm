@@ -9,8 +9,8 @@
 
         <entity-listeners>
             <entity-listener class="CompanyContractListener">
-                <lifecycle-callback type="onFlush"      method="onFlushHandler"/>
-                <lifecycle-callback type="postFlush"      method="postFlushHandler"/>
+                <lifecycle-callback type="onFlush"       method="onFlushHandler"/>
+                <lifecycle-callback type="postFlush"     method="postFlushHandler"/>
 
                 <lifecycle-callback type="preFlush"      method="preFlushHandler"/>
                 <lifecycle-callback type="postLoad"      method="postLoadHandler"/>

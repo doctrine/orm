@@ -53,6 +53,8 @@
       <xs:enumeration value="preRemove"/>
       <xs:enumeration value="postRemove"/>
       <xs:enumeration value="postLoad"/>
+      <xs:enumeration value="onFlush"/>
+      <xs:enumeration value="postFlush"/>
       <xs:enumeration value="preFlush"/>
     </xs:restriction>
   </xs:simpleType>
