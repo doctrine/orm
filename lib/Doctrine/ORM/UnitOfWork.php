@@ -28,7 +28,6 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
-use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
@@ -37,9 +36,9 @@ use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
-use Doctrine\ORM\Proxy\Proxy;
 use Exception;
 use InvalidArgumentException;
+use ProxyManager\Proxy\GhostObjectInterface;
 use UnexpectedValueException;
 
 /**
@@ -711,7 +710,7 @@ class UnitOfWork implements PropertyChangedListener
 
             foreach ($entitiesToProcess as $entity) {
                 // Ignore uninitialized proxy objects
-                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
+                if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
                     continue;
                 }
 
@@ -738,7 +737,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function computeAssociationChanges(AssociationMetadata $association, $value)
     {
-        if ($value instanceof Proxy && ! $value->__isInitialized()) {
+        if ($value instanceof GhostObjectInterface && ! $value->isProxyInitialized()) {
             return;
         }
 
@@ -1867,8 +1866,8 @@ class UnitOfWork implements PropertyChangedListener
                 continue;
             }
 
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $entity->__load();
+            if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+                $entity->initializeProxy();
             }
 
             $relatedEntities = $association->getValue($entity);
@@ -1931,8 +1930,8 @@ class UnitOfWork implements PropertyChangedListener
                     return;
                 }
 
-                if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                    $entity->__load();
+                if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+                    $entity->initializeProxy();
                 }
 
                 $entityVersion = $class->versionProperty->getValue($entity);
@@ -2108,7 +2107,7 @@ class UnitOfWork implements PropertyChangedListener
                 isset($hints[Query::HINT_REFRESH])
                 && isset($hints[Query::HINT_REFRESH_ENTITY])
                 && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
-                && $unmanagedProxy instanceof Proxy
+                && $unmanagedProxy instanceof GhostObjectInterface
                 && $this->isIdentifierEquals($unmanagedProxy, $entity)
             ) {
                 // DDC-1238 - we have a managed instance, but it isn't the provided one.
@@ -2123,8 +2122,8 @@ class UnitOfWork implements PropertyChangedListener
                 return $unmanagedProxy;
             }
 
-            if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
-                $entity->__setInitialized(true);
+            if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+                $entity->setProxyInitializer(null);
 
                 $overrideLocalValues = true;
 
@@ -2316,10 +2315,10 @@ class UnitOfWork implements PropertyChangedListener
                     // this association is marked as eager fetch, and its an uninitialized proxy (wtf!)
                     // then we can append this entity for eager loading!
                     if (!$targetClass->isIdentifierComposite() &&
-                        $newValue instanceof Proxy &&
+                        $newValue instanceof GhostObjectInterface &&
                         isset($hints[self::HINT_DEFEREAGERLOAD]) &&
                         $hints['fetchMode'][$class->getClassName()][$field] === FetchMode::EAGER &&
-                        ! $newValue->__isInitialized()
+                        ! $newValue->isProxyInitialized()
                     ) {
 
                         $this->eagerLoadingEntities[$targetClass->getRootClassName()][$relatedIdHash] = current($associatedId);
@@ -2673,7 +2672,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function registerManaged($entity, array $id, array $data)
     {
-        $isProxy = $entity instanceof Proxy && ! $entity->__isInitialized();
+        $isProxy = $entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized();
         $oid     = spl_object_hash($entity);
 
         $this->entityIdentifiers[$oid]  = $id;
@@ -2789,8 +2788,8 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function initializeObject($obj)
     {
-        if ($obj instanceof Proxy) {
-            $obj->__load();
+        if ($obj instanceof GhostObjectInterface) {
+            $obj->initializeProxy();
 
             return;
         }

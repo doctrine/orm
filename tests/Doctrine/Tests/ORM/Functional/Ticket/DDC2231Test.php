@@ -8,7 +8,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerAware;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2231
@@ -35,12 +35,12 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $y1ref = $this->em->getReference(get_class($y1), $y1->id);
 
-        self::assertInstanceOf(Proxy::class, $y1ref);
-        self::assertFalse($y1ref->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $y1ref);
+        self::assertFalse($y1ref->isProxyInitialized());
 
         $id = $y1ref->doSomething();
 
-        self::assertTrue($y1ref->__isInitialized());
+        self::assertTrue($y1ref->isProxyInitialized());
         self::assertEquals($this->em, $y1ref->om);
     }
 }

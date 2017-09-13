@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -42,16 +42,16 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->clear();
 
         $x2 = $this->em->find(get_class($x), $x->id); // proxy injected for Y
-        self::assertInstanceOf(Proxy::class, $x2->y);
-        self::assertFalse($x2->y->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $x2->y);
+        self::assertFalse($x2->y->isProxyInitialized());
 
         // proxy for Y is in identity map
 
         $z2 = $this->em->createQuery('select z,y from ' . get_class($z) . ' z join z.y y where z.id = ?1')
                 ->setParameter(1, $z->id)
                 ->getSingleResult();
-        self::assertInstanceOf(Proxy::class, $z2->y);
-        self::assertTrue($z2->y->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $z2->y);
+        self::assertTrue($z2->y->isProxyInitialized());
         self::assertEquals('Y', $z2->y->data);
         self::assertEquals($y->id, $z2->y->id);
 
@@ -61,7 +61,7 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertNotSame($x, $x2);
         self::assertNotSame($z, $z2);
         self::assertSame($z2->y, $x2->y);
-        self::assertInstanceOf(Proxy::class, $z2->y);
+        self::assertInstanceOf(GhostObjectInterface::class, $z2->y);
 
     }
 }

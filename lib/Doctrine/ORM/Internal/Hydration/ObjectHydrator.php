@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\ORM\Event\PostLoadEventDispatcher;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use PDO;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\PostLoadEventDispatcher;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
+use PDO;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -401,7 +400,7 @@ class ObjectHydrator extends AbstractHydrator
                     $reflFieldValue = $association->getValue($parentObject);
 
                     if (! $reflFieldValue || isset($this->hints[Query::HINT_REFRESH]) ||
-                        ($reflFieldValue instanceof Proxy && ! $reflFieldValue->__isInitialized())) {
+                        ($reflFieldValue instanceof GhostObjectInterface && ! $reflFieldValue->isProxyInitialized())) {
                         // we only need to take action if this value is null,
                         // we refresh the entity or its an uninitialized proxy.
                         if (isset($nonemptyComponents[$dqlAlias])) {

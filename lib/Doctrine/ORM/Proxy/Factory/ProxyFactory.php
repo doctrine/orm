@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Proxy\Factory;
 
 use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 interface ProxyFactory
 {
@@ -56,11 +57,6 @@ interface ProxyFactory
     /**
      * Gets a reference proxy instance for the entity of the given type and identified by
      * the given identifier.
-     *
-     * @param string $className
-     * @param array  $identifier
-     *
-     * @return \Doctrine\ORM\Proxy\Proxy
      */
-    public function getProxy(string $className, array $identifier) : Proxy;
+    public function getProxy(string $className, array $identifier) : GhostObjectInterface;
 }

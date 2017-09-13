@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Logging\DebugStack;
-use Doctrine\ORM\EntityNotFoundException;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsAddress;
@@ -19,6 +16,7 @@ use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class BasicFunctionalTest extends OrmFunctionalTestCase
 {
@@ -141,7 +139,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         // Address has been eager-loaded because it cant be lazy
         self::assertInstanceOf(CmsAddress::class, $user2->address);
-        self::assertNotInstanceOf(Proxy::class, $user2->address);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $user2->address);
     }
 
     /**
@@ -651,7 +649,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        self::assertInstanceOf(Proxy::class, $address2->getUser());
+        self::assertInstanceOf(GhostObjectInterface::class, $address2->getUser());
         self::assertTrue($userRef === $address2->getUser());
         self::assertFalse($userRef->__isInitialized());
         self::assertEquals('Germany', $address2->country);
@@ -868,7 +866,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
             ->setFetchMode(CmsArticle::class, 'user', FetchMode::EAGER)
             ->getSingleResult();
 
-        self::assertInstanceOf(Proxy::class, $article->user, "It IS a proxy, ...");
+        self::assertInstanceOf(GhostObjectInterface::class, $article->user, "It IS a proxy, ...");
         self::assertTrue($article->user->__isInitialized(), "...but its initialized!");
         self::assertEquals($qc+2, $this->getCurrentQueryCount());
     }

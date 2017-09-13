@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Query;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-371
@@ -49,7 +49,7 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getResult();
 
         self::assertEquals(1, count($children));
-        self::assertNotInstanceOf(Proxy::class, $children[0]->parent);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $children[0]->parent);
         self::assertFalse($children[0]->parent->children->isInitialized());
         self::assertEquals(0, $children[0]->parent->children->unwrap()->count());
     }

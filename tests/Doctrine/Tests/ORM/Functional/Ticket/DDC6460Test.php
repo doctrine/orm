@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group embedded
@@ -62,11 +62,11 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $secondEntityWithLazyParameter = $this->em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
-        self::assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
+        self::assertInstanceOf(GhostObjectInterface::class, $secondEntityWithLazyParameter->lazyLoaded);
         self::assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
-        self::assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertFalse($secondEntityWithLazyParameter->lazyLoaded->isProxyInitialized());
         self::assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
-        self::assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertTrue($secondEntityWithLazyParameter->lazyLoaded->isProxyInitialized());
     }
 }
 

@@ -7,6 +7,7 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * EntityManager interface
@@ -145,7 +146,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param string $entityName The name of the entity type.
      * @param mixed  $id         The entity identifier.
      *
-     * @return object The entity reference.
+     * @return object|GhostObjectInterface The entity reference.
      *
      * @throws ORMException
      */

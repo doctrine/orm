@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests that join columns (foreign keys) can be named the same as the association
@@ -54,7 +54,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertInstanceOf(DDC522Cart::class, $cart);
         self::assertInstanceOf(DDC522Customer::class, $cart->customer);
-        self::assertNotInstanceOf(Proxy::class, $cart->customer);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $cart->customer);
         self::assertEquals('name', $cart->customer->name);
 
         $cartId = $cart->id;
@@ -69,8 +69,8 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $fkt2 = $this->em->find(get_class($fkt), $fkt->id);
 
         self::assertEquals($fkt->cart->id, $cartId);
-        self::assertInstanceOf(Proxy::class, $fkt2->cart);
-        self::assertFalse($fkt2->cart->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $fkt2->cart);
+        self::assertFalse($fkt2->cart->isProxyInitialized());
     }
 
     /**
