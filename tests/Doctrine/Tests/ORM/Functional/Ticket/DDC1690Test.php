@@ -7,7 +7,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -55,7 +55,7 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child = $this->em->find(DDC1690Child::class, $childId);
 
         self::assertEquals(1, count($parent->listeners));
-        self::assertInstanceOf(Proxy::class, $child, 'Verifying that $child is a proxy before using proxy API');
+        self::assertInstanceOf(GhostObjectInterface::class, $child, 'Verifying that $child is a proxy before using proxy API');
         self::assertCount(0, $child->listeners);
         $child->__load();
         self::assertCount(1, $child->listeners);

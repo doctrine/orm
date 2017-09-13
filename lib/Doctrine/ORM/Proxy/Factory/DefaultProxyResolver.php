@@ -5,9 +5,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
-use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Proxy\Proxy;
-
 class DefaultProxyResolver implements ProxyResolver
 {
     /**

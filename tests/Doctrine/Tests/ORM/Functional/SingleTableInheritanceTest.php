@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Persisters\PersisterException;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyFixContract;
 use Doctrine\Tests\Models\Company\CompanyFlexContract;
 use Doctrine\Tests\Models\Company\CompanyFlexUltraContract;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class SingleTableInheritanceTest extends OrmFunctionalTestCase
 {
@@ -396,13 +395,13 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $ref = $this->em->getReference(CompanyContract::class, $this->fix->getId());
-        self::assertNotInstanceOf(Proxy::class, $ref, "Cannot Request a proxy from a class that has subclasses.");
+        self::assertNotInstanceOf(GhostObjectInterface::class, $ref, "Cannot Request a proxy from a class that has subclasses.");
         self::assertInstanceOf(CompanyContract::class, $ref);
         self::assertInstanceOf(CompanyFixContract::class, $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->em->clear();
 
         $ref = $this->em->getReference(CompanyFixContract::class, $this->fix->getId());
-        self::assertInstanceOf(Proxy::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        self::assertInstanceOf(GhostObjectInterface::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
 
     /**
@@ -419,6 +418,6 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
             ->setParameter(1, $this->fix->getId())
             ->getSingleResult();
 
-        self::assertNotInstanceOf(Proxy::class, $contract->getSalesPerson());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $contract->getSalesPerson());
     }
 }

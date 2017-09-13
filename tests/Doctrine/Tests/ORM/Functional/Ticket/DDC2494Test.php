@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2494
@@ -53,21 +54,21 @@ class DDC2494Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $queryCount = $this->getCurrentQueryCount();
 
-        self::assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $item->getCurrency());
-        self::assertFalse($item->getCurrency()->__isInitialized());
+        self::assertInstanceOf(GhostObjectInterface::class, $item->getCurrency());
+        self::assertFalse($item->getCurrency()->isProxyInitialized());
 
         self::assertArrayHasKey('convertToPHPValue', DDC2494TinyIntType::$calls);
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
 
         self::assertInternalType('integer', $item->getCurrency()->getId());
         self::assertCount(1, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        self::assertFalse($item->getCurrency()->__isInitialized());
+        self::assertFalse($item->getCurrency()->isProxyInitialized());
 
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
         self::assertInternalType('integer', $item->getCurrency()->getTemp());
         self::assertCount(3, DDC2494TinyIntType::$calls['convertToPHPValue']);
-        self::assertTrue($item->getCurrency()->__isInitialized());
+        self::assertTrue($item->getCurrency()->isProxyInitialized());
 
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }

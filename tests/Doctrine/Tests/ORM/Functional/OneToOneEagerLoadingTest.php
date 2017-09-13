@@ -6,9 +6,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-952
@@ -51,7 +51,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->sqlLoggerStack->queries);
 
         $train = $this->em->find(get_class($train), $train->id);
-        self::assertNotInstanceOf(Proxy::class, $train->driver);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
         self::assertEquals("Benjamin", $train->driver->name);
 
         self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
@@ -71,7 +71,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->sqlLoggerStack->queries);
 
         $train = $this->em->find(get_class($train), $train->id);
-        self::assertNotInstanceOf(Proxy::class, $train->driver);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
         self::assertNull($train->driver);
 
         self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
@@ -92,7 +92,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->sqlLoggerStack->queries);
 
         $driver = $this->em->find(get_class($owner), $owner->id);
-        self::assertNotInstanceOf(Proxy::class, $owner->train);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $owner->train);
         self::assertNotNull($owner->train);
 
         self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
@@ -114,7 +114,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $sqlCount = count($this->sqlLoggerStack->queries);
 
         $driver = $this->em->find(get_class($driver), $driver->id);
-        self::assertNotInstanceOf(Proxy::class, $driver->train);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $driver->train);
         self::assertNull($driver->train);
 
         self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
@@ -131,7 +131,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $waggon = $this->em->find(get_class($waggon), $waggon->id);
-        self::assertNotInstanceOf(Proxy::class, $waggon->train);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $waggon->train);
         self::assertNotNull($waggon->train);
     }
 

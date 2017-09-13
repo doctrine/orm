@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\LazyLoading;
 
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @BeforeMethods({"init"})
@@ -17,22 +17,22 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 final class ProxyInitializationTimeBench
 {
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $cmsUsers;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $cmsEmployees;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $initializedUsers;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $initializedEmployees;
 
