@@ -7,8 +7,12 @@ namespace Doctrine\ORM\Proxy\Factory;
 
 use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Proxy\Factory\Strategy\ConditionalFileWriterProxyGeneratorStrategy;
+use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Configuration;
+use ProxyManager\Factory\LazyLoadingGhostFactory;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Static factory for proxy objects.
@@ -54,7 +58,7 @@ class StaticProxyFactory implements ProxyFactory
         $generatorStrategy = new Strategy\ConditionalFileWriterProxyGeneratorStrategy($generator);
         $definitionFactory = new ProxyDefinitionFactory($entityManager, $resolver, $generatorStrategy);
 
-        $generator->setPlaceholder('baseProxyInterface', Proxy::class);
+        $generator->setPlaceholder('baseProxyInterface', GhostObjectInterface::class);
 
         $this->entityManager     = $entityManager;
         $this->definitionFactory = $definitionFactory;
@@ -82,9 +86,46 @@ class StaticProxyFactory implements ProxyFactory
 
     /**
      * {@inheritdoc}
+     * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function getProxy(string $className, array $identifier) : Proxy
+    public function getProxy(string $className, array $identifier) : GhostObjectInterface
     {
+        $metadata = $this->entityManager->getClassMetadata($className);
+
+        return (new LazyLoadingGhostFactory(new Configuration()))
+            ->createProxy(
+                $metadata->getClassName(),
+                function (
+                    GhostObjectInterface $ghostObject,
+                    string $method, // we don't care
+                    array $parameters, // we don't care
+                    & $initializer,
+                    array $properties
+                ) use ($metadata) : bool {
+                    $originalInitializer = $initializer;
+                    $initializer = null;
+
+                    $persister = $this->entityManager->getUnitOfWork()->getEntityPersister($metadata->getClassName());
+
+                    $identifier = $persister->getIdentifier($ghostObject);
+
+                    // @TODO how do we use `$properties` in the persister? That would be a massive optimisation
+                    if (! $persister->loadById($identifier, $ghostObject)) {
+                        $initializer = $originalInitializer;
+
+                        throw EntityNotFoundException::fromClassNameAndIdentifier(
+                            $metadata->getClassName(),
+                            $identifier
+                        );
+                    }
+
+                    return true;
+                },
+                [
+                    // @TODO this should be a constant reference, not a magic constant
+                    'skippedProperties' => $this->identifierFieldFqns($metadata)
+                ]
+            );
         $proxyDefinition = $this->getOrCreateProxyDefinition($className);
         $proxyInstance   = $this->createProxyInstance($proxyDefinition);
         $proxyPersister  = $proxyDefinition->entityPersister;
@@ -92,6 +133,37 @@ class StaticProxyFactory implements ProxyFactory
         $proxyPersister->setIdentifier($proxyInstance, $identifier);
 
         return $proxyInstance;
+    }
+
+    private function identifierFieldFqns(ClassMetadata $metadata) : array
+    {
+        $idFieldFqcns = [];
+
+        foreach ($metadata->getIdentifierFieldNames() as $idField) {
+            $property = $metadata->getProperty($idField);
+
+            $idFieldFqcns[] = $this->propertyFqcn(
+                $property
+                    ->getDeclaringClass()
+                    ->getReflectionClass()
+                    ->getProperty($idField) // @TODO possible NPR. This should never be null, why is it allowed to be?
+            );
+        }
+
+        return $idFieldFqcns;
+    }
+
+    private function propertyFqcn(\ReflectionProperty $property) : string
+    {
+        if ($property->isPrivate()) {
+            return "\0" . $property->getDeclaringClass()->getName() . "\0" . $property->getName();
+        }
+
+        if ($property->isProtected()) {
+            return "\0*\0" . $property->getName();
+        }
+
+        return $property->getName();
     }
 
     /**

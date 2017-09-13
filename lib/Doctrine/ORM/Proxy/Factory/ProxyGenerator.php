@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Proxy\Factory;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * This factory is used to generate proxy classes.
@@ -30,7 +30,7 @@ class ProxyGenerator
      * @var string[]|callable[]
      */
     protected $placeholders = [
-        'baseProxyInterface'   => Proxy::class,
+        'baseProxyInterface'   => GhostObjectInterface::class,
         'additionalProperties' => '',
     ];
 

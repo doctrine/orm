@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -51,7 +51,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
         self::assertInstanceOf(CTIRelated::class, $related2);
         self::assertInstanceOf(CTIChild::class, $related2->getCTIParent());
-        self::assertNotInstanceOf(Proxy::class, $related2->getCTIParent());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $related2->getCTIParent());
         self::assertEquals('hello', $related2->getCTIParent()->getData());
 
         self::assertSame($related2, $related2->getCTIParent()->getRelated());

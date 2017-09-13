@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1163
@@ -76,7 +76,7 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $specialProduct = $this->em->find(DDC1163SpecialProduct::class, $this->productId);
 
         self::assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
-        self::assertInstanceOf(Proxy::class, $specialProduct);
+        self::assertInstanceOf(GhostObjectInterface::class, $specialProduct);
 
         $specialProduct->setSubclassProperty('foobar');
 
