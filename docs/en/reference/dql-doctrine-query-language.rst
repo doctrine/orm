@@ -1160,6 +1160,22 @@ Object hydration hydrates the result set into the object graph:
     $query = $em->createQuery('SELECT u FROM CmsUser u');
     $users = $query->getResult(Query::HYDRATE_OBJECT);
 
+Sometimes the behavior in the object hydrator can be confusing, which is
+why we are listing as many of the assumptions here for reference:
+
+- Objects fetched in a FROM clause are returned as a Set, that means every
+  object is only ever included in the resulting array once. This is the case
+  even when using JOIN or GROUP BY in ways that return the same row for an
+  object multiple times. If the hydrator sees the same object multiple times,
+  then it makes sure it is only returned once.
+
+- If an object is already in memory from a previous query of any kind, then
+  then the previous object is used, even if the database may contain more
+  recent data. Data from the database is discarded. This even happens if the
+  previous object is still an unloaded proxy. 
+
+This list might be incomplete.
+
 Array Hydration
 ^^^^^^^^^^^^^^^
 
