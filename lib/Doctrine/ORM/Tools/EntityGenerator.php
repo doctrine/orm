@@ -1669,6 +1669,10 @@ public function __construct(<params>)
                 $options[] = '"unsigned"=true';
             }
 
+            if (isset($fieldMapping['options']['fixed']) && $fieldMapping['options']['fixed']) {
+				$options[] = '"fixed"=true';
+			}
+
             if ($options) {
                 $column[] = 'options={'.implode(',', $options).'}';
             }
