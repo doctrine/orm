@@ -1670,8 +1670,12 @@ public function __construct(<params>)
             }
 
             if (isset($fieldMapping['options']['fixed']) && $fieldMapping['options']['fixed']) {
-				$options[] = '"fixed"=true';
-			}
+                $options[] = '"fixed"=true';
+            }
+
+            if (isset($fieldMapping['options']['default']) && $fieldMapping['options']['default']) {
+                $options[] = '"default"="'. $fieldMapping['options']['default'].'"';
+            }
 
             if ($options) {
                 $column[] = 'options={'.implode(',', $options).'}';
