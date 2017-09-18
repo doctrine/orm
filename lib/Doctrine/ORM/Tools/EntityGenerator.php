@@ -1673,7 +1673,7 @@ public function __construct(<params>)
                 $options[] = '"fixed"=true';
             }
 
-            if (isset($fieldMapping['options']['default']) && $fieldMapping['options']['default']) {
+            if (isset($fieldMapping['options']['default'])) {
                 $options[] = '"default"="'. $fieldMapping['options']['default'].'"';
             }
 
