@@ -309,6 +309,7 @@ abstract class AbstractHydrator
             foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];
                 $args   = $newObject['args'];
+                ksort($args);
                 $obj    = $class->newInstanceArgs($args);
 
                 $rowData['newObjects'][$objIndex]['obj'] = $obj;

@@ -1648,7 +1648,7 @@ class SqlWalker implements TreeWalker
                 'argIndex'  => $argIndex,
             ];
 
-            if ($objOwner) {
+            if ($objOwner !== null) {
                 $this->rsm->addNewObjectAsArgument($objIndex, $objOwner, $objOwnerIdx);
             }
         }
