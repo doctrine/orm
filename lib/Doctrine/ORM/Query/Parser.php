@@ -1873,6 +1873,12 @@ class Parser
             return $expression;
         }
 
+        if ($token['type'] === Lexer::T_NEW) {
+            $expression = $this->NewObjectExpression();
+
+            return $expression;
+        }
+
         return $this->ScalarExpression();
     }
 
