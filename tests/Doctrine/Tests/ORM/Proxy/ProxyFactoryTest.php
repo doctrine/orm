@@ -223,33 +223,36 @@ class ProxyFactoryTest extends OrmTestCase
 
     public function testProxyClonesParentFields()
     {
-        $companyEmployee = new CompanyEmployee();
-        $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
-        $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
-
-        // Set the id of the CompanyEmployee (which is in the parent CompanyPerson)
-        $property = new \ReflectionProperty(CompanyPerson::class, 'id');
-
-        $property->setAccessible(true);
-        $property->setValue($companyEmployee, 42);
-
+        $identifier    = ['id' => 42];
         $classMetaData = $this->emMock->getClassMetadata(CompanyEmployee::class);
 
         $persister = $this
             ->getMockBuilder(BasicEntityPersister::class)
             ->setConstructorArgs([$this->emMock, $classMetaData])
-            ->setMethods(['load'])
+            ->setMethods(['loadById'])
             ->getMock();
 
         $persister
             ->expects(self::atLeastOnce())
-            ->method('load')
-            ->willReturn($companyEmployee);
+            ->method('loadById')
+            ->with(
+                $identifier,
+                self::logicalAnd(
+                    self::isInstanceOf(GhostObjectInterface::class),
+                    self::isInstanceOf(CompanyEmployee::class)
+                )
+            )
+            ->willReturnCallback(function (array $id, CompanyEmployee $companyEmployee) {
+                $companyEmployee->setSalary(1000); // A property on the CompanyEmployee
+                $companyEmployee->setName('Bob'); // A property on the parent class, CompanyPerson
+
+                return $companyEmployee;
+            });
 
         $this->uowMock->setEntityPersister(CompanyEmployee::class, $persister);
 
         /* @var $proxy GhostObjectInterface|CompanyEmployee */
-        $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, ['id' => 42]);
+        $proxy = $this->proxyFactory->getProxy(CompanyEmployee::class, $identifier);
 
         $cloned = clone $proxy;
 
