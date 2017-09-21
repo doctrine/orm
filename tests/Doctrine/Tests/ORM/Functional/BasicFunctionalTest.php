@@ -649,9 +649,12 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                 ->setParameter('user', $userRef)
                 ->getSingleResult();
 
-        self::assertInstanceOf(GhostObjectInterface::class, $address2->getUser());
-        self::assertTrue($userRef === $address2->getUser());
-        self::assertFalse($userRef->__isInitialized());
+        /* @var $fetchedUser CmsUser|GhostObjectInterface */
+        $fetchedUser = $address2->getUser();
+
+        self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser);
+        self::assertSame($userRef, $fetchedUser);
+        self::assertFalse($userRef->isProxyInitialized());
         self::assertEquals('Germany', $address2->country);
         self::assertEquals('Berlin', $address2->city);
         self::assertEquals('12345', $address2->zip);
@@ -860,14 +863,18 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $qc = $this->getCurrentQueryCount();
         $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.id = ?1";
+        /* @var $article CmsArticle */
         $article = $this->em
             ->createQuery($dql)
             ->setParameter(1, $article->id)
             ->setFetchMode(CmsArticle::class, 'user', FetchMode::EAGER)
             ->getSingleResult();
 
-        self::assertInstanceOf(GhostObjectInterface::class, $article->user, "It IS a proxy, ...");
-        self::assertTrue($article->user->__isInitialized(), "...but its initialized!");
+        /* @var $fetchedUser CmsUser|GhostObjectInterface */
+        $fetchedUser = $article->user;
+
+        self::assertInstanceOf(GhostObjectInterface::class, $fetchedUser, "It IS a proxy, ...");
+        self::assertTrue($fetchedUser->isProxyInitialized(), "...but its initialized!");
         self::assertEquals($qc+2, $this->getCurrentQueryCount());
     }
 
