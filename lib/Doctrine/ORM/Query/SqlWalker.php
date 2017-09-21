@@ -752,6 +752,7 @@ class SqlWalker implements TreeWalker
                 if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
                     continue;
                 }
+                
                 if ( !$addMetaColumns && !isset($assoc['id'])) {
                     continue;
                 }
