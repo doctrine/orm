@@ -446,17 +446,23 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
         $this->em->clear();
-        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $q = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
-                ->setParameter("user", $this->em->getReference(CmsUser::class, $author->id))
-                ->setParameter("topic", "dr. dolittle");
 
-        $result = $q->getResult();
-        self::assertEquals(1, count($result));
+        /* @var $result CmsArticle[] */
+        $result = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
+                ->setParameter("user", $this->em->getReference(CmsUser::class, $author->id))
+                ->setParameter("topic", "dr. dolittle")
+                ->getResult();
+
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals("dr. dolittle", $result[0]->topic);
-        self::assertInstanceOf(GhostObjectInterface::class, $result[0]->user);
-        self::assertFalse($result[0]->user->__isInitialized());
+
+        /* @var $user CmsUser|GhostObjectInterface */
+        $user = $result[0]->user;
+
+        self::assertInstanceOf(CmsUser::class, $user);
+        self::assertInstanceOf(GhostObjectInterface::class, $user);
+        self::assertFalse($user->isProxyInitialized());
     }
 
     /**
