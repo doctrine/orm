@@ -238,14 +238,14 @@ the database permanently.
 
 Notice how both sides of the bidirectional association are always
 updated. Unidirectional associations are consequently simpler to
-handle. Also note that if you use type-hinting in your methods, i.e.
-``setAddress(Address $address)``, PHP will only allow null
-values if ``null`` is set as default value. Otherwise
-setAddress(null) will fail for removing the association. If you
-insist on type-hinting a typical way to deal with this is to
-provide a special method, like ``removeAddress()``. This can also
-provide better encapsulation as it hides the internal meaning of
-not having an address.
+handle.
+
+Also note that if you use type-hinting in your methods, you will 
+have to specify a nullable type, i.e. ``setAddress(?Address $address)``,
+otherwise ``setAddress(null)`` will fail to remove the association.
+Another way to deal with this is to provide a special method, like
+``removeAddress()``. This can also provide better encapsulation as
+it hides the internal meaning of not having an address.
 
 When working with collections, keep in mind that a Collection is
 essentially an ordered map (just like a PHP array). That is why the
@@ -396,7 +396,7 @@ There are two approaches to handle this problem in your code:
 
 1. Ignore updating the inverse side of bidirectional collections,
    BUT never read from them in requests that changed their state. In
-   the next Request Doctrine hydrates the consistent collection state
+   the next request Doctrine hydrates the consistent collection state
    again.
 2. Always keep the bidirectional collections in sync through
    association management methods. Reads of the Collections directly
