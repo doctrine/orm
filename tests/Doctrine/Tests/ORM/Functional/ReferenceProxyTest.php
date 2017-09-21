@@ -118,6 +118,8 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1033
+     *
+     * @TODO remove this test and document the BC break
      */
     public function testCloneProxy()
     {
@@ -182,6 +184,8 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1022
+     *
+     * @TODO remove this test and document the BC break
      */
     public function testWakeupCalledOnProxy()
     {
