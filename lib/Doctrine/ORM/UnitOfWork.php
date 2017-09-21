@@ -339,9 +339,13 @@ class UnitOfWork implements PropertyChangedListener
         // Compute changes done since last commit.
         if (null === $entity) {
             $this->computeChangeSets();
-        } elseif (is_object($entity)) {
+        }
+
+        if (is_object($entity)) {
             $this->computeSingleEntityChangeSet($entity);
-        } elseif (is_array($entity)) {
+        }
+
+        if (is_array($entity)) {
             foreach ($entity as $object) {
                 $this->computeSingleEntityChangeSet($object);
             }
@@ -1248,6 +1252,7 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->entityDeletions[$oid])) {
             throw ORMInvalidArgumentException::scheduleInsertForRemovedEntity($entity);
         }
+
         if (isset($this->originalEntityData[$oid]) && ! isset($this->entityInsertions[$oid])) {
             throw ORMInvalidArgumentException::scheduleInsertForManagedEntity($entity);
         }
@@ -1571,8 +1576,6 @@ class UnitOfWork implements PropertyChangedListener
         if (isset($this->identityMap[$className][$idHash])) {
             unset($this->identityMap[$className][$idHash]);
             unset($this->readOnlyObjects[$oid]);
-
-            //$this->entityStates[$oid] = self::STATE_DETACHED;
 
             return true;
         }
@@ -2139,9 +2142,6 @@ class UnitOfWork implements PropertyChangedListener
                 case ($relatedEntities !== null):
                     $this->doRefresh($relatedEntities, $visited);
                     break;
-
-                default:
-                    // Do nothing
             }
         }
     }
@@ -2182,9 +2182,6 @@ class UnitOfWork implements PropertyChangedListener
                 case ($relatedEntities !== null):
                     $this->doDetach($relatedEntities, $visited);
                     break;
-
-                default:
-                    // Do nothing
             }
         }
     }
@@ -2223,7 +2220,11 @@ class UnitOfWork implements PropertyChangedListener
                 foreach ($relatedEntities as $relatedEntity) {
                     $this->doMerge($relatedEntity, $visited, $managedCopy, $assoc);
                 }
-            } else if ($relatedEntities !== null) {
+
+                continue;
+            }
+
+            if ($relatedEntities !== null) {
                 $this->doMerge($relatedEntities, $visited, $managedCopy, $assoc);
             }
         }
@@ -2282,9 +2283,6 @@ class UnitOfWork implements PropertyChangedListener
 
                     $this->doPersist($relatedEntities, $visited);
                     break;
-
-                default:
-                    // Do nothing
             }
         }
     }
@@ -2327,9 +2325,6 @@ class UnitOfWork implements PropertyChangedListener
                 case ($relatedEntities !== null):
                     $entitiesToCascade[] = $relatedEntities;
                     break;
-
-                default:
-                    // Do nothing
             }
         }
 
@@ -2399,9 +2394,6 @@ class UnitOfWork implements PropertyChangedListener
                     $lockMode
                 );
                 break;
-
-            default:
-                // Do nothing
         }
     }
 
@@ -2549,7 +2541,10 @@ class UnitOfWork implements PropertyChangedListener
     public function createEntity($className, array $data, &$hints = [])
     {
         $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
+
+        if ( ! $class instanceof ClassMetadata) {
+          return $entity;
+        }
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
@@ -2608,7 +2603,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityIdentifiers[$oid]  = $id;
             $this->entityStates[$oid]       = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
-
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
             if ($entity instanceof NotifyPropertyChanged) {
@@ -2836,7 +2830,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function triggerEagerLoads()
     {
-        if ( ! $this->eagerLoadingEntities) {
+        if (empty($this->eagerLoadingEntities)) {
             return;
         }
 
