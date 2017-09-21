@@ -2541,7 +2541,10 @@ class UnitOfWork implements PropertyChangedListener
     public function createEntity($className, array $data, &$hints = [])
     {
         $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
+
+        if ( ! $class instanceof ClassMetadata) {
+          return $entity;
+        }
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
@@ -2600,7 +2603,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityIdentifiers[$oid]  = $id;
             $this->entityStates[$oid]       = self::STATE_MANAGED;
             $this->originalEntityData[$oid] = $data;
-
             $this->identityMap[$class->rootEntityName][$idHash] = $entity;
 
             if ($entity instanceof NotifyPropertyChanged) {
@@ -2828,7 +2830,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function triggerEagerLoads()
     {
-        if ( ! $this->eagerLoadingEntities) {
+        if (empty($this->eagerLoadingEntities)) {
             return;
         }
 
