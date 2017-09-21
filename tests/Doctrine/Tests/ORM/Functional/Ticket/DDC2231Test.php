@@ -33,15 +33,16 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $y1ref = $this->em->getReference(get_class($y1), $y1->id);
+        /* @var $y1ref DDC2231EntityY|GhostObjectInterface */
+        $y1ref = $this->em->getReference(DDC2231EntityY::class, $y1->id);
 
         self::assertInstanceOf(GhostObjectInterface::class, $y1ref);
+        self::assertInstanceOf(DDC2231EntityY::class, $y1ref);
         self::assertFalse($y1ref->isProxyInitialized());
 
-        $id = $y1ref->doSomething();
+        $y1ref->initializeProxy();
 
-        self::assertTrue($y1ref->isProxyInitialized());
-        self::assertEquals($this->em, $y1ref->om);
+        self::assertSame($this->em, $y1ref->om);
     }
 }
 
