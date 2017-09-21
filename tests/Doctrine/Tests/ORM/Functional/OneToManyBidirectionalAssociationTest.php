@@ -116,12 +116,13 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery('select f from Doctrine\Tests\Models\ECommerce\ECommerceFeature f');
         $features = $query->getResult();
 
+        /* @var $product GhostObjectInterface|ECommerceFeature */
         $product = $features[0]->getProduct();
         self::assertInstanceOf(GhostObjectInterface::class, $product);
         self::assertInstanceOf(ECommerceProduct::class, $product);
-        self::assertFalse($product->__isInitialized());
+        self::assertFalse($product->isProxyInitialized());
         self::assertSame('Doctrine Cookbook', $product->getName());
-        self::assertTrue($product->__isInitialized());
+        self::assertTrue($product->isProxyInitialized());
     }
 
     public function testLazyLoadsObjectsOnTheInverseSide2()
