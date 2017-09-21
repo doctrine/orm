@@ -2368,7 +2368,16 @@ class UnitOfWork implements PropertyChangedListener
             $this->originalEntityData[$oid][$field] = $newValue;
             $association->setValue($entity, $newValue);
 
-            if ($association->getInversedBy() && $association instanceof OneToOneAssociationMetadata) {
+            if (
+                $association->getInversedBy()
+                && $association instanceof OneToOneAssociationMetadata
+                // @TODO refactor this
+                // we don't want to set any values in un-initialized proxies
+                && ! (
+                    $newValue instanceof GhostObjectInterface
+                    && ! $newValue->isProxyInitialized()
+                )
+            ) {
                 $inverseAssociation = $targetClass->getProperty($association->getInversedBy());
 
                 $inverseAssociation->setValue($newValue, $entity);
