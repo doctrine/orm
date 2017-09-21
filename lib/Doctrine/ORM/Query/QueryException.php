@@ -24,9 +24,9 @@ class QueryException extends \Doctrine\ORM\ORMException
      *
      * @return QueryException
      */
-    public static function dqlError($dql)
+    public static function dqlError($dql, ?\Throwable $previous = null)
     {
-        return new self($dql);
+        return new self($dql, 0, $previous);
     }
 
     /**
