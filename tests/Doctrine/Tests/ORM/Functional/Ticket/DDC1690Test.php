@@ -38,41 +38,42 @@ class DDC1690Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($parent);
         $this->em->persist($child);
 
-        self::assertEquals(1, count($parent->listeners));
-        self::assertEquals(1, count($child->listeners));
+        self::assertCount(1, $parent->listeners);
+        self::assertCount(1, $child->listeners);
 
         $this->em->flush();
         $this->em->clear();
 
-        self::assertEquals(1, count($parent->listeners));
-        self::assertEquals(1, count($child->listeners));
+        self::assertCount(1, $parent->listeners);
+        self::assertCount(1, $child->listeners);
 
         $parentId = $parent->getId();
-        $childId = $child->getId();
-        unset($parent, $child);
+        $childId  = $child->getId();
 
-        $parent = $this->em->find(DDC1690Parent::class, $parentId);
-        $child = $this->em->find(DDC1690Child::class, $childId);
+        $fetchedParent = $this->em->find(DDC1690Parent::class, $parentId);
+        /* @var $fetchedChild DDC1690Child|GhostObjectInterface */
+        $fetchedChild = $this->em->find(DDC1690Child::class, $childId);
 
-        self::assertEquals(1, count($parent->listeners));
-        self::assertInstanceOf(GhostObjectInterface::class, $child, 'Verifying that $child is a proxy before using proxy API');
-        self::assertCount(0, $child->listeners);
-        $child->__load();
-        self::assertCount(1, $child->listeners);
-        unset($parent, $child);
+        self::assertCount(1, $fetchedParent->listeners);
+        self::assertInstanceOf(GhostObjectInterface::class, $fetchedChild, 'Verifying that $child is a proxy before using proxy API');
+        self::assertFalse($fetchedChild->isProxyInitialized());
+        self::assertCount(1, $fetchedChild->listeners);
 
-        $parent = $this->em->find(DDC1690Parent::class, $parentId);
-        $child = $parent->getChild();
+        $fetchedChild->initializeProxy();
 
-        self::assertEquals(1, count($parent->listeners));
-        self::assertEquals(1, count($child->listeners));
-        unset($parent, $child);
+        self::assertCount(1, $fetchedChild->listeners);
 
-        $child = $this->em->find(DDC1690Child::class, $childId);
-        $parent = $child->getParent();
+        $secondFetchedParent = $this->em->find(DDC1690Parent::class, $parentId);
+        $secondFetchedChild  = $parent->getChild();
 
-        self::assertEquals(1, count($parent->listeners));
-        self::assertEquals(1, count($child->listeners));
+        self::assertCount(1, $secondFetchedParent->listeners);
+        self::assertCount(1, $secondFetchedChild->listeners);
+
+        $thirdFetchedChild  = $this->em->find(DDC1690Child::class, $childId);
+        $thirdFetchedParent = $child->getParent();
+
+        self::assertCount(1, $thirdFetchedParent->listeners);
+        self::assertCount(1, $thirdFetchedChild->listeners);
     }
 }
 
@@ -80,16 +81,14 @@ class NotifyBaseEntity implements NotifyPropertyChanged {
     public $listeners = [];
 
     public function addPropertyChangedListener(PropertyChangedListener $listener) {
-        if (!in_array($listener, $this->listeners)) {
+        if (! \in_array($listener, $this->listeners, true)) {
             $this->listeners[] = $listener;
         }
     }
 
     protected function onPropertyChanged($propName, $oldValue, $newValue) {
-        if ($this->listeners) {
-            foreach ($this->listeners as $listener) {
-                $listener->propertyChanged($this, $propName, $oldValue, $newValue);
-            }
+        foreach ($this->listeners as $listener) {
+            $listener->propertyChanged($this, $propName, $oldValue, $newValue);
         }
     }
 }
