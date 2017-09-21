@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC1193Test extends OrmFunctionalTestCase
 {
@@ -41,13 +42,20 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->em->flush();
 
         $companyId = $company->id;
-        $accountId = $account->id;
+
         $this->em->clear();
 
-        $company = $this->em->find(get_class($company), $companyId);
+        /* @var $company DDC1193Company */
+        $company = $this->em->find(DDC1193Company::class, $companyId);
 
         self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company), "Company is in identity map.");
-        self::assertFalse($company->member->__isInitialized(), "Pre-Condition");
+
+        /* @var $member GhostObjectInterface|DDC1193Person */
+        $member = $company->member;
+
+        self::assertInstanceOf(GhostObjectInterface::class, $member);
+        self::assertInstanceOf(DDC1193Person::class, $member);
+        self::assertFalse($member->isProxyInitialized(), "Pre-Condition");
         self::assertTrue($this->em->getUnitOfWork()->isInIdentityMap($company->member), "Member is in identity map.");
 
         $this->em->remove($company);
