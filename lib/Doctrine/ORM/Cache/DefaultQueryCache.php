@@ -16,6 +16,7 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Query;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Default query cache implementation.
@@ -335,7 +336,7 @@ class DefaultQueryCache implements QueryCache
             $assocIdentifier = $this->uow->getEntityIdentifier($assocValue);
             $entityKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocIdentifier);
 
-            if ((! $assocValue instanceof Proxy && ($key->cacheMode & Cache::MODE_REFRESH)) || ! $assocRegion->contains($entityKey)) {
+            if ((! $assocValue instanceof GhostObjectInterface && ($key->cacheMode & Cache::MODE_REFRESH)) || ! $assocRegion->contains($entityKey)) {
                 // Entity put fail
                 if (! $assocPersister->storeEntityCache($assocValue, $entityKey)) {
                     return null;
