@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1238
@@ -58,14 +59,29 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $userId = $user->getId();
         $this->em->clear();
 
+        /* @var $user DDC1238User|GhostObjectInterface */
         $user = $this->em->getReference(DDC1238User::class, $userId);
+
         $this->em->clear();
 
+        /* @var $user2 DDC1238User|GhostObjectInterface */
         $user2 = $this->em->getReference(DDC1238User::class, $userId);
 
-        // force proxy load, getId() doesn't work anymore
-        $user->getName();
-        self::assertNull($user->getId(), "Now this is null, we already have a user instance of that type");
+        $user->initializeProxy();
+
+        self::assertInternalType(
+            'integer',
+            $user->getId(),
+            'Even if a proxy is detached, it should still have an identifier'
+        );
+
+        $user2->initializeProxy();
+
+        self::assertInternalType(
+            'integer',
+            $user2->getId(),
+            'The managed instance still has an identifier'
+        );
     }
 }
 
