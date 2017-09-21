@@ -9,6 +9,7 @@ use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Proxy\Proxy;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
@@ -123,16 +124,40 @@ class StaticProxyFactory implements ProxyFactory
                 },
                 [
                     // @TODO this should be a constant reference, not a magic constant
-                    'skippedProperties' => $this->identifierFieldFqns($metadata)
+                    'skippedProperties' => \array_merge(
+                        $this->identifierFieldFqns($metadata),
+                        $this->transientFieldsFqns($metadata)
+                    ),
                 ]
             );
 
+        $this->transientFieldsFqns($metadata);
         $proxyDefinition = $this->getOrCreateProxyDefinition($className);
         $proxyPersister  = $proxyDefinition->entityPersister;
 
         $proxyPersister->setIdentifier($proxyInstance, $identifier);
 
         return $proxyInstance;
+    }
+
+    private function transientFieldsFqns(ClassMetadata $metadata) : array
+    {
+        $transientFieldsFqns = [];
+
+        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $property) {
+            if (! $property instanceof TransientMetadata) {
+                continue;
+            }
+
+            $transientFieldsFqns[] = $this->propertyFqcn(
+                $property
+                    ->getDeclaringClass()
+                    ->getReflectionClass()
+                    ->getProperty($name) // @TODO possible NPR. This should never be null, why is it allowed to be?
+            );
+        }
+
+        return $transientFieldsFqns;
     }
 
     private function identifierFieldFqns(ClassMetadata $metadata) : array
