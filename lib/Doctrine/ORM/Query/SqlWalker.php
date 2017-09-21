@@ -749,9 +749,8 @@ class SqlWalker implements TreeWalker
 
             // Add foreign key columns of class and also parent classes
             foreach ($class->associationMappings as $assoc) {
-                if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)) {
-                    continue;
-                } else if ( !$addMetaColumns && !isset($assoc['id'])) {
+                if ( ! ($assoc['isOwningSide'] && $assoc['type'] & ClassMetadata::TO_ONE)
+                    || ( ! $addMetaColumns && !isset($assoc['id']))) {
                     continue;
                 }
 
