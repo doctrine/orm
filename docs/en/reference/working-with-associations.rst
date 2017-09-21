@@ -240,17 +240,12 @@ Notice how both sides of the bidirectional association are always
 updated. Unidirectional associations are consequently simpler to
 handle.
 
-Also note that if you use type-hinting in your methods, i.e.
-``setAddress(Address $address)``, you will have to specifically
-allow null values, otherwise ``setAddress(null)`` will fail to 
-remove the association. Starting from PHP 7.1 you should use 
-nullable types by prefixing the type with a ``?``, 
-``setAddress(?Address $address)``. Older PHP versions will only 
-allow null values if ``null`` is set as default value,
-``setAddress(Address $address = null)``. Yet another way to deal 
-with this is to provide a special method, like ``removeAddress()``.
-This can also provide better encapsulation as it hides the internal 
-meaning of not having an address.
+Also note that if you use type-hinting in your methods, you will 
+have to specify a nullable type, i.e. ``setAddress(?Address $address)``,
+otherwise ``setAddress(null)`` will fail to remove the association.
+Another way to deal with this is to provide a special method, like
+``removeAddress()``. This can also provide better encapsulation as
+it hides the internal meaning of not having an address.
 
 When working with collections, keep in mind that a Collection is
 essentially an ordered map (just like a PHP array). That is why the
