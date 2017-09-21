@@ -92,7 +92,7 @@ class StaticProxyFactory implements ProxyFactory
     {
         $metadata = $this->entityManager->getClassMetadata($className);
 
-        return (new LazyLoadingGhostFactory(new Configuration()))
+        $proxyInstance = (new LazyLoadingGhostFactory(new Configuration()))
             ->createProxy(
                 $metadata->getClassName(),
                 function (
@@ -126,8 +126,8 @@ class StaticProxyFactory implements ProxyFactory
                     'skippedProperties' => $this->identifierFieldFqns($metadata)
                 ]
             );
+
         $proxyDefinition = $this->getOrCreateProxyDefinition($className);
-        $proxyInstance   = $this->createProxyInstance($proxyDefinition);
         $proxyPersister  = $proxyDefinition->entityPersister;
 
         $proxyPersister->setIdentifier($proxyInstance, $identifier);

@@ -58,11 +58,12 @@ class ProxyDefinitionFactory
     {
         $definition = $this->createDefinition($classMetadata);
 
-        if (! class_exists($definition->proxyClassName, false)) {
-            $proxyClassPath = $this->resolver->resolveProxyClassPath($classMetadata->getClassName());
-
-            $this->generatorStrategy->generate($proxyClassPath, $definition);
-        }
+        // @TODO kill this. We no longer generate proxies the "old way"
+//        if (! class_exists($definition->proxyClassName, false)) {
+//            $proxyClassPath = $this->resolver->resolveProxyClassPath($classMetadata->getClassName());
+//
+//            $this->generatorStrategy->generate($proxyClassPath, $definition);
+//        }
 
         return $definition;
     }
