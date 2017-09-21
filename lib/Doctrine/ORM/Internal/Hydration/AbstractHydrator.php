@@ -99,9 +99,9 @@ abstract class AbstractHydrator
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->_em       = $em;
-        $this->_platform = $em->getConnection()->getDatabasePlatform();
-        $this->_uow      = $em->getUnitOfWork();
+        $this->_em            = $em;
+        $this->_platform      = $em->getConnection()->getDatabasePlatform();
+        $this->_uow           = $em->getUnitOfWork();
     }
 
     /**

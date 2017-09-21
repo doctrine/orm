@@ -45,6 +45,11 @@ class ObjectHydrator extends AbstractHydrator
     private $identifierMap = [];
 
     /**
+     * @var object[] indexed by oid
+     */
+    private $trackedWritableEntities = [];
+
+    /**
      * @var array
      */
     private $resultPointers = [];
@@ -101,7 +106,7 @@ class ObjectHydrator extends AbstractHydrator
 
             $sourceClassName = $this->_rsm->aliasMap[$parent];
             $sourceClass     = $this->getClassMetadata($sourceClassName);
-            $assoc           = $sourceClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
+            $assoc       = $sourceClass->associationMappings[$this->_rsm->relationMap[$dqlAlias]];
 
             $this->_hints['fetched'][$parent][$assoc['fieldName']] = true;
 
@@ -268,7 +273,13 @@ class ObjectHydrator extends AbstractHydrator
 
         $this->_hints['fetchAlias'] = $dqlAlias;
 
-        return $this->_uow->createEntity($className, $data, $this->_hints);
+        [$entity, $writable] = $this->_uow->getOrCreateEntity($className, $data, $this->_hints);
+
+        if ($writable) {
+            $this->trackedWritableEntities[\spl_object_hash($entity)] = true;
+        }
+
+        return $entity;
     }
 
     /**
@@ -290,7 +301,7 @@ class ObjectHydrator extends AbstractHydrator
                 $idHash .= ' ' . (isset($class->associationMappings[$fieldName])
                     ? $data[$class->associationMappings[$fieldName]['joinColumns'][0]['name']]
                     : $data[$fieldName]);
-            }
+                }
 
             return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
         } else if (isset($class->associationMappings[$class->identifier[0]])) {
@@ -431,9 +442,8 @@ class ObjectHydrator extends AbstractHydrator
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
 
-                    if ( ! $reflFieldValue || isset($this->_hints[Query::HINT_REFRESH]) || ($reflFieldValue instanceof Proxy && !$reflFieldValue->__isInitialized__)) {
-                        // we only need to take action if this value is null,
-                        // we refresh the entity or its an uninitialized proxy.
+                    if (isset($this->trackedWritableEntities[$oid]) || isset($this->_hints[Query::HINT_REFRESH])) {
+                        // we only need to take action if `$parentObject` was not built or is not to be refreshed by this hydrator,
                         if (isset($nonemptyComponents[$dqlAlias])) {
                             $element = $this->getEntity($data, $dqlAlias);
                             $reflField->setValue($parentObject, $element);

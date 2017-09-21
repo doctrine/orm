@@ -9,27 +9,38 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for orphan removal with one to many association.
+ *
+ * @group DDC-3644
+ *
+ * @runTestsInSeparateProcesses
+ *
+ * Note: this test is not necessarily to be run in a separate process, but another set of
+ *       tests (which we cannot isolate) is causing it to fail during SQLite schema mutations.
+ *       This is likely due to a separate process causing explicit rollbacks, and this process
+ *       not expecting those to happen in the same transaction boundaries. DDL is not
+ *       transactional in SQLite, so that's possibly going to fix the test when it supports
+ *       that.
+ *
+ * @link http://sqlite.1065341.n5.nabble.com/Table-locked-why-td27245.html
+ * @link http://technosophos.com/2009/05/28/sqlite-database-table-locked-errors-pdo.html
+ * @link https://www.sqlite.org/cvstrac/wiki?p=DatabaseIsLocked
+ * @link https://github.com/doctrine/doctrine2/pull/6649#issuecomment-325130196
  */
 class DDC3644Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(
-            [
+        $this->setUpEntitySchema([
             DDC3644User::class,
             DDC3644Address::class,
             DDC3644Animal::class,
             DDC3644Pet::class,
-            ]
-        );
+        ]);
     }
 
-    /**
-     * @group DDC-3644
-     */
-    public function testIssueWithRegularEntity()
+    public function testIssueWithRegularEntity() : void
     {
         // Define initial dataset
         $current   = new DDC3644Address('Sao Paulo, SP, Brazil');
@@ -78,10 +89,7 @@ class DDC3644Test extends OrmFunctionalTestCase
         $this->assertCount(1, $addresses);
     }
 
-    /**
-     * @group DDC-3644
-     */
-    public function testIssueWithJoinedEntity()
+    public function testIssueWithJoinedEntity() : void
     {
         // Define initial dataset
         $actual = new DDC3644Pet('Catharina');
