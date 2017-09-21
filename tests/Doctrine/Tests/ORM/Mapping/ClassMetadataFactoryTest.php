@@ -118,14 +118,13 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $entityManager = $this->createEntityManager($metadataDriver);
 
         $mf = $entityManager->getMetadataFactory();
-        $m1 = $mf->getMetadataFor(DoctrineGlobal_Article::class);
-        $h1 = $mf->hasMetadataFor(DoctrineGlobal_Article::class);
-        $h2 = $mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class);
-        $m2 = $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class);
 
-        self::assertNotSame($m1, $m2);
-        self::assertFalse($h2);
-        self::assertTrue($h1);
+        self::assertSame(
+            $mf->getMetadataFor(DoctrineGlobal_Article::class),
+            $mf->getMetadataFor('\\' . DoctrineGlobal_Article::class)
+        );
+        self::assertTrue($mf->hasMetadataFor(DoctrineGlobal_Article::class));
+        self::assertTrue($mf->hasMetadataFor('\\' . DoctrineGlobal_Article::class));
     }
 
     /**
