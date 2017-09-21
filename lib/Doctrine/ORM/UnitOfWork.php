@@ -1805,6 +1805,11 @@ class UnitOfWork implements PropertyChangedListener
     {
         $class = $this->em->getClassMetadata(get_class($entity));
 
+        if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
+            // nothing to do - proxy is not initialized, therefore we don't do anything with it
+            return;
+        }
+
         foreach ($class->getDeclaredPropertiesIterator() as $association) {
             if (! ($association instanceof AssociationMetadata && in_array('persist', $association->getCascade()))) {
                 continue;
