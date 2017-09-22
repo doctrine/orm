@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Proxy;
 
-use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
-use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
-use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -19,7 +16,6 @@ use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
-use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\OrmTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -72,17 +68,10 @@ class ProxyFactoryTest extends OrmTestCase
 
         $this->emMock->setUnitOfWork($this->uowMock);
 
-        $proxyConfiguration = new ProxyConfiguration();
-
-        $proxyConfiguration->setDirectory(sys_get_temp_dir());
-        $proxyConfiguration->setNamespace('Proxies');
-        $proxyConfiguration->setAutoGenerate(ProxyFactory::AUTOGENERATE_ALWAYS);
-        $proxyConfiguration->setResolver(new DefaultProxyResolver(
-            $proxyConfiguration->getNamespace(),
-            $proxyConfiguration->getDirectory()
-        ));
-
-        $this->proxyFactory = new StaticProxyFactory($this->emMock, $proxyConfiguration);
+        $this->proxyFactory = new StaticProxyFactory(
+            $this->emMock,
+            $this->emMock->getConfiguration()->buildGhostObjectFactory()
+        );
     }
 
     public function testReferenceProxyDelegatesLoadingToThePersister()

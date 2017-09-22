@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyResolver;
@@ -14,6 +13,8 @@ use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\FileLocator\FileLocator;
+use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
@@ -24,11 +25,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class ReferenceProxyTest extends OrmFunctionalTestCase
 {
-    /**
-     * @var ProxyResolver
-     */
-    private $resolver;
-
     /**
      * @var ProxyFactory
      */
@@ -41,19 +37,13 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $namespace = 'Doctrine\Tests\Proxies';
-        $directory = __DIR__ . '/../../Proxies';
+        $configuration = $this->em->getConfiguration();
 
-        $this->resolver = new DefaultProxyResolver($namespace, $directory);
+        $configuration->setProxyNamespace(__NAMESPACE__ . '\\ProxyTest');
+        $configuration->setProxyDir(__DIR__ . '/../../Proxies');
+        $configuration->setAutoGenerateProxyClasses(StaticProxyFactory::AUTOGENERATE_ALWAYS);
 
-        $proxyConfiguration = new ProxyConfiguration();
-
-        $proxyConfiguration->setDirectory($directory);
-        $proxyConfiguration->setNamespace($namespace);
-        $proxyConfiguration->setAutoGenerate(ProxyFactory::AUTOGENERATE_ALWAYS);
-        $proxyConfiguration->setResolver($this->resolver);
-
-        $this->factory = new StaticProxyFactory($this->em, $proxyConfiguration);
+        $this->factory = new StaticProxyFactory($this->em, $configuration->buildGhostObjectFactory());
     }
 
     public function createProduct()
@@ -262,9 +252,19 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertFalse($entity->isProxyInitialized());
         self::assertEquals(ECommerceProduct::class, $className);
 
-        $proxyFileName = $this->resolver->resolveProxyClassPath(ECommerceProduct::class );
+        $proxyManagerConfiguration = $this->em->getConfiguration()->getProxyManagerConfiguration();
 
-        self::assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
+        self::assertInstanceOf(
+            FileWriterGeneratorStrategy::class,
+            $proxyManagerConfiguration->getGeneratorStrategy(),
+            'Proxies are being written to disk in this test'
+        );
+
+        $proxy = $this->factory->getProxy(ECommerceProduct::class, ['id' => 123]);
+
+        $proxyClass = new \ReflectionClass($proxy);
+
+        self::assertFileExists($proxyClass->getFileName());
 
         $entity->initializeProxy();
 
