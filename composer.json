@@ -34,7 +34,8 @@
         "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
+        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" },
+        "files": ["shims/ClassUtils.php"]
     },
     "autoload-dev": {
         "psr-4": {
