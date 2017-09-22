@@ -402,6 +402,14 @@ class ConfigurationTest extends DoctrineTestCase
         self::assertSame($proxyPath, $this->configuration->getProxyManagerConfiguration()->getProxiesTargetDir());
     }
 
+    public function testProxyManagerConfigurationContainsGivenProxyNamespace() : void
+    {
+        $namespace = \str_replace('.', '', \uniqid('Namespace', true));
+
+        $this->configuration->setProxyNamespace($namespace);
+        self::assertSame($namespace, $this->configuration->getProxyManagerConfiguration()->getProxiesNamespace());
+    }
+
     /**
      * @dataProvider expectedGeneratorStrategies
      *
