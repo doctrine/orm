@@ -5,9 +5,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CacheException;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -22,7 +22,7 @@ class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollecti
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {
             throw CacheException::updateReadOnlyCollection(
-                ClassUtils::getClass($collection->getOwner()),
+                StaticClassNameConverter::getClass($collection->getOwner()),
                 $this->association->getName()
             );
         }
