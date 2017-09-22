@@ -71,13 +71,11 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function generateProxyClasses(array $classMetadataList) : int
     {
-        $generated = 0;
+        $concreteClasses = \array_filter($classMetadataList, function (ClassMetadata $metadata) : bool {
+            return ! ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract());
+        });
 
-        foreach ($classMetadataList as $metadata) {
-            if ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract()) {
-                continue;
-            }
-
+        foreach ($concreteClasses as $metadata) {
             $className = $metadata->getClassName();
 
             $this
@@ -92,11 +90,9 @@ final class StaticProxyFactory implements ProxyFactory
                             self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)
                         ]
                 );
-
-            $generated++;
         }
 
-        return $generated;
+        return \count($concreteClasses);
     }
 
     /**
