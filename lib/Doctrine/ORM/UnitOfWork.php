@@ -2173,6 +2173,10 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
+        if ($entity instanceof NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
+        }
+
         foreach ($data as $field => $value) {
             $property = $class->getProperty($field);
 
