@@ -14,6 +14,8 @@ final class NormalizeIdentifier
     /**
      * Given a flat identifier, this method will produce another flat identifier, but with all
      * association fields that are mapped as identifiers replaced by entity references, recursively.
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     public function __invoke(
         EntityManagerInterface $entityManager,
@@ -38,16 +40,14 @@ final class NormalizeIdentifier
 
                 // Note: the ORM prevents using an entity with a composite identifier as an identifier association
                 //       therefore, reset($targetIdMetadata->identifier) is always correct
-                $normalizedNested = $this->__invoke(
-                    $entityManager,
-                    $targetIdMetadata,
-                    [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
-                );
-                $reference =  $entityManager->getReference(
+                $normalizedAssociatedId[$name] = $entityManager->getReference(
                     $targetIdMetadata->getClassName(),
-                    $normalizedNested
+                    $this->__invoke(
+                        $entityManager,
+                        $targetIdMetadata,
+                        [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]]
+                    )
                 );
-                $normalizedAssociatedId[$name] = $reference;
             }
         }
 
