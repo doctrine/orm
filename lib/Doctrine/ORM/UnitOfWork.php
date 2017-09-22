@@ -2345,28 +2345,50 @@ class UnitOfWork implements PropertyChangedListener
                     // Proxies do not carry any kind of original entity data until they're fully loaded/initialized
                     $managedData = [];
 
+                    // @TODO refactor: `getProxy`: no scalars if the identifier is an association, use real value
+                    // @TODO note that this mess is recursive, so we need to fix it somewhere else. An identifier
+                    //       may be composed by multiple levels of association fetching, where:
+                    //       A#id = B(to-one)
+                    //       B#id = C(to-one)
+                    //       C#id = D(to-one)
+                    //       E#id = E(to-one)
+                    //       E#id = composite scalar
+                    //       that is a mess, but it is the real world scenario
+                    // @TODO we need to therefore have a generic utility that, given a scalar identifier, gives us
+                    //       a "normalized" identifier. This is pretty much the opposite of what the
+                    //       `IdentifierFlattener` does
+                    // @TODO note that we also need to sort the identifier fields here
+
+                    // @TODO Start of the block to be refactored into "make a deep identifier from a flat one"
+
+                    $normalizedAssociatedId = $this->convertFlatIdentifierIntoRealIdentifierFieldValues(
+                        $targetClass,
+                        $associatedId
+                    );
+
                     switch (true) {
                         // We are negating the condition here. Other cases will assume it is valid!
                         case ($hints['fetchMode'][$class->getClassName()][$field] !== FetchMode::EAGER):
-                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $associatedId);
+                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $normalizedAssociatedId);
                             break;
 
                         // Deferred eager load only works for single identifier classes
                         case (isset($hints[self::HINT_DEFEREAGERLOAD]) && !$targetClass->isIdentifierComposite()):
                             // TODO: Is there a faster approach?
-                            $this->eagerLoadingEntities[$targetClass->getRootClassName()][$relatedIdHash] = current($associatedId);
+                            $this->eagerLoadingEntities[$targetClass->getRootClassName()][$relatedIdHash] = current($normalizedAssociatedId);
 
-                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $associatedId);
+                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $normalizedAssociatedId);
                             break;
 
                         default:
                             // TODO: This is very imperformant, ignore it?
-                            $newValue    = $this->em->find($targetEntity, $associatedId);
+                            $newValue    = $this->em->find($targetEntity, $normalizedAssociatedId);
                             // Needed to re-assign original entity data for freshly loaded entity
                             $managedData = $this->originalEntityData[spl_object_hash($newValue)];
                             break;
                     }
 
+                    // @TODO using `$associatedId` here seems to be risky.
                     $this->registerManaged($newValue, $associatedId, $managedData);
 
                     break;
@@ -2543,6 +2565,86 @@ class UnitOfWork implements PropertyChangedListener
             : $persister->getIdentifier($entity);
 
         return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
+    }
+
+    /**
+     * @param array  $id
+     * @param string $rootClassName
+     *
+     * @return GhostObjectInterface|object
+     */
+    private function tryGetByIdOrLoadProxy(array $id, string $rootClassName)
+    {
+        if ($fetched = $this->tryGetById($id, $rootClassName)) {
+            return $fetched;
+        }
+
+        $class = $this->em->getClassMetadata($rootClassName);
+
+        if ($class->getSubClasses()) {
+            // can't do this for inheritance trees!
+            // @TODO fetching from the EntityManager feels dirty here
+            return $this->em->find($rootClassName, $id);
+        }
+
+        $sortedId = [];
+
+        foreach ($class->identifier as $idField) {
+            $sortedId[$idField] = $id[$idField];
+        }
+
+        $proxy = $this->em->getProxyFactory()->getProxy($rootClassName, $sortedId);
+
+        $this->registerManaged($proxy, $sortedId, []);
+
+        return $proxy;
+    }
+    /**
+     * @TODO refactor: `getProxy`: no scalars if the identifier is an association, use real value
+     * @TODO note that this mess is recursive, so we need to fix it somewhere else. An identifier
+     *       may be composed by multiple levels of association fetching, where:
+     *       A#id = B(to-one)
+     *       B#id = C(to-one)
+     *       C#id = D(to-one)
+     *       E#id = E(to-one)
+     *       E#id = composite scalar
+     *       that is a mess, but it is the real world scenario
+     * @TODO we need to therefore have a generic utility that, given a scalar identifier, gives us
+     *       a "normalized" identifier. This is pretty much the opposite of what the
+     *       `IdentifierFlattener` does
+     * @TODO note that we also need to sort the identifier fields here
+     *
+     * @TODO Start of the block to be refactored into "make a deep identifier from a flat one"
+     *
+     * @return mixed[]
+     */
+    private function convertFlatIdentifierIntoRealIdentifierFieldValues(
+        ClassMetadata $targetClass,
+        array $flatIdentifier
+    ) {
+
+        $normalizedAssociatedId = [];
+
+        foreach ($targetClass->getDeclaredPropertiesIterator() as $name => $declaredProperty) {
+            if (! \array_key_exists($name, $flatIdentifier)) {
+                continue;
+            }
+
+            if ($declaredProperty instanceof ToOneAssociationMetadata) {
+                $targetIdMetadata = $this->em->getClassMetadata($declaredProperty->getTargetEntity());
+
+                $normalizedAssociatedId[$name] = $this->tryGetByIdOrLoadProxy(
+                    [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]], // @TODO this is where stuff breaks with composite IDs :-(
+                    $declaredProperty->getTargetEntity()
+                );
+            }
+
+            if ($declaredProperty instanceof FieldMetadata) {
+                $normalizedAssociatedId[$name] = $flatIdentifier[$name];
+            }
+        }
+
+        return $normalizedAssociatedId;
     }
 
     /**
