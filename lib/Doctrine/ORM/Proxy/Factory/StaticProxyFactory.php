@@ -59,6 +59,8 @@ class StaticProxyFactory implements ProxyFactory
 
     /**
      * {@inheritdoc}
+     *
+     * @param ClassMetadata[] $classMetadataList
      */
     public function generateProxyClasses(array $classMetadataList) : int
     {
@@ -69,8 +71,21 @@ class StaticProxyFactory implements ProxyFactory
                 continue;
             }
 
-            // @TODO We just need to actually instantiate a fake proxy here
-            $this->definitionFactory->build($classMetadata);
+            $this
+                ->proxyFactory
+                ->createProxy(
+                    $classMetadata->getClassName(),
+                    function () {
+                        // empty closure, serves its purpose, for now
+                    },
+                    [
+                        // @TODO this should be a constant reference, not a magic constant
+                        'skippedProperties' => \array_merge(
+                            $this->identifierFieldFqns($classMetadata),
+                            $this->transientFieldsFqns($classMetadata)
+                        ),
+                    ]
+                );
 
             $generated++;
         }
