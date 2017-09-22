@@ -2102,7 +2102,6 @@ class UnitOfWork implements PropertyChangedListener
         $class  = $this->em->getClassMetadata($className);
         $id     = $this->em->getIdentifierFlattener()->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         if (isset($this->identityMap[$class->getRootClassName()][$idHash])) {
             $entity = $this->identityMap[$class->getRootClassName()][$idHash];
@@ -2115,22 +2114,9 @@ class UnitOfWork implements PropertyChangedListener
                 && $unmanagedProxy instanceof GhostObjectInterface
                 && $this->isIdentifierEquals($unmanagedProxy, $entity)
             ) {
-                // @TODO messy, but for now we try continuing operation as normal
-                // @TODO ideally, all this scenario should be completely gone
+                // We will hydrate the given un-managed proxy anyway:
+                // continue work, but consider it the entity from now on
                 $entity = $unmanagedProxy;
-                // DDC-1238 - we have a managed instance, but it isn't the provided one.
-                // Therefore we clear its identifier. Also, we must re-fetch metadata since the
-                // refreshed object may be anything
-                // @TODO DDC-1238 seems to be invalid.
-                // @TODO We shouldn't touch the object state, but instead just consider it "unmanaged" and skip further hydration
-//                foreach ($class->identifier as $fieldName) {
-//                    $property = $class->getProperty($fieldName);
-//
-//                    $property->setValue($unmanagedProxy, null);
-//                }
-
-                // @TODO overall, this logic seems wrong and harmful. Even if the proxy is un-managed, we want to load its data here
-//                return $unmanagedProxy;
             }
 
             if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
