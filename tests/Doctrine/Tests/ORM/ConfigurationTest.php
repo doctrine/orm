@@ -17,9 +17,12 @@ use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\DoctrineTestCase;
 use Doctrine\Tests\Models\DDC753\DDC753CustomRepository;
+use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
+use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ReflectionClass;
 
 /**
@@ -397,6 +400,53 @@ class ConfigurationTest extends DoctrineTestCase
 
         $this->configuration->setProxyDir($proxyPath);
         self::assertSame($proxyPath, $this->configuration->getProxyManagerConfiguration()->getProxiesTargetDir());
+    }
+
+    /**
+     * @dataProvider expectedGeneratorStrategies
+     *
+     * @param int|bool $proxyAutoGenerateFlag
+     */
+    public function testProxyManagerConfigurationWillBeUpdatedWithCorrectGeneratorStrategies(
+        $proxyAutoGenerateFlag,
+        string $expectedGeneratorStrategy
+    ) : void {
+        $this->configuration->setAutoGenerateProxyClasses($proxyAutoGenerateFlag);
+
+        self::assertInstanceOf(
+            $expectedGeneratorStrategy,
+            $this->configuration->getProxyManagerConfiguration()->getGeneratorStrategy()
+        );
+    }
+
+    public function expectedGeneratorStrategies() : array
+    {
+        return [
+            [
+                StaticProxyFactory::AUTOGENERATE_NEVER,
+                EvaluatingGeneratorStrategy::class,
+            ],
+            [
+                StaticProxyFactory::AUTOGENERATE_EVAL,
+                EvaluatingGeneratorStrategy::class,
+            ],
+            [
+                false,
+                EvaluatingGeneratorStrategy::class,
+            ],
+            [
+                StaticProxyFactory::AUTOGENERATE_ALWAYS,
+                FileWriterGeneratorStrategy::class,
+            ],
+            [
+                StaticProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS,
+                FileWriterGeneratorStrategy::class,
+            ],
+            [
+                true,
+                FileWriterGeneratorStrategy::class,
+            ],
+        ];
     }
 
     private function makeTemporaryValidDirectory() : string
