@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\TransientMetadata;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Proxy\Proxy;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -24,6 +25,8 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class StaticProxyFactory implements ProxyFactory
 {
+    private const SKIPPED_PROPERTIES = 'skippedProperties';
+
     /**
      * @var EntityManagerInterface
      */
@@ -40,14 +43,29 @@ class StaticProxyFactory implements ProxyFactory
     protected $definitionFactory;
 
     /**
-     * @var array<string, ProxyDefinition>
-     */
-    private $definitions = [];
-
-    /**
      * @var LazyLoadingGhostFactory
      */
     private $proxyFactory;
+
+    /**
+     * @var ClassMetadata[] indexed by metadata class name
+     */
+    private $cachedMetadata = [];
+
+    /**
+     * @var \Closure[] indexed by metadata class name
+     */
+    private $cachedInitializers = [];
+
+    /**
+     * @var EntityPersister[] indexed by metadata class name
+     */
+    private $cachedPersisters = [];
+
+    /**
+     * @var string[][] indexed by metadata class name
+     */
+    private $cachedSkippedProperties = [];
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -66,25 +84,24 @@ class StaticProxyFactory implements ProxyFactory
     {
         $generated = 0;
 
-        foreach ($classMetadataList as $classMetadata) {
-            if ($classMetadata->isMappedSuperclass || $classMetadata->getReflectionClass()->isAbstract()) {
+        foreach ($classMetadataList as $metadata) {
+            if ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract()) {
                 continue;
             }
+
+            $className = $metadata->getClassName();
 
             $this
                 ->proxyFactory
                 ->createProxy(
-                    $classMetadata->getClassName(),
+                    $className,
                     function () {
                         // empty closure, serves its purpose, for now
                     },
-                    [
-                        // @TODO this should be a constant reference, not a magic constant
-                        'skippedProperties' => \array_merge(
-                            $this->identifierFieldFqns($classMetadata),
-                            $this->transientFieldsFqns($classMetadata)
-                        ),
-                    ]
+                    $this->cachedSkippedProperties[$className]
+                        ?? $this->cachedSkippedProperties[$className] = [
+                            self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)
+                        ]
                 );
 
             $generated++;
@@ -99,50 +116,65 @@ class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(string $className, array $identifier) : GhostObjectInterface
     {
-        $metadata  = $this->entityManager->getClassMetadata($className);
-        $persister = $this->entityManager->getUnitOfWork()->getEntityPersister($metadata->getClassName());
+        $metadata  = $this->cachedMetadata[$className]
+            ?? $this->cachedMetadata[$className] = $this->entityManager->getClassMetadata($className);
+        $persister = $this->cachedPersisters[$className]
+            ?? $this->cachedPersisters[$className] = $this
+                ->entityManager
+                ->getUnitOfWork()
+                ->getEntityPersister($metadata->getClassName());
 
-        // @TODO extract the parameters passed to `createProxy` to a private cache
         $proxyInstance = $this
             ->proxyFactory
             ->createProxy(
                 $metadata->getClassName(),
-                function (
-                    GhostObjectInterface $ghostObject,
-                    string $method, // we don't care
-                    array $parameters, // we don't care
-                    & $initializer,
-                    array $properties // we currently do not use this
-                ) use ($metadata, $persister) : bool {
-                    $originalInitializer = $initializer;
-                    $initializer = null;
-
-                    $identifier = $persister->getIdentifier($ghostObject);
-
-                    // @TODO how do we use `$properties` in the persister? That would be a massive optimisation
-                    if (! $persister->loadById($identifier, $ghostObject)) {
-                        $initializer = $originalInitializer;
-
-                        throw EntityNotFoundException::fromClassNameAndIdentifier(
-                            $metadata->getClassName(),
-                            $identifier
-                        );
-                    }
-
-                    return true;
-                },
-                [
-                    // @TODO this should be a constant reference, not a magic constant
-                    'skippedProperties' => \array_merge(
-                        $this->identifierFieldFqns($metadata),
-                        $this->transientFieldsFqns($metadata)
-                    ),
-                ]
+                $this->cachedInitializers[$className]
+                    ?? $this->cachedInitializers[$className] = $this->makeInitializer($metadata, $persister),
+                $this->cachedSkippedProperties[$className]
+                    ?? $this->cachedSkippedProperties[$className] = [
+                        self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)
+                    ]
             );
 
         $persister->setIdentifier($proxyInstance, $identifier);
 
         return $proxyInstance;
+    }
+
+    private function makeInitializer(ClassMetadata $metadata, EntityPersister $persister) : \Closure
+    {
+        return function (
+            GhostObjectInterface $ghostObject,
+            string $method, // we don't care
+            array $parameters, // we don't care
+            & $initializer,
+            array $properties // we currently do not use this
+        ) use ($metadata, $persister) : bool {
+            $originalInitializer = $initializer;
+            $initializer = null;
+
+            $identifier = $persister->getIdentifier($ghostObject);
+
+            // @TODO how do we use `$properties` in the persister? That would be a massive optimisation
+            if (! $persister->loadById($identifier, $ghostObject)) {
+                $initializer = $originalInitializer;
+
+                throw EntityNotFoundException::fromClassNameAndIdentifier(
+                    $metadata->getClassName(),
+                    $identifier
+                );
+            }
+
+            return true;
+        };
+    }
+
+    private function skippedFieldsFqns(ClassMetadata $metadata) : array
+    {
+        return \array_merge(
+            $this->identifierFieldFqns($metadata),
+            $this->transientFieldsFqns($metadata)
+        );
     }
 
     private function transientFieldsFqns(ClassMetadata $metadata) : array
@@ -170,10 +202,9 @@ class StaticProxyFactory implements ProxyFactory
         $idFieldFqcns = [];
 
         foreach ($metadata->getIdentifierFieldNames() as $idField) {
-            $property = $metadata->getProperty($idField);
-
             $idFieldFqcns[] = $this->propertyFqcn(
-                $property
+                $metadata
+                    ->getProperty($idField)
                     ->getDeclaringClass()
                     ->getReflectionClass()
                     ->getProperty($idField) // @TODO possible NPR. This should never be null, why is it allowed to be?
