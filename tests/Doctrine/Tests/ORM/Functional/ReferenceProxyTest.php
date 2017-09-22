@@ -182,26 +182,6 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals('Doctrine 2 Cookbook', $entity->getName());
     }
 
-    /**
-     * @group DDC-1022
-     *
-     * @TODO remove this test and document the BC break
-     */
-    public function testWakeupCalledOnProxy()
-    {
-        $id = $this->createProduct();
-
-        /* @var $entity ECommerceProduct|GhostObjectInterface */
-        $entity = $this->em->getReference(ECommerceProduct::class , $id);
-
-        self::assertFalse($entity->wakeUp);
-
-        $entity->setName('Doctrine 2 Cookbook');
-
-        // @TODO this condition is no longer true - should we keep it that way?
-        self::assertTrue($entity->wakeUp, "Loading the proxy should call __wakeup().");
-    }
-
     public function testDoNotInitializeProxyOnGettingTheIdentifier()
     {
         $id = $this->createProduct();
