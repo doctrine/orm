@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;;
 use Doctrine\ORM\Query\Parameter;
