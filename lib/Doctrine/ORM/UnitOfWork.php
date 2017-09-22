@@ -2121,6 +2121,9 @@ class UnitOfWork implements PropertyChangedListener
                 && $unmanagedProxy instanceof GhostObjectInterface
                 && $this->isIdentifierEquals($unmanagedProxy, $entity)
             ) {
+                // @TODO messy, but for now we try continuing operation as normal
+                // @TODO ideally, all this scenario should be completely gone
+                $entity = $unmanagedProxy;
                 // DDC-1238 - we have a managed instance, but it isn't the provided one.
                 // Therefore we clear its identifier. Also, we must re-fetch metadata since the
                 // refreshed object may be anything
@@ -2132,7 +2135,8 @@ class UnitOfWork implements PropertyChangedListener
 //                    $property->setValue($unmanagedProxy, null);
 //                }
 
-                return $unmanagedProxy;
+                // @TODO overall, this logic seems wrong and harmful. Even if the proxy is un-managed, we want to load its data here
+//                return $unmanagedProxy;
             }
 
             if ($entity instanceof GhostObjectInterface && ! $entity->isProxyInitialized()) {
