@@ -390,6 +390,16 @@ class ConfigurationTest extends DoctrineTestCase
             $this->configuration->getProxyManagerConfiguration()
         );
     }
+
+    public function testProxyManagerConfigurationContainsGivenProxyTargetDir() : void
+    {
+        $proxyPath = \tempnam(\sys_get_temp_dir(), 'ProxyConfigurationTest');
+        unlink($proxyPath);
+        mkdir($proxyPath);
+
+        $this->configuration->setProxyDir($proxyPath);
+        self::assertSame($proxyPath, $this->configuration->getProxyManagerConfiguration()->getProxiesTargetDir());
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
