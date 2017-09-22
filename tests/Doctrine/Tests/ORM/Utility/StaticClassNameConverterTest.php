@@ -30,4 +30,20 @@ class StaticClassNameConverterTest extends TestCase
             ['foo\\aaa\\__PM__\\baz\\bar\\taz', 'baz\\bar'],
         ];
     }
+
+    /**
+     * @dataProvider classNamesProvider
+     *
+     * @runInSeparateProcess
+     */
+    public function testClassNameConversionFromObject(string $givenClassName, string $expectedClassName) : void
+    {
+        $namespaceParts = explode('\\', $givenClassName);
+        $className      = array_pop($namespaceParts);
+        $namespace      = implode('\\', $namespaceParts);
+
+        eval('namespace ' . $namespace . ' { class ' . $className . ' {} }');
+
+        self::assertSame($expectedClassName, StaticClassNameConverter::getClass(new $givenClassName));
+    }
 }
