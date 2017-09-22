@@ -382,6 +382,14 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->setSecondLevelCacheConfiguration($mockClass);
         self::assertEquals($mockClass, $this->configuration->getSecondLevelCacheConfiguration());
     }
+
+    public function testGetProxyManagerConfiguration() : void
+    {
+        self::assertInstanceOf(
+            \ProxyManager\Configuration::class,
+            $this->configuration->getProxyManagerConfiguration()
+        );
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
