@@ -492,12 +492,16 @@ final class EntityManager implements EntityManagerInterface
             $id = [$class->identifier[0] => $id];
         }
 
+        $scalarId = [];
+
         // @TODO this is wrong, as it flattens an identifier, even if `getProxy` requires the real values (even if objects)
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+            $scalarId[$i] = $value;
 
-                if ($id[$i] === null) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($scalarId[$i] === null) {
                     throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
                 }
             }
@@ -506,16 +510,16 @@ final class EntityManager implements EntityManagerInterface
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
+            if ( ! isset($scalarId[$identifier])) {
                 throw ORMException::missingIdentifierField($className, $identifier);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
-            unset($id[$identifier]);
+            $sortedId[$identifier] = $scalarId[$identifier];
+            unset($scalarId[$identifier]);
         }
 
-        if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+        if ($scalarId) {
+            throw ORMException::unrecognizedIdentifierFields($className, array_keys($scalarId));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -527,7 +531,7 @@ final class EntityManager implements EntityManagerInterface
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($className, $sortedId);
+        $entity = $this->proxyFactory->getProxy($className, $id);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
