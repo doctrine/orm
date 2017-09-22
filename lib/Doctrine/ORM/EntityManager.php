@@ -161,7 +161,7 @@ final class EntityManager implements EntityManagerInterface
 
         $this->repositoryFactory   = $config->getRepositoryFactory();
         $this->unitOfWork          = new UnitOfWork($this);
-        $this->proxyFactory        = new StaticProxyFactory($this, $proxyConfiguration);
+        $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
         $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadataFactory);
 
         if ($config->isSecondLevelCacheEnabled()) {
