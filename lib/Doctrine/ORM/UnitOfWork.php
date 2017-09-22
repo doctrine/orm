@@ -2137,10 +2137,6 @@ class UnitOfWork implements PropertyChangedListener
                 $entity->setProxyInitializer(null);
 
                 $overrideLocalValues = true;
-
-                if ($entity instanceof NotifyPropertyChanged) {
-                    $entity->addPropertyChangedListener($this);
-                }
             } else {
                 $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
 
@@ -2168,15 +2164,15 @@ class UnitOfWork implements PropertyChangedListener
 
             $this->identityMap[$class->getRootClassName()][$idHash] = $entity;
 
-            if ($entity instanceof NotifyPropertyChanged) {
-                $entity->addPropertyChangedListener($this);
-            }
-
             $overrideLocalValues = true;
         }
 
         if ( ! $overrideLocalValues) {
             return $entity;
+        }
+
+        if ($entity instanceof NotifyPropertyChanged) {
+            $entity->addPropertyChangedListener($this);
         }
 
         foreach ($data as $field => $value) {
