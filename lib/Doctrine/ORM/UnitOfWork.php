@@ -2333,22 +2333,6 @@ class UnitOfWork implements PropertyChangedListener
                     // Proxies do not carry any kind of original entity data until they're fully loaded/initialized
                     $managedData = [];
 
-                    // @TODO refactor: `getProxy`: no scalars if the identifier is an association, use real value
-                    // @TODO note that this mess is recursive, so we need to fix it somewhere else. An identifier
-                    //       may be composed by multiple levels of association fetching, where:
-                    //       A#id = B(to-one)
-                    //       B#id = C(to-one)
-                    //       C#id = D(to-one)
-                    //       E#id = E(to-one)
-                    //       E#id = composite scalar
-                    //       that is a mess, but it is the real world scenario
-                    // @TODO we need to therefore have a generic utility that, given a scalar identifier, gives us
-                    //       a "normalized" identifier. This is pretty much the opposite of what the
-                    //       `IdentifierFlattener` does
-                    // @TODO note that we also need to sort the identifier fields here
-
-                    // @TODO Start of the block to be refactored into "make a deep identifier from a flat one"
-
                     $normalizedAssociatedId = $this->convertFlatIdentifierIntoRealIdentifierFieldValues(
                         $targetClass,
                         $associatedId
