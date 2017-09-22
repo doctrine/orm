@@ -4,7 +4,6 @@
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
-use Doctrine\ORM\Reflection\RuntimePublicReflectionProperty;
 
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
@@ -137,10 +136,6 @@ abstract class ComponentMetadata
 
         if ($this->reflectionClass) {
             $reflectionProperty = new \ReflectionProperty($className, $propertyName);
-
-            if ($reflectionProperty->isPublic()) {
-                $reflectionProperty = new RuntimePublicReflectionProperty($className, $propertyName);
-            }
 
             $reflectionProperty->setAccessible(true);
 

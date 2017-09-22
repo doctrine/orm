@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
-use Doctrine\ORM\Proxy\Factory\ProxyResolver;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
-use Doctrine\ORM\Proxy\Proxy;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 interface ProxyFactory
