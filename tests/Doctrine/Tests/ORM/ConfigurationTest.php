@@ -393,12 +393,20 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testProxyManagerConfigurationContainsGivenProxyTargetDir() : void
     {
-        $proxyPath = \tempnam(\sys_get_temp_dir(), 'ProxyConfigurationTest');
-        unlink($proxyPath);
-        mkdir($proxyPath);
+        $proxyPath = $this->makeTemporaryValidDirectory();
 
         $this->configuration->setProxyDir($proxyPath);
         self::assertSame($proxyPath, $this->configuration->getProxyManagerConfiguration()->getProxiesTargetDir());
+    }
+
+    private function makeTemporaryValidDirectory() : string
+    {
+        $path = \tempnam(\sys_get_temp_dir(), 'ProxyConfigurationTest');
+
+        unlink($path);
+        mkdir($path);
+
+        return $path;
     }
 }
 
