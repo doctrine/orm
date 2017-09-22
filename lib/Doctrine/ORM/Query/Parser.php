@@ -971,7 +971,6 @@ class Parser
      */
     private function validateAbstractSchemaName($schemaName) : void
     {
-        // @TODO are these checks even needed?
         if (class_exists($schemaName, true) || interface_exists($schemaName, true)) {
             return;
         }
