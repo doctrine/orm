@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
@@ -243,7 +243,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         /* @var $entity ECommerceProduct|GhostObjectInterface */
         $entity = $this->em->getReference(ECommerceProduct::class , $id);
 
-        $className = ClassUtils::getClass($entity);
+        $className = StaticClassNameConverter::getClass($entity);
 
         self::assertInstanceOf(GhostObjectInterface::class, $entity);
         self::assertFalse($entity->isProxyInitialized());

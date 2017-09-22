@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\Common\Persistence\Mapping\MappingException as CommonMappingException;
-use Doctrine\Common\Cache\Cache;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use ReflectionException;
 
 /**
@@ -345,7 +345,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
             return $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
         }
 
-        return ClassUtils::getRealClass($className);
+        return StaticClassNameConverter::getRealClass($className);
     }
 
     /**
