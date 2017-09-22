@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -398,7 +399,7 @@ abstract class AbstractQuery
             return $value;
         }
 
-        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+        if (is_object($value) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
             $value = $this->em->getUnitOfWork()->getSingleIdentifierValue($value);
 
             if ($value === null) {

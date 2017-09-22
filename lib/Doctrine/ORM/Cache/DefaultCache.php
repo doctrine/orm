@@ -6,12 +6,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
@@ -312,7 +312,7 @@ class DefaultCache implements Cache
      */
     private function toIdentifierArray(ClassMetadata $metadata, $identifier)
     {
-        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($identifier))) {
+        if (is_object($identifier) && $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($identifier))) {
             $identifier = $this->uow->getSingleIdentifierValue($identifier);
 
             if ($identifier === null) {

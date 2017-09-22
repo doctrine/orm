@@ -6,12 +6,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Configuration\MetadataConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\Mapping\Factory\Strategy\ConditionalFileWriterClassMetadataGeneratorStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * AbstractClassMetadataFactory is the base of ClassMetadata object creation that contain all the metadata mapping
@@ -103,7 +103,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      */
     public function getMetadataFor($className)
     {
-        $entityClassName = ClassUtils::getRealClass($className);
+        $entityClassName = StaticClassNameConverter::getRealClass($className);
 
         if (isset($this->loaded[$entityClassName])) {
             return $this->loaded[$entityClassName];

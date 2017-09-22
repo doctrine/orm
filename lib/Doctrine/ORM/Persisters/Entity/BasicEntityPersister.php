@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
@@ -33,6 +32,7 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -2080,7 +2080,7 @@ class BasicEntityPersister implements EntityPersister
         $metadataFactory = $this->em->getMetadataFactory();
         $unitOfWork      = $this->em->getUnitOfWork();
 
-        if (is_object($value) && $metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+        if (is_object($value) && $metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
             $class     = $metadataFactory->getMetadataFor(get_class($value));
             $persister = $unitOfWork->getEntityPersister($class->getClassName());
 
@@ -2107,7 +2107,7 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getIndividualValue($value)
     {
-        if ( ! is_object($value) || ! $this->em->getMetadataFactory()->hasMetadataFor(ClassUtils::getClass($value))) {
+        if ( ! is_object($value) || ! $this->em->getMetadataFactory()->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
             return $value;
         }
 
