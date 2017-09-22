@@ -5,13 +5,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
-use Doctrine\ORM\Configuration\ProxyConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Proxy\Proxy;
-use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -47,22 +45,16 @@ class StaticProxyFactory implements ProxyFactory
     private $definitions = [];
 
     /**
-     * ProxyFactory constructor.
-     *
-     * @param ProxyConfiguration $configuration
+     * @var LazyLoadingGhostFactory
      */
-    public function __construct(EntityManagerInterface $entityManager, ProxyConfiguration $configuration)
-    {
-        $resolver          = $configuration->getResolver();
-        //$autoGenerate      = $configuration->getAutoGenerate();
-        $generator         = new ProxyGenerator();
-        $generatorStrategy = new Strategy\ConditionalFileWriterProxyGeneratorStrategy($generator);
-        $definitionFactory = new ProxyDefinitionFactory($entityManager, $resolver, $generatorStrategy);
+    private $proxyFactory;
 
-        $generator->setPlaceholder('baseProxyInterface', GhostObjectInterface::class);
-
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        LazyLoadingGhostFactory $proxyFactory
+    ) {
         $this->entityManager     = $entityManager;
-        $this->definitionFactory = $definitionFactory;
+        $this->proxyFactory      = $proxyFactory;
     }
 
     /**
@@ -77,6 +69,7 @@ class StaticProxyFactory implements ProxyFactory
                 continue;
             }
 
+            // @TODO We just need to actually instantiate a fake proxy here
             $this->definitionFactory->build($classMetadata);
 
             $generated++;
@@ -91,9 +84,12 @@ class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(string $className, array $identifier) : GhostObjectInterface
     {
-        $metadata = $this->entityManager->getClassMetadata($className);
+        $metadata  = $this->entityManager->getClassMetadata($className);
+        $persister = $this->entityManager->getUnitOfWork()->getEntityPersister($metadata->getClassName());
 
-        $proxyInstance = (new LazyLoadingGhostFactory(new Configuration()))
+        // @TODO extract the parameters passed to `createProxy` to a private cache
+        $proxyInstance = $this
+            ->proxyFactory
             ->createProxy(
                 $metadata->getClassName(),
                 function (
@@ -101,12 +97,10 @@ class StaticProxyFactory implements ProxyFactory
                     string $method, // we don't care
                     array $parameters, // we don't care
                     & $initializer,
-                    array $properties
-                ) use ($metadata) : bool {
+                    array $properties // we currently do not use this
+                ) use ($metadata, $persister) : bool {
                     $originalInitializer = $initializer;
                     $initializer = null;
-
-                    $persister = $this->entityManager->getUnitOfWork()->getEntityPersister($metadata->getClassName());
 
                     $identifier = $persister->getIdentifier($ghostObject);
 
@@ -131,11 +125,7 @@ class StaticProxyFactory implements ProxyFactory
                 ]
             );
 
-        $this->transientFieldsFqns($metadata);
-        $proxyDefinition = $this->getOrCreateProxyDefinition($className);
-        $proxyPersister  = $proxyDefinition->entityPersister;
-
-        $proxyPersister->setIdentifier($proxyInstance, $identifier);
+        $persister->setIdentifier($proxyInstance, $identifier);
 
         return $proxyInstance;
     }
@@ -202,23 +192,5 @@ class StaticProxyFactory implements ProxyFactory
         $proxyClassName = $definition->proxyClassName;
 
         return new $proxyClassName($definition);
-    }
-
-    /**
-     * Create a proxy definition for the given class name.
-     *
-     * @param string $className
-     *
-     * @return ProxyDefinition
-     */
-    private function getOrCreateProxyDefinition(string $className) : ProxyDefinition
-    {
-        if (! isset($this->definitions[$className])) {
-            $classMetadata = $this->entityManager->getClassMetadata($className);
-
-            $this->definitions[$className] = $this->definitionFactory->build($classMetadata);
-        }
-
-        return $this->definitions[$className];
     }
 }
