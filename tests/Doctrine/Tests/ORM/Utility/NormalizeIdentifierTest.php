@@ -35,17 +35,9 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
         array $id,
         array $expectedIdentifierStructure
     ) : void {
-//        self::assertEquals(
-//            $expectedIdentifierStructure,
-//            $this->normalizeIdentifier->__invoke(
-//                $this->em,
-//                $this->em->getClassMetadata($targetClass),
-//                $id
-//            )
-//        );
         $this->assertSameIdentifierStructure(
             $expectedIdentifierStructure,
-            $this->normalizeIdentifier->__invoke(
+            ($this->normalizeIdentifier)(
                 $this->em,
                 $this->em->getClassMetadata($targetClass),
                 $id
@@ -86,9 +78,13 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
 
     public function expectedIdentifiersProvider() : array
     {
-        $simpleId = new SimpleId();
+        $simpleIdA                    = new SimpleId();
+        $simpleIdB                    = new SimpleId();
+        $toOneAssociationIdToSimpleId = new ToOneAssociationIdToSimpleId();
 
-        $simpleId->id = 123;
+        $simpleIdA->id                          = 123;
+        $simpleIdB->id                          = 456;
+        $toOneAssociationIdToSimpleId->simpleId = $simpleIdA;
 
         return [
             'simple single-field id fetch' => [
@@ -109,7 +105,17 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
             ToOneAssociationIdToSimpleId::class => [
                 ToOneAssociationIdToSimpleId::class,
                 ['simpleId' => 123],
-                ['simpleId' => $simpleId],
+                ['simpleId' => $simpleIdA],
+            ],
+            ToOneCompositeAssociationToMultipleSimpleId::class => [
+                ToOneCompositeAssociationToMultipleSimpleId::class,
+                ['simpleIdA' => 123, 'simpleIdB' => 456],
+                ['simpleIdA' => $simpleIdA, 'simpleIdB' => $simpleIdB],
+            ],
+            NestedAssociationToToOneAssociationIdToSimpleId::class => [
+                NestedAssociationToToOneAssociationIdToSimpleId::class,
+                ['nested' => 123],
+                ['nested' => $toOneAssociationIdToSimpleId],
             ],
         ];
     }
@@ -119,54 +125,56 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
 /** @ORM\Entity */
 class SimpleId
 {
-    /** @ORM\Id @ORM\Column(type="integer") */
+    /** @ORM\Id @ORM\Column(name="id", type="integer") */
     public $id;
 }
 
 /** @ORM\Entity */
 class CompositeId
 {
-    /** @ORM\Id @ORM\Column(type="integer") */
+    /** @ORM\Id @ORM\Column(name="id_a", type="integer") */
     public $idA;
 
-    /** @ORM\Id @ORM\Column(type="integer") */
+    /** @ORM\Id @ORM\Column(name="id_b", type="integer") */
     public $idB;
 }
 
 /** @ORM\Entity */
 class ToOneAssociationIdToSimpleId
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=SimpleId::class) */
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=SimpleId::class)
+     * @ORM\JoinColumn(name="simple_id", referencedColumnName="id")
+     */
     public $simpleId;
 }
 
 /** @ORM\Entity */
-class ToOneAssociationIdToCompositeId
+class ToOneCompositeAssociationToMultipleSimpleId
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=CompositeId::class) */
-    public $compositeId;
-}
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=SimpleId::class)
+     * @ORM\JoinColumn(name="simple_id_a", referencedColumnName="id")
+     */
+    public $simpleIdA;
 
-/** @ORM\Entity */
-class ToOneCompositeAssociationToSimpleIdAndCompositeId
-{
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=SimpleId::class) */
-    public $simpleId;
-
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=CompositeId::class) */
-    public $compositeId;
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=SimpleId::class)
+     * @ORM\JoinColumn(name="simple_id_b", referencedColumnName="id")
+     */
+    public $simpleIdB;
 }
 
 /** @ORM\Entity */
 class NestedAssociationToToOneAssociationIdToSimpleId
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=ToOneAssociationIdToSimpleId::class) */
-    public $nested;
-}
-
-/** @ORM\Entity */
-class NestedAssociationToToOneCompositeAssociationToSimpleIdAndCompositeId
-{
-    /** @ORM\Id @ORM\ManyToOne(targetEntity=ToOneCompositeAssociationToSimpleIdAndCompositeId::class) */
+    /**
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=ToOneAssociationIdToSimpleId::class)
+     * @ORM\JoinColumn(name="nested_id", referencedColumnName="simple_id")
+     */
     public $nested;
 }
