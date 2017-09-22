@@ -118,8 +118,6 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1033
-     *
-     * @TODO remove this test and document the BC break
      */
     public function testCloneProxy()
     {
@@ -134,10 +132,11 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         self::assertEquals($id, $entity->getId());
         self::assertEquals('Doctrine Cookbook', $entity->getName());
 
-        // @TODO this condition is no longer true - should we keep it this way?
         self::assertFalse($this->em->contains($clone), "Cloning a reference proxy should return an unmanaged/detached entity.");
+        self::assertTrue($this->em->contains($entity), "Real instance should be managed");
         self::assertEquals($id, $clone->getId(), "Cloning a reference proxy should return same id.");
         self::assertEquals('Doctrine Cookbook', $clone->getName(), "Cloning a reference proxy should return same product name.");
+        self::assertEquals('Doctrine Cookbook', $entity->getName(), "Real instance should contain the real data too");
 
         // domain logic, Product::__clone sets isCloned public property
         self::assertTrue($clone->isCloned);
