@@ -10,7 +10,6 @@ use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Proxy\Proxy;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -23,24 +22,14 @@ use ProxyManager\Proxy\GhostObjectInterface;
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class StaticProxyFactory implements ProxyFactory
+final class StaticProxyFactory implements ProxyFactory
 {
     private const SKIPPED_PROPERTIES = 'skippedProperties';
 
     /**
      * @var EntityManagerInterface
      */
-    protected $entityManager;
-
-    /**
-     * @var ProxyGenerator
-     */
-    protected $generator;
-
-    /**
-     * @var ProxyDefinitionFactory
-     */
-    protected $definitionFactory;
+    private $entityManager;
 
     /**
      * @var LazyLoadingGhostFactory
@@ -225,18 +214,5 @@ class StaticProxyFactory implements ProxyFactory
         }
 
         return $property->getName();
-    }
-
-    /**
-     * @param ProxyDefinition $definition
-     *
-     * @return Proxy
-     */
-    protected function createProxyInstance(ProxyDefinition $definition) : Proxy
-    {
-        /** @var Proxy $classMetadata */
-        $proxyClassName = $definition->proxyClassName;
-
-        return new $proxyClassName($definition);
     }
 }

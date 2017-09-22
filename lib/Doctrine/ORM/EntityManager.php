@@ -9,11 +9,9 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Configuration\ProxyConfiguration;
-use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\FilterCollection;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
@@ -144,13 +142,6 @@ final class EntityManager implements EntityManagerInterface
         $this->conn              = $conn;
         $this->config            = $config;
         $this->eventManager      = $eventManager;
-
-        $proxyConfiguration = new ProxyConfiguration();
-
-        $proxyConfiguration->setResolver(new DefaultProxyResolver($config->getProxyNamespace(), $config->getProxyDir()));
-        $proxyConfiguration->setDirectory($config->getProxyDir());
-        $proxyConfiguration->setNamespace($config->getProxyNamespace());
-        $proxyConfiguration->setAutoGenerate($config->getAutoGenerateProxyClasses());
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 

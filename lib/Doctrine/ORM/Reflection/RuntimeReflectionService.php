@@ -61,10 +61,6 @@ class RuntimeReflectionService implements ReflectionService
     {
         $reflectionProperty = new \ReflectionProperty($className, $propertyName);
 
-        if ($reflectionProperty->isPublic()) {
-            $reflectionProperty = new RuntimePublicReflectionProperty($className, $propertyName);
-        }
-
         $reflectionProperty->setAccessible(true);
 
         return $reflectionProperty;
