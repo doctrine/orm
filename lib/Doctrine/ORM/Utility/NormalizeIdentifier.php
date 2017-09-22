@@ -11,6 +11,10 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 final class NormalizeIdentifier
 {
+    /**
+     * Given a flat identifier, this method will produce another flat identifier, but with all
+     * association fields that are mapped as identifiers replaced by entity references, recursively.
+     */
     public function __invoke(
         EntityManagerInterface $entityManager,
         ClassMetadata $targetClass,
