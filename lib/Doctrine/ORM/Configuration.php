@@ -19,8 +19,14 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
+use ProxyManager\Configuration as ProxyManagerConfiguration;
+use ProxyManager\Factory\LazyLoadingGhostFactory;
+use ProxyManager\FileLocator\FileLocator;
+use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
+use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -37,6 +43,11 @@ use Doctrine\ORM\Repository\RepositoryFactory;
 class Configuration extends \Doctrine\DBAL\Configuration
 {
     /**
+     * @var ProxyManagerConfiguration|null
+     */
+    private $proxyManagerConfiguration;
+
+    /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
      *
      * @param string $dir
@@ -46,12 +57,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setProxyDir($dir)
     {
         $this->attributes['proxyDir'] = $dir;
+
+        $this->getProxyManagerConfiguration()->setProxiesTargetDir($dir);
     }
 
     /**
      * Gets the directory where Doctrine generates any necessary proxy class files.
      *
      * @return string|null
+     *
+     * @deprecated please do not use this anymore
      */
     public function getProxyDir()
     {
@@ -64,6 +79,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the strategy for automatically generating proxy classes.
      *
      * @return int Possible values are constants of Doctrine\ORM\Proxy\Factory\StaticProxyFactory.
+     *
+     * @deprecated please do not use this anymore
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -83,12 +100,32 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setAutoGenerateProxyClasses($autoGenerate)
     {
         $this->attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
+
+        $proxyManagerConfig = $this->getProxyManagerConfiguration();
+
+        switch ((int) $autoGenerate) {
+            case StaticProxyFactory::AUTOGENERATE_ALWAYS:
+            case StaticProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
+                $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
+                    new FileLocator($proxyManagerConfig->getProxiesTargetDir())
+                ));
+
+                return;
+            case StaticProxyFactory::AUTOGENERATE_NEVER:
+            case StaticProxyFactory::AUTOGENERATE_EVAL:
+            default:
+                $proxyManagerConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
+
+                return;
+        }
     }
 
     /**
      * Gets the namespace where proxy classes reside.
      *
      * @return string|null
+     *
+     * @deprecated please do not use this anymore
      */
     public function getProxyNamespace()
     {
@@ -107,6 +144,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setProxyNamespace($ns)
     {
         $this->attributes['proxyNamespace'] = $ns;
+
+        $this->getProxyManagerConfiguration()->setProxiesNamespace($ns);
     }
 
     /**
@@ -847,5 +886,16 @@ class Configuration extends \Doctrine\DBAL\Configuration
     public function setDefaultQueryHint($name, $value)
     {
         $this->attributes['defaultQueryHints'][$name] = $value;
+    }
+
+    public function buildGhostObjectFactory() : LazyLoadingGhostFactory
+    {
+        return new LazyLoadingGhostFactory(clone $this->getProxyManagerConfiguration());
+    }
+
+    public function getProxyManagerConfiguration() : ProxyManagerConfiguration
+    {
+        return $this->proxyManagerConfiguration
+            ?? $this->proxyManagerConfiguration = new ProxyManagerConfiguration();
     }
 }
