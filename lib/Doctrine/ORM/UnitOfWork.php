@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\Collection\OneToManyPersister;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
+use Doctrine\ORM\Utility\NormalizeIdentifier;
 use Exception;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -271,6 +272,11 @@ class UnitOfWork implements PropertyChangedListener
     private $hydrationCompleteHandler;
 
     /**
+     * @var NormalizeIdentifier
+     */
+    private $normalizeIdentifier;
+
+    /**
      * Initializes a new UnitOfWork instance, bound to the given EntityManager.
      *
      * @param EntityManagerInterface $em
@@ -283,6 +289,7 @@ class UnitOfWork implements PropertyChangedListener
         $this->hasCache                 = $em->getConfiguration()->isSecondLevelCacheEnabled();
         $this->instantiator             = new Instantiator();
         $this->hydrationCompleteHandler = new HydrationCompleteHandler($this->listenersInvoker, $em);
+        $this->normalizeIdentifier      = new NormalizeIdentifier();
     }
 
     /**
@@ -2331,7 +2338,8 @@ class UnitOfWork implements PropertyChangedListener
                     // Proxies do not carry any kind of original entity data until they're fully loaded/initialized
                     $managedData = [];
 
-                    $normalizedAssociatedId = $this->convertFlatIdentifierIntoRealIdentifierFieldValues(
+                    $normalizedAssociatedId = $this->normalizeIdentifier->__invoke(
+                        $this->em,
                         $targetClass,
                         $associatedId
                     );
@@ -2568,53 +2576,6 @@ class UnitOfWork implements PropertyChangedListener
         $this->registerManaged($proxy, $sortedId, []);
 
         return $proxy;
-    }
-    /**
-     * @TODO refactor: `getProxy`: no scalars if the identifier is an association, use real value
-     * @TODO note that this mess is recursive, so we need to fix it somewhere else. An identifier
-     *       may be composed by multiple levels of association fetching, where:
-     *       A#id = B(to-one)
-     *       B#id = C(to-one)
-     *       C#id = D(to-one)
-     *       E#id = E(to-one)
-     *       E#id = composite scalar
-     *       that is a mess, but it is the real world scenario
-     * @TODO we need to therefore have a generic utility that, given a scalar identifier, gives us
-     *       a "normalized" identifier. This is pretty much the opposite of what the
-     *       `IdentifierFlattener` does
-     * @TODO note that we also need to sort the identifier fields here
-     *
-     * @TODO Start of the block to be refactored into "make a deep identifier from a flat one"
-     *
-     * @return mixed[]
-     */
-    private function convertFlatIdentifierIntoRealIdentifierFieldValues(
-        ClassMetadata $targetClass,
-        array $flatIdentifier
-    ) {
-
-        $normalizedAssociatedId = [];
-
-        foreach ($targetClass->getDeclaredPropertiesIterator() as $name => $declaredProperty) {
-            if (! \array_key_exists($name, $flatIdentifier)) {
-                continue;
-            }
-
-            if ($declaredProperty instanceof ToOneAssociationMetadata) {
-                $targetIdMetadata = $this->em->getClassMetadata($declaredProperty->getTargetEntity());
-
-                $normalizedAssociatedId[$name] = $this->tryGetByIdOrLoadProxy(
-                    [reset($targetIdMetadata->identifier) => $flatIdentifier[$name]], // @TODO this is where stuff breaks with composite IDs :-(
-                    $declaredProperty->getTargetEntity()
-                );
-            }
-
-            if ($declaredProperty instanceof FieldMetadata) {
-                $normalizedAssociatedId[$name] = $flatIdentifier[$name];
-            }
-        }
-
-        return $normalizedAssociatedId;
     }
 
     /**
