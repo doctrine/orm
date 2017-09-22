@@ -458,6 +458,20 @@ class ConfigurationTest extends DoctrineTestCase
 
         return $path;
     }
+
+    public function testWillProduceGhostObjectFactory() : void
+    {
+        $factory1 = $this->configuration->buildGhostObjectFactory();
+        $factory2 = $this->configuration->buildGhostObjectFactory();
+
+        $this->configuration->setProxyDir($this->makeTemporaryValidDirectory());
+
+        $factory3 = $this->configuration->buildGhostObjectFactory();
+
+        self::assertNotSame($factory1, $factory2);
+        self::assertEquals($factory1, $factory2);
+        self::assertNotEquals($factory2, $factory3);
+    }
 }
 
 class ConfigurationTestAnnotationReaderChecker
