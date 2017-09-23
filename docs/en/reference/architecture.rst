@@ -78,13 +78,6 @@ be any regular PHP class observing the following restrictions:
    always be private or protected, otherwise lazy-loading might not
    work as expected. In case you serialize entities (for example Session)
    properties should be protected (See Serialize section below).
--  An entity class must not implement ``__clone`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
--  An entity class must not implement ``__wakeup`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-   Also consider implementing
-   `Serializable <http://php.net/manual/en/class.serializable.php>`_
-   instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
    property with the same name. That is, if B inherits from A then B
