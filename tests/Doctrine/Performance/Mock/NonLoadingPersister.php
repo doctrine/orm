@@ -30,4 +30,23 @@ class NonLoadingPersister extends BasicEntityPersister
     ) {
         return $entity;
     }
+
+    public function getIdentifier($entity) : array
+    {
+        // empty on purpose
+
+        return [];
+    }
+
+    public function setIdentifier($entity, array $id) : void
+    {
+        // empty on purpose
+    }
+
+    public function loadById(array $identifier, $entity = null)
+    {
+        // empty on purpose
+
+        return $entity;
+    }
 }
