@@ -357,13 +357,14 @@ identifier. You could simply do this:
     $item = $em->getReference(\MyProject\Model\Item::class, $itemId);
     $cart->addItem($item);
 
-Here, we added an Item to a Cart without loading the Item from the
-database. If you invoke any method on the Item instance, it would
-fully initialize its state transparently from the database. Here
-$item is actually an instance of the proxy class that was generated
-for the Item class but your code does not need to care. In fact it
-**should not care**. Proxy objects should be transparent to your
-code.
+Here, we added an ``Item`` to a ``Cart`` without loading the Item from the
+database.
+If you access any persistent state that isn't yet available in the ``Item``
+instance, the proxying mechanism would fully initialize the object's state
+transparently from the database.
+Here ``$item`` is actually an instance of the proxy class that was generated
+for the ``Item`` class but your code does not need to care. In fact it
+**should not care**. Proxy objects should be transparent to your code.
 
 Association proxies
 ~~~~~~~~~~~~~~~~~~~
@@ -371,7 +372,7 @@ Association proxies
 The second most important situation where Doctrine uses proxy
 objects is when querying for objects. Whenever you query for an
 object that has a single-valued association to another object that
-is configured LAZY, without joining that association in the same
+is configured ``LAZY``, without joining that association in the same
 query, Doctrine puts proxy objects in place where normally the
 associated object would be. Just like other proxies it will
 transparently initialize itself on first access.
@@ -382,55 +383,6 @@ transparently initialize itself on first access.
     essentially means eager loading of that association in that query.
     This will override the 'fetch' option specified in the mapping for
     that association, but only for that query.
-
-
-Generating Proxy classes
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-In a production environment, it is highly recommended to use
-``AUTOGENERATE_NEVER`` to allow for optimal performances.
-However you will be required to generate the proxies manually
-using the Doctrine Console:
-
-.. code-block:: php
-
-    $ ./doctrine orm:generate-proxies
-
-The other options are interesting in development environment:
-
-- ``AUTOGENERATE_ALWAYS`` will require you to create and configure
-  a proxy directory. Proxies will be generated and written to file
-  on each request, so any modification to your code will be acknowledged.
-
-- ``AUTOGENERATE_FILE_NOT_EXISTS`` will not overwrite an existing
-  proxy file. If your code changes, you will need to regenerate the
-  proxies manually.
-
-- ``AUTOGENERATE_EVAL`` will regenerate each proxy on each request,
-  but without writing them to disk.
-
-Autoloading Proxies
--------------------
-
-When you deserialize proxy objects from the session or any other storage
-it is necessary to have an autoloading mechanism in place for these classes.
-For implementation reasons Proxy class names are not PSR-0 compliant. This
-means that you have to register a special autoloader for these classes:
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Proxy\Autoloader;
-
-    $proxyDir = "/path/to/proxies";
-    $proxyNamespace = "MyProxies";
-
-    Autoloader::register($proxyDir, $proxyNamespace);
-
-If you want to execute additional logic to intercept the proxy file not found
-state you can pass a closure as the third argument. It will be called with
-the arguments proxydir, namespace and className when the proxy file could not
-be found.
 
 Multiple Metadata Sources
 -------------------------
