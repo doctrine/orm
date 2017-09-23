@@ -18,6 +18,7 @@ use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
 use Doctrine\Tests\Models\FriendObject\ComparableObject;
+use Doctrine\Tests\Models\ProxySpecifics\FuncGetArgs;
 use Doctrine\Tests\OrmTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -285,11 +286,36 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertFalse($comparable1->isProxyInitialized());
         self::assertFalse($comparable2->isProxyInitialized());
 
-        // due to implementation details, identity check is not reading lazy state:
-        self::assertFalse($comparable1->equalTo($comparable2));
+        self::assertFalse(
+            $comparable1->equalTo($comparable2),
+            'Due to implementation details, identity check is not reading lazy state'
+        );
 
         self::assertTrue($comparable1->isProxyInitialized());
         self::assertTrue($comparable2->isProxyInitialized());
+    }
+
+    public function testProxyMethodsSupportFuncGetArgsLogic()
+    {
+        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        $persister = $this->createMock(BasicEntityPersister::class);
+        $persister->expects(self::never())->method('loadById');
+
+        $this->uowMock->setEntityPersister(FuncGetArgs::class, $persister);
+
+        /* @var $funcGetArgs FuncGetArgs|GhostObjectInterface */
+        $funcGetArgs = $this->proxyFactory->getProxy(FuncGetArgs::class, ['id' => 123]);
+
+        self::assertInstanceOf(GhostObjectInterface::class, $funcGetArgs);
+        self::assertFalse($funcGetArgs->isProxyInitialized());
+
+        self::assertSame(
+            [1, 2, 3, 4],
+            $funcGetArgs->funcGetArgsCallingMethod(1, 2, 3, 4),
+            '`func_get_args()` calls are now supported in proxy implementations'
+        );
+
+        self::assertFalse($funcGetArgs->isProxyInitialized(), 'No state was accessed anyway');
     }
 }
 
