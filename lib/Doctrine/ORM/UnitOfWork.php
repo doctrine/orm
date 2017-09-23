@@ -2209,9 +2209,14 @@ class UnitOfWork implements PropertyChangedListener
             $targetClass  = $this->em->getClassMetadata($targetEntity);
 
             if ($association instanceof ToManyAssociationMetadata) {
+                $associationValue = $association->getValue($entity);
+
                 // Ignore if its a cached collection
                 if (isset($hints[Query::HINT_CACHE_ENABLED]) &&
-                    $association->getValue($entity) instanceof PersistentCollection) {
+                    $associationValue instanceof PersistentCollection
+                    && $associationValue->isInitialized()
+                    && ! $associationValue->isDirty()
+                ) {
                     continue;
                 }
 
