@@ -147,18 +147,18 @@ subsequent access must be through the interface type.
 Serializing entities
 ~~~~~~~~~~~~~~~~~~~~
 
-Serializing entities can be problematic and is not really
-recommended, at least not as long as an entity instance still holds
-references to proxy objects or is still managed by an
-EntityManager. If you intend to serialize (and unserialize) entity
+Serializing entities is generally to be avoided.
+
+If you intend to serialize (and unserialize) entity
 instances that still hold references to proxy objects you may run
-into problems with private properties because of technical
-limitations. Proxy objects implement ``__sleep`` and it is not
-possible for ``__sleep`` to return names of private properties in
-parent classes. On the other hand it is not a solution for proxy
-objects to implement ``Serializable`` because Serializable does not
-work well with any potential cyclic object references (at least we
-did not find a way yet, if you did, please contact us).
+into problems, because all proxy properties will be initialized
+recursively, leading to large serialized object graphs, especially
+for circular associations.
+
+If you really must serialize entities, regardless if proxies are
+involved or not, then consider implementing the ``Serializable``
+interface and manually checking for cyclic dependencies in your
+object graph.
 
 The EntityManager
 ~~~~~~~~~~~~~~~~~
