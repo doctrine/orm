@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
-use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
@@ -59,6 +58,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $this->attributes['proxyDir'] = $dir;
 
         $this->getProxyManagerConfiguration()->setProxiesTargetDir($dir);
+        $this->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
     }
 
     /**
@@ -78,7 +78,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the strategy for automatically generating proxy classes.
      *
-     * @return int Possible values are constants of Doctrine\ORM\Proxy\Factory\StaticProxyFactory.
+     * @return int Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
      *
      * @deprecated please do not use this anymore
      */
@@ -92,7 +92,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\StaticProxyFactory.
+     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
      *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      *
      * @return void
@@ -104,15 +104,15 @@ class Configuration extends \Doctrine\DBAL\Configuration
         $proxyManagerConfig = $this->getProxyManagerConfiguration();
 
         switch ((int) $autoGenerate) {
-            case StaticProxyFactory::AUTOGENERATE_ALWAYS:
-            case StaticProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
+            case ProxyFactory::AUTOGENERATE_ALWAYS:
+            case ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
                 $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
                     new FileLocator($proxyManagerConfig->getProxiesTargetDir())
                 ));
 
                 return;
-            case StaticProxyFactory::AUTOGENERATE_NEVER:
-            case StaticProxyFactory::AUTOGENERATE_EVAL:
+            case ProxyFactory::AUTOGENERATE_NEVER:
+            case ProxyFactory::AUTOGENERATE_EVAL:
             default:
                 $proxyManagerConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
 
