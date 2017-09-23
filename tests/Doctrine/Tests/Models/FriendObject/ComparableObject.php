@@ -18,7 +18,7 @@ class ComparableObject
     public function equalTo(self $other) : bool
     {
         return $other === $this
-            || $other->comparedField = $this->comparedField;
+            || $other->comparedField === $this->comparedField;
     }
 
     public function setComparedFieldValue(string $value) : void

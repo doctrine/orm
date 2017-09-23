@@ -17,6 +17,7 @@ use Doctrine\Tests\Mocks\EntityManagerMock;
 use Doctrine\Tests\Mocks\UnitOfWorkMock;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\ECommerce\ECommerceFeature;
+use Doctrine\Tests\Models\FriendObject\ComparableObject;
 use Doctrine\Tests\OrmTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -248,6 +249,74 @@ class ProxyFactoryTest extends OrmTestCase
         self::assertSame(42, $cloned->getId(), 'Expected the Id to be cloned');
         self::assertSame(1000, $cloned->getSalary(), 'Expect properties on the CompanyEmployee class to be cloned');
         self::assertSame('Bob', $cloned->getName(), 'Expect properties on the CompanyPerson class to be cloned');
+    }
+
+    public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState()
+    {
+        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        $persister = $this->createMock(BasicEntityPersister::class);
+        $persister->expects(self::never())->method('loadById');
+
+        $this->uowMock->setEntityPersister(ComparableObject::class, $persister);
+
+        /* @var $comparable ComparableObject|GhostObjectInterface */
+        $comparable = $this->proxyFactory->getProxy(ComparableObject::class, ['id' => 123]);
+
+        self::assertInstanceOf(ComparableObject::class, $comparable);
+        self::assertInstanceOf(GhostObjectInterface::class, $comparable);
+        self::assertFalse($comparable->isProxyInitialized());
+
+        // due to implementation details, identity check is not reading lazy state:
+        self::assertTrue($comparable->equalTo($comparable));
+
+        self::assertFalse($comparable->isProxyInitialized());
+    }
+
+    public function testFriendObjectsLazyLoadWhenAccessingLazyState()
+    {
+        /* @var $persister BasicEntityPersister|\PHPUnit_Framework_MockObject_MockObject */
+        $persister = $this
+            ->getMockBuilder(BasicEntityPersister::class)
+            ->setConstructorArgs([$this->emMock, $this->emMock->getClassMetadata(ComparableObject::class)])
+            ->setMethods(['loadById'])
+            ->getMock();
+
+        $persister
+            ->expects(self::exactly(2))
+            ->method('loadById')
+            ->with(
+                self::logicalOr(['id' => 123], ['id' => 456]),
+                self::logicalAnd(
+                    self::isInstanceOf(GhostObjectInterface::class),
+                    self::isInstanceOf(ComparableObject::class)
+                )
+            )
+            ->willReturnCallback(function (array $id, ComparableObject $comparableObject) {
+                $comparableObject->setComparedFieldValue(\json_encode($id));
+
+                return $comparableObject;
+            });
+
+        $this->uowMock->setEntityPersister(ComparableObject::class, $persister);
+
+        /* @var $comparable1 ComparableObject|GhostObjectInterface */
+        $comparable1 = $this->proxyFactory->getProxy(ComparableObject::class, ['id' => 123]);
+        /* @var $comparable2 ComparableObject|GhostObjectInterface */
+        $comparable2 = $this->proxyFactory->getProxy(ComparableObject::class, ['id' => 456]);
+
+        self::assertInstanceOf(ComparableObject::class, $comparable1);
+        self::assertInstanceOf(ComparableObject::class, $comparable2);
+        self::assertInstanceOf(GhostObjectInterface::class, $comparable1);
+        self::assertInstanceOf(GhostObjectInterface::class, $comparable2);
+        self::assertNotSame($comparable1, $comparable2);
+        self::assertFalse($comparable1->isProxyInitialized());
+        self::assertFalse($comparable2->isProxyInitialized());
+
+        // due to implementation details, identity check is not reading lazy state:
+        self::assertFalse($comparable1->equalTo($comparable2));
+
+        self::assertTrue($comparable1->isProxyInitialized());
+        self::assertTrue($comparable2->isProxyInitialized());
     }
 }
 
