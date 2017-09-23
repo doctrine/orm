@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Utility;
 
-use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Utility\NormalizeIdentifier;
+use Doctrine\Tests\Models\IdentityIsAssociation\CompositeId;
+use Doctrine\Tests\Models\IdentityIsAssociation\NestedAssociationToToOneAssociationIdToSimpleId;
+use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
+use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
+use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -119,62 +123,4 @@ class NormalizeIdentifierTest extends OrmFunctionalTestCase
             ],
         ];
     }
-}
-
-// @TODO move following entities to their own namespace
-/** @ORM\Entity */
-class SimpleId
-{
-    /** @ORM\Id @ORM\Column(name="id", type="integer") */
-    public $id;
-}
-
-/** @ORM\Entity */
-class CompositeId
-{
-    /** @ORM\Id @ORM\Column(name="id_a", type="integer") */
-    public $idA;
-
-    /** @ORM\Id @ORM\Column(name="id_b", type="integer") */
-    public $idB;
-}
-
-/** @ORM\Entity */
-class ToOneAssociationIdToSimpleId
-{
-    /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity=SimpleId::class)
-     * @ORM\JoinColumn(name="simple_id", referencedColumnName="id")
-     */
-    public $simpleId;
-}
-
-/** @ORM\Entity */
-class ToOneCompositeAssociationToMultipleSimpleId
-{
-    /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity=SimpleId::class)
-     * @ORM\JoinColumn(name="simple_id_a", referencedColumnName="id")
-     */
-    public $simpleIdA;
-
-    /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity=SimpleId::class)
-     * @ORM\JoinColumn(name="simple_id_b", referencedColumnName="id")
-     */
-    public $simpleIdB;
-}
-
-/** @ORM\Entity */
-class NestedAssociationToToOneAssociationIdToSimpleId
-{
-    /**
-     * @ORM\Id
-     * @ORM\ManyToOne(targetEntity=ToOneAssociationIdToSimpleId::class)
-     * @ORM\JoinColumn(name="nested_id", referencedColumnName="simple_id")
-     */
-    public $nested;
 }
