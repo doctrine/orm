@@ -13,7 +13,9 @@ use ProxyManager\Inflector\ClassNameInflectorInterface;
  * proxy class names to original class names
  *
  * @since  3.0
- * @author Jasper N. Brouwer <jasper@nerdsweide.nl>
+ * @author Marco Pivetta <ocramius@gmail.com>
+ *
+ * @internal do not use in your own codebase: no BC compliance on this class
  */
 abstract class StaticClassNameConverter
 {
