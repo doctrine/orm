@@ -36,13 +36,15 @@ will still end up with the same reference:
 
     public function testIdentityMapReference()
     {
-        $objectA = $this->entityManager->getReference('EntityName', 1);
-        // check for proxyinterface
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $objectA);
+        /* @var $objectA EntityName|\ProxyManager\Proxy\GhostObjectInterface */
+        $objectA = $this->entityManager->getReference(EntityName::class, 1);
 
-        $objectB = $this->entityManager->find('EntityName', 1);
+        self::assertInstanceOf(\ProxyManager\Proxy\GhostObjectInterface::class, $objectA);
+        self::assertFalse($objectA->isProxyInitialized());
 
-        $this->assertSame($objectA, $objectB)
+        $objectB = $this->entityManager->find(EntityName::class, 1);
+
+        self::assertSame($objectA, $objectB)
     }
 
 The identity map being indexed by primary keys only allows shortcuts when you
