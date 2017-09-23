@@ -68,8 +68,6 @@ Customize it to your needs.
         $doctrineClassLoader->register();
         $entitiesClassLoader = new ClassLoader('models', rtrim(APPPATH, "/" ));
         $entitiesClassLoader->register();
-        $proxiesClassLoader = new ClassLoader('Proxies', APPPATH.'models/proxies');
-        $proxiesClassLoader->register();
     
         // Set up caches
         $config = new Configuration;
@@ -83,13 +81,10 @@ Customize it to your needs.
     
         // Proxy configuration
         $config->setProxyDir(APPPATH.'/models/proxies');
-        $config->setProxyNamespace('Proxies');
     
         // Set up logger
         $logger = new EchoSQLLogger;
         $config->setSQLLogger($logger);
-    
-        $config->setAutoGenerateProxyClasses( TRUE );
     
         // Database connection information
         $connectionOptions = array(
@@ -108,7 +103,7 @@ Customize it to your needs.
 Please note that this is a development configuration; for a
 production system you'll want to use a real caching system like
 APC, get rid of EchoSqlLogger, and turn off
-autoGenerateProxyClasses.
+proxy auto-generation.
 
 For more details, consult the
 `Doctrine 2 Configuration documentation <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/configuration.html>`_.
