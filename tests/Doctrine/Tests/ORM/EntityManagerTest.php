@@ -22,6 +22,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
 use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
+use Doctrine\Tests\Models\IdentityIsAssociation\ToOneCompositeAssociationToMultipleSimpleId;
 use Doctrine\Tests\OrmTestCase;
 use ProxyManager\Proxy\GhostObjectInterface;
 
@@ -277,14 +278,38 @@ class EntityManagerTest extends OrmTestCase
             ['id' => 123]
         );
         /* @var $nestedReference GhostObjectInterface|ToOneAssociationIdToSimpleId */
-        $nestedReference   = $this->em->getReference(
+        $nestedIdReference = $this->em->getReference(
             ToOneAssociationIdToSimpleId::class,
             ['simpleId' => $simpleIdReference]
         );
 
-        self::assertInstanceOf(ToOneAssociationIdToSimpleId::class, $nestedReference);
-        self::assertSame($simpleIdReference, $nestedReference->simpleId);
+        self::assertInstanceOf(ToOneAssociationIdToSimpleId::class, $nestedIdReference);
+        self::assertSame($simpleIdReference, $nestedIdReference->simpleId);
         self::assertTrue($this->em->contains($simpleIdReference));
-        self::assertTrue($this->em->contains($nestedReference));
+        self::assertTrue($this->em->contains($nestedIdReference));
+    }
+
+    public function testGetReferenceRetrievesReferencesWithGivenProxiesAsIdentifiersEvenIfIdentifierOrderIsSwapped() : void
+    {
+        $simpleIdReferenceA = $this->em->getReference(
+            SimpleId::class,
+            ['id' => 123]
+        );
+        $simpleIdReferenceB = $this->em->getReference(
+            SimpleId::class,
+            ['id' => 456]
+        );
+        /* @var $nestedIdReference GhostObjectInterface|ToOneCompositeAssociationToMultipleSimpleId */
+        $nestedIdReference = $this->em->getReference(
+            ToOneCompositeAssociationToMultipleSimpleId::class,
+            ['simpleIdB' => $simpleIdReferenceB, 'simpleIdA' => $simpleIdReferenceA]
+        );
+
+        self::assertInstanceOf(ToOneCompositeAssociationToMultipleSimpleId::class, $nestedIdReference);
+        self::assertSame($simpleIdReferenceA, $nestedIdReference->simpleIdA);
+        self::assertSame($simpleIdReferenceB, $nestedIdReference->simpleIdB);
+        self::assertTrue($this->em->contains($simpleIdReferenceA));
+        self::assertTrue($this->em->contains($simpleIdReferenceB));
+        self::assertTrue($this->em->contains($nestedIdReference));
     }
 }
