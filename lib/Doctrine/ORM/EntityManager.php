@@ -494,7 +494,6 @@ final class EntityManager implements EntityManagerInterface
 
         $scalarId = [];
 
-        // @TODO this is wrong, as it flattens an identifier, even if `getProxy` requires the real values (even if objects)
         foreach ($id as $i => $value) {
             $scalarId[$i] = $value;
 
