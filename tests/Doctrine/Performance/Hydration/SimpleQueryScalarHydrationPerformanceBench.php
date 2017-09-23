@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -32,7 +31,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -75,7 +74,7 @@ final class SimpleQueryScalarHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__name', 'name');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
