@@ -9,6 +9,12 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
+/**
+ * @since  3.0
+ * @author Marco Pivetta <ocramius@gmail.com>
+ *
+ * @internal do not use in your own codebase: no BC compliance on this class
+ */
 final class NormalizeIdentifier
 {
     /**

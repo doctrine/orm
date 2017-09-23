@@ -15,6 +15,8 @@ use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
  *
  * @since       2.5
  * @author      Rob Caiger <rob@clocal.co.uk>
+ *
+ * @internal do not use in your own codebase: no BC compliance on this class
  */
 final class IdentifierFlattener
 {
