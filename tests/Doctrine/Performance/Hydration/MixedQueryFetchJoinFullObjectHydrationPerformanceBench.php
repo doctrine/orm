@@ -34,7 +34,7 @@ final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -76,7 +76,7 @@ final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
