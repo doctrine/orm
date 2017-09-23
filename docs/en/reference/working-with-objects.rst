@@ -155,25 +155,28 @@ your code. See the following code:
     }
 
 A slice of the generated proxy classes code looks like the
-following piece of code. A real proxy class override ALL public
-methods along the lines of the ``getName()`` method shown below:
+following piece of code. A real proxy class override all non-identity
+non-transient object state at instantiation time in order to
+enable lazy-loading mechanisms:
 
 .. code-block:: php
 
     <?php
-    class UserProxy extends User implements Proxy
+    class UserProxyHASH extends User implements GhostObjectInterface
     {
-        private function _load()
+        // ... generated code
+
+        public static function staticProxyConstructor($initializer)
         {
-            // lazy loading code
+            // ... generated code
         }
-    
-        public function getName()
+
+        private function callInitializerHASH($methodName, array $parameters)
         {
-            $this->_load();
-            return parent::getName();
+            // ... generated code
         }
-        // .. other public methods of User
+
+        // ... generated code
     }
 
 .. warning::
