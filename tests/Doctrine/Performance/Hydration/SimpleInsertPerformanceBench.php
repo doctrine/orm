@@ -49,6 +49,8 @@ final class SimpleInsertPerformanceBench
 
     public function benchHydration() : void
     {
+        $this->entityManager->createQuery('DELETE FROM ' . CMS\CmsUser::class . ' u')->execute();
+
         foreach ($this->users as $key => $user) {
             $this->entityManager->persist($user);
 
