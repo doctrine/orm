@@ -20,7 +20,10 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\Models\IdentityIsAssociation\SimpleId;
+use Doctrine\Tests\Models\IdentityIsAssociation\ToOneAssociationIdToSimpleId;
 use Doctrine\Tests\OrmTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class EntityManagerTest extends OrmTestCase
 {
@@ -265,5 +268,23 @@ class EntityManagerTest extends OrmTestCase
         $this->em->clear();
 
         self::assertFalse($this->em->contains($entity));
+    }
+
+    public function testGetReferenceRetrievesReferencesWithGivenProxiesAsIdentifiers() : void
+    {
+        $simpleIdReference = $this->em->getReference(
+            SimpleId::class,
+            ['id' => 123]
+        );
+        /* @var $nestedReference GhostObjectInterface|ToOneAssociationIdToSimpleId */
+        $nestedReference   = $this->em->getReference(
+            ToOneAssociationIdToSimpleId::class,
+            ['simpleId' => $simpleIdReference]
+        );
+
+        self::assertInstanceOf(ToOneAssociationIdToSimpleId::class, $nestedReference);
+        self::assertSame($simpleIdReference, $nestedReference->simpleId);
+        self::assertTrue($this->em->contains($simpleIdReference));
+        self::assertTrue($this->em->contains($nestedReference));
     }
 }
