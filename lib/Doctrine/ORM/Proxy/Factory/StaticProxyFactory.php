@@ -21,6 +21,9 @@ use ProxyManager\Proxy\GhostObjectInterface;
  *
  * @author Benjamin Eberlei <kontakt@beberlei.de>
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
+ * @author Marco Pivetta <ocramius@gmail.com>
+ *
+ * @internal this class is to be used by ORM internals only
  */
 final class StaticProxyFactory implements ProxyFactory
 {
@@ -97,6 +100,7 @@ final class StaticProxyFactory implements ProxyFactory
 
     /**
      * {@inheritdoc}
+     *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
     public function getProxy(string $className, array $identifier) : GhostObjectInterface

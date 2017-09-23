@@ -47,7 +47,7 @@ interface ProxyFactory
     const AUTOGENERATE_EVAL = 3;
 
     /**
-     * @param array<Doctrine\ORM\Mapping\ClassMetadata> $classMetadataList
+     * @param \Doctrine\ORM\Mapping\ClassMetadata[] $classMetadataList
      *
      * @return int
      */
