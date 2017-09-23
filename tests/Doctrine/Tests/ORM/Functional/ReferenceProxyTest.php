@@ -10,7 +10,6 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceShipping;
-use Doctrine\Tests\Models\FriendObject\ComparableObject;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -267,20 +266,5 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $entity->initializeProxy();
 
         self::assertTrue($entity->isProxyInitialized());
-    }
-
-    public function testFriendObjectsDoNotLazyLoadIfNotAccessingLazyState()
-    {
-        /* @var $comparable ComparableObject|GhostObjectInterface */
-        $comparable = $this->em->getReference(ComparableObject::class, ['id' => 123]);
-
-        self::assertInstanceOf(ComparableObject::class, $comparable);
-        self::assertInstanceOf(GhostObjectInterface::class, $comparable);
-        self::assertFalse($comparable->isProxyInitialized());
-
-        // due to implementation details, identity check is not reading lazy state:
-        self::assertTrue($comparable->equalTo($comparable));
-
-        self::assertFalse($comparable->isProxyInitialized());
     }
 }
