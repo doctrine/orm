@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\Driver\XmlDriver;
 use Doctrine\ORM\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
 use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\Export\ClassMetadataExporter;
@@ -44,8 +45,8 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $driverMock = new DriverMock();
         $config     = new Configuration();
 
-        $config->setProxyDir(__DIR__ . '/../../Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $eventManager = new EventManager();
         $conn = new ConnectionMock([], $driverMock, $config, $eventManager);
         $config->setMetadataDriverImpl($metadataDriver);
