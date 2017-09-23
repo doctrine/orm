@@ -140,10 +140,10 @@ not need to lazy load the association with another query.
 
     Doctrine allows you to walk all the associations between
     all the objects in your domain model. Objects that were not already
-    loaded from the database are replaced with lazy load proxy
-    instances. Non-loaded Collections are also replaced by lazy-load
+    loaded from the database are replaced with lazy loading proxy
+    instances. Non-loaded Collections are also replaced by lazy-loading
     instances that fetch all the contained objects upon first access.
-    However relying on the lazy-load mechanism leads to many small
+    However relying on the lazy-loading mechanism leads to many small
     queries executed against the database, which can significantly
     affect the performance of your application. **Fetch Joins** are the
     solution to hydrate most or all of the entities that you need in a
