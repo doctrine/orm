@@ -90,9 +90,6 @@ be any regular PHP class observing the following restrictions:
    property with the same name. That is, if B inherits from A then B
    must not have a mapped field with the same name as an already
    mapped field that is inherited from A.
--  An entity cannot make use of func_get_args() to implement variable parameters.
-   Generated proxies do not support this for performance reasons and your code might
-   actually fail to work when violating this restriction.
 
 Entities support inheritance, polymorphic associations, and
 polymorphic queries. Both abstract and concrete classes can be
