@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Performance\ChangeSet;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -26,7 +24,7 @@ final class UnitOfWorkComputeChangesBench
      */
     private $unitOfWork;
 
-    public function init()
+    public function init() : void
     {
         $this->unitOfWork = EntityManagerFactory::getEntityManager([])->getUnitOfWork();
 
@@ -67,7 +65,7 @@ final class UnitOfWorkComputeChangesBench
         }
     }
 
-    public function benchChangeSetComputation()
+    public function benchChangeSetComputation() : void
     {
         $this->unitOfWork->computeChangeSets();
     }

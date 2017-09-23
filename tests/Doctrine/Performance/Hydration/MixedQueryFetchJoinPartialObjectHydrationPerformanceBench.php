@@ -34,7 +34,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -88,7 +88,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }

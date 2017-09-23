@@ -32,7 +32,7 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -75,7 +75,7 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__name', 'name');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }

@@ -36,7 +36,7 @@ final class ProxyInitializationTimeBench
      */
     private $initializedEmployees;
 
-    public function init()
+    public function init() : void
     {
         $proxyFactory = (new NonProxyLoadingEntityManager(EntityManagerFactory::getEntityManager([])))
             ->getProxyFactory();
@@ -47,36 +47,36 @@ final class ProxyInitializationTimeBench
             $this->initializedUsers[$i]     = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
             $this->initializedEmployees[$i] = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
 
-            $this->initializedUsers[$i]->__load();
-            $this->initializedEmployees[$i]->__load();
+            $this->initializedUsers[$i]->initializeProxy();
+            $this->initializedEmployees[$i]->initializeProxy();
         }
     }
 
-    public function benchCmsUserInitialization()
+    public function benchCmsUserInitialization() : void
     {
         foreach ($this->cmsUsers as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchCmsEmployeeInitialization()
+    public function benchCmsEmployeeInitialization() : void
     {
         foreach ($this->cmsEmployees as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsUsers()
+    public function benchInitializationOfAlreadyInitializedCmsUsers() : void
     {
         foreach ($this->initializedUsers as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsEmployees()
+    public function benchInitializationOfAlreadyInitializedCmsEmployees() : void
     {
         foreach ($this->initializedEmployees as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 }
