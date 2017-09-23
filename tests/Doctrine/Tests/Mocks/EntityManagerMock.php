@@ -9,6 +9,7 @@ use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -81,8 +82,8 @@ class EntityManagerMock extends EntityManagerDecorator
         if (null === $config) {
             $config = new Configuration();
 
-            $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
+            $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
