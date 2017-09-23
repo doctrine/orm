@@ -6,7 +6,6 @@ namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Driver\Connection;
-use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Cache\CacheConfiguration;
@@ -15,6 +14,7 @@ use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
@@ -697,11 +697,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
 
         //FIXME: two different configs! $conn and the created entity manager have
         // different configs.
-        $config = new \Doctrine\ORM\Configuration();
+        $config = new Configuration();
 
         $config->setMetadataCacheImpl(self::$metadataCacheImpl);
         $config->setQueryCacheImpl(self::$queryCacheImpl);
-        $config->setProxyDir(__DIR__ . '/Proxies');
+        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
         if (null !== $this->resultCacheImpl) {
