@@ -78,8 +78,7 @@ Customize it to your needs.
         $config->setQueryCacheImpl($cache);
 
         $config->setQueryCacheImpl($cache);
-    
-        // Proxy configuration
+
         $config->setProxyDir(APPPATH.'/models/proxies');
     
         // Set up logger
