@@ -271,7 +271,7 @@ Here is an example of such setup:
     {
         "autoload": {
             "psr-4": {
-                "MyProject\\": "path/to/project/sources/"
+                "MyProject\\": "path/to/project/sources/",
                 "GeneratedProxies\\": "path/to/generated/proxies/"
             }
         }
