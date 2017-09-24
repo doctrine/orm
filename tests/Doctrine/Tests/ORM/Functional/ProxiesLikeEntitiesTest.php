@@ -69,7 +69,8 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
     public function testPersistUpdate()
     {
         // Considering case (a)
-        $proxy = $this->em->getProxyFactory()->getProxy(CmsUser::class, ['id' => 123]);
+        $metadata = $this->em->getClassMetadata(CmsUser::class);
+        $proxy    = $this->em->getProxyFactory()->getProxy($metadata, ['id' => 123]);
 
         $proxy->setProxyInitializer(null);
         $proxy->id = null;
@@ -83,8 +84,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
 
         $proxy->name = 'Marco Pivetta';
 
-        $this->em->getUnitOfWork()
-            ->computeChangeSet($this->em->getClassMetadata(CmsUser::class), $proxy);
+        $this->em->getUnitOfWork()->computeChangeSet($metadata, $proxy);
         self::assertNotEmpty($this->em->getUnitOfWork()->getEntityChangeSet($proxy));
         self::assertEquals('Marco Pivetta', $this->em->find(CmsUser::class, $proxy->getId())->name);
 
@@ -114,7 +114,10 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     public function testProxyAsDqlParameterPersist()
     {
-        $proxy = $this->em->getProxyFactory()->getProxy(CmsUser::class, ['id' => $this->user->getId()]);
+        $proxy = $this->em->getProxyFactory()->getProxy(
+            $this->em->getClassMetadata(CmsUser::class),
+            ['id' => $this->user->getId()]
+        );
 
         $proxy->id = $this->user->getId();
 

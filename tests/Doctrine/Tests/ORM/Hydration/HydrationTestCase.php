@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ParserResult;
 
 class HydrationTestCase extends \Doctrine\Tests\OrmTestCase
 {
+    /**
+     * @var EntityManagerInterface
+     */
     protected $em;
 
     protected function setUp()

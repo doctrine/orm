@@ -38,14 +38,18 @@ final class ProxyInitializationTimeBench
 
     public function init() : void
     {
-        $proxyFactory = (new NonProxyLoadingEntityManager(EntityManagerFactory::getEntityManager([])))
+        $entityManager = EntityManagerFactory::getEntityManager([]);
+        $proxyFactory  = (new NonProxyLoadingEntityManager($entityManager))
             ->getProxyFactory();
 
+        $cmsUser     = $entityManager->getClassMetadata(CmsUser::class);
+        $cmsEmployee = $entityManager->getClassMetadata(CmsEmployee::class);
+
         for ($i = 0; $i < 10000; ++$i) {
-            $this->cmsUsers[$i]             = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
-            $this->cmsEmployees[$i]         = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
-            $this->initializedUsers[$i]     = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
-            $this->initializedEmployees[$i] = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
+            $this->cmsUsers[$i]             = $proxyFactory->getProxy($cmsUser, ['id' => $i]);
+            $this->cmsEmployees[$i]         = $proxyFactory->getProxy($cmsEmployee, ['id' => $i]);
+            $this->initializedUsers[$i]     = $proxyFactory->getProxy($cmsUser, ['id' => $i]);
+            $this->initializedEmployees[$i] = $proxyFactory->getProxy($cmsEmployee, ['id' => $i]);
 
             $this->initializedUsers[$i]->initializeProxy();
             $this->initializedEmployees[$i]->initializeProxy();

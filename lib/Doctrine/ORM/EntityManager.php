@@ -530,7 +530,7 @@ final class EntityManager implements EntityManagerInterface
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($className, $id);
+        $entity = $this->proxyFactory->getProxy($class, $id);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 

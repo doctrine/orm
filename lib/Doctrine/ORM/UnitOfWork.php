@@ -2349,7 +2349,7 @@ class UnitOfWork implements PropertyChangedListener
                     switch (true) {
                         // We are negating the condition here. Other cases will assume it is valid!
                         case ($hints['fetchMode'][$class->getClassName()][$field] !== FetchMode::EAGER):
-                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $normalizedAssociatedId);
+                            $newValue = $this->em->getProxyFactory()->getProxy($targetClass, $normalizedAssociatedId);
                             break;
 
                         // Deferred eager load only works for single identifier classes
@@ -2357,7 +2357,7 @@ class UnitOfWork implements PropertyChangedListener
                             // TODO: Is there a faster approach?
                             $this->eagerLoadingEntities[$targetClass->getRootClassName()][$relatedIdHash] = current($normalizedAssociatedId);
 
-                            $newValue = $this->em->getProxyFactory()->getProxy($targetEntity, $normalizedAssociatedId);
+                            $newValue = $this->em->getProxyFactory()->getProxy($targetClass, $normalizedAssociatedId);
                             break;
 
                         default:
@@ -2571,7 +2571,7 @@ class UnitOfWork implements PropertyChangedListener
             $sortedId[$idField] = $id[$idField];
         }
 
-        $proxy = $this->em->getProxyFactory()->getProxy($rootClassName, $sortedId);
+        $proxy = $this->em->getProxyFactory()->getProxy($class, $sortedId);
 
         $this->registerManaged($proxy, $sortedId, []);
 
