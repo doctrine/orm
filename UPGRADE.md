@@ -13,6 +13,12 @@ These related classes have been removed:
  * `Doctrine\ORM\Proxy\Proxy`
  * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
  * `Doctrine\ORM\Reflection\RuntimePublicReflectionProperty`
+ 
+These methods have been removed:
+
+ * `Doctrine\ORM\Configuration#getProxyDir()`
+ * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
+ * `Doctrine\ORM\Configuration#getProxyNamespace()`
 
 Proxy class names change: the generated proxies now follow
 the [`ClassNameInflector`](https://github.com/Ocramius/ProxyManager/blob/2.1.1/src/ProxyManager/Inflector/ClassNameInflector.php)
@@ -37,12 +43,6 @@ In addition to that, following changes affect entity lazy-loading semantics:
  * calling a method on a proxy no longer causes proxy lazy-loading if the method does
    not access any un-initialized proxy state
  * accessing entity private state, even with reflection, will trigger lazy-loading
-   
-The following methods have been deprecated, and should no longer be used:
-
- * `Doctrine\ORM\Configuration#getProxyDir()`
- * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
- * `Doctrine\ORM\Configuration#getProxyNamespace()`
 
 ## BC Break: Removed `Doctrine\ORM\Version`
 
