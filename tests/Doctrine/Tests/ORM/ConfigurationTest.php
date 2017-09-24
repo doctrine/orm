@@ -42,36 +42,6 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration = new Configuration();
     }
 
-    public function testSetGetProxyDir()
-    {
-        self::assertSame(null, $this->configuration->getProxyDir()); // defaults
-
-        $this->configuration->setProxyDir(__DIR__);
-        self::assertSame(__DIR__, $this->configuration->getProxyDir());
-    }
-
-    public function testSetGetAutoGenerateProxyClasses()
-    {
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses()); // defaults
-
-        $this->configuration->setAutoGenerateProxyClasses(false);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_NEVER, $this->configuration->getAutoGenerateProxyClasses());
-
-        $this->configuration->setAutoGenerateProxyClasses(true);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_ALWAYS, $this->configuration->getAutoGenerateProxyClasses());
-
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-        self::assertSame(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS, $this->configuration->getAutoGenerateProxyClasses());
-    }
-
-    public function testSetGetProxyNamespace()
-    {
-        self::assertSame(null, $this->configuration->getProxyNamespace()); // defaults
-
-        $this->configuration->setProxyNamespace(__NAMESPACE__);
-        self::assertSame(__NAMESPACE__, $this->configuration->getProxyNamespace());
-    }
-
     public function testSetGetMetadataDriverImpl()
     {
         self::assertSame(null, $this->configuration->getMetadataDriverImpl()); // defaults
@@ -161,7 +131,7 @@ class ConfigurationTest extends DoctrineTestCase
      */
     protected function setProductionSettings($skipCache = false)
     {
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_NEVER);
+        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
         $cache = $this->createMock(Cache::class);
 
@@ -220,28 +190,6 @@ class ConfigurationTest extends DoctrineTestCase
 
         $this->expectException(ORMException::class);
         $this->expectExceptionMessage('Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesAlways()
-    {
-        $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_ALWAYS);
-
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('Proxy Classes are always regenerating.');
-
-        $this->configuration->ensureProductionSettings();
-    }
-
-    public function testEnsureProductionSettingsAutoGenerateProxyClassesFileNotExists()
-    {
-        $this->setProductionSettings();
-        $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-
-        $this->expectException(ORMException::class);
-        $this->expectExceptionMessage('Proxy Classes are always regenerating.');
 
         $this->configuration->ensureProductionSettings();
     }
