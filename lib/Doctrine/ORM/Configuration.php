@@ -162,10 +162,8 @@ class Configuration extends DBALConfiguration
      *
      * @param boolean|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
      *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
-     *
-     * @return void
      */
-    public function setAutoGenerateProxyClasses($autoGenerate)
+    public function setAutoGenerateProxyClasses($autoGenerate) : void
     {
         $proxyManagerConfig = $this->getProxyManagerConfiguration();
 
@@ -432,10 +430,8 @@ class Configuration extends DBALConfiguration
      * Any previously added string functions are discarded.
      *
      * @param array $functions The map of custom DQL string functions.
-     *
-     * @return void
      */
-    public function setCustomStringFunctions(array $functions)
+    public function setCustomStringFunctions(array $functions) : void
     {
         foreach ($functions as $name => $className) {
             $this->addCustomStringFunction($name, $className);
@@ -500,11 +496,9 @@ class Configuration extends DBALConfiguration
     /**
      * Gets the implementation class name of a registered custom date/time DQL function.
      *
-     * @param string $name
-     *
-     * @return string|null
+     * @return string|callable|null
      */
-    public function getCustomDatetimeFunction($functionName)
+    public function getCustomDatetimeFunction(string $functionName)
     {
         return $this->customDatetimeFunctions[\strtolower($functionName)] ?? null;
     }
@@ -518,10 +512,8 @@ class Configuration extends DBALConfiguration
      * Any previously added date/time functions are discarded.
      *
      * @param array $functions The map of custom DQL date/time functions.
-     *
-     * @return void
      */
-    public function setCustomDatetimeFunctions(array $functions)
+    public function setCustomDatetimeFunctions(array $functions) : void
     {
         foreach ($functions as $name => $className) {
             $this->addCustomDatetimeFunction($name, $className);
