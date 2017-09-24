@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 interface ProxyFactory
@@ -47,15 +48,15 @@ interface ProxyFactory
     const AUTOGENERATE_EVAL = 3;
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata[] $classMetadataList
+     * @param \Doctrine\ORM\Mapping\ClassMetadata[] $classes
      *
      * @return int
      */
-    public function generateProxyClasses(array $classMetadataList) : int;
+    public function generateProxyClasses(array $classes) : int;
 
     /**
      * Gets a reference proxy instance for the entity of the given type and identified by
      * the given identifier.
      */
-    public function getProxy(string $className, array $identifier) : GhostObjectInterface;
+    public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface;
 }

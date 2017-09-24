@@ -40,11 +40,6 @@ final class StaticProxyFactory implements ProxyFactory
     private $proxyFactory;
 
     /**
-     * @var ClassMetadata[] indexed by metadata class name
-     */
-    private $cachedMetadata = [];
-
-    /**
      * @var \Closure[] indexed by metadata class name
      */
     private $cachedInitializers = [];
@@ -70,28 +65,23 @@ final class StaticProxyFactory implements ProxyFactory
     /**
      * {@inheritdoc}
      *
-     * @param ClassMetadata[] $classMetadataList
+     * @param ClassMetadata[] $classes
      */
-    public function generateProxyClasses(array $classMetadataList) : int
+    public function generateProxyClasses(array $classes) : int
     {
-        $concreteClasses = \array_filter($classMetadataList, function (ClassMetadata $metadata) : bool {
+        $concreteClasses = \array_filter($classes, function (ClassMetadata $metadata) : bool {
             return ! ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract());
         });
 
         foreach ($concreteClasses as $metadata) {
-            $className = $metadata->getClassName();
-
             $this
                 ->proxyFactory
                 ->createProxy(
-                    $className,
+                    $metadata->getClassName(),
                     function () {
                         // empty closure, serves its purpose, for now
                     },
-                    $this->cachedSkippedProperties[$className]
-                        ?? $this->cachedSkippedProperties[$className] = [
-                            self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)
-                        ]
+                    $this->skippedFieldsFqns($metadata)
                 );
         }
 
@@ -103,10 +93,9 @@ final class StaticProxyFactory implements ProxyFactory
      *
      * @throws \Doctrine\ORM\EntityNotFoundException
      */
-    public function getProxy(string $className, array $identifier) : GhostObjectInterface
+    public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface
     {
-        $metadata  = $this->cachedMetadata[$className]
-            ?? $this->cachedMetadata[$className] = $this->entityManager->getClassMetadata($className);
+        $className = $metadata->getClassName();
         $persister = $this->cachedPersisters[$className]
             ?? $this->cachedPersisters[$className] = $this
                 ->entityManager
