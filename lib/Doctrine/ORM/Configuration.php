@@ -10,6 +10,7 @@ use Doctrine\Common\Annotations\CachedReader;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -19,6 +20,7 @@ use Doctrine\ORM\Mapping\EntityListenerResolver;
 use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Repository\RepositoryFactory;
 use ProxyManager\Configuration as ProxyManagerConfiguration;
@@ -39,7 +41,7 @@ use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class Configuration extends \Doctrine\DBAL\Configuration
+class Configuration extends DBALConfiguration
 {
     /**
      * @var ProxyManagerConfiguration|null
@@ -47,46 +49,112 @@ class Configuration extends \Doctrine\DBAL\Configuration
     private $proxyManagerConfiguration;
 
     /**
+     * @var MappingDriver|null
+     */
+    private $metadataDriver;
+
+    /**
+     * @var CacheDriver|null
+     */
+    private $queryCache;
+
+    /**
+     * @var CacheDriver|null
+     */
+    private $hydrationCache;
+
+    /**
+     * @var CacheDriver|null
+     */
+    private $metadataCache;
+
+    /**
+     * @var string[] indexed by alias
+     */
+    private $entityNamespaces = [];
+
+    /**
+     * @var string[] of DQL, indexed by query name
+     */
+    private $namedQueries = [];
+
+    /**
+     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
+     */
+    private $namedNativeQueries = [];
+
+    /**
+     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
+     */
+    private $customStringFunctions = [];
+
+    /**
+     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
+     */
+    private $customNumericFunctions = [];
+
+    /**
+     * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
+     */
+    private $customDatetimeFunctions = [];
+
+    /**
+     * @var string[] of hydrator class names, indexed by mode name
+     */
+    private $customHydrationModes = [];
+
+    /**
+     * @var string
+     */
+    private $classMetadataFactoryClassName = ClassMetadataFactory::class;
+
+    /**
+     * @var string[] of filter class names, indexed by filter name
+     */
+    private $filters;
+
+    /**
+     * @var string
+     */
+    private $defaultRepositoryClassName = EntityRepository::class;
+
+    /**
+     * @var NamingStrategy|null
+     */
+    private $namingStrategy;
+
+    /**
+     * @var EntityListenerResolver|null
+     */
+    private $entityListenerResolver;
+
+    /**
+     * @var RepositoryFactory|null
+     */
+    private $repositoryFactory;
+
+    /**
+     * @var bool
+     */
+    private $isSecondLevelCacheEnabled = false;
+
+    /**
+     * @var CacheConfiguration|null
+     */
+    private $secondLevelCacheConfiguration;
+
+    /**
+     * @var mixed[] indexed by hint name
+     */
+    private $defaultQueryHints = [];
+
+    /**
      * Sets the directory where Doctrine generates any necessary proxy class files.
-     *
-     * @param string $dir
-     *
-     * @return void
      */
-    public function setProxyDir($dir)
+    public function setProxyDir(string $directory) : void
     {
-        $this->attributes['proxyDir'] = $dir;
-
-        $this->getProxyManagerConfiguration()->setProxiesTargetDir($dir);
+        $this->getProxyManagerConfiguration()->setProxiesTargetDir($directory);
         $this->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-    }
-
-    /**
-     * Gets the directory where Doctrine generates any necessary proxy class files.
-     *
-     * @return string|null
-     *
-     * @deprecated please do not use this anymore
-     */
-    public function getProxyDir()
-    {
-        return isset($this->attributes['proxyDir'])
-            ? $this->attributes['proxyDir']
-            : null;
-    }
-
-    /**
-     * Gets the strategy for automatically generating proxy classes.
-     *
-     * @return int Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
-     *
-     * @deprecated please do not use this anymore
-     */
-    public function getAutoGenerateProxyClasses()
-    {
-        return isset($this->attributes['autoGenerateProxyClasses'])
-            ? $this->attributes['autoGenerateProxyClasses']
-            : ProxyFactory::AUTOGENERATE_ALWAYS;
     }
 
     /**
@@ -99,8 +167,6 @@ class Configuration extends \Doctrine\DBAL\Configuration
      */
     public function setAutoGenerateProxyClasses($autoGenerate)
     {
-        $this->attributes['autoGenerateProxyClasses'] = (int) $autoGenerate;
-
         $proxyManagerConfig = $this->getProxyManagerConfiguration();
 
         switch ((int) $autoGenerate) {
@@ -121,277 +187,192 @@ class Configuration extends \Doctrine\DBAL\Configuration
     }
 
     /**
-     * Gets the namespace where proxy classes reside.
-     *
-     * @return string|null
-     *
-     * @deprecated please do not use this anymore
-     */
-    public function getProxyNamespace()
-    {
-        return isset($this->attributes['proxyNamespace'])
-            ? $this->attributes['proxyNamespace']
-            : null;
-    }
-
-    /**
      * Sets the namespace where proxy classes reside.
-     *
-     * @param string $ns
-     *
-     * @return void
      */
-    public function setProxyNamespace($ns)
+    public function setProxyNamespace(string $namespace) : void
     {
-        $this->attributes['proxyNamespace'] = $ns;
-
-        $this->getProxyManagerConfiguration()->setProxiesNamespace($ns);
+        $this->getProxyManagerConfiguration()->setProxiesNamespace($namespace);
     }
 
     /**
      * Sets the cache driver implementation that is used for metadata caching.
      *
-     * @param MappingDriver $driverImpl
-     *
-     * @return void
-     *
      * @todo Force parameter to be a Closure to ensure lazy evaluation
      *       (as soon as a metadata cache is in effect, the driver never needs to initialize).
      */
-    public function setMetadataDriverImpl(MappingDriver $driverImpl)
+    public function setMetadataDriverImpl(MappingDriver $metadataDriver) : void
     {
-        $this->attributes['metadataDriverImpl'] = $driverImpl;
+        $this->metadataDriver = $metadataDriver;
     }
 
     /**
      * Adds a new default annotation driver with a correctly configured annotation reader.
      *
-     * @param array $paths
+     * @param string[] $paths
      *
      * @return AnnotationDriver
      */
-    public function newDefaultAnnotationDriver($paths = [])
+    public function newDefaultAnnotationDriver(array $paths = []) : AnnotationDriver
     {
         AnnotationRegistry::registerFile(__DIR__ . '/Annotation/DoctrineAnnotations.php');
 
         $reader = new CachedReader(new AnnotationReader(), new ArrayCache());
 
-        return new AnnotationDriver($reader, (array) $paths);
+        return new AnnotationDriver($reader, $paths);
     }
 
     /**
      * Adds a namespace under a certain alias.
-     *
-     * @param string $alias
-     * @param string $namespace
-     *
-     * @return void
      */
-    public function addEntityNamespace($alias, $namespace)
+    public function addEntityNamespace(string $alias, string $namespace) : void
     {
-        $this->attributes['entityNamespaces'][$alias] = $namespace;
+        $this->entityNamespaces[$alias] = $namespace;
     }
 
     /**
      * Resolves a registered namespace alias to the full namespace.
      *
-     * @param string $entityNamespaceAlias
-     *
-     * @return string
-     *
      * @throws ORMException
      */
-    public function getEntityNamespace($entityNamespaceAlias)
+    public function getEntityNamespace(string $entityNamespaceAlias) : string
     {
-        if ( ! isset($this->attributes['entityNamespaces'][$entityNamespaceAlias])) {
+        if ( ! isset($this->entityNamespaces[$entityNamespaceAlias])) {
             throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
         }
 
-        return trim($this->attributes['entityNamespaces'][$entityNamespaceAlias], '\\');
+        return trim($this->entityNamespaces[$entityNamespaceAlias], '\\');
     }
 
     /**
      * Sets the entity alias map.
      *
-     * @param array $entityNamespaces
-     *
-     * @return void
+     * @param string[] $entityNamespaces indexed by namespace alias
      */
-    public function setEntityNamespaces(array $entityNamespaces)
+    public function setEntityNamespaces(array $entityNamespaces) : void
     {
-        $this->attributes['entityNamespaces'] = $entityNamespaces;
+        $this->entityNamespaces = $entityNamespaces;
     }
 
     /**
      * Retrieves the list of registered entity namespace aliases.
      *
-     * @return array
+     * @return string[] indexed by namespace alias
      */
-    public function getEntityNamespaces()
+    public function getEntityNamespaces() : array
     {
-        return $this->attributes['entityNamespaces'];
+        return $this->entityNamespaces;
     }
 
     /**
      * Gets the cache driver implementation that is used for the mapping metadata.
-     *
-     * @return MappingDriver|null
-     *
-     * @throws ORMException
      */
-    public function getMetadataDriverImpl()
+    public function getMetadataDriverImpl() : ?MappingDriver
     {
-        return isset($this->attributes['metadataDriverImpl'])
-            ? $this->attributes['metadataDriverImpl']
-            : null;
+        return $this->metadataDriver;
     }
 
     /**
      * Gets the cache driver implementation that is used for the query cache (SQL cache).
-     *
-     * @return \Doctrine\Common\Cache\Cache|null
      */
-    public function getQueryCacheImpl()
+    public function getQueryCacheImpl() : ?CacheDriver
     {
-        return isset($this->attributes['queryCacheImpl'])
-            ? $this->attributes['queryCacheImpl']
-            : null;
+        return $this->queryCache;
     }
 
     /**
      * Sets the cache driver implementation that is used for the query cache (SQL cache).
-     *
-     * @param \Doctrine\Common\Cache\Cache $cacheImpl
-     *
-     * @return void
      */
-    public function setQueryCacheImpl(CacheDriver $cacheImpl)
+    public function setQueryCacheImpl(CacheDriver $queryCache) : void
     {
-        $this->attributes['queryCacheImpl'] = $cacheImpl;
+        $this->queryCache = $queryCache;
     }
 
     /**
      * Gets the cache driver implementation that is used for the hydration cache (SQL cache).
-     *
-     * @return \Doctrine\Common\Cache\Cache|null
      */
-    public function getHydrationCacheImpl()
+    public function getHydrationCacheImpl() : ?CacheDriver
     {
-        return isset($this->attributes['hydrationCacheImpl'])
-            ? $this->attributes['hydrationCacheImpl']
-            : null;
+        return $this->hydrationCache;
     }
 
     /**
      * Sets the cache driver implementation that is used for the hydration cache (SQL cache).
-     *
-     * @param \Doctrine\Common\Cache\Cache $cacheImpl
-     *
-     * @return void
      */
-    public function setHydrationCacheImpl(CacheDriver $cacheImpl)
+    public function setHydrationCacheImpl(CacheDriver $hydrationCache) : void
     {
-        $this->attributes['hydrationCacheImpl'] = $cacheImpl;
+        $this->hydrationCache = $hydrationCache;
     }
 
     /**
      * Gets the cache driver implementation that is used for metadata caching.
-     *
-     * @return \Doctrine\Common\Cache\Cache|null
      */
-    public function getMetadataCacheImpl()
+    public function getMetadataCacheImpl() : ?CacheDriver
     {
-        return isset($this->attributes['metadataCacheImpl'])
-            ? $this->attributes['metadataCacheImpl']
-            : null;
+        return $this->metadataCache;
     }
 
     /**
      * Sets the cache driver implementation that is used for metadata caching.
-     *
-     * @param \Doctrine\Common\Cache\Cache $cacheImpl
-     *
-     * @return void
      */
-    public function setMetadataCacheImpl(CacheDriver $cacheImpl)
+    public function setMetadataCacheImpl(CacheDriver $metadataCache) : void
     {
-        $this->attributes['metadataCacheImpl'] = $cacheImpl;
+        $this->metadataCache = $metadataCache;
     }
 
     /**
      * Adds a named DQL query to the configuration.
-     *
-     * @param string $name The name of the query.
-     * @param string $dql  The DQL query string.
-     *
-     * @return void
      */
-    public function addNamedQuery($name, $dql)
+    public function addNamedQuery(string $queryName, string $dqlQuery) : void
     {
-        $this->attributes['namedQueries'][$name] = $dql;
+        $this->namedQueries[$queryName] = $dqlQuery;
     }
 
     /**
      * Gets a previously registered named DQL query.
      *
-     * @param string $name The name of the query.
-     *
-     * @return string The DQL query.
-     *
      * @throws ORMException
      */
-    public function getNamedQuery($name)
+    public function getNamedQuery(string $queryName) : string
     {
-        if ( ! isset($this->attributes['namedQueries'][$name])) {
-            throw ORMException::namedQueryNotFound($name);
+        if ( ! isset($this->namedQueries[$queryName])) {
+            throw ORMException::namedQueryNotFound($queryName);
         }
 
-        return $this->attributes['namedQueries'][$name];
+        return $this->namedQueries[$queryName];
     }
 
     /**
      * Adds a named native query to the configuration.
-     *
-     * @param string                 $name The name of the query.
-     * @param string                 $sql  The native SQL query string.
-     * @param Query\ResultSetMapping $rsm  The ResultSetMapping used for the results of the SQL query.
-     *
-     * @return void
      */
-    public function addNamedNativeQuery($name, $sql, Query\ResultSetMapping $rsm)
+    public function addNamedNativeQuery(string $queryName, string $sql, ResultSetMapping $resultSetMapping) : void
     {
-        $this->attributes['namedNativeQueries'][$name] = [$sql, $rsm];
+        $this->namedNativeQueries[$queryName] = [$sql, $resultSetMapping];
     }
 
     /**
      * Gets the components of a previously registered named native query.
      *
-     * @param string $name The name of the query.
-     *
-     * @return array A tuple with the first element being the SQL string and the second
-     *               element being the ResultSetMapping.
+     * @return string[]|ResultSetMapping[] tuple of [$sqlString, $resultSetMaping]
      *
      * @throws ORMException
      */
-    public function getNamedNativeQuery($name)
+    public function getNamedNativeQuery(string $queryName) : array
     {
-        if ( ! isset($this->attributes['namedNativeQueries'][$name])) {
-            throw ORMException::namedNativeQueryNotFound($name);
+        if ( ! isset($this->namedNativeQueries[$queryName])) {
+            throw ORMException::namedNativeQueryNotFound($queryName);
         }
 
-        return $this->attributes['namedNativeQueries'][$name];
+        return $this->namedNativeQueries[$queryName];
     }
 
     /**
      * Ensures that this Configuration instance contains settings that are
      * suitable for a production environment.
      *
-     * @return void
-     *
      * @throws ORMException If a configuration setting has a value that is not
      *                      suitable for a production environment.
      */
-    public function ensureProductionSettings()
+    public function ensureProductionSettings() : void
     {
         $queryCacheImpl = $this->getQueryCacheImpl();
 
@@ -413,7 +394,7 @@ class Configuration extends \Doctrine\DBAL\Configuration
             throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
         }
 
-        if ($this->getAutoGenerateProxyClasses()) {
+        if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {
             throw ORMException::proxyClassesAlwaysRegenerating();
         }
     }
@@ -425,30 +406,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
-     *
-     * @return void
+     * @param string|callable $classNameOrFactory Class name or a callable that returns the function.
      */
-    public function addCustomStringFunction($name, $className)
+    public function addCustomStringFunction(string $functionName, $classNameOrFactory) : void
     {
-        $this->attributes['customStringFunctions'][strtolower($name)] = $className;
+        $this->customStringFunctions[\strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
      * Gets the implementation class name of a registered custom string DQL function.
      *
-     * @param string $name
-     *
-     * @return string|null
+     * @return string|callable|null
      */
-    public function getCustomStringFunction($name)
+    public function getCustomStringFunction(string $functionName)
     {
-        $name = strtolower($name);
-
-        return isset($this->attributes['customStringFunctions'][$name])
-            ? $this->attributes['customStringFunctions'][$name]
-            : null;
+        return $this->customStringFunctions[\strtolower($functionName)] ?? null;
     }
 
     /**
@@ -477,30 +449,21 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
-     *
-     * @return void
+     * @param string|callable $classNameOrFactory Class name or a callable that returns the function.
      */
-    public function addCustomNumericFunction($name, $className)
+    public function addCustomNumericFunction(string $functionName, $classNameOrFactory) : void
     {
-        $this->attributes['customNumericFunctions'][strtolower($name)] = $className;
+        $this->customNumericFunctions[\strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
      * Gets the implementation class name of a registered custom numeric DQL function.
      *
-     * @param string $name
-     *
-     * @return string|null
+     * @return string|callable|null
      */
-    public function getCustomNumericFunction($name)
+    public function getCustomNumericFunction(string $functionName)
     {
-        $name = strtolower($name);
-
-        return isset($this->attributes['customNumericFunctions'][$name])
-            ? $this->attributes['customNumericFunctions'][$name]
-            : null;
+        return $this->customNumericFunctions[\strtolower($functionName)] ?? null;
     }
 
     /**
@@ -512,10 +475,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Any previously added numeric functions are discarded.
      *
      * @param array $functions The map of custom DQL numeric functions.
-     *
-     * @return void
      */
-    public function setCustomNumericFunctions(array $functions)
+    public function setCustomNumericFunctions(array $functions) : void
     {
         foreach ($functions as $name => $className) {
             $this->addCustomNumericFunction($name, $className);
@@ -529,14 +490,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * DQL function names are case-insensitive.
      *
-     * @param string          $name      Function name.
-     * @param string|callable $className Class name or a callable that returns the function.
-     *
-     * @return void
+     * @param string|callable $classNameOrFactory Class name or a callable that returns the function.
      */
-    public function addCustomDatetimeFunction($name, $className)
+    public function addCustomDatetimeFunction(string $functionName, $classNameOrFactory)
     {
-        $this->attributes['customDatetimeFunctions'][strtolower($name)] = $className;
+        $this->customDatetimeFunctions[\strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
@@ -546,13 +504,9 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return string|null
      */
-    public function getCustomDatetimeFunction($name)
+    public function getCustomDatetimeFunction($functionName)
     {
-        $name = strtolower($name);
-
-        return isset($this->attributes['customDatetimeFunctions'][$name])
-            ? $this->attributes['customDatetimeFunctions'][$name]
-            : null;
+        return $this->customDatetimeFunctions[\strtolower($functionName)] ?? null;
     }
 
     /**
@@ -577,13 +531,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Sets the custom hydrator modes in one pass.
      *
-     * @param array $modes An array of ($modeName => $hydrator).
-     *
-     * @return void
+     * @param iterable $modes An iterable of string $modeName => string $hydratorClassName
      */
-    public function setCustomHydrationModes($modes)
+    public function setCustomHydrationModes(iterable $modes) : void
     {
-        $this->attributes['customHydrationModes'] = [];
+        $this->customHydrationModes = [];
 
         foreach ($modes as $modeName => $hydrator) {
             $this->addCustomHydrationMode($modeName, $hydrator);
@@ -593,78 +545,50 @@ class Configuration extends \Doctrine\DBAL\Configuration
     /**
      * Gets the hydrator class for the given hydration mode name.
      *
-     * @param string $modeName The hydration mode name.
-     *
      * @return string|null The hydrator class name.
      */
-    public function getCustomHydrationMode($modeName)
+    public function getCustomHydrationMode(string $modeName) : ?string
     {
-        return isset($this->attributes['customHydrationModes'][$modeName])
-            ? $this->attributes['customHydrationModes'][$modeName]
-            : null;
+        return $this->customHydrationModes[$modeName] ?? null;
     }
 
     /**
      * Adds a custom hydration mode.
-     *
-     * @param string $modeName The hydration mode name.
-     * @param string $hydrator The hydrator class name.
-     *
-     * @return void
      */
-    public function addCustomHydrationMode($modeName, $hydrator)
+    public function addCustomHydrationMode(string $modeName, string $hydratorClassName) : void
     {
-        $this->attributes['customHydrationModes'][$modeName] = $hydrator;
+        $this->customHydrationModes[$modeName] = $hydratorClassName;
     }
 
     /**
      * Sets a class metadata factory.
-     *
-     * @param string $cmfName
-     *
-     * @return void
      */
-    public function setClassMetadataFactoryName($cmfName)
+    public function setClassMetadataFactoryName(string $classMetadataFactoryClassName) : void
     {
-        $this->attributes['classMetadataFactoryName'] = $cmfName;
+        $this->classMetadataFactoryClassName = $classMetadataFactoryClassName;
     }
 
-    /**
-     * @return string
-     */
-    public function getClassMetadataFactoryName()
+    public function getClassMetadataFactoryName() : string
     {
-        if ( ! isset($this->attributes['classMetadataFactoryName'])) {
-            $this->attributes['classMetadataFactoryName'] = ClassMetadataFactory::class;
-        }
-
-        return $this->attributes['classMetadataFactoryName'];
+        return $this->classMetadataFactoryClassName;
     }
 
     /**
      * Adds a filter to the list of possible filters.
-     *
-     * @param string $name      The name of the filter.
-     * @param string $className The class name of the filter.
      */
-    public function addFilter($name, $className)
+    public function addFilter(string $filterName, string $filterClassName) : void
     {
-        $this->attributes['filters'][$name] = $className;
+        $this->filters[$filterName] = $filterClassName;
     }
 
     /**
      * Gets the class name for a given filter name.
      *
-     * @param string $name The name of the filter.
-     *
-     * @return string The class name of the filter, or null if it is not
-     *  defined.
+     * @return string|null The class name of the filter
      */
-    public function getFilterClassName($name)
+    public function getFilterClassName(string $filterName) : ?string
     {
-        return isset($this->attributes['filters'][$name])
-            ? $this->attributes['filters'][$name]
-            : null;
+        return $this->filters[$filterName] ?? null;
     }
 
     /**
@@ -672,151 +596,114 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.2
      *
-     * @param string $className
-     *
-     * @return void
-     *
-     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository
+     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository implementation
      */
-    public function setDefaultRepositoryClassName($className)
+    public function setDefaultRepositoryClassName(string $repositoryClassName) : void
     {
-        $reflectionClass = new \ReflectionClass($className);
+        $reflectionClass = new \ReflectionClass($repositoryClassName);
 
         if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
-            throw ORMException::invalidEntityRepository($className);
+            throw ORMException::invalidEntityRepository($repositoryClassName);
         }
 
-        $this->attributes['defaultRepositoryClassName'] = $className;
+        $this->defaultRepositoryClassName = $repositoryClassName;
     }
 
     /**
      * Get default repository class.
      *
      * @since 2.2
-     *
-     * @return string
      */
-    public function getDefaultRepositoryClassName()
+    public function getDefaultRepositoryClassName() : string
     {
-        return isset($this->attributes['defaultRepositoryClassName'])
-            ? $this->attributes['defaultRepositoryClassName']
-            : EntityRepository::class;
+        return $this->defaultRepositoryClassName;
     }
 
     /**
      * Sets naming strategy.
      *
      * @since 2.3
-     *
-     * @param NamingStrategy $namingStrategy
-     *
-     * @return void
      */
-    public function setNamingStrategy(NamingStrategy $namingStrategy)
+    public function setNamingStrategy(NamingStrategy $namingStrategy) : void
     {
-        $this->attributes['namingStrategy'] = $namingStrategy;
+        $this->namingStrategy = $namingStrategy;
     }
 
     /**
      * Gets naming strategy..
      *
      * @since 2.3
-     *
-     * @return NamingStrategy
      */
-    public function getNamingStrategy()
+    public function getNamingStrategy() : ?NamingStrategy
     {
-        if ( ! isset($this->attributes['namingStrategy'])) {
-            $this->attributes['namingStrategy'] = new DefaultNamingStrategy();
-        }
-
-        return $this->attributes['namingStrategy'];
+        return $this->namingStrategy
+            ?? $this->namingStrategy = new DefaultNamingStrategy();
     }
 
     /**
      * Set the entity listener resolver.
      *
      * @since 2.4
-     * @param \Doctrine\ORM\Mapping\EntityListenerResolver $resolver
      */
-    public function setEntityListenerResolver(EntityListenerResolver $resolver)
+    public function setEntityListenerResolver(EntityListenerResolver $resolver) : void
     {
-        $this->attributes['entityListenerResolver'] = $resolver;
+        $this->entityListenerResolver = $resolver;
     }
 
     /**
      * Get the entity listener resolver.
      *
      * @since 2.4
-     * @return \Doctrine\ORM\Mapping\EntityListenerResolver
      */
-    public function getEntityListenerResolver()
+    public function getEntityListenerResolver() : EntityListenerResolver
     {
-        if ( ! isset($this->attributes['entityListenerResolver'])) {
-            $this->attributes['entityListenerResolver'] = new DefaultEntityListenerResolver();
-        }
-
-        return $this->attributes['entityListenerResolver'];
+        return $this->entityListenerResolver
+            ?? $this->entityListenerResolver = new DefaultEntityListenerResolver();
     }
 
     /**
      * Set the entity repository factory.
      *
      * @since 2.4
-     * @param \Doctrine\ORM\Repository\RepositoryFactory $repositoryFactory
      */
-    public function setRepositoryFactory(RepositoryFactory $repositoryFactory)
+    public function setRepositoryFactory(RepositoryFactory $repositoryFactory) : void
     {
-        $this->attributes['repositoryFactory'] = $repositoryFactory;
+        $this->repositoryFactory = $repositoryFactory;
     }
 
     /**
      * Get the entity repository factory.
      *
      * @since 2.4
-     * @return \Doctrine\ORM\Repository\RepositoryFactory
      */
-    public function getRepositoryFactory()
+    public function getRepositoryFactory() : RepositoryFactory
     {
-        return isset($this->attributes['repositoryFactory'])
-            ? $this->attributes['repositoryFactory']
-            : new DefaultRepositoryFactory();
+        return $this->repositoryFactory
+            ?? $this->repositoryFactory = new DefaultRepositoryFactory();
     }
 
     /**
      * @since 2.5
-     *
-     * @return boolean
      */
-    public function isSecondLevelCacheEnabled()
+    public function isSecondLevelCacheEnabled() : bool
     {
-        return isset($this->attributes['isSecondLevelCacheEnabled'])
-            ? $this->attributes['isSecondLevelCacheEnabled']
-            : false;
+        return $this->isSecondLevelCacheEnabled;
     }
 
     /**
      * @since 2.5
-     *
-     * @param boolean $flag
-     *
-     * @return void
      */
-    public function setSecondLevelCacheEnabled($flag = true)
+    public function setSecondLevelCacheEnabled(bool $flag = true) : void
     {
-        $this->attributes['isSecondLevelCacheEnabled'] = (boolean) $flag;
+        $this->isSecondLevelCacheEnabled = $flag;
     }
 
     /**
      * @since 2.5
-     *
-     * @param \Doctrine\ORM\Cache\CacheConfiguration $cacheConfig
-     *
-     * @return void
      */
-    public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig)
+    public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig) : void
     {
-        $this->attributes['secondLevelCacheConfiguration'] = $cacheConfig;
+        $this->secondLevelCacheConfiguration = $cacheConfig;
     }
 
     /**
@@ -824,39 +711,33 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @return  \Doctrine\ORM\Cache\CacheConfiguration|null
      */
-    public function getSecondLevelCacheConfiguration()
+    public function getSecondLevelCacheConfiguration() : ?CacheConfiguration
     {
-        if ( ! isset($this->attributes['secondLevelCacheConfiguration']) && $this->isSecondLevelCacheEnabled()) {
-            $this->attributes['secondLevelCacheConfiguration'] = new CacheConfiguration();
+        if ($this->isSecondLevelCacheEnabled && ! $this->secondLevelCacheConfiguration) {
+            $this->secondLevelCacheConfiguration = new CacheConfiguration();
         }
 
-        return isset($this->attributes['secondLevelCacheConfiguration'])
-            ? $this->attributes['secondLevelCacheConfiguration']
-            : null;
+        return $this->secondLevelCacheConfiguration;
     }
 
     /**
      * Returns query hints, which will be applied to every query in application
      *
      * @since 2.5
-     *
-     * @return array
      */
-    public function getDefaultQueryHints()
+    public function getDefaultQueryHints() : array
     {
-        return isset($this->attributes['defaultQueryHints']) ? $this->attributes['defaultQueryHints'] : [];
+        return $this->defaultQueryHints;
     }
 
     /**
      * Sets array of query hints, which will be applied to every query in application
      *
      * @since 2.5
-     *
-     * @param array $defaultQueryHints
      */
-    public function setDefaultQueryHints(array $defaultQueryHints)
+    public function setDefaultQueryHints(array $defaultQueryHints) : void
     {
-        $this->attributes['defaultQueryHints'] = $defaultQueryHints;
+        $this->defaultQueryHints = $defaultQueryHints;
     }
 
     /**
@@ -864,15 +745,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.5
      *
-     * @param string $name The name of the hint.
-     *
      * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
      */
-    public function getDefaultQueryHint($name)
+    public function getDefaultQueryHint(string $hintName)
     {
-        return isset($this->attributes['defaultQueryHints'][$name])
-            ? $this->attributes['defaultQueryHints'][$name]
-            : false;
+        return $this->defaultQueryHints[$hintName] ?? false;
     }
 
     /**
@@ -880,12 +757,11 @@ class Configuration extends \Doctrine\DBAL\Configuration
      *
      * @since 2.5
      *
-     * @param string $name  The name of the hint.
      * @param mixed  $value The value of the hint.
      */
-    public function setDefaultQueryHint($name, $value)
+    public function setDefaultQueryHint(string $hintName, $value) : void
     {
-        $this->attributes['defaultQueryHints'][$name] = $value;
+        $this->defaultQueryHints[$hintName] = $value;
     }
 
     public function buildGhostObjectFactory() : LazyLoadingGhostFactory

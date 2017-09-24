@@ -50,8 +50,8 @@ class SetupTest extends OrmTestCase
         $config = Setup::createAnnotationMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
-        self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
-        self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        self::assertEquals(sys_get_temp_dir(), $config->getProxyManagerConfiguration()->getProxiesTargetDir());
+        self::assertEquals('DoctrineProxies', $config->getProxyManagerConfiguration()->getProxiesNamespace());
         self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
     }
 
@@ -107,7 +107,7 @@ class SetupTest extends OrmTestCase
     {
         $path   = $this->makeTemporaryDirectory();
         $config = Setup::createAnnotationMetadataConfiguration([], true, $path);
-        self::assertSame($path, $config->getProxyDir());
+        self::assertSame($path, $config->getProxyManagerConfiguration()->getProxiesTargetDir());
     }
 
     /**
