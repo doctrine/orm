@@ -257,7 +257,10 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
             'Proxies are being written to disk in this test'
         );
 
-        $proxy = $this->factory->getProxy(ECommerceProduct::class, ['id' => 123]);
+        $proxy = $this->factory->getProxy(
+            $this->em->getClassMetadata(ECommerceProduct::class),
+            ['id' => 123]
+        );
 
         $proxyClass = new \ReflectionClass($proxy);
 
