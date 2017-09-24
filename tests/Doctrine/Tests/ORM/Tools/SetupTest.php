@@ -50,8 +50,8 @@ class SetupTest extends OrmTestCase
         $config = Setup::createAnnotationMetadataConfiguration([], true);
 
         self::assertInstanceOf(Configuration::class, $config);
-        self::assertEquals(sys_get_temp_dir(), $config->getProxyDir());
-        self::assertEquals('DoctrineProxies', $config->getProxyNamespace());
+        self::assertEquals(sys_get_temp_dir(), $config->getProxyManagerConfiguration()->getProxiesTargetDir());
+        self::assertEquals('DoctrineProxies', $config->getProxyManagerConfiguration()->getProxiesNamespace());
         self::assertInstanceOf(AnnotationDriver::class, $config->getMetadataDriverImpl());
     }
 
@@ -68,8 +68,9 @@ class SetupTest extends OrmTestCase
      */
     public function testConfigureProxyDir()
     {
-        $config = Setup::createAnnotationMetadataConfiguration([], true, "/foo");
-        self::assertEquals('/foo', $config->getProxyDir());
+        $path   = $this->makeTemporaryDirectory();
+        $config = Setup::createAnnotationMetadataConfiguration([], true, $path);
+        self::assertSame($path, $config->getProxyManagerConfiguration()->getProxiesTargetDir());
     }
 
     /**
@@ -91,10 +92,20 @@ class SetupTest extends OrmTestCase
     public function testConfigureCacheCustomInstance()
     {
         $cache  = $this->createMock(Cache::class);
-        $config = Setup::createConfiguration([], true, $cache);
+        $config = Setup::createConfiguration([], null, $cache);
 
         self::assertSame($cache, $config->getResultCacheImpl());
         self::assertSame($cache, $config->getMetadataCacheImpl());
         self::assertSame($cache, $config->getQueryCacheImpl());
+    }
+
+    private function makeTemporaryDirectory() : string
+    {
+        $path = \tempnam(\sys_get_temp_dir(), 'foo');
+
+        \unlink($path);
+        \mkdir($path);
+
+        return $path;
     }
 }

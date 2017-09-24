@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -450,7 +451,7 @@ class Parser
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function semanticalError($message = '', $token = null)
+    public function semanticalError($message = '', $token = null, ?\Throwable $previousFailure = null)
     {
         if ($token === null) {
             $token = $this->lexer->lookahead;
@@ -472,7 +473,10 @@ class Parser
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
 
-        throw QueryException::semanticalError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::semanticalError(
+            $message,
+            QueryException::dqlError($this->query->getDQL(), $previousFailure)
+        );
     }
 
     /**
@@ -965,11 +969,24 @@ class Parser
      *
      * @throws QueryException if the name does not exist.
      */
-    private function validateAbstractSchemaName($schemaName)
+    private function validateAbstractSchemaName($schemaName) : void
     {
-        if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
-            $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
+        if (class_exists($schemaName, true) || interface_exists($schemaName, true)) {
+            return;
         }
+
+        try {
+            $this->getEntityManager()->getClassMetadata($schemaName);
+
+            return;
+        } catch (MappingException $mappingException) {
+            $this->semanticalError(
+                \sprintf('Class %s could not be mapped', $schemaName),
+                $this->lexer->token
+            );
+        }
+
+        $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
     }
 
     /**

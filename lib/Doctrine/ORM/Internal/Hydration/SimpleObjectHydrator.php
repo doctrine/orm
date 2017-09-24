@@ -124,12 +124,6 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
         }
 
-        if (isset($this->hints[Query::HINT_REFRESH_ENTITY])) {
-            $id = $this->em->getIdentifierFlattener()->flattenIdentifier($this->class, $data);
-
-            $this->em->getUnitOfWork()->registerManaged($this->hints[Query::HINT_REFRESH_ENTITY], $id, $data);
-        }
-
         $uow    = $this->em->getUnitOfWork();
         $entity = $uow->createEntity($entityName, $data, $this->hints);
 

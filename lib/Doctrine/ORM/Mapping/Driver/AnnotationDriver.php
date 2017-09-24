@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Driver;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
@@ -68,10 +69,10 @@ class AnnotationDriver implements MappingDriver
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      *
-     * @param AnnotationReader  $reader The AnnotationReader to use, duck-typed.
+     * @param Reader            $reader The AnnotationReader to use, duck-typed.
      * @param string|array|null $paths  One or multiple paths where mapping classes can be found.
      */
-    public function __construct($reader, $paths = null)
+    public function __construct(Reader $reader, $paths = null)
     {
         $this->reader = $reader;
         if ($paths) {

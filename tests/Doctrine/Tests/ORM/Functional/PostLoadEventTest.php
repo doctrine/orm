@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
 use Doctrine\Tests\Models\CMS\CmsPhonenumber;
@@ -310,7 +310,7 @@ class PostLoadListenerLoadEntityInEventHandler
     public function postLoad(LifecycleEventArgs $event)
     {
         $object = $event->getObject();
-        $class = ClassUtils::getClass($object);
+        $class = StaticClassNameConverter::getClass($object);
         if (!isset($this->firedByClasses[$class])) {
             $this->firedByClasses[$class] = 1;
         } else {

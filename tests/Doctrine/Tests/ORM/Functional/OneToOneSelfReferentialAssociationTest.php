@@ -6,9 +6,9 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests a self referential one-to-one association mapping (without inheritance).
@@ -56,7 +56,7 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $id = $this->createFixture();
 
         $customer = $this->em->find(ECommerceCustomer::class, $id);
-        self::assertNotInstanceOf(Proxy::class, $customer->getMentor());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $customer->getMentor());
     }
 
     public function testEagerLoadsAssociation()

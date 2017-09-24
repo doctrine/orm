@@ -5,15 +5,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
-
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Default hydrator cache for entities
@@ -122,7 +121,7 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             if (! $association->isPrimaryKey()) {
-                $targetClass = ClassUtils::getClass($data[$name]);
+                $targetClass = StaticClassNameConverter::getClass($data[$name]);
                 $targetId    = $this->uow->getEntityIdentifier($data[$name]);
                 $data[$name] = new AssociationCacheEntry($targetClass, $targetId);
 

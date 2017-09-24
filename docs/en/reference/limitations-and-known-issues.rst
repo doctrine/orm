@@ -171,27 +171,3 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
-
-Entities, Proxies and Reflection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Using methods for Reflection on entities can be prone to error, when the entity
-is actually a proxy the following methods will not work correctly:
-
-- ``new ReflectionClass``
-- ``new ReflectionObject``
-- ``get_class()``
-- ``get_parent_class()``
-
-This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
-methods, which resolve the proxy problem beforehand.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Util\ClassUtils;
-
-    $bookProxy = $entityManager->getReference('Acme\Book');
-
-    $reflection = ClassUtils::newReflectionClass($bookProxy);
-    $class = ClassUtils::getClass($bookProxy)¸

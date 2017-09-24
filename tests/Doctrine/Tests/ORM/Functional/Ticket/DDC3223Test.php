@@ -6,6 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for get Id after clone child entity
@@ -30,9 +31,8 @@ class DDC3223Test extends OrmFunctionalTestCase
 
     public function testIssueGetId()
     {
-        $profileStatus = new ProfileStatus();
-
-        $participant = new Journalist();
+        $profileStatus              = new ProfileStatus();
+        $participant                = new Journalist();
         $participant->profileStatus = $profileStatus;
 
         $this->em->persist($profileStatus);
@@ -40,11 +40,25 @@ class DDC3223Test extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        $participant = $this->em->find(Participant::class, $participant->id);
 
-        $profileStatus = clone $participant->profileStatus;
+        /* @var $fetchedParticipant Participant */
+        $fetchedParticipant = $this->em->find(Participant::class, $participant->id);
 
-        self::assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
+        /* @var $clonedProfileStatus GhostObjectInterface|ProfileStatus */
+        $clonedProfileStatus = clone $fetchedParticipant->profileStatus;
+
+        self::assertInstanceOf(GhostObjectInterface::class, $clonedProfileStatus);
+        self::assertInstanceOf(ProfileStatus::class, $clonedProfileStatus);
+        self::assertTrue($clonedProfileStatus->isProxyInitialized());
+
+        $clonedIdentifier = $clonedProfileStatus->getId();
+
+        self::assertInternalType('integer', $clonedIdentifier);
+        self::assertSame(
+            $profileStatus->getId(),
+            $clonedIdentifier,
+            'The identifier on the cloned instance is an integer'
+        );
     }
 }
 
@@ -67,7 +81,11 @@ class Participant
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity="ProfileStatus") */
+    /**
+     * @ORM\ManyToOne(targetEntity="ProfileStatus")
+     * @ORM\JoinColumn(name="status_id", nullable=false)
+     * @var ProfileStatus
+     */
     public $profileStatus;
 }
 

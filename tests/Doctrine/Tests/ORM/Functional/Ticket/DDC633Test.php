@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -44,7 +44,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $eagerAppointment = $this->em->find(DDC633Appointment::class, $app->id);
 
         // Eager loading of one to one leads to fetch-join
-        self::assertNotInstanceOf(Proxy::class, $eagerAppointment->patient);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $eagerAppointment->patient);
         self::assertTrue($this->em->contains($eagerAppointment->patient));
     }
 
@@ -69,8 +69,8 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $appointments = $this->em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
 
         foreach ($appointments AS $eagerAppointment) {
-            self::assertInstanceOf(Proxy::class, $eagerAppointment->patient);
-            self::assertTrue($eagerAppointment->patient->__isInitialized(), "Proxy should already be initialized due to eager loading!");
+            self::assertInstanceOf(GhostObjectInterface::class, $eagerAppointment->patient);
+            self::assertTrue($eagerAppointment->patient->isProxyInitialized(), "Proxy should already be initialized due to eager loading!");
         }
     }
 }

@@ -255,11 +255,11 @@ class SecondLevelCacheManyToOneTest extends SecondLevelCacheAbstractTest
 
         self::assertInstanceOf(Action::class, $entity->getComplexAction()->getAction1());
         self::assertInstanceOf(Action::class, $entity->getComplexAction()->getAction2());
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
         self::assertEquals('login', $entity->getComplexAction()->getAction1()->name);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
         self::assertEquals('rememberme', $entity->getComplexAction()->getAction2()->name);
-        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
     }
 }

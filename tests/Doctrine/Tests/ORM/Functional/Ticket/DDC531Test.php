@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -35,7 +35,7 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.
         self::assertInstanceOf(DDC531Item::class, $item3->parent);
-        self::assertNotInstanceOf(Proxy::class, $item3->parent);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $item3->parent);
         $item4 = $this->em->find(DDC531Item::class, $item1->id); // Load parent item (id 1)
         self::assertNull($item4->parent);
         self::assertNotNull($item4->getChildren());

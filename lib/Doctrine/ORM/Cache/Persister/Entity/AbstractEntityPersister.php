@@ -5,26 +5,24 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
-use Doctrine\ORM\Cache\TimestampCacheKey;
-use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
-use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
-
-use Doctrine\Common\Util\ClassUtils;
-use Doctrine\Common\Collections\Criteria;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -212,7 +210,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     public function storeEntityCache($entity, EntityCacheKey $key)
     {
         $class      = $this->class;
-        $className  = ClassUtils::getClass($entity);
+        $className  = StaticClassNameConverter::getClass($entity);
 
         if ($className !== $this->class->getClassName()) {
             $class = $this->metadataFactory->getMetadataFor($className);
@@ -494,7 +492,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         }
 
         $class      = $this->class;
-        $className  = ClassUtils::getClass($entity);
+        $className  = StaticClassNameConverter::getClass($entity);
 
         if ($className !== $this->class->getClassName()) {
             $class = $this->metadataFactory->getMetadataFor($className);

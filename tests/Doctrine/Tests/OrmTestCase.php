@@ -11,6 +11,7 @@ use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\Tests\Mocks;
 
 /**
@@ -101,8 +102,8 @@ abstract class OrmTestCase extends DoctrineTestCase
         $config->setMetadataCacheImpl($metadataCache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([]));
         $config->setQueryCacheImpl(self::getSharedQueryCacheImpl());
-        $config->setProxyDir(__DIR__ . '/Proxies');
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
+        $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setMetadataDriverImpl(
             $config->newDefaultAnnotationDriver([
                 realpath(__DIR__ . '/Models/Cache')

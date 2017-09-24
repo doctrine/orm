@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
-use Doctrine\ORM\Configuration\ProxyConfiguration;
-use Doctrine\ORM\Proxy\Factory\DefaultProxyResolver;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\FilterCollection;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -145,13 +143,6 @@ final class EntityManager implements EntityManagerInterface
         $this->config            = $config;
         $this->eventManager      = $eventManager;
 
-        $proxyConfiguration = new ProxyConfiguration();
-
-        $proxyConfiguration->setResolver(new DefaultProxyResolver($config->getProxyNamespace(), $config->getProxyDir()));
-        $proxyConfiguration->setDirectory($config->getProxyDir());
-        $proxyConfiguration->setNamespace($config->getProxyNamespace());
-        $proxyConfiguration->setAutoGenerate($config->getAutoGenerateProxyClasses());
-
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
         $this->metadataFactory = new $metadataFactoryClassName;
@@ -161,7 +152,7 @@ final class EntityManager implements EntityManagerInterface
 
         $this->repositoryFactory   = $config->getRepositoryFactory();
         $this->unitOfWork          = new UnitOfWork($this);
-        $this->proxyFactory        = new StaticProxyFactory($this, $proxyConfiguration);
+        $this->proxyFactory        = new StaticProxyFactory($this, $this->config->buildGhostObjectFactory());
         $this->identifierFlattener = new IdentifierFlattener($this->unitOfWork, $this->metadataFactory);
 
         if ($config->isSecondLevelCacheEnabled()) {
@@ -410,7 +401,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {
@@ -501,11 +492,15 @@ final class EntityManager implements EntityManagerInterface
             $id = [$class->identifier[0] => $id];
         }
 
-        foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
-                $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+        $scalarId = [];
 
-                if ($id[$i] === null) {
+        foreach ($id as $i => $value) {
+            $scalarId[$i] = $value;
+
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
+                $scalarId[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
+
+                if ($scalarId[$i] === null) {
                     throw ORMInvalidArgumentException::invalidIdentifierBindingEntity();
                 }
             }
@@ -514,16 +509,16 @@ final class EntityManager implements EntityManagerInterface
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
+            if ( ! isset($scalarId[$identifier])) {
                 throw ORMException::missingIdentifierField($className, $identifier);
             }
 
-            $sortedId[$identifier] = $id[$identifier];
-            unset($id[$identifier]);
+            $sortedId[$identifier] = $scalarId[$identifier];
+            unset($scalarId[$identifier]);
         }
 
-        if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+        if ($scalarId) {
+            throw ORMException::unrecognizedIdentifierFields($className, array_keys($scalarId));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -535,7 +530,7 @@ final class EntityManager implements EntityManagerInterface
             return $this->find($entityName, $sortedId);
         }
 
-        $entity = $this->proxyFactory->getProxy($className, $sortedId);
+        $entity = $this->proxyFactory->getProxy($class, $id);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
@@ -559,7 +554,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         foreach ($id as $i => $value) {
-            if (is_object($value) && $this->metadataFactory->hasMetadataFor(ClassUtils::getClass($value))) {
+            if (is_object($value) && $this->metadataFactory->hasMetadataFor(StaticClassNameConverter::getClass($value))) {
                 $id[$i] = $this->unitOfWork->getSingleIdentifierValue($value);
 
                 if ($id[$i] === null) {

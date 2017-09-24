@@ -1,5 +1,49 @@
 # Upgrade to 3.0
 
+## BC Break: proxies no longer implement `Doctrine\ORM\Proxy\Proxy`
+
+Proxy objects no longer implement `Doctrine\ORM\Proxy\Proxy` nor
+`Doctrine\Common\Persistence\Proxy`: instead, they implement
+`ProxyManager\Proxy\GhostObjectInterface`.
+
+These related classes have been removed:
+
+ * `Doctrine\ORM\Proxy\ProxyFactory` - replaced by `Doctrine\ORM\Proxy\Factory\StaticProxyFacory`
+   and `Doctrine\ORM\Proxy\Factory\ProxyFactory`
+ * `Doctrine\ORM\Proxy\Proxy`
+ * `Doctrine\ORM\Proxy\Autoloader` - we suggest using the composer autoloader instead
+ * `Doctrine\ORM\Reflection\RuntimePublicReflectionProperty`
+ 
+These methods have been removed:
+
+ * `Doctrine\ORM\Configuration#getProxyDir()`
+ * `Doctrine\ORM\Configuration#getAutoGenerateProxyClasses()`
+ * `Doctrine\ORM\Configuration#getProxyNamespace()`
+
+Proxy class names change: the generated proxies now follow
+the [`ClassNameInflector`](https://github.com/Ocramius/ProxyManager/blob/2.1.1/src/ProxyManager/Inflector/ClassNameInflector.php)
+naming.
+
+Proxies are also always generated if not found: fatal errors due to missing
+proxy classes should no longer occur with ORM default settings.
+
+In addition to that, following changes affect entity lazy-loading semantics:
+
+ * `final` methods are now allowed
+ * `__clone` is no longer called by the ORM
+ * `__wakeup` is no longer called by the ORM
+ * `serialize($proxy)` will lead to full recursive proxy initialization: please mitigate
+   the recursive initialization by implementing
+   the [`Serializable`](https://secure.php.net/manual/en/class.serializable.php) interface
+ * `clone $proxy` will lead to full initialization of the cloned instance, not the
+   original instance
+ * lazy-loading a detached proxy no longer causes the proxy identifiers to be reset
+   to `null`
+ * identifier properties are always set when the ORM produces a proxy instance
+ * calling a method on a proxy no longer causes proxy lazy-loading if the method does
+   not access any un-initialized proxy state
+ * accessing entity private state, even with reflection, will trigger lazy-loading
+
 ## BC Break: Removed `Doctrine\ORM\Version`
 
 The `Doctrine\ORM\Version` class is no longer available: please refrain from checking the ORM version at runtime.

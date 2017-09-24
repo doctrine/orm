@@ -21,6 +21,8 @@ use Doctrine\ORM\Query\QueryException;
  * @link   www.doctrine-project.org
  * @since  2.5
  * @author Jasper N. Brouwer <jasper@nerdsweide.nl>
+ *
+ * @internal do not use in your own codebase: no BC compliance on this class
  */
 class PersisterHelper
 {

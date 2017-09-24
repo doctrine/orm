@@ -6,7 +6,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -87,8 +87,8 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $calls = $this->em->createQuery($dql)->getResult();
 
         self::assertEquals(2, count($calls));
-        self::assertNotInstanceOf(Proxy::class, $calls[0]->getPhoneNumber());
-        self::assertNotInstanceOf(Proxy::class, $calls[1]->getPhoneNumber());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $calls[0]->getPhoneNumber());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $calls[1]->getPhoneNumber());
 
         $dql = "SELECT p, c FROM " . DDC881PhoneNumber::class . " p JOIN p.calls c";
         $numbers = $this->em->createQuery($dql)->getResult();

@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\Company\CompanyAuction;
 use Doctrine\Tests\Models\Company\CompanyEmployee;
 use Doctrine\Tests\Models\Company\CompanyEvent;
@@ -15,6 +14,7 @@ use Doctrine\Tests\Models\Company\CompanyOrganization;
 use Doctrine\Tests\Models\Company\CompanyPerson;
 use Doctrine\Tests\Models\Company\CompanyRaffle;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
@@ -291,7 +291,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
 
         // mainEvent should have been loaded because it can't be lazy
         self::assertInstanceOf(CompanyAuction::class, $mainEvent);
-        self::assertNotInstanceOf(Proxy::class, $mainEvent);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $mainEvent);
     }
 
     /**
@@ -427,13 +427,13 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $ref = $this->em->getReference(CompanyPerson::class, $manager->getId());
-        self::assertNotInstanceOf(Proxy::class, $ref, "Cannot Request a proxy from a class that has subclasses.");
+        self::assertNotInstanceOf(GhostObjectInterface::class, $ref, "Cannot Request a proxy from a class that has subclasses.");
         self::assertInstanceOf(CompanyPerson::class, $ref);
         self::assertInstanceOf(CompanyEmployee::class, $ref, "Direct fetch of the reference has to load the child class Employee directly.");
         $this->em->clear();
 
         $ref = $this->em->getReference(CompanyManager::class, $manager->getId());
-        self::assertInstanceOf(Proxy::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
+        self::assertInstanceOf(GhostObjectInterface::class, $ref, "A proxy can be generated only if no subclasses exists for the requested reference.");
     }
 
     /**

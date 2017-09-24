@@ -23,6 +23,7 @@
         "doctrine/cache": "~1.6",
         "doctrine/annotations": "~1.4",
         "ocramius/package-versions": "^1.1.2",
+        "ocramius/proxy-manager": "^2.1.1",
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {

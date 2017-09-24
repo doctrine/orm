@@ -5,19 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
-
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\Proxy\Proxy;
-use Doctrine\ORM\Query\QueryException;
-use Doctrine\ORM\UnexpectedResultException;
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsArticle,
-    Doctrine\Tests\Models\CMS\CmsPhonenumber;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\UnexpectedResultException;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional Query tests.
@@ -448,17 +446,23 @@ class QueryTest extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
         $this->em->clear();
-        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $q = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
-                ->setParameter("user", $this->em->getReference(CmsUser::class, $author->id))
-                ->setParameter("topic", "dr. dolittle");
 
-        $result = $q->getResult();
-        self::assertEquals(1, count($result));
+        /* @var $result CmsArticle[] */
+        $result = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a where a.topic = :topic and a.user = :user")
+                ->setParameter("user", $this->em->getReference(CmsUser::class, $author->id))
+                ->setParameter("topic", "dr. dolittle")
+                ->getResult();
+
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsArticle::class, $result[0]);
         self::assertEquals("dr. dolittle", $result[0]->topic);
-        self::assertInstanceOf(Proxy::class, $result[0]->user);
-        self::assertFalse($result[0]->user->__isInitialized());
+
+        /* @var $user CmsUser|GhostObjectInterface */
+        $user = $result[0]->user;
+
+        self::assertInstanceOf(CmsUser::class, $user);
+        self::assertInstanceOf(GhostObjectInterface::class, $user);
+        self::assertFalse($user->isProxyInitialized());
     }
 
     /**
@@ -494,7 +498,7 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals(10, count($articles));
 
         foreach ($articles AS $article) {
-            self::assertNotInstanceOf(Proxy::class, $article);
+            self::assertNotInstanceOf(GhostObjectInterface::class, $article);
         }
     }
 

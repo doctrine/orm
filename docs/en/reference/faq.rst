@@ -21,12 +21,6 @@ created database tables and columns.
 Entity Classes
 --------------
 
-I access a variable and its null, what is wrong?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If this variable is a public variable then you are violating one of the criteria for entities.
-All properties have to be protected or private for the proxy object pattern to work.
-
 How can I add default values to a column?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

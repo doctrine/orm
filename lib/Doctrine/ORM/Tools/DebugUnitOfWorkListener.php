@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging
@@ -100,7 +101,7 @@ class DebugUnitOfWorkListener
                     }
 
                     if ($association instanceof ToOneAssociationMetadata) {
-                        if ($value instanceof Proxy && !$value->__isInitialized()) {
+                        if ($value instanceof GhostObjectInterface && !$value->isProxyInitialized()) {
                             fwrite($fh, "[PROXY] ");
                         }
 

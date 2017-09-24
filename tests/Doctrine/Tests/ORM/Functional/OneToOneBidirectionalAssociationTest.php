@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceCustomer;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
@@ -94,7 +93,7 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
 
         self::assertNull($customer->getMentor());
         self::assertInstanceOf(ECommerceCart::class, $customer->getCart());
-        self::assertNotInstanceOf(Proxy::class, $customer->getCart());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $customer->getCart());
         self::assertEquals('paypal', $customer->getCart()->getPayment());
     }
 

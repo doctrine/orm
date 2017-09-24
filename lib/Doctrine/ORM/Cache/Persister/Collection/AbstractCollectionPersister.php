@@ -7,16 +7,16 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
+use Doctrine\ORM\Cache\Region;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
-use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Cache\Region;
-use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
@@ -177,7 +177,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
             }
 
             $class      = $this->targetEntity;
-            $className  = ClassUtils::getClass($elements[$index]);
+            $className  = StaticClassNameConverter::getClass($elements[$index]);
 
             if ($className !== $this->targetEntity->getClassName()) {
                 $class = $this->metadataFactory->getMetadataFor($className);
