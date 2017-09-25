@@ -54,6 +54,7 @@
         "doctrine/annotations": "<1.13 || >= 2.0"
     },
     "suggest": {
+        "ext-dom": "Provides support for XSD validation for XML mapping files",
         "symfony/cache": "Provides cache support for Setup Tool with doctrine/cache 2.0",
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
