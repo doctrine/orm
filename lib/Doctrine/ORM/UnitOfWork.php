@@ -2549,7 +2549,6 @@ class UnitOfWork implements PropertyChangedListener
     public function createEntity($className, array $data, &$hints = [])
     {
         $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
@@ -2579,28 +2578,22 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__setInitialized(true);
 
-                $overrideLocalValues = true;
-
                 if ($entity instanceof NotifyPropertyChanged) {
                     $entity->addPropertyChangedListener($this);
                 }
             } else {
-                $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
-
-                // If only a specific entity is set to refresh, check that it's the one
-                if (isset($hints[Query::HINT_REFRESH_ENTITY])) {
-                    $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
+                if ( ! isset($hints[Query::HINT_REFRESH])
+                    || (isset($hints[Query::HINT_REFRESH_ENTITY]) && $hints[Query::HINT_REFRESH_ENTITY] !== $entity)) {
+                    return $entity;
                 }
             }
 
-            if ($overrideLocalValues) {
-                // inject ObjectManager upon refresh.
-                if ($entity instanceof ObjectManagerAware) {
-                    $entity->injectObjectManager($this->em, $class);
-                }
-
-                $this->originalEntityData[$oid] = $data;
+            // inject ObjectManager upon refresh.
+            if ($entity instanceof ObjectManagerAware) {
+                $entity->injectObjectManager($this->em, $class);
             }
+
+            $this->originalEntityData[$oid] = $data;
         } else {
             $entity = $this->newInstance($class);
             $oid    = spl_object_hash($entity);
@@ -2614,12 +2607,6 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
-
-            $overrideLocalValues = true;
-        }
-
-        if ( ! $overrideLocalValues) {
-            return $entity;
         }
 
         foreach ($data as $field => $value) {
@@ -2823,10 +2810,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ($overrideLocalValues) {
-            // defer invoking of postLoad event to hydration complete step
-            $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
-        }
+        // defer invoking of postLoad event to hydration complete step
+        $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
 
         return $entity;
     }
