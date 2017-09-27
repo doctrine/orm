@@ -820,7 +820,7 @@ class BasicEntityPersister implements EntityPersister
             ? $this->expandCriteriaParameters($criteria)
             : $this->expandParameters($criteria);
 
-        return $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
+        return (int) $this->conn->executeQuery($sql, $params, $types)->fetchColumn();
     }
 
     /**
