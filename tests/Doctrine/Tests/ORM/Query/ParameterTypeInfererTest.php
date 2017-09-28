@@ -13,17 +13,18 @@ class ParameterTypeInfererTest extends OrmTestCase
 
     public function providerParameterTypeInferer()
     {
-         $data = [
+        $data = [
             [1,                 Type::INTEGER],
             ["bar",             PDO::PARAM_STR],
             ["1",               PDO::PARAM_STR],
             [new \DateTime,     Type::DATETIME],
+            [new \DateInterval('P1D'), Type::DATEINTERVAL],
             [[2],          Connection::PARAM_INT_ARRAY],
             [["foo"],      Connection::PARAM_STR_ARRAY],
             [["1","2"],    Connection::PARAM_STR_ARRAY],
             [[],           Connection::PARAM_STR_ARRAY],
             [true,              Type::BOOLEAN],
-         ];
+        ];
 
         if (PHP_VERSION_ID >= 50500) {
             $data[] = [new \DateTimeImmutable(), Type::DATETIME];

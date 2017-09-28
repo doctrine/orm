@@ -17,7 +17,7 @@
         "php": "^7.1",
         "ext-pdo": "*",
         "doctrine/collections": "^1.4",
-        "doctrine/dbal": ">=2.5-dev,<2.7-dev",
+        "doctrine/dbal": "^2.6",
         "doctrine/instantiator": "~1.1",
         "doctrine/common": "^2.7.1",
         "doctrine/cache": "~1.6",
