@@ -259,10 +259,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $parameters = $this->expandCriteriaParameters($criteria);
 
         foreach ($parameters as $parameter) {
-            list($name, $value) = $parameter;
-            $field = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
-            $whereClauses[]     = sprintf('te.%s = ?', $field);
-            $params[]           = $value;
+            [$name, $value, $operator] = $parameter;
+
+            $field          = $this->quoteStrategy->getColumnName($name, $targetClass, $this->platform);
+            $whereClauses[] = sprintf('te.%s %s ?', $field, $operator);
+            $params[]       = $value;
         }
 
         $tableName    = $this->quoteStrategy->getTableName($targetClass, $this->platform);
