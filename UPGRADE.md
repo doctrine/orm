@@ -1,5 +1,14 @@
 # Upgrade to 2.10
 
+## Minor BC BREAK: some exception methods have been removed
+
+The following methods were not in use and are very unlikely to be used by
+downstream packages or applications, and were consequently removed:
+
+- `ORMException::entityMissingForeignAssignedId`
+- `ORMException::entityMissingAssignedIdForField`
+- `ORMException::invalidFlushMode`
+
 ## Deprecated: database-side UUID generation
 
 [DB-generated UUIDs are deprecated as of `doctrine/dbal` 2.8][DBAL deprecation].
