@@ -25,6 +25,16 @@ class DateSubFunction extends DateAddFunction
     public function getSql(SqlWalker $sqlWalker)
     {
         switch (strtolower($this->unit->value)) {
+            case 'second':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubSecondsExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
+            case 'minute':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubMinutesExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
             case 'hour':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubHourExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
@@ -35,16 +45,25 @@ class DateSubFunction extends DateAddFunction
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
-
+            case 'week':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubWeeksExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
             case 'month':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubMonthExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
+            case 'year':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateSubYearsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
 
             default:
                 throw QueryException::semanticalError(
-                    'DATE_SUB() only supports units of type hour, day and month.'
+                    'DATE_SUB() only supports units of type second, minute, hour, day, week, month and year.'
                 );
         }
     }
