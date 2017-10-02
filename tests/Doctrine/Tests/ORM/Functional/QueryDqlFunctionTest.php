@@ -301,6 +301,24 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $this->assertTrue(strtotime($arg[0]['add']) > 0);
     }
 
+    /**
+     * @group DDC-2938
+     */
+    public function testDateAddTime(): void
+    {
+        $arg = $this->_em->createQuery("SELECT DATE_ADD(CURRENT_TIMESTAMP(), 10, 'second') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_ADD(CURRENT_TIMESTAMP(), 10, 'minute') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_ADD(CURRENT_TIMESTAMP(), 10, 'hour') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
+    }
+
     public function testDateAddSecond()
     {
         $dql     = "SELECT CURRENT_TIMESTAMP() now, DATE_ADD(CURRENT_TIMESTAMP(), 10, 'second') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m";
@@ -332,6 +350,24 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
                 ->getArrayResult();
 
         $this->assertTrue(strtotime($arg[0]['add']) > 0);
+    }
+
+    /**
+     * @group DDC-2938
+     */
+    public function testDateSubTime(): void
+    {
+        $arg = $this->_em->createQuery("SELECT DATE_SUB(CURRENT_TIMESTAMP(), 10, 'second') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_SUB(CURRENT_TIMESTAMP(), 10, 'minute') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
+
+        $arg = $this->_em->createQuery("SELECT DATE_SUB(CURRENT_TIMESTAMP(), 10, 'hour') AS add FROM Doctrine\Tests\Models\Company\CompanyManager m")
+                ->getArrayResult();
+        self::assertTrue(strtotime($arg[0]['add']) > 0);
     }
 
     /**
