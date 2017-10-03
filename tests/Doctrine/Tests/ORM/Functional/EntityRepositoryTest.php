@@ -287,7 +287,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @expectedException \Doctrine\ORM\ORMException
+     * @expectedException Doctrine\ORM\Repository\InvalidMagicMethodCall
      */
     public function testExceptionIsThrownWhenUsingInvalidFieldName() : void
     {

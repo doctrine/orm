@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Repository\InvalidMagicMethodCall;
 use function array_slice;
 use function lcfirst;
 use function sprintf;
@@ -260,7 +261,11 @@ class EntityRepository implements ObjectRepository, Selectable
         $fieldName = lcfirst(Inflector::classify($by));
 
         if ($this->class->getProperty($fieldName) === null) {
-            throw ORMException::invalidMagicCall($this->entityName, $fieldName, $method . $by);
+            throw InvalidMagicMethodCall::fromEntityNameFieldNameAndMethod(
+                $this->entityName,
+                $fieldName,
+                $method . $by
+            );
         }
 
         return $this->{$method}([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
