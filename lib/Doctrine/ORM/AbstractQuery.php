@@ -25,7 +25,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Driver\ResultStatement;
+use Doctrine\DBAL\Driver\Statement;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\TimestampCacheKey;
@@ -584,13 +586,13 @@ abstract class AbstractQuery
      *
      * @return static This query instance.
      *
-     * @throws ORMException
+     * @throws InvalidResultCacheDriver
      */
     public function setResultCacheDriver($resultCacheDriver = null)
     {
         /** @phpstan-ignore-next-line */
         if ($resultCacheDriver !== null && ! ($resultCacheDriver instanceof \Doctrine\Common\Cache\Cache)) {
-            throw ORMException::invalidResultCacheDriver();
+            throw InvalidResultCacheDriver::create();
         }
 
         $this->_queryCacheProfile = $this->_queryCacheProfile

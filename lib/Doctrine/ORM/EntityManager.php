@@ -29,6 +29,12 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Deprecations\Deprecation;
+use Doctrine\ORM\Exception\EntityManagerClosed;
+use Doctrine\ORM\Exception\InvalidHydrationMode;
+use Doctrine\ORM\Exception\MismatchedEventManager;
+use Doctrine\ORM\Exception\MissingIdentifierField;
+use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
+use Doctrine\ORM\Exception\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\ProxyFactory;
@@ -430,7 +436,7 @@ use function sprintf;
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -438,7 +444,7 @@ use function sprintf;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
@@ -501,7 +507,7 @@ use function sprintf;
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($class->name, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $class->name);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -509,7 +515,7 @@ use function sprintf;
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($class->name, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($class->name, array_keys($id));
         }
 
         $entity = $this->unitOfWork->tryGetById($sortedId, $class->rootEntityName);
@@ -801,12 +807,12 @@ use function sprintf;
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
      *
-     * @throws ORMException If the EntityManager is closed.
+     * @throws EntityManagerClosed If the EntityManager is closed.
      */
     private function errorIfClosed(): void
     {
         if ($this->closed) {
-            throw ORMException::entityManagerClosed();
+            throw EntityManagerClosed::create();
         }
     }
 
@@ -863,7 +869,7 @@ use function sprintf;
                 }
         }
 
-        throw ORMException::invalidHydrationMode($hydrationMode);
+        throw InvalidHydrationMode::fromMode($hydrationMode);
     }
 
     /**
@@ -897,7 +903,7 @@ use function sprintf;
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
+            throw MissingMappingDriverImplementation::create();
         }
 
         $connection = static::createConnection($connection, $config, $eventManager);
@@ -934,7 +940,7 @@ use function sprintf;
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
+            throw MismatchedEventManager::create();
         }
 
         return $connection;

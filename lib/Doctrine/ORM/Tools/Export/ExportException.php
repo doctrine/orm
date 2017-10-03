@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Tools\Export;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 
 use function sprintf;
 

@@ -20,7 +20,7 @@
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
 
 use function implode;
 use function sprintf;

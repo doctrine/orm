@@ -30,7 +30,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\Deprecations\Deprecation;
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\Instantiator\InstantiatorInterface;
-use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\Exception\CacheException;
+use Doctrine\ORM\Cache\Exception\NonCacheableEntityAssociation;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\Persistence\Mapping\ClassMetadata;
 use Doctrine\Persistence\Mapping\ReflectionService;
@@ -1683,7 +1684,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             if ($this->cache && ! isset($mapping['cache'])) {
-                throw CacheException::nonCacheableEntityAssociation($this->name, $mapping['fieldName']);
+                throw NonCacheableEntityAssociation::fromEntityAndField(
+                    $this->name,
+                    $mapping['fieldName']
+                );
             }
         }
 

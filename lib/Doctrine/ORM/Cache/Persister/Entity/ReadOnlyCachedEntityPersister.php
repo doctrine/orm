@@ -22,6 +22,8 @@ namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyEntity;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Specific read-only region entity persister
@@ -33,6 +35,6 @@ class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersis
      */
     public function update($entity)
     {
-        throw CacheException::updateReadOnlyEntity(ClassUtils::getClass($entity));
+        throw CannotUpdateReadOnlyEntity::fromEntity(ClassUtils::getClass($entity));
     }
 }

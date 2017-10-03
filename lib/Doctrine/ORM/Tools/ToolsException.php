@@ -20,7 +20,8 @@
 
 namespace Doctrine\ORM\Tools;
 
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
 use Throwable;
 
 use function sprintf;

@@ -28,12 +28,23 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Id\AssignedGenerator;
 use Doctrine\ORM\Id\BigIntegerIdentityGenerator;
 use Doctrine\ORM\Id\IdentityGenerator;
 use Doctrine\ORM\Id\SequenceGenerator;
 use Doctrine\ORM\Id\UuidGenerator;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Mapping\Exception\InvalidCustomGenerator;
+use Doctrine\ORM\Mapping\Exception\TableGeneratorNotImplementedYet;
+use Doctrine\ORM\Mapping\Exception\UnknownGeneratorType;
+use Doctrine\ORM\NotImplementedYet;
+use Doctrine\ORM\Sequencing;
+use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
+use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
+use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use Doctrine\Persistence\Mapping\AbstractClassMetadataFactory;
 use Doctrine\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\Persistence\Mapping\Driver\MappingDriver;
@@ -681,26 +692,25 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_TABLE:
-                throw new ORMException('TableGenerator not yet implemented.');
+                throw TableGeneratorNotImplementedYet::create();
 
                 break;
 
             case ClassMetadata::GENERATOR_TYPE_CUSTOM:
                 $definition = $class->customGeneratorDefinition;
                 if ($definition === null) {
-                    throw new ORMException("Can't instantiate custom generator : no custom generator definition");
+                    throw InvalidCustomGenerator::onClassNotConfigured();
                 }
 
                 if (! class_exists($definition['class'])) {
-                    throw new ORMException("Can't instantiate custom generator : " .
-                        $definition['class']);
+                    throw InvalidCustomGenerator::onMissingClass($definition);
                 }
 
                 $class->setIdGenerator(new $definition['class']());
                 break;
 
             default:
-                throw new ORMException('Unknown generator type: ' . $class->generatorType);
+                throw UnknownGeneratorType::create($class->generatorType);
         }
     }
 

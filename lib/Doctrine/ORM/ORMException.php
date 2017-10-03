@@ -30,10 +30,14 @@ use function sprintf;
 
 /**
  * Base exception class for all ORM exceptions.
+ *
+ * @deprecated Use Doctrine\ORM\Exception\ORMException for catch and instanceof
  */
 class ORMException extends Exception
 {
     /**
+     * @deprecated Use Doctrine\ORM\Exception\MissingMappingDriverImplementation
+     *
      * @return ORMException
      */
     public static function missingMappingDriverImpl()
@@ -43,6 +47,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\NamedQueryNotFound
+     *
      * @param string $queryName
      *
      * @return ORMException
@@ -53,6 +59,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\NamedQueryNotFound
+     *
      * @param string $nativeQueryName
      *
      * @return ORMException
@@ -63,6 +71,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated No replacement planned
+     *
      * @param object $entity
      * @param object $relatedEntity
      *
@@ -80,6 +90,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\EntityMissingAssignedId
+     *
      * @param object $entity
      * @param string $field
      *
@@ -94,6 +106,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Persisters\Exception\UnrecognizedField
+     *
      * @param string $field
      *
      * @return ORMException
@@ -104,6 +118,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\UnexpectedAssociationValue
+     *
      * @param string $class
      * @param string $association
      * @param string $given
@@ -117,6 +133,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Persisters\Exception\InvalidOrientation
+     *
      * @param string $className
      * @param string $field
      *
@@ -128,6 +146,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated No replacement planned
+     *
      * @param string $mode
      *
      * @return ORMException
@@ -138,6 +158,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\EntityManagerClosed
+     *
      * @return ORMException
      */
     public static function entityManagerClosed()
@@ -146,6 +168,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\InvalidHydrationMode
+     *
      * @param string $mode
      *
      * @return ORMException
@@ -156,6 +180,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\MismatchedEventManager
+     *
      * @return ORMException
      */
     public static function mismatchedEventManager()
@@ -164,6 +190,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall::onMissingParameter()
+     *
      * @param string $methodName
      *
      * @return ORMException
@@ -174,6 +202,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Doctrine\ORM\Repository\Exception\InvalidFindByCall
+     *
      * @param string $entityName
      * @param string $fieldName
      * @param string $method
@@ -189,6 +219,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Doctrine\ORM\Repository\Exception\InvalidMagicMethodCall
+     *
      * @param string $entityName
      * @param string $fieldName
      * @param string $method
@@ -204,6 +236,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Repository\Exception\InvalidFindByCall::fromInverseSideUsage()
+     *
      * @param string $entityName
      * @param string $associationFieldName
      *
@@ -218,6 +252,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Cache\Exception\InvalidResultCacheDriver
+     *
      * @return ORMException
      */
     public static function invalidResultCacheDriver()
@@ -226,6 +262,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Doctrine\ORM\Tools\Exception\NotSupported
+     *
      * @return ORMException
      */
     public static function notSupported()
@@ -234,6 +272,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Cache\Exception\QueryCacheNotConfigured
+     *
      * @return ORMException
      */
     public static function queryCacheNotConfigured()
@@ -242,6 +282,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Cache\Exception\MetadataCacheNotConfigured
+     *
      * @return ORMException
      */
     public static function metadataCacheNotConfigured()
@@ -250,6 +292,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Cache\Exception\QueryCacheUsesNonPersistentCache
+     *
      * @return ORMException
      */
     public static function queryCacheUsesNonPersistentCache(CacheDriver $cache)
@@ -258,6 +302,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Cache\Exception\MetadataCacheUsesNonPersistentCache
+     *
      * @return ORMException
      */
     public static function metadataCacheUsesNonPersistentCache(CacheDriver $cache)
@@ -266,6 +312,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\ProxyClassesAlwaysRegenerating
+     *
      * @return ORMException
      */
     public static function proxyClassesAlwaysRegenerating()
@@ -274,6 +322,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\UnknownEntityNamespace
+     *
      * @param string $entityNamespaceAlias
      *
      * @return ORMException
@@ -286,6 +336,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\InvalidEntityRepository
+     *
      * @param string $className
      *
      * @return ORMException
@@ -300,6 +352,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\MissingIdentifierField
+     *
      * @param string $className
      * @param string $fieldName
      *
@@ -311,6 +365,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Exception\UnrecognizedIdentifierFields
+     *
      * @param string   $className
      * @param string[] $fieldNames
      *
@@ -325,6 +381,8 @@ class ORMException extends Exception
     }
 
     /**
+     * @deprecated Use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys
+     *
      * @return ORMException
      */
     public static function cantUseInOperatorOnCompositeKeys()

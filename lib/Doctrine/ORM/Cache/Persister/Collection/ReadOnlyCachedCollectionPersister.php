@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\Exception\CannotUpdateReadOnlyCollection;
 use Doctrine\ORM\PersistentCollection;
 
 class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
@@ -32,7 +33,10 @@ class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollecti
     public function update(PersistentCollection $collection)
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {
-            throw CacheException::updateReadOnlyCollection(ClassUtils::getClass($collection->getOwner()), $this->association['fieldName']);
+            throw CannotUpdateReadOnlyCollection::fromEntityAndField(
+                ClassUtils::getClass($collection->getOwner()),
+                $this->association['fieldName']
+            );
         }
 
         parent::update($collection);

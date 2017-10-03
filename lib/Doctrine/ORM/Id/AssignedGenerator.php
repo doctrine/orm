@@ -21,7 +21,7 @@
 namespace Doctrine\ORM\Id;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Exception\EntityMissingAssignedId;
 
 use function get_class;
 
@@ -35,7 +35,7 @@ class AssignedGenerator extends AbstractIdGenerator
      *
      * {@inheritDoc}
      *
-     * @throws ORMException
+     * @throws EntityMissingAssignedId
      */
     public function generate(EntityManager $em, $entity)
     {
@@ -47,7 +47,7 @@ class AssignedGenerator extends AbstractIdGenerator
             $value = $class->getFieldValue($entity, $idField);
 
             if (! isset($value)) {
-                throw ORMException::entityMissingAssignedIdForField($entity, $idField);
+                throw EntityMissingAssignedId::forField($entity, $idField);
             }
 
             if (isset($class->associationMappings[$idField])) {

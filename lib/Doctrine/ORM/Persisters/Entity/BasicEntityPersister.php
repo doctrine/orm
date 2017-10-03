@@ -29,16 +29,20 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\Exception\CantUseInOperatorOnCompositeKeys;
+use Doctrine\ORM\Persisters\Exception\InvalidOrientation;
+use Doctrine\ORM\Persisters\Exception\UnrecognizedField;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Repository\Exception\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -414,7 +418,7 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $updateData      The map of columns to update (column => value).
      * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
-     * @throws ORMException
+     * @throws UnrecognizedField
      * @throws OptimisticLockException
      */
     final protected function updateTable(
@@ -477,7 +481,7 @@ class BasicEntityPersister implements EntityPersister
             $targetType    = PersisterHelper::getTypeOfField($targetMapping->identifier[0], $targetMapping, $this->em);
 
             if ($targetType === []) {
-                throw ORMException::unrecognizedField($targetMapping->identifier[0]);
+                throw UnrecognizedField::byName($targetMapping->identifier[0]);
             }
 
             $types[] = reset($targetType);
@@ -1136,7 +1140,9 @@ class BasicEntityPersister implements EntityPersister
      *
      * @psalm-param array<string, string> $orderBy
      *
-     * @throws ORMException
+     * @throws InvalidOrientation
+     * @throws InvalidFindByCall
+     * @throws UnrecognizedField
      */
     final protected function getOrderBySQL(array $orderBy, string $baseTableAlias): string
     {
@@ -1146,7 +1152,7 @@ class BasicEntityPersister implements EntityPersister
             $orientation = strtoupper(trim($orientation));
 
             if ($orientation !== 'ASC' && $orientation !== 'DESC') {
-                throw ORMException::invalidOrientation($this->class->name, $fieldName);
+                throw InvalidOrientation::fromClassNameAndField($this->class->name, $fieldName);
             }
 
             if (isset($this->class->fieldMappings[$fieldName])) {
@@ -1162,7 +1168,7 @@ class BasicEntityPersister implements EntityPersister
 
             if (isset($this->class->associationMappings[$fieldName])) {
                 if (! $this->class->associationMappings[$fieldName]['isOwningSide']) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $fieldName);
+                    throw InvalidFindByCall::fromInverseSideUsage($this->class->name, $fieldName);
                 }
 
                 $tableAlias = isset($this->class->associationMappings[$fieldName]['inherited'])
@@ -1177,7 +1183,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            throw ORMException::unrecognizedField($fieldName);
+            throw UnrecognizedField::byName($fieldName);
         }
 
         return ' ORDER BY ' . implode(', ', $orderByList);
@@ -1594,7 +1600,7 @@ class BasicEntityPersister implements EntityPersister
              *  @todo try to support multi-column IN expressions.
              *  Example: (col1, col2) IN (('val1A', 'val2A'), ('val1B', 'val2B'))
              */
-            throw ORMException::cantUseInOperatorOnCompositeKeys();
+            throw CantUseInOperatorOnCompositeKeys::create();
         }
 
         foreach ($columns as $column) {
@@ -1658,7 +1664,8 @@ class BasicEntityPersister implements EntityPersister
      * @return string[]
      * @psalm-return list<string>
      *
-     * @throws ORMException
+     * @throws InvalidFindByCall
+     * @throws UnrecognizedField
      */
     private function getSelectConditionStatementColumnSQL(
         string $field,
@@ -1691,7 +1698,10 @@ class BasicEntityPersister implements EntityPersister
                 }
             } else {
                 if (! $association['isOwningSide']) {
-                    throw ORMException::invalidFindByInverseAssociation($this->class->name, $field);
+                    throw InvalidFindByCall::fromInverseSideUsage(
+                        $this->class->name,
+                        $field
+                    );
                 }
 
                 $className = $association['inherited'] ?? $this->class->name;
@@ -1712,7 +1722,7 @@ class BasicEntityPersister implements EntityPersister
             return [$field];
         }
 
-        throw ORMException::unrecognizedField($field);
+        throw UnrecognizedField::byName($field);
     }
 
     /**

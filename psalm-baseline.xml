@@ -603,6 +603,11 @@
       <code>$em</code>
     </PropertyTypeCoercion>
   </file>
+  <file src="lib/Doctrine/ORM/Exception/ORMException.php">
+    <DeprecatedClass occurrences="1">
+      <code>BaseORMException</code>
+    </DeprecatedClass>
+  </file>
   <file src="lib/Doctrine/ORM/Id/AssignedGenerator.php">
     <PossiblyNullArgument occurrences="3">
       <code>$entity</code>
