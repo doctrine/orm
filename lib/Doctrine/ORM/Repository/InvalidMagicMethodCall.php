@@ -11,7 +11,7 @@ final class InvalidMagicMethodCall extends \InvalidArgumentException implements 
     public static function fromEntityNameFieldNameAndMethod(
         string $entityName,
         string $fieldName,
-        $method
+        string $method
     ) : self {
         return new self(
             "Entity '".$entityName."' has no field '".$fieldName."'. ".
