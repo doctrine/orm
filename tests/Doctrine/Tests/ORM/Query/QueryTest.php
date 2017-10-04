@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Query;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 
+use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
@@ -365,5 +366,19 @@ class QueryTest extends OrmTestCase
         self::assertSame(3, $query->getParameter(0)->getValue());
         self::assertSame(3, $query->getParameter('0')->getValue());
         self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6748
+     */
+    public function testResultCacheProfileCanBeRemovedViaSetter() : void
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->_em->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
+        $query->useResultCache(true);
+        $query->setResultCacheProfile();
+
+        self::assertAttributeSame(null, '_queryCacheProfile', $query);
     }
 }
