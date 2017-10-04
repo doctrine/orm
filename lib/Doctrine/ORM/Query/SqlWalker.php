@@ -92,7 +92,7 @@ class SqlWalker implements TreeWalker
     private $parserResult;
 
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -213,7 +213,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the EntityManager used by the walker.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     public function getEntityManager()
     {

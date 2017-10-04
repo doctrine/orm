@@ -45,7 +45,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     public function getEntityManager()
     {

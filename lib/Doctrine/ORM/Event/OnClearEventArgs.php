@@ -57,7 +57,7 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
