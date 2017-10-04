@@ -290,7 +290,7 @@ class BasicEntityPersister implements EntityPersister
                     'entity' => $entity,
                 ];
             } else {
-                $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+                $id = $this->class->getIdentifierValues($entity);
             }
 
             if ($this->class->isVersioned) {
@@ -334,16 +334,17 @@ class BasicEntityPersister implements EntityPersister
         $versionField = $versionedClass->versionField;
         $fieldMapping = $versionedClass->fieldMappings[$versionField];
         $tableName    = $this->quoteStrategy->getTableName($versionedClass, $this->platform);
+        $identifier   = $this->quoteStrategy->getIdentifierColumnNames($versionedClass, $this->platform);
         $columnName   = $this->quoteStrategy->getColumnName($versionField, $versionedClass, $this->platform);
-
-        $identifier = $this->determineIdentifierColumnsAndValues($versionedClass, $id);
 
         // FIXME: Order with composite keys might not be correct
         $sql = 'SELECT ' . $columnName
              . ' FROM '  . $tableName
-             . ' WHERE ' . implode(' = ? AND ', $identifier['columns']) . ' = ?';
+             . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
-        $value = $this->conn->fetchColumn($sql, $identifier['values']);
+        $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
+
+        $value = $this->conn->fetchColumn($sql, array_values($flatId));
 
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
     }
@@ -366,7 +367,16 @@ class BasicEntityPersister implements EntityPersister
         $this->updateTable($entity, $quotedTableName, $data, $isVersioned);
 
         if ($isVersioned) {
-            $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+            $identifier = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
+
+            $id = [];
+            foreach ($this->class->identifier as $idField) {
+                if (isset($this->class->associationMappings[$idField])) {
+                    $id[$this->class->associationMappings[$idField]['joinColumns'][0]['name']] = $identifier[$idField];
+                } else {
+                    $id[$idField] = $identifier[$idField];
+                }
+            }
 
             $this->assignDefaultVersionValue($entity, $id);
         }
@@ -2070,30 +2080,4 @@ class BasicEntityPersister implements EntityPersister
 
         $this->currentPersisterContext = $this->limitsHandlingContext;
     }
-
-    /**
-     * Determains the identifier columns and values for an entity
-     *
-     * @param ClassMetadata $class
-     * @param array         $id
-     * @return array
-     */
-    private function determineIdentifierColumnsAndValues(ClassMetadata $class, array $id)
-    {
-        $identifier = [
-            'columns'  => [],
-            'values' => []
-        ];
-        foreach ($class->identifier as $idField) {
-            if (isset($class->associationMappings[$idField])) {
-                $identifier['columns'][] = $class->associationMappings[$idField]['joinColumns'][0]['name'];
-            } else {
-                $identifier['columns'][] = $this->quoteStrategy->getColumnName($idField, $class, $this->platform);
-            }
-
-            $identifier['values'][] = $id[$idField];
-        }
-        
-        return $identifier;
-	}
 }
