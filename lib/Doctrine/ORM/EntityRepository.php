@@ -261,7 +261,7 @@ class EntityRepository implements ObjectRepository, Selectable
         $fieldName = lcfirst(Inflector::classify($by));
 
         if ($this->class->getProperty($fieldName) === null) {
-            throw InvalidMagicMethodCall::fromEntityNameFieldNameAndMethod(
+            throw InvalidMagicMethodCall::becauseFieldNotFoundIn(
                 $this->entityName,
                 $fieldName,
                 $method . $by

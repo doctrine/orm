@@ -8,7 +8,7 @@ use Doctrine\ORM\RepositoryException;
 
 final class InvalidMagicMethodCall extends \InvalidArgumentException implements RepositoryException
 {
-    public static function fromEntityNameFieldNameAndMethod(
+    public static function becauseFieldNotFoundIn(
         string $entityName,
         string $fieldName,
         string $method
