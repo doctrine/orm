@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Cache;
 
-use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
@@ -28,14 +28,11 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testSharedRegion()
     {
-        if ( ! extension_loaded('apc') || false === @apc_cache_info()) {
-            $this->markTestSkipped('The ' . __CLASS__ .' requires the use of APC');
-        }
-
+        $cache   = new SharedArrayCache();
         $key     = new CacheKeyMock('key');
         $entry   = new CacheEntryMock(['value' => 'foo']);
-        $region1 = new DefaultRegion('region1', new ApcCache());
-        $region2 = new DefaultRegion('region2', new ApcCache());
+        $region1 = new DefaultRegion('region1', $cache->createChild());
+        $region2 = new DefaultRegion('region2', $cache->createChild());
 
         $this->assertFalse($region1->contains($key));
         $this->assertFalse($region2->contains($key));
@@ -97,5 +94,62 @@ class DefaultRegionTest extends AbstractRegionTest
 
         $this->assertEquals($value1, $actual[0]);
         $this->assertEquals($value2, $actual[1]);
+    }
+}
+
+/**
+ * Cache provider that offers child cache items (sharing the same array)
+ *
+ * Declared as a different class for readability purposes and kept in this file
+ * to keep its monstrosity contained.
+ *
+ * @internal
+ */
+final class SharedArrayCache extends ArrayCache
+{
+    public function createChild(): Cache
+    {
+        return new class ($this) extends CacheProvider
+        {
+            /**
+             * @var ArrayCache
+             */
+            private $parent;
+
+            public function __construct(ArrayCache $parent)
+            {
+                $this->parent = $parent;
+            }
+
+            protected function doFetch($id)
+            {
+                return $this->parent->doFetch($id);
+            }
+
+            protected function doContains($id)
+            {
+                return $this->parent->doContains($id);
+            }
+
+            protected function doSave($id, $data, $lifeTime = 0)
+            {
+                return $this->parent->doSave($id, $data, $lifeTime);
+            }
+
+            protected function doDelete($id)
+            {
+                return $this->parent->doDelete($id);
+            }
+
+            protected function doFlush()
+            {
+                return $this->parent->doFlush();
+            }
+
+            protected function doGetStats()
+            {
+                return $this->parent->doGetStats();
+            }
+        };
     }
 }

@@ -5,6 +5,8 @@ namespace Doctrine\Tests\ORM\Tools\Export;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\PHPDriver;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -344,7 +346,7 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         $this->assertEquals('user', $class->associationMappings['address']['inversedBy']);
     }
-	/**
+    /**
      * @depends testExportDirectoryAndFilesAreCreated
      */
     public function testCascadeAllCollapsed()
@@ -369,6 +371,26 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         } else {
             $this->markTestSkipped('Test not available for '.$type.' driver');
         }
+    }
+
+    /**
+     * @depends testExportedMetadataCanBeReadBackIn
+     *
+     * @param ClassMetadata $class
+     */
+    public function testEntityListenersAreExported($class)
+    {
+        $this->assertNotEmpty($class->entityListeners);
+        $this->assertCount(2, $class->entityListeners[Events::prePersist]);
+        $this->assertCount(2, $class->entityListeners[Events::postPersist]);
+        $this->assertEquals(UserListener::class, $class->entityListeners[Events::prePersist][0]['class']);
+        $this->assertEquals('customPrePersist', $class->entityListeners[Events::prePersist][0]['method']);
+        $this->assertEquals(GroupListener::class, $class->entityListeners[Events::prePersist][1]['class']);
+        $this->assertEquals('prePersist', $class->entityListeners[Events::prePersist][1]['method']);
+        $this->assertEquals(UserListener::class, $class->entityListeners[Events::postPersist][0]['class']);
+        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][0]['method']);
+        $this->assertEquals(AddressListener::class, $class->entityListeners[Events::postPersist][1]['class']);
+        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
     }
 
     public function __destruct()
@@ -405,4 +427,29 @@ class Phonenumber
 class Group
 {
 
+}
+class UserListener
+{
+    /**
+     * @\Doctrine\ORM\Mapping\PrePersist
+     */
+    public function customPrePersist(): void {}
+    /**
+     * @\Doctrine\ORM\Mapping\PostPersist
+     */
+    public function customPostPersist(): void {}
+}
+class GroupListener
+{
+    /**
+     * @\Doctrine\ORM\Mapping\PrePersist
+     */
+    public function prePersist(): void {}
+}
+class AddressListener
+{
+    /**
+     * @\Doctrine\ORM\Mapping\PostPersist
+     */
+    public function customPostPersist(): void {}
 }

@@ -46,7 +46,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
      *
-     * @return mixed
+     * @return void
      */
     public function walkComparison(Comparison $comparison)
     {
@@ -69,7 +69,7 @@ class SqlValueVisitor extends ExpressionVisitor
      *
      * @param \Doctrine\Common\Collections\Expr\CompositeExpression $expr
      *
-     * @return mixed
+     * @return void
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
@@ -111,8 +111,18 @@ class SqlValueVisitor extends ExpressionVisitor
     {
         $value = $comparison->getValue()->getValue();
 
-        return $comparison->getOperator() == Comparison::CONTAINS
-            ? "%{$value}%"
-            : $value;
+        switch ($comparison->getOperator()) {
+            case Comparison::CONTAINS:
+                return "%{$value}%";
+
+            case Comparison::STARTS_WITH:
+                return "{$value}%";
+
+            case Comparison::ENDS_WITH:
+                return "%{$value}";
+
+            default:
+                return $value;
+        }
     }
 }

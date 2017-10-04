@@ -21,7 +21,8 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private $translation;
     private $articleDetails;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('ddc117');
         parent::setUp();
 
@@ -63,7 +64,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $dql = "SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE r.source = ?1";
+        $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE r.source = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
 
         $this->assertInstanceOf(DDC117Reference::class, $mapRef);
@@ -73,7 +74,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $dql = "SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
+        $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
         $this->assertInstanceOf(DDC117Reference::class, $dqlRef);
@@ -81,7 +82,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertInstanceOf(DDC117Article::class, $dqlRef->source());
         $this->assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
 
-        $dql = "SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
+        $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
         $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
         $this->_em->contains($dqlRef);
@@ -265,16 +266,17 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOneToOneCascadePersist()
     {
-        if (!$this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
+        if ( ! $this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
             $this->markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
         }
 
         $this->article1 = new DDC117Article("Foo");
-
         $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
 
         $this->_em->persist($this->article1);
         $this->_em->flush();
+
+        self::assertSame($this->articleDetails, $this->_em->find(DDC117ArticleDetails::class, $this->article1));
     }
 
     /**

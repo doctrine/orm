@@ -87,16 +87,18 @@ class BasicEntityPersister implements EntityPersister
      * @var array
      */
     static private $comparisonMap = [
-        Comparison::EQ       => '= %s',
-        Comparison::IS       => '= %s',
-        Comparison::NEQ      => '!= %s',
-        Comparison::GT       => '> %s',
-        Comparison::GTE      => '>= %s',
-        Comparison::LT       => '< %s',
-        Comparison::LTE      => '<= %s',
-        Comparison::IN       => 'IN (%s)',
-        Comparison::NIN      => 'NOT IN (%s)',
-        Comparison::CONTAINS => 'LIKE %s',
+        Comparison::EQ          => '= %s',
+        Comparison::IS          => '= %s',
+        Comparison::NEQ         => '!= %s',
+        Comparison::GT          => '> %s',
+        Comparison::GTE         => '>= %s',
+        Comparison::LT          => '< %s',
+        Comparison::LTE         => '<= %s',
+        Comparison::IN          => 'IN (%s)',
+        Comparison::NIN         => 'NOT IN (%s)',
+        Comparison::CONTAINS    => 'LIKE %s',
+        Comparison::STARTS_WITH => 'LIKE %s',
+        Comparison::ENDS_WITH   => 'LIKE %s',
     ];
 
     /**
@@ -342,11 +344,28 @@ class BasicEntityPersister implements EntityPersister
              . ' FROM '  . $tableName
              . ' WHERE ' . implode(' = ? AND ', $identifier) . ' = ?';
 
+
         $flatId = $this->identifierFlattener->flattenIdentifier($versionedClass, $id);
 
-        $value = $this->conn->fetchColumn($sql, array_values($flatId));
+        $value = $this->conn->fetchColumn(
+            $sql,
+            array_values($flatId),
+            0,
+            $this->extractIdentifierTypes($id, $versionedClass)
+        );
 
         return Type::getType($fieldMapping['type'])->convertToPHPValue($value, $this->platform);
+    }
+
+    private function extractIdentifierTypes(array $id, ClassMetadata $versionedClass) : array
+    {
+        $types = [];
+
+        foreach ($id as $field => $value) {
+            $types = array_merge($types, $this->getTypes($field, $value, $versionedClass));
+        }
+
+        return $types;
     }
 
     /**
@@ -792,7 +811,7 @@ class BasicEntityPersister implements EntityPersister
 
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
-            $identifier[$this->getSQLTableAlias($targetClass->name) . "." . $targetKeyColumn] =
+            $identifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
                 $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
 
             unset($identifier[$targetKeyColumn]);
@@ -1071,11 +1090,11 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = ' ' . $this->platform->getReadLockSql();
+                $lockSql = ' ' . $this->platform->getReadLockSQL();
                 break;
 
             case LockMode::PESSIMISTIC_WRITE:
-                $lockSql = ' ' . $this->platform->getWriteLockSql();
+                $lockSql = ' ' . $this->platform->getWriteLockSQL();
                 break;
         }
 
@@ -1336,7 +1355,7 @@ class BasicEntityPersister implements EntityPersister
             $resultColumnName = $this->getSQLColumnAlias($joinColumn['name']);
             $type             = PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em);
 
-            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $quotedColumn, $isIdentifier, $type);
+            $this->currentPersisterContext->rsm->addMetaResult($alias, $resultColumnName, $joinColumn['name'], $isIdentifier, $type);
 
             $columnList[] = sprintf('%s.%s AS %s', $sqlTableAlias, $quotedColumn, $resultColumnName);
         }
@@ -1527,12 +1546,12 @@ class BasicEntityPersister implements EntityPersister
 
         switch ($lockMode) {
             case LockMode::PESSIMISTIC_READ:
-                $lockSql = $this->platform->getReadLockSql();
+                $lockSql = $this->platform->getReadLockSQL();
 
                 break;
             case LockMode::PESSIMISTIC_WRITE:
 
-                $lockSql = $this->platform->getWriteLockSql();
+                $lockSql = $this->platform->getWriteLockSQL();
                 break;
         }
 
@@ -1785,7 +1804,7 @@ class BasicEntityPersister implements EntityPersister
         $parameters  = [];
         $owningAssoc = $this->class->associationMappings[$assoc['mappedBy']];
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
-        $tableAlias  = $this->getSQLTableAlias(isset($owningAssoc['inherited']) ? $owningAssoc['inherited'] : $this->class->name);
+        $tableAlias  = $this->getSQLTableAlias($owningAssoc['inherited'] ?? $this->class->name);
 
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ($sourceClass->containsForeignIdentifier) {
@@ -1877,8 +1896,9 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Infers field types to be used by parameter type casting.
      *
-     * @param string $field
-     * @param mixed  $value
+     * @param string        $field
+     * @param mixed         $value
+     * @param ClassMetadata $class
      *
      * @return array
      *

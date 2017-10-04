@@ -942,7 +942,7 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $fieldRefl = $reflService->getAccessibleProperty(
-                isset($embeddedClass['declared']) ? $embeddedClass['declared'] : $this->name,
+                $embeddedClass['declared'] ?? $this->name,
                 $property
             );
 
@@ -1376,7 +1376,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @param array $mapping The field mapping to validate & complete.
      *
-     * @return array The validated and completed field mapping.
+     * @return void
      *
      * @throws MappingException
      */
@@ -1547,11 +1547,11 @@ class ClassMetadataInfo implements ClassMetadata
         }
 
         $mapping['cascade'] = $cascades;
-        $mapping['isCascadeRemove'] = in_array('remove', $cascades);
+        $mapping['isCascadeRemove']  = in_array('remove', $cascades);
         $mapping['isCascadePersist'] = in_array('persist', $cascades);
         $mapping['isCascadeRefresh'] = in_array('refresh', $cascades);
-        $mapping['isCascadeMerge'] = in_array('merge', $cascades);
-        $mapping['isCascadeDetach'] = in_array('detach', $cascades);
+        $mapping['isCascadeMerge']   = in_array('merge', $cascades);
+        $mapping['isCascadeDetach']  = in_array('detach', $cascades);
 
         return $mapping;
     }
@@ -1617,9 +1617,7 @@ class ClassMetadataInfo implements ClassMetadata
                 }
 
                 $mapping['sourceToTargetKeyColumns'][$joinColumn['name']] = $joinColumn['referencedColumnName'];
-                $mapping['joinColumnFieldNames'][$joinColumn['name']] = isset($joinColumn['fieldName'])
-                    ? $joinColumn['fieldName']
-                    : $joinColumn['name'];
+                $mapping['joinColumnFieldNames'][$joinColumn['name']] = $joinColumn['fieldName'] ?? $joinColumn['name'];
             }
 
             if ($uniqueConstraintColumns) {
@@ -1796,12 +1794,16 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierFieldName()
     {
         if ($this->isIdentifierComposite) {
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->name);
+        }
+
+        if ( ! isset($this->identifier[0])) {
+            throw MappingException::noIdDefined($this->name);
         }
 
         return $this->identifier[0];
@@ -1813,7 +1815,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return string
      *
-     * @throws MappingException If the class has a composite primary key.
+     * @throws MappingException If the class doesn't have an identifier or it has a composite primary key.
      */
     public function getSingleIdentifierColumnName()
     {
@@ -1848,7 +1850,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function hasField($fieldName)
     {
-        return isset($this->fieldMappings[$fieldName]);
+        return isset($this->fieldMappings[$fieldName]) || isset($this->embeddedClasses[$fieldName]);
     }
 
     /**
@@ -2030,7 +2032,7 @@ class ClassMetadataInfo implements ClassMetadata
      *
      * @return \Doctrine\DBAL\Types\Type|string|null
      *
-     * @deprecated 3.0 remove this. this method is bogous and unreliable, since it cannot resolve the type of a column
+     * @deprecated 3.0 remove this. this method is bogus and unreliable, since it cannot resolve the type of a column
      *             that is derived by a referenced field on a different entity.
      */
     public function getTypeOfColumn($columnName)
@@ -2147,6 +2149,10 @@ class ClassMetadataInfo implements ClassMetadata
 
         if (isset($overrideMapping['joinTable'])) {
             $mapping['joinTable'] = $overrideMapping['joinTable'];
+        }
+
+        if (isset($overrideMapping['fetch'])) {
+            $mapping['fetch'] = $overrideMapping['fetch'];
         }
 
         $mapping['joinColumnFieldNames']        = null;
@@ -2297,6 +2303,10 @@ class ClassMetadataInfo implements ClassMetadata
             }
 
             $this->table['name'] = $table['name'];
+        }
+
+        if (isset($table['quoted'])) {
+            $this->table['quoted'] = $table['quoted'];
         }
 
         if (isset($table['schema'])) {
@@ -3276,8 +3286,8 @@ class ClassMetadataInfo implements ClassMetadata
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class' => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix' => $mapping['columnPrefix'],
-            'declaredField' => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
-            'originalField' => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'declaredField' => $mapping['declaredField'] ?? null,
+            'originalField' => $mapping['originalField'] ?? null,
         ];
     }
 
@@ -3290,15 +3300,11 @@ class ClassMetadataInfo implements ClassMetadata
     public function inlineEmbeddable($property, ClassMetadataInfo $embeddable)
     {
         foreach ($embeddable->fieldMappings as $fieldMapping) {
-            $fieldMapping['originalClass'] = isset($fieldMapping['originalClass'])
-                ? $fieldMapping['originalClass']
-                : $embeddable->name;
+            $fieldMapping['originalClass'] = $fieldMapping['originalClass'] ?? $embeddable->name;
             $fieldMapping['declaredField'] = isset($fieldMapping['declaredField'])
                 ? $property . '.' . $fieldMapping['declaredField']
                 : $property;
-            $fieldMapping['originalField'] = isset($fieldMapping['originalField'])
-                ? $fieldMapping['originalField']
-                : $fieldMapping['fieldName'];
+            $fieldMapping['originalField'] = $fieldMapping['originalField'] ?? $fieldMapping['fieldName'];
             $fieldMapping['fieldName'] = $property . "." . $fieldMapping['fieldName'];
 
             if (! empty($this->embeddedClasses[$property]['columnPrefix'])) {

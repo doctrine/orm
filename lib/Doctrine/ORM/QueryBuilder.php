@@ -107,7 +107,7 @@ class QueryBuilder
     /**
      * The maximum number of results to retrieve.
      *
-     * @var integer
+     * @var integer|null
      */
     private $_maxResults = null;
 
@@ -526,7 +526,7 @@ class QueryBuilder
      *
      * @param string|integer $key   The parameter position or name.
      * @param mixed          $value The parameter value.
-     * @param string|null    $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
+     * @param string|integer|null    $type  PDO::PARAM_* or \Doctrine\DBAL\Types\Type::* constant
      *
      * @return self
      */
@@ -653,7 +653,7 @@ class QueryBuilder
     /**
      * Sets the maximum number of results to retrieve (the "limit").
      *
-     * @param integer $maxResults The maximum number of results to retrieve.
+     * @param integer|null $maxResults The maximum number of results to retrieve.
      *
      * @return self
      */
@@ -668,7 +668,7 @@ class QueryBuilder
      * Gets the maximum number of results the query object was set to retrieve (the "limit").
      * Returns NULL if {@link setMaxResults} was not applied to this query builder.
      *
-     * @return integer Maximum number of results.
+     * @return integer|null Maximum number of results.
      */
     public function getMaxResults()
     {
@@ -1441,12 +1441,12 @@ class QueryBuilder
         $queryPart = $this->getDQLPart($queryPartName);
 
         if (empty($queryPart)) {
-            return (isset($options['empty']) ? $options['empty'] : '');
+            return ($options['empty'] ?? '');
         }
 
-        return (isset($options['pre']) ? $options['pre'] : '')
+        return ($options['pre'] ?? '')
              . (is_array($queryPart) ? implode($options['separator'], $queryPart) : $queryPart)
-             . (isset($options['post']) ? $options['post'] : '');
+             . ($options['post'] ?? '');
     }
 
     /**

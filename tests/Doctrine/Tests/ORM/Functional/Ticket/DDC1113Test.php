@@ -8,21 +8,20 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
  */
 class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     public function setUp()
     {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1113Engine::class),
-                $this->_em->getClassMetadata(DDC1113Vehicle::class),
-                $this->_em->getClassMetadata(DDC1113Car::class),
-                $this->_em->getClassMetadata(DDC1113Bus::class),
+                    $this->_em->getClassMetadata(DDC1113Engine::class),
+                    $this->_em->getClassMetadata(DDC1113Vehicle::class),
+                    $this->_em->getClassMetadata(DDC1113Car::class),
+                    $this->_em->getClassMetadata(DDC1113Bus::class),
                 ]
             );
         } catch (\Exception $e) {
-
         }
     }
 
@@ -43,8 +42,11 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->remove($bus);
         $this->_em->remove($car);
         $this->_em->flush();
-    }
 
+        self::assertEmpty($this->_em->getRepository(DDC1113Car::class)->findAll());
+        self::assertEmpty($this->_em->getRepository(DDC1113Bus::class)->findAll());
+        self::assertEmpty($this->_em->getRepository(DDC1113Engine::class)->findAll());
+    }
 }
 
 /**

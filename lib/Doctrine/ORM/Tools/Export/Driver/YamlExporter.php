@@ -193,7 +193,7 @@ class YamlExporter extends AbstractExporter
                     'mappedBy'      => $associationMapping['mappedBy'],
                     'inversedBy'    => $associationMapping['inversedBy'],
                     'orphanRemoval' => $associationMapping['orphanRemoval'],
-                    'orderBy'       => isset($associationMapping['orderBy']) ? $associationMapping['orderBy'] : null
+                    'orderBy'       => $associationMapping['orderBy'] ?? null
                 ];
 
                 $associationMappingArray = array_merge($associationMappingArray, $oneToManyMappingArray);
@@ -202,8 +202,8 @@ class YamlExporter extends AbstractExporter
                 $manyToManyMappingArray = [
                     'mappedBy'   => $associationMapping['mappedBy'],
                     'inversedBy' => $associationMapping['inversedBy'],
-                    'joinTable'  => isset($associationMapping['joinTable']) ? $associationMapping['joinTable'] : null,
-                    'orderBy'    => isset($associationMapping['orderBy']) ? $associationMapping['orderBy'] : null
+                    'joinTable'  => $associationMapping['joinTable'] ?? null,
+                    'orderBy'    => $associationMapping['orderBy'] ?? null
                 ];
 
                 $associationMappingArray = array_merge($associationMappingArray, $manyToManyMappingArray);
@@ -213,6 +213,8 @@ class YamlExporter extends AbstractExporter
         if (isset($metadata->lifecycleCallbacks)) {
             $array['lifecycleCallbacks'] = $metadata->lifecycleCallbacks;
         }
+
+        $array = $this->processEntityListeners($metadata, $array);
 
         return $this->yamlDump([$metadata->name => $array], 10);
     }
@@ -231,5 +233,33 @@ class YamlExporter extends AbstractExporter
     protected function yamlDump($array, $inline = 2)
     {
         return Yaml::dump($array, $inline);
+    }
+
+    private function processEntityListeners(ClassMetadataInfo $metadata, array $array) : array
+    {
+        if (0 === \count($metadata->entityListeners)) {
+            return $array;
+        }
+
+        $array['entityListeners'] = [];
+
+        foreach ($metadata->entityListeners as $event => $entityListenerConfig) {
+            $array = $this->processEntityListenerConfig($array, $entityListenerConfig, $event);
+        }
+
+        return $array;
+    }
+
+    private function processEntityListenerConfig(array $array, array $entityListenerConfig, string $event) : array
+    {
+        foreach ($entityListenerConfig as $entityListener) {
+            if (! isset($array['entityListeners'][$entityListener['class']])) {
+                $array['entityListeners'][$entityListener['class']] = [];
+            }
+
+            $array['entityListeners'][$entityListener['class']][$event] = [$entityListener['method']];
+        }
+
+        return $array;
     }
 }

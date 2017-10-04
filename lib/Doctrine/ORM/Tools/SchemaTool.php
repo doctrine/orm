@@ -92,7 +92,7 @@ class SchemaTool
         foreach ($createSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 throw ToolsException::schemaToolFailure($sql, $e);
             }
         }
@@ -283,13 +283,13 @@ class SchemaTool
                         $indexData['flags'] = [];
                     }
 
-                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], isset($indexData['options']) ? $indexData['options'] : []);
+                    $table->addIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, (array) $indexData['flags'], $indexData['options'] ?? []);
                 }
             }
 
             if (isset($class->table['uniqueConstraints'])) {
                 foreach ($class->table['uniqueConstraints'] as $indexName => $indexData) {
-                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], isset($indexData['options']) ? $indexData['options'] : []);
+                    $uniqIndex = new Index($indexName, $indexData['columns'], true, false, [], $indexData['options'] ?? []);
 
                     foreach ($table->getIndexes() as $tableIndexName => $tableIndex) {
                         if ($tableIndex->isFullfilledBy($uniqIndex)) {
@@ -298,7 +298,7 @@ class SchemaTool
                         }
                     }
 
-                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, isset($indexData['options']) ? $indexData['options'] : []);
+                    $table->addUniqueIndex($indexData['columns'], is_numeric($indexName) ? null : $indexName, $indexData['options'] ?? []);
                 }
             }
 
@@ -351,22 +351,21 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The portable column definition of the discriminator column as required by
-     *               the DBAL.
+     * @return void
      */
     private function addDiscriminatorColumnDefinition($class, Table $table)
     {
         $discrColumn = $class->discriminatorColumn;
 
         if ( ! isset($discrColumn['type']) ||
-            (strtolower($discrColumn['type']) == 'string' && $discrColumn['length'] === null)
+            (strtolower($discrColumn['type']) == 'string' && ! isset($discrColumn['length']))
         ) {
             $discrColumn['type'] = 'string';
             $discrColumn['length'] = 255;
         }
 
         $options = [
-            'length'    => isset($discrColumn['length']) ? $discrColumn['length'] : null,
+            'length'    => $discrColumn['length'] ?? null,
             'notnull'   => true
         ];
 
@@ -384,7 +383,7 @@ class SchemaTool
      * @param ClassMetadata $class
      * @param Table         $table
      *
-     * @return array The list of portable column definitions as required by the DBAL.
+     * @return void
      */
     private function gatherColumns($class, Table $table)
     {
@@ -401,12 +400,6 @@ class SchemaTool
                 $pkColumns[] = $this->quoteStrategy->getColumnName($mapping['fieldName'], $class, $this->platform);
             }
         }
-
-        // For now, this is a hack required for single table inheritence, since this method is called
-        // twice by single table inheritence relations
-        if (!$table->hasIndex('primary')) {
-            //$table->setPrimaryKey($pkColumns);
-        }
     }
 
     /**
@@ -416,7 +409,7 @@ class SchemaTool
      * @param array         $mapping The field mapping.
      * @param Table         $table
      *
-     * @return array The portable column definition as required by the DBAL.
+     * @return void
      */
     private function gatherColumn($class, array $mapping, Table $table)
     {
@@ -424,7 +417,7 @@ class SchemaTool
         $columnType = $mapping['type'];
 
         $options = [];
-        $options['length'] = isset($mapping['length']) ? $mapping['length'] : null;
+        $options['length'] = $mapping['length'] ?? null;
         $options['notnull'] = isset($mapping['nullable']) ? ! $mapping['nullable'] : true;
         if ($class->isInheritanceTypeSingleTable() && $class->parentClasses) {
             $options['notnull'] = false;
@@ -481,7 +474,7 @@ class SchemaTool
             $table->addColumn($columnName, $columnType, $options);
         }
 
-        $isUnique = isset($mapping['unique']) ? $mapping['unique'] : false;
+        $isUnique = $mapping['unique'] ?? false;
         if ($isUnique) {
             $table->addUniqueIndex([$columnName]);
         }
@@ -749,8 +742,8 @@ class SchemaTool
         foreach ($dropSchemaSql as $sql) {
             try {
                 $conn->executeQuery($sql);
-            } catch (\Exception $e) {
-
+            } catch (\Throwable $e) {
+                // ignored
             }
         }
     }

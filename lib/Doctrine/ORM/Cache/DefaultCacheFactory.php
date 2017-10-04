@@ -30,7 +30,6 @@ use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
@@ -210,7 +209,10 @@ class DefaultCacheFactory implements CacheFactory
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
-            if ( ! $this->fileLockRegionDirectory) {
+            if (
+                '' === $this->fileLockRegionDirectory ||
+                null === $this->fileLockRegionDirectory
+            ) {
                 throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '

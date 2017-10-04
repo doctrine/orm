@@ -24,6 +24,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\MappingException;
+use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
@@ -165,7 +166,7 @@ class XmlDriver extends FileDriver
             $inheritanceType = (string) $xmlRoot['inheritance-type'];
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . $inheritanceType));
 
-            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType != Metadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate <discriminator-column...>
                 if (isset($xmlRoot->{'discriminator-column'})) {
                     $discrColumn = $xmlRoot->{'discriminator-column'};
@@ -621,6 +622,11 @@ class XmlDriver extends FileDriver
                     $override['inversedBy'] = (string) $overrideElement->{'inversed-by'}['name'];
                 }
 
+                // Check for `fetch`
+                if (isset($overrideElement['fetch'])) {
+                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . (string) $overrideElement['fetch']);
+                }
+
                 $metadata->setAssociationOverride($fieldName, $override);
             }
         }
@@ -832,7 +838,8 @@ class XmlDriver extends FileDriver
     protected function loadMappingFile($file)
     {
         $result = [];
-        $xmlElement = simplexml_load_file($file);
+        // Note: we do not use `simplexml_load_file()` because of https://bugs.php.net/bug.php?id=62577
+        $xmlElement = simplexml_load_string(file_get_contents($file));
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {

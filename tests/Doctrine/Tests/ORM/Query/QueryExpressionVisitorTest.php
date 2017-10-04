@@ -68,6 +68,9 @@ class QueryExpressionVisitorTest extends TestCase
 
             [$cb->contains('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value%')],
 
+            [$cb->startsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', 'value%')],
+            [$cb->endsWith('field', 'value'), $qb->like('o.field', ':field'), new Parameter('field', '%value')],
+
             // Test parameter conversion
             [$cb->eq('object.field', 'value'), $qb->eq('o.object.field', ':object_field'), new Parameter('object_field', 'value')],
 

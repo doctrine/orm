@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Types\Type as DBALType;
+use Doctrine\Tests\DbalTypes\NegativeToPositiveType;
+use Doctrine\Tests\DbalTypes\UpperCaseStringType;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\CustomType\CustomTypeUpperCase;
@@ -12,16 +14,16 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
-        if (DBALType::hasType('upper_case_string')) {
-            DBALType::overrideType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+        if (DBALType::hasType(UpperCaseStringType::NAME)) {
+            DBALType::overrideType(UpperCaseStringType::NAME, UpperCaseStringType::class);
         } else {
-            DBALType::addType('upper_case_string', '\Doctrine\Tests\DbalTypes\UpperCaseStringType');
+            DBALType::addType(UpperCaseStringType::NAME, UpperCaseStringType::class);
         }
 
-        if (DBALType::hasType('negative_to_positive')) {
-            DBALType::overrideType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+        if (DBALType::hasType(NegativeToPositiveType::NAME)) {
+            DBALType::overrideType(NegativeToPositiveType::NAME, NegativeToPositiveType::class);
         } else {
-            DBALType::addType('negative_to_positive', '\Doctrine\Tests\DbalTypes\NegativeToPositiveType');
+            DBALType::addType(NegativeToPositiveType::NAME, NegativeToPositiveType::class);
         }
 
         $this->useModelSet('customtype');

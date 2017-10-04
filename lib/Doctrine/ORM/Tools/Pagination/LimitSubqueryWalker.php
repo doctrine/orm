@@ -136,7 +136,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot        = reset($from);
 
         if ($query instanceof Query
-            && $query->getMaxResults()
+            && null !== $query->getMaxResults()
             && $AST->orderByClause
             && count($fromRoot->joins)) {
             // Check each orderby item.

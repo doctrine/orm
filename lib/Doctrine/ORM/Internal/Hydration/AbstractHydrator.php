@@ -143,6 +143,8 @@ abstract class AbstractHydrator
         $this->_rsm   = $resultSetMapping;
         $this->_hints = $hints;
 
+        $this->_em->getEventManager()->addEventListener([Events::onClear], $this);
+
         $this->prepare();
 
         $result = $this->hydrateAllData();
@@ -211,6 +213,11 @@ abstract class AbstractHydrator
         $this->_rsm           = null;
         $this->_cache         = [];
         $this->_metadataCache = [];
+
+        $this
+            ->_em
+            ->getEventManager()
+            ->removeEventListener([Events::onClear], $this);
     }
 
     /**
@@ -286,6 +293,17 @@ abstract class AbstractHydrator
                 default:
                     $dqlAlias = $cacheKeyInfo['dqlAlias'];
                     $type     = $cacheKeyInfo['type'];
+
+                    // If there are field name collisions in the child class, then we need
+                    // to only hydrate if we are looking at the correct discriminator value
+                    if(
+                        isset($cacheKeyInfo['discriminatorColumn']) && 
+                        isset($data[$cacheKeyInfo['discriminatorColumn']]) &&
+                        // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
+                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
+                    ) {
+                        break;
+                    }
 
                     // in an inheritance hierarchy the same field could be defined several times.
                     // We overwrite this value so long we don't have a non-null value, that value we keep.
@@ -368,13 +386,27 @@ abstract class AbstractHydrator
                 $classMetadata = $this->getClassMetadata($this->_rsm->declaringClasses[$key]);
                 $fieldName     = $this->_rsm->fieldMappings[$key];
                 $fieldMapping  = $classMetadata->fieldMappings[$fieldName];
-
-                return $this->_cache[$key] = [
-                    'isIdentifier' => in_array($fieldName, $classMetadata->identifier),
+                $ownerMap      = $this->_rsm->columnOwnerMap[$key];
+                $columnInfo    = [
+                    'isIdentifier' => \in_array($fieldName, $classMetadata->identifier, true),
                     'fieldName'    => $fieldName,
                     'type'         => Type::getType($fieldMapping['type']),
-                    'dqlAlias'     => $this->_rsm->columnOwnerMap[$key],
+                    'dqlAlias'     => $ownerMap,
                 ];
+
+                // the current discriminator value must be saved in order to disambiguate fields hydration,
+                // should there be field name collisions
+                if ($classMetadata->parentClasses && isset($this->_rsm->discriminatorColumns[$ownerMap])) {
+                    return $this->_cache[$key] = \array_merge(
+                        $columnInfo,
+                        [
+                            'discriminatorColumn' => $this->_rsm->discriminatorColumns[$ownerMap],
+                            'discriminatorValue'  => $classMetadata->discriminatorValue
+                        ]
+                    );
+                }
+
+                return $this->_cache[$key] = $columnInfo;
 
             case (isset($this->_rsm->newObjectMappings[$key])):
                 // WARNING: A NEW object is also a scalar, so it must be declared before!

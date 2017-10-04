@@ -101,7 +101,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="result-class" type="xs:string" />
+    <xs:attribute name="result-class" type="orm:fqcn" />
     <xs:attribute name="result-set-mapping" type="xs:string" />
   </xs:complexType>
 
@@ -117,7 +117,7 @@
       <xs:element name="lifecycle-callback" type="orm:lifecycle-callback" minOccurs="0" maxOccurs="unbounded"/>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="class" type="xs:string"/>
+    <xs:attribute name="class" type="orm:fqcn"/>
   </xs:complexType>
 
   <xs:complexType name="entity-listeners">
@@ -139,7 +139,7 @@
     <xs:sequence>
       <xs:element name="field-result" type="orm:field-result" minOccurs="0" maxOccurs="unbounded" />
     </xs:sequence>
-    <xs:attribute name="entity-class" type="xs:string" use="required" />
+    <xs:attribute name="entity-class" type="orm:fqcn" use="required" />
     <xs:attribute name="discriminator-column" type="xs:string" use="optional" />
   </xs:complexType>
 
@@ -167,7 +167,7 @@
   </xs:complexType>
 
   <xs:complexType name="entity">
-    <xs:sequence>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="cache" type="orm:cache" minOccurs="0" maxOccurs="1"/>
       <xs:element name="options" type="orm:options" minOccurs="0" />
       <xs:element name="indexes" type="orm:indexes" minOccurs="0"/>
@@ -189,16 +189,23 @@
       <xs:element name="association-overrides" type="orm:association-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:element name="attribute-overrides" type="orm:attribute-overrides" minOccurs="0" maxOccurs="unbounded" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-    </xs:sequence>
+    </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="table" type="xs:NMTOKEN" />
+    <xs:attribute name="table" type="orm:tablename" />
     <xs:attribute name="schema" type="xs:NMTOKEN" />
-    <xs:attribute name="repository-class" type="xs:string"/>
+    <xs:attribute name="repository-class" type="orm:fqcn"/>
     <xs:attribute name="inheritance-type" type="orm:inheritance-type"/>
     <xs:attribute name="change-tracking-policy" type="orm:change-tracking-policy" />
     <xs:attribute name="read-only" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
+
+  <xs:simpleType name="tablename" id="tablename">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[a-zA-Z_u01-uff.]+" id="tablename.pattern">
+      </xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="option" mixed="true">
     <xs:sequence minOccurs="0" maxOccurs="unbounded">
@@ -302,7 +309,7 @@
 
   <xs:complexType name="embedded">
     <xs:attribute name="name" type="xs:string" use="required" />
-    <xs:attribute name="class" type="xs:string" use="required" />
+    <xs:attribute name="class" type="orm:fqcn" use="required" />
     <xs:attribute name="column-prefix" type="xs:string" use="optional" />
     <xs:attribute name="use-column-prefix" type="xs:boolean" default="true" use="optional" />
   </xs:complexType>
@@ -361,7 +368,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
-    <xs:attribute name="class" type="xs:string" use="required"/>
+    <xs:attribute name="class" type="orm:fqcn" use="required"/>
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -412,8 +419,15 @@
     <xs:sequence>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="class" type="xs:string" use="required" />
+    <xs:attribute name="class" type="orm:fqcn" use="required" />
   </xs:complexType>
+
+  <xs:simpleType name="fqcn" id="fqcn">
+    <xs:restriction base="xs:token">
+      <xs:pattern value="[a-zA-Z_u01-uff][a-zA-Z0-9_u01-uff]+" id="fqcn.pattern">
+      </xs:pattern>
+    </xs:restriction>
+  </xs:simpleType>
 
   <xs:complexType name="inverse-join-columns">
     <xs:sequence>
@@ -567,6 +581,7 @@
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
     <xs:attribute name="name" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="fetch" type="orm:fetch-type" use="optional" />
   </xs:complexType>
 
   <xs:complexType name="inversed-by-override">

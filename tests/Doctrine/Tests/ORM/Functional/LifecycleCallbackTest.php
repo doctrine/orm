@@ -268,6 +268,47 @@ DQL;
             break;
         }
     }
+    
+    /**
+     * https://github.com/doctrine/doctrine2/issues/6568
+     */
+    public function testPostLoadIsInvokedOnFetchJoinedEntities()
+    {
+        $entA = new LifecycleCallbackCascader();
+        $this->_em->persist($entA);
+        
+        $entB_1 = new LifecycleCallbackTestEntity();
+        $entB_2 = new LifecycleCallbackTestEntity();
+
+        $entA->entities[] = $entB_1;
+        $entA->entities[] = $entB_2;
+        $entB_1->cascader = $entA;
+        $entB_2->cascader = $entA;
+
+        $this->_em->flush();
+        $this->_em->clear();
+
+        $dql = <<<'DQL'
+SELECT
+    entA, entB
+FROM
+    Doctrine\Tests\ORM\Functional\LifecycleCallbackCascader AS entA
+LEFT JOIN
+    entA.entities AS entB
+WHERE
+    entA.id = :entA_id
+DQL;
+
+        $fetchedA = $this
+            ->_em
+            ->createQuery($dql)->setParameter('entA_id', $entA->getId())
+            ->getOneOrNullResult();
+
+        $this->assertTrue($fetchedA->postLoadCallbackInvoked);
+        foreach ($fetchedA->entities as $fetchJoinedEntB) {
+            $this->assertTrue($fetchJoinedEntB->postLoadCallbackInvoked);
+        }
+    }
 
     public function testLifecycleCallbacksGetInherited()
     {
@@ -454,6 +495,10 @@ class LifecycleCallbackCascader
     public function doStuffOnPostLoad() {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
+    }
+    
+    public function getId() {
+        return $this->id;
     }
 }
 

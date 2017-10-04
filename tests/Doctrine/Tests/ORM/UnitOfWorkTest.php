@@ -163,7 +163,8 @@ class UnitOfWorkTest extends OrmTestCase
         $this->_unitOfWork->persist($entity);
 
         $this->_unitOfWork->commit();
-        $this->assertEquals(1, count($persister->getInserts()));
+        $this->assertCount(1, $persister->getInserts());
+
         $persister->reset();
 
         $this->assertTrue($this->_unitOfWork->isInIdentityMap($entity));
@@ -248,8 +249,12 @@ class UnitOfWorkTest extends OrmTestCase
         // Schedule user for update without changes
         $this->_unitOfWork->scheduleForUpdate($user);
 
+        self::assertNotEmpty($this->_unitOfWork->getScheduledEntityUpdates());
+
         // This commit should not raise an E_NOTICE
         $this->_unitOfWork->commit();
+
+        self::assertEmpty($this->_unitOfWork->getScheduledEntityUpdates());
     }
 
     /**
@@ -354,6 +359,49 @@ class UnitOfWorkTest extends OrmTestCase
         $this->assertFalse($this->_unitOfWork->isInIdentityMap($entity2));
         $this->assertTrue($this->_unitOfWork->isScheduledForInsert($entity1));
         $this->assertFalse($this->_unitOfWork->isScheduledForInsert($entity2));
+    }
+
+    /**
+     * @group #5579
+     */
+    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity() : void
+    {
+        $entity1 = new NotifyChangedEntity;
+        $entity2 = new NotifyChangedEntity;
+
+        $entity1->setData('thedata');
+        $entity2->setData('thedata');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+
+        $this->_unitOfWork->commit($entity1);
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+    }
+
+    /**
+     * @group #5579
+     */
+    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities() : void
+    {
+        $entity1 = new NotifyChangedEntity;
+        $entity2 = new NotifyChangedEntity;
+        $entity3 = new NotifyChangedEntity;
+
+        $entity1->setData('thedata');
+        $entity2->setData('thedata');
+        $entity3->setData('thedata');
+
+        $this->_unitOfWork->persist($entity1);
+        $this->_unitOfWork->persist($entity2);
+        $this->_unitOfWork->persist($entity3);
+
+        $this->_unitOfWork->commit([$entity1, $entity3]);
+
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
+        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
+        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
@@ -551,7 +599,7 @@ class UnitOfWorkTest extends OrmTestCase
         $mergedEntity    = new EntityWithRandomlyGeneratedField();
 
         $mergedEntity->id = $persistedEntity->id;
-        $mergedEntity->generatedField = mt_rand(
+        $mergedEntity->generatedField = random_int(
             $persistedEntity->generatedField + 1,
             $persistedEntity->generatedField + 1000
         );
@@ -576,6 +624,135 @@ class UnitOfWorkTest extends OrmTestCase
 
         self::assertSame($merged, $persistedEntity);
         self::assertSame($persistedEntity->generatedField, $mergedEntity->generatedField);
+    }
+
+    /**
+     * Unlike next test, this one demonstrates that the problem does
+     * not necessarily reproduce if all the pieces are being flushed together.
+     *
+     * @group DDC-2922
+     * @group #1521
+     */
+    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughCascadedAssociationsFirst()
+    {
+        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithCascadingAssociation::class));
+        $persister3 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->_unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
+        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
+
+        $cascadePersisted = new CascadePersistedEntity();
+        $cascading        = new EntityWithCascadingAssociation();
+        $nonCascading     = new EntityWithNonCascadingAssociation();
+
+        // First we persist and flush a EntityWithCascadingAssociation with
+        // the cascading association not set. Having the "cascading path" involve
+        // a non-new object is important to show that the ORM should be considering
+        // cascades across entity changesets in subsequent flushes.
+        $cascading->cascaded = $cascadePersisted;
+        $nonCascading->cascaded = $cascadePersisted;
+
+        $this->_unitOfWork->persist($cascading);
+        $this->_unitOfWork->persist($nonCascading);
+
+        $this->_unitOfWork->commit();
+
+        $this->assertCount(1, $persister1->getInserts());
+        $this->assertCount(1, $persister2->getInserts());
+        $this->assertCount(1, $persister3->getInserts());
+    }
+
+    /**
+     * This test exhibits the bug describe in the ticket, where an object that
+     * ought to be reachable causes errors.
+     *
+     * @group DDC-2922
+     * @group #1521
+     */
+    public function testNewAssociatedEntityPersistenceOfNewEntitiesThroughNonCascadedAssociationsFirst()
+    {
+        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithCascadingAssociation::class));
+        $persister3 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->_unitOfWork->setEntityPersister(EntityWithCascadingAssociation::class, $persister2);
+        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister3);
+
+        $cascadePersisted = new CascadePersistedEntity();
+        $cascading        = new EntityWithCascadingAssociation();
+        $nonCascading     = new EntityWithNonCascadingAssociation();
+
+        // First we persist and flush a EntityWithCascadingAssociation with
+        // the cascading association not set. Having the "cascading path" involve
+        // a non-new object is important to show that the ORM should be considering
+        // cascades across entity changesets in subsequent flushes.
+        $cascading->cascaded = null;
+
+        $this->_unitOfWork->persist($cascading);
+        $this->_unitOfWork->commit();
+
+        self::assertCount(0, $persister1->getInserts());
+        self::assertCount(1, $persister2->getInserts());
+        self::assertCount(0, $persister3->getInserts());
+
+        // Note that we have NOT directly persisted the CascadePersistedEntity,
+        // and EntityWithNonCascadingAssociation does NOT have a configured
+        // cascade-persist.
+        $nonCascading->nonCascaded = $cascadePersisted;
+
+        // However, EntityWithCascadingAssociation *does* have a cascade-persist
+        // association, which ought to allow us to save the CascadePersistedEntity
+        // anyway through that connection.
+        $cascading->cascaded = $cascadePersisted;
+
+        $this->_unitOfWork->persist($nonCascading);
+        $this->_unitOfWork->commit();
+
+        self::assertCount(1, $persister1->getInserts());
+        self::assertCount(1, $persister2->getInserts());
+        self::assertCount(1, $persister3->getInserts());
+    }
+
+
+    /**
+     * This test exhibits the bug describe in the ticket, where an object that
+     * ought to be reachable causes errors.
+     *
+     * @group DDC-2922
+     * @group #1521
+     */
+    public function testPreviousDetectedIllegalNewNonCascadedEntitiesAreCleanedUpOnSubsequentCommits()
+    {
+        $persister1 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(CascadePersistedEntity::class));
+        $persister2 = new EntityPersisterMock($this->_emMock, $this->_emMock->getClassMetadata(EntityWithNonCascadingAssociation::class));
+        $this->_unitOfWork->setEntityPersister(CascadePersistedEntity::class, $persister1);
+        $this->_unitOfWork->setEntityPersister(EntityWithNonCascadingAssociation::class, $persister2);
+
+        $cascadePersisted = new CascadePersistedEntity();
+        $nonCascading     = new EntityWithNonCascadingAssociation();
+
+        // We explicitly cause the ORM to detect a non-persisted new entity in the association graph:
+        $nonCascading->nonCascaded = $cascadePersisted;
+
+        $this->_unitOfWork->persist($nonCascading);
+
+        try {
+            $this->_unitOfWork->commit();
+
+            self::fail('An exception was supposed to be raised');
+        } catch (ORMInvalidArgumentException $ignored) {
+            self::assertEmpty($persister1->getInserts());
+            self::assertEmpty($persister2->getInserts());
+        }
+
+        $this->_unitOfWork->clear();
+        $this->_unitOfWork->persist(new CascadePersistedEntity());
+        $this->_unitOfWork->commit();
+
+        // Persistence operations should just recover normally:
+        self::assertCount(1, $persister1->getInserts());
+        self::assertCount(0, $persister2->getInserts());
     }
 }
 
@@ -738,6 +915,48 @@ class EntityWithRandomlyGeneratedField
     public function __construct()
     {
         $this->id             = uniqid('id', true);
-        $this->generatedField = mt_rand(0, 100000);
+        $this->generatedField = random_int(0, 100000);
+    }
+}
+
+/** @Entity */
+class CascadePersistedEntity
+{
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    private $id;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
+}
+
+/** @Entity */
+class EntityWithCascadingAssociation
+{
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    private $id;
+
+    /** @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"}) */
+    public $cascaded;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
+    }
+}
+
+/** @Entity */
+class EntityWithNonCascadingAssociation
+{
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    private $id;
+
+    /** @ManyToOne(targetEntity=CascadePersistedEntity::class) */
+    public $nonCascaded;
+
+    public function __construct()
+    {
+        $this->id = uniqid(self::class, true);
     }
 }

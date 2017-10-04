@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\Quote\Group;
-use Doctrine\Tests\Models\Quote\Phone;
 use Doctrine\Tests\Models\Quote\User;
 use Doctrine\Tests\Models\Quote\Address;
 
@@ -13,21 +11,11 @@ use Doctrine\Tests\Models\Quote\Address;
  */
 class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-    protected function setUp()
+    protected function setUp() : void
     {
-        parent::setUp();
+        $this->useModelSet('quote');
 
-        try {
-            $this->_schemaTool->createSchema(
-                [
-                $this->_em->getClassMetadata(User::class),
-                $this->_em->getClassMetadata(Group::class),
-                $this->_em->getClassMetadata(Phone::class),
-                $this->_em->getClassMetadata(Address::class),
-                ]
-            );
-        } catch(\Exception $e) {
-        }
+        parent::setUp();
     }
 
     public function testCreateRetrieveUpdateDelete()

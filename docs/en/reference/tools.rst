@@ -205,7 +205,7 @@ tables of the current model to clean up with orphaned tables.
 You can also use database introspection to update your schema
 easily with the ``updateSchema()`` method. It will compare your
 existing database schema to the passed array of
-``ClassMetdataInfo`` instances.
+``ClassMetadataInfo`` instances.
 
 .. code-block:: php
 

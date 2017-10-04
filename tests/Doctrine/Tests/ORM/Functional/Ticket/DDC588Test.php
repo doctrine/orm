@@ -7,9 +7,10 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
         $this->_schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC588Site::class),
+                $this->_em->getClassMetadata(DDC588Site::class),
             ]
         );
     }
@@ -22,6 +23,8 @@ class DDC588Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         // Following should not result in exception
         $this->_em->refresh($site);
+
+        $this->addToAssertionCount(1);
     }
 }
 

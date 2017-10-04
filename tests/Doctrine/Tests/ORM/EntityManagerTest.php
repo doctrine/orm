@@ -233,6 +233,24 @@ class EntityManagerTest extends OrmTestCase
     }
 
     /**
+     * @group #5796
+     */
+    public function testTransactionalReThrowsThrowables()
+    {
+        try {
+            $this->_em->transactional(function () {
+                (function (array $value) {
+                    // this only serves as an IIFE that throws a `TypeError`
+                })(null);
+            });
+
+            self::fail('TypeError expected to be thrown');
+        } catch (\TypeError $ignored) {
+            self::assertFalse($this->_em->isOpen());
+        }
+    }
+
+    /**
      * @group 6017
      */
     public function testClearManagerWithObject()
@@ -259,7 +277,7 @@ class EntityManagerTest extends OrmTestCase
      */
     public function testClearManagerWithProxyClassName()
     {
-        $proxy = $this->_em->getReference(Country::class, ['id' => rand(457, 100000)]);
+        $proxy = $this->_em->getReference(Country::class, ['id' => random_int(457, 100000)]);
 
         $entity = new Country(456, 'United Kingdom');
 

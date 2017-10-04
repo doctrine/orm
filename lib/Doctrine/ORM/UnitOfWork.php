@@ -43,8 +43,8 @@ use Doctrine\ORM\Persisters\Entity\JoinedSubclassPersister;
 use Doctrine\ORM\Persisters\Entity\SingleTablePersister;
 use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\ORM\Utility\IdentifierFlattener;
-use Exception;
 use InvalidArgumentException;
+use Throwable;
 use UnexpectedValueException;
 
 /**
@@ -177,6 +177,19 @@ class UnitOfWork implements PropertyChangedListener
      * @var array
      */
     private $entityDeletions = [];
+
+    /**
+     * New entities that were discovered through relationships that were not
+     * marked as cascade-persist. During flush, this array is populated and
+     * then pruned of any entities that were discovered through a valid
+     * cascade-persist path. (Leftovers cause an error.)
+     *
+     * Keys are OIDs, payload is a two-item array describing the association
+     * and the entity.
+     *
+     * @var object[][]|array[][] indexed by respective object spl_object_hash()
+     */
+    private $nonCascadedNewDetectedEntities = [];
 
     /**
      * All pending collection deletions.
@@ -324,7 +337,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         // Compute changes done since last commit.
-        if ($entity === null) {
+        if (null === $entity) {
             $this->computeChangeSets();
         } elseif (is_object($entity)) {
             $this->computeSingleEntityChangeSet($entity);
@@ -345,6 +358,8 @@ class UnitOfWork implements PropertyChangedListener
 
             return; // Nothing to do.
         }
+
+        $this->assertThatThereAreNoUnintentionallyNonPersistedAssociations();
 
         if ($this->orphanRemovals) {
             foreach ($this->orphanRemovals as $orphan) {
@@ -396,7 +411,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $conn->commit();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->em->close();
             $conn->rollBack();
 
@@ -414,17 +429,41 @@ class UnitOfWork implements PropertyChangedListener
 
         $this->dispatchPostFlushEvent();
 
-        // Clear up
+        $this->postCommitCleanup($entity);
+    }
+
+    /**
+     * @param null|object|object[] $entity
+     */
+    private function postCommitCleanup($entity) : void
+    {
         $this->entityInsertions =
         $this->entityUpdates =
         $this->entityDeletions =
         $this->extraUpdates =
-        $this->entityChangeSets =
         $this->collectionUpdates =
+        $this->nonCascadedNewDetectedEntities =
         $this->collectionDeletions =
         $this->visitedCollections =
-        $this->scheduledForSynchronization =
         $this->orphanRemovals = [];
+
+        if (null === $entity) {
+            $this->entityChangeSets = $this->scheduledForSynchronization = [];
+
+            return;
+        }
+
+        $entities = \is_object($entity)
+            ? [$entity]
+            : $entity;
+
+        foreach ($entities as $object) {
+            $oid = \spl_object_hash($object);
+
+            $this->clearEntityChangeSet($oid);
+
+            unset($this->scheduledForSynchronization[$this->em->getClassMetadata(\get_class($object))->rootEntityName][$oid]);
+        }
     }
 
     /**
@@ -838,11 +877,20 @@ class UnitOfWork implements PropertyChangedListener
             switch ($state) {
                 case self::STATE_NEW:
                     if ( ! $assoc['isCascadePersist']) {
-                        throw ORMInvalidArgumentException::newEntityFoundThroughRelationship($assoc, $entry);
+                        /*
+                         * For now just record the details, because this may
+                         * not be an issue if we later discover another pathway
+                         * through the object-graph where cascade-persistence
+                         * is enabled for this object.
+                         */
+                        $this->nonCascadedNewDetectedEntities[\spl_object_hash($entry)] = [$assoc, $entry];
+
+                        break;
                     }
 
                     $this->persistNew($targetClass, $entry);
                     $this->computeChangeSet($targetClass, $entry);
+
                     break;
 
                 case self::STATE_REMOVED:
@@ -953,7 +1001,7 @@ class UnitOfWork implements PropertyChangedListener
         $changeSet = [];
 
         foreach ($actualData as $propName => $actualValue) {
-            $orgValue = isset($originalData[$propName]) ? $originalData[$propName] : null;
+            $orgValue = $originalData[$propName] ?? null;
 
             if ($orgValue !== $actualValue) {
                 $changeSet[$propName] = [$orgValue, $actualValue];
@@ -2388,6 +2436,7 @@ class UnitOfWork implements PropertyChangedListener
             $this->entityInsertions =
             $this->entityUpdates =
             $this->entityDeletions =
+            $this->nonCascadedNewDetectedEntities =
             $this->collectionDeletions =
             $this->collectionUpdates =
             $this->extraUpdates =
@@ -2500,7 +2549,6 @@ class UnitOfWork implements PropertyChangedListener
     public function createEntity($className, array $data, &$hints = [])
     {
         $class = $this->em->getClassMetadata($className);
-        //$isReadOnly = isset($hints[Query::HINT_READ_ONLY]);
 
         $id = $this->identifierFlattener->flattenIdentifier($class, $data);
         $idHash = implode(' ', $id);
@@ -2530,28 +2578,22 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof Proxy && ! $entity->__isInitialized()) {
                 $entity->__setInitialized(true);
 
-                $overrideLocalValues = true;
-
                 if ($entity instanceof NotifyPropertyChanged) {
                     $entity->addPropertyChangedListener($this);
                 }
             } else {
-                $overrideLocalValues = isset($hints[Query::HINT_REFRESH]);
-
-                // If only a specific entity is set to refresh, check that it's the one
-                if (isset($hints[Query::HINT_REFRESH_ENTITY])) {
-                    $overrideLocalValues = $hints[Query::HINT_REFRESH_ENTITY] === $entity;
+                if ( ! isset($hints[Query::HINT_REFRESH])
+                    || (isset($hints[Query::HINT_REFRESH_ENTITY]) && $hints[Query::HINT_REFRESH_ENTITY] !== $entity)) {
+                    return $entity;
                 }
             }
 
-            if ($overrideLocalValues) {
-                // inject ObjectManager upon refresh.
-                if ($entity instanceof ObjectManagerAware) {
-                    $entity->injectObjectManager($this->em, $class);
-                }
-
-                $this->originalEntityData[$oid] = $data;
+            // inject ObjectManager upon refresh.
+            if ($entity instanceof ObjectManagerAware) {
+                $entity->injectObjectManager($this->em, $class);
             }
+
+            $this->originalEntityData[$oid] = $data;
         } else {
             $entity = $this->newInstance($class);
             $oid    = spl_object_hash($entity);
@@ -2565,12 +2607,6 @@ class UnitOfWork implements PropertyChangedListener
             if ($entity instanceof NotifyPropertyChanged) {
                 $entity->addPropertyChangedListener($this);
             }
-
-            $overrideLocalValues = true;
-        }
-
-        if ( ! $overrideLocalValues) {
-            return $entity;
         }
 
         foreach ($data as $field => $value) {
@@ -2632,7 +2668,7 @@ class UnitOfWork implements PropertyChangedListener
 
                     // TODO: Is this even computed right in all cases of composite keys?
                     foreach ($assoc['targetToSourceKeyColumns'] as $targetColumn => $srcColumn) {
-                        $joinColumnValue = isset($data[$srcColumn]) ? $data[$srcColumn] : null;
+                        $joinColumnValue = $data[$srcColumn] ?? null;
 
                         if ($joinColumnValue !== null) {
                             if ($targetClass->containsForeignIdentifier) {
@@ -2774,10 +2810,8 @@ class UnitOfWork implements PropertyChangedListener
             }
         }
 
-        if ($overrideLocalValues) {
-            // defer invoking of postLoad event to hydration complete step
-            $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
-        }
+        // defer invoking of postLoad event to hydration complete step
+        $this->hydrationCompleteHandler->deferPostLoadInvoking($class, $entity);
 
         return $entity;
     }
@@ -3101,7 +3135,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function clearEntityChangeSet($oid)
     {
-        $this->entityChangeSets[$oid] = [];
+        unset($this->entityChangeSets[$oid]);
     }
 
     /* PropertyChangedListener implementation */
@@ -3339,6 +3373,22 @@ class UnitOfWork implements PropertyChangedListener
             : $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
+    }
+
+    /**
+     * @throws ORMInvalidArgumentException
+     */
+    private function assertThatThereAreNoUnintentionallyNonPersistedAssociations() : void
+    {
+        $entitiesNeedingCascadePersist = \array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);
+
+        $this->nonCascadedNewDetectedEntities = [];
+
+        if ($entitiesNeedingCascadePersist) {
+            throw ORMInvalidArgumentException::newEntitiesFoundThroughRelationships(
+                \array_values($entitiesNeedingCascadePersist)
+            );
+        }
     }
 
     /**

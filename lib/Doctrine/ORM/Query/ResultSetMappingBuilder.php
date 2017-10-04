@@ -206,8 +206,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 return $columnName . $this->sqlCounter++;
 
             case self::COLUMN_RENAMING_CUSTOM:
-                return isset($customRenameColumns[$columnName])
-                    ? $customRenameColumns[$columnName] : $columnName;
+                return $customRenameColumns[$columnName] ?? $columnName;
 
             case self::COLUMN_RENAMING_NONE:
                 return $columnName;
@@ -441,8 +440,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
         $sql = "";
 
         foreach ($this->columnOwnerMap as $columnName => $dqlAlias) {
-            $tableAlias = isset($tableAliases[$dqlAlias])
-                ? $tableAliases[$dqlAlias] : $dqlAlias;
+            $tableAlias = $tableAliases[$dqlAlias] ?? $dqlAlias;
 
             if ($sql) {
                 $sql .= ", ";

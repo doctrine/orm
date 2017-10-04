@@ -305,15 +305,6 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group DDC-980
-     */
-    public function testUpdateDeleteSizeSubselectQueries()
-    {
-        $this->_em->createQuery("DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10")->execute();
-        $this->_em->createQuery("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10")->execute();
-    }
-
-    /**
      * @group DDC-978
      */
     public function testClearAndResetCollection()

@@ -1,3 +1,26 @@
+# Upgrade to 2.6
+
+## Minor BC BREAK: `Doctrine\ORM\Tools\Console\ConsoleRunner` is now final
+
+Since it's just an utilitarian class and should not be inherited.
+
+## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
+
+Method `Doctrine\ORM\Query\QueryException::associationPathInverseSideNotSupported`
+now has a required parameter `$pathExpr`.
+
+## Minor BC BREAK: removed `Doctrine\ORM\Query\Parser#isInternalFunction`
+
+Method `Doctrine\ORM\Query\Parser#isInternalFunction` was removed because 
+the distinction between internal function and user defined DQL was removed.
+[#6500](https://github.com/doctrine/doctrine2/pull/6500)
+
+## Minor BC BREAK: removed `Doctrine\ORM\ORMException#overwriteInternalDQLFunctionNotAllowed`
+
+Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed` was 
+removed because of the choice to allow users to overwrite internal functions, ie
+`AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/doctrine2/pull/6500)
+
 # Upgrade to 2.5
 
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`

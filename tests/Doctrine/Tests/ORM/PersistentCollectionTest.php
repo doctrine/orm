@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Mocks\DriverMock;
 use Doctrine\Tests\Mocks\EntityManagerMock;
@@ -24,7 +25,7 @@ class PersistentCollectionTest extends OrmTestCase
     protected $collection;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerMock
      */
     private $_emMock;
 
@@ -33,6 +34,8 @@ class PersistentCollectionTest extends OrmTestCase
         parent::setUp();
 
         $this->_emMock = EntityManagerMock::create(new ConnectionMock([], new DriverMock()));
+
+        $this->setUpPersistentCollection();
     }
 
     /**
@@ -59,7 +62,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testCurrentInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->current();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -69,7 +71,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testKeyInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->key();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -79,7 +80,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testNextInitializesCollection()
     {
-        $this->setUpPersistentCollection();
         $this->collection->next();
         $this->assertTrue($this->collection->isInitialized());
     }
@@ -89,8 +89,6 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testNonObjects()
     {
-        $this->setUpPersistentCollection();
-
         $this->assertEmpty($this->collection);
 
         $this->collection->add("dummy");
@@ -113,12 +111,12 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testRemovingElementsAlsoRemovesKeys()
     {
-        $this->setUpPersistentCollection();
+        $dummy = new \stdClass();
 
-        $this->collection->add('dummy');
+        $this->collection->add($dummy);
         $this->assertEquals([0], array_keys($this->collection->toArray()));
 
-        $this->collection->removeElement('dummy');
+        $this->collection->removeElement($dummy);
         $this->assertEquals([], array_keys($this->collection->toArray()));
     }
 
@@ -127,9 +125,7 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoClearKeys()
     {
-        $this->setUpPersistentCollection();
-
-        $this->collection->add('dummy');
+        $this->collection->add(new \stdClass());
         $this->collection->clear();
         $this->assertEquals([], array_keys($this->collection->toArray()));
     }
@@ -139,12 +135,133 @@ class PersistentCollectionTest extends OrmTestCase
      */
     public function testClearWillAlsoResetKeyPositions()
     {
-        $this->setUpPersistentCollection();
+        $dummy = new \stdClass();
 
-        $this->collection->add('dummy');
-        $this->collection->removeElement('dummy');
+        $this->collection->add($dummy);
+        $this->collection->removeElement($dummy);
         $this->collection->clear();
-        $this->collection->add('dummy');
+        $this->collection->add($dummy);
         $this->assertEquals([0], array_keys($this->collection->toArray()));
+    }
+
+    /**
+     * @group 6613
+     * @group 6614
+     * @group 6616
+     */
+    public function testWillKeepNewItemsInDirtyCollectionAfterInitialization() : void
+    {
+        /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $newElement       = new \stdClass();
+        $persistedElement = new \stdClass();
+
+        $this->collection->add($newElement);
+
+        self::assertFalse($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+
+        $unitOfWork
+            ->expects(self::once())
+            ->method('loadCollection')
+            ->with($this->collection)
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use ($persistedElement) : void {
+                $persistentCollection->unwrap()->add($persistedElement);
+            });
+
+        $this->collection->initialize();
+
+        self::assertSame([$persistedElement, $newElement], $this->collection->toArray());
+        self::assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+    }
+
+    /**
+     * @group 6613
+     * @group 6614
+     * @group 6616
+     */
+    public function testWillDeDuplicateNewItemsThatWerePreviouslyPersistedInDirtyCollectionAfterInitialization() : void
+    {
+        /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $newElement                    = new \stdClass();
+        $newElementThatIsAlsoPersisted = new \stdClass();
+        $persistedElement              = new \stdClass();
+
+        $this->collection->add($newElementThatIsAlsoPersisted);
+        $this->collection->add($newElement);
+
+        self::assertFalse($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+
+        $unitOfWork
+            ->expects(self::once())
+            ->method('loadCollection')
+            ->with($this->collection)
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
+                $persistedElement,
+                $newElementThatIsAlsoPersisted
+            ) : void {
+                $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
+                $persistentCollection->unwrap()->add($persistedElement);
+            });
+
+        $this->collection->initialize();
+
+        self::assertSame(
+            [$newElementThatIsAlsoPersisted, $persistedElement, $newElement],
+            $this->collection->toArray()
+        );
+        self::assertTrue($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+    }
+
+    /**
+     * @group 6613
+     * @group 6614
+     * @group 6616
+     */
+    public function testWillNotMarkCollectionAsDirtyAfterInitializationIfNoElementsWereAdded() : void
+    {
+        /* @var $unitOfWork UnitOfWork|\PHPUnit_Framework_MockObject_MockObject */
+        $unitOfWork = $this->createMock(UnitOfWork::class);
+
+        $this->_emMock->setUnitOfWork($unitOfWork);
+
+        $newElementThatIsAlsoPersisted = new \stdClass();
+        $persistedElement              = new \stdClass();
+
+        $this->collection->add($newElementThatIsAlsoPersisted);
+
+        self::assertFalse($this->collection->isInitialized());
+        self::assertTrue($this->collection->isDirty());
+
+        $unitOfWork
+            ->expects(self::once())
+            ->method('loadCollection')
+            ->with($this->collection)
+            ->willReturnCallback(function (PersistentCollection $persistentCollection) use (
+                $persistedElement,
+                $newElementThatIsAlsoPersisted
+            ) : void {
+                $persistentCollection->unwrap()->add($newElementThatIsAlsoPersisted);
+                $persistentCollection->unwrap()->add($persistedElement);
+            });
+
+        $this->collection->initialize();
+
+        self::assertSame(
+            [$newElementThatIsAlsoPersisted, $persistedElement],
+            $this->collection->toArray()
+        );
+        self::assertTrue($this->collection->isInitialized());
+        self::assertFalse($this->collection->isDirty());
     }
 }

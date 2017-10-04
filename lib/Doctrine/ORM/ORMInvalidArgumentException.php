@@ -82,21 +82,42 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array  $assoc
+     * @param array[][]|object[][] $newEntitiesWithAssociations non-empty an array
+ *                                                              of [array $associationMapping, object $entity] pairs
+     *
+     * @return ORMInvalidArgumentException
+     */
+    static public function newEntitiesFoundThroughRelationships($newEntitiesWithAssociations)
+    {
+        $errorMessages = array_map(
+            function (array $newEntityWithAssociation) : string {
+                [$associationMapping, $entity] = $newEntityWithAssociation;
+
+                return self::newEntityFoundThroughRelationshipMessage($associationMapping, $entity);
+            },
+            $newEntitiesWithAssociations
+        );
+
+        if (1 === count($errorMessages)) {
+            return new self(reset($errorMessages));
+        }
+
+        return new self(
+            'Multiple non-persisted new entities were found through the given association graph:'
+            . "\n\n * "
+            . implode("\n * ", $errorMessages)
+        );
+    }
+
+    /**
+     * @param array  $associationMapping
      * @param object $entry
      *
      * @return ORMInvalidArgumentException
      */
-    static public function newEntityFoundThroughRelationship(array $assoc, $entry)
+    static public function newEntityFoundThroughRelationship(array $associationMapping, $entry)
     {
-        return new self("A new entity was found through the relationship '"
-            . $assoc['sourceEntity'] . "#" . $assoc['fieldName'] . "' that was not"
-            . " configured to cascade persist operations for entity: " . self::objToStr($entry) . "."
-            . " To solve this issue: Either explicitly call EntityManager#persist()"
-            . " on this unknown entity or configure cascade persist "
-            . " this association in the mapping for example @ManyToOne(..,cascade={\"persist\"})."
-            . (method_exists($entry, '__toString') ? "": " If you cannot find out which entity causes the problem"
-            . " implement '" . $assoc['targetEntity'] . "#__toString()' to get a clue."));
+        return new self(self::newEntityFoundThroughRelationshipMessage($associationMapping, $entry));
     }
 
     /**
@@ -229,8 +250,27 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      *
      * @return string
      */
-    private static function objToStr($obj)
+    private static function objToStr($obj) : string
     {
         return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_hash($obj);
+    }
+
+    /**
+     * @param array  $associationMapping
+     * @param object $entity
+     */
+    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, $entity) : string
+    {
+        return 'A new entity was found through the relationship \''
+            . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'
+            . ' configured to cascade persist operations for entity: ' . self::objToStr($entity) . '.'
+            . ' To solve this issue: Either explicitly call EntityManager#persist()'
+            . ' on this unknown entity or configure cascade persist'
+            . ' this association in the mapping for example @ManyToOne(..,cascade={"persist"}).'
+            . (method_exists($entity, '__toString')
+                ? ''
+                : ' If you cannot find out which entity causes the problem implement \''
+                . $associationMapping['targetEntity'] . '#__toString()\' to get a clue.'
+            );
     }
 }

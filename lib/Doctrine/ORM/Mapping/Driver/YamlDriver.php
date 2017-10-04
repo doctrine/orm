@@ -22,6 +22,7 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Builder\EntityListenerBuilder;
 use Doctrine\Common\Persistence\Mapping\Driver\FileDriver;
+use Doctrine\ORM\Mapping\ClassMetadata as Metadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -63,7 +64,7 @@ class YamlDriver extends FileDriver
             }
         } else if ($element['type'] == 'mappedSuperclass') {
             $metadata->setCustomRepositoryClass(
-                isset($element['repositoryClass']) ? $element['repositoryClass'] : null
+                $element['repositoryClass'] ?? null
             );
             $metadata->isMappedSuperclass = true;
         } else if ($element['type'] == 'embeddable') {
@@ -114,9 +115,9 @@ class YamlDriver extends FileDriver
                 $metadata->addNamedNativeQuery(
                     [
                         'name'              => $mappingElement['name'],
-                        'query'             => isset($mappingElement['query']) ? $mappingElement['query'] : null,
-                        'resultClass'       => isset($mappingElement['resultClass']) ? $mappingElement['resultClass'] : null,
-                        'resultSetMapping'  => isset($mappingElement['resultSetMapping']) ? $mappingElement['resultSetMapping'] : null,
+                        'query'             => $mappingElement['query'] ?? null,
+                        'resultClass'       => $mappingElement['resultClass'] ?? null,
+                        'resultSetMapping'  => $mappingElement['resultSetMapping'] ?? null,
                     ]
                 );
             }
@@ -135,15 +136,15 @@ class YamlDriver extends FileDriver
                     foreach ($resultSetMapping['entityResult'] as $entityResultElement) {
                         $entityResult = [
                             'fields'                => [],
-                            'entityClass'           => isset($entityResultElement['entityClass']) ? $entityResultElement['entityClass'] : null,
-                            'discriminatorColumn'   => isset($entityResultElement['discriminatorColumn']) ? $entityResultElement['discriminatorColumn'] : null,
+                            'entityClass'           => $entityResultElement['entityClass'] ?? null,
+                            'discriminatorColumn'   => $entityResultElement['discriminatorColumn'] ?? null,
                         ];
 
                         if (isset($entityResultElement['fieldResult'])) {
                             foreach ($entityResultElement['fieldResult'] as $fieldResultElement) {
                                 $entityResult['fields'][] = [
-                                    'name'      => isset($fieldResultElement['name']) ? $fieldResultElement['name'] : null,
-                                    'column'    => isset($fieldResultElement['column']) ? $fieldResultElement['column'] : null,
+                                    'name'      => $fieldResultElement['name'] ?? null,
+                                    'column'    => $fieldResultElement['column'] ?? null,
                                 ];
                             }
                         }
@@ -156,7 +157,7 @@ class YamlDriver extends FileDriver
                 if (isset($resultSetMapping['columnResult'])) {
                     foreach ($resultSetMapping['columnResult'] as $columnResultAnnot) {
                         $columns[] = [
-                            'name' => isset($columnResultAnnot['name']) ? $columnResultAnnot['name'] : null,
+                            'name' => $columnResultAnnot['name'] ?? null,
                         ];
                     }
                 }
@@ -174,7 +175,7 @@ class YamlDriver extends FileDriver
         if (isset($element['inheritanceType'])) {
             $metadata->setInheritanceType(constant('Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_' . strtoupper($element['inheritanceType'])));
 
-            if ($metadata->inheritanceType != \Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_NONE) {
+            if ($metadata->inheritanceType != Metadata::INHERITANCE_TYPE_NONE) {
                 // Evaluate discriminatorColumn
                 if (isset($element['discriminatorColumn'])) {
                     $discrColumn = $element['discriminatorColumn'];
@@ -342,7 +343,7 @@ class YamlDriver extends FileDriver
                 $mapping = [
                     'fieldName' => $name,
                     'class' => $embeddedMapping['class'],
-                    'columnPrefix' => isset($embeddedMapping['columnPrefix']) ? $embeddedMapping['columnPrefix'] : null,
+                    'columnPrefix' => $embeddedMapping['columnPrefix'] ?? null,
                 ];
                 $metadata->mapEmbedded($mapping);
             }
@@ -620,6 +621,11 @@ class YamlDriver extends FileDriver
                 // Check for inversedBy
                 if (isset($associationOverrideElement['inversedBy'])) {
                     $override['inversedBy'] = (string) $associationOverrideElement['inversedBy'];
+                }
+
+                // Check for `fetch`
+                if (isset($associationOverrideElement['fetch'])) {
+                    $override['fetch'] = constant(Metadata::class . '::FETCH_' . $associationOverrideElement['fetch']);
                 }
 
                 $metadata->setAssociationOverride($fieldName, $override);

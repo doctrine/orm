@@ -14,6 +14,7 @@ use Doctrine\Tests\Models\Company\CompanyContract;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\DDC117\DDC117Article;
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
+use Doctrine\Tests\Models\DDC6412\DDC6412File;
 use Doctrine\Tests\Models\DDC964\DDC964Admin;
 use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
@@ -204,6 +205,15 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
         $cm->isIdentifierComposite  = true;
+
+        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
+        $cm->getSingleIdentifierFieldName();
+    }
+
+    public function testGetSingleIdentifierFieldName_NoIdEntity_ThrowsException()
+    {
+        $cm = new ClassMetadata(DDC6412File::class);
+        $cm->initializeReflection(new RuntimeReflectionService());
 
         $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
         $cm->getSingleIdentifierFieldName();
@@ -1258,6 +1268,24 @@ class ClassMetadataTest extends OrmTestCase
         $metadata->mapField(['fieldName' => 'name', 'type' => 'string', 'columnName' => 'baz']);
 
         self::assertSame(['foo', 'baz'], $metadata->getColumnNames(['status', 'name']));
+    }
+
+    /**
+     * @group DDC-6460
+     */
+    public function testInlineEmbeddable()
+    {
+        $classMetadata = new ClassMetadata(TestEntity1::class);
+
+        $classMetadata->mapEmbedded(
+            [
+                'fieldName'    => 'test',
+                'class'        => TestEntity1::class,
+                'columnPrefix' => false,
+            ]
+        );
+
+        $this->assertTrue($classMetadata->hasField('test'));
     }
 }
 

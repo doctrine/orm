@@ -4,8 +4,11 @@ Separating Concerns using Embeddables
 Embeddables are classes which are not entities themselves, but are embedded
 in entities and can also be queried in DQL. You'll mostly want to use them
 to reduce duplication or separating concerns. Value objects such as date range
-or address are the primary use case for this feature. Embeddables can only
-contain properties with basic ``@Column`` mapping.
+or address are the primary use case for this feature. 
+
+.. note::
+
+    Embeddables can only contain properties with basic ``@Column`` mapping.
 
 For the purposes of this tutorial, we will assume that you have a ``User``
 class in your application and you would like to store an address in

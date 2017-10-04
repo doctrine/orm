@@ -24,6 +24,9 @@ One tip for working with relations is to read the relation from left to right, w
 
 See below for all the possible relations. 
 
+An association is considered to be unidirectional if only one side of the association has 
+a property referring to the other side.
+
 To gain a full understanding of associations you should also read about :doc:`owning and
 inverse sides of associations <unitofwork-associations>`
 
@@ -105,9 +108,7 @@ One-To-One, Unidirectional
 --------------------------
 
 Here is an example of a one-to-one association with a ``Product`` entity that
-references one ``Shipping`` entity. The ``Shipping`` does not reference back to
-the ``Product`` so that the reference is said to be unidirectional, in one
-direction only.
+references one ``Shipment`` entity.
 
 .. configuration-block::
 
@@ -120,17 +121,17 @@ direction only.
             // ...
 
             /**
-             * One Product has One Shipping.
-             * @OneToOne(targetEntity="Shipping")
-             * @JoinColumn(name="shipping_id", referencedColumnName="id")
+             * One Product has One Shipment.
+             * @OneToOne(targetEntity="Shipment")
+             * @JoinColumn(name="shipment_id", referencedColumnName="id")
              */
-            private $shipping;
+            private $shipment;
 
             // ...
         }
 
         /** @Entity */
-        class Shipping
+        class Shipment
         {
             // ...
         }
@@ -139,8 +140,8 @@ direction only.
 
         <doctrine-mapping>
             <entity class="Product">
-                <one-to-one field="shipping" target-entity="Shipping">
-                    <join-column name="shipping_id" referenced-column-name="id" />
+                <one-to-one field="shipment" target-entity="Shipment">
+                    <join-column name="shipment_id" referenced-column-name="id" />
                 </one-to-one>
             </entity>
         </doctrine-mapping>
@@ -150,10 +151,10 @@ direction only.
         Product:
           type: entity
           oneToOne:
-            shipping:
-              targetEntity: Shipping
+            shipment:
+              targetEntity: Shipment
               joinColumn:
-                name: shipping_id
+                name: shipment_id
                 referencedColumnName: id
 
 Note that the @JoinColumn is not really necessary in this example,
@@ -165,15 +166,15 @@ Generated MySQL Schema:
 
     CREATE TABLE Product (
         id INT AUTO_INCREMENT NOT NULL,
-        shipping_id INT DEFAULT NULL,
-        UNIQUE INDEX UNIQ_6FBC94267FE4B2B (shipping_id),
+        shipment_id INT DEFAULT NULL,
+        UNIQUE INDEX UNIQ_6FBC94267FE4B2B (shipment_id),
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    CREATE TABLE Shipping (
+    CREATE TABLE Shipment (
         id INT AUTO_INCREMENT NOT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    ALTER TABLE Product ADD FOREIGN KEY (shipping_id) REFERENCES Shipping(id);
+    ALTER TABLE Product ADD FOREIGN KEY (shipment_id) REFERENCES Shipment(id);
 
 One-To-One, Bidirectional
 -------------------------
@@ -181,6 +182,10 @@ One-To-One, Bidirectional
 Here is a one-to-one relationship between a ``Customer`` and a
 ``Cart``. The ``Cart`` has a reference back to the ``Customer`` so
 it is bidirectional.
+
+Here we see the ``mappedBy`` and ``inversedBy`` annotations for the first time.
+They are used to tell Doctrine which property on the other side refers to the
+object.
 
 .. configuration-block::
 
@@ -263,8 +268,9 @@ Generated MySQL Schema:
     ) ENGINE = InnoDB;
     ALTER TABLE Cart ADD FOREIGN KEY (customer_id) REFERENCES Customer(id);
 
-See how the foreign key is defined on the owning side of the
-relation, the table ``Cart``.
+We had a choice of sides on which to place the ``inversedBy`` attribute. Because it
+is on the ``Cart``, that is the owning side of the relation, and thus holds the
+foreign key.
 
 One-To-One, Self-referencing
 ----------------------------
@@ -307,15 +313,16 @@ With the generated MySQL Schema:
 One-To-Many, Bidirectional
 --------------------------
 
-A one-to-many association has to be bidirectional, unless you are using an
-additional join-table. This is necessary, because of the foreign key
-in a one-to-many association being defined on the "many" side. Doctrine
-needs a many-to-one association that defines the mapping of this
-foreign key.
+A one-to-many association has to be bidirectional, unless you are using a
+join table. This is because the many side in a one-to-many association holds
+the foreign key, making it the owning side. Doctrine needs the many side
+defined in order to understand the association.
 
 This bidirectional mapping requires the ``mappedBy`` attribute on the
-``OneToMany`` association and the ``inversedBy`` attribute on the ``ManyToOne``
-association.
+"one" side and the ``inversedBy`` attribute on the "many" side.
+
+This means there is no difference between a bidirectional one-to-many and a
+bidirectional many-to-one.
 
 .. configuration-block::
 
@@ -775,14 +782,14 @@ one is bidirectional.
 The MySQL schema is exactly the same as for the Many-To-Many
 uni-directional case above.
 
-Owning and Inverse Side on a ManyToMany association
+Owning and Inverse Side on a ManyToMany Association
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For Many-To-Many associations you can chose which entity is the
 owning and which the inverse side. There is a very simple semantic
 rule to decide which side is more suitable to be the owning side
-from a developers perspective. You only have to ask yourself, which
-entity is responsible for the connection management and pick that
+from a developers perspective. You only have to ask yourself which
+entity is responsible for the connection management, and pick that
 as the owning side.
 
 Take an example of two entities ``Article`` and ``Tag``. Whenever
@@ -790,7 +797,7 @@ you want to connect an Article to a Tag and vice-versa, it is
 mostly the Article that is responsible for this relation. Whenever
 you add a new article, you want to connect it with existing or new
 tags. Your create Article form will probably support this notion
-and allow to specify the tags directly. This is why you should pick
+and allow specifying the tags directly. This is why you should pick
 the Article as owning side, as it makes the code more
 understandable:
 
@@ -906,14 +913,14 @@ As an example, consider this mapping:
     .. code-block:: php
 
         <?php
-        /** @OneToOne(targetEntity="Shipping") */
-        private $shipping;
+        /** @OneToOne(targetEntity="Shipment") */
+        private $shipment;
 
     .. code-block:: xml
 
         <doctrine-mapping>
             <entity class="Product">
-                <one-to-one field="shipping" target-entity="Shipping" />
+                <one-to-one field="shipment" target-entity="Shipment" />
             </entity>
         </doctrine-mapping>
 
@@ -922,8 +929,8 @@ As an example, consider this mapping:
         Product:
           type: entity
           oneToOne:
-            shipping:
-              targetEntity: Shipping
+            shipment:
+              targetEntity: Shipment
 
 This is essentially the same as the following, more verbose,
 mapping:
@@ -934,18 +941,18 @@ mapping:
 
         <?php
         /**
-         * One Product has One Shipping.
-         * @OneToOne(targetEntity="Shipping")
-         * @JoinColumn(name="shipping_id", referencedColumnName="id")
+         * One Product has One Shipment.
+         * @OneToOne(targetEntity="Shipment")
+         * @JoinColumn(name="shipment_id", referencedColumnName="id")
          */
-        private $shipping;
+        private $shipment;
 
     .. code-block:: xml
 
         <doctrine-mapping>
             <entity class="Product">
-                <one-to-one field="shipping" target-entity="Shipping">
-                    <join-column name="shipping_id" referenced-column-name="id" />
+                <one-to-one field="shipment" target-entity="Shipment">
+                    <join-column name="shipment_id" referenced-column-name="id" />
                 </one-to-one>
             </entity>
         </doctrine-mapping>
@@ -955,10 +962,10 @@ mapping:
         Product:
           type: entity
           oneToOne:
-            shipping:
-              targetEntity: Shipping
+            shipment:
+              targetEntity: Shipment
               joinColumn:
-                name: shipping_id
+                name: shipment_id
                 referencedColumnName: id
 
 The @JoinTable definition used for many-to-many mappings has

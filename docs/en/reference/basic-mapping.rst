@@ -295,7 +295,8 @@ annotation.
         class Message
         {
             /**
-             * @Id @Column(type="integer")
+             * @Id
+             * @Column(type="integer")
              * @GeneratedValue
              */
             private $id;

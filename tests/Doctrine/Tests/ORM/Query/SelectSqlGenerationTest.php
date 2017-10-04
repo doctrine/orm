@@ -39,8 +39,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = []
-    )
+    public function assertSqlGeneration($dqlToBeTested, $sqlToBeConfirmed, array $queryHints = [], array $queryParams = [])
     {
         try {
             $query = $this->_em->createQuery($dqlToBeTested);
@@ -78,8 +77,7 @@ class SelectSqlGenerationTest extends OrmTestCase
      * @param array $queryHints
      * @param array $queryParams
      */
-    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = []
-    )
+    public function assertInvalidSqlGeneration($dqlToBeTested, $expectedException, array $queryHints = [], array $queryParams = [])
     {
         $this->expectException($expectedException);
 
@@ -200,12 +198,12 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id AND (c0_.id = c3_.id)'
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id INNER JOIN (company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id) ON (c0_.id = c3_.id)'
         );
 
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e LEFT JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id ON (c0_.id = c3_.id)'
+            'SELECT c0_.id AS id_0, c0_.name AS name_1, c1_.salary AS salary_2, c1_.department AS department_3, c1_.startDate AS startDate_4, c0_.discr AS discr_5 FROM company_employees c1_ INNER JOIN company_persons c0_ ON c1_.id = c0_.id LEFT JOIN (company_managers c2_ INNER JOIN company_employees c4_ ON c2_.id = c4_.id INNER JOIN company_persons c3_ ON c2_.id = c3_.id) ON (c0_.id = c3_.id)'
         );
     }
 
@@ -502,7 +500,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee",
-            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee')"
+            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('manager', 'employee')"
         );
     }
 
@@ -511,7 +509,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // This also uses FQCNs starting with or without a backslash in the INSTANCE OF parameter
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF (Doctrine\Tests\Models\Company\CompanyEmployee, \Doctrine\Tests\Models\Company\CompanyManager)",
-            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee', 'manager')"
+            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('manager', 'employee')"
         );
     }
 
@@ -522,7 +520,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF \Doctrine\Tests\Models\Company\CompanyEmployee",
-            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('employee')"
+            "SELECT c0_.id AS id_0, c0_.name AS name_1, c0_.discr AS discr_2 FROM company_persons c0_ WHERE c0_.discr IN ('manager', 'employee')"
         );
     }
 
@@ -892,7 +890,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-     * @expectedException Doctrine\ORM\Query\QueryException
+     * @expectedException \Doctrine\ORM\Query\QueryException
      */
     public function testOrderBySupportsSingleValuedPathExpressionInverseSide()
     {
@@ -1033,7 +1031,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u.name, (SELECT COUNT(p.phonenumber) FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p WHERE p.phonenumber = 1234) pcount FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = 'jon'",
-            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.phonenumber) AS dctrn__1 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr_1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
+            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.phonenumber) AS sclr_2 FROM cms_phonenumbers c1_ WHERE c1_.phonenumber = 1234) AS sclr_1 FROM cms_users c0_ WHERE c0_.name = 'jon'"
         );
     }
 
@@ -1200,7 +1198,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             "SELECT u.name, (SELECT COUNT(cfc.id) total FROM Doctrine\Tests\Models\Company\CompanyFixContract cfc) as cfc_count FROM Doctrine\Tests\Models\CMS\CmsUser u",
-            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.id) AS dctrn__total FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr_1 FROM cms_users c0_"
+            "SELECT c0_.name AS name_0, (SELECT COUNT(c1_.id) AS sclr_2 FROM company_contracts c1_ WHERE c1_.discr IN ('fix')) AS sclr_1 FROM cms_users c0_"
         );
     }
 
@@ -1752,7 +1750,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
         $this->assertSqlGeneration(
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) = ( SELECT SUM(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
-            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 FROM cms_users c0_ WHERE COUNT(c0_.id) = (SELECT SUM(c1_.id) AS dctrn__1 FROM cms_users c1_)'
+            'SELECT c0_.id AS id_0, c0_.status AS status_1, c0_.username AS username_2, c0_.name AS name_3 FROM cms_users c0_ WHERE COUNT(c0_.id) = (SELECT SUM(c1_.id) AS sclr_4 FROM cms_users c1_)'
         );
         $this->assertSqlGeneration(
             'SELECT u1 FROM Doctrine\Tests\Models\CMS\CmsUser u1 WHERE COUNT(u1.id) <= ( SELECT SUM(u2.id) + COUNT(u2.email) FROM Doctrine\Tests\Models\CMS\CmsUser u2 )',
@@ -1991,7 +1989,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT u, a FROM Doctrine\Tests\Models\Quote\User u JOIN u.address a',
-            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id"'
+            'SELECT q0_."user-id" AS userid_0, q0_."user-name" AS username_1, q1_."address-id" AS addressid_2, q1_."address-zip" AS addresszip_3, q1_.type AS type_4 FROM "quote-user" q0_ INNER JOIN "quote-address" q1_ ON q0_."address-id" = q1_."address-id" AND q1_.type IN (\'simple\', \'full\')'
         );
 
         $this->assertSqlGeneration(
@@ -2006,7 +2004,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $this->assertSqlGeneration(
             'SELECT a, u FROM Doctrine\Tests\Models\Quote\Address a JOIN a.user u',
-            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id"'
+            'SELECT q0_."address-id" AS addressid_0, q0_."address-zip" AS addresszip_1, q1_."user-id" AS userid_2, q1_."user-name" AS username_3, q0_.type AS type_4 FROM "quote-address" q0_ INNER JOIN "quote-user" q1_ ON q0_."user-id" = q1_."user-id" WHERE q0_.type IN (\'simple\', \'full\')'
         );
 
         $this->assertSqlGeneration(
@@ -2213,7 +2211,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         // the where clause when not joining onto that table
         $this->assertSqlGeneration(
             'SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c LEFT JOIN Doctrine\Tests\Models\Company\CompanyEmployee e WITH e.id = c.salesPerson WHERE c.completed = true',
-            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id ON (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
+            "SELECT c0_.id AS id_0, c0_.completed AS completed_1, c0_.fixPrice AS fixPrice_2, c0_.hoursWorked AS hoursWorked_3, c0_.pricePerHour AS pricePerHour_4, c0_.maxPrice AS maxPrice_5, c0_.discr AS discr_6 FROM company_contracts c0_ LEFT JOIN (company_employees c1_ INNER JOIN company_persons c2_ ON c1_.id = c2_.id) ON (c2_.id = c0_.salesPerson_id) WHERE (c0_.completed = 1) AND c0_.discr IN ('fix', 'flexible', 'flexultra')"
         );
     }
 

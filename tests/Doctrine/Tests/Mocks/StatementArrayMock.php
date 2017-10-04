@@ -34,12 +34,12 @@ class StatementArrayMock extends StatementMock
         }
     }
 
-    public function fetchAll($fetchStyle = null)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
         return $this->_result;
     }
 
-    public function fetch($fetchStyle = null)
+    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_result);
         next($this->_result);

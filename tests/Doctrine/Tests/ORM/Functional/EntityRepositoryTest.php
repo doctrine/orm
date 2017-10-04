@@ -910,6 +910,38 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $this->assertEquals(2, count($users));
     }
 
+    public function testMatchingCriteriaStartsWithComparison()
+    {
+        $this->loadFixture();
+
+        $repository = $this->_em->getRepository(CmsUser::class);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'Foo')));
+        $this->assertCount(0, $users);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('name', 'R')));
+        $this->assertCount(1, $users);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->startsWith('status', 'de')));
+        $this->assertCount(2, $users);
+    }
+
+    public function testMatchingCriteriaEndsWithComparison()
+    {
+        $this->loadFixture();
+
+        $repository = $this->_em->getRepository(CmsUser::class);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'foo')));
+        $this->assertCount(0, $users);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('name', 'oman')));
+        $this->assertCount(1, $users);
+
+        $users = $repository->matching(new Criteria(Criteria::expr()->endsWith('status', 'ev')));
+        $this->assertCount(2, $users);
+    }
+
     /**
      * @group DDC-2478
      */

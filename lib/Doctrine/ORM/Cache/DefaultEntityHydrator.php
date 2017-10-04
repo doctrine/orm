@@ -36,7 +36,7 @@ use Doctrine\ORM\Utility\IdentifierFlattener;
 class DefaultEntityHydrator implements EntityHydrator
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 

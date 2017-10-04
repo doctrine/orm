@@ -604,18 +604,23 @@ public function __construct(<params>)
      */
     protected function generateEntityNamespace(ClassMetadataInfo $metadata)
     {
-        if ($this->hasNamespace($metadata)) {
-            return 'namespace ' . $this->getNamespace($metadata) .';';
+        if (! $this->hasNamespace($metadata)) {
+            return '';
         }
+
+        return 'namespace ' . $this->getNamespace($metadata) .';';
     }
 
+    /**
+     * @return string
+     */
     protected function generateEntityUse()
     {
-        if ($this->generateAnnotations) {
-            return "\n".'use Doctrine\ORM\Mapping as ORM;'."\n";
-        } else {
-            return "";
+        if (! $this->generateAnnotations) {
+            return '';
         }
+
+        return "\n".'use Doctrine\ORM\Mapping as ORM;'."\n";
     }
 
     /**
@@ -738,9 +743,7 @@ public function __construct(<params>)
         }
 
         foreach ($fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField'], $metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
@@ -911,6 +914,8 @@ public function __construct(<params>)
      * @param ClassMetadataInfo $metadata
      *
      * @return array
+     *
+     * @throws \ReflectionException
      */
     protected function getTraits(ClassMetadataInfo $metadata)
     {
@@ -918,9 +923,7 @@ public function __construct(<params>)
             return [];
         }
 
-        $reflClass = $metadata->reflClass === null
-            ? new \ReflectionClass($metadata->name)
-            : $metadata->reflClass;
+        $reflClass = $metadata->reflClass ?? new \ReflectionClass($metadata->name);
 
         $traits = [];
 
@@ -1010,6 +1013,7 @@ public function __construct(<params>)
                 'generateDiscriminatorColumnAnnotation',
                 'generateDiscriminatorMapAnnotation',
                 'generateEntityAnnotation',
+                'generateEntityListenerAnnotation',
             ];
 
             foreach ($methods as $method) {
@@ -1113,9 +1117,11 @@ public function __construct(<params>)
      */
     protected function generateInheritanceAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            return '@' . $this->annotationsPrefix . 'InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            return '';
         }
+
+        return '@' . $this->annotationsPrefix . 'InheritanceType("'.$this->getInheritanceTypeString($metadata->inheritanceType).'")';
     }
 
     /**
@@ -1125,14 +1131,16 @@ public function __construct(<params>)
      */
     protected function generateDiscriminatorColumnAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            $discrColumn = $metadata->discriminatorColumn;
-            $columnDefinition = 'name="' . $discrColumn['name']
-                . '", type="' . $discrColumn['type']
-                . '", length=' . $discrColumn['length'];
-
-            return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            return '';
         }
+
+        $discrColumn = $metadata->discriminatorColumn;
+        $columnDefinition = 'name="' . $discrColumn['name']
+            . '", type="' . $discrColumn['type']
+            . '", length=' . $discrColumn['length'];
+
+        return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
     }
 
     /**
@@ -1142,15 +1150,17 @@ public function __construct(<params>)
      */
     protected function generateDiscriminatorMapAnnotation(ClassMetadataInfo $metadata)
     {
-        if ($metadata->inheritanceType != ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
-            $inheritanceClassMap = [];
-
-            foreach ($metadata->discriminatorMap as $type => $class) {
-                $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
-            }
-
-            return '@' . $this->annotationsPrefix . 'DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
+        if ($metadata->inheritanceType === ClassMetadataInfo::INHERITANCE_TYPE_NONE) {
+            return null;
         }
+
+        $inheritanceClassMap = [];
+
+        foreach ($metadata->discriminatorMap as $type => $class) {
+            $inheritanceClassMap[] .= '"' . $type . '" = "' . $class . '"';
+        }
+
+        return '@' . $this->annotationsPrefix . 'DiscriminatorMap({' . implode(', ', $inheritanceClassMap) . '})';
     }
 
     /**
@@ -1163,18 +1173,14 @@ public function __construct(<params>)
         $methods = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if (isset($fieldMapping['declaredField']) &&
-                isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-            ) {
+            if (isset($fieldMapping['declaredField'], $metadata->embeddedClasses[$fieldMapping['declaredField']])) {
                 continue;
             }
 
             $nullableField = $this->nullableFieldExpression($fieldMapping);
 
-            if (( ! isset($fieldMapping['id']) ||
-                    ! $fieldMapping['id'] ||
-                    $metadata->generatorType == ClassMetadataInfo::GENERATOR_TYPE_NONE
-                ) && (! $metadata->isEmbeddedClass || ! $this->embeddablesImmutable)
+            if ((!$metadata->isEmbeddedClass || !$this->embeddablesImmutable)
+                && (!isset($fieldMapping['id']) || ! $fieldMapping['id'] || $metadata->generatorType === ClassMetadataInfo::GENERATOR_TYPE_NONE)
                 && $code = $this->generateEntityStubMethod($metadata, 'set', $fieldMapping['fieldName'], $fieldMapping['type'], $nullableField)
             ) {
                 $methods[] = $code;
@@ -1307,12 +1313,9 @@ public function __construct(<params>)
         $lines = [];
 
         foreach ($metadata->fieldMappings as $fieldMapping) {
-            if ($this->hasProperty($fieldMapping['fieldName'], $metadata) ||
-                $metadata->isInheritedField($fieldMapping['fieldName']) ||
-                (
-                    isset($fieldMapping['declaredField']) &&
-                    isset($metadata->embeddedClasses[$fieldMapping['declaredField']])
-                )
+            if (isset($fieldMapping['declaredField'], $metadata->embeddedClasses[$fieldMapping['declaredField']]) ||
+                $this->hasProperty($fieldMapping['fieldName'], $metadata) ||
+                $metadata->isInheritedField($fieldMapping['fieldName'])
             ) {
                 continue;
             }
@@ -1413,6 +1416,7 @@ public function __construct(<params>)
         if ($this->hasMethod($methodName, $metadata)) {
             return '';
         }
+
         $this->staticReflection[$metadata->name]['methods'][] = $methodName;
 
         $replacements = [
@@ -1731,8 +1735,12 @@ public function __construct(<params>)
 
             $embedded = ['class="' . $embeddedClass['class'] . '"'];
 
-            if (isset($fieldMapping['columnPrefix'])) {
-                $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+            if (isset($embeddedClass['columnPrefix'])) {
+                if (is_string($embeddedClass['columnPrefix'])) {
+                    $embedded[] = 'columnPrefix="' . $embeddedClass['columnPrefix'] . '"';
+                } else {
+                    $embedded[] = 'columnPrefix=' . var_export($embeddedClass['columnPrefix'], true);
+                }
             }
 
             $lines[] = $this->spaces . ' * @' .
@@ -1742,6 +1750,27 @@ public function __construct(<params>)
         $lines[] = $this->spaces . ' */';
 
         return implode("\n", $lines);
+    }
+
+    private function generateEntityListenerAnnotation(ClassMetadataInfo $metadata): string
+    {
+        if (0 === \count($metadata->entityListeners)) {
+            return '';
+        }
+
+        $processedClasses = [];
+        foreach ($metadata->entityListeners as $event => $eventListeners) {
+            foreach ($eventListeners as $eventListener) {
+                $processedClasses[] = '"' . $eventListener['class'] . '"';
+            }
+        }
+
+        return \sprintf(
+            '%s%s({%s})',
+            '@' . $this->annotationsPrefix,
+            'EntityListeners',
+            \implode(',', \array_unique($processedClasses))
+        );
     }
 
     /**

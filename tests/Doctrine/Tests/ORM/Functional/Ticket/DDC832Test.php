@@ -7,22 +7,24 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
+
         $platform = $this->_em->getConnection()->getDatabasePlatform();
-        if ($platform->getName() == "oracle") {
+
+        if ($platform->getName() === 'oracle') {
             $this->markTestSkipped('Doesnt run on Oracle.');
         }
 
         $this->_em->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC832JoinedIndex::class),
-                $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
-                $this->_em->getClassMetadata(DDC832Like::class),
+                    $this->_em->getClassMetadata(DDC832JoinedIndex::class),
+                    $this->_em->getClassMetadata(DDC832JoinedTreeIndex::class),
+                    $this->_em->getClassMetadata(DDC832Like::class),
                 ]
             );
         } catch(\Exception $e) {
-
         }
     }
 
@@ -30,6 +32,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         /* @var $sm \Doctrine\DBAL\Schema\AbstractSchemaManager */
         $platform = $this->_em->getConnection()->getDatabasePlatform();
+
         $sm = $this->_em->getConnection()->getSchemaManager();
         $sm->dropTable($platform->quoteIdentifier('TREE_INDEX'));
         $sm->dropTable($platform->quoteIdentifier('INDEX'));
@@ -41,12 +44,15 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableBasicUpdate()
     {
-        $like = new DDC832Like("test");
+        $like = new DDC832Like('test');
         $this->_em->persist($like);
         $this->_em->flush();
 
-        $like->word = "test2";
+        $like->word = 'test2';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($like, $this->_em->find(DDC832Like::class, $like->id));
     }
 
     /**
@@ -54,12 +60,17 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableBasicRemove()
     {
-        $like = new DDC832Like("test");
+        $like = new DDC832Like('test');
         $this->_em->persist($like);
         $this->_em->flush();
 
+        $idToBeRemoved = $like->id;
+
         $this->_em->remove($like);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832Like::class, $idToBeRemoved));
     }
 
     /**
@@ -67,12 +78,15 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedUpdate()
     {
-        $index = new DDC832JoinedIndex("test");
+        $index = new DDC832JoinedIndex('test');
         $this->_em->persist($index);
         $this->_em->flush();
 
-        $index->name = "asdf";
+        $index->name = 'asdf';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($index, $this->_em->find(DDC832JoinedIndex::class, $index->id));
     }
 
     /**
@@ -80,12 +94,17 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedRemove()
     {
-        $index = new DDC832JoinedIndex("test");
+        $index = new DDC832JoinedIndex('test');
         $this->_em->persist($index);
         $this->_em->flush();
 
+        $idToBeRemoved = $index->id;
+
         $this->_em->remove($index);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832JoinedIndex::class, $idToBeRemoved));
     }
 
     /**
@@ -93,12 +112,15 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedChildUpdate()
     {
-        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->_em->persist($index);
         $this->_em->flush();
 
-        $index->name = "asdf";
+        $index->name = 'asdf';
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertEquals($index, $this->_em->find(DDC832JoinedTreeIndex::class, $index->id));
     }
 
     /**
@@ -106,12 +128,17 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testQuotedTableJoinedChildRemove()
     {
-        $index = new DDC832JoinedTreeIndex("test", 1, 2);
+        $index = new DDC832JoinedTreeIndex('test', 1, 2);
         $this->_em->persist($index);
         $this->_em->flush();
 
+        $idToBeRemoved = $index->id;
+
         $this->_em->remove($index);
         $this->_em->flush();
+        $this->_em->clear();
+
+        self::assertNull($this->_em->find(DDC832JoinedTreeIndex::class, $idToBeRemoved));
     }
 }
 
@@ -178,6 +205,7 @@ class DDC832JoinedTreeIndex extends DDC832JoinedIndex
 {
     /** @Column(type="integer") */
     public $lft;
+
     /** @Column(type="integer") */
     public $rgt;
 

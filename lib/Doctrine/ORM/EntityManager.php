@@ -19,8 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Doctrine\ORM\Mapping\MappingException;
-use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -29,6 +27,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
+use Throwable;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -238,7 +237,7 @@ use Doctrine\Common\Util\ClassUtils;
             $this->conn->commit();
 
             return $return ?: true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();
 

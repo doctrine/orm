@@ -12,9 +12,9 @@ class DDC1209Test extends OrmFunctionalTestCase
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1209_1::class),
-                $this->_em->getClassMetadata(DDC1209_2::class),
-                $this->_em->getClassMetadata(DDC1209_3::class)
+                    $this->_em->getClassMetadata(DDC1209_1::class),
+                    $this->_em->getClassMetadata(DDC1209_2::class),
+                    $this->_em->getClassMetadata(DDC1209_3::class)
                 ]
             );
         } catch(\Exception $e) {
@@ -26,8 +26,12 @@ class DDC1209Test extends OrmFunctionalTestCase
      */
     public function testIdentifierCanHaveCustomType()
     {
-        $this->_em->persist(new DDC1209_3());
+        $entity = new DDC1209_3();
+
+        $this->_em->persist($entity);
         $this->_em->flush();
+
+        self::assertSame($entity, $this->_em->find(DDC1209_3::class, $entity->date));
     }
 
     /**
@@ -36,14 +40,27 @@ class DDC1209Test extends OrmFunctionalTestCase
     public function testCompositeIdentifierCanHaveCustomType()
     {
         $future1 = new DDC1209_1();
-        $this->_em->persist($future1);
 
+        $this->_em->persist($future1);
         $this->_em->flush();
 
         $future2 = new DDC1209_2($future1);
-        $this->_em->persist($future2);
 
+        $this->_em->persist($future2);
         $this->_em->flush();
+
+        self::assertSame(
+            $future2,
+            $this->_em->find(
+                DDC1209_2::class,
+                [
+                    'future1'           => $future1,
+                    'starting_datetime' => $future2->starting_datetime,
+                    'during_datetime'   => $future2->during_datetime,
+                    'ending_datetime'   => $future2->ending_datetime,
+                ]
+            )
+        );
     }
 }
 
@@ -78,17 +95,19 @@ class DDC1209_2
      *  @Id
      *  @Column(type="datetime", nullable=false)
      */
-    private $starting_datetime;
+    public $starting_datetime;
+
     /**
      *  @Id
      *  @Column(type="datetime", nullable=false)
      */
-    private $during_datetime;
+    public $during_datetime;
+
     /**
      *  @Id
      *  @Column(type="datetime", nullable=false)
      */
-    private $ending_datetime;
+    public $ending_datetime;
 
     public function __construct(DDC1209_1 $future1)
     {
@@ -108,7 +127,7 @@ class DDC1209_3
      * @Id
      * @Column(type="datetime", name="somedate")
      */
-    private $date;
+    public $date;
 
     public function __construct()
     {

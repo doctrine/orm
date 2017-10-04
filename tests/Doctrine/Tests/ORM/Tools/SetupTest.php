@@ -35,7 +35,8 @@ class SetupTest extends OrmTestCase
 
         set_include_path($this->originalIncludePath);
         $loaders = spl_autoload_functions();
-        for ($i = 0; $i < count($loaders); $i++) {
+        $numberOfLoaders = count($loaders);
+        for ($i = 0; $i < $numberOfLoaders; $i++) {
             if ($i > $this->originalAutoloaderCount+1) {
                 spl_autoload_unregister($loaders[$i]);
             }

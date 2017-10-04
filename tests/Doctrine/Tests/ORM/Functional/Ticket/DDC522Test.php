@@ -13,16 +13,16 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
+
         try {
             $this->_schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC522Customer::class),
-                $this->_em->getClassMetadata(DDC522Cart::class),
-                $this->_em->getClassMetadata(DDC522ForeignKeyTest::class)
+                    $this->_em->getClassMetadata(DDC522Customer::class),
+                    $this->_em->getClassMetadata(DDC522Cart::class),
+                    $this->_em->getClassMetadata(DDC522ForeignKeyTest::class)
                 ]
             );
         } catch(\Exception $e) {
-
         }
     }
 
@@ -43,8 +43,8 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $r = $this->_em->createQuery("select ca,c from ".get_class($cart)." ca join ca.customer c")
-                ->getResult();
+        $r = $this->_em->createQuery('select ca,c from ' . DDC522Cart::class . ' ca join ca.customer c')
+                       ->getResult();
 
         $this->assertInstanceOf(DDC522Cart::class, $r[0]);
         $this->assertInstanceOf(DDC522Customer::class, $r[0]->customer);
@@ -71,33 +71,43 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testJoinColumnWithNullSameNameAssociationField()
     {
         $fkCust = new DDC522ForeignKeyTest;
-        $fkCust->name = "name";
+        $fkCust->name = 'name';
         $fkCust->cart = null;
 
         $this->_em->persist($fkCust);
         $this->_em->flush();
         $this->_em->clear();
 
-        $newCust = $this->_em->find(get_class($fkCust), $fkCust->id);
+        $expected = clone $fkCust;
+        // removing dynamic field (which is not persisted)
+        unset($expected->name);
+
+        self::assertEquals($expected, $this->_em->find(DDC522ForeignKeyTest::class, $fkCust->id));
     }
 }
 
 /** @Entity */
-class DDC522Customer {
+class DDC522Customer
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
+
     /** @Column */
     public $name;
+
     /** @OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
     public $cart;
 }
 
 /** @Entity */
-class DDC522Cart {
+class DDC522Cart
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
+
     /** @Column(type="integer") */
     public $total;
+
     /**
      * @OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
      * @JoinColumn(name="customer", referencedColumnName="id")
@@ -106,11 +116,14 @@ class DDC522Cart {
 }
 
 /** @Entity */
-class DDC522ForeignKeyTest {
+class DDC522ForeignKeyTest
+{
     /** @Id @Column(type="integer") @GeneratedValue */
     public $id;
+
     /** @Column(type="integer", name="cart_id", nullable=true) */
     public $cartId;
+
     /**
      * @OneToOne(targetEntity="DDC522Cart")
      * @JoinColumn(name="cart_id", referencedColumnName="id")
