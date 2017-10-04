@@ -280,7 +280,7 @@ abstract class AbstractQuery
     /**
      * Retrieves the associated EntityManager of this Query instance.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

@@ -34,7 +34,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class PreFlushEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -49,7 +49,7 @@ class PreFlushEventArgs extends EventArgs
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManager
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
