@@ -95,20 +95,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $entityName
-     * @param string $associationFieldName
-     *
-     * @return ORMException
-     */
-    public static function invalidFindByInverseAssociation($entityName, $associationFieldName)
-    {
-        return new self(
-            "You cannot search for the association field '" . $entityName . '#' . $associationFieldName . "', " .
-            'because it is the inverse side of an association. Find methods only work on owning side associations.'
-        );
-    }
-
-    /**
      * @return ORMException
      */
     public static function invalidResultCacheDriver()
