@@ -85,16 +85,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $methodName
-     *
-     * @return ORMException
-     */
-    public static function findByRequiresParameter($methodName)
-    {
-        return new self("You need to pass a parameter to '" . $methodName . "'");
-    }
-
-    /**
      * @return ORMException
      */
     public static function invalidResultCacheDriver()

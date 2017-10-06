@@ -11,6 +11,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\Repository\InvalidMagicMethodCall;
 use function array_slice;
 use function lcfirst;
@@ -255,7 +256,7 @@ class EntityRepository implements ObjectRepository, Selectable
     private function resolveMagicCall($method, $by, array $arguments)
     {
         if (! $arguments) {
-            throw ORMException::findByRequiresParameter($method . $by);
+            throw InvalidMagicMethodCall::onMissingParameter($method . $by);
         }
 
         $fieldName = lcfirst(Inflector::classify($by));

@@ -18,4 +18,9 @@ final class InvalidMagicMethodCall extends \BadMethodCallException implements Re
             "You can therefore not call '".$method."' on the entities' repository."
         );
     }
+
+    public static function onMissingParameter(string $methodName): self
+    {
+        return new self("You need to pass a parameter to '".$methodName."'");
+    }
 }
