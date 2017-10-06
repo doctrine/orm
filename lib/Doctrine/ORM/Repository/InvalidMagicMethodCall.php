@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Repository;
 
 use Doctrine\ORM\RepositoryException;
 
-final class InvalidMagicMethodCall extends \InvalidArgumentException implements RepositoryException
+final class InvalidMagicMethodCall extends \BadMethodCallException implements RepositoryException
 {
     public static function becauseFieldNotFoundIn(
         string $entityName,
