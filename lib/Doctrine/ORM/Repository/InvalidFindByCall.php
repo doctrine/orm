@@ -6,9 +6,9 @@ namespace Doctrine\ORM\Repository;
 
 use Doctrine\ORM\RepositoryException;
 
-final class InvalidFindByInverseAssociation extends \BadMethodCallException implements RepositoryException
+final class InvalidFindByCall extends \BadMethodCallException implements RepositoryException
 {
-    public static function becauseIsInverseAssociation(
+    public static function fromInverseSideUsage(
         string $entityName,
         string $associationFieldName
     ) : self {

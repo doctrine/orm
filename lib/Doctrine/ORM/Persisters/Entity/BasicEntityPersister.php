@@ -36,6 +36,7 @@ use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Repository\InvalidFindByInverseAssociation;
+use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\PersisterHelper;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
@@ -1236,7 +1237,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             } elseif ($property instanceof AssociationMetadata) {
                 if (! $property->isOwningSide()) {
-                    throw InvalidFindByInverseAssociation::becauseIsInverseAssociation(
+                    throw InvalidFindByCall::fromInverseSideUsage(
                         $this->class->getClassName(),
                         $fieldName
                     );
@@ -1806,7 +1807,7 @@ class BasicEntityPersister implements EntityPersister
                 }
             } else {
                 if (! $owningAssociation->isOwningSide()) {
-                    throw InvalidFindByInverseAssociation::becauseIsInverseAssociation(
+                    throw InvalidFindByCall::fromInverseSideUsage(
                         $this->class->getClassName(),
                         $field
                     );

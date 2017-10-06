@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query;
-use Doctrine\ORM\Repository\InvalidFindByInverseAssociation;
+use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\TransactionRequiredException;
 use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\Models\CMS\CmsEmail;
@@ -386,7 +386,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         list($userId, $addressId) = $this->loadAssociatedFixture();
         $repos                    = $this->em->getRepository(CmsUser::class);
 
-        $this->expectException(InvalidFindByInverseAssociation::class);
+        $this->expectException(InvalidFindByCall::class);
         $this->expectExceptionMessage("You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association. Find methods only work on owning side associations.");
 
         $user = $repos->findBy(['address' => $addressId]);
@@ -621,7 +621,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @group DDC-1376
      *
-     * @expectedException Doctrine\ORM\Repository\InvalidFindByInverseAssociation
+     * @expectedException Doctrine\ORM\Repository\InvalidFindByCall
      * @expectedExceptionMessage You cannot search for the association field 'Doctrine\Tests\Models\CMS\CmsUser#address', because it is the inverse side of an association.
      */
     public function testInvalidOrderByAssociation() : void
