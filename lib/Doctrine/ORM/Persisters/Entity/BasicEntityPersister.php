@@ -792,6 +792,8 @@ class BasicEntityPersister implements EntityPersister
         $sourceClass = $this->em->getClassMetadata($assoc['sourceEntity']);
         $owningAssoc = $targetClass->getAssociationMapping($assoc['mappedBy']);
 
+        $computedIdentifier = [];
+
         // TRICKY: since the association is specular source and target are flipped
         foreach ($owningAssoc['targetToSourceKeyColumns'] as $sourceKeyColumn => $targetKeyColumn) {
             if ( ! isset($sourceClass->fieldNames[$sourceKeyColumn])) {
@@ -802,13 +804,11 @@ class BasicEntityPersister implements EntityPersister
 
             // unset the old value and set the new sql aliased value here. By definition
             // unset($identifier[$targetKeyColumn] works here with how UnitOfWork::createEntity() calls this method.
-            $identifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
+            $computedIdentifier[$targetClass->getFieldForColumn($targetKeyColumn)] =
                 $sourceClass->reflFields[$sourceClass->fieldNames[$sourceKeyColumn]]->getValue($sourceEntity);
-
-            unset($identifier[$targetKeyColumn]);
         }
 
-        $targetEntity = $this->load($identifier, null, $assoc);
+        $targetEntity = $this->load($computedIdentifier, null, $assoc);
 
         if ($targetEntity !== null) {
             $targetClass->setFieldValue($targetEntity, $assoc['mappedBy'], $sourceEntity);
