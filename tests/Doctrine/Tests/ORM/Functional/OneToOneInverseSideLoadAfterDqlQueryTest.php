@@ -26,7 +26,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
     }
 
     /**
-     * @group #6759
+     * @group 6759
      */
     public function testInverseSideOneToOneLoadedAfterDqlQuery(): void
     {
