@@ -150,7 +150,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param string $entityName The name of the entity type.
      * @param mixed  $id         The entity identifier.
      *
-     * @return object The entity reference.
+     * @return object|null The entity reference.
      *
      * @throws ORMException
      */
