@@ -22,8 +22,8 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testGetters()
     {
-        $this->assertEquals('default.region.test', $this->region->getName());
-        $this->assertSame($this->cache, $this->region->getCache());
+        self::assertEquals('default.region.test', $this->region->getName());
+        self::assertSame($this->cache, $this->region->getCache());
     }
 
     public function testSharedRegion()
@@ -34,19 +34,19 @@ class DefaultRegionTest extends AbstractRegionTest
         $region1 = new DefaultRegion('region1', $cache->createChild());
         $region2 = new DefaultRegion('region2', $cache->createChild());
 
-        $this->assertFalse($region1->contains($key));
-        $this->assertFalse($region2->contains($key));
+        self::assertFalse($region1->contains($key));
+        self::assertFalse($region2->contains($key));
 
         $region1->put($key, $entry);
         $region2->put($key, $entry);
 
-        $this->assertTrue($region1->contains($key));
-        $this->assertTrue($region2->contains($key));
+        self::assertTrue($region1->contains($key));
+        self::assertTrue($region2->contains($key));
 
         $region1->evictAll();
 
-        $this->assertFalse($region1->contains($key));
-        $this->assertTrue($region2->contains($key));
+        self::assertFalse($region1->contains($key));
+        self::assertTrue($region2->contains($key));
     }
 
     public function testDoesNotModifyCacheNamespace()
@@ -58,7 +58,7 @@ class DefaultRegionTest extends AbstractRegionTest
         new DefaultRegion('bar', $cache);
         new DefaultRegion('baz', $cache);
 
-        $this->assertSame('foo', $cache->getNamespace());
+        self::assertSame('foo', $cache->getNamespace());
     }
 
     public function testEvictAllWithGenericCacheThrowsUnsupportedException()
@@ -81,19 +81,19 @@ class DefaultRegionTest extends AbstractRegionTest
         $key2 = new CacheKeyMock('key.2');
         $value2 = new CacheEntryMock(['id' => 2, 'name' => 'bar']);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
 
         $this->region->put($key1, $value1);
         $this->region->put($key2, $value2);
 
-        $this->assertTrue($this->region->contains($key1));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertTrue($this->region->contains($key1));
+        self::assertTrue($this->region->contains($key2));
 
         $actual = $this->region->getMultiple(new CollectionCacheEntry([$key1, $key2]));
 
-        $this->assertEquals($value1, $actual[0]);
-        $this->assertEquals($value2, $actual[1]);
+        self::assertEquals($value1, $actual[0]);
+        self::assertEquals($value2, $actual[1]);
     }
 }
 

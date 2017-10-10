@@ -44,9 +44,9 @@ class DDC2084Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e2 = $e1->getMyEntity2();
         $e  = $this->_em->find(__NAMESPACE__ . '\DDC2084\MyEntity1', $e2);
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
-        $this->assertEquals('Foo', $e->getMyEntity2()->getValue());
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity1', $e);
+        self::assertInstanceOf(__NAMESPACE__ . '\DDC2084\MyEntity2', $e->getMyEntity2());
+        self::assertEquals('Foo', $e->getMyEntity2()->getValue());
     }
 
     /**

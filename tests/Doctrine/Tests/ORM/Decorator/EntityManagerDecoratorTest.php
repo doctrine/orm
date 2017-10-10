@@ -82,6 +82,6 @@ class EntityManagerDecoratorTest extends TestCase
         $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
         };
 
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        self::assertSame($return, $decorator->$method(...$parameters));
     }
 }

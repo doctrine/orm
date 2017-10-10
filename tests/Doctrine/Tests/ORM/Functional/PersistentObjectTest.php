@@ -51,7 +51,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         $entity = $this->_em->find(PersistentEntity::class, $entity->getId());
 
-        $this->assertEquals('test', $entity->getName());
+        self::assertEquals('test', $entity->getName());
         $entity->setName('foobar');
 
         $this->_em->flush();
@@ -68,7 +68,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
 
-        $this->assertEquals('test', $entity->getName());
+        self::assertEquals('test', $entity->getName());
     }
 
     public function testSetAssociation()
@@ -82,7 +82,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
-        $this->assertSame($entity, $entity->getParent());
+        self::assertSame($entity, $entity->getParent());
     }
 }
 

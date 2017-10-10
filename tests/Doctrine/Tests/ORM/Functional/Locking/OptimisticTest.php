@@ -39,7 +39,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertEquals(1, $test->version);
+        self::assertEquals(1, $test->version);
 
         return $test;
     }
@@ -66,7 +66,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
     }
 
@@ -79,7 +79,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertEquals(1, $test->version);
+        self::assertEquals(1, $test->version);
 
         return $test;
     }
@@ -106,7 +106,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
     }
 
@@ -120,8 +120,8 @@ class OptimisticTest extends OrmFunctionalTestCase
             $this->_em->persist($test);
             $this->_em->flush();
 
-            $this->assertInternalType('int', $test->getVersion());
-            $this->assertEquals($i + 1, $test->getVersion());
+            self::assertInternalType('int', $test->getVersion());
+            self::assertEquals($i + 1, $test->getVersion());
         }
     }
 
@@ -134,8 +134,8 @@ class OptimisticTest extends OrmFunctionalTestCase
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInternalType('int', $test->getVersion());
-        $this->assertEquals(1, $test->getVersion());
+        self::assertInternalType('int', $test->getVersion());
+        self::assertEquals(1, $test->getVersion());
 
         return $test;
     }
@@ -162,7 +162,7 @@ class OptimisticTest extends OrmFunctionalTestCase
         try {
             $this->_em->flush();
         } catch (OptimisticLockException $e) {
-            $this->assertSame($test, $e->getEntity());
+            self::assertSame($test, $e->getEntity());
         }
     }
 
@@ -188,12 +188,12 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test->name = 'Testing';
 
-        $this->assertNull($test->version, "Pre-Condition");
+        self::assertNull($test->version, "Pre-Condition");
 
         $this->_em->persist($test);
         $this->_em->flush();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         return $test;
     }
@@ -209,7 +209,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         // Manually increment the version datetime column
         $format = $this->_em->getConnection()->getDatabasePlatform()->getDateTimeFormatString();
@@ -227,8 +227,8 @@ class OptimisticTest extends OrmFunctionalTestCase
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
-        $this->assertSame($test, $caughtException->getEntity());
+        self::assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        self::assertSame($test, $caughtException->getEntity());
 
     }
 
@@ -243,7 +243,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         $test = $q->getSingleResult();
 
-        $this->assertInstanceOf('DateTime', $test->version);
+        self::assertInstanceOf('DateTime', $test->version);
 
         // Try to lock the record with an older timestamp and it should throw an exception
         $caughtException = null;
@@ -256,8 +256,8 @@ class OptimisticTest extends OrmFunctionalTestCase
             $caughtException = $e;
         }
 
-        $this->assertNotNull($caughtException, "No OptimisticLockingException was thrown");
-        $this->assertSame($test, $caughtException->getEntity());
+        self::assertNotNull($caughtException, "No OptimisticLockingException was thrown");
+        self::assertSame($test, $caughtException->getEntity());
 
     }
 

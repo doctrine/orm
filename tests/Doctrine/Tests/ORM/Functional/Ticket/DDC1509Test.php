@@ -46,8 +46,8 @@ class DDC1509Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $pic = $em->merge($picture);
         /* @var $pic DDC1509Picture */
 
-        $this->assertNotNull($pic->getThumbnail());
-        $this->assertNotNull($pic->getFile());
+        self::assertNotNull($pic->getThumbnail());
+        self::assertNotNull($pic->getFile());
     }
 
 }

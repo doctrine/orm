@@ -18,6 +18,6 @@ class DDC2655Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testSingleScalarOneOrNullResult()
     {
         $query = $this->_em->createQuery("SELECT u.name FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'happy_doctrine_user'");
-        $this->assertNull($query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
+        self::assertNull($query->getOneOrNullResult(Query::HYDRATE_SINGLE_SCALAR));
     }
 }

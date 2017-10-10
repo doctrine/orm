@@ -39,7 +39,7 @@ class DDC933Test extends OrmFunctionalTestCase
         $this->_em->rollback();
 
         // if lock hasn't been released we'd have an exception here
-        $this->assertManagerCanBeUpdatedOnAnotherConnection($manager->getId(), 'Master of This Test');
+        self::assertManagerCanBeUpdatedOnAnotherConnection($manager->getId(), 'Master of This Test');
     }
 
     /**

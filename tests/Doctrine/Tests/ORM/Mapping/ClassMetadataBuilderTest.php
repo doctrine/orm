@@ -35,23 +35,23 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testSetMappedSuperClass()
     {
-        $this->assertIsFluent($this->builder->setMappedSuperClass());
-        $this->assertTrue($this->cm->isMappedSuperclass);
-        $this->assertFalse($this->cm->isEmbeddedClass);
+        self::assertIsFluent($this->builder->setMappedSuperClass());
+        self::assertTrue($this->cm->isMappedSuperclass);
+        self::assertFalse($this->cm->isEmbeddedClass);
     }
 
     public function testSetEmbedable()
     {
-        $this->assertIsFluent($this->builder->setEmbeddable());
-        $this->assertTrue($this->cm->isEmbeddedClass);
-        $this->assertFalse($this->cm->isMappedSuperclass);
+        self::assertIsFluent($this->builder->setEmbeddable());
+        self::assertTrue($this->cm->isEmbeddedClass);
+        self::assertFalse($this->cm->isMappedSuperclass);
     }
 
     public function testAddEmbeddedWithOnlyRequiredParams()
     {
-        $this->assertIsFluent($this->builder->addEmbedded('name', Name::class));
+        self::assertIsFluent($this->builder->addEmbedded('name', Name::class));
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'name' => [
                 'class' => Name::class,
@@ -64,7 +64,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testAddEmbeddedWithPrefix()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder->addEmbedded(
                 'name',
                 Name::class,
@@ -72,7 +72,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             )
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'name' => [
                 'class' => Name::class,
@@ -86,12 +86,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
     public function testCreateEmbeddedWithoutExtraParams()
     {
         $embeddedBuilder = ($this->builder->createEmbedded('name', Name::class));
-        $this->assertInstanceOf(EmbeddedBuilder::class, $embeddedBuilder);
+        self::assertInstanceOf(EmbeddedBuilder::class, $embeddedBuilder);
 
-        $this->assertFalse(isset($this->cm->embeddedClasses['name']));
+        self::assertFalse(isset($this->cm->embeddedClasses['name']));
 
-        $this->assertIsFluent($embeddedBuilder->build());
-        $this->assertEquals(
+        self::assertIsFluent($embeddedBuilder->build());
+        self::assertEquals(
             [
                 'class' => Name::class,
                 'columnPrefix' => null,
@@ -106,11 +106,11 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $embeddedBuilder = ($this->builder->createEmbedded('name', Name::class));
 
-        $this->assertEquals($embeddedBuilder, $embeddedBuilder->setColumnPrefix('nm_'));
+        self::assertEquals($embeddedBuilder, $embeddedBuilder->setColumnPrefix('nm_'));
 
-        $this->assertIsFluent($embeddedBuilder->build());
+        self::assertIsFluent($embeddedBuilder->build());
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'class' => Name::class,
                 'columnPrefix' => 'nm_',
@@ -123,32 +123,32 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testSetCustomRepositoryClass()
     {
-        $this->assertIsFluent($this->builder->setCustomRepositoryClass(CmsGroup::class));
-        $this->assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
+        self::assertIsFluent($this->builder->setCustomRepositoryClass(CmsGroup::class));
+        self::assertEquals(CmsGroup::class, $this->cm->customRepositoryClassName);
     }
 
     public function testSetReadOnly()
     {
-        $this->assertIsFluent($this->builder->setReadOnly());
-        $this->assertTrue($this->cm->isReadOnly);
+        self::assertIsFluent($this->builder->setReadOnly());
+        self::assertTrue($this->cm->isReadOnly);
     }
 
     public function testSetTable()
     {
-        $this->assertIsFluent($this->builder->setTable('users'));
-        $this->assertEquals('users', $this->cm->table['name']);
+        self::assertIsFluent($this->builder->setTable('users'));
+        self::assertEquals('users', $this->cm->table['name']);
     }
 
     public function testAddIndex()
     {
-        $this->assertIsFluent($this->builder->addIndex(['username', 'name'], 'users_idx'));
-        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
+        self::assertIsFluent($this->builder->addIndex(['username', 'name'], 'users_idx'));
+        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['indexes']);
     }
 
     public function testAddUniqueConstraint()
     {
-        $this->assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
-        $this->assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
+        self::assertIsFluent($this->builder->addUniqueConstraint(['username', 'name'], 'users_idx'));
+        self::assertEquals(['users_idx' => ['columns' => ['username', 'name']]], $this->cm->table['uniqueConstraints']);
     }
 
     public function testSetPrimaryTableRelated()
@@ -157,7 +157,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
         $this->builder->addIndex(['username', 'name'], 'users_idx');
         $this->builder->setTable('users');
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => 'users',
                 'indexes' => ['users_idx' => ['columns' => ['username', 'name']]],
@@ -169,64 +169,64 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testSetInheritanceJoined()
     {
-        $this->assertIsFluent($this->builder->setJoinedTableInheritance());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_JOINED, $this->cm->inheritanceType);
+        self::assertIsFluent($this->builder->setJoinedTableInheritance());
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_JOINED, $this->cm->inheritanceType);
     }
 
     public function testSetInheritanceSingleTable()
     {
-        $this->assertIsFluent($this->builder->setSingleTableInheritance());
-        $this->assertEquals(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE, $this->cm->inheritanceType);
+        self::assertIsFluent($this->builder->setSingleTableInheritance());
+        self::assertEquals(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE, $this->cm->inheritanceType);
     }
 
     public function testSetDiscriminatorColumn()
     {
-        $this->assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
-        $this->assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
+        self::assertIsFluent($this->builder->setDiscriminatorColumn('discr', 'string', '124'));
+        self::assertEquals(['fieldName' => 'discr', 'name' => 'discr', 'type' => 'string', 'length' => '124'], $this->cm->discriminatorColumn);
     }
 
     public function testAddDiscriminatorMapClass()
     {
-        $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test', CmsUser::class));
-        $this->assertIsFluent($this->builder->addDiscriminatorMapClass('test2', CmsGroup::class));
+        self::assertIsFluent($this->builder->addDiscriminatorMapClass('test', CmsUser::class));
+        self::assertIsFluent($this->builder->addDiscriminatorMapClass('test2', CmsGroup::class));
 
-        $this->assertEquals(
+        self::assertEquals(
             ['test' => CmsUser::class, 'test2' => CmsGroup::class], $this->cm->discriminatorMap);
-        $this->assertEquals('test', $this->cm->discriminatorValue);
+        self::assertEquals('test', $this->cm->discriminatorValue);
     }
 
     public function testChangeTrackingPolicyExplicit()
     {
-        $this->assertIsFluent($this->builder->setChangeTrackingPolicyDeferredExplicit());
-        $this->assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
+        self::assertIsFluent($this->builder->setChangeTrackingPolicyDeferredExplicit());
+        self::assertEquals(ClassMetadata::CHANGETRACKING_DEFERRED_EXPLICIT, $this->cm->changeTrackingPolicy);
     }
 
     public function testChangeTrackingPolicyNotify()
     {
-        $this->assertIsFluent($this->builder->setChangeTrackingPolicyNotify());
-        $this->assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
+        self::assertIsFluent($this->builder->setChangeTrackingPolicyNotify());
+        self::assertEquals(ClassMetadata::CHANGETRACKING_NOTIFY, $this->cm->changeTrackingPolicy);
     }
 
     public function testAddField()
     {
-        $this->assertIsFluent($this->builder->addField('name', 'string'));
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        self::assertIsFluent($this->builder->addField('name', 'string'));
+        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
     public function testCreateField()
     {
         $fieldBuilder = ($this->builder->createField('name', 'string'));
-        $this->assertInstanceOf(FieldBuilder::class, $fieldBuilder);
+        self::assertInstanceOf(FieldBuilder::class, $fieldBuilder);
 
-        $this->assertFalse(isset($this->cm->fieldMappings['name']));
-        $this->assertIsFluent($fieldBuilder->build());
-        $this->assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
+        self::assertFalse(isset($this->cm->fieldMappings['name']));
+        self::assertIsFluent($fieldBuilder->build());
+        self::assertEquals(['columnName' => 'name', 'fieldName' => 'name', 'type' => 'string'], $this->cm->fieldMappings['name']);
     }
 
     public function testCreateVersionedField()
     {
         $this->builder->createField('name', 'integer')->columnName('username')->length(124)->nullable()->columnDefinition('foobar')->unique()->isVersionField()->build();
-        $this->assertEquals(
+        self::assertEquals(
             [
             'columnDefinition' => 'foobar',
             'columnName' => 'username',
@@ -243,15 +243,15 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $this->builder->createField('id', 'integer')->makePrimaryKey()->generatedValue()->build();
 
-        $this->assertEquals(['id'], $this->cm->identifier);
-        $this->assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
+        self::assertEquals(['id'], $this->cm->identifier);
+        self::assertEquals(['columnName' => 'id', 'fieldName' => 'id', 'id' => true, 'type' => 'integer'], $this->cm->fieldMappings['id']);
     }
 
     public function testCreateUnsignedOptionField()
     {
         $this->builder->createField('state', 'integer')->option('unsigned', true)->build();
 
-        $this->assertEquals(
+        self::assertEquals(
             ['fieldName' => 'state', 'type' => 'integer', 'options' => ['unsigned' => true], 'columnName' => 'state'], $this->cm->fieldMappings['state']);
     }
 
@@ -259,12 +259,12 @@ class ClassMetadataBuilderTest extends OrmTestCase
     {
         $this->builder->addLifecycleEvent('getStatus', 'postLoad');
 
-        $this->assertEquals(['postLoad' => ['getStatus']], $this->cm->lifecycleCallbacks);
+        self::assertEquals(['postLoad' => ['getStatus']], $this->cm->lifecycleCallbacks);
     }
 
     public function testCreateManyToOne()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder->createManyToOne('groups', CmsGroup::class)
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                               ->cascadeAll()
@@ -272,7 +272,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                 'fieldName' => 'groups',
@@ -325,7 +325,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateManyToOneWithIdentity()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this
                 ->builder
                 ->createManyToOne('groups', CmsGroup::class)
@@ -336,7 +336,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                     'fieldName' => 'groups',
@@ -392,7 +392,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateOneToOne()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder->createOneToOne('groups', CmsGroup::class)
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
                               ->cascadeAll()
@@ -400,7 +400,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                 'fieldName' => 'groups',
@@ -453,7 +453,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateOneToOneWithIdentity()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this
                 ->builder
                 ->createOneToOne('groups', CmsGroup::class)
@@ -464,7 +464,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'groups' => [
                     'fieldName' => 'groups',
@@ -533,7 +533,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateManyToMany()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder->createManyToMany('groups', CmsGroup::class)
                               ->setJoinTable('groups_users')
                               ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
@@ -543,7 +543,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                               ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'groups' =>
             [
@@ -631,7 +631,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testCreateOneToMany()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
                 $this->builder->createOneToMany('groups', CmsGroup::class)
                         ->mappedBy('test')
                         ->setOrderBy(['test'])
@@ -639,7 +639,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                         ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'groups' =>
             [
@@ -683,7 +683,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testOrphanRemovalOnCreateOneToOne()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder
                 ->createOneToOne('groups', CmsGroup::class)
                 ->addJoinColumn('group_id', 'id', true, false, 'CASCADE')
@@ -691,7 +691,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'groups' => [
                 'fieldName' => 'groups',
@@ -738,7 +738,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function testOrphanRemovalOnCreateOneToMany()
     {
-        $this->assertIsFluent(
+        self::assertIsFluent(
             $this->builder
                 ->createOneToMany('groups', CmsGroup::class)
                 ->mappedBy('test')
@@ -746,7 +746,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
                 ->build()
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'groups' =>
             [
@@ -788,7 +788,7 @@ class ClassMetadataBuilderTest extends OrmTestCase
             ->orphanRemoval()
             ->build();
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'groups' => [
                 'fieldName' => 'groups',
@@ -843,6 +843,6 @@ class ClassMetadataBuilderTest extends OrmTestCase
 
     public function assertIsFluent($ret)
     {
-        $this->assertSame($this->builder, $ret, "Return Value has to be same instance as used builder");
+        self::assertSame($this->builder, $ret, "Return Value has to be same instance as used builder");
     }
 }

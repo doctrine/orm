@@ -28,7 +28,7 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $q = $this->_em->createQuery("SELECT u FROM $classname u");
         $u = $q->getSingleResult();
-        $this->assertEquals("Initial value", $u->name);
+        self::assertEquals("Initial value", $u->name);
 
         $u->name = "Modified value";
 
@@ -40,7 +40,7 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $u = $this->_em->createQuery("SELECT u FROM $classname u");
         $u = $q->getSingleResult();
 
-        $this->assertEquals("Initial value", $u->name);
+        self::assertEquals("Initial value", $u->name);
 
 
         $u->name = "Modified value";
@@ -51,7 +51,7 @@ class DDC444Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $q = $this->_em->createQuery("SELECT u FROM $classname u");
         $u = $q->getSingleResult();
 
-        $this->assertEquals("Modified value", $u->name);
+        self::assertEquals("Modified value", $u->name);
     }
 }
 

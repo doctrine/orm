@@ -31,9 +31,9 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
         
-        $this->assertCount(2, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
-        $this->assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
+        self::assertCount(2, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+        self::assertArrayHasKey($childClassMetadata->discriminatorValue, $discriminators);
     }
 
     public function testResolveDiscriminatorsForClassWithNoSubclasses()
@@ -50,7 +50,7 @@ class HierarchyDiscriminatorResolverTest extends TestCase
 
         $discriminators = HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($classMetadata, $em->reveal());
         
-        $this->assertCount(1, $discriminators);
-        $this->assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
+        self::assertCount(1, $discriminators);
+        self::assertArrayHasKey($classMetadata->discriminatorValue, $discriminators);
     }
 }

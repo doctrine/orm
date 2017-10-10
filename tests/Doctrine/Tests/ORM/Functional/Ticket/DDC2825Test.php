@@ -41,8 +41,8 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
 
         // Check if table name and schema properties are defined in the class metadata
-        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
-        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
+        self::assertEquals($expectedTableName, $classMetadata->table['name']);
+        self::assertEquals($expectedSchemaName, $classMetadata->table['schema']);
 
         if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
             $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
@@ -50,10 +50,10 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
         }
 
-        $this->assertEquals($fullTableName, $quotedTableName);
+        self::assertEquals($fullTableName, $quotedTableName);
 
         // Checks sequence name validity
-        $this->assertEquals(
+        self::assertEquals(
             $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
             $classMetadata->getSequenceName($platform)
         );
@@ -76,7 +76,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $this->assertCount(1, $this->_em->getRepository($className)->findAll());
+        self::assertCount(1, $this->_em->getRepository($className)->findAll());
     }
 
     /**

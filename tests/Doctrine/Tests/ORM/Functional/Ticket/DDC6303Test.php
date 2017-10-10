@@ -30,7 +30,7 @@ class DDC6303Test extends OrmFunctionalTestCase
         // DDC6303ChildA and DDC6303ChildB have an inheritance from DDC6303BaseClass,
         // but one has a string originalData and the second has an array, since the fields
         // are mapped differently
-        $this->assertHydratedEntitiesSameToPersistedOnes([
+        self::assertHydratedEntitiesSameToPersistedOnes([
             'a' => new DDC6303ChildA('a', 'authorized'),
             'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
         ]);
@@ -39,7 +39,7 @@ class DDC6303Test extends OrmFunctionalTestCase
 
     public function testEmptyValuesInJoinedInheritance() : void
     {
-        $this->assertHydratedEntitiesSameToPersistedOnes([
+        self::assertHydratedEntitiesSameToPersistedOnes([
             'stringEmpty' => new DDC6303ChildA('stringEmpty', ''),
             'stringZero'  => new DDC6303ChildA('stringZero', 0),
             'arrayEmpty'  => new DDC6303ChildB('arrayEmpty', []),

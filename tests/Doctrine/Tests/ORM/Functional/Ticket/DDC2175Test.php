@@ -25,17 +25,17 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($entity);
         $this->_em->flush();
 
-        $this->assertEquals(1, $entity->version);
+        self::assertEquals(1, $entity->version);
 
         $entity->field = "bar";
         $this->_em->flush();
 
-        $this->assertEquals(2, $entity->version);
+        self::assertEquals(2, $entity->version);
 
         $entity->field = "baz";
         $this->_em->flush();
 
-        $this->assertEquals(3, $entity->version);
+        self::assertEquals(3, $entity->version);
     }
 }
 

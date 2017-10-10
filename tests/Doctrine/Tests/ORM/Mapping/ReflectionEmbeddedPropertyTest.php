@@ -39,11 +39,11 @@ class ReflectionEmbeddedPropertyTest extends TestCase
 
         $embeddedPropertyReflection->setValue($object, 'newValue');
 
-        $this->assertSame('newValue', $embeddedPropertyReflection->getValue($object));
+        self::assertSame('newValue', $embeddedPropertyReflection->getValue($object));
 
         $embeddedPropertyReflection->setValue($object, 'changedValue');
 
-        $this->assertSame('changedValue', $embeddedPropertyReflection->getValue($object));
+        self::assertSame('changedValue', $embeddedPropertyReflection->getValue($object));
     }
 
     /**
@@ -62,7 +62,7 @@ class ReflectionEmbeddedPropertyTest extends TestCase
 
         $instantiator = new Instantiator();
 
-        $this->assertNull($embeddedPropertyReflection->getValue(
+        self::assertNull($embeddedPropertyReflection->getValue(
             $instantiator->instantiate($parentProperty->getDeclaringClass()->getName())
         ));
     }
