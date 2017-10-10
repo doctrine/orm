@@ -18,9 +18,9 @@ class ClassMetadataLoadEventTest extends OrmTestCase
         $evm = $em->getEventManager();
         $evm->addEventListener(Events::loadClassMetadata, $this);
         $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
-        $this->assertTrue($classMetadata->hasField('about'));
-        $this->assertArrayHasKey('about', $classMetadata->reflFields);
-        $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+        self::assertTrue($classMetadata->hasField('about'));
+        self::assertArrayHasKey('about', $classMetadata->reflFields);
+        self::assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)

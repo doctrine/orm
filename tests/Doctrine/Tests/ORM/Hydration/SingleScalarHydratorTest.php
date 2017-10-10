@@ -74,13 +74,13 @@ class SingleScalarHydratorTest extends HydrationTestCase
 
         if ($name === 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
-            $this->assertEquals('romanb', $result);
+            self::assertEquals('romanb', $result);
             return;
         }
 
         if ($name === 'result2') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
-            $this->assertEquals(1, $result);
+            self::assertEquals(1, $result);
 
             return;
         }

@@ -53,7 +53,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ], ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing all second-level cache collection regions' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing all second-level cache collection regions' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testClearByOwnerEntityClassName()
@@ -68,7 +68,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ], ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testClearCacheEntryName()
@@ -84,7 +84,7 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ], ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner entity identified by "1"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner entity identified by "1"' . PHP_EOL, $tester->getDisplay());
     }
 
     public function testFlushRegionName()
@@ -100,6 +100,6 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
             ], ['decorated' => false]
         );
 
-        $this->assertEquals('Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
+        self::assertEquals('Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
     }
 }

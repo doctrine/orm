@@ -35,15 +35,15 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // $user is now detached
-        $this->assertFalse($this->_em->contains($user));
+        self::assertFalse($this->_em->contains($user));
 
         $user->name = 'Roman B.';
 
         $user2 = $this->_em->merge($user);
 
-        $this->assertFalse($user === $user2);
-        $this->assertTrue($this->_em->contains($user2));
-        $this->assertEquals('Roman B.', $user2->name);
+        self::assertFalse($user === $user2);
+        self::assertTrue($this->_em->contains($user2));
+        self::assertEquals('Roman B.', $user2->name);
     }
 
     public function testSerializeUnserializeModifyMerge()
@@ -60,20 +60,20 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->persist($user);
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->contains($user));
-        $this->assertTrue($user->phonenumbers->isInitialized());
+        self::assertTrue($this->_em->contains($user));
+        self::assertTrue($user->phonenumbers->isInitialized());
 
         $serialized = serialize($user);
 
         $this->_em->clear();
 
-        $this->assertFalse($this->_em->contains($user));
+        self::assertFalse($this->_em->contains($user));
 
         unset($user);
 
         $user = unserialize($serialized);
 
-        $this->assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
+        self::assertEquals(1, count($user->getPhonenumbers()), "Pre-Condition: 1 Phonenumber");
 
         $ph2 = new CmsPhonenumber;
 
@@ -82,29 +82,29 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $oldPhonenumbers = $user->getPhonenumbers();
 
-        $this->assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
-        $this->assertFalse($this->_em->contains($user));
+        self::assertEquals(2, count($oldPhonenumbers), "Pre-Condition: 2 Phonenumbers");
+        self::assertFalse($this->_em->contains($user));
 
         $this->_em->persist($ph2);
 
         // Merge back in
         $user = $this->_em->merge($user); // merge cascaded to phonenumbers
-        $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[0]->user);
-        $this->assertInstanceOf(CmsUser::class, $user->phonenumbers[1]->user);
+        self::assertInstanceOf(CmsUser::class, $user->phonenumbers[0]->user);
+        self::assertInstanceOf(CmsUser::class, $user->phonenumbers[1]->user);
         $im = $this->_em->getUnitOfWork()->getIdentityMap();
         $this->_em->flush();
 
-        $this->assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
+        self::assertTrue($this->_em->contains($user), "Failed to assert that merged user is contained inside EntityManager persistence context.");
         $phonenumbers = $user->getPhonenumbers();
-        $this->assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
-        $this->assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
+        self::assertNotSame($oldPhonenumbers, $phonenumbers, "Merge should replace the Detached Collection with a new PersistentCollection.");
+        self::assertEquals(2, count($phonenumbers), "Failed to assert that two phonenumbers are contained in the merged users phonenumber collection.");
 
-        $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[1]);
-        $this->assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
+        self::assertInstanceOf(CmsPhonenumber::class, $phonenumbers[1]);
+        self::assertTrue($this->_em->contains($phonenumbers[1]), "Failed to assert that second phonenumber in collection is contained inside EntityManager persistence context.");
 
-        $this->assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
-        $this->assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
-        $this->assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
+        self::assertInstanceOf(CmsPhonenumber::class, $phonenumbers[0]);
+        self::assertTrue($this->_em->getUnitOfWork()->isInIdentityMap($phonenumbers[0]));
+        self::assertTrue($this->_em->contains($phonenumbers[0]), "Failed to assert that first phonenumber in collection is contained inside EntityManager persistence context.");
     }
 
     /**
@@ -146,16 +146,16 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $address2 = $this->_em->find(get_class($address), $address->id);
-        $this->assertInstanceOf(Proxy::class, $address2->user);
-        $this->assertFalse($address2->user->__isInitialized__);
+        self::assertInstanceOf(Proxy::class, $address2->user);
+        self::assertFalse($address2->user->__isInitialized__);
         $detachedAddress2 = unserialize(serialize($address2));
-        $this->assertInstanceOf(Proxy::class, $detachedAddress2->user);
-        $this->assertFalse($detachedAddress2->user->__isInitialized__);
+        self::assertInstanceOf(Proxy::class, $detachedAddress2->user);
+        self::assertFalse($detachedAddress2->user->__isInitialized__);
 
         $managedAddress2 = $this->_em->merge($detachedAddress2);
-        $this->assertInstanceOf(Proxy::class, $managedAddress2->user);
-        $this->assertFalse($managedAddress2->user === $detachedAddress2->user);
-        $this->assertFalse($managedAddress2->user->__isInitialized__);
+        self::assertInstanceOf(Proxy::class, $managedAddress2->user);
+        self::assertFalse($managedAddress2->user === $detachedAddress2->user);
+        self::assertFalse($managedAddress2->user->__isInitialized__);
     }
 
     /**
@@ -179,8 +179,8 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $newUser = $query->getSingleResult();
 
-        $this->assertInstanceOf(CmsUser::class, $newUser);
-        $this->assertEquals('gblanco', $newUser->username);
+        self::assertInstanceOf(CmsUser::class, $newUser);
+        self::assertEquals('gblanco', $newUser->username);
     }
 
     /**
@@ -198,8 +198,8 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
         $this->_em->flush();
 
-        $this->assertFalse($this->_em->contains($user));
-        $this->assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
+        self::assertFalse($this->_em->contains($user));
+        self::assertFalse($this->_em->getUnitOfWork()->isInIdentityMap($user));
     }
 
     /**

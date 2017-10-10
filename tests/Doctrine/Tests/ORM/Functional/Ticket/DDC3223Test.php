@@ -41,7 +41,7 @@ class DDC3223Test extends OrmFunctionalTestCase
 
         $profileStatus = clone $participant->profileStatus;
 
-        $this->assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
+        self::assertSame(1, $profileStatus->getId(), 'The identifier on the cloned instance is an integer');
     }
 }
 

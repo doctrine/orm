@@ -70,8 +70,8 @@ final class GH6362Test extends OrmFunctionalTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ObjectHydrator($this->_em);
         $result   = $hydrator->hydrateAll($stmt, $rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
 
-        $this->assertInstanceOf(GH6362Start::class, $result[0]['base']);
-        $this->assertInstanceOf(GH6362Child::class, $result[1][0]);
+        self::assertInstanceOf(GH6362Start::class, $result[0]['base']);
+        self::assertInstanceOf(GH6362Child::class, $result[1][0]);
     }
 }
 

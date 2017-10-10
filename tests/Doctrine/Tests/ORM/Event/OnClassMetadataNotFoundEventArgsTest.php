@@ -21,20 +21,20 @@ class OnClassMetadataNotFoundEventArgsTest extends TestCase
 
         $args = new OnClassMetadataNotFoundEventArgs('foo', $objectManager);
 
-        $this->assertSame('foo', $args->getClassName());
-        $this->assertSame($objectManager, $args->getObjectManager());
+        self::assertSame('foo', $args->getClassName());
+        self::assertSame($objectManager, $args->getObjectManager());
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
 
         /* @var $metadata \Doctrine\Common\Persistence\Mapping\ClassMetadata */
         $metadata = $this->createMock(ClassMetadata::class);
 
         $args->setFoundMetadata($metadata);
 
-        $this->assertSame($metadata, $args->getFoundMetadata());
+        self::assertSame($metadata, $args->getFoundMetadata());
 
         $args->setFoundMetadata(null);
 
-        $this->assertNull($args->getFoundMetadata());
+        self::assertNull($args->getFoundMetadata());
     }
 }

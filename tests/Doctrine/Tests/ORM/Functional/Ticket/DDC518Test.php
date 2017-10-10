@@ -30,6 +30,6 @@ class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($user);
         $managedArticle = $this->_em->merge($article);
 
-        $this->assertSame($article->user, $managedArticle->user);
+        self::assertSame($article->user, $managedArticle->user);
     }
 }

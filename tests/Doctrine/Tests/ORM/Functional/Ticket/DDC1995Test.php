@@ -38,8 +38,8 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setParameter(1, $class)
                 ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertInstanceOf(CompanyEmployee::class, $result[0]);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(CompanyEmployee::class, $result[0]);
     }
 
     public function testQueryCache()
@@ -71,10 +71,10 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->useQueryCache(true)
                 ->getResult();
 
-        $this->assertCount(1, $result1);
-        $this->assertCount(2, $result2);
+        self::assertCount(1, $result1);
+        self::assertCount(2, $result2);
 
-        $this->assertInstanceOf(CompanyEmployee::class, $result1[0]);
-        $this->assertContainsOnlyInstancesOf(CompanyPerson::class, $result2);
+        self::assertInstanceOf(CompanyEmployee::class, $result1[0]);
+        self::assertContainsOnlyInstancesOf(CompanyPerson::class, $result2);
     }
 }

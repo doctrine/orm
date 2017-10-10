@@ -42,30 +42,30 @@ class HydrationCacheTest extends OrmFunctionalTestCase
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getResult();
 
-        $this->assertEquals($c, $this->getCurrentQueryCount(), "Should not execute query. Its cached!");
+        self::assertEquals($c, $this->getCurrentQueryCount(), "Should not execute query. Its cached!");
 
         $users = $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getArrayResult();
 
-        $this->assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration is part of cache key.");
+        self::assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration is part of cache key.");
 
         $users = $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, null, $cache))
                       ->getArrayResult();
 
-        $this->assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration now cached");
+        self::assertEquals($c + 1, $this->getCurrentQueryCount(), "Hydration now cached");
 
         $users = $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
                       ->getArrayResult();
 
-        $this->assertTrue($cache->contains('cachekey'), 'Explicit cache key');
+        self::assertTrue($cache->contains('cachekey'), 'Explicit cache key');
 
         $users = $this->_em->createQuery($dql)
                       ->setHydrationCacheProfile(new QueryCacheProfile(null, 'cachekey', $cache))
                       ->getArrayResult();
-        $this->assertEquals($c + 2, $this->getCurrentQueryCount(), "Hydration now cached");
+        self::assertEquals($c + 2, $this->getCurrentQueryCount(), "Hydration now cached");
     }
 
     public function testHydrationParametersSerialization()
@@ -83,7 +83,7 @@ class HydrationCacheTest extends OrmFunctionalTestCase
 
         $query->getResult();
 
-        $this->assertEquals($c, $this->getCurrentQueryCount(), "Should not execute query. Its cached!");
+        self::assertEquals($c, $this->getCurrentQueryCount(), "Should not execute query. Its cached!");
     }
 }
 

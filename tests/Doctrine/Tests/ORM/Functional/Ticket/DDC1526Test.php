@@ -41,7 +41,7 @@ class DDC1526Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         // All Children collection now have to be initialized
         foreach ($menus as $menu) {
-            $this->assertTrue($menu->children->isInitialized());
+            self::assertTrue($menu->children->isInitialized());
         }
     }
 }

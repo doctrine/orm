@@ -54,11 +54,11 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
 
-        $this->assertCount(5, $result);
+        self::assertCount(5, $result);
 
         foreach ($result as $order) {
-            $this->assertNotNull($order);
-            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
+            self::assertNotNull($order);
+            self::assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 
@@ -72,11 +72,11 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query  = $this->_em->createNativeQuery($sql, $rsm);
         $result = $query->getResult();
 
-        $this->assertCount(5, $result);
+        self::assertCount(5, $result);
 
         foreach ($result as $order) {
-            $this->assertNotNull($order);
-            $this->assertInstanceOf(DDC2660CustomerOrder::class, $order);
+            self::assertNotNull($order);
+            self::assertInstanceOf(DDC2660CustomerOrder::class, $order);
         }
     }
 }

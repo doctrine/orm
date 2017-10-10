@@ -27,12 +27,12 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $pref->value = "bar";
         $this->_em->flush();
 
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
 
         $this->_em->clear();
 
         $pref = $this->_em->find(DDC2996UserPreference::class, $pref->id);
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
     }
 }
 

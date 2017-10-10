@@ -40,8 +40,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $this->_em->persist($this->firstCart);
         $this->_em->flush();
 
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testRemovesAManyToManyAssociation()
@@ -53,8 +53,8 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
 
         $this->_em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstCart->getId(), $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
+        self::assertForeignKeysNotContain($this->firstCart->getId(), $this->firstProduct->getId());
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testEagerLoad()
@@ -67,11 +67,11 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
-        $this->assertCollectionEquals($products, $secondCart->getProducts());
-        //$this->assertEquals("Doctrine 1.x Manual", $products[0]->getName());
-        //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
+        self::assertInstanceOf(ECommerceProduct::class, $products[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $products[1]);
+        self::assertCollectionEquals($products, $secondCart->getProducts());
+        //self::assertEquals("Doctrine 1.x Manual", $products[0]->getName());
+        //self::assertEquals("Doctrine 2.x Manual", $products[1]->getName());
     }
 
     public function testLazyLoadsCollection()
@@ -86,9 +86,9 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
-        $this->assertCollectionEquals($products, $secondCart->getProducts());
+        self::assertInstanceOf(ECommerceProduct::class, $products[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $products[1]);
+        self::assertCollectionEquals($products, $secondCart->getProducts());
     }
 
     private function _createFixture()

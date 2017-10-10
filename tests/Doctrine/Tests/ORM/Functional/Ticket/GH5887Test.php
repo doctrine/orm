@@ -52,7 +52,7 @@ class GH5887Test extends OrmFunctionalTestCase
             ->getQuery()
             ->getOneOrNullResult();
 
-        $this->assertInstanceOf(GH5887Cart::class, $customer->getCart());
+        self::assertInstanceOf(GH5887Cart::class, $customer->getCart());
     }
 }
 

@@ -21,7 +21,7 @@ class DDC1360Test extends OrmFunctionalTestCase
             ]
         );
 
-        $this->assertEquals(
+        self::assertEquals(
             [
             'CREATE SCHEMA user',
             'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',

@@ -37,7 +37,7 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->getClassMetadata(DDC6460Entity::class)
             ->hasField('embedded');
 
-        $this->assertTrue($isFieldMapped);
+        self::assertTrue($isFieldMapped);
     }
 
     /**
@@ -61,11 +61,11 @@ class DDC6460Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $secondEntityWithLazyParameter = $this->_em->getRepository(DDC6460ParentEntity::class)->findOneById(1);
 
-        $this->assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
-        $this->assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
-        $this->assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
-        $this->assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
-        $this->assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertInstanceOf(Proxy::class, $secondEntityWithLazyParameter->lazyLoaded);
+        self::assertInstanceOf(DDC6460Entity::class, $secondEntityWithLazyParameter->lazyLoaded);
+        self::assertFalse($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
+        self::assertEquals($secondEntityWithLazyParameter->lazyLoaded->embedded, $entity->embedded);
+        self::assertTrue($secondEntityWithLazyParameter->lazyLoaded->__isInitialized());
     }
 }
 

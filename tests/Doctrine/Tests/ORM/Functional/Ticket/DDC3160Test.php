@@ -37,9 +37,9 @@ class DDC3160Test extends OrmFunctionalTestCase
 
         $this->_em->refresh($user);
 
-        $this->assertEquals('romanc', $user->username);
-        $this->assertEquals(1, $listener->inserts);
-        $this->assertEquals(0, $listener->updates);
+        self::assertEquals('romanc', $user->username);
+        self::assertEquals(1, $listener->inserts);
+        self::assertEquals(0, $listener->updates);
     }
 }
 

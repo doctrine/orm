@@ -38,16 +38,16 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $item = $this->_em->find(get_class($item), $item->id);
 
-        $this->assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
-        $this->assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
-        $this->assertArrayHasKey('convertToPHPValue', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToDatabaseValueSQL', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToDatabaseValue', DDC2012TsVectorType::$calls);
+        self::assertArrayHasKey('convertToPHPValue', DDC2012TsVectorType::$calls);
 
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
-        $this->assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
+        self::assertCount(1, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(DDC2012Item::class, $item);
-        $this->assertEquals(['word1', 'word2', 'word3'], $item->tsv);
+        self::assertInstanceOf(DDC2012Item::class, $item);
+        self::assertEquals(['word1', 'word2', 'word3'], $item->tsv);
 
 
         $item->tsv = ['word1', 'word2'];
@@ -58,12 +58,12 @@ class DDC2012Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $item = $this->_em->find(get_class($item), $item->id);
 
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
-        $this->assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValueSQL']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToDatabaseValue']);
+        self::assertCount(2, DDC2012TsVectorType::$calls['convertToPHPValue']);
 
-        $this->assertInstanceOf(DDC2012Item::class, $item);
-        $this->assertEquals(['word1', 'word2'], $item->tsv);
+        self::assertInstanceOf(DDC2012Item::class, $item);
+        self::assertEquals(['word1', 'word2'], $item->tsv);
     }
 }
 
