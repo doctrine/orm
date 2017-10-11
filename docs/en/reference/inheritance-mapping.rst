@@ -159,7 +159,7 @@ This strategy is very efficient for querying across all types in
 the hierarchy or for specific types. No table joins are required,
 only a WHERE clause listing the type identifiers. In particular,
 relationships involving types that employ this mapping strategy are
-very performant.
+very performing.
 
 There is a general performance consideration with Single Table
 Inheritance: If the target-entity of a many-to-one or one-to-one 

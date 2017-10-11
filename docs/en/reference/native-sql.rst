@@ -63,7 +63,7 @@ This has several benefits:
 - The API is much simpler than the usual ``ResultSetMapping`` API.
 
 One downside is that the builder API does not yet support entities
-with inheritance hierachies.
+with inheritance hierarchies.
 
 .. code-block:: php
 

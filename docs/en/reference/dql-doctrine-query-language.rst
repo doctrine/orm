@@ -2,7 +2,7 @@ Doctrine Query Language
 ===========================
 
 DQL stands for Doctrine Query Language and is an Object
-Query Language derivate that is very similar to the Hibernate
+Query Language derivative that is very similar to the Hibernate
 Query Language (HQL) or the Java Persistence Query Language (JPQL).
 
 In essence, DQL provides powerful querying capabilities over your
