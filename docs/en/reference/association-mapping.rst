@@ -33,7 +33,7 @@ inverse sides of associations <unitofwork-associations>`
 Many-To-One, Unidirectional
 ---------------------------
 
-A many-to-one association is the most common association between objects.
+A many-to-one association is the most common association between objects. Example: Many Users have One Address:
 
 .. configuration-block::
 
@@ -46,7 +46,6 @@ A many-to-one association is the most common association between objects.
             // ...
 
             /**
-             * Many Users have One Address.
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
              */
