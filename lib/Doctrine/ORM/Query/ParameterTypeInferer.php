@@ -57,6 +57,10 @@ class ParameterTypeInferer
             return Type::DATETIME;
         }
 
+        if ($value instanceof \DateInterval) {
+            return Type::DATEINTERVAL;
+        }
+
         if (is_array($value)) {
             return is_int(current($value))
                 ? Connection::PARAM_INT_ARRAY
