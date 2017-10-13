@@ -3,6 +3,7 @@
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
+use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Driver\PDOSqlite\Driver as SqliteDriver;
 use Doctrine\DBAL\Logging\DebugStack;
@@ -488,6 +489,11 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM ddc3346_users');
         }
 
+        if (isset($this->_usedModelSets['ornemental_orphan_removal'])) {
+            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_person');
+            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_phone_number');
+        }
+
         if (isset($this->_usedModelSets['quote'])) {
             $conn->executeUpdate(
                 sprintf(
@@ -678,7 +684,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
      *
      * @throws \Doctrine\ORM\ORMException
      */
-    protected function _getEntityManager(Connection $connection = null) {
+    protected function _getEntityManager(
+        Connection $connection = null,
+        MappingDriver $mappingDriver = null
+    ) {
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
@@ -732,7 +741,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         $config->setMetadataDriverImpl(
-            $config->newDefaultAnnotationDriver(
+            $mappingDriver ?? $config->newDefaultAnnotationDriver(
                 [
                     realpath(__DIR__ . '/Models/Cache'),
                     realpath(__DIR__ . '/Models/GeoNames')
