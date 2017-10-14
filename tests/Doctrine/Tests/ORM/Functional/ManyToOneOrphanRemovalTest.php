@@ -30,11 +30,14 @@ class ManyToOneOrphanRemovalTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $person = new Person;
+        $person->id = 'ca41a293-799f-4d68-bf79-626c3ad223ec';
 
         $phone1 = new PhoneNumber;
+        $phone1->id = 'f4132478-c492-4dfe-aab5-a5b79ae129e7';
         $phone1->phonenumber = '123456';
 
         $phone2 = new PhoneNumber;
+        $phone2->id = '7faa4cd3-a155-4fbf-bc42-aa4269a4454d';
         $phone2->phonenumber = '234567';
 
         $phone1->person = $person;
