@@ -6,7 +6,7 @@
                             https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <entity name="Doctrine\Tests\Models\OrnementalOrphanRemoval\Person" table="ornemental_orphan_removal_person">
         <id name="id" column="id">
-            <generator strategy="UUID" />
+            <generator strategy="NONE" />
         </id>
     </entity>
 </doctrine-mapping>
