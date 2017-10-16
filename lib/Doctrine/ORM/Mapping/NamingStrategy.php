@@ -52,8 +52,10 @@ interface NamingStrategy
     /**
      * Returns a column name for an embedded property.
      *
-     * @param string $propertyName
-     * @param string $embeddedColumnName
+     * @param string    $propertyName
+     * @param string    $embeddedColumnName
+     * @param string    $className
+     * @param string    $embeddedClassName
      *
      * @return string
      */
@@ -70,12 +72,10 @@ interface NamingStrategy
      * Returns a join column name for a property.
      *
      * @param string $propertyName A property name.
-     * @param string|null $className    The fully-qualified class name.
-     *                                  This parameter is omitted from the signature due to BC
      *
      * @return string A join column name.
      */
-    function joinColumnName($propertyName/*, $className = null*/);
+    function joinColumnName($propertyName);
 
     /**
      * Returns a join table name.

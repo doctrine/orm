@@ -113,7 +113,7 @@ Optional attributes:
 -  **unique**: Boolean value to determine if the value of the column
    should be unique across all rows of the underlying entities table.
 
--  **nullable**: Determines if NULL values allowed for this column.
+-  **nullable**: Determines if NULL values allowed for this column. If not specified, default value is false.
 
 -  **options**: Array of additional options:
 
@@ -133,6 +133,9 @@ Optional attributes:
       be supported by all vendors).
 
    -  ``collation``: The collation of the column (only supported by Drizzle, Mysql, PostgreSQL>=9.1, Sqlite and SQLServer).
+
+   -  ``check``: Adds a check constraint type to the column (might not
+      be supported by all vendors).
 
 -  **columnDefinition**: DDL SQL snippet that starts after the column
    name and specifies the complete (non-portable!) column definition.
@@ -315,7 +318,7 @@ depending on whether the classes are in the namespace or not.
 @Embeddable
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embeddable is required on an entity targed to be embeddable inside
+The embeddable is required on an entity targeted to be embeddable inside
 another. It works together with the :ref:`@Embedded <annref_embedded>`
 annotation to establish the relationship between two entities.
 

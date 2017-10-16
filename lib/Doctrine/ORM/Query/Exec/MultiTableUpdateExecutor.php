@@ -24,6 +24,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Query\ParameterTypeInferer;
 use Doctrine\ORM\Query\AST;
 use Doctrine\ORM\Utility\PersisterHelper;
+use Throwable;
 
 /**
  * Executes the SQL statements for bulk DQL UPDATE statements on classes in
@@ -52,7 +53,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
     /**
      * @var array
      */
-    private $_sqlParameters = array();
+    private $_sqlParameters = [];
 
     /**
      * @var int
@@ -92,7 +93,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
                 . ' SELECT t0.' . implode(', t0.', $idColumnNames);
 
         $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->name, $updateClause->aliasIdentificationVariable);
-        $fromClause = new AST\FromClause(array(new AST\IdentificationVariableDeclaration($rangeDecl, null, array())));
+        $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
 
         $this->_insertSql .= $sqlWalker->walkFromClause($fromClause);
 
@@ -100,7 +101,7 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         $idSubselect = 'SELECT ' . $idColumnList . ' FROM ' . $tempTable;
 
         // 3. Create and store UPDATE statements
-        $classNames = array_merge($primaryClass->parentClasses, array($primaryClass->name), $primaryClass->subClasses);
+        $classNames = array_merge($primaryClass->parentClasses, [$primaryClass->name], $primaryClass->subClasses);
         $i = -1;
 
         foreach (array_reverse($classNames) as $className) {
@@ -143,13 +144,13 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
         }
 
         // 4. Store DDL for temporary identifier table.
-        $columnDefinitions = array();
+        $columnDefinitions = [];
 
         foreach ($idColumnNames as $idColumnName) {
-            $columnDefinitions[$idColumnName] = array(
+            $columnDefinitions[$idColumnName] = [
                 'notnull' => true,
                 'type'    => Type::getType(PersisterHelper::getTypeOfColumn($idColumnName, $rootClass, $em)),
-            );
+            ];
         }
 
         $this->_createTempTableSql = $platform->getCreateTemporaryTableSnippetSQL() . ' ' . $tempTable . ' ('
@@ -176,19 +177,19 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
 
             // Execute UPDATE statements
             foreach ($this->_sqlStatements as $key => $statement) {
-                $paramValues = array();
-                $paramTypes  = array();
+                $paramValues = [];
+                $paramTypes  = [];
 
                 if (isset($this->_sqlParameters[$key])) {
                     foreach ($this->_sqlParameters[$key] as $parameterKey => $parameterName) {
                         $paramValues[] = $params[$parameterKey];
-                        $paramTypes[]  = isset($types[$parameterKey]) ? $types[$parameterKey] : ParameterTypeInferer::inferType($params[$parameterKey]);
+                        $paramTypes[]  = $types[$parameterKey] ?? ParameterTypeInferer::inferType($params[$parameterKey]);
                     }
                 }
 
                 $conn->executeUpdate($statement, $paramValues, $paramTypes);
             }
-        } catch (\Exception $exception) {
+        } catch (Throwable $exception) {
             // FAILURE! Drop temporary table to avoid possible collisions
             $conn->executeUpdate($this->_dropTempTableSql);
 

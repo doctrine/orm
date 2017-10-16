@@ -78,7 +78,7 @@ class DebugUnitOfWorkListener
         $uow = $em->getUnitOfWork();
         $identityMap = $uow->getIdentityMap();
 
-        $fh = fopen($this->file, "x+");
+        $fh = fopen($this->file, 'xb+');
         if (count($identityMap) == 0) {
             fwrite($fh, "Flush Operation [".$this->context."] - Empty identity map.\n");
 
@@ -143,7 +143,7 @@ class DebugUnitOfWorkListener
         if (is_object($var)) {
             $refl = new \ReflectionObject($var);
 
-            return $refl->getShortname();
+            return $refl->getShortName();
         }
 
         return gettype($var);
@@ -176,7 +176,7 @@ class DebugUnitOfWorkListener
             $idstring .= " [REMOVED]";
         } elseif ($state == UnitOfWork::STATE_MANAGED) {
             $idstring .= " [MANAGED]";
-        } elseif ($state == UnitOfwork::STATE_DETACHED) {
+        } elseif ($state == UnitOfWork::STATE_DETACHED) {
             $idstring .= " [DETACHED]";
         }
 

@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\Legacy\LegacyUser;
 use Doctrine\Tests\Models\Legacy\LegacyUserReference;
 
@@ -29,18 +30,18 @@ class DDC2519Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $result = $this->_em->createQuery($dql)->getResult();
 
         $this->assertCount(2, $result);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUserReference', $result[1]);
+        $this->assertInstanceOf(LegacyUserReference::class, $result[0]);
+        $this->assertInstanceOf(LegacyUserReference::class, $result[1]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->source());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[0]->target());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->source());
-        $this->assertInstanceOf('Doctrine\Tests\Models\Legacy\LegacyUser', $result[1]->target());
+        $this->assertInstanceOf(LegacyUser::class, $result[0]->source());
+        $this->assertInstanceOf(LegacyUser::class, $result[0]->target());
+        $this->assertInstanceOf(LegacyUser::class, $result[1]->source());
+        $this->assertInstanceOf(LegacyUser::class, $result[1]->target());
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[0]->target());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->source());
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $result[1]->target());
+        $this->assertInstanceOf(Proxy::class, $result[0]->source());
+        $this->assertInstanceOf(Proxy::class, $result[0]->target());
+        $this->assertInstanceOf(Proxy::class, $result[1]->source());
+        $this->assertInstanceOf(Proxy::class, $result[1]->target());
 
         $this->assertFalse($result[0]->target()->__isInitialized());
         $this->assertFalse($result[0]->source()->__isInitialized());

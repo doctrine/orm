@@ -48,12 +48,12 @@ class OrderBy
     /**
      * @var array
      */
-    protected $allowedClasses = array();
+    protected $allowedClasses = [];
 
     /**
      * @var array
      */
-    protected $parts = array();
+    protected $parts = [];
 
     /**
      * @param string|null $sort
@@ -97,7 +97,7 @@ class OrderBy
     /**
      * @return string
      */
-    public function __tostring()
+    public function __toString()
     {
         return $this->preSeparator . implode($this->separator, $this->parts) . $this->postSeparator;
     }

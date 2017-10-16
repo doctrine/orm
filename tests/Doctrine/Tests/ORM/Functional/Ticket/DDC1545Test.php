@@ -58,9 +58,9 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->_em->find(CmsArticle::class, $this->articleId);
 
-        $user = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->userId);
+        $user = $this->_em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
@@ -86,7 +86,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->userId);
+        $user = $this->_em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
@@ -107,7 +107,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(true);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->_em->find(CmsArticle::class, $this->articleId);
 
         $article->user = null;
 
@@ -150,9 +150,9 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->_em->find(CmsArticle::class, $this->articleId);
 
-        $user2 = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->user2Id);
+        $user2 = $this->_em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 
@@ -178,7 +178,7 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user2 = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->user2Id);
+        $user2 = $this->_em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 

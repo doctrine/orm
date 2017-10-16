@@ -14,7 +14,7 @@
  *
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
- * <http://www.phpdoctrine.org>.
+ * <http://www.doctrine-project.org>.
  */
 
 namespace Doctrine\ORM\Mapping;
@@ -422,6 +422,16 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function singleIdNotAllowedOnCompositePrimaryKey($entity)
     {
         return new self('Single id is not allowed on composite primary key in entity '.$entity);
+    }
+
+    /**
+     * @param string $entity
+     *
+     * @return MappingException
+     */
+    public static function noIdDefined($entity)
+    {
+        return new self('No ID defined for entity ' . $entity);
     }
 
     /**

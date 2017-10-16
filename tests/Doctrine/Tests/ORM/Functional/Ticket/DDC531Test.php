@@ -2,15 +2,19 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
+
 class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC531Item'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC531SubItem'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC531Item::class),
+            $this->_em->getClassMetadata(DDC531SubItem::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -24,12 +28,12 @@ class DDC531Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $item3 = $this->_em->find(__NAMESPACE__ . '\DDC531Item', $item2->id); // Load child item first (id 2)
+        $item3 = $this->_em->find(DDC531Item::class, $item2->id); // Load child item first (id 2)
         // parent will already be loaded, cannot be lazy because it has mapped subclasses and we would not
         // know which proxy type to put in.
-        $this->assertInstanceOf(__NAMESPACE__ . '\DDC531Item', $item3->parent);
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $item3->parent);
-        $item4 = $this->_em->find(__NAMESPACE__ . '\DDC531Item', $item1->id); // Load parent item (id 1)
+        $this->assertInstanceOf(DDC531Item::class, $item3->parent);
+        $this->assertNotInstanceOf(Proxy::class, $item3->parent);
+        $item4 = $this->_em->find(DDC531Item::class, $item1->id); // Load parent item (id 1)
         $this->assertNull($item4->parent);
         $this->assertNotNull($item4->getChildren());
         $this->assertTrue($item4->getChildren()->contains($item3)); // lazy-loads children

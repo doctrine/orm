@@ -2,9 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\CMS\CmsUser,
-    Doctrine\Tests\Models\CMS\CmsEmail,
-    Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsEmail;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -40,7 +40,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $userProxy = $this->_em->getReference('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+        $userProxy = $this->_em->getReference(CmsUser::class, $userId);
 
         $this->_em->remove($userProxy);
         $this->_em->flush();
@@ -76,7 +76,7 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
 
         $this->_em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\CMS\CmsUser', $userId);
+        $user = $this->_em->find(CmsUser::class, $userId);
 
         $user->setEmail(null);
 

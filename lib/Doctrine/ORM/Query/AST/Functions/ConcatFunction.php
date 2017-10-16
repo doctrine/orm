@@ -38,26 +38,28 @@ class ConcatFunction extends FunctionNode
 
     public $secondStringPrimary;
 
-    public $concatExpressions = array();
+    public $concatExpressions = [];
 
     /**
      * @override
+     * @inheritdoc
      */
     public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
     {
         $platform = $sqlWalker->getConnection()->getDatabasePlatform();
 
-        $args = array();
+        $args = [];
 
         foreach ($this->concatExpressions as $expression) {
             $args[] = $sqlWalker->walkStringPrimary($expression);
         }
 
-        return call_user_func_array(array($platform,'getConcatExpression'), $args);
+        return call_user_func_array([$platform,'getConcatExpression'], $args);
     }
 
     /**
      * @override
+     * @inheritdoc
      */
     public function parse(\Doctrine\ORM\Query\Parser $parser)
     {

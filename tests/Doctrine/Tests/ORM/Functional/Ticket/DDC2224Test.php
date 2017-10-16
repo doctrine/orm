@@ -14,7 +14,7 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public static function setUpBeforeClass()
     {
-        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', __NAMESPACE__ . '\DDC2224Type');
+        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
     public function testIssue()

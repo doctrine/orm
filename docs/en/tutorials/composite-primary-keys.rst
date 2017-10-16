@@ -13,7 +13,7 @@ This tutorial shows how the semantics of composite primary keys work and how the
 General Considerations
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Every entity with a composite key cannot use an id generator other than "ASSIGNED". That means
+Every entity with a composite key cannot use an id generator other than "NONE". That means
 the ID fields have to have their values set before you call ``EntityManager#persist($entity)``.
 
 Primitive Types only

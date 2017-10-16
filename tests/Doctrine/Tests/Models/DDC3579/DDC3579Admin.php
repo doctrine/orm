@@ -15,8 +15,9 @@ class DDC3579Admin extends DDC3579User
 {
     public static function loadMetadata($metadata)
     {
-        $metadata->setAssociationOverride('groups', array(
+        $metadata->setAssociationOverride('groups', [
             'inversedBy' => 'admins'
-        ));
+        ]
+        );
     }
 }

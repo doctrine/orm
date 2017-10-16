@@ -100,7 +100,7 @@ with the batching strategy that was already used for bulk inserts:
 
     Results may be fully buffered by the database client/ connection allocating
     additional memory not visible to the PHP process. For large sets this
-    may easily kill the process for no apparant reason.
+    may easily kill the process for no apparent reason.
 
 
 Bulk Deletes

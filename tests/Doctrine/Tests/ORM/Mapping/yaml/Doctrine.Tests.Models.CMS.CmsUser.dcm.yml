@@ -135,7 +135,6 @@ Doctrine\Tests\Models\CMS\CmsUser:
         name: address_id
         referencedColumnName: id
       cascade: [ persist ]
-  oneToOne:
     email:
       targetEntity: CmsEmail
       orphanRemoval: true

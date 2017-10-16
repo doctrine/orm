@@ -10,8 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class ComplexAction
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Column
      */

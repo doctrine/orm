@@ -205,7 +205,7 @@ tables of the current model to clean up with orphaned tables.
 You can also use database introspection to update your schema
 easily with the ``updateSchema()`` method. It will compare your
 existing database schema to the passed array of
-``ClassMetdataInfo`` instances.
+``ClassMetadataInfo`` instances.
 
 .. code-block:: php
 
@@ -385,7 +385,7 @@ First you need to retrieve the metadata instances with the
         )
     );
     
-    $cmf = new DisconnectedClassMetadataFactory();
+    $cmf = new \Doctrine\ORM\Tools\DisconnectedClassMetadataFactory();
     $cmf->setEntityManager($em);
     $metadata = $cmf->getAllMetadata();
 
@@ -395,6 +395,7 @@ to yml:
 .. code-block:: php
 
     <?php
+    $cme = new \Doctrine\ORM\Tools\Export\ClassMetadataExporter();
     $exporter = $cme->getExporter('yml', '/path/to/export/yml');
     $exporter->setMetadata($metadata);
     $exporter->export();
@@ -476,7 +477,7 @@ To include a new command on Doctrine Console, you need to do modify the
 
     <?php
     // doctrine.php
-    use Symfony\Component\Console\Helper\Application;
+    use Symfony\Component\Console\Application;
 
     // as before ...
 

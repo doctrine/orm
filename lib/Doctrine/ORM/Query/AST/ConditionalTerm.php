@@ -32,7 +32,7 @@ class ConditionalTerm extends Node
     /**
      * @var array
      */
-    public $conditionalFactors = array();
+    public $conditionalFactors = [];
 
     /**
      * @param array $conditionalFactors

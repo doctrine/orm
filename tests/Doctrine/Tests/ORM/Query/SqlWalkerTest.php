@@ -24,7 +24,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     protected function setUp()
     {
-        $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), array());
+        $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), []);
     }
 
     /**
@@ -53,10 +53,10 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function getColumnNamesAndSqlAliases()
     {
-        return array(
-            array('aaaaa', 'a0_'),
-            array('table', 't0_'),
-            array('çtable', 't0_'),
-        );
+        return [
+            ['aaaaa', 'a0_'],
+            ['table', 't0_'],
+            ['çtable', 't0_'],
+        ];
     }
 }

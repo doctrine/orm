@@ -12,14 +12,16 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        Type::addType('ddc3785_asset_id', __NAMESPACE__ . '\\DDC3785_AssetIdType');
+        Type::addType('ddc3785_asset_id', DDC3785_AssetIdType::class);
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Asset'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_AssetId'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3785_Attribute')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(DDC3785_Asset::class),
+                    $this->_em->getClassMetadata(DDC3785_AssetId::class),
+                    $this->_em->getClassMetadata(DDC3785_Attribute::class)
+                ]
+            );
         } catch(\Exception $e) {
         }
     }
@@ -29,18 +31,26 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOwningValueObjectIdIsCorrectlyTransformedWhenRemovingOrphanedChildEntities()
     {
-    	$id = new DDC3785_AssetId("919609ba-57d9-4a13-be1d-d202521e858a");
-    	$attributes = array(
-    		$attribute1 = new DDC3785_Attribute("foo1", "bar1"), 
-    		$attribute2 = new DDC3785_Attribute("foo2", "bar2")
-    	);
+        $id = new DDC3785_AssetId('919609ba-57d9-4a13-be1d-d202521e858a');
+
+        $attributes = [
+            $attribute1 = new DDC3785_Attribute('foo1', 'bar1'),
+            $attribute2 = new DDC3785_Attribute('foo2', 'bar2')
+        ];
+
         $this->_em->persist($asset = new DDC3785_Asset($id, $attributes));
         $this->_em->flush();
 
-        $asset->getAttributes()->removeElement($attribute1);
+        $asset->getAttributes()
+              ->removeElement($attribute1);
+
+        $idToBeRemoved = $attribute1->id;
 
         $this->_em->persist($asset);
         $this->_em->flush();
+
+        self::assertNull($this->_em->find(DDC3785_Attribute::class, $idToBeRemoved));
+        self::assertNotNull($this->_em->find(DDC3785_Attribute::class, $attribute2->id));
     }
 }
 
@@ -64,14 +74,14 @@ class DDC3785_Asset
      **/
     private $attributes;
 
-    public function __construct(DDC3785_AssetId $id, $attributes = array())
+    public function __construct(DDC3785_AssetId $id, $attributes = [])
     {
-    	$this->id = $id;
-    	$this->attributes = new ArrayCollection();
+        $this->id = $id;
+        $this->attributes = new ArrayCollection();
 
-    	foreach ($attributes as $attribute) {
-    		$this->attributes->add($attribute);
-    	}
+        foreach ($attributes as $attribute) {
+            $this->attributes->add($attribute);
+        }
     }
 
     public function getId()
@@ -81,7 +91,7 @@ class DDC3785_Asset
 
     public function getAttributes()
     {
-    	return $this->attributes;
+        return $this->attributes;
     }
 }
 
@@ -91,23 +101,23 @@ class DDC3785_Asset
  */
 class DDC3785_Attribute
 {
-	/**
+    /**
      * @Id @Column(type="integer")
      * @GeneratedValue
      */
-	private $id;
+    public $id;
 
-	/** @Column(type = "string") */
-	private $name;
+    /** @Column(type = "string") */
+    private $name;
 
-	/** @Column(type = "string") */
-	private $value;
+    /** @Column(type = "string") */
+    private $value;
 
-	public function __construct($name, $value)
-	{
-		$this->name = $name;
-		$this->value = $value;
-	}
+    public function __construct($name, $value)
+    {
+        $this->name = $name;
+        $this->value = $value;
+    }
 }
 
 /** @Embeddable */
@@ -118,12 +128,12 @@ class DDC3785_AssetId
 
     public function __construct($id)
     {
-    	$this->id = $id;
+        $this->id = $id;
     }
 
     public function __toString()
     {
-    	return $this->id;
+        return $this->id;
     }
 }
 

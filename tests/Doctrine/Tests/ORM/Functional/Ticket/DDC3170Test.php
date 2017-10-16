@@ -18,12 +18,12 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         $this->_schemaTool->createSchema(
-            array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntityJoined'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductJoined'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170AbstractEntitySingleTable'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC3170ProductSingleTable'),
-            )
+            [
+                $this->_em->getClassMetadata(DDC3170AbstractEntityJoined::class),
+                $this->_em->getClassMetadata(DDC3170ProductJoined::class),
+                $this->_em->getClassMetadata(DDC3170AbstractEntitySingleTable::class),
+                $this->_em->getClassMetadata(DDC3170ProductSingleTable::class),
+            ]
         );
     }
 
@@ -38,36 +38,31 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        // $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-
         $productJoined = new DDC3170ProductJoined();
         $productSingleTable = new DDC3170ProductSingleTable();
+
         $this->_em->persist($productJoined);
         $this->_em->persist($productSingleTable);
         $this->_em->flush();
         $this->_em->clear();
 
-        try {
-            $this->_em->createQueryBuilder()
-                ->select('p')
-                ->from(__NAMESPACE__ . '\\DDC3170ProductJoined', 'p')
-                ->getQuery()
-                ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
-        } catch (HydrationException $e) // Thrown by SimpleObjectHydrator
-        {
-            $this->fail('Failed correct mapping of discriminator column when using simple object hydration and class table inheritance');
-        }
+        $result = $this->_em->createQueryBuilder()
+                  ->select('p')
+                  ->from(DDC3170ProductJoined::class, 'p')
+                  ->getQuery()
+                  ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
 
-        try {
-            $this->_em->createQueryBuilder()
-                ->select('p')
-                ->from(__NAMESPACE__ . '\\DDC3170ProductSingleTable', 'p')
-                ->getQuery()
-                ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
-        } catch (HydrationException $e) // Thrown by SimpleObjectHydrator
-        {
-            $this->fail('Failed correct mapping of discriminator column when using simple object hydration and single table inheritance');
-        }
+        self::assertCount(1, $result);
+        self::assertContainsOnly(DDC3170ProductJoined::class, $result);
+
+        $result = $this->_em->createQueryBuilder()
+                  ->select('p')
+                  ->from(DDC3170ProductSingleTable::class, 'p')
+                  ->getQuery()
+                  ->getResult(AbstractQuery::HYDRATE_SIMPLEOBJECT);
+
+        self::assertCount(1, $result);
+        self::assertContainsOnly(DDC3170ProductSingleTable::class, $result);
     }
 }
 

@@ -34,7 +34,7 @@ class EntityListenerBuilder
     /**
      * @var array Hash-map to handle event names.
      */
-    static private $events = array(
+    static private $events = [
         Events::preRemove   => true,
         Events::postRemove  => true,
         Events::prePersist  => true,
@@ -43,7 +43,7 @@ class EntityListenerBuilder
         Events::postUpdate  => true,
         Events::postLoad    => true,
         Events::preFlush    => true
-    );
+    ];
 
     /**
      * Lookup the entity class to find methods that match to event lifecycle names

@@ -30,7 +30,6 @@ use Doctrine\ORM\Cache\Persister\Collection\ReadWriteCachedCollectionPersister;
 use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadOnlyCachedEntityPersister;
 use Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\Region\DefaultMultiGetRegion;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
@@ -64,7 +63,7 @@ class DefaultCacheFactory implements CacheFactory
     /**
      * @var \Doctrine\ORM\Cache\Region[]
      */
-    private $regions = array();
+    private $regions = [];
 
     /**
      * @var string|null
@@ -167,10 +166,10 @@ class DefaultCacheFactory implements CacheFactory
         return new DefaultQueryCache(
             $em,
             $this->getRegion(
-                array(
+                [
                     'region' => $regionName ?: Cache::DEFAULT_QUERY_REGION_NAME,
                     'usage'  => ClassMetadata::CACHE_USAGE_NONSTRICT_READ_WRITE
-                )
+                ]
             )
         );
     }
@@ -200,14 +199,9 @@ class DefaultCacheFactory implements CacheFactory
             return $this->regions[$cache['region']];
         }
 
-        $cacheAdapter = clone $this->cache;
-
-        if ($cacheAdapter instanceof CacheProvider) {
-            $cacheAdapter->setNamespace($cache['region']);
-        }
-
-        $name     = $cache['region'];
-        $lifetime = $this->regionsConfig->getLifetime($cache['region']);
+        $name         = $cache['region'];
+        $cacheAdapter = $this->createRegionCache($name);
+        $lifetime     = $this->regionsConfig->getLifetime($cache['region']);
 
         $region = ($cacheAdapter instanceof MultiGetCache)
             ? new DefaultMultiGetRegion($name, $cacheAdapter, $lifetime)
@@ -215,7 +209,10 @@ class DefaultCacheFactory implements CacheFactory
 
         if ($cache['usage'] === ClassMetadata::CACHE_USAGE_READ_WRITE) {
 
-            if ( ! $this->fileLockRegionDirectory) {
+            if (
+                '' === $this->fileLockRegionDirectory ||
+                null === $this->fileLockRegionDirectory
+            ) {
                 throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '
@@ -227,6 +224,30 @@ class DefaultCacheFactory implements CacheFactory
         }
 
         return $this->regions[$cache['region']] = $region;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return CacheAdapter
+     */
+    private function createRegionCache($name)
+    {
+        $cacheAdapter = clone $this->cache;
+
+        if (!$cacheAdapter instanceof CacheProvider) {
+            return $cacheAdapter;
+        }
+
+        $namespace = $cacheAdapter->getNamespace();
+
+        if ('' !== $namespace) {
+            $namespace .= ':';
+        }
+
+        $cacheAdapter->setNamespace($namespace . $name);
+
+        return $cacheAdapter;
     }
 
     /**

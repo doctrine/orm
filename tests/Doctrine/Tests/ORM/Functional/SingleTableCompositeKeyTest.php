@@ -1,8 +1,9 @@
 <?php
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
 use Doctrine\Tests\Models\CompositeKeyInheritance\SingleChildClass;
+use Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 {
@@ -56,9 +57,6 @@ class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
      */
     private function findEntity()
     {
-        return $this->_em->find(
-            'Doctrine\Tests\Models\CompositeKeyInheritance\SingleRootClass',
-            array('keyPart1' => 'part-1', 'keyPart2' => 'part-2')
-        );
+        return $this->_em->find(SingleRootClass::class, ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']);
     }
 }

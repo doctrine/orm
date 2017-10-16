@@ -87,19 +87,14 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
                     continue;
                 }
 
-                $className   = isset($assoc['inherited']) ? $assoc['inherited'] : $this->class->name;
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
 
-                foreach ($assoc['targetToSourceKeyColumns'] as $srcColumn) {
+                foreach ($assoc['joinColumns'] as $joinColumn) {
                     $columnList[] = $this->getSelectJoinColumnSQL(
                         $tableAlias,
-                        $srcColumn,
-                        $className,
-                        PersisterHelper::getTypeOfColumn(
-                            $assoc['sourceToTargetKeyColumns'][$srcColumn],
-                            $targetClass,
-                            $this->em
-                        )
+                        $joinColumn['name'],
+                        $this->quoteStrategy->getJoinColumnName($joinColumn, $subClass, $this->platform),
+                        PersisterHelper::getTypeOfColumn($joinColumn['referencedColumnName'], $targetClass, $this->em)
                     );
                 }
             }
@@ -164,7 +159,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
      */
     protected function getSelectConditionDiscriminatorValueSQL()
     {
-        $values = array();
+        $values = [];
 
         if ($this->class->discriminatorValue !== null) { // discriminators can be 0
             $values[] = $this->conn->quote($this->class->discriminatorValue);

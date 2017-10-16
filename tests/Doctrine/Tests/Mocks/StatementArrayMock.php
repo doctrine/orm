@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: avasilenko
- * Date: 24/04/15
- * Time: 19:01
- */
 
 namespace Doctrine\Tests\Mocks;
 
@@ -40,12 +34,12 @@ class StatementArrayMock extends StatementMock
         }
     }
 
-    public function fetchAll($fetchStyle = null)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
         return $this->_result;
     }
 
-    public function fetch($fetchStyle = null)
+    public function fetch($fetchMode = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_result);
         next($this->_result);

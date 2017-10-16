@@ -10,11 +10,13 @@ class DDC1193Test extends OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Company'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Person'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1193Account')
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1193Company::class),
+            $this->_em->getClassMetadata(DDC1193Person::class),
+            $this->_em->getClassMetadata(DDC1193Account::class)
+            ]
+        );
     }
 
     /**

@@ -19,7 +19,6 @@
 
 namespace Doctrine\ORM;
 
-use Exception;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -28,6 +27,7 @@ use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\Common\Util\ClassUtils;
+use Throwable;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -237,7 +237,7 @@ use Doctrine\Common\Util\ClassUtils;
             $this->conn->commit();
 
             return $return ?: true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->close();
             $this->conn->rollBack();
 
@@ -385,7 +385,7 @@ use Doctrine\Common\Util\ClassUtils;
                 throw ORMInvalidArgumentException::invalidCompositeIdentifier();
             }
 
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
         foreach ($id as $i => $value) {
@@ -398,7 +398,7 @@ use Doctrine\Common\Util\ClassUtils;
             }
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -457,7 +457,7 @@ use Doctrine\Common\Util\ClassUtils;
                     throw TransactionRequiredException::transactionRequired();
                 }
 
-                return $persister->load($sortedId, null, null, array(), $lockMode);
+                return $persister->load($sortedId, null, null, [], $lockMode);
 
             default:
                 return $persister->loadById($sortedId);
@@ -472,10 +472,10 @@ use Doctrine\Common\Util\ClassUtils;
         $class = $this->metadataFactory->getMetadataFor(ltrim($entityName, '\\'));
 
         if ( ! is_array($id)) {
-            $id = array($class->identifier[0] => $id);
+            $id = [$class->identifier[0] => $id];
         }
 
-        $sortedId = array();
+        $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
             if ( ! isset($id[$identifier])) {
@@ -501,7 +501,7 @@ use Doctrine\Common\Util\ClassUtils;
 
         $entity = $this->proxyFactory->getProxy($class->name, $sortedId);
 
-        $this->unitOfWork->registerManaged($entity, $sortedId, array());
+        $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
         return $entity;
     }
@@ -519,14 +519,14 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         if ( ! is_array($identifier)) {
-            $identifier = array($class->identifier[0] => $identifier);
+            $identifier = [$class->identifier[0] => $identifier];
         }
 
         $entity = $class->newInstance();
 
         $class->setIdentifierValues($entity, $identifier);
 
-        $this->unitOfWork->registerManaged($entity, $identifier, array());
+        $this->unitOfWork->registerManaged($entity, $identifier, []);
         $this->unitOfWork->markReadOnly($entity);
 
         return $entity;
@@ -539,10 +539,22 @@ use Doctrine\Common\Util\ClassUtils;
      * @param string|null $entityName if given, only entities of this type will get detached
      *
      * @return void
+     *
+     * @throws ORMInvalidArgumentException                           if a non-null non-string value is given
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException if a $entityName is given, but that entity is not
+     *                                                               found in the mappings
      */
     public function clear($entityName = null)
     {
-        $this->unitOfWork->clear($entityName);
+        if (null !== $entityName && ! is_string($entityName)) {
+            throw ORMInvalidArgumentException::invalidEntityName($entityName);
+        }
+
+        $this->unitOfWork->clear(
+            null === $entityName
+                ? null
+                : $this->metadataFactory->getMetadataFor($entityName)->getName()
+        );
     }
 
     /**
@@ -860,7 +872,13 @@ use Doctrine\Common\Util\ClassUtils;
         }
 
         if ( ! $connection instanceof Connection) {
-            throw new \InvalidArgumentException("Invalid argument: " . $connection);
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Invalid $connection argument of type %s given%s.',
+                    is_object($connection) ? get_class($connection) : gettype($connection),
+                    is_object($connection) ? '' : ': "' . $connection . '"'
+                )
+            );
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {

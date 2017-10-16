@@ -4,7 +4,12 @@ namespace Doctrine\Tests\ORM\Mapping;
 
 use Doctrine\Instantiator\Instantiator;
 use Doctrine\ORM\Mapping\ReflectionEmbeddedProperty;
+use Doctrine\Tests\Models\Generic\BooleanModel;
 use Doctrine\Tests\Models\Mapping\Entity;
+use Doctrine\Tests\Models\Reflection\AbstractEmbeddable;
+use Doctrine\Tests\Models\Reflection\ArrayObjectExtendingClass;
+use Doctrine\Tests\Models\Reflection\ConcreteEmbeddable;
+use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 /**
@@ -12,7 +17,7 @@ use ReflectionProperty;
  *
  * @covers \Doctrine\ORM\Mapping\ReflectionEmbeddedProperty
  */
-class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
+class ReflectionEmbeddedPropertyTest extends TestCase
 {
     /**
      * @param ReflectionProperty $parentProperty  property of the embeddable/entity where to write the embeddable to
@@ -69,76 +74,40 @@ class ReflectionEmbeddedPropertyTest extends \PHPUnit_Framework_TestCase
      */
     public function getTestedReflectionProperties()
     {
-        return array(
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
-                    'id'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
-                    'id'
-                ),
-                'Doctrine\\Tests\\Models\\Generic\\BooleanModel'
-            ),
+        return [
+            [
+                $this->getReflectionProperty(BooleanModel::class, 'id'),
+                $this->getReflectionProperty(BooleanModel::class, 'id'),
+                BooleanModel::class
+            ],
             // reflection on embeddables that have properties defined in abstract ancestors:
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
-                    'id'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\AbstractEmbeddable',
-                    'propertyInAbstractClass'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
-            ),
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Generic\\BooleanModel',
-                    'id'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable',
-                    'propertyInConcreteClass'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ConcreteEmbeddable'
-            ),
+            [
+                $this->getReflectionProperty(BooleanModel::class, 'id'),
+                $this->getReflectionProperty(AbstractEmbeddable::class, 'propertyInAbstractClass'),
+                ConcreteEmbeddable::class
+            ],
+            [
+                $this->getReflectionProperty(BooleanModel::class, 'id'),
+                $this->getReflectionProperty(ConcreteEmbeddable::class, 'propertyInConcreteClass'),
+                ConcreteEmbeddable::class
+            ],
             // reflection on classes extending internal PHP classes:
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'publicProperty'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'privateProperty'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'publicProperty'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'protectedProperty'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-            array(
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'publicProperty'
-                ),
-                $this->getReflectionProperty(
-                    'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass',
-                    'publicProperty'
-                ),
-                'Doctrine\\Tests\\Models\\Reflection\\ArrayObjectExtendingClass'
-            ),
-        );
+            [
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'privateProperty'),
+                ArrayObjectExtendingClass::class
+            ],
+            [
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'protectedProperty'),
+                ArrayObjectExtendingClass::class
+            ],
+            [
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                $this->getReflectionProperty(ArrayObjectExtendingClass::class, 'publicProperty'),
+                ArrayObjectExtendingClass::class
+            ],
+        ];
     }
 
     /**

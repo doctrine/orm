@@ -6,9 +6,12 @@ use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\Models\CMS\CmsAddress;
 use Doctrine\Tests\OrmTestCase;
 
 class QueryTest extends OrmTestCase
@@ -89,7 +92,7 @@ class QueryTest extends OrmTestCase
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
-          ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
+          ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
           ->setDQL('foo')
@@ -109,7 +112,7 @@ class QueryTest extends OrmTestCase
 
         $this->assertEquals('bar', $q->getHint('foo'));
         $this->assertEquals('baz', $q->getHint('bar'));
-        $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
+        $this->assertEquals(['foo' => 'bar', 'bar' => 'baz'], $q->getHints());
         $this->assertTrue($q->hasHint('foo'));
         $this->assertFalse($q->hasHint('barFooBaz'));
     }
@@ -146,7 +149,8 @@ class QueryTest extends OrmTestCase
     public function testIterateWithDistinct()
     {
         $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
-        $q->iterate();
+
+        self::assertInstanceOf(IterableResult::class, $q->iterate());
     }
 
     /**
@@ -154,11 +158,11 @@ class QueryTest extends OrmTestCase
      */
     public function testCollectionParameters()
     {
-        $cities = array(
+        $cities = [
             0 => "Paris",
             3 => "Canne",
             9 => "St Julien"
-        );
+        ];
 
         $query  = $this->_em
                 ->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)")
@@ -178,19 +182,19 @@ class QueryTest extends OrmTestCase
     {
         $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
         $this->assertEquals(
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+            CmsAddress::class,
+            $query->processParameterValue($this->_em->getClassMetadata(CmsAddress::class))
         );
     }
 
     public function testDefaultQueryHints()
     {
         $config = $this->_em->getConfiguration();
-        $defaultHints = array(
+        $defaultHints = [
             'hint_name_1' => 'hint_value_1',
             'hint_name_2' => 'hint_value_2',
             'hint_name_3' => 'hint_value_3',
-        );
+        ];
 
         $config->setDefaultQueryHints($defaultHints);
         $query = $this->_em->createQuery();
@@ -241,5 +245,62 @@ class QueryTest extends OrmTestCase
         $query = $this->_em->createQuery();
         $query->setHydrationCacheProfile(null);
         $this->assertNull($query->getHydrationCacheProfile());
+    }
+
+    /**
+     * @group 2947
+     */
+    public function testResultCacheEviction()
+    {
+        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->_em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+                           ->useResultCache(true);
+
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->_em->getConnection()
+                                          ->getWrappedConnection();
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(1, $query->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1], ['id_0' => 2]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(1, $query->getResult());
+
+        // Performs the query and caches the result set since expire flag is true
+        self::assertCount(2, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['id_0' => 1]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(2, $query->expireResultCache(false)->getResult());
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectJoinSubquery()
+    {
+        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectFromSubquery()
+    {
+        $query = $this->_em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
     }
 }

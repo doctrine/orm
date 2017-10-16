@@ -19,14 +19,16 @@ class LockTest extends OrmFunctionalTestCase
     {
         $this->useModelSet('cms');
         parent::setUp();
-        $this->handles = array();
+
+        $this->handles = [];
     }
 
     /**
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntity() {
+    public function testLockVersionedEntity()
+    {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -35,13 +37,16 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version);
+
+        $this->addToAssertionCount(1);
     }
 
     /**
      * @group DDC-178
      * @group locking
      */
-    public function testLockVersionedEntity_MismatchThrowsException() {
+    public function testLockVersionedEntity_MismatchThrowsException()
+    {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -58,7 +63,8 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnversionedEntity_ThrowsException() {
+    public function testLockUnversionedEntity_ThrowsException()
+    {
         $user = new CmsUser();
         $user->name = "foo";
         $user->status = "active";
@@ -76,11 +82,12 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockUnmanagedEntity_ThrowsException() {
+    public function testLockUnmanagedEntity_ThrowsException()
+    {
         $article = new CmsArticle();
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Entity Doctrine\Tests\Models\CMS\CmsArticle');
+        $this->expectExceptionMessage('Entity ' . CmsArticle::class);
 
         $this->_em->lock($article, LockMode::OPTIMISTIC, $article->version + 1);
     }
@@ -89,7 +96,8 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticRead_NoTransaction_ThrowsException() {
+    public function testLockPessimisticRead_NoTransaction_ThrowsException()
+    {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -106,7 +114,8 @@ class LockTest extends OrmFunctionalTestCase
      * @group DDC-178
      * @group locking
      */
-    public function testLockPessimisticWrite_NoTransaction_ThrowsException() {
+    public function testLockPessimisticWrite_NoTransaction_ThrowsException()
+    {
         $article = new CmsArticle();
         $article->text = "my article";
         $article->topic = "Hello";
@@ -126,7 +135,8 @@ class LockTest extends OrmFunctionalTestCase
     public function testLockPessimisticWrite()
     {
         $writeLockSql = $this->_em->getConnection()->getDatabasePlatform()->getWriteLockSQL();
-        if (strlen($writeLockSql) == 0) {
+
+        if (! $writeLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -157,7 +167,8 @@ class LockTest extends OrmFunctionalTestCase
     public function testLockPessimisticRead()
     {
         $readLockSql = $this->_em->getConnection()->getDatabasePlatform()->getReadLockSQL();
-        if (strlen($readLockSql) == 0) {
+
+        if (! $readLockSql) {
             $this->markTestSkipped('Database Driver has no Write Lock support.');
         }
 
@@ -169,6 +180,7 @@ class LockTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->_em->beginTransaction();
+
         try {
             $this->_em->lock($article, LockMode::PESSIMISTIC_READ);
             $this->_em->commit();
@@ -177,8 +189,9 @@ class LockTest extends OrmFunctionalTestCase
             throw $e;
         }
 
-        $query = array_pop( $this->_sqlLoggerStack->queries );
-        $query = array_pop( $this->_sqlLoggerStack->queries );
+        array_pop($this->_sqlLoggerStack->queries);
+        $query = array_pop($this->_sqlLoggerStack->queries);
+
         $this->assertContains($readLockSql, $query['sql']);
     }
 
@@ -187,13 +200,13 @@ class LockTest extends OrmFunctionalTestCase
      */
     public function testLockOptimisticNonVersionedThrowsExceptionInDQL()
     {
-        $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.username = 'gblanco'";
+        $dql = "SELECT u FROM " . CmsUser::class . " u WHERE u.username = 'gblanco'";
 
         $this->expectException(OptimisticLockException::class);
         $this->expectExceptionMessage('The optimistic lock on an entity failed.');
 
-        $sql = $this->_em->createQuery($dql)->setHint(
-            Query::HINT_LOCK_MODE, LockMode::OPTIMISTIC
-        )->getSQL();
+        $this->_em->createQuery($dql)
+                  ->setHint(Query::HINT_LOCK_MODE, LockMode::OPTIMISTIC)
+                  ->getSQL();
     }
 }

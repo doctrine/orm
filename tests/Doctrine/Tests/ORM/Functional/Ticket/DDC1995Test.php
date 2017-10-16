@@ -15,7 +15,7 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->useModelSet('company');
         parent::setUp();
     }
-    
+
     public function testIssue()
     {
         $person = new CompanyPerson;
@@ -32,14 +32,14 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $dql    = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF ?1';
-        $class  = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
+        $class  = $this->_em->getClassMetadata(CompanyEmployee::class);
 
         $result = $this->_em->createQuery($dql)
                 ->setParameter(1, $class)
                 ->getResult();
 
         $this->assertCount(1, $result);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result[0]);
+        $this->assertInstanceOf(CompanyEmployee::class, $result[0]);
     }
 
     public function testQueryCache()
@@ -58,8 +58,8 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->clear();
 
         $dql     = 'SELECT u FROM Doctrine\Tests\Models\Company\CompanyPerson u WHERE u INSTANCE OF :type';
-        $class1  = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyEmployee');
-        $class2  = $this->_em->getClassMetadata('Doctrine\Tests\Models\Company\CompanyPerson');
+        $class1  = $this->_em->getClassMetadata(CompanyEmployee::class);
+        $class2  = $this->_em->getClassMetadata(CompanyPerson::class);
 
         $result1 = $this->_em->createQuery($dql)
                 ->setParameter('type', $class1)
@@ -72,10 +72,9 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getResult();
 
         $this->assertCount(1, $result1);
-        $this->assertCount(1, $result2);
+        $this->assertCount(2, $result2);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result1[0]);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Company\CompanyPerson', $result2[0]);
-        $this->assertNotInstanceOf('Doctrine\Tests\Models\Company\CompanyEmployee', $result2[0]);
+        $this->assertInstanceOf(CompanyEmployee::class, $result1[0]);
+        $this->assertContainsOnlyInstancesOf(CompanyPerson::class, $result2);
     }
 }

@@ -36,12 +36,12 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         try {
             $this->_schemaTool->createSchema(
-                array(
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\Flight'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\City')
-                )
+                [
+                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
+                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
+                    $this->_em->getClassMetadata(Flight::class),
+                    $this->_em->getClassMetadata(City::class)
+                ]
             );
         } catch (ORMException $e) {
         }
@@ -65,10 +65,10 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->_em->persist($firstRelatedEntity);
         $this->_em->flush();
 
-        $firstEntity = $this->_em->getRepository('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity')
-            ->findOneBy(array('name' => 'Fred'));
+        $firstEntity = $this->_em->getRepository(FirstRelatedEntity::class)
+            ->findOneBy(['name' => 'Fred']);
 
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\VersionedOneToOne\FirstRelatedEntity');
+        $class = $this->_em->getClassMetadata(FirstRelatedEntity::class);
 
         $id = $class->getIdentifierValues($firstEntity);
 
@@ -108,7 +108,7 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $this->_em->persist($flight);
         $this->_em->flush();
 
-        $class = $this->_em->getClassMetadata('Doctrine\Tests\Models\Cache\Flight');
+        $class = $this->_em->getClassMetadata(Flight::class);
         $id = $class->getIdentifierValues($flight);
 
         $this->assertCount(2, $id);

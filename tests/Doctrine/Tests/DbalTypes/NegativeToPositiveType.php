@@ -7,12 +7,14 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 class NegativeToPositiveType extends Type
 {
+    const NAME = 'negative_to_positive';
+
     /**
      * {@inheritdoc}
      */
     public function getName()
     {
-        return 'negative_to_positive';
+        return self::NAME;
     }
 
     /**

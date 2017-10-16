@@ -22,19 +22,22 @@ class AssignedGeneratorTest extends OrmTestCase
         $this->_assignedGen = new AssignedGenerator;
     }
 
-    public function testThrowsExceptionIfIdNotAssigned()
+    /**
+     * @dataProvider entitiesWithoutId
+     */
+    public function testThrowsExceptionIfIdNotAssigned($entity)
     {
-        try {
-            $entity = new AssignedSingleIdEntity;
-            $this->_assignedGen->generate($this->_em, $entity);
-            $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (ORMException $expected) {}
+        $this->expectException(ORMException::class);
 
-        try {
-            $entity = new AssignedCompositeIdEntity;
-            $this->_assignedGen->generate($this->_em, $entity);
-            $this->fail('Assigned generator did not throw exception even though ID was missing.');
-        } catch (ORMException $expected) {}
+        $this->_assignedGen->generate($this->_em, $entity);
+    }
+
+    public function entitiesWithoutId(): array
+    {
+        return [
+            'single'    => [new AssignedSingleIdEntity()],
+            'composite' => [new AssignedCompositeIdEntity()],
+        ];
     }
 
     public function testCorrectIdGeneration()
@@ -42,13 +45,13 @@ class AssignedGeneratorTest extends OrmTestCase
         $entity = new AssignedSingleIdEntity;
         $entity->myId = 1;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId' => 1), $id);
+        $this->assertEquals(['myId' => 1], $id);
 
         $entity = new AssignedCompositeIdEntity;
         $entity->myId2 = 2;
         $entity->myId1 = 4;
         $id = $this->_assignedGen->generate($this->_em, $entity);
-        $this->assertEquals(array('myId1' => 4, 'myId2' => 2), $id);
+        $this->assertEquals(['myId1' => 4, 'myId2' => 2], $id);
     }
 }
 

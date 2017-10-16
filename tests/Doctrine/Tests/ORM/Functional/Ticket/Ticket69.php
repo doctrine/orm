@@ -2,8 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Query;
-
 /**
  * Functional tests for the Single Table Inheritance mapping strategy.
  *
@@ -14,11 +12,13 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                    $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\Lemma'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\Relation'),
-                    $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\Ticket\RelationType')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(Lemma::class),
+                    $this->_em->getClassMetadata(Relation::class),
+                    $this->_em->getClassMetadata(RelationType::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -83,11 +83,11 @@ class AdvancedAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase {
         $lemma = $res[0];
 
         $this->assertEquals('foo', $lemma->getLemma());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\Lemma', $lemma);
+        $this->assertInstanceOf(Lemma::class, $lemma);
         $relations = $lemma->getRelations();
 
         foreach($relations as $relation) {
-            $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\Relation', $relation);
+            $this->assertInstanceOf(Relation::class, $relation);
             $this->assertTrue($relation->getType()->getType() != '');
         }
 

@@ -25,16 +25,18 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC742Comment')
-            ));
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(DDC742User::class),
+                    $this->_em->getClassMetadata(DDC742Comment::class)
+                ]
+            );
         } catch(\Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
-        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742User', null);
-        $this->_em->getMetadataFactory()->setMetadataFor(__NAMESPACE__ . '\DDC742Comment', null);
+        $this->_em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
+        $this->_em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
     public function testIssue()
@@ -62,10 +64,11 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $user = $this->_em->find(get_class($user), $user->id);
-        $comment3 = $this->_em->find(get_class($comment3), $comment3->id);
-        $user->favoriteComments->add($comment3);
+        $user = $this->_em->find(DDC742User::class, $user->id);
+        $user->favoriteComments->add($this->_em->find(DDC742Comment::class, $comment3->id));
+
         $this->_em->flush();
+        $this->addToAssertionCount(1);
     }
 }
 
@@ -84,11 +87,13 @@ class DDC742User
      * @var int
      */
     public $id;
+
     /**
      * @Column(length=100, type="string")
      * @var string
      */
     public $title;
+
     /**
      * @ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
      * @JoinTable(
@@ -97,7 +102,7 @@ class DDC742User
      *  inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
      * )
      *
-     * @var Doctrine\ORM\PersistentCollection
+     * @var \Doctrine\ORM\PersistentCollection
      */
     public $favoriteComments;
 }
@@ -117,6 +122,7 @@ class DDC742Comment
      * @var int
      */
     public $id;
+
     /**
      * @Column(length=100, type="string")
      * @var string

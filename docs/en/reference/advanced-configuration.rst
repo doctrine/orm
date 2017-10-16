@@ -152,6 +152,7 @@ The recommended implementations for production are:
 
 
 -  ``Doctrine\Common\Cache\ApcCache``
+-  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
 -  ``Doctrine\Common\Cache\RedisCache``
@@ -183,6 +184,7 @@ The recommended implementations for production are:
 
 
 -  ``Doctrine\Common\Cache\ApcCache``
+-  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
 -  ``Doctrine\Common\Cache\XcacheCache``
 -  ``Doctrine\Common\Cache\RedisCache``
@@ -394,7 +396,7 @@ means that you have to register a special autoloader for these classes:
 .. code-block:: php
 
     <?php
-    use Doctrine\ORM\Proxy\Autoloader;
+    use Doctrine\Common\Proxy\Autoloader;
 
     $proxyDir = "/path/to/proxies";
     $proxyNamespace = "MyProxies";

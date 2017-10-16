@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\CountOutputWalker;
 
 class CountOutputWalkerTest extends PaginationTestCase
 {
@@ -10,7 +11,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT p, c, a FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p JOIN p.category c JOIN p.author a');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -22,7 +23,7 @@ class CountOutputWalkerTest extends PaginationTestCase
     {
         $query = $this->entityManager->createQuery(
             'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(
@@ -30,15 +31,27 @@ class CountOutputWalkerTest extends PaginationTestCase
         );
     }
 
-    public function testCountQuery_Having()
+    public function testCountQuery_GroupBy(): void
+    {
+        $query = $this->entityManager->createQuery(
+            'SELECT p.name FROM Doctrine\Tests\ORM\Tools\Pagination\Person p GROUP BY p.name');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
+        $query->setFirstResult(null)->setMaxResults(null);
+
+        $this->assertSame(
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT p0_.name AS name_0 FROM Person p0_ GROUP BY p0_.name) dctrn_table", $query->getSQL()
+        );
+    }
+
+    public function testCountQuery_Having(): void
     {
         $query = $this->entityManager->createQuery(
             'SELECT g, u, count(u.id) AS userCount FROM Doctrine\Tests\ORM\Tools\Pagination\Group g LEFT JOIN g.users u GROUP BY g.id HAVING userCount > 0');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
-        $this->assertEquals(
-            "SELECT COUNT(*) AS dctrn_count FROM (SELECT DISTINCT id_1 FROM (SELECT count(u0_.id) AS sclr_0, g1_.id AS id_1, u0_.id AS id_2 FROM groups g1_ LEFT JOIN user_group u2_ ON g1_.id = u2_.group_id LEFT JOIN User u0_ ON u0_.id = u2_.user_id GROUP BY g1_.id HAVING sclr_0 > 0) dctrn_result) dctrn_table", $query->getSQL()
+        $this->assertSame(
+            "SELECT COUNT(*) AS dctrn_count FROM (SELECT count(u0_.id) AS sclr_0, g1_.id AS id_1, u0_.id AS id_2 FROM groups g1_ LEFT JOIN user_group u2_ ON g1_.id = u2_.group_id LEFT JOIN User u0_ ON u0_.id = u2_.user_id GROUP BY g1_.id HAVING sclr_0 > 0) dctrn_table", $query->getSQL()
         );
     }
 
@@ -50,7 +63,7 @@ class CountOutputWalkerTest extends PaginationTestCase
 
         $query = $this->entityManager->createQuery(
             'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\BlogPost p ORDER BY p.id');
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Tools\Pagination\CountOutputWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, CountOutputWalker::class);
         $query->setFirstResult(null)->setMaxResults(null);
 
         $this->assertEquals(

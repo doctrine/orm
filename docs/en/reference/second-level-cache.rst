@@ -97,7 +97,7 @@ Defines a contract for accessing a particular region.
 
 Defines a contract for accessing a particular cache region.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.Region.html/>`_.
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.Region.html>`_.
 
 Concurrent cache region
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -111,7 +111,7 @@ If you want to use an ``READ_WRITE`` cache, you should consider providing your o
 
 Defines contract for concurrently managed data region.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.ConcurrentRegion.html/>`_.
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.ConcurrentRegion.html>`_.
 
 Timestamp region
 ~~~~~~~~~~~~~~~~
@@ -120,7 +120,7 @@ Timestamp region
 
 Tracks the timestamps of the most recent updates to particular entity.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.TimestampRegion.html/>`_.
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.TimestampRegion.html>`_.
 
 .. _reference-second-level-cache-mode:
 
@@ -153,21 +153,21 @@ Built-in cached persisters
 
 Cached persisters are responsible to access cache regions.
 
-    +-----------------------+-------------------------------------------------------------------------------+
-    | Cache Usage           | Persister                                                                     |
-    +=======================+===============================================================================+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedEntityPersister                |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedEntityPersister               |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCachedEntityPersister      |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\ReadOnlyCachedCollectionPersister            |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\ReadWriteCachedCollectionPersister           |
-    +-----------------------+-------------------------------------------------------------------------------+
-    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\NonStrictReadWriteCacheCollectionPersister   |
-    +-----------------------+-------------------------------------------------------------------------------+
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | Cache Usage           | Persister                                                                                 |
+    +=======================+===========================================================================================+
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadOnlyCachedEntityPersister                    |
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Entity\\ReadWriteCachedEntityPersister                   |
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Entity\\NonStrictReadWriteCachedEntityPersister          |
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | READ_ONLY             | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadOnlyCachedCollectionPersister            |
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | READ_WRITE            | Doctrine\\ORM\\Cache\\Persister\\Collection\\ReadWriteCachedCollectionPersister           |
+    +-----------------------+-------------------------------------------------------------------------------------------+
+    | NONSTRICT_READ_WRITE  | Doctrine\\ORM\\Cache\\Persister\\Collection\\NonStrictReadWriteCachedCollectionPersister  |
+    +-----------------------+-------------------------------------------------------------------------------------------+
 
 Configuration
 -------------
@@ -209,7 +209,7 @@ It allows you to provide a specific implementation of the following components :
 * ``EntityHydrator``  Transform an entity into a cache entry and cache entry into entities
 * ``CollectionHydrator`` Transform a collection into a cache entry and cache entry into collection
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.DefaultCacheFactory.html/>`_.
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.DefaultCacheFactory.html>`_.
 
 Region Lifetime
 ~~~~~~~~~~~~~~~
@@ -220,7 +220,7 @@ To specify a default lifetime for all regions or specify a different lifetime fo
 
     <?php
     /* @var $config \Doctrine\ORM\Configuration */
-    /* @var $cacheConfig \Doctrine\ORM\Configuration */
+    /* @var $cacheConfig \Doctrine\ORM\Cache\CacheConfiguration */
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
 
@@ -270,7 +270,7 @@ By providing a cache logger you should be able to get information about all cach
 If you want to get more information you should implement ``\Doctrine\ORM\Cache\Logging\CacheLogger``.
 and collect all information you want.
 
-`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.CacheLogger.html/>`_.
+`See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.CacheLogger.html>`_.
 
 
 Entity cache definition

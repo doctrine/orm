@@ -1,5 +1,7 @@
 <?php
-$metadata->mapField(array(
+$metadata->mapField(
+    [
    'fieldName'  => 'creditCardNumber',
    'type'       => 'string',
-));
+    ]
+);

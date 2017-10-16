@@ -31,12 +31,12 @@ class RegionsConfiguration
     /**
      * @var array
      */
-    private $lifetimes = array();
+    private $lifetimes = [];
 
     /**
      * @var array
      */
-    private $lockLifetimes = array();
+    private $lockLifetimes = [];
 
     /**
      * @var integer

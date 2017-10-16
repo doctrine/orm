@@ -101,7 +101,7 @@ class ORMException extends Exception
         return new self("Unrecognized field: $field");
     }
 
-     /**
+    /**
      *
      * @param string $class
      * @param string $association
@@ -321,16 +321,6 @@ class ORMException extends Exception
             "Unrecognized identifier fields: '" . implode("', '", $fieldNames) . "' " .
             "are not present on class '" . $className . "'."
         );
-    }
-
-    /**
-     * @param string $functionName
-     *
-     * @return ORMException
-     */
-    public static function overwriteInternalDQLFunctionNotAllowed($functionName)
-    {
-        return new self("It is not allowed to overwrite internal function '$functionName' in the DQL parser through user-defined functions.");
     }
 
     /**

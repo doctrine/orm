@@ -16,13 +16,16 @@ class PersistentObjectTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\PersistentEntity'),
-            ));
-        } catch (\Exception $e) {
 
+        try {
+            $this->_schemaTool->createSchema(
+                [
+                    $this->_em->getClassMetadata(PersistentEntity::class),
+                ]
+            );
+        } catch (\Exception $e) {
         }
+
         PersistentObject::setObjectManager($this->_em);
     }
 
@@ -33,6 +36,8 @@ class PersistentObjectTest extends OrmFunctionalTestCase
 
         $this->_em->persist($entity);
         $this->_em->flush();
+
+        $this->addToAssertionCount(1);
     }
 
     public function testFind()
@@ -44,7 +49,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entity = $this->_em->find(__NAMESPACE__ . '\PersistentEntity', $entity->getId());
+        $entity = $this->_em->find(PersistentEntity::class, $entity->getId());
 
         $this->assertEquals('test', $entity->getName());
         $entity->setName('foobar');
@@ -61,7 +66,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entity = $this->_em->getReference(__NAMESPACE__ . '\PersistentEntity', $entity->getId());
+        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
 
         $this->assertEquals('test', $entity->getName());
     }
@@ -76,7 +81,7 @@ class PersistentObjectTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $entity = $this->_em->getReference(__NAMESPACE__ . '\PersistentEntity', $entity->getId());
+        $entity = $this->_em->getReference(PersistentEntity::class, $entity->getId());
         $this->assertSame($entity, $entity->getParent());
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
+
 /**
  * @group DDC-1163
  */
@@ -11,12 +13,14 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163Product'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163SpecialProduct'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163ProxyHolder'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1163Tag'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC1163Product::class),
+            $this->_em->getClassMetadata(DDC1163SpecialProduct::class),
+            $this->_em->getClassMetadata(DDC1163ProxyHolder::class),
+            $this->_em->getClassMetadata(DDC1163Tag::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -57,25 +61,25 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     private function createProxyForSpecialProduct()
     {
-        /* @var $proxyHolder ProxyHolder */
-        $proxyHolder = $this->_em->find(__NAMESPACE__ . '\\DDC1163ProxyHolder', $this->proxyHolderId);
+        /* @var $proxyHolder DDC1163ProxyHolder */
+        $proxyHolder = $this->_em->find(DDC1163ProxyHolder::class, $this->proxyHolderId);
 
-        $this->assertInstanceOf(__NAMESPACE__.'\\DDC1163SpecialProduct', $proxyHolder->getSpecialProduct());
+        $this->assertInstanceOf(DDC1163SpecialProduct::class, $proxyHolder->getSpecialProduct());
     }
 
     private function setPropertyAndAssignTagToSpecialProduct()
     {
-        /* @var $specialProduct SpecialProduct */
-        $specialProduct = $this->_em->find(__NAMESPACE__ . '\\DDC1163SpecialProduct', $this->productId);
+        /* @var $specialProduct DDC1163SpecialProduct */
+        $specialProduct = $this->_em->find(DDC1163SpecialProduct::class, $this->productId);
 
-        $this->assertInstanceOf(__NAMESPACE__.'\\DDC1163SpecialProduct', $specialProduct);
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $specialProduct);
+        $this->assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
+        $this->assertInstanceOf(Proxy::class, $specialProduct);
 
         $specialProduct->setSubclassProperty('foobar');
 
         // this screams violation of law of demeter ;)
         $this->assertEquals(
-            __NAMESPACE__.'\\DDC1163SpecialProduct',
+            DDC1163SpecialProduct::class,
             $this->_em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->name
         );
 

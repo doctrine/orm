@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Throwable;
 
 /**
  * Command to ensure that Doctrine is properly configured for a production environment.
@@ -45,12 +46,14 @@ class EnsureProductionSettingsCommand extends Command
         $this
         ->setName('orm:ensure-production-settings')
         ->setDescription('Verify that Doctrine is properly configured for a production environment.')
-        ->setDefinition(array(
-            new InputOption(
-                'complete', null, InputOption::VALUE_NONE,
-                'Flag to also inspect database connection existence.'
-            )
-        ))
+        ->setDefinition(
+            [
+                new InputOption(
+                    'complete', null, InputOption::VALUE_NONE,
+                    'Flag to also inspect database connection existence.'
+                )
+            ]
+        )
         ->setHelp(<<<EOT
 Verify that Doctrine is properly configured for a production environment.
 EOT
@@ -70,7 +73,7 @@ EOT
             if ($input->getOption('complete') !== null) {
                 $em->getConnection()->connect();
             }
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $output->writeln('<error>' . $e->getMessage() . '</error>');
 
             return 1;

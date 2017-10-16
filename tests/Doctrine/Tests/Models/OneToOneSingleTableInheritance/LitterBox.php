@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
  */
 class LitterBox
 {
-    const CLASSNAME = __CLASS__;
-
     /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
     public $id;
 }

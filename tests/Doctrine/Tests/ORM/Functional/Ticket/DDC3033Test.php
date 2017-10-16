@@ -12,10 +12,12 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3033User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC3033Product'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+            $this->_em->getClassMetadata(DDC3033User::class),
+            $this->_em->getClassMetadata(DDC3033Product::class),
+            ]
+        );
 
         $user = new DDC3033User();
         $user->name = "Test User";
@@ -38,12 +40,12 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($product);
         $this->_em->flush();
 
-        $expect = array(
-            'title' => array(
+        $expect = [
+            'title' => [
                 0 => 'Test product',
                 1 => 'Test Change title',
-            ),
-        );
+            ],
+        ];
 
         $this->assertEquals($expect, $product->changeSet);
     }
@@ -55,7 +57,7 @@ class DDC3033Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC3033Product
 {
-    public $changeSet = array();
+    public $changeSet = [];
 
     /**
      * @var int $id

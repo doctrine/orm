@@ -25,7 +25,7 @@ use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
@@ -33,7 +33,7 @@ use stdClass;
  *
  * @covers \Doctrine\ORM\Internal\HydrationCompleteHandler
  */
-class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
+class HydrationCompleteHandlerTest extends TestCase
 {
     /**
      * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
@@ -61,7 +61,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -99,7 +99,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -125,7 +125,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -158,7 +158,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), array($entity1, $entity2), true)
+                    return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -187,15 +187,15 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
         $this->handler->hydrationComplete();
     }
 
-    public function testGetValidListenerInvocationFlags()
+    public function invocationFlagProvider()
     {
-        return array(
-            array(ListenersInvoker::INVOKE_LISTENERS),
-            array(ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER),
-        );
+        return [
+            [ListenersInvoker::INVOKE_LISTENERS],
+            [ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER],
+        ];
     }
 }

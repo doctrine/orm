@@ -76,7 +76,7 @@ class ProxyFactory extends AbstractProxyFactory
     {
         $proxyGenerator = new ProxyGenerator($proxyDir, $proxyNs);
 
-        $proxyGenerator->setPlaceholder('baseProxyInterface', 'Doctrine\ORM\Proxy\Proxy');
+        $proxyGenerator->setPlaceholder('baseProxyInterface', Proxy::class);
         parent::__construct($proxyGenerator, $em->getMetadataFactory(), $autoGenerate);
 
         $this->em                  = $em;
@@ -91,7 +91,9 @@ class ProxyFactory extends AbstractProxyFactory
     protected function skipClass(ClassMetadata $metadata)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadataInfo */
-        return $metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract();
+        return $metadata->isMappedSuperclass
+            || $metadata->isEmbeddedClass
+            || $metadata->getReflectionClass()->isAbstract();
     }
 
     /**

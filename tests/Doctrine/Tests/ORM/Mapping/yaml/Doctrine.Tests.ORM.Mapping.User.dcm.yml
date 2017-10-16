@@ -18,6 +18,7 @@ Doctrine\Tests\ORM\Mapping\User:
         initialValue: 1
       options:
         foo: bar
+        unsigned: false
   fields:
     name:
       type: string
@@ -28,6 +29,7 @@ Doctrine\Tests\ORM\Mapping\User:
         foo: bar
         baz:
           key: val
+        fixed: false
     email:
       type: string
       column: user_email

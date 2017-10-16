@@ -8,8 +8,6 @@ namespace Doctrine\Tests\Models\Tweet;
  */
 class UserList
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @GeneratedValue

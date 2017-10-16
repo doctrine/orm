@@ -295,7 +295,8 @@ annotation.
         class Message
         {
             /**
-             * @Id @Column(type="integer")
+             * @Id
+             * @Column(type="integer")
              * @GeneratedValue
              */
             private $id;
@@ -363,6 +364,8 @@ Here is the list of possible generation strategies:
    thus generated) by your code. The assignment must take place before
    a new entity is passed to ``EntityManager#persist``. NONE is the
    same as leaving off the @GeneratedValue entirely.
+-  ``CUSTOM``: With this option, you can use the ``@CustomIdGenerator`` annotation.
+   It will allow you to pass a :doc:`class of your own to generate the identifiers.<_annref_customidgenerator>`
 
 Sequence Generator
 ^^^^^^^^^^^^^^^^^^

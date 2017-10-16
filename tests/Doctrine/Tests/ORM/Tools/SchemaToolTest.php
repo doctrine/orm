@@ -2,10 +2,21 @@
 
 namespace Doctrine\Tests\ORM\Tools;
 
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\ORM\Tools\ToolEvents;
-use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
-use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsComment;
+use Doctrine\Tests\Models\CMS\CmsEmployee;
+use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsPhonenumber;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\Models\Forum\ForumAvatar;
+use Doctrine\Tests\Models\Forum\ForumUser;
+use Doctrine\Tests\Models\NullDefault\NullDefaultColumn;
 use Doctrine\Tests\OrmTestCase;
 
 class SchemaToolTest extends OrmTestCase
@@ -15,20 +26,20 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        $classes = [
+            $em->getClassMetadata(CmsAddress::class),
+            $em->getClassMetadata(CmsArticle::class),
+            $em->getClassMetadata(CmsComment::class),
+            $em->getClassMetadata(CmsEmployee::class),
+            $em->getClassMetadata(CmsGroup::class),
+            $em->getClassMetadata(CmsPhonenumber::class),
+            $em->getClassMetadata(CmsUser::class),
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
         $this->assertTrue($schema->hasTable('cms_users'), "Table cms_users should exist.");
-        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(array('username')), "username column should be indexed.");
+        $this->assertTrue($schema->getTable('cms_users')->columnsAreIndexed(['username']), "username column should be indexed.");
     }
 
     public function testAnnotationOptionsAttribute()
@@ -36,13 +47,13 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
-            $em->getClassMetadata(__NAMESPACE__ . '\\TestEntityWithAnnotationOptionsAttribute'),
-        );
+        $classes = [
+            $em->getClassMetadata(TestEntityWithAnnotationOptionsAttribute::class),
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
-        $expected = array('foo' => 'bar', 'baz' => array('key' => 'val'));
+        $expected = ['foo' => 'bar', 'baz' => ['key' => 'val']];
 
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getOptions(), "options annotation are passed to the tables options");
         $this->assertEquals($expected, $schema->getTable('TestEntityWithAnnotationOptionsAttribute')->getColumn('test')->getCustomSchemaOptions(), "options annotation are passed to the columns customSchemaOptions");
@@ -58,11 +69,11 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $avatar = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumAvatar');
+        $avatar = $em->getClassMetadata(ForumAvatar::class);
         $avatar->fieldMappings['id']['columnDefinition'] = $customColumnDef;
-        $user = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumUser');
+        $user = $em->getClassMetadata(ForumUser::class);
 
-        $classes = array($avatar, $user);
+        $classes = [$avatar, $user];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
@@ -81,19 +92,19 @@ class SchemaToolTest extends OrmTestCase
 
         $em = $this->_getTestEntityManager();
         $em->getEventManager()->addEventListener(
-            array(ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema), $listener
+            [ToolEvents::postGenerateSchemaTable, ToolEvents::postGenerateSchema], $listener
         );
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsArticle'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsComment'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsEmployee'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsGroup'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsPhonenumber'),
-            $em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsUser'),
-        );
+        $classes = [
+            $em->getClassMetadata(CmsAddress::class),
+            $em->getClassMetadata(CmsArticle::class),
+            $em->getClassMetadata(CmsComment::class),
+            $em->getClassMetadata(CmsEmployee::class),
+            $em->getClassMetadata(CmsGroup::class),
+            $em->getClassMetadata(CmsPhonenumber::class),
+            $em->getClassMetadata(CmsUser::class),
+        ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
 
@@ -106,16 +117,12 @@ class SchemaToolTest extends OrmTestCase
         $em = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
 
-        $classes = array(
-            $em->getClassMetadata('Doctrine\Tests\Models\NullDefault\NullDefaultColumn'),
-        );
-
-        $customSchemaOptions = $schemaTool->getSchemaFromMetadata($classes)
+        $customSchemaOptions = $schemaTool->getSchemaFromMetadata([$em->getClassMetadata(NullDefaultColumn::class)])
             ->getTable('NullDefaultColumn')
             ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
 
-        $this->assertSame(array(), $customSchemaOptions);
+        $this->assertSame([], $customSchemaOptions);
     }
 
     /**
@@ -126,7 +133,7 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(__NAMESPACE__ . '\\UniqueConstraintAnnotationModel'),
+            $em->getClassMetadata(UniqueConstraintAnnotationModel::class),
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -144,8 +151,8 @@ class SchemaToolTest extends OrmTestCase
         $em         = $this->_getTestEntityManager();
         $schemaTool = new SchemaTool($em);
         $classes    = [
-            $em->getClassMetadata(__NAMESPACE__ . '\\FirstEntity'),
-            $em->getClassMetadata(__NAMESPACE__ . '\\SecondEntity')
+            $em->getClassMetadata(FirstEntity::class),
+            $em->getClassMetadata(SecondEntity::class)
         ];
 
         $schema = $schemaTool->getSchemaFromMetadata($classes);
@@ -156,6 +163,26 @@ class SchemaToolTest extends OrmTestCase
 
         $this->assertCount(1, $indexes, "there should be only one index");
         $this->assertTrue(current($indexes)->isPrimary(), "index should be primary");
+    }
+
+    public function testSetDiscriminatorColumnWithoutLength() : void
+    {
+        $em         = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+        $metadata   = $em->getClassMetadata(FirstEntity::class);
+
+        $metadata->setInheritanceType(ClassMetadata::INHERITANCE_TYPE_SINGLE_TABLE);
+        $metadata->setDiscriminatorColumn(['name' => 'discriminator', 'type' => 'string']);
+
+        $schema = $schemaTool->getSchemaFromMetadata([$metadata]);
+
+        $this->assertTrue($schema->hasTable('first_entity'));
+        $table = $schema->getTable('first_entity');
+
+        $this->assertTrue($table->hasColumn('discriminator'));
+        $column = $table->getColumn('discriminator');
+
+        $this->assertEquals(255, $column->getLength());
     }
 }
 

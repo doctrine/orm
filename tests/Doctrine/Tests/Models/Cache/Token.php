@@ -10,8 +10,6 @@ use Doctrine\Common\Collections\ArrayCollection;
  */
 class Token
 {
-    const CLASSNAME = __CLASS__;
-
     /**
      * @Id
      * @Column(type="string")

@@ -44,12 +44,12 @@ class ConvertDoctrine1Schema
     /**
      * @var array
      */
-    private $legacyTypeMap = array(
+    private $legacyTypeMap = [
         // TODO: This list may need to be updated
         'clob' => 'text',
         'timestamp' => 'datetime',
         'enum' => 'string'
-    );
+    ];
 
     /**
      * Constructor passes the directory or array of directories
@@ -72,7 +72,7 @@ class ConvertDoctrine1Schema
      */
     public function getMetadata()
     {
-        $schema = array();
+        $schema = [];
         foreach ($this->from as $path) {
             if (is_dir($path)) {
                 $files = glob($path . '/*.yml');
@@ -84,7 +84,7 @@ class ConvertDoctrine1Schema
             }
         }
 
-        $metadatas = array();
+        $metadatas = [];
         foreach ($schema as $className => $mappingInformation) {
             $metadatas[] = $this->convertToClassMetadataInfo($className, $mappingInformation);
         }
@@ -153,12 +153,12 @@ class ConvertDoctrine1Schema
         }
 
         if ( ! $id) {
-            $fieldMapping = array(
+            $fieldMapping = [
                 'fieldName' => 'id',
                 'columnName' => 'id',
                 'type' => 'integer',
                 'id' => true
-            );
+            ];
             $metadata->mapField($fieldMapping);
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_AUTO);
         }
@@ -178,7 +178,7 @@ class ConvertDoctrine1Schema
     {
         if (is_string($column)) {
             $string = $column;
-            $column = array();
+            $column = [];
             $column['type'] = $string;
         }
 
@@ -208,13 +208,13 @@ class ConvertDoctrine1Schema
             throw ToolsException::couldNotMapDoctrine1Type($column['type']);
         }
 
-        $fieldMapping = array();
+        $fieldMapping = [];
 
         if (isset($column['primary'])) {
             $fieldMapping['id'] = true;
         }
 
-        $fieldMapping['fieldName'] = isset($column['alias']) ? $column['alias'] : $name;
+        $fieldMapping['fieldName'] = $column['alias'] ?? $name;
         $fieldMapping['columnName'] = $column['name'];
         $fieldMapping['type'] = $column['type'];
 
@@ -222,7 +222,7 @@ class ConvertDoctrine1Schema
             $fieldMapping['length'] = $column['length'];
         }
 
-        $allowed = array('precision', 'scale', 'unique', 'options', 'notnull', 'version');
+        $allowed = ['precision', 'scale', 'unique', 'options', 'notnull', 'version'];
 
         foreach ($column as $key => $value) {
             if (in_array($key, $allowed)) {
@@ -237,9 +237,9 @@ class ConvertDoctrine1Schema
         } elseif (isset($column['sequence'])) {
             $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
 
-            $definition = array(
+            $definition = [
                 'sequenceName' => is_array($column['sequence']) ? $column['sequence']['name']:$column['sequence']
-            );
+            ];
 
             if (isset($column['sequence']['size'])) {
                 $definition['allocationSize'] = $column['sequence']['size'];
@@ -272,9 +272,9 @@ class ConvertDoctrine1Schema
             $type = (isset($index['type']) && $index['type'] == 'unique')
                 ? 'uniqueConstraints' : 'indexes';
 
-            $metadata->table[$type][$name] = array(
+            $metadata->table[$type][$name] = [
                 'columns' => $index['fields']
-            );
+            ];
         }
     }
 
@@ -311,17 +311,17 @@ class ConvertDoctrine1Schema
             if (isset($relation['refClass'])) {
                 $type = 'many';
                 $foreignType = 'many';
-                $joinColumns = array();
+                $joinColumns = [];
             } else {
-                $type = isset($relation['type']) ? $relation['type'] : 'one';
-                $foreignType = isset($relation['foreignType']) ? $relation['foreignType'] : 'many';
-                $joinColumns = array(
-                    array(
+                $type = $relation['type'] ?? 'one';
+                $foreignType = $relation['foreignType'] ?? 'many';
+                $joinColumns = [
+                    [
                         'name' => $relation['local'],
                         'referencedColumnName' => $relation['foreign'],
-                        'onDelete' => isset($relation['onDelete']) ? $relation['onDelete'] : null,
-                    )
-                );
+                        'onDelete' => $relation['onDelete'] ?? null,
+                    ]
+                ];
             }
 
             if ($type == 'one' && $foreignType == 'one') {
@@ -332,7 +332,7 @@ class ConvertDoctrine1Schema
                 $method = 'mapOneToMany';
             }
 
-            $associationMapping = array();
+            $associationMapping = [];
             $associationMapping['fieldName'] = $relation['alias'];
             $associationMapping['targetEntity'] = $relation['class'];
             $associationMapping['mappedBy'] = $relation['foreignAlias'];

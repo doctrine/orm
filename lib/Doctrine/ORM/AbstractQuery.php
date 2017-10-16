@@ -27,9 +27,6 @@ use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 
-use Doctrine\ORM\Cache;
-use Doctrine\ORM\Query\ResultSetMapping;
-
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
  *
@@ -96,7 +93,7 @@ abstract class AbstractQuery
      *
      * @var array
      */
-    protected $_hints = array();
+    protected $_hints = [];
 
     /**
      * The hydration mode.
@@ -106,7 +103,7 @@ abstract class AbstractQuery
     protected $_hydrationMode = self::HYDRATE_OBJECT;
 
     /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
      */
     protected $_queryCacheProfile;
 
@@ -118,7 +115,7 @@ abstract class AbstractQuery
     protected $_expireResultCache = false;
 
     /**
-     * @param \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
      */
     protected $_hydrationCacheProfile;
 
@@ -796,7 +793,7 @@ abstract class AbstractQuery
      * @return mixed
      *
      * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result.
+     * @throws NoResultException        If the query returned no result and hydration mode is not HYDRATE_SINGLE_SCALAR.
      */
     public function getSingleResult($hydrationMode = null)
     {
@@ -822,10 +819,9 @@ abstract class AbstractQuery
      *
      * Alias for getSingleResult(HYDRATE_SINGLE_SCALAR).
      *
-     * @return mixed
+     * @return mixed The scalar result, or NULL if the query returned no result.
      *
      * @throws NonUniqueResultException If the query result is not unique.
-     * @throws NoResultException        If the query returned no result.
      */
     public function getSingleScalarResult()
     {
@@ -955,7 +951,7 @@ abstract class AbstractQuery
             }
 
             if ( ! $result) {
-                $result = array();
+                $result = [];
             }
 
             $setCacheEntry = function($data) use ($cache, $result, $cacheKey, $realCacheKey, $queryCacheProfile) {
@@ -1037,7 +1033,7 @@ abstract class AbstractQuery
 
         $metadata = $this->_em->getClassMetadata($entityName);
 
-        return new Cache\TimestampCacheKey($metadata->getTableName());
+        return new Cache\TimestampCacheKey($metadata->rootEntityName);
     }
 
     /**
@@ -1049,7 +1045,7 @@ abstract class AbstractQuery
      */
     protected function getHydrationCacheId()
     {
-        $parameters = array();
+        $parameters = [];
 
         foreach ($this->getParameters() as $parameter) {
             $parameters[$parameter->getName()] = $this->processParameterValue($parameter->getValue());
@@ -1111,7 +1107,7 @@ abstract class AbstractQuery
     {
         $this->parameters = new ArrayCollection();
 
-        $this->_hints = array();
+        $this->_hints = [];
         $this->_hints = $this->_em->getConfiguration()->getDefaultQueryHints();
     }
 

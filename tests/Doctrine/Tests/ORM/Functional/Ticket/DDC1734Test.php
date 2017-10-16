@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
 class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
@@ -31,7 +32,7 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $proxy);
+        $this->assertInstanceOf(Proxy::class, $proxy);
         $this->assertFalse($proxy->__isInitialized());
 
         $this->_em->detach($proxy);
@@ -61,7 +62,7 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $proxy = $this->getProxy($group);
 
-        $this->assertInstanceOf('Doctrine\ORM\Proxy\Proxy', $proxy);
+        $this->assertInstanceOf(Proxy::class, $proxy);
         $this->assertFalse($proxy->__isInitialized());
 
         $this->_em->detach($proxy);

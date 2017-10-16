@@ -21,7 +21,6 @@
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\Common\Cache\MultiGetCache;
-use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 
 /**
@@ -56,7 +55,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $keysToRetrieve = array();
+        $keysToRetrieve = [];
 
         foreach ($collection->identifiers as $index => $key) {
             $keysToRetrieve[$index] = $this->getCacheEntryKey($key);
@@ -67,7 +66,7 @@ class DefaultMultiGetRegion extends DefaultRegion
             return null;
         }
 
-        $returnableItems = array();
+        $returnableItems = [];
         foreach ($keysToRetrieve as $index => $key) {
             $returnableItems[$index] = $items[$key];
         }

@@ -1,0 +1,12 @@
+Doctrine\Tests\Models\DDC5934\DDC5934BaseContract:
+  type: mappedSuperclass
+  id:
+    id:
+      type: integer
+      column: id
+      generator:
+        strategy: AUTO
+  manyToMany:
+    members:
+      targetEntity: DDC5934Member
+      inversedBy: contract

@@ -2,11 +2,15 @@
 
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
-$metadata->enableCache(array(
+$metadata->enableCache(
+    [
     'usage' => ClassMetadataInfo::CACHE_USAGE_READ_ONLY
-));
-$metadata->mapManyToOne(array(
+    ]
+);
+$metadata->mapManyToOne(
+    [
     'fieldName'      => 'foo',
     'id'         => true,
     'targetEntity'   => 'PHPSLCFoo'
-));
+    ]
+);

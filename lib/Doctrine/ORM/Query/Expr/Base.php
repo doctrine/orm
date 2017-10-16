@@ -48,17 +48,17 @@ abstract class Base
     /**
      * @var array
      */
-    protected $allowedClasses = array();
+    protected $allowedClasses = [];
 
     /**
      * @var array
      */
-    protected $parts = array();
+    protected $parts = [];
 
     /**
      * @param array $args
      */
-    public function __construct($args = array())
+    public function __construct($args = [])
     {
         $this->addMultiple($args);
     }
@@ -68,7 +68,7 @@ abstract class Base
      *
      * @return Base
      */
-    public function addMultiple($args = array())
+    public function addMultiple($args = [])
     {
         foreach ((array) $args as $arg) {
             $this->add($arg);

@@ -24,6 +24,9 @@ use Doctrine\ORM\ORMException;
 class PersisterException extends ORMException
 {
     /**
+     * @param string $class
+     * @param string $associationName
+     *
      * @return PersisterException
      */
     static public function matchingAssocationFieldRequiresObject($class, $associationName)

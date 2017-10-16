@@ -53,7 +53,7 @@ class DefaultCache implements Cache
     /**
      * @var \Doctrine\ORM\Cache\QueryCache[]
      */
-    private $queryCaches = array();
+    private $queryCaches = [];
 
     /**
      * @var \Doctrine\ORM\Cache\QueryCache
@@ -314,7 +314,7 @@ class DefaultCache implements Cache
     private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
         if ( ! is_array($ownerIdentifier)) {
-            $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);;
+            $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
 
         return new CollectionCacheKey($metadata->rootEntityName, $association, $ownerIdentifier);
@@ -336,7 +336,7 @@ class DefaultCache implements Cache
             }
         }
 
-        return array($metadata->identifier[0] => $identifier);
+        return [$metadata->identifier[0] => $identifier];
     }
 
 }

@@ -14,20 +14,24 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+        $this->_schemaTool->createSchema(
+            [
+                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
+                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
+            ]
+        );
     }
 
     protected function tearDown()
     {
         parent::tearDown();
 
-        $this->_schemaTool->dropSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityO'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\CascadeRemoveOrderEntityG'),
-        ));
+        $this->_schemaTool->dropSchema(
+            [
+                $this->_em->getClassMetadata(CascadeRemoveOrderEntityO::class),
+                $this->_em->getClassMetadata(CascadeRemoveOrderEntityG::class),
+            ]
+        );
     }
 
     public function testSingle()
@@ -39,10 +43,12 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $eOloaded = $this->_em->find('Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', $eO->getId());
+        $eOloaded = $this->_em->find(CascadeRemoveOrderEntityO::class, $eO->getId());
 
         $this->_em->remove($eOloaded);
         $this->_em->flush();
+
+        self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG->getId()));
     }
 
     public function testMany()
@@ -58,10 +64,14 @@ class CascadeRemoveOrderTest extends OrmFunctionalTestCase
         $this->_em->flush();
         $this->_em->clear();
 
-        $eOloaded = $this->_em->find('Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO', $eO->getId());
+        $eOloaded = $this->_em->find(CascadeRemoveOrderEntityO::class, $eO->getId());
 
         $this->_em->remove($eOloaded);
         $this->_em->flush();
+
+        self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG1->getId()));
+        self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG2->getId()));
+        self::assertNull($this->_em->find(CascadeRemoveOrderEntityG::class, $eG3->getId()));
     }
 }
 

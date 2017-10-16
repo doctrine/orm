@@ -14,10 +14,9 @@ class DDC3103Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        $className     = __NAMESPACE__ . '\\DDC3103ArticleId';
-        $classMetadata = new ClassMetadata($className);
+        $classMetadata = new ClassMetadata(DDC3103ArticleId::class);
 
-        $this->createAnnotationDriver()->loadMetadataForClass($className, $classMetadata);
+        $this->createAnnotationDriver()->loadMetadataForClass(DDC3103ArticleId::class, $classMetadata);
 
         $this->assertTrue(
             $classMetadata->isEmbeddedClass,
