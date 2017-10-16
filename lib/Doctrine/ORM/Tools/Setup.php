@@ -126,19 +126,27 @@ class Setup
         if ($isDevMode === false && $cache === null) {
             if (extension_loaded('apc')) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
-            } elseif (extension_loaded('xcache')) {
+            }
+            if ($cache === null && extension_loaded('xcache')) {
                 $cache = new \Doctrine\Common\Cache\XcacheCache();
-            } elseif (extension_loaded('memcache')) {
+            }
+            if ($cache === null && extension_loaded('memcache')) {
                 $memcache = new \Memcache();
-                $memcache->connect('127.0.0.1');
-                $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                $cache->setMemcache($memcache);
-            } elseif (extension_loaded('redis')) {
+                $r = @$memcache->connect('127.0.0.1');
+                if ($r !== false) {
+                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                    $cache->setMemcache($memcache);
+                }
+            }
+            if ($cache === null && extension_loaded('redis')) {
                 $redis = new \Redis();
-                $redis->connect('127.0.0.1');
-                $cache = new \Doctrine\Common\Cache\RedisCache();
-                $cache->setRedis($redis);
-            } else {
+                $r = @$redis->connect('127.0.0.1');
+                if ($r !== false) {
+                    $cache = new \Doctrine\Common\Cache\RedisCache();
+                    $cache->setRedis($redis);
+                }
+            }
+            if ($cache === null) {
                 $cache = new ArrayCache();
             }
         } elseif ($cache === null) {
