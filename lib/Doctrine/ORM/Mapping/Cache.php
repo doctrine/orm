@@ -19,6 +19,9 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * Caching to an entity or a collection.
  *
@@ -32,7 +35,7 @@ final class Cache implements Annotation
 {
     /**
      * @Enum({"READ_ONLY", "NONSTRICT_READ_WRITE", "READ_WRITE"})
-     * 
+     *
      * @var string The concurrency strategy.
      */
     public $usage = 'READ_ONLY';
