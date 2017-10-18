@@ -19,6 +19,9 @@
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
+use Doctrine\Common\Annotations\Annotation\Target;
+
 /**
  * @Annotation
  * @Target("PROPERTY")
