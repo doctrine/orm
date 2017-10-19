@@ -709,7 +709,7 @@ use Throwable;
      *
      * @param string $entityName The name of the entity.
      *
-     * @return \Doctrine\ORM\EntityRepository The repository class.
+     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
