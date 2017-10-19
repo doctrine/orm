@@ -318,9 +318,9 @@ depending on whether the classes are in the namespace or not.
 @Embeddable
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embeddable is required on an entity targeted to be embeddable inside
-another. It works together with the :ref:`@Embedded <annref_embedded>`
-annotation to establish the relationship between two entities.
+The embeddable annotation is required on a class, in order to make it
+embeddable inside an entity. It works together with the :ref:`@Embedded <annref_embedded>`
+annotation to establish the relationship between the two classes.
 
 .. code-block:: php
 
@@ -345,8 +345,8 @@ annotation to establish the relationship between two entities.
 @Embedded
 ~~~~~~~~~~~~~~~~~~~~~
 
-The embedded annotation is required on a member class varible targed to
-embed it's class argument inside it's own class.
+The embedded annotation is required on an entity's member variable,
+in order to specify that it is an embedded class.
 
 Required attributes:
 
