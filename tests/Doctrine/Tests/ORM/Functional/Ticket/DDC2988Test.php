@@ -3,8 +3,6 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\JoinColumns;
-use Doctrine\ORM\Mapping\JoinTable;
 
 /**
  * @group DDC-2988
@@ -13,18 +11,14 @@ class DDC2988Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected $groups;
 
-    /**
-     * {@inheritDoc}
-     */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
-
+        parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2988User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2988Group'),
-            ));
+            $this->_schemaTool->createSchema([
+                $this->_em->getClassMetadata(DDC2988User::class),
+                $this->_em->getClassMetadata(DDC2988Group::class),
+            ]);
         } catch (\Exception $e) {
             return;
         }
@@ -43,14 +37,14 @@ class DDC2988Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testManyToManyFindBy()
     {
-        $userRepository  = $this->_em->getRepository(__NAMESPACE__ . '\DDC2988User');
-        $groupRepository = $this->_em->getRepository(__NAMESPACE__ . '\DDC2988Group');
+        $userRepository  = $this->_em->getRepository(DDC2988User::class);
+        $groupRepository = $this->_em->getRepository(DDC2988Group::class);
         $groups          = $groupRepository->findAll();
         $result          = $userRepository->findBy(array('groups' => $groups));
     }
 }
 
-/** @Entity  @Table(name="ddc_2988_user") */
+/** @Entity */
 class DDC2988User
 {
     /** @Id @Column(type="integer") @GeneratedValue */
@@ -70,7 +64,7 @@ class DDC2988User
     }
 }
 
-/** @Entity  @Table(name="ddc_2988_group") */
+/** @Entity */
 class DDC2988Group
 {
     /** @Id @Column(type="integer") @GeneratedValue */
