@@ -49,8 +49,6 @@ you wish. Here is an example skeleton of such a custom type class:
 
     The following assumptions are applied to mapping types by the ORM:
 
-    -  If the value of the field is *NULL* the method
-       ``convertToDatabaseValue()`` is not called.
     -  The ``UnitOfWork`` never passes values to the database convert
        method that did not change in the request.
     -  The ``UnitOfWork`` internally assumes that entity identifiers are
