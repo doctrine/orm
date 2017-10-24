@@ -1663,14 +1663,8 @@ public function __construct(<params>)
                 $column[] = 'nullable=' .  var_export($fieldMapping['nullable'], true);
             }
 
-            $options = [];
-
-            if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
-                $options[] = '"unsigned"=true';
-            }
-
-            if ($options) {
-                $column[] = 'options={'.implode(',', $options).'}';
+            if (isset($fieldMapping['options']) && !empty($fieldMapping['options'])) {
+                $column[] = $this->generateFormattedOptionsString($fieldMapping['options']);
             }
 
             if (isset($fieldMapping['columnDefinition'])) {
@@ -1717,6 +1711,28 @@ public function __construct(<params>)
         $lines[] = $this->spaces . ' */';
 
         return implode("\n", $lines);
+    }
+    
+    /**
+     * @param array $optionsArray
+     *
+     * @return string
+     */
+    protected function generateFormattedOptionsString(array $optionsArray) 
+    {
+        $options  = [];
+        foreach ($optionsArray as $key => $value) {
+            if ($value) {
+                if ($key === 'unsigned') {
+                    $options[] = '"unsigned"=true';
+                } else {
+                    $options[] = '"' . $key . '"="' . $value . '"';
+                }
+            }
+        }
+        if ($options) {
+            return 'options={'.implode(',', $options).'}';
+        }
     }
 
     /**
