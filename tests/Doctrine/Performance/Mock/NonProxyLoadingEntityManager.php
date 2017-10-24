@@ -179,14 +179,6 @@ class NonProxyLoadingEntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function copy($entity, $deep = false)
-    {
-        return $this->realEntityManager->copy($entity, $deep);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function lock($entity, $lockMode, $lockVersion = null) : void
     {
         $this->realEntityManager->lock($entity, $lockMode, $lockVersion);

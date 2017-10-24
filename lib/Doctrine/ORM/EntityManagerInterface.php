@@ -184,18 +184,6 @@ interface EntityManagerInterface extends ObjectManager
     public function close();
 
     /**
-     * Creates a copy of the given entity. Can create a shallow or a deep copy.
-     *
-     * @param object  $entity The entity to copy.
-     * @param boolean $deep   FALSE for a shallow copy, TRUE for a deep copy.
-     *
-     * @return object The new entity.
-     *
-     * @throws \BadMethodCallException
-     */
-    public function copy($entity, $deep = false);
-
-    /**
      * Acquire a lock on the given entity.
      *
      * @param object   $entity
