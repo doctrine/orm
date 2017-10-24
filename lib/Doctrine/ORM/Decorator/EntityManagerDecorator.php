@@ -152,14 +152,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function copy($entity, $deep = false)
-    {
-        return $this->wrapped->copy($entity, $deep);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
         return $this->wrapped->lock($entity, $lockMode, $lockVersion);
