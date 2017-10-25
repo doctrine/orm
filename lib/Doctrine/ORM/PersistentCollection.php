@@ -160,18 +160,31 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $this->collection->add($element);
 
-        // If _backRefFieldName is set and its a one-to-many association,
-        // we need to set the back reference.
         if ($this->backRefFieldName && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
-            // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
-                $element, $this->owner
-            );
-
-            $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_hash($element), $this->backRefFieldName, $this->owner
-            );
+            $this->completeBidirectionalAssociationLink($element);
         }
+    }
+
+    /**
+     * Sets the owner on the inverse side of the association, when the property was not set yet
+     *
+     * @param mixed $element
+     */
+    private function completeBidirectionalAssociationLink($element) : void
+    {
+        $field = $this->typeClass->reflFields[$this->backRefFieldName];
+
+        if ($field->getValue($element) !== null) {
+            return;
+        }
+
+        $field->setValue($element, $this->owner);
+
+        $this->em->getUnitOfWork()->setOriginalEntityProperty(
+            spl_object_hash($element),
+            $this->backRefFieldName,
+            $this->owner
+        );
     }
 
     /**
@@ -187,13 +200,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $this->collection->set($key, $element);
 
-        // If _backRefFieldName is set, then the association is bidirectional
-        // and we need to set the back reference.
         if ($this->backRefFieldName && $this->association['type'] === ClassMetadata::ONE_TO_MANY) {
-            // Set back reference to owner
-            $this->typeClass->reflFields[$this->backRefFieldName]->setValue(
-                $element, $this->owner
-            );
+            $this->completeBidirectionalAssociationLink($element);
         }
     }
 
