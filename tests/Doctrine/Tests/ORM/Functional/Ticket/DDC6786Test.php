@@ -22,7 +22,6 @@ class DDC6786Test extends OrmFunctionalTestCase
                 ]
             );
         } catch(\Exception $e) {
-            $breakpoint = null;
         }
 
         $this->createFixtures();
@@ -42,7 +41,6 @@ class DDC6786Test extends OrmFunctionalTestCase
         /** @var EndpointServerConfig $endpointServerConfigUpdated */
         $endpointServerConfigUpdated = $endpointServerConfigRepo->find(1);
         $this->assertNull($endpointServerConfigUpdated->getServer());
-
     }
 
     public function testSettingEndpointServerConfigViaEndpoint()
@@ -94,9 +92,3 @@ class DDC6786Test extends OrmFunctionalTestCase
     }
 
 }
-
-
-
-
-
-

@@ -113,32 +113,6 @@ class Endpoint
     }
 
     /**
-     * @param string $type
-     *
-     * @return Endpoint
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     *
-     * @Groups({"export"})
-     */
-    public function getType()
-    {
-        return str_replace(
-            'Endpoint',
-            '',
-            (new ReflectionClass($this))->getShortName()
-        );
-    }
-
-    /**
      * @param string $serverPlace
      *
      * @return Endpoint
