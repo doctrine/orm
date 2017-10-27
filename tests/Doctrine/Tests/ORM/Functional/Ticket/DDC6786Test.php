@@ -22,7 +22,7 @@ class DDC6786Test extends OrmFunctionalTestCase
                 ]
             );
         } catch (\Exception $e) {
-
+            // nothing to do
         }
 
         $this->createFixtures();
