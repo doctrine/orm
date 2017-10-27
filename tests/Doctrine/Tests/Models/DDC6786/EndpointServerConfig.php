@@ -93,7 +93,7 @@ class EndpointServerConfig
     public function setServer(Server $server = null)
     {
 
-        if(! $server || ! $server->getName()) {
+        if( ! $server || ! $server->getName()) {
             $server = null;
         }
         $this->server = $server;

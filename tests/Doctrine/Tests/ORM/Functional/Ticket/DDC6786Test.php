@@ -21,7 +21,8 @@ class DDC6786Test extends OrmFunctionalTestCase
                     $this->_em->getClassMetadata(Endpoint::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
+
         }
 
         $this->createFixtures();
