@@ -190,6 +190,8 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Creates a copy of the given entity. Can create a shallow or a deep copy.
      *
+     * @deprecated method will be removed in 3.0
+     *
      * @param object  $entity The entity to copy.
      * @param boolean $deep   FALSE for a shallow copy, TRUE for a deep copy.
      *
