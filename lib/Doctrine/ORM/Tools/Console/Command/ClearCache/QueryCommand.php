@@ -19,12 +19,9 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\Common\Cache\ApcCache;
-use Doctrine\Common\Cache\XcacheCache;
 
 /**
  * Command to clear the query cache of the various cache drivers.
@@ -36,7 +33,7 @@ use Doctrine\Common\Cache\XcacheCache;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class QueryCommand extends Command
+class QueryCommand extends AbstractCommand
 {
     /**
      * {@inheritdoc}
@@ -87,12 +84,7 @@ EOT
             throw new \InvalidArgumentException('No Query cache driver is configured on given EntityManager.');
         }
 
-        if ($cacheDriver instanceof ApcCache) {
-            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
-        }
-        if ($cacheDriver instanceof XcacheCache) {
-            throw new \LogicException("Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
-        }
+        $this->checkCacheDriverType($cacheDriver);
 
         $output->write('Clearing ALL Query cache entries' . PHP_EOL);
 
