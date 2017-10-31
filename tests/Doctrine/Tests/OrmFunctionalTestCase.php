@@ -118,6 +118,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Company\CompanyCar::class,
             Models\Company\CompanyContract::class,
         ],
+        'detach' => [
+            Models\Detach\Member::class,
+            Models\Detach\Owner::class,
+        ],
         'ecommerce' => [
             Models\ECommerce\ECommerceCart::class,
             Models\ECommerce\ECommerceCustomer::class,
