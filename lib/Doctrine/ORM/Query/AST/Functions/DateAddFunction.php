@@ -51,7 +51,11 @@ class DateAddFunction extends FunctionNode
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
-
+            case 'minute':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMinutesExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
             case 'hour':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddHourExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
@@ -62,16 +66,25 @@ class DateAddFunction extends FunctionNode
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
-
+            case 'week':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddWeeksExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
             case 'month':
                 return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddMonthExpression(
+                    $this->firstDateExpression->dispatch($sqlWalker),
+                    $this->intervalExpression->dispatch($sqlWalker)
+                );
+            case 'year':
+                return $sqlWalker->getConnection()->getDatabasePlatform()->getDateAddYearsExpression(
                     $this->firstDateExpression->dispatch($sqlWalker),
                     $this->intervalExpression->dispatch($sqlWalker)
                 );
 
             default:
                 throw QueryException::semanticalError(
-                    'DATE_ADD() only supports units of type second, hour, day and month.'
+                    'DATE_ADD() only supports units of type second, minute, hour, day, week, month and year.'
                 );
         }
     }
