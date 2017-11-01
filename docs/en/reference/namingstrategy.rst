@@ -126,12 +126,12 @@ You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrateg
         }
         public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
         {
-            return strtolower($this->classToTableName($sourceEntity) . '_' .
+            return strtoupper($this->classToTableName($sourceEntity) . '_' .
                     $this->classToTableName($targetEntity));
         }
         public function joinKeyColumnName($entityName, $referencedColumnName = null)
         {
-            return strtolower($this->classToTableName($entityName) . '_' .
+            return strtoupper($this->classToTableName($entityName) . '_' .
                     ($referencedColumnName ?: $this->referenceColumnName()));
         }
     }
