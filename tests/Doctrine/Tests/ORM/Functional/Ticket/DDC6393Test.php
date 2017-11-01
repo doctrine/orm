@@ -8,16 +8,13 @@ class DDC6393Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        try {
-            $this->_schemaTool->createSchema(
-                    [
-                        $this->_em->getClassMetadata(A::class),
-                        $this->_em->getClassMetadata(B::class)
-                    ]
-            );
-        } catch (\Exception $e) {
-            
-        }
+
+        $this->_schemaTool->createSchema(
+            [
+                $this->_em->getClassMetadata(A::class),
+                $this->_em->getClassMetadata(B::class)
+            ]
+        );
     }
 
     /**
