@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManager\MissingMappingDriverImplementation;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
@@ -824,7 +825,7 @@ final class EntityManager implements EntityManagerInterface
     public static function create($connection, Configuration $config, ?EventManager $eventManager = null)
     {
         if (! $config->getMetadataDriverImpl()) {
-            throw ORMException::missingMappingDriverImpl();
+            throw MissingMappingDriverImplementation::create();
         }
 
         $connection = static::createConnection($connection, $config, $eventManager);

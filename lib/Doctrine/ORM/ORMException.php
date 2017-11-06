@@ -16,15 +16,6 @@ use function sprintf;
 class ORMException extends Exception
 {
     /**
-     * @return ORMException
-     */
-    public static function missingMappingDriverImpl()
-    {
-        return new self("It's a requirement to specify a Metadata Driver and pass it " .
-            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().');
-    }
-
-    /**
      * @param string $field
      *
      * @return ORMException
