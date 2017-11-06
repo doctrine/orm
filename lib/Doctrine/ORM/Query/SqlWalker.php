@@ -897,15 +897,17 @@ class SqlWalker implements TreeWalker
             $this->query->getHint(Query::HINT_LOCK_MODE)
         );
 
-        if ($class->isInheritanceTypeJoined()) {
-            if ($buildNestedJoins) {
-                $sql = '(' . $sql . $this->_generateClassTableInheritanceJoins($class, $dqlAlias) . ')';
-            } else {
-                $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
-            }
+        if ( ! $class->isInheritanceTypeJoined()) {
+            return $sql;
         }
 
-        return $sql;
+        $classTableInheritanceJoins = $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+
+        if ( ! $buildNestedJoins) {
+            return $sql . $classTableInheritanceJoins;
+        }
+
+        return $classTableInheritanceJoins === '' ? $sql : '(' . $sql . $classTableInheritanceJoins . ')';
     }
 
     /**
