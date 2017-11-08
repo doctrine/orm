@@ -184,6 +184,7 @@ class YamlDriver extends FileDriver
                             'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
                             'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
                             'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
+                            'fieldName' => isset($discrColumnAnnot['fieldName']) ? (string) $discrColumn['fieldName'] : null,
                             'columnDefinition' => isset($discrColumn['columnDefinition']) ? (string) $discrColumn['columnDefinition'] : null
                         ]
                     );

@@ -175,6 +175,7 @@ class XmlDriver extends FileDriver
                             'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
                             'type' => isset($discrColumn['type']) ? (string) $discrColumn['type'] : 'string',
                             'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
+                            'fieldName' => isset($discrColumnAnnot['field-name']) ? (string) $discrColumn['field-name'] : null,
                             'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null
                         ]
                     );
