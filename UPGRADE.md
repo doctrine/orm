@@ -37,6 +37,11 @@ As a consequence, automatic cache setup in Doctrine\ORM\Tools\Setup::create*Conf
 - Memcached extension (ext-memcached) will be used instead of obsolete Memcache (ext-memcache).
 - XCache support was dropped as it doesn't work with PHP 7.
 
+## Deprecated: `Doctrine\ORM\EntityManagerInterface#copy()`
+
+Method `Doctrine\ORM\EntityManagerInterface#copy()` never got its implementation and is deprecated.
+It will be removed in 3.0.
+
 # Upgrade to 2.5
 
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`
