@@ -69,18 +69,8 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $fromRoot  = reset($from);
         $rootAlias = $fromRoot->rangeVariableDeclaration->aliasIdentificationVariable;
         $rootClass = $queryComponents[$rootAlias]['metadata'];
-        $selectExpressions = [];
 
         $this->validate($AST);
-
-        foreach ($queryComponents as $dqlAlias => $qComp) {
-            // Preserve mixed data in query for ordering.
-            if (isset($qComp['resultVariable'])) {
-                $selectExpressions[] = new SelectExpression($qComp['resultVariable'], $dqlAlias);
-                continue;
-            }
-        }
-
         $identifier = $rootClass->getSingleIdentifierFieldName();
 
         if (isset($rootClass->associationMappings[$identifier])) {
@@ -100,20 +90,25 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
-        array_unshift($selectExpressions, new SelectExpression($pathExpression, '_dctrn_id'));
-
-        $AST->selectClause->selectExpressions = $selectExpressions;
+        $AST->selectClause->selectExpressions = array(new SelectExpression($pathExpression, '_dctrn_id'));
 
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
                 if ( ! $item->expression instanceof PathExpression) {
-                    continue;
+                    if(isset($queryComponents[$item->expression])) {
+                        $qComp = $queryComponents[$item->expression];
+                        if (isset($qComp['resultVariable'])) {
+                            $AST->selectClause->selectExpressions[] = new SelectExpression($qComp['resultVariable'], $item->expression);
+                        }
+                    }
+                } else {
+
+                    $AST->selectClause->selectExpressions[] = new SelectExpression(
+                        $this->createSelectExpressionItem($item->expression),
+                        '_dctrn_ord' . $this->_aliasCounter++
+                    );
                 }
 
-                $AST->selectClause->selectExpressions[] = new SelectExpression(
-                    $this->createSelectExpressionItem($item->expression),
-                    '_dctrn_ord' . $this->_aliasCounter++
-                );
             }
         }
 
