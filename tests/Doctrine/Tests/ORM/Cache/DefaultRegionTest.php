@@ -27,7 +27,7 @@ class DefaultRegionTest extends AbstractRegionTest
 
     public function testSharedRegion()
     {
-        if ( ! extension_loaded('apc') || false === @apc_cache_info()) {
+        if ( ! extension_loaded('apc') || ! is_array(@apc_cache_info("user"))) {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of APC');
         }
 
