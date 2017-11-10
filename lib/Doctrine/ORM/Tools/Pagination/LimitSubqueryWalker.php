@@ -95,7 +95,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         if (isset($AST->orderByClause)) {
             foreach ($AST->orderByClause->orderByItems as $item) {
                 if ( ! $item->expression instanceof PathExpression) {
-                    if(isset($queryComponents[$item->expression])) {
+                    if(is_string($item->expression) && isset($queryComponents[$item->expression])) {
                         $qComp = $queryComponents[$item->expression];
                         if (isset($qComp['resultVariable'])) {
                             $AST->selectClause->selectExpressions[] = new SelectExpression($qComp['resultVariable'], $item->expression);

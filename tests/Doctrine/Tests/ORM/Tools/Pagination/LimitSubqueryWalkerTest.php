@@ -38,6 +38,21 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testLimitSubqueryWithSortFunction()
+    {
+        $dql        = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c GROUP BY p.id ORDER BY COUNT(c.id)';
+        $query      = $this->entityManager->createQuery($dql);
+        $limitQuery = clone $query;
+
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $this->assertEquals(
+            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY COUNT(c1_.id) ASC",
+            $limitQuery->getSQL()
+        );
+    }
+
+
     public function testCountQuery_MixedResultsWithName()
     {
         $dql        = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a';
