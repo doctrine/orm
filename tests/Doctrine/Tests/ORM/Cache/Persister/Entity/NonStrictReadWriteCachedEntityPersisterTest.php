@@ -28,7 +28,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     {
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -50,7 +50,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
         $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -87,7 +87,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
         $entry     = new EntityCacheEntry(Country::CLASSNAME, array('id'=>1, 'name'=>'Foo'));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
@@ -115,7 +115,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $entity    = new Country("Foo");
         $persister = $this->createPersisterDefault();
         $key       = new EntityCacheKey(Country::CLASSNAME, array('id'=>1));
-        $property  = new \ReflectionProperty('Doctrine\ORM\Cache\Persister\Entity\ReadWriteCachedEntityPersister', 'queuedCache');
+        $property  = new \ReflectionProperty($persister, 'queuedCache');
 
         $property->setAccessible(true);
 
