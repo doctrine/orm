@@ -129,6 +129,7 @@ class QueryCacheTest extends \Doctrine\Tests\OrmFunctionalTestCase
                     ->will($this->returnValue( 10 ));
 
         $parserResultMock = $this->getMock('Doctrine\ORM\Query\ParserResult');
+        $parserResultMock->method('getParameterMappings')->willReturn(array());
         $parserResultMock->expects($this->once())
                          ->method('getSqlExecutor')
                          ->will($this->returnValue($sqlExecMock));
