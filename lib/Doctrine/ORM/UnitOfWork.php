@@ -622,6 +622,7 @@ class UnitOfWork implements PropertyChangedListener
             if ($class->isCollectionValuedAssociation($name) && $value !== null) {
                 if ($value instanceof PersistentCollection) {
                     if ($value->getOwner() === $entity) {
+                        $actualData[$name] = $value;
                         continue;
                     }
 
