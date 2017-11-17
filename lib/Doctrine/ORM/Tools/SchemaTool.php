@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use Doctrine\ORM\Tools\NotSupported;
 use function array_diff;
 use function array_key_exists;
 use function array_keys;
@@ -233,7 +234,7 @@ class SchemaTool
                     break;
 
                 case InheritanceType::TABLE_PER_CLASS:
-                    throw ORMException::notSupported();
+                    throw NotSupported::create();
 
                 default:
                     $this->gatherColumns($class, $table);
@@ -546,7 +547,7 @@ class SchemaTool
 
                 case ($property instanceof OneToManyAssociationMetadata):
                     //... create join table, one-many through join table supported later
-                    throw ORMException::notSupported();
+                    throw NotSupported::create();
 
                 case ($property instanceof ManyToManyAssociationMetadata):
                     // create join table
