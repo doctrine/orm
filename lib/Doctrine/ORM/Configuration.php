@@ -12,6 +12,7 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Configuration\InvalidEntityRepository;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -448,7 +449,7 @@ class Configuration extends DBALConfiguration
         $reflectionClass = new \ReflectionClass($repositoryClassName);
 
         if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
-            throw ORMException::invalidEntityRepository($repositoryClassName);
+            throw InvalidEntityRepository::fromClassName($repositoryClassName);
         }
 
         $this->defaultRepositoryClassName = $repositoryClassName;
