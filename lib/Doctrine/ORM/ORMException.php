@@ -124,11 +124,15 @@ class ORMException extends Exception
     }
 
     /**
+     * @param string $entityNamespaceAlias
+     *
      * @return ORMException
      */
-    public static function proxyClassesAlwaysRegenerating()
+    public static function unknownEntityNamespace($entityNamespaceAlias)
     {
-        return new self('Proxy Classes are always regenerating.');
+        return new self(
+            "Unknown Entity namespace alias '$entityNamespaceAlias'."
+        );
     }
 
     /**

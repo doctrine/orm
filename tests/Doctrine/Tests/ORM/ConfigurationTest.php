@@ -10,6 +10,7 @@ use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
@@ -167,7 +168,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->setProductionSettings();
         $this->configuration->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_EVAL);
 
-        $this->expectException(ORMException::class);
+        $this->expectException(ProxyClassesAlwaysRegenerating::class);
         $this->expectExceptionMessage('Proxy Classes are always regenerating.');
 
         $this->configuration->ensureProductionSettings();

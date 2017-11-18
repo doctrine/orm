@@ -12,6 +12,7 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
@@ -247,7 +248,7 @@ class Configuration extends DBALConfiguration
         }
 
         if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {
-            throw ORMException::proxyClassesAlwaysRegenerating();
+            throw ProxyClassesAlwaysRegenerating::create();
         }
     }
 
