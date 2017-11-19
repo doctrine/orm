@@ -5,23 +5,23 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
-class GH6829Test extends OrmFunctionalTestCase
+class GH6831Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
         $this->_schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH6829Contact::class),
-                $this->_em->getClassMetadata(GH6829Source::class)
+                $this->_em->getClassMetadata(GH6831Contact::class),
+                $this->_em->getClassMetadata(GH6831Source::class)
             ]
         );
 
-        $source = new GH6829Source();
+        $source = new GH6831Source();
         $source->id = 'cck';
         $this->_em->persist($source);
 
-        $contact = new GH6829Contact();
+        $contact = new GH6831Contact();
         $contact->sources = new ArrayCollection([$source]);
         $contact->name = 'name 1';
         $this->_em->persist($contact);
@@ -32,22 +32,23 @@ class GH6829Test extends OrmFunctionalTestCase
 
     public function testCollectionUpdate()
     {
-        $contact = $this->_em->getRepository(GH6829Contact::class)->findOneBy([]);
+        $contact = $this->_em->getRepository(GH6831Contact::class)->findOneBy([]);
         $contact->name = 'name 2';
         $this->_em->flush();
 
         $sources = $contact->sources->toArray();
         $contact->sources = new ArrayCollection($sources);
         $this->_em->flush();
+        $this->_em->refresh($contact);
 
-        $this->assertSame(true, true);
+        $this->assertCount(1, $contact->sources);
     }
 }
 
 /**
  * @Entity
  */
-class GH6829Contact
+class GH6831Contact
 {
     /**
      * @Id
@@ -62,7 +63,7 @@ class GH6829Contact
     public $name;
 
     /**
-     * @ManyToMany(targetEntity="GH6829Source")
+     * @ManyToMany(targetEntity="GH6831Source")
      */
     public $sources;
 
@@ -75,7 +76,7 @@ class GH6829Contact
 /**
  * @Entity
  */
-class GH6829Source
+class GH6831Source
 {
     /**
      * @Id
