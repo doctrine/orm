@@ -41,8 +41,6 @@ class DefaultQuoteStrategy implements QuoteStrategy
 
     /**
      * {@inheritdoc}
-     *
-     * @todo Table names should be computed in DBAL depending on the platform
      */
     public function getTableName(ClassMetadata $class, AbstractPlatform $platform)
     {
@@ -56,9 +54,13 @@ class DefaultQuoteStrategy implements QuoteStrategy
             }
         }
 
-        return isset($class->table['quoted'])
-            ? $platform->quoteIdentifier($tableName)
-            : $tableName;
+        $keywords = $platform->getReservedKeywordsList();
+        $parts = explode(".", $tableName);
+        foreach ($parts as $k => $v) {
+            $parts[$k] = (isset($class->table['quoted']) || $keywords->isKeyword($v)) ? $platform->quoteIdentifier($v) : $v;
+        }
+
+        return implode(".", $parts);
     }
 
     /**

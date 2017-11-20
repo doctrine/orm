@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
+use Doctrine\Tests\TestUtil;
 
 /**
  * This class makes tests on the correct use of a database schema when entities are stored
@@ -60,6 +61,37 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     }
 
     /**
+     * @dataProvider getTestedClassesWithImplicitlyDefinedSchemaAndTableName
+     *
+     * @param string $className
+     * @param string $expectedSchemaName
+     * @param string $expectedTableName
+     * @param string $expectedQuotedTableName
+     */
+    public function testClassSchemaMappingsValidityWithImplicitlyDefinedSchemaAndQuotedTableName(
+        $className,
+        $expectedSchemaName,
+        $expectedTableName,
+        $expectedQuotedTableName
+    ) {
+        $classMetadata   = $this->_em->getClassMetadata($className);
+        $platform        = $this->_em->getConnection()->getDatabasePlatform();
+        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
+
+        // Check if table name and schema properties are defined in the class metadata
+        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
+        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
+
+        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
+            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedQuotedTableName);
+        } else {
+            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
+        }
+
+        $this->assertEquals($fullTableName, $quotedTableName);
+    }
+    
+    /**
      * @dataProvider getTestedClasses
      *
      * @param string $className
@@ -89,7 +121,18 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
         return [
             [ExplicitSchemaAndTable::class, 'explicit_schema', 'explicit_table'],
             [SchemaAndTableInTableName::class, 'implicit_schema', 'implicit_table'],
-            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order'],
+        ];
+    }
+
+    public function getTestedClassesWithImplicitlyDefinedSchemaAndTableName()
+    {
+        $connection = TestUtil::getConnection();
+        $platform = $connection->getDatabasePlatform();
+
+        $expectedQuotedTableName = 'postgresql' === $platform->getName() ? '"order"' : 'order';
+
+        return [
+            [DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName::class, 'myschema', 'order', $expectedQuotedTableName],
         ];
     }
 }

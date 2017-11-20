@@ -151,4 +151,12 @@ class DatabasePlatformMock extends AbstractPlatform
     {
         throw DBALException::notSupported(__METHOD__);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getReservedKeywordsClass()
+    {
+        return KeywordListMock::class;
+    }
 }
