@@ -73,14 +73,14 @@ class StatementMock implements \IteratorAggregate, \Doctrine\DBAL\Driver\Stateme
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null)
+    public function fetch($fetchStyle = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchAll($fetchStyle = null)
+    public function fetchAll($fetchStyle = null, $fetchArgument = null, $ctorArgs = null)
     {
     }
 

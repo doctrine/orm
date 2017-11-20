@@ -34,7 +34,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
      *
      * @return array
      */
-    public function fetchAll($fetchStyle = null, $columnIndex = null, array $ctorArgs = null)
+    public function fetchAll($fetchStyle = null, $columnIndex = null, $ctorArgs = null)
     {
         return $this->_resultSet;
     }
@@ -53,7 +53,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null)
+    public function fetch($fetchStyle = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
         $current = current($this->_resultSet);
         next($this->_resultSet);

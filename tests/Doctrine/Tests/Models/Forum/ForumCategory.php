@@ -9,7 +9,7 @@ namespace Doctrine\Tests\Models\Forum;
 class ForumCategory
 {
     /**
-     * @Column(type="integer")
+     * @Column(type="guid", options={"fixed":true, "collation":"latin1_bin", "foo":"bar"})
      * @Id
      */
     private $id;

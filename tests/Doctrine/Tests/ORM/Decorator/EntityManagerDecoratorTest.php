@@ -54,13 +54,18 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
+        $returnedValue = null;
+
         $stub = $this->wrapped
             ->expects($this->once())
             ->method($method)
-            ->will($this->returnValue('INNER VALUE FROM ' . $method));
+            ->willReturnCallback(function () use ($method, &$returnedValue) {
+                $returnedValue = 'INNER VALUE FROM '.$method;
+            });
 
         call_user_func_array(array($stub, 'with'), $parameters);
+        call_user_func_array(array($this->decorator, $method), $parameters);
 
-        $this->assertSame('INNER VALUE FROM ' . $method, call_user_func_array(array($this->decorator, $method), $parameters));
+        $this->assertSame('INNER VALUE FROM ' . $method, $returnedValue);
     }
 }
