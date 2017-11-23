@@ -78,6 +78,11 @@ jobs:
       before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
       script: php phpbench.phar run -l dots --report=default
 
+    - stage: Coding standard
+      php: nightly
+      script:
+        - ./vendor/bin/phpcs
+
   allow_failures:
     - php: nightly
 

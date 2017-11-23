@@ -28,7 +28,9 @@
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
+        "doctrine/coding-standard": "^1.0",
         "phpunit/phpunit": "^6.0",
+        "squizlabs/php_codesniffer": "^3.1",
         "symfony/yaml": "~3.4|~4.0"
     },
     "autoload": {
