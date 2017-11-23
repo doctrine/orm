@@ -13,20 +13,23 @@
         {"name": "Marco Pivetta", "email": "ocramius@gmail.com"}
     ],
     "minimum-stability": "dev",
+    "config": {
+        "sort-packages": true
+    },
     "require": {
         "php": "^7.1",
         "ext-pdo": "*",
+        "doctrine/annotations": "~1.4",
+        "doctrine/cache": "~1.6",
         "doctrine/collections": "^1.4",
+        "doctrine/common": "^2.7.1",
         "doctrine/dbal": "^2.6",
         "doctrine/instantiator": "~1.1",
-        "doctrine/common": "^2.7.1",
-        "doctrine/cache": "~1.6",
-        "doctrine/annotations": "~1.4",
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
-        "symfony/yaml": "~3.4|~4.0",
-        "phpunit/phpunit": "^6.0"
+        "phpunit/phpunit": "^6.0",
+        "symfony/yaml": "~3.4|~4.0"
     },
     "suggest": {
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
