@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
@@ -59,6 +60,8 @@ class RunDqlCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         /* @var $em \Doctrine\ORM\EntityManagerInterface */
         $em = $this->getHelper('em')->getEntityManager();
 
@@ -100,12 +103,12 @@ class RunDqlCommand extends Command
         }
 
         if ($input->getOption('show-sql')) {
-            $output->writeln(Debug::dump($query->getSQL(), 2, true, false));
+            $ui->text($query->getSQL());
             return;
         }
 
         $resultSet = $query->execute([], constant($hydrationMode));
 
-        $output->writeln(Debug::dump($resultSet, $input->getOption('depth'), true, false));
+        $ui->text(Debug::dump($resultSet, $input->getOption('depth'), true, false));
     }
 }

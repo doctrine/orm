@@ -25,6 +25,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to clear the result cache of the various cache drivers.
@@ -71,6 +72,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
         $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
@@ -86,7 +89,7 @@ EOT
             throw new \LogicException("Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
         }
 
-        $output->writeln('Clearing ALL Result cache entries');
+        $ui->comment('Clearing <info>all</info> Result cache entries');
 
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
@@ -96,6 +99,14 @@ EOT
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
 
-        $output->writeln($message);
+        if ( ! $result) {
+            $ui->error($message);
+
+            return 1;
+        }
+
+        $ui->success($message);
+
+        return 0;
     }
 }

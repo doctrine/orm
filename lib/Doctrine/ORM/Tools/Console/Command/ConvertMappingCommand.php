@@ -29,6 +29,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to convert your mapping information between the various formats.
@@ -89,6 +90,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
 
         if ($input->getOption('from-database') === true) {
@@ -144,20 +147,26 @@ EOT
             }
         }
 
-        if (count($metadata)) {
-            foreach ($metadata as $class) {
-                $output->writeln(sprintf('Processing entity "<info>%s</info>"', $class->name));
-            }
-
-            $exporter->setMetadata($metadata);
-            $exporter->export();
-
-            $output->writeln(PHP_EOL . sprintf(
-                'Exporting "<info>%s</info>" mapping information to "<info>%s</info>"', $toType, $destPath
-            ));
-        } else {
-            $output->writeln('No Metadata Classes to process.');
+        if (empty($metadata)) {
+            $ui->success('No Metadata Classes to process.');
+            return;
         }
+
+        foreach ($metadata as $class) {
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $class->name));
+        }
+
+        $exporter->setMetadata($metadata);
+        $exporter->export();
+
+        $ui->newLine();
+        $ui->text(
+            sprintf(
+                'Exporting "<info>%s</info>" mapping information to "<info>%s</info>"',
+                $toType,
+                $destPath
+            )
+        );
     }
 
     /**

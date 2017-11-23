@@ -23,6 +23,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to create the database schema for a set of classes based on their mappings.
@@ -59,18 +60,30 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
+    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {
-        if ($input->getOption('dump-sql')) {
-            $sqls = $schemaTool->getCreateSchemaSql($metadatas);
-            $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
-        } else {
-            $output->writeln('ATTENTION: This operation should not be executed in a production environment.' . PHP_EOL);
+        $dumpSql = true === $input->getOption('dump-sql');
 
-            $output->writeln('Creating database schema...');
-            $schemaTool->createSchema($metadatas);
-            $output->writeln('Database schema created successfully!');
+        if ($dumpSql) {
+            $sqls = $schemaTool->getCreateSchemaSql($metadatas);
+            $ui->text('The following SQL statements will be executed:');
+            $ui->newLine();
+
+            foreach ($sqls as $sql) {
+                $ui->text(sprintf('    %s;', $sql));
+            }
+
+            return 0;
         }
+
+        $ui->caution('This operation should not be executed in a production environment!');
+
+        $ui->text('Creating database schema...');
+        $ui->newLine();
+
+        $schemaTool->createSchema($metadatas);
+
+        $ui->success('Database schema created successfully!');
 
         return 0;
     }

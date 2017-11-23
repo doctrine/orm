@@ -26,6 +26,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to generate repository classes for mapping information.
@@ -57,6 +58,8 @@ class GenerateRepositoriesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
@@ -79,32 +82,33 @@ class GenerateRepositoriesCommand extends Command
             );
         }
 
-        if (count($metadatas)) {
-            $numRepositories = 0;
-            $generator = new EntityRepositoryGenerator();
-
-            $generator->setDefaultRepositoryName($repositoryName);
-
-            foreach ($metadatas as $metadata) {
-                if ($metadata->customRepositoryClassName) {
-                    $output->writeln(
-                        sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName)
-                    );
-
-                    $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
-
-                    $numRepositories++;
-                }
-            }
-
-            if ($numRepositories) {
-                // Outputting information message
-                $output->writeln(PHP_EOL . sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath));
-            } else {
-                $output->writeln('No Repository classes were found to be processed.');
-            }
-        } else {
-            $output->writeln('No Metadata Classes to process.');
+        if (empty($metadatas)) {
+            $ui->success('No Metadata Classes to process.');
+            return;
         }
+
+        $numRepositories = 0;
+        $generator       = new EntityRepositoryGenerator();
+
+        $generator->setDefaultRepositoryName($repositoryName);
+
+        foreach ($metadatas as $metadata) {
+            if ($metadata->customRepositoryClassName) {
+                $ui->text(sprintf('Processing repository "<info>%s</info>"', $metadata->customRepositoryClassName));
+
+                $generator->writeEntityRepositoryClass($metadata->customRepositoryClassName, $destPath);
+
+                ++$numRepositories;
+            }
+        }
+
+        if ($numRepositories === 0) {
+            $ui->text('No Repository classes were found to be processed.');
+            return;
+        }
+
+        // Outputting information message
+        $ui->newLine();
+        $ui->text(sprintf('Repository classes generated to "<info>%s</INFO>"', $destPath));
     }
 }

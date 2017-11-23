@@ -22,10 +22,10 @@ namespace Doctrine\ORM\Tools\Console\Command;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Show information about mapped entities.
@@ -61,10 +61,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         /* @var $entityManager \Doctrine\ORM\EntityManagerInterface */
         $entityManager = $this->getHelper('em')->getEntityManager();
 
-        $this->displayEntity($input->getArgument('entityName'), $entityManager, $output);
+        $this->displayEntity($input->getArgument('entityName'), $entityManager, $ui);
 
         return 0;
     }
@@ -74,18 +76,14 @@ EOT
      *
      * @param string                 $entityName    Full or partial entity class name
      * @param EntityManagerInterface $entityManager
-     * @param OutputInterface        $output
+     * @param SymfonyStyle           $ui
      */
-    private function displayEntity($entityName, EntityManagerInterface $entityManager, OutputInterface $output)
+    private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $ui)
     {
-        $table = new Table($output);
-
-        $table->setHeaders(['Field', 'Value']);
-
         $metadata = $this->getClassMetadata($entityName, $entityManager);
 
-        array_map(
-            [$table, 'addRow'],
+        $ui->table(
+            ['Field', 'Value'],
             array_merge(
                 [
                     $this->formatField('Name', $metadata->name),
@@ -124,8 +122,6 @@ EOT
                 $this->formatMappings($metadata->fieldMappings)
             )
         );
-
-        $table->render();
     }
 
     /**

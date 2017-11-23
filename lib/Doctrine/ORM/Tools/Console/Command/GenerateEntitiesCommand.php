@@ -27,6 +27,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.
@@ -85,6 +86,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
 
         $cmf = new DisconnectedClassMetadataFactory();
@@ -107,33 +110,33 @@ EOT
             );
         }
 
-        if (count($metadatas)) {
-            $entityGenerator = new EntityGenerator();
-
-            $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
-            $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
-            $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
-            $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-            $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
-            $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
-
-            if (($extend = $input->getOption('extend')) !== null) {
-                $entityGenerator->setClassToExtend($extend);
-            }
-
-            foreach ($metadatas as $metadata) {
-                $output->writeln(
-                    sprintf('Processing entity "<info>%s</info>"', $metadata->name)
-                );
-            }
-
-            // Generating Entities
-            $entityGenerator->generate($metadatas, $destPath);
-
-            // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Entity classes generated to "<info>%s</INFO>"', $destPath));
-        } else {
-            $output->writeln('No Metadata Classes to process.');
+        if (empty($metadatas)) {
+            $ui->success('No Metadata Classes to process.');
+            return;
         }
+
+        $entityGenerator = new EntityGenerator();
+
+        $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
+        $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
+        $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
+        $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
+        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+        $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
+
+        if (($extend = $input->getOption('extend')) !== null) {
+            $entityGenerator->setClassToExtend($extend);
+        }
+
+        foreach ($metadatas as $metadata) {
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $metadata->name));
+        }
+
+        // Generating Entities
+        $entityGenerator->generate($metadatas, $destPath);
+
+        // Outputting information message
+        $ui->newLine();
+        $ui->success(sprintf('Entity classes generated to "%s"', $destPath));
     }
 }

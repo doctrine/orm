@@ -26,6 +26,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to clear a query cache region.
@@ -77,6 +78,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em    = $this->getHelper('em')->getEntityManager();
         $name  = $input->getArgument('region-name');
         $cache = $em->getCache();
@@ -102,20 +105,25 @@ EOT
 
             $queryRegion->getCache()->flushAll();
 
-            $output->writeln(sprintf('Flushing cache provider configured for second-level cache query region named <info>"%s"</info>', $name));
+            $ui->comment(
+                sprintf(
+                    'Flushing cache provider configured for second-level cache query region named <info>"%s"</info>',
+                    $name
+                )
+            );
 
             return;
         }
 
         if ($input->getOption('all')) {
-            $output->writeln('Clearing <info>all</info> second-level cache query regions');
+            $ui->comment('Clearing <info>all</info> second-level cache query regions');
 
             $cache->evictQueryRegions();
 
             return;
         }
 
-        $output->writeln(sprintf('Clearing second-level cache query region named <info>"%s"</info>', $name));
+        $ui->comment(sprintf('Clearing second-level cache query region named <info>"%s"</info>', $name));
         $cache->evictQueryRegion($name);
     }
 }

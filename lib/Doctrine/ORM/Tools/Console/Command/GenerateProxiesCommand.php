@@ -26,6 +26,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
@@ -57,6 +58,8 @@ class GenerateProxiesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         /** @var EntityManagerInterface $em */
         $em = $this->getHelper('em')->getEntityManager();
 
@@ -86,20 +89,20 @@ class GenerateProxiesCommand extends Command
             );
         }
 
-        if ( count($metadatas)) {
-            foreach ($metadatas as $metadata) {
-                $output->writeln(
-                    sprintf('Processing entity "<info>%s</info>"', $metadata->name)
-                );
-            }
-
-            // Generating Proxies
-            $em->getProxyFactory()->generateProxyClasses($metadatas, $destPath);
-
-            // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath));
-        } else {
-            $output->writeln('No Metadata Classes to process.');
+        if (empty($metadatas)) {
+            $ui->success('No Metadata Classes to process.');
+            return;
         }
+
+        foreach ($metadatas as $metadata) {
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $metadata->name));
+        }
+
+        // Generating Proxies
+        $em->getProxyFactory()->generateProxyClasses($metadatas, $destPath);
+
+        // Outputting information message
+        $ui->newLine();
+        $ui->text(sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath));
     }
 }

@@ -23,6 +23,7 @@ use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
@@ -62,23 +63,31 @@ EOT
     /**
      * {@inheritdoc}
      */
-    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas)
+    protected function executeSchemaCommand(InputInterface $input, OutputInterface $output, SchemaTool $schemaTool, array $metadatas, SymfonyStyle $ui)
     {
         $isFullDatabaseDrop = $input->getOption('full-database');
+        $dumpSql = true === $input->getOption('dump-sql');
+        $force   = true === $input->getOption('force');
 
-        if ($input->getOption('dump-sql')) {
+        if ($dumpSql) {
             if ($isFullDatabaseDrop) {
                 $sqls = $schemaTool->getDropDatabaseSQL();
             } else {
                 $sqls = $schemaTool->getDropSchemaSQL($metadatas);
             }
-            $output->writeln(implode(';' . PHP_EOL, $sqls));
+            $ui->text('The following SQL statements will be executed:');
+            $ui->newLine();
+
+            foreach ($sqls as $sql) {
+                $ui->text(sprintf('    %s;', $sql));
+            }
 
             return 0;
         }
 
-        if ($input->getOption('force')) {
-            $output->writeln('Dropping database schema...');
+        if ($force) {
+            $ui->text('Dropping database schema...');
+            $ui->newLine();
 
             if ($isFullDatabaseDrop) {
                 $schemaTool->dropDatabase();
@@ -86,12 +95,12 @@ EOT
                 $schemaTool->dropSchema($metadatas);
             }
 
-            $output->writeln('Database schema dropped successfully!');
+            $ui->success('Database schema dropped successfully!');
 
             return 0;
         }
 
-        $output->writeln('<comment>ATTENTION</comment>: This operation should not be executed in a production environment.' . PHP_EOL);
+        $ui->caution('This operation should not be executed in a production environment!');
 
         if ($isFullDatabaseDrop) {
             $sqls = $schemaTool->getDropDatabaseSQL();
@@ -99,18 +108,23 @@ EOT
             $sqls = $schemaTool->getDropSchemaSQL($metadatas);
         }
 
-        if (count($sqls)) {
-            $output->writeln(sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)));
-            $output->writeln('Please run the operation by passing one - or both - of the following options:');
+        if (empty($sqls)) {
+            $ui->success('Nothing to drop. The database is empty!');
 
-            $output->writeln(sprintf('    <info>%s --force</info> to execute the command', $this->getName()));
-            $output->writeln(sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()));
-
-            return 1;
+            return 0;
         }
 
-        $output->writeln('Nothing to drop. The database is empty!');
+        $ui->text(
+            [
+                sprintf('The Schema-Tool would execute <info>"%s"</info> queries to update the database.', count($sqls)),
+                '',
+                'Please run the operation by passing one - or both - of the following options:',
+                '',
+                sprintf('    <info>%s --force</info> to execute the command', $this->getName()),
+                sprintf('    <info>%s --dump-sql</info> to dump the SQL statements to the screen', $this->getName()),
+            ]
+        );
 
-        return 0;
+        return 1;
     }
 }
