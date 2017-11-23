@@ -22,6 +22,8 @@
         <var name="tmpdb_username" value="postgres" />
         <var name="tmpdb_password" value="" />
         <var name="tmpdb_port" value="5432"/>
+
+        <env name="COLUMNS" value="120"/>
     </php>
 
     <testsuites>

@@ -8,6 +8,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
 
 /**
@@ -39,6 +40,8 @@ class EnsureProductionSettingsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
 
         try {
@@ -48,11 +51,13 @@ class EnsureProductionSettingsCommand extends Command
                 $em->getConnection()->connect();
             }
         } catch (Throwable $e) {
-            $output->writeln('<error>' . $e->getMessage() . '</error>');
+            $ui->error($e->getMessage());
 
             return 1;
         }
 
-        $output->writeln('<info>Environment is correctly configured for production.</info>');
+        $ui->success('Environment is correctly configured for production.');
+
+        return 0;
     }
 }
