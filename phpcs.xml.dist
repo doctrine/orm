@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ruleset>
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="80"/>
+    <arg name="cache" value=".phpcs-cache"/>
+    <arg name="colors" />
+
+    <!-- Ignore warnings and show progress of the run -->
+    <arg value="np"/>
+
+    <file>lib</file>
+    <file>tests</file>
+    <file>tools</file>
+
+    <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
+
+    <rule ref="Doctrine" />
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+</ruleset>
+
