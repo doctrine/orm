@@ -20,8 +20,8 @@
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -43,21 +43,10 @@ class EnsureProductionSettingsCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:ensure-production-settings')
-        ->setDescription('Verify that Doctrine is properly configured for a production environment.')
-        ->setDefinition(
-            [
-                new InputOption(
-                    'complete', null, InputOption::VALUE_NONE,
-                    'Flag to also inspect database connection existence.'
-                )
-            ]
-        )
-        ->setHelp(<<<EOT
-Verify that Doctrine is properly configured for a production environment.
-EOT
-        );
+        $this->setName('orm:ensure-production-settings')
+             ->setDescription('Verify that Doctrine is properly configured for a production environment')
+             ->addOption('complete', null, InputOption::VALUE_NONE, 'Flag to also inspect database connection existence.')
+             ->setHelp('Verify that Doctrine is properly configured for a production environment.');
     }
 
     /**

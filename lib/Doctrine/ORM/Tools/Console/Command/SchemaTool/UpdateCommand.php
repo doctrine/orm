@@ -19,10 +19,10 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to generate the SQL needed to update the database schema to match
@@ -48,30 +48,12 @@ class UpdateCommand extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-        ->setName($this->name)
-        ->setDescription(
-            'Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata.'
-        )
-        ->setDefinition(
-            [
-                new InputOption(
-                    'complete', null, InputOption::VALUE_NONE,
-                    'If defined, all assets of the database which are not relevant to the current metadata will be dropped.'
-                ),
-
-                new InputOption(
-                    'dump-sql', null, InputOption::VALUE_NONE,
-                    'Dumps the generated SQL statements to the screen (does not execute them).'
-                ),
-                new InputOption(
-                    'force', 'f', InputOption::VALUE_NONE,
-                    'Causes the generated SQL statements to be physically executed against your database.'
-                ),
-            ]
-        );
-
-        $this->setHelp(<<<EOT
+        $this->setName($this->name)
+             ->setDescription('Executes (or dumps) the SQL needed to update the database schema to match the current mapping metadata')
+             ->addOption('complete', null, InputOption::VALUE_NONE, 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.')
+             ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Dumps the generated SQL statements to the screen (does not execute them).')
+             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Causes the generated SQL statements to be physically executed against your database.')
+             ->setHelp(<<<EOT
 The <info>%command.name%</info> command generates the SQL needed to
 synchronize the database schema with the current mapping metadata of the
 default entity manager.
@@ -101,7 +83,7 @@ on a global level:
 
     \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
-        );
+             );
     }
 
     /**

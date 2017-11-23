@@ -19,11 +19,11 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
+use Doctrine\ORM\Tools\SchemaValidator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\ORM\Tools\SchemaValidator;
 
 /**
  * Command to validate that the current mapping is valid.
@@ -43,26 +43,11 @@ class ValidateSchemaCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:validate-schema')
-        ->setDescription('Validate the mapping files.')
-        ->addOption(
-            'skip-mapping',
-            null,
-            InputOption::VALUE_NONE,
-            'Skip the mapping validation check'
-        )
-        ->addOption(
-            'skip-sync',
-            null,
-            InputOption::VALUE_NONE,
-            'Skip checking if the mapping is in sync with the database'
-        )
-        ->setHelp(
-            <<<EOT
-'Validate that the mapping files are correct and in sync with the database.'
-EOT
-        );
+        $this->setName('orm:validate-schema')
+             ->setDescription('Validate the mapping files')
+             ->addOption('skip-mapping', null, InputOption::VALUE_NONE, 'Skip the mapping validation check')
+             ->addOption('skip-sync', null, InputOption::VALUE_NONE, 'Skip checking if the mapping is in sync with the database')
+             ->setHelp('Validate that the mapping files are correct and in sync with the database.');
     }
 
     /**

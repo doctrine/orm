@@ -19,12 +19,13 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
@@ -43,26 +44,12 @@ class GenerateProxiesCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:generate-proxies')
-        ->setAliases(['orm:generate:proxies'])
-        ->setDescription('Generates proxy classes for entity classes.')
-        ->setDefinition(
-            [
-                new InputOption(
-                    'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                    'A string pattern used to match entities that should be processed.'
-                ),
-                new InputArgument(
-                    'dest-path', InputArgument::OPTIONAL,
-                    'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.'
-                ),
-            ]
-        )
-        ->setHelp(<<<EOT
-Generates proxy classes for entity classes.
-EOT
-        );
+        $this->setName('orm:generate-proxies')
+             ->setAliases(['orm:generate:proxies'])
+             ->setDescription('Generates proxy classes for entity classes')
+             ->addArgument('dest-path', InputArgument::OPTIONAL, 'The path to generate your proxy classes. If none is provided, it will attempt to grab from configuration.')
+             ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
+             ->setHelp('Generates proxy classes for entity classes.');
     }
 
     /**
@@ -70,6 +57,7 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var EntityManagerInterface $em */
         $em = $this->getHelper('em')->getEntityManager();
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();

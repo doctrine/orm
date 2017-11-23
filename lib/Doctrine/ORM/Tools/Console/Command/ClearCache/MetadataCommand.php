@@ -19,12 +19,12 @@
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\Common\Cache\ApcCache;
 use Doctrine\Common\Cache\XcacheCache;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to clear the metadata cache of the various cache drivers.
@@ -43,19 +43,10 @@ class MetadataCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:clear-cache:metadata')
-        ->setDescription('Clear all metadata cache of the various cache drivers.')
-        ->setDefinition(
-            [
-                new InputOption(
-                    'flush', null, InputOption::VALUE_NONE,
-                    'If defined, cache entries will be flushed instead of deleted/invalidated.'
-                )
-            ]
-        );
-
-        $this->setHelp(<<<EOT
+        $this->setName('orm:clear-cache:metadata')
+             ->setDescription('Clear all metadata cache of the various cache drivers')
+             ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
+             ->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear the metadata cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
@@ -72,7 +63,7 @@ Alternatively, if you want to flush the cache provider using this command:
 Finally, be aware that if <info>--flush</info> option is passed, not all cache providers are able to flush entries,
 because of a limitation of its execution nature.
 EOT
-        );
+             );
     }
 
     /**
