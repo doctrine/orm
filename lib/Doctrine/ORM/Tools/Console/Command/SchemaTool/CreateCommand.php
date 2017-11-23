@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to create the database schema for a set of classes based on their mappings.
@@ -26,20 +26,10 @@ class CreateCommand extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:schema-tool:create')
-        ->setDescription(
-            'Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.'
-        )
-        ->setDefinition(
-            [
-                new InputOption(
-                    'dump-sql', null, InputOption::VALUE_NONE,
-                    'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
-                )
-            ]
-        )
-        ->setHelp(<<<EOT
+        $this->setName('orm:schema-tool:create')
+             ->setDescription('Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output')
+             ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.')
+             ->setHelp(<<<EOT
 Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
 
 <comment>Hint:</comment> If you have a database with tables that should not be managed
@@ -48,7 +38,7 @@ on a global level:
 
     \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
-        );
+             );
     }
 
     /**

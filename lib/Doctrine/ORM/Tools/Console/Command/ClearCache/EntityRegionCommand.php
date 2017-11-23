@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\ORM\Cache\Region\DefaultRegion;
-use Doctrine\ORM\Cache;
 
 /**
  * Command to clear a entity cache region.
@@ -25,16 +25,13 @@ class EntityRegionCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:clear-cache:region:entity')
-        ->setDescription('Clear a second-level cache entity region.')
-        ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
-        ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
-        ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
-        ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.');
-
-
-        $this->setHelp(<<<EOT
+        $this->setName('orm:clear-cache:region:entity')
+             ->setDescription('Clear a second-level cache entity region')
+             ->addArgument('entity-class', InputArgument::OPTIONAL, 'The entity name.')
+             ->addArgument('entity-id', InputArgument::OPTIONAL, 'The entity identifier.')
+             ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
+             ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
+             ->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear a second-level cache entity region for an associated Entity Manager.
 It is possible to delete/invalidate all entity region, a specific entity region or flushes the cache provider.
 
@@ -58,7 +55,7 @@ Alternatively, if you want to flush the configured cache provider for an entity 
 Finally, be aware that if <info>--flush</info> option is passed,
 not all cache providers are able to flush entries, because of a limitation of its execution nature.
 EOT
-        );
+             );
     }
 
     /**

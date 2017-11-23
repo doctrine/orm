@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Mapping\MappingException;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command;
 
 /**
  * Show information about mapped entities.
@@ -23,15 +23,14 @@ class InfoCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('orm:info')
-            ->setDescription('Show basic information about all mapped entities')
-            ->setHelp(<<<EOT
+        $this->setName('orm:info')
+             ->setDescription('Show basic information about all mapped entities')
+             ->setHelp(<<<EOT
 The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or
 not.
 EOT
-            );
+             );
     }
 
     /**
@@ -46,7 +45,7 @@ EOT
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
-        if (!$entityClassNames) {
+        if ( ! $entityClassNames) {
             throw new \Exception(
                 'You do not have any mapped Doctrine ORM entities according to the current configuration. '.
                 'If you have entities or mapping files you should check your mapping configuration for errors.'

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\ClearCache;
 
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\ORM\Cache\Region\DefaultRegion;
-use Doctrine\ORM\Cache;
 
 /**
  * Command to clear a query cache region.
@@ -25,15 +25,12 @@ class QueryRegionCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:clear-cache:region:query')
-        ->setDescription('Clear a second-level cache query region.')
-        ->addArgument('region-name', InputArgument::OPTIONAL, 'The query region to clear.')
-        ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all query regions will be deleted/invalidated.')
-        ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.');
-
-
-        $this->setHelp(<<<EOT
+        $this->setName('orm:clear-cache:region:query')
+             ->setDescription('Clear a second-level cache query region')
+             ->addArgument('region-name', InputArgument::OPTIONAL, 'The query region to clear.')
+             ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all query regions will be deleted/invalidated.')
+             ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
+             ->setHelp(<<<EOT
 The <info>%command.name%</info> command is meant to clear a second-level cache query region for an associated Entity Manager.
 It is possible to delete/invalidate all query region, a specific query region or flushes the cache provider.
 
@@ -57,7 +54,7 @@ Alternatively, if you want to flush the configured cache provider use this comma
 Finally, be aware that if <info>--flush</info> option is passed,
 not all cache providers are able to flush entries, because of a limitation of its execution nature.
 EOT
-        );
+             );
     }
 
     /**

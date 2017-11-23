@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Console\Command\SchemaTool;
 
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Doctrine\ORM\Tools\SchemaTool;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Command to drop the database schema for a set of classes based on their mappings.
@@ -26,28 +26,12 @@ class DropCommand extends AbstractCommand
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:schema-tool:drop')
-        ->setDescription(
-            'Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output.'
-        )
-        ->setDefinition(
-            [
-                new InputOption(
-                    'dump-sql', null, InputOption::VALUE_NONE,
-                    'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.'
-                ),
-                new InputOption(
-                    'force', 'f', InputOption::VALUE_NONE,
-                    "Don't ask for the deletion of the database, but force the operation to run."
-                ),
-                new InputOption(
-                    'full-database', null, InputOption::VALUE_NONE,
-                    'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.'
-                ),
-            ]
-        )
-        ->setHelp(<<<EOT
+        $this->setName('orm:schema-tool:drop')
+             ->setDescription('Drop the complete database schema of EntityManager Storage Connection or generate the corresponding SQL output')
+             ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Instead of trying to apply generated SQLs into EntityManager Storage Connection, output them.')
+             ->addOption('force', 'f', InputOption::VALUE_NONE, "Don't ask for the deletion of the database, but force the operation to run.")
+             ->addOption('full-database', null, InputOption::VALUE_NONE, 'Instead of using the Class Metadata to detect the database table schema, drop ALL assets that the database contains.')
+             ->setHelp(<<<EOT
 Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
 Beware that the complete database is dropped by this command, even tables that are not relevant to your metadata model.
 
@@ -57,7 +41,7 @@ on a global level:
 
     \$config->setFilterSchemaAssetsExpression(\$regexp);
 EOT
-        );
+             );
     }
 
     /**
