@@ -217,11 +217,7 @@ EOT
         }
 
         if (is_array($value)) {
-            if (defined('JSON_UNESCAPED_UNICODE') && defined('JSON_UNESCAPED_SLASHES')) {
-                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            }
-
-            return json_encode($value);
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
         if (is_object($value)) {
@@ -283,14 +279,6 @@ EOT
      */
     private function formatEntityListeners(array $entityListeners)
     {
-        return $this->formatField(
-            'Entity listeners',
-            array_map(
-                function ($entityListener) {
-                    return get_class($entityListener);
-                },
-                $entityListeners
-            )
-        );
+        return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
     }
 }
