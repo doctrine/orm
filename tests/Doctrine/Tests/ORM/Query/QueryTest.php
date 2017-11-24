@@ -197,4 +197,66 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
         $q2 = clone $query;
         $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
+
+    /**
+     * @group 6699
+     */
+    public function testGetParameterTypeJuggling()
+    {
+        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id = ?0');
+
+        $query->setParameter(0, 0);
+
+        self::assertCount(1, $query->getParameters());
+        self::assertSame(0, $query->getParameter(0)->getValue());
+        self::assertSame(0, $query->getParameter('0')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroIsNotOverridden()
+    {
+        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter(0, 0);
+        $query->setParameter('name', 'Doctrine');
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(0, $query->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter()
+    {
+        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter('name', 'Doctrine');
+        $query->setParameter(0, 0);
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(0, $query->getParameter(0)->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithTypeJugglingWorks()
+    {
+        $query = $this->_em->createQuery('select u from Doctrine\Tests\Models\CMS\CmsUser u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter('0', 1);
+        $query->setParameter('name', 'Doctrine');
+        $query->setParameter(0, 2);
+        $query->setParameter('0', 3);
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(3, $query->getParameter(0)->getValue());
+        self::assertSame(3, $query->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
 }
