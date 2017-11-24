@@ -1158,4 +1158,81 @@ class QueryBuilderTest extends OrmTestCase
 
         $this->assertEquals(['u', 'g'], $aliases);
     }
+
+    /**
+     * @group 6699
+     */
+    public function testGetParameterTypeJuggling() : void
+    {
+        $builder = $this->_em->createQueryBuilder()
+                             ->select('u')
+                             ->from(CmsUser::class, 'u')
+                             ->where('u.id = ?0');
+
+        $builder->setParameter(0, 0);
+
+        self::assertCount(1, $builder->getParameters());
+        self::assertSame(0, $builder->getParameter(0)->getValue());
+        self::assertSame(0, $builder->getParameter('0')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroIsNotOverridden() : void
+    {
+        $builder = $this->_em->createQueryBuilder()
+                             ->select('u')
+                             ->from(CmsUser::class, 'u')
+                             ->where('u.id != ?0')
+                             ->andWhere('u.username = :name');
+
+        $builder->setParameter(0, 0);
+        $builder->setParameter('name', 'Doctrine');
+
+        self::assertCount(2, $builder->getParameters());
+        self::assertSame(0, $builder->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter() : void
+    {
+        $builder = $this->_em->createQueryBuilder()
+                             ->select('u')
+                             ->from(CmsUser::class, 'u')
+                             ->where('u.id != ?0')
+                             ->andWhere('u.username = :name');
+
+        $builder->setParameter('name', 'Doctrine');
+        $builder->setParameter(0, 0);
+
+        self::assertCount(2, $builder->getParameters());
+        self::assertSame(0, $builder->getParameter(0)->getValue());
+        self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithTypeJugglingWorks() : void
+    {
+        $builder = $this->_em->createQueryBuilder()
+                             ->select('u')
+                             ->from(CmsUser::class, 'u')
+                             ->where('u.id != ?0')
+                             ->andWhere('u.username = :name');
+
+        $builder->setParameter('0', 1);
+        $builder->setParameter('name', 'Doctrine');
+        $builder->setParameter(0, 2);
+        $builder->setParameter('0', 3);
+
+        self::assertCount(2, $builder->getParameters());
+        self::assertSame(3, $builder->getParameter(0)->getValue());
+        self::assertSame(3, $builder->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $builder->getParameter('name')->getValue());
+    }
 }
