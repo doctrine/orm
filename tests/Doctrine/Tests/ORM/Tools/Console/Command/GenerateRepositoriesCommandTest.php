@@ -2,18 +2,18 @@
 
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Console\Command\GenerateRepositoriesCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use Doctrine\Tests\Models\DDC3231\DDC3231EntityRepository;
-use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\Console\Helper\HelperSet;
-use Symfony\Component\Console\Application;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Tester\CommandTester;
 
-/**
- * GenerateRepositoriesCommandTest
- */
 class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 {
     /**
@@ -34,25 +34,12 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 
         \mkdir($this->path);
 
-
         $metadataDriver = $this->_em->getConfiguration()->getMetadataDriverImpl();
-
-        $metadataDriver->addPaths(
-            [
-            __DIR__ . '/../../../../Models/DDC3231/'
-            ]
-        );
+        $metadataDriver->addPaths([__DIR__ . '/../../../../Models/DDC3231/']);
 
         $this->application = new Application();
-
-        $this->application->setHelperSet(new HelperSet(
-            [
-            'em' => new EntityManagerHelper($this->_em)
-            ]
-        ));
-
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
         $this->application->add(new GenerateRepositoriesCommand());
-
     }
 
     /**
@@ -88,20 +75,20 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $cname = 'Doctrine\Tests\Models\DDC3231\DDC3231User1Repository';
         $fname = str_replace('\\', DIRECTORY_SEPARATOR, $cname) . '.php';
 
-        $this->assertFileExists($this->path . DIRECTORY_SEPARATOR . $fname);
-        $this->assertFileExists($this->path . DIRECTORY_SEPARATOR . 'DDC3231User1NoNamespaceRepository.php');
+        self::assertFileExists($this->path . DIRECTORY_SEPARATOR . $fname);
+        self::assertFileExists($this->path . DIRECTORY_SEPARATOR . 'DDC3231User1NoNamespaceRepository.php');
 
         require $this->path . DIRECTORY_SEPARATOR . $fname;
         require $this->path . DIRECTORY_SEPARATOR . 'DDC3231User1NoNamespaceRepository.php';
 
-        $this->assertTrue(class_exists($cname));
-        $this->assertTrue(class_exists('DDC3231User1NoNamespaceRepository'));
+        self::assertTrue(class_exists($cname));
+        self::assertTrue(class_exists('DDC3231User1NoNamespaceRepository'));
 
         $repo1  = new \ReflectionClass($cname);
         $repo2  = new \ReflectionClass('DDC3231User1NoNamespaceRepository');
 
-        $this->assertSame(EntityRepository::class, $repo1->getParentClass()->getName());
-        $this->assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
+        self::assertSame(EntityRepository::class, $repo1->getParentClass()->getName());
+        self::assertSame(EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     public function testGenerateRepositoriesCustomDefaultRepository()
@@ -111,20 +98,20 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         $cname = 'Doctrine\Tests\Models\DDC3231\DDC3231User2Repository';
         $fname = str_replace('\\', DIRECTORY_SEPARATOR, $cname) . '.php';
 
-        $this->assertFileExists($this->path . DIRECTORY_SEPARATOR . $fname);
-        $this->assertFileExists($this->path . DIRECTORY_SEPARATOR . 'DDC3231User2NoNamespaceRepository.php');
+        self::assertFileExists($this->path . DIRECTORY_SEPARATOR . $fname);
+        self::assertFileExists($this->path . DIRECTORY_SEPARATOR . 'DDC3231User2NoNamespaceRepository.php');
 
         require $this->path . DIRECTORY_SEPARATOR . $fname;
         require $this->path . DIRECTORY_SEPARATOR . 'DDC3231User2NoNamespaceRepository.php';
 
-        $this->assertTrue(class_exists($cname));
-        $this->assertTrue(class_exists('DDC3231User2NoNamespaceRepository'));
+        self::assertTrue(class_exists($cname));
+        self::assertTrue(class_exists('DDC3231User2NoNamespaceRepository'));
 
         $repo1  = new \ReflectionClass($cname);
         $repo2  = new \ReflectionClass('DDC3231User2NoNamespaceRepository');
 
-        $this->assertSame(DDC3231EntityRepository::class, $repo1->getParentClass()->getName());
-        $this->assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
+        self::assertSame(DDC3231EntityRepository::class, $repo1->getParentClass()->getName());
+        self::assertSame(DDC3231EntityRepository::class, $repo2->getParentClass()->getName());
     }
 
     /**
@@ -137,13 +124,14 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
             $this->_em->getConfiguration()->setDefaultRepositoryClassName($defaultRepository);
         }
 
-        $command    = $this->application->find('orm:generate-repositories');
-        $tester     = new CommandTester($command);
+        $command = $this->application->find('orm:generate-repositories');
+        $tester  = new CommandTester($command);
+
         $tester->execute(
             [
-            'command'   => $command->getName(),
-            'dest-path' => $this->path,
-            '--filter'  => $filter,
+                'command'   => $command->getName(),
+                'dest-path' => $this->path,
+                '--filter'  => $filter,
             ]
         );
     }
