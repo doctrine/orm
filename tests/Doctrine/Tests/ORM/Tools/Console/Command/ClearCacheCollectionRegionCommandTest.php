@@ -30,76 +30,90 @@ class ClearCacheCollectionRegionCommandTest extends OrmFunctionalTestCase
         $this->enableSecondLevelCache();
         parent::setUp();
 
+        $this->command = new CollectionRegionCommand();
+
         $this->application = new Application();
-        $this->command     = new CollectionRegionCommand();
-
-        $this->application->setHelperSet(new HelperSet(
-            [
-            'em' => new EntityManagerHelper($this->_em)
-            ]
-        ));
-
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
         $this->application->add($this->command);
     }
 
     public function testClearAllRegion()
     {
-        $command    = $this->application->find('orm:clear-cache:region:collection');
-        $tester     = new CommandTester($command);
+        $command = $this->application->find('orm:clear-cache:region:collection');
+        $tester  = new CommandTester($command);
+
         $tester->execute(
             [
-            'command' => $command->getName(),
-            '--all'   => true,
-            ], ['decorated' => false]
+                'command' => $command->getName(),
+                '--all'   => true,
+            ],
+            ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing all second-level cache collection regions' . PHP_EOL, $tester->getDisplay());
+        self::assertContains(' // Clearing all second-level cache collection regions', $tester->getDisplay());
     }
 
     public function testClearByOwnerEntityClassName()
     {
-        $command    = $this->application->find('orm:clear-cache:region:collection');
-        $tester     = new CommandTester($command);
+        $command = $this->application->find('orm:clear-cache:region:collection');
+        $tester  = new CommandTester($command);
+
         $tester->execute(
             [
-            'command'       => $command->getName(),
-            'owner-class'   => State::class,
-            'association'   => 'cities',
-            ], ['decorated' => false]
+                'command'     => $command->getName(),
+                'owner-class' => State::class,
+                'association' => 'cities',
+            ],
+            ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
+        self::assertContains(
+            ' // Clearing second-level cache for collection "Doctrine\Tests\Models\Cache\State#cities"',
+            $tester->getDisplay()
+        );
     }
 
     public function testClearCacheEntryName()
     {
-        $command    = $this->application->find('orm:clear-cache:region:collection');
-        $tester     = new CommandTester($command);
+        $command = $this->application->find('orm:clear-cache:region:collection');
+        $tester  = new CommandTester($command);
+
         $tester->execute(
             [
-            'command'       => $command->getName(),
-            'owner-class'   => State::class,
-            'association'   => 'cities',
-            'owner-id'      => 1,
-            ], ['decorated' => false]
+                'command'     => $command->getName(),
+                'owner-class' => State::class,
+                'association' => 'cities',
+                'owner-id'    => 1,
+            ],
+            ['decorated' => false]
         );
 
-        $this->assertEquals('Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner entity identified by "1"' . PHP_EOL, $tester->getDisplay());
+        self::assertContains(
+            ' // Clearing second-level cache entry for collection "Doctrine\Tests\Models\Cache\State#cities" owner',
+            $tester->getDisplay()
+        );
+
+        self::assertContains(' // entity identified by "1"', $tester->getDisplay());
     }
 
     public function testFlushRegionName()
     {
-        $command    = $this->application->find('orm:clear-cache:region:collection');
-        $tester     = new CommandTester($command);
+        $command = $this->application->find('orm:clear-cache:region:collection');
+        $tester  = new CommandTester($command);
+
         $tester->execute(
             [
-            'command'       => $command->getName(),
-            'owner-class'   => State::class,
-            'association'   => 'cities',
-            '--flush'       => true,
-            ], ['decorated' => false]
+                'command'     => $command->getName(),
+                'owner-class' => State::class,
+                'association' => 'cities',
+                '--flush'     => true,
+            ],
+            ['decorated' => false]
         );
 
-        $this->assertEquals('Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"' . PHP_EOL, $tester->getDisplay());
+        self::assertContains(
+            ' // Flushing cache provider configured for "Doctrine\Tests\Models\Cache\State#cities"',
+            $tester->getDisplay()
+        );
     }
 }

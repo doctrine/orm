@@ -19,14 +19,15 @@
 
 namespace Doctrine\ORM\Tools\Console\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
 use Doctrine\ORM\Tools\Console\MetadataFilter;
-use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\ORM\Tools\DisconnectedClassMetadataFactory;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
+use Doctrine\ORM\Tools\EntityGenerator;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to generate entity classes and method stubs from your mapping information.
@@ -45,50 +46,19 @@ class GenerateEntitiesCommand extends Command
      */
     protected function configure()
     {
-        $this
-        ->setName('orm:generate-entities')
-        ->setAliases(['orm:generate:entities'])
-        ->setDescription('Generate entity classes and method stubs from your mapping information.')
-        ->setDefinition(
-            [
-                new InputOption(
-                    'filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-                    'A string pattern used to match entities that should be processed.'
-                ),
-                new InputArgument(
-                    'dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.'
-                ),
-                new InputOption(
-                    'generate-annotations', null, InputOption::VALUE_OPTIONAL,
-                    'Flag to define if generator should generate annotation metadata on entities.', false
-                ),
-                new InputOption(
-                    'generate-methods', null, InputOption::VALUE_OPTIONAL,
-                    'Flag to define if generator should generate stub methods on entities.', true
-                ),
-                new InputOption(
-                    'regenerate-entities', null, InputOption::VALUE_OPTIONAL,
-                    'Flag to define if generator should regenerate entity if it exists.', false
-                ),
-                new InputOption(
-                    'update-entities', null, InputOption::VALUE_OPTIONAL,
-                    'Flag to define if generator should only update entity if it exists.', true
-                ),
-                new InputOption(
-                    'extend', null, InputOption::VALUE_REQUIRED,
-                    'Defines a base class to be extended by generated entity classes.'
-                ),
-                new InputOption(
-                    'num-spaces', null, InputOption::VALUE_REQUIRED,
-                    'Defines the number of indentation spaces', 4
-                ),
-                new InputOption(
-                    'no-backup', null, InputOption::VALUE_NONE,
-                    'Flag to define if generator should avoid backuping existing entity file if it exists.'
-                )
-            ]
-        )
-        ->setHelp(<<<EOT
+        $this->setName('orm:generate-entities')
+             ->setAliases(['orm:generate:entities'])
+             ->setDescription('Generate entity classes and method stubs from your mapping information')
+             ->addArgument('dest-path', InputArgument::REQUIRED, 'The path to generate your entity classes.')
+             ->addOption('filter', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'A string pattern used to match entities that should be processed.')
+             ->addOption('generate-annotations', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate annotation metadata on entities.', false)
+             ->addOption('generate-methods', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should generate stub methods on entities.', true)
+             ->addOption('regenerate-entities', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should regenerate entity if it exists.', false)
+             ->addOption('update-entities', null, InputOption::VALUE_OPTIONAL, 'Flag to define if generator should only update entity if it exists.', true)
+             ->addOption('extend', null, InputOption::VALUE_REQUIRED, 'Defines a base class to be extended by generated entity classes.')
+             ->addOption('num-spaces', null, InputOption::VALUE_REQUIRED, 'Defines the number of indentation spaces', 4)
+             ->addOption('no-backup', null, InputOption::VALUE_NONE, 'Flag to define if generator should avoid backuping existing entity file if it exists.')
+             ->setHelp(<<<EOT
 Generate entity classes and method stubs from your mapping information.
 
 If you use the <comment>--update-entities</comment> or <comment>--regenerate-entities</comment> flags your existing
@@ -108,7 +78,7 @@ child classes for you correctly, because it doesn't know which
 class is supposed to extend which. You have to adjust the entity
 code manually for inheritance to work!
 EOT
-        );
+             );
     }
 
     /**
@@ -116,6 +86,8 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $ui = new SymfonyStyle($input, $output);
+
         $em = $this->getHelper('em')->getEntityManager();
 
         $cmf = new DisconnectedClassMetadataFactory();
@@ -138,34 +110,33 @@ EOT
             );
         }
 
-        if (count($metadatas)) {
-            // Create EntityGenerator
-            $entityGenerator = new EntityGenerator();
-
-            $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
-            $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
-            $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
-            $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
-            $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
-            $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
-
-            if (($extend = $input->getOption('extend')) !== null) {
-                $entityGenerator->setClassToExtend($extend);
-            }
-
-            foreach ($metadatas as $metadata) {
-                $output->writeln(
-                    sprintf('Processing entity "<info>%s</info>"', $metadata->name)
-                );
-            }
-
-            // Generating Entities
-            $entityGenerator->generate($metadatas, $destPath);
-
-            // Outputting information message
-            $output->writeln(PHP_EOL . sprintf('Entity classes generated to "<info>%s</INFO>"', $destPath));
-        } else {
-            $output->writeln('No Metadata Classes to process.');
+        if (empty($metadatas)) {
+            $ui->success('No Metadata Classes to process.');
+            return;
         }
+
+        $entityGenerator = new EntityGenerator();
+
+        $entityGenerator->setGenerateAnnotations($input->getOption('generate-annotations'));
+        $entityGenerator->setGenerateStubMethods($input->getOption('generate-methods'));
+        $entityGenerator->setRegenerateEntityIfExists($input->getOption('regenerate-entities'));
+        $entityGenerator->setUpdateEntityIfExists($input->getOption('update-entities'));
+        $entityGenerator->setNumSpaces($input->getOption('num-spaces'));
+        $entityGenerator->setBackupExisting(!$input->getOption('no-backup'));
+
+        if (($extend = $input->getOption('extend')) !== null) {
+            $entityGenerator->setClassToExtend($extend);
+        }
+
+        foreach ($metadatas as $metadata) {
+            $ui->text(sprintf('Processing entity "<info>%s</info>"', $metadata->name));
+        }
+
+        // Generating Entities
+        $entityGenerator->generate($metadatas, $destPath);
+
+        // Outputting information message
+        $ui->newLine();
+        $ui->success(sprintf('Entity classes generated to "%s"', $destPath));
     }
 }

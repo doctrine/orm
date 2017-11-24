@@ -37,32 +37,26 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $command = new MappingDescribeCommand();
-
-        $this->application->setHelperSet(new HelperSet(
-            [
-            'em' => new EntityManagerHelper($this->_em)
-            ]
-        ));
-
-        $this->application->add($command);
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->add(new MappingDescribeCommand());
 
         $this->command = $this->application->find('orm:mapping:describe');
-        $this->tester = new CommandTester($command);
+        $this->tester  = new CommandTester($this->command);
     }
 
     public function testShowSpecificFuzzySingle()
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionInfo',
             ]
         );
 
         $display = $this->tester->getDisplay();
-        $this->assertContains(AttractionInfo::class, $display);
-        $this->assertContains('Root entity name', $display);
+
+        self::assertContains(AttractionInfo::class, $display);
+        self::assertContains('Root entity name', $display);
     }
 
     /**
@@ -73,8 +67,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'Attraction',
+                'command'    => $this->command->getName(),
+                'entityName' => 'Attraction',
             ]
         );
     }
@@ -87,8 +81,8 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
     {
         $this->tester->execute(
             [
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionFooBar'
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionFooBar',
             ]
         );
     }
