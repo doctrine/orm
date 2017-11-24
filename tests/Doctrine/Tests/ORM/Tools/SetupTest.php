@@ -76,6 +76,22 @@ class SetupTest extends OrmTestCase
         $this->assertInstanceOf(YamlDriver::class, $config->getMetadataDriverImpl());
     }
 
+    public function testConfigureCacheNamespace()
+    {
+        // automatically set namespace
+        $config = Setup::createConfiguration(false, '/foo');
+
+        $this->assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $config->getMetadataCacheImpl()->getNamespace());
+
+
+        // manually set namespace
+        $cache = new ArrayCache();
+        $cache->setNamespace('foo');
+        $config = Setup::createConfiguration(false, '/foo', $cache);
+
+        $this->assertSame('foo', $config->getMetadataCacheImpl()->getNamespace());
+    }
+
     /**
      * @group DDC-1350
      */
