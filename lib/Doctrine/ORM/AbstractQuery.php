@@ -305,14 +305,14 @@ abstract class AbstractQuery
     public function getParameter($key)
     {
         $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
-                // Must not be identical because of string to integer conversion
-                return ($key == $parameter->getName());
+            function (Query\Parameter $parameter) use ($key) : bool {
+                $parameterName = $parameter->getName();
+
+                return $key === $parameterName || (string) $key === (string) $parameterName;
             }
         );
 
-        return $filteredParameters->isEmpty() ? null : $filteredParameters->first();
+        return ! $filteredParameters->isEmpty() ? $filteredParameters->first() : null;
     }
 
     /**
@@ -353,17 +353,10 @@ abstract class AbstractQuery
      */
     public function setParameter($key, $value, $type = null)
     {
-        $filteredParameters = $this->parameters->filter(
-            function ($parameter) use ($key)
-            {
-                // Must not be identical because of string to integer conversion
-                return ($key == $parameter->getName());
-            }
-        );
+        $existingParameter = $this->getParameter($key);
 
-        if (! $filteredParameters->isEmpty()) {
-            $parameter = $filteredParameters->first();
-            $parameter->setValue($value, $type);
+        if ($existingParameter !== null) {
+            $existingParameter->setValue($value, $type);
 
             return $this;
         }
