@@ -104,7 +104,7 @@ class SetupTest extends OrmTestCase
     public function testConfigureCacheCustomInstance()
     {
         $cache  = $this->createMock(Cache::class);
-        $config = Setup::createConfiguration([], true, $cache);
+        $config = Setup::createConfiguration(true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
