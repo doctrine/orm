@@ -239,9 +239,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $parameters = $this->expandCriteriaParameters($criteria);
 
         foreach ($parameters as $parameter) {
-            list($name, $value) = $parameter;
-            $whereClauses[]     = sprintf('te.%s = ?', $name);
-            $params[]           = $value;
+            list($name, $value, $operator) = $parameter;
+
+            $whereClauses[] = sprintf('te.%s %s ?', $name, $operator);
+            $params[]       = $value;
         }
 
         $mapping      = $collection->getMapping();
