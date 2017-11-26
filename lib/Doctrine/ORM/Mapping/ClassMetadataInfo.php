@@ -2949,13 +2949,21 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function setSequenceGeneratorDefinition(array $definition)
     {
-        if ( ! isset($definition['sequenceName'])) {
+        if ( ! isset($definition['sequenceName']) || trim($definition['sequenceName']) === '') {
             throw MappingException::missingSequenceName($this->name);
         }
 
         if ($definition['sequenceName'][0] == '`') {
             $definition['sequenceName']   = trim($definition['sequenceName'], '`');
             $definition['quoted'] = true;
+        }
+
+        if ( ! isset($definition['allocationSize']) || trim($definition['allocationSize']) === '') {
+            $definition['allocationSize'] = '1';
+        }
+
+        if ( ! isset($definition['initialValue']) || trim($definition['initialValue']) === '') {
+            $definition['initialValue'] = '1';
         }
 
         $this->sequenceGeneratorDefinition = $definition;
