@@ -98,7 +98,7 @@ class SetupTest extends \Doctrine\Tests\OrmTestCase
         $cache = $this->getMock('Doctrine\Common\Cache\Cache');
         $cache->expects($this->never())->method('setNamespace');
 
-        $config = Setup::createConfiguration(array(), true, $cache);
+        $config = Setup::createConfiguration(true, null, $cache);
 
         $this->assertSame($cache, $config->getResultCacheImpl());
         $this->assertSame($cache, $config->getMetadataCacheImpl());
