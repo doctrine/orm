@@ -15,7 +15,7 @@
  * This software consists of voluntary contributions made by many individuals
  * and is licensed under the MIT license. For more information, see
  * <http://www.doctrine-project.org>.
-*/
+ */
 
 namespace Doctrine\ORM\Tools;
 
@@ -122,32 +122,7 @@ class Setup
     public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
-
-        if ($isDevMode === false && $cache === null) {
-            if (extension_loaded('apc')) {
-                $cache = new \Doctrine\Common\Cache\ApcCache();
-            } elseif (extension_loaded('xcache')) {
-                $cache = new \Doctrine\Common\Cache\XcacheCache();
-            } elseif (extension_loaded('memcache')) {
-                $memcache = new \Memcache();
-                $memcache->connect('127.0.0.1');
-                $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                $cache->setMemcache($memcache);
-            } elseif (extension_loaded('redis')) {
-                $redis = new \Redis();
-                $redis->connect('127.0.0.1');
-                $cache = new \Doctrine\Common\Cache\RedisCache();
-                $cache->setRedis($redis);
-            } else {
-                $cache = new ArrayCache();
-            }
-        } elseif ($cache === null) {
-            $cache = new ArrayCache();
-        }
-
-        if ($cache instanceof CacheProvider) {
-            $cache->setNamespace("dc2_" . md5($proxyDir) . "_"); // to avoid collisions
-        }
+        $cache    = self::createCacheConfiguration($isDevMode, $proxyDir, $cache);
 
         $config = new Configuration();
         $config->setMetadataCacheImpl($cache);
@@ -158,5 +133,78 @@ class Setup
         $config->setAutoGenerateProxyClasses($isDevMode);
 
         return $config;
+    }
+
+    /**
+     * @param bool       $isDevMode
+     * @param string     $proxyDir
+     * @param Cache|null $cache
+     *
+     * @return Cache
+     */
+    private static function createCacheConfiguration($isDevMode, $proxyDir, Cache $cache = null)
+    {
+        $cache = self::createCacheInstance($isDevMode, $cache);
+
+        if ( ! $cache instanceof CacheProvider) {
+            return $cache;
+        }
+
+        $namespace = $cache->getNamespace();
+
+        if ($namespace !== '') {
+            $namespace .= ':';
+        }
+
+        $cache->setNamespace($namespace . 'dc2_' . md5($proxyDir) . '_'); // to avoid collisions
+
+        return $cache;
+    }
+
+    /**
+     * @param bool       $isDevMode
+     * @param Cache|null $cache
+     *
+     * @return Cache
+     */
+    private static function createCacheInstance($isDevMode, Cache $cache = null)
+    {
+        if ($cache !== null) {
+            return $cache;
+        }
+
+        if ($isDevMode === true) {
+            return new ArrayCache();
+        }
+
+        if (extension_loaded('apc')) {
+            return new \Doctrine\Common\Cache\ApcCache();
+        }
+
+        if (extension_loaded('xcache')) {
+            return new \Doctrine\Common\Cache\XcacheCache();
+        }
+
+        if (extension_loaded('memcache')) {
+            $memcache = new \Memcache();
+            $memcache->connect('127.0.0.1');
+
+            $cache = new \Doctrine\Common\Cache\MemcacheCache();
+            $cache->setMemcache($memcache);
+
+            return $cache;
+        }
+
+        if (extension_loaded('redis')) {
+            $redis = new \Redis();
+            $redis->connect('127.0.0.1');
+
+            $cache = new \Doctrine\Common\Cache\RedisCache();
+            $cache->setRedis($redis);
+
+            return $cache;
+        }
+
+        return new ArrayCache();
     }
 }
