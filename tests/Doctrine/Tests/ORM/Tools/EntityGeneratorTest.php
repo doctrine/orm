@@ -1345,6 +1345,99 @@ class
         self::assertEquals(1, preg_match('/@param\s+([^\s]+)/', $method->getDocComment(), $matches));
         self::assertEquals($type, $matches[1]);
     }
+
+    /**
+     * @group 6703
+     *
+     * @dataProvider columnOptionsProvider
+     */
+    public function testOptionsAreGeneratedProperly(string $expectedAnnotation, array $fieldConfiguration) : void
+    {
+        $metadata               = new ClassMetadataInfo($this->_namespace . '\GH6703Options');
+        $metadata->namespace    = $this->_namespace;
+        $metadata->mapField(['fieldName' => 'id', 'type' => 'integer', 'id' => true]);
+        $metadata->mapField(['fieldName' => 'test'] + $fieldConfiguration);
+        $metadata->setIdGeneratorType(ClassMetadataInfo::GENERATOR_TYPE_SEQUENCE);
+        $this->_generator->writeEntityClass($metadata, $this->_tmpDir);
+
+        $filename = $this->_tmpDir . DIRECTORY_SEPARATOR . $this->_namespace . DIRECTORY_SEPARATOR . 'GH6703Options.php';
+
+        self::assertFileExists($filename);
+        require_once $filename;
+
+        $property   = new \ReflectionProperty($metadata->name, 'test');
+        $docComment = $property->getDocComment();
+
+        self::assertContains($expectedAnnotation, $docComment);
+    }
+
+    public function columnOptionsProvider() : array
+    {
+        return [
+            'string-default'   => [
+                '@Column(name="test", type="string", length=10, options={"default"="testing"})',
+                ['type' => 'string', 'length' => 10, 'options' => ['default' => 'testing']],
+            ],
+            'string-fixed'     => [
+                '@Column(name="test", type="string", length=10, options={"fixed"=true})',
+                ['type' => 'string', 'length' => 10, 'options' => ['fixed' => true]],
+            ],
+            'string-comment'   => [
+                '@Column(name="test", type="string", length=10, options={"comment"="testing"})',
+                ['type' => 'string', 'length' => 10, 'options' => ['comment' => 'testing']],
+            ],
+            'string-collation' => [
+                '@Column(name="test", type="string", length=10, options={"collation"="utf8mb4_general_ci"})',
+                ['type' => 'string', 'length' => 10, 'options' => ['collation' => 'utf8mb4_general_ci']],
+            ],
+            'string-check'     => [
+                '@Column(name="test", type="string", length=10, options={"check"="CHECK (test IN (""test""))"})',
+                ['type' => 'string', 'length' => 10, 'options' => ['check' => 'CHECK (test IN (""test""))']],
+            ],
+            'string-all'       => [
+                '@Column(name="test", type="string", length=10, options={"default"="testing","fixed"=true,"comment"="testing","collation"="utf8mb4_general_ci","check"="CHECK (test IN (""test""))"})',
+                [
+                    'type' => 'string',
+                    'length' => 10,
+                    'options' => [
+                        'default' => 'testing',
+                        'fixed' => true,
+                        'comment' => 'testing',
+                        'collation' => 'utf8mb4_general_ci',
+                        'check' => 'CHECK (test IN (""test""))'
+                    ]
+                ],
+            ],
+            'int-default'      => [
+                '@Column(name="test", type="integer", options={"default"="10"})',
+                ['type' => 'integer', 'options' => ['default' => 10]],
+            ],
+            'int-unsigned'     => [
+                '@Column(name="test", type="integer", options={"unsigned"=true})',
+                ['type' => 'integer', 'options' => ['unsigned' => true]],
+            ],
+            'int-comment'      => [
+                '@Column(name="test", type="integer", options={"comment"="testing"})',
+                ['type' => 'integer', 'options' => ['comment' => 'testing']],
+            ],
+            'int-check'        => [
+                '@Column(name="test", type="integer", options={"check"="CHECK (test > 5)"})',
+                ['type' => 'integer', 'options' => ['check' => 'CHECK (test > 5)']],
+            ],
+            'int-all'        => [
+                '@Column(name="test", type="integer", options={"default"="10","unsigned"=true,"comment"="testing","check"="CHECK (test > 5)"})',
+                [
+                    'type' => 'integer',
+                    'options' => [
+                        'default' => 10,
+                        'unsigned' => true,
+                        'comment' => 'testing',
+                        'check' => 'CHECK (test > 5)',
+                    ]
+                ],
+            ],
+        ];
+    }
 }
 
 class EntityGeneratorAuthor {}
