@@ -1188,15 +1188,19 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-2662
+     * @group 6682
      */
-    public function testQuotedSequenceName()
+    public function testQuotedSequenceName() : void
     {
         $cm = new ClassMetadata(CMS\CmsUser::class);
-        $cm->initializeReflection(new RuntimeReflectionService());
 
+        $cm->initializeReflection(new RuntimeReflectionService());
         $cm->setSequenceGeneratorDefinition(['sequenceName' => '`foo`']);
 
-        $this->assertEquals(['sequenceName' => 'foo', 'quoted' => true], $cm->sequenceGeneratorDefinition);
+        self::assertSame(
+            ['sequenceName' => 'foo', 'quoted' => true, 'allocationSize' => '1', 'initialValue' => '1'],
+            $cm->sequenceGeneratorDefinition
+        );
     }
 
     /**
