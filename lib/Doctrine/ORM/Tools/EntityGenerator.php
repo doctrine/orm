@@ -1665,8 +1665,28 @@ public function __construct(<params>)
 
             $options = [];
 
+            if (isset($fieldMapping['options']['default']) && $fieldMapping['options']['default']) {
+                $options[] = '"default"="' . $fieldMapping['options']['default'] .'"';
+            }
+
             if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
                 $options[] = '"unsigned"=true';
+            }
+
+            if (isset($fieldMapping['options']['fixed']) && $fieldMapping['options']['fixed']) {
+                $options[] = '"fixed"=true';
+            }
+
+            if (isset($fieldMapping['options']['comment']) && $fieldMapping['options']['comment']) {
+                $options[] = '"comment"="' . $fieldMapping['options']['comment'] .'"';
+            }
+
+            if (isset($fieldMapping['options']['collation']) && $fieldMapping['options']['collation']) {
+                $options[] = '"collation"="' . $fieldMapping['options']['collation'] .'"';
+            }
+
+            if (isset($fieldMapping['options']['check']) && $fieldMapping['options']['check']) {
+                $options[] = '"check"="' . $fieldMapping['options']['check'] .'"';
             }
 
             if ($options) {
