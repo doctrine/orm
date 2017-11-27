@@ -5,7 +5,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 class DDC6393Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -20,8 +20,9 @@ class DDC6393Test extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * Test the the version of an entity can be fetched, when the id field and
      * the id column are different.
+     * @group 6393
      */
-    public function testFetchVersionValueForDifferentIdFieldAndColumn()
+    public function testFetchVersionValueForDifferentIdFieldAndColumn(): void
     {
         $a = new A(1);
         $this->_em->persist($a);
@@ -30,12 +31,12 @@ class DDC6393Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->_em->persist($b);        
         $this->_em->flush();
         
-        $this->assertSame(1, $b->getVersion());
+        self::assertSame(1, $b->version);
 
-        $b->setSomething('bar');
+        $b->something = 'bar';
         $this->_em->flush();
         
-        $this->assertSame(2, $b->getVersion());
+        self::assertSame(2, $b->version);
     }
 
 }
@@ -50,27 +51,17 @@ class A
      * @Id
      * @Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @Version
      * @Column(type="integer")
      */
-    private $version;
+    public $version;
 
-    public function __construct($id)
+    public function __construct(int $id)
     {
         $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
     }
 
 }
@@ -86,43 +77,23 @@ class B
      * @ManyToOne(targetEntity="A")
      * @JoinColumn(name="aid", referencedColumnName="id")
      */
-    private $a;
+    public $a;
 
     /**
      * @Column(type="string")
      */
-    private $something;
+    public $something;
 
     /**
      * @Version
      * @Column(type="integer")
      */
-    private $version;
+    public $version;
 
-    public function __construct($a, $something)
+    public function __construct(A $a, string $something)
     {
         $this->a = $a;
         $this->something = $something;
-    }
-
-    public function getA()
-    {
-        return $this->a;
-    }
-
-    public function getSomething()
-    {
-        return $this->something;
-    }
-
-    public function setSomething($something)
-    {
-        $this->something = $something;
-    }
-
-    public function getVersion()
-    {
-        return $this->version;
     }
 
 }
