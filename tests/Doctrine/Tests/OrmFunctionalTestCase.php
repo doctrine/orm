@@ -159,6 +159,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\DDC117\DDC117Editor::class,
             Models\DDC117\DDC117Link::class,
         ],
+        'ddc1879' => [
+            Models\DDC1879\DDC1879Child::class,
+            Models\DDC1879\DDC1879Parent::class,
+        ],
         'ddc3699' => [
             Models\DDC3699\DDC3699Parent::class,
             Models\DDC3699\DDC3699RelationOne::class,
@@ -422,6 +426,10 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM DDC117ArticleDetails');
             $conn->executeUpdate('DELETE FROM DDC117Translation');
             $conn->executeUpdate('DELETE FROM DDC117Article');
+        }
+        if (isset($this->_usedModelSets['ddc1879'])) {
+            $conn->executeUpdate('DELETE FROM DDC1879_child');
+            $conn->executeUpdate('DELETE FROM DDC1879_parent');
         }
         if (isset($this->_usedModelSets['stockexchange'])) {
             $conn->executeUpdate('DELETE FROM exchange_bonds_stocks');
