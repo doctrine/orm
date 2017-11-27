@@ -25,7 +25,7 @@ class SequenceGeneratorTest extends OrmTestCase
      */
     private $connection;
 
-    protected function setUp() : void
+    protected function setUp()
     {
         parent::setUp();
 
@@ -33,10 +33,10 @@ class SequenceGeneratorTest extends OrmTestCase
         $this->sequenceGenerator = new SequenceGenerator('seq', 10);
         $this->connection        = $this->entityManager->getConnection();
 
-        self::assertInstanceOf(ConnectionMock::class, $this->connection);
+        self::assertInstanceOf('Doctrine\Tests\Mocks\ConnectionMock', $this->connection);
     }
 
-    public function testGeneration() : void
+    public function testGeneration()
     {
         $this->connection->setFetchOneException(new \BadMethodCallException(
             'Fetch* method used. Query method should be used instead, '

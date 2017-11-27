@@ -108,7 +108,7 @@ class ConnectionMock extends Connection
     /**
      * {@inheritdoc}
      */
-    public function query() : Statement
+    public function query()
     {
         return $this->_queryResult;
     }
