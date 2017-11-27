@@ -72,6 +72,39 @@ class SchemaToolTest extends \Doctrine\Tests\OrmTestCase
         $this->assertEquals($customColumnDef, $table->getColumn('avatar_id')->getColumnDefinition());
     }
 
+    public function testPassColumnOptionsToJoinColumn()
+    {
+        $em = $this->_getTestEntityManager();
+        $schemaTool = new SchemaTool($em);
+
+        $category = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumCategory');
+        $board = $em->getClassMetadata('Doctrine\Tests\Models\Forum\ForumBoard');
+
+        $classes = array($category, $board);
+
+        $schema = $schemaTool->getSchemaFromMetadata($classes);
+
+        $this->assertTrue($schema->hasTable('forum_categories'));
+        $this->assertTrue($schema->hasTable('forum_boards'));
+
+        $tableCategory = $schema->getTable('forum_categories');
+        $tableBoard = $schema->getTable('forum_boards');
+
+        $this->assertTrue($tableBoard->hasColumn('category_id'));
+
+        $this->assertSame(
+            $tableCategory->getColumn('id')->getFixed(),
+            $tableBoard->getColumn('category_id')->getFixed(),
+            'Target and source columns have different value of option `fixed`'
+        );
+
+        $this->assertEquals(
+            $tableCategory->getColumn('id')->getCustomSchemaOptions(),
+            $tableBoard->getColumn('category_id')->getCustomSchemaOptions(),
+            'Target and source columns have different schema options'
+        );
+    }
+
     /**
      * @group DDC-283
      */
