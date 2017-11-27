@@ -164,6 +164,7 @@ class EntityGenerator
         Type::TEXT          => 'string',
         Type::BLOB          => 'string',
         Type::DECIMAL       => 'string',
+        Type::GUID          => 'string',
         Type::JSON_ARRAY    => 'array',
         Type::SIMPLE_ARRAY  => 'array',
         Type::BOOLEAN       => 'bool',
