@@ -122,7 +122,7 @@ class SchemaToolTest extends OrmTestCase
             ->getColumn('nullDefault')
             ->getCustomSchemaOptions();
 
-        $this->assertSame([], $customSchemaOptions);
+        $this->assertEmpty($customSchemaOptions);
     }
 
     /**

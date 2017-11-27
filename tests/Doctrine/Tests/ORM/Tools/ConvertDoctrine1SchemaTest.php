@@ -53,8 +53,8 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         $exporter->setMetadata($converter->getMetadata());
         $exporter->export();
 
-        $this->assertTrue(file_exists(__DIR__ . '/convert/User.dcm.yml'));
-        $this->assertTrue(file_exists(__DIR__ . '/convert/Profile.dcm.yml'));
+        $this->assertFileExists(__DIR__ . '/convert/User.dcm.yml');
+        $this->assertFileExists(__DIR__ . '/convert/Profile.dcm.yml');
 
         $metadataDriver = new YamlDriver(__DIR__ . '/convert');
         $em = $this->_createEntityManager($metadataDriver);
