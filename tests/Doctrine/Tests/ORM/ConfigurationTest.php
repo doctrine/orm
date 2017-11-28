@@ -38,7 +38,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetProxyDir()
     {
-        $this->assertSame(null, $this->configuration->getProxyDir()); // defaults
+        $this->assertNull($this->configuration->getProxyDir()); // defaults
 
         $this->configuration->setProxyDir(__DIR__);
         $this->assertSame(__DIR__, $this->configuration->getProxyDir());
@@ -60,7 +60,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetProxyNamespace()
     {
-        $this->assertSame(null, $this->configuration->getProxyNamespace()); // defaults
+        $this->assertNull($this->configuration->getProxyNamespace()); // defaults
 
         $this->configuration->setProxyNamespace(__NAMESPACE__);
         $this->assertSame(__NAMESPACE__, $this->configuration->getProxyNamespace());
@@ -68,7 +68,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetMetadataDriverImpl()
     {
-        $this->assertSame(null, $this->configuration->getMetadataDriverImpl()); // defaults
+        $this->assertNull($this->configuration->getMetadataDriverImpl()); // defaults
 
         $metadataDriver = $this->createMock(MappingDriver::class);
         $this->configuration->setMetadataDriverImpl($metadataDriver);
@@ -110,7 +110,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetQueryCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getQueryCacheImpl()); // defaults
+        $this->assertNull($this->configuration->getQueryCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setQueryCacheImpl($queryCacheImpl);
         $this->assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
@@ -118,7 +118,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetHydrationCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getHydrationCacheImpl()); // defaults
+        $this->assertNull($this->configuration->getHydrationCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setHydrationCacheImpl($queryCacheImpl);
         $this->assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
@@ -126,7 +126,7 @@ class ConfigurationTest extends TestCase
 
     public function testSetGetMetadataCacheImpl()
     {
-        $this->assertSame(null, $this->configuration->getMetadataCacheImpl()); // defaults
+        $this->assertNull($this->configuration->getMetadataCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setMetadataCacheImpl($queryCacheImpl);
         $this->assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
@@ -262,7 +262,7 @@ class ConfigurationTest extends TestCase
     {
         $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
+        $this->assertNull($this->configuration->getCustomStringFunction('NonExistingFunction'));
         $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomStringFunction('OtherFunctionName'));
     }
@@ -271,7 +271,7 @@ class ConfigurationTest extends TestCase
     {
         $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
+        $this->assertNull($this->configuration->getCustomNumericFunction('NonExistingFunction'));
         $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('OtherFunctionName'));
     }
@@ -280,14 +280,14 @@ class ConfigurationTest extends TestCase
     {
         $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
-        $this->assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
+        $this->assertNull($this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
         $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
         $this->assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('OtherFunctionName'));
     }
 
     public function testAddGetCustomHydrationMode()
     {
-        $this->assertSame(null, $this->configuration->getCustomHydrationMode('NonExisting'));
+        $this->assertNull($this->configuration->getCustomHydrationMode('NonExisting'));
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getCustomHydrationMode('HydrationModeName'));
     }
@@ -316,7 +316,7 @@ class ConfigurationTest extends TestCase
 
     public function testAddGetFilters()
     {
-        $this->assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
+        $this->assertNull($this->configuration->getFilterClassName('NonExistingFilter'));
         $this->configuration->addFilter('FilterName', __CLASS__);
         $this->assertSame(__CLASS__, $this->configuration->getFilterClassName('FilterName'));
     }

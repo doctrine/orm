@@ -243,7 +243,7 @@ class ReferenceProxyTest extends OrmFunctionalTestCase
         $restName = str_replace($this->_em->getConfiguration()->getProxyNamespace(), "", get_class($entity));
         $restName = substr(get_class($entity), strlen($this->_em->getConfiguration()->getProxyNamespace()) +1);
         $proxyFileName = $this->_em->getConfiguration()->getProxyDir() . DIRECTORY_SEPARATOR . str_replace("\\", "", $restName) . ".php";
-        $this->assertTrue(file_exists($proxyFileName), "Proxy file name cannot be found generically.");
+        $this->assertFileExists($proxyFileName, "Proxy file name cannot be found generically.");
 
         $entity->__load();
         $this->assertTrue($entity->__isInitialized());

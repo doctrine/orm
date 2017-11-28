@@ -526,8 +526,8 @@ class UnitOfWorkTest extends OrmTestCase
         $user->name = 'ocramius';
         $mergedUser = $this->_unitOfWork->merge($user);
 
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
+        self::assertEmpty($this->_unitOfWork->getOriginalEntityData($user), 'No original data was stored');
+        self::assertEmpty($this->_unitOfWork->getOriginalEntityData($mergedUser), 'No original data was stored');
 
 
         $user       = null;
@@ -541,7 +541,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->_unitOfWork->persist($newUser);
 
-        self::assertSame([], $this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
+        self::assertEmpty($this->_unitOfWork->getOriginalEntityData($newUser), 'No original data was stored');
     }
 
     /**

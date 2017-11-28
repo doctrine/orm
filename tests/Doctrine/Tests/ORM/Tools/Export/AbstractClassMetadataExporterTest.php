@@ -111,9 +111,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
         $exporter->export();
 
         if ($type == 'annotation') {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', ExportedUser::class).$this->_extension));
+            $this->assertFileExists(__DIR__ . '/export/' . $type . '/'.str_replace('\\', '/', ExportedUser::class).$this->_extension);
         } else {
-            $this->assertTrue(file_exists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser'.$this->_extension));
+            $this->assertFileExists(__DIR__ . '/export/' . $type . '/Doctrine.Tests.ORM.Tools.Export.ExportedUser'.$this->_extension);
         }
     }
 
