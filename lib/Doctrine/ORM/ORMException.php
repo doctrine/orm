@@ -124,18 +124,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $entityNamespaceAlias
-     *
-     * @return ORMException
-     */
-    public static function unknownEntityNamespace($entityNamespaceAlias)
-    {
-        return new self(
-            "Unknown Entity namespace alias '$entityNamespaceAlias'."
-        );
-    }
-
-    /**
      * @param string $className
      * @param string $fieldName
      *

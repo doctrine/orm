@@ -11,6 +11,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
+use Doctrine\ORM\Configuration\UnknownEntityNamespace;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;

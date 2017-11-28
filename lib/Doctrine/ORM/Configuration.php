@@ -14,6 +14,7 @@ use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
 use Doctrine\ORM\Configuration\InvalidEntityRepository;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
+use Doctrine\ORM\Configuration\UnknownEntityNamespace;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\DefaultEntityListenerResolver;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
