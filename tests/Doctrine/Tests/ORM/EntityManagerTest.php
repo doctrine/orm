@@ -8,6 +8,7 @@ use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManager\EntityManagerClosed;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\ORM\ORMException;
@@ -159,7 +160,7 @@ class EntityManagerTest extends OrmTestCase
      */
     public function testAffectedByErrorIfClosedException($methodName) : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(EntityManagerClosed::class);
         $this->expectExceptionMessage('closed');
 
         $this->em->close();

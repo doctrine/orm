@@ -50,14 +50,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @return ORMException
-     */
-    public static function entityManagerClosed()
-    {
-        return new self('The EntityManager is closed.');
-    }
-
-    /**
      * @param string $mode
      *
      * @return ORMException

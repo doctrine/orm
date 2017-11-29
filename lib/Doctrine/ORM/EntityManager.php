@@ -10,6 +10,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManager\EntityManagerClosed;
 use Doctrine\ORM\EntityManager\MissingMappingDriverImplementation;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -735,7 +736,7 @@ final class EntityManager implements EntityManagerInterface
     private function errorIfClosed()
     {
         if ($this->closed) {
-            throw ORMException::entityManagerClosed();
+            throw EntityManagerClosed::create();
         }
     }
 
