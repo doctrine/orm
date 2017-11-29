@@ -548,8 +548,8 @@ preFlush
 ~~~~~~~~
 
 ``preFlush`` is called at ``EntityManager#flush()`` before
-anything else. ``EntityManager#flush()`` can be called safely
-inside its listeners.
+anything else. ``EntityManager#flush()`` should never be called inside its listeners,
+because it will cause an infinite recursive call.
 
 .. code-block:: php
 
