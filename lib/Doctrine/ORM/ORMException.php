@@ -50,16 +50,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $mode
-     *
-     * @return ORMException
-     */
-    public static function invalidHydrationMode($mode)
-    {
-        return new self(sprintf("'%s' is an invalid hydration mode.", $mode));
-    }
-
-    /**
      * @return ORMException
      */
     public static function mismatchedEventManager()
