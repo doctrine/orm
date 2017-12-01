@@ -103,6 +103,6 @@ class GenerateProxiesCommand extends Command
 
         // Outputting information message
         $ui->newLine();
-        $ui->text(sprintf('Proxy classes generated to "<info>%s</INFO>"', $destPath));
+        $ui->text(sprintf('Proxy classes generated to "<info>%s</info>"', $destPath));
     }
 }
