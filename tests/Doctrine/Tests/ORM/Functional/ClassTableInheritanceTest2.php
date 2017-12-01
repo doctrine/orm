@@ -75,7 +75,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 
         $mmrel2 = $this->em->find(get_class($mmrel), $mmrel->getId());
         self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
-        self::assertEquals(1, count($mmrel2->getCTIChildren()));
+        self::assertCount(1, $mmrel2->getCTIChildren());
         self::assertTrue($mmrel2->getCTIChildren()->isInitialized());
         self::assertInstanceOf(CTIChild::class, $mmrel2->getCTIChildren()->get(0));
     }

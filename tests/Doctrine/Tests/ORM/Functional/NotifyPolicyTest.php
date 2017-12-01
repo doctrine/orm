@@ -45,14 +45,14 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->em->persist($user);
         $this->em->persist($group);
 
-        self::assertEquals(1, count($user->listeners));
-        self::assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $this->em->flush();
         $this->em->clear();
 
-        self::assertEquals(1, count($user->listeners));
-        self::assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $userId = $user->getId();
         $groupId = $group->getId();
@@ -63,8 +63,8 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $group = $this->em->find(NotifyGroup::class, $groupId);
         self::assertEquals(1, $group->getUsers()->count());
 
-        self::assertEquals(1, count($user->listeners));
-        self::assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2 = new NotifyGroup();
         $group2->setName('nerds');
@@ -77,8 +77,8 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
 
-        self::assertEquals(1, count($user->listeners));
-        self::assertEquals(1, count($group->listeners));
+        self::assertCount(1, $user->listeners);
+        self::assertCount(1, $group->listeners);
 
         $group2Id = $group2->getId();
         unset($group2, $user);

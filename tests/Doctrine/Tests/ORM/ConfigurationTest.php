@@ -44,7 +44,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetMetadataDriverImpl()
     {
-        self::assertSame(null, $this->configuration->getMetadataDriverImpl()); // defaults
+        self::assertNull($this->configuration->getMetadataDriverImpl()); // defaults
 
         $metadataDriver = $this->createMock(MappingDriver::class);
         $this->configuration->setMetadataDriverImpl($metadataDriver);
@@ -79,7 +79,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetQueryCacheImpl()
     {
-        self::assertSame(null, $this->configuration->getQueryCacheImpl()); // defaults
+        self::assertNull($this->configuration->getQueryCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setQueryCacheImpl($queryCacheImpl);
         self::assertSame($queryCacheImpl, $this->configuration->getQueryCacheImpl());
@@ -87,7 +87,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetHydrationCacheImpl()
     {
-        self::assertSame(null, $this->configuration->getHydrationCacheImpl()); // defaults
+        self::assertNull($this->configuration->getHydrationCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setHydrationCacheImpl($queryCacheImpl);
         self::assertSame($queryCacheImpl, $this->configuration->getHydrationCacheImpl());
@@ -95,7 +95,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testSetGetMetadataCacheImpl()
     {
-        self::assertSame(null, $this->configuration->getMetadataCacheImpl()); // defaults
+        self::assertNull($this->configuration->getMetadataCacheImpl()); // defaults
         $queryCacheImpl = $this->createMock(Cache::class);
         $this->configuration->setMetadataCacheImpl($queryCacheImpl);
         self::assertSame($queryCacheImpl, $this->configuration->getMetadataCacheImpl());
@@ -210,7 +210,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->addCustomStringFunction('FunctionName', __CLASS__);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomStringFunction('FunctionName'));
-        self::assertSame(null, $this->configuration->getCustomStringFunction('NonExistingFunction'));
+        self::assertNull($this->configuration->getCustomStringFunction('NonExistingFunction'));
 
         $this->configuration->setCustomStringFunctions(['OtherFunctionName' => __CLASS__]);
 
@@ -222,7 +222,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->addCustomNumericFunction('FunctionName', __CLASS__);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomNumericFunction('FunctionName'));
-        self::assertSame(null, $this->configuration->getCustomNumericFunction('NonExistingFunction'));
+        self::assertNull($this->configuration->getCustomNumericFunction('NonExistingFunction'));
 
         $this->configuration->setCustomNumericFunctions(['OtherFunctionName' => __CLASS__]);
 
@@ -234,7 +234,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->configuration->addCustomDatetimeFunction('FunctionName', __CLASS__);
 
         self::assertSame(__CLASS__, $this->configuration->getCustomDatetimeFunction('FunctionName'));
-        self::assertSame(null, $this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
+        self::assertNull($this->configuration->getCustomDatetimeFunction('NonExistingFunction'));
 
         $this->configuration->setCustomDatetimeFunctions(['OtherFunctionName' => __CLASS__]);
 
@@ -243,7 +243,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testAddGetCustomHydrationMode()
     {
-        self::assertSame(null, $this->configuration->getCustomHydrationMode('NonExisting'));
+        self::assertNull($this->configuration->getCustomHydrationMode('NonExisting'));
 
         $this->configuration->addCustomHydrationMode('HydrationModeName', __CLASS__);
 
@@ -277,7 +277,7 @@ class ConfigurationTest extends DoctrineTestCase
 
     public function testAddGetFilters()
     {
-        self::assertSame(null, $this->configuration->getFilterClassName('NonExistingFilter'));
+        self::assertNull($this->configuration->getFilterClassName('NonExistingFilter'));
 
         $this->configuration->addFilter('FilterName', __CLASS__);
 

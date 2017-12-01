@@ -191,7 +191,7 @@ class NewOperatorTest extends OrmFunctionalTestCase
         $dql = "
             SELECT
                 new CmsUserDTO(u.name, e.email, a.city)
-            FROM 
+            FROM
                 Doctrine\Tests\Models\CMS\CmsUser u
             JOIN
                 u.email e
@@ -307,9 +307,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals('fabio.bat.silva@gmail.com', $result[1]->email);
         self::assertEquals('fabio.bat.silva@gmail.com', $result[2]->email);
 
-        self::assertEquals(false, $result[0]->address);
-        self::assertEquals(false, $result[1]->address);
-        self::assertEquals(false, $result[2]->address);
+        self::assertFalse($result[0]->address);
+        self::assertFalse($result[1]->address);
+        self::assertFalse($result[2]->address);
 
         self::assertEquals(123, $result[0]->phonenumbers);
         self::assertEquals(123, $result[1]->phonenumbers);

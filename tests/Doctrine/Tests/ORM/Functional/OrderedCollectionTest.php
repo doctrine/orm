@@ -63,7 +63,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
 
         $route = $this->em->find(RoutingRoute::class, $routeId);
 
-        self::assertEquals(2, count($route->legs));
+        self::assertCount(2, $route->legs);
         self::assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
         self::assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
     }
@@ -94,7 +94,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
 
         $route = $this->em->find(RoutingRoute::class, $routeId);
 
-        self::assertEquals(2, count($route->bookings));
+        self::assertCount(2, $route->bookings);
         self::assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
         self::assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
     }
@@ -107,7 +107,7 @@ class OrderedCollectionTest extends OrmFunctionalTestCase
                            ->setParameter(1, $routeId)
                            ->getSingleResult();
 
-        self::assertEquals(2, count($route->legs));
+        self::assertCount(2, $route->legs);
         self::assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
         self::assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
     }

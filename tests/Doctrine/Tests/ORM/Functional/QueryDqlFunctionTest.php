@@ -68,7 +68,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, ABS(m.salary * -1) AS abs FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(100000, $result[0]['abs']);
         self::assertEquals(200000, $result[1]['abs']);
         self::assertEquals(400000, $result[2]['abs']);
@@ -80,7 +80,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $arg = $this->em->createQuery('SELECT m, CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getArrayResult();
 
-        self::assertEquals(4, count($arg));
+        self::assertCount(4, $arg);
         self::assertEquals('Roman B.IT', $arg[0]['namedep']);
         self::assertEquals('Benjamin E.HR', $arg[1]['namedep']);
         self::assertEquals('Guilherme B.Complaint Department', $arg[2]['namedep']);
@@ -92,7 +92,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, LENGTH(CONCAT(m.name, m.department)) AS namedeplength FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(10, $result[0]['namedeplength']);
         self::assertEquals(13, $result[1]['namedeplength']);
         self::assertEquals(32, $result[2]['namedeplength']);
@@ -107,7 +107,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery($dql)
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(0, $result[0]['loc']);
         self::assertEquals(2, $result[1]['loc']);
         self::assertEquals(6, $result[2]['loc']);
@@ -123,7 +123,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery("SELECT m, LOWER(m.name) AS lowername FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals('roman b.', $result[0]['lowername']);
         self::assertEquals('benjamin e.', $result[1]['lowername']);
         self::assertEquals('guilherme b.', $result[2]['lowername']);
@@ -135,7 +135,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery("SELECT m, MOD(m.salary, 3500) AS amod FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(2000, $result[0]['amod']);
         self::assertEquals(500, $result[1]['amod']);
         self::assertEquals(1000, $result[2]['amod']);
@@ -147,7 +147,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery("SELECT m, SQRT(m.salary) AS sqrtsalary FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(316, round($result[0]['sqrtsalary']));
         self::assertEquals(447,  round($result[1]['sqrtsalary']));
         self::assertEquals(632, round($result[2]['sqrtsalary']));
@@ -159,7 +159,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery("SELECT m, UPPER(m.name) AS uppername FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals('ROMAN B.', $result[0]['uppername']);
         self::assertEquals('BENJAMIN E.', $result[1]['uppername']);
         self::assertEquals('GUILHERME B.', $result[2]['uppername']);
@@ -174,7 +174,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery($dql)
                          ->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals('Ben', $result[0]['str1']);
         self::assertEquals('Gui', $result[1]['str1']);
         self::assertEquals('Jon', $result[2]['str1']);
@@ -194,7 +194,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
 
         $result = $this->em->createQuery($dql)->getArrayResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals('Roman B', $result[0]['str1']);
         self::assertEquals('Benjamin E', $result[1]['str1']);
         self::assertEquals('Guilherme B', $result[2]['str1']);
@@ -214,7 +214,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, m.salary+2500 AS add FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(102500, $result[0]['add']);
         self::assertEquals(202500, $result[1]['add']);
         self::assertEquals(402500, $result[2]['add']);
@@ -226,7 +226,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, m.salary-2500 AS sub FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(97500, $result[0]['sub']);
         self::assertEquals(197500, $result[1]['sub']);
         self::assertEquals(397500, $result[2]['sub']);
@@ -238,7 +238,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, m.salary*2 AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
@@ -253,7 +253,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $result = $this->em->createQuery('SELECT m, (m.salary/0.5) AS op FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC')
                 ->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
         self::assertEquals(200000, $result[0]['op']);
         self::assertEquals(400000, $result[1]['op']);
         self::assertEquals(800000, $result[2]['op']);
@@ -265,7 +265,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $arg = $this->em->createQuery('SELECT CONCAT(m.name, m.department) AS namedep FROM Doctrine\Tests\Models\Company\CompanyManager m order by namedep desc')
                 ->getArrayResult();
 
-        self::assertEquals(4, count($arg));
+        self::assertCount(4, $arg);
         self::assertEquals('Roman B.IT', $arg[0]['namedep']);
         self::assertEquals('Jonathan W.Administration', $arg[1]['namedep']);
         self::assertEquals('Guilherme B.Complaint Department', $arg[2]['namedep']);

@@ -243,7 +243,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         // Check indexes
         $indexes = $metadata->table->getIndexes();
 
-        self::assertTrue( ! empty($indexes['index1']['columns']));
+        self::assertNotEmpty($indexes['index1']['columns']);
         self::assertEquals(
             ['column_index1','column_index2'],
             $indexes['index1']['columns']
@@ -252,7 +252,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         // Check unique constraints
         $uniqueConstraints = $metadata->table->getUniqueConstraints();
 
-        self::assertTrue( ! empty($uniqueConstraints['unique_index1']['columns']));
+        self::assertNotEmpty($uniqueConstraints['unique_index1']['columns']);
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
             $uniqueConstraints['unique_index1']['columns']

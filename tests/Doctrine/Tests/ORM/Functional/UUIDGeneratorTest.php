@@ -32,7 +32,7 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
 
         $this->em->persist($entity);
         self::assertNotNull($entity->getId());
-        self::assertTrue(strlen($entity->getId()) > 0);
+        self::assertGreaterThan(0, strlen($entity->getId()));
     }
 }
 

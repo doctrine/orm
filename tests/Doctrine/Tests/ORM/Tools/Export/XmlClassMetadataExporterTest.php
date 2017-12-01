@@ -37,10 +37,10 @@ class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
         $xml->registerXPathNamespace("d", "http://doctrine-project.org/schemas/orm/doctrine-mapping");
 
         $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @nullable='true']");
-        self::assertEquals(1, count($nodes));
+        self::assertCount(1, $nodes);
 
         $nodes = $xml->xpath("/d:doctrine-mapping/d:entity/d:field[@name='name' and @type='string' and @unique='true']");
-        self::assertEquals(1, count($nodes));
+        self::assertCount(1, $nodes);
     }
 
     /**

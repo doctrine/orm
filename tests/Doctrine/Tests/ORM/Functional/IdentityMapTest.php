@@ -45,16 +45,16 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $user2 = $this->em->find(get_class($user), $user->getId());
-        self::assertTrue($user2 !== $user);
+        self::assertNotSame($user2, $user);
         $user3 = $this->em->find(get_class($user), $user->getId());
-        self::assertTrue($user2 === $user3);
+        self::assertSame($user2, $user3);
 
         $address2 = $this->em->find(get_class($address), $address->getId());
-        self::assertTrue($address2 !== $address);
+        self::assertNotSame($address2, $address);
         $address3 = $this->em->find(get_class($address), $address->getId());
-        self::assertTrue($address2 === $address3);
+        self::assertSame($address2, $address3);
 
-        self::assertTrue($user2->getAddress() === $address2); // !!!
+        self::assertSame($user2->getAddress(), $address2); // !!!
     }
 
     public function testSingleValuedAssociationIdentityMapBehaviorWithRefresh()
@@ -137,7 +137,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
 
         // Should still be $user1
         self::assertSame($user1, $address2->user);
-        self::assertTrue($user2->address === null);
+        self::assertNull($user2->address);
 
         // But we want to have this external change!
         // Solution 2: Alternatively, a refresh query should work
@@ -179,7 +179,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->em->persist($user); // cascaded to phone numbers
         $this->em->flush();
 
-        self::assertEquals(3, count($user->getPhonenumbers()));
+        self::assertCount(3, $user->getPhonenumbers());
         self::assertFalse($user->getPhonenumbers()->isDirty());
 
         //external update to CmsAddress
@@ -193,7 +193,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user, $user2);
 
         // Should still be the same 3 phonenumbers
-        self::assertEquals(3, count($user2->getPhonenumbers()));
+        self::assertCount(3, $user2->getPhonenumbers());
 
         // But we want to have this external change!
         // Solution 1: refresh().
@@ -206,7 +206,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user, $user3); // should still be the same, always from identity map
 
         // Now the collection should be refreshed with correct count
-        self::assertEquals(4, count($user3->getPhonenumbers()));
+        self::assertCount(4, $user3->getPhonenumbers());
     }
 
     public function testCollectionValuedAssociationIdentityMapBehaviorWithRefresh()
@@ -232,7 +232,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         $this->em->persist($user); // cascaded to phone numbers
         $this->em->flush();
 
-        self::assertEquals(3, count($user->getPhonenumbers()));
+        self::assertCount(3, $user->getPhonenumbers());
 
         //external update to CmsAddress
         $this->em->getConnection()->executeUpdate('insert into cms_phonenumbers (phonenumber, user_id) VALUES (?,?)', [999, $user->getId()]
@@ -245,7 +245,7 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user, $user2);
 
         // Should still be the same 3 phonenumbers
-        self::assertEquals(3, count($user2->getPhonenumbers()));
+        self::assertCount(3, $user2->getPhonenumbers());
 
         // But we want to have this external change!
         // Solution 1: refresh().
@@ -254,7 +254,6 @@ class IdentityMapTest extends OrmFunctionalTestCase
         self::assertSame($user, $user2); // should still be the same, always from identity map
 
         // Now the collection should be refreshed with correct count
-        self::assertEquals(4, count($user2->getPhonenumbers()));
+        self::assertCount(4, $user2->getPhonenumbers());
     }
 }
-

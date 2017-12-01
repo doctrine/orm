@@ -66,7 +66,7 @@ class QueryTest extends OrmTestCase
 
         $query->free();
 
-        self::assertEquals(0, count($query->getParameters()));
+        self::assertCount(0, $query->getParameters());
     }
 
     public function testClone()
@@ -80,7 +80,7 @@ class QueryTest extends OrmTestCase
         $cloned = clone $query;
 
         self::assertEquals($dql, $cloned->getDQL());
-        self::assertEquals(0, count($cloned->getParameters()));
+        self::assertCount(0, $cloned->getParameters());
         self::assertFalse($cloned->getHint('foo'));
     }
 

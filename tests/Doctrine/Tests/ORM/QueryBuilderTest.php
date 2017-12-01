@@ -775,7 +775,7 @@ class QueryBuilderTest extends OrmTestCase
         $q1 = $qb->getQuery();
 
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name', $q1->getDQL());
-        self::assertEquals(1, count($q1->getParameters()));
+        self::assertCount(1, $q1->getParameters());
 
         // add another condition and construct a second query
         $qb->andWhere($expr->eq('u.id', ':id'));
@@ -784,9 +784,9 @@ class QueryBuilderTest extends OrmTestCase
         $q2 = $qb->getQuery();
 
         self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.name = :name AND u.id = :id', $q2->getDQL());
-        self::assertTrue($q1 !== $q2); // two different, independent queries
-        self::assertEquals(2, count($q2->getParameters()));
-        self::assertEquals(1, count($q1->getParameters())); // $q1 unaffected
+        self::assertNotSame($q1, $q2); // two different, independent queries
+        self::assertCount(2, $q2->getParameters());
+        self::assertCount(1, $q1->getParameters()); // $q1 unaffected
     }
 
     public function testGetEntityManager()
@@ -827,12 +827,12 @@ class QueryBuilderTest extends OrmTestCase
             ->where('u.username = ?1')->orderBy('u.username');
 
         self::assertEquals('u.username = ?1', (string)$qb->getDQLPart('where'));
-        self::assertEquals(1, count($qb->getDQLPart('orderBy')));
+        self::assertCount(1, $qb->getDQLPart('orderBy'));
 
         $qb->resetDQLPart('where')->resetDQLPart('orderBy');
 
         self::assertNull($qb->getDQLPart('where'));
-        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertCount(0, $qb->getDQLPart('orderBy'));
     }
 
     public function testResetDQLParts()
@@ -844,9 +844,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->resetDQLParts(['where', 'orderBy']);
 
-        self::assertEquals(1, count($qb->getDQLPart('select')));
+        self::assertCount(1, $qb->getDQLPart('select'));
         self::assertNull($qb->getDQLPart('where'));
-        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertCount(0, $qb->getDQLPart('orderBy'));
     }
 
     public function testResetAllDQLParts()
@@ -858,9 +858,9 @@ class QueryBuilderTest extends OrmTestCase
 
         $qb->resetDQLParts();
 
-        self::assertEquals(0, count($qb->getDQLPart('select')));
+        self::assertCount(0, $qb->getDQLPart('select'));
         self::assertNull($qb->getDQLPart('where'));
-        self::assertEquals(0, count($qb->getDQLPart('orderBy')));
+        self::assertCount(0, $qb->getDQLPart('orderBy'));
     }
 
     /**

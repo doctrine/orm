@@ -80,7 +80,7 @@ class FileLockRegionTest extends AbstractRegionTest
 
         self::assertFileExists($file);
         self::assertInstanceOf(Lock::class, $lock);
-        self::assertEquals($lock->value, file_get_contents($file));
+        self::assertStringEqualsFile($file, $lock->value);
 
         // should be not available after lock
         self::assertFalse($this->region->contains($key));
@@ -102,10 +102,10 @@ class FileLockRegionTest extends AbstractRegionTest
 
         file_put_contents($file, 'foo');
         self::assertFileExists($file);
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
 
         self::assertNull($this->region->lock($key));
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
         self::assertFileExists($file);
 
         // should be not available
@@ -124,17 +124,17 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertTrue($this->region->contains($key));
 
         self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        self::assertEquals($lock->value, file_get_contents($file));
+        self::assertStringEqualsFile($file, $lock->value);
         self::assertFileExists($file);
 
         // change the lock
         file_put_contents($file, 'foo');
         self::assertFileExists($file);
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
 
         //try to unlock
         self::assertFalse($this->region->unlock($key, $lock));
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
         self::assertFileExists($file);
 
         // should be not available
@@ -155,14 +155,14 @@ class FileLockRegionTest extends AbstractRegionTest
         // create lock
         file_put_contents($file, 'foo');
         self::assertFileExists($file);
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
 
         self::assertFalse($this->region->contains($key));
         self::assertFalse($this->region->put($key, $entry));
         self::assertFalse($this->region->contains($key));
 
         self::assertFileExists($file);
-        self::assertEquals('foo' , file_get_contents($file));
+        self::assertStringEqualsFile($file, 'foo');
     }
 
     public function testLockedEvict()
@@ -176,7 +176,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertTrue($this->region->contains($key));
 
         self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        self::assertEquals($lock->value, file_get_contents($file));
+        self::assertStringEqualsFile($file, $lock->value);
         self::assertFileExists($file);
 
         self::assertFalse($this->region->contains($key));
@@ -206,8 +206,8 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertInstanceOf(Lock::class, $lock1 = $this->region->lock($key1));
         self::assertInstanceOf(Lock::class, $lock2 = $this->region->lock($key2));
 
-        self::assertEquals($lock2->value, file_get_contents($file2));
-        self::assertEquals($lock1->value, file_get_contents($file1));
+        self::assertStringEqualsFile($file2, $lock2->value);
+        self::assertStringEqualsFile($file1, $lock1->value);
 
         self::assertFileExists($file1);
         self::assertFileExists($file2);
@@ -236,7 +236,7 @@ class FileLockRegionTest extends AbstractRegionTest
         self::assertTrue($this->region->contains($key));
 
         self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
-        self::assertEquals($lock->value, file_get_contents($file));
+        self::assertStringEqualsFile($file, $lock->value);
         self::assertFileExists($file);
 
         // outdated lock should be removed

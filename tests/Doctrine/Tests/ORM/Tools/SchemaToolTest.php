@@ -152,8 +152,8 @@ class SchemaToolTest extends OrmTestCase
         self::assertTrue($schema->hasTable('unique_constraint_annotation_table'));
         $table = $schema->getTable('unique_constraint_annotation_table');
 
-        self::assertEquals(1, count($table->getIndexes()));
-        self::assertEquals(1, count($table->getUniqueConstraints()));
+        self::assertCount(1, $table->getIndexes());
+        self::assertCount(1, $table->getUniqueConstraints());
         self::assertTrue($table->hasIndex('primary'));
         self::assertTrue($table->hasUniqueConstraint('uniq_hash'));
     }

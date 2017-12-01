@@ -52,7 +52,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
             "JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t"
         )->getSingleResult();
 
-        self::assertEquals(1, count($routes->legs));
+        self::assertCount(1, $routes->legs);
         self::assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
         self::assertEquals("Bonn", $routes->legs[0]->toLocation->name);
     }

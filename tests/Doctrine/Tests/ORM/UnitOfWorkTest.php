@@ -108,9 +108,9 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($user);
 
         // Check
-        self::assertEquals(0, count($userPersister->getInserts()));
-        self::assertEquals(0, count($userPersister->getUpdates()));
-        self::assertEquals(0, count($userPersister->getDeletes()));
+        self::assertCount(0, $userPersister->getInserts());
+        self::assertCount(0, $userPersister->getUpdates());
+        self::assertCount(0, $userPersister->getDeletes());
         self::assertFalse($this->unitOfWork->isInIdentityMap($user));
         // should no longer be scheduled for insert
         self::assertTrue($this->unitOfWork->isScheduledForInsert($user));
@@ -122,13 +122,13 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->commit();
 
         // Check.
-        self::assertEquals(1, count($userPersister->getInserts()));
-        self::assertEquals(0, count($userPersister->getUpdates()));
-        self::assertEquals(0, count($userPersister->getDeletes()));
+        self::assertCount(1, $userPersister->getInserts());
+        self::assertCount(0, $userPersister->getUpdates());
+        self::assertCount(0, $userPersister->getDeletes());
 
         // should have an id
-        self::assertTrue(is_numeric($user->id));
-    }
+        self::assertInternalType('numeric', $user->id);
+}
 
     /**
      * Tests a scenario where a save() operation is cascaded from a ForumUser
@@ -155,16 +155,16 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->unitOfWork->commit();
 
-        self::assertTrue(is_numeric($user->id));
-        self::assertTrue(is_numeric($avatar->id));
+        self::assertInternalType('numeric', $user->id);
+        self::assertInternalType('numeric', $avatar->id);
 
-        self::assertEquals(1, count($userPersister->getInserts()));
-        self::assertEquals(0, count($userPersister->getUpdates()));
-        self::assertEquals(0, count($userPersister->getDeletes()));
+        self::assertCount(1, $userPersister->getInserts());
+        self::assertCount(0, $userPersister->getUpdates());
+        self::assertCount(0, $userPersister->getDeletes());
 
-        self::assertEquals(1, count($avatarPersister->getInserts()));
-        self::assertEquals(0, count($avatarPersister->getUpdates()));
-        self::assertEquals(0, count($avatarPersister->getDeletes()));
+        self::assertCount(1, $avatarPersister->getInserts());
+        self::assertCount(0, $avatarPersister->getUpdates());
+        self::assertCount(0, $avatarPersister->getDeletes());
     }
 
     public function testChangeTrackingNotify()
@@ -179,9 +179,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($entity);
 
         $this->unitOfWork->commit();
-
         self::assertCount(1, $persister->getInserts());
-
         $persister->reset();
 
         self::assertTrue($this->unitOfWork->isInIdentityMap($entity));
@@ -205,7 +203,7 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($item);
 
         $this->unitOfWork->commit();
-        self::assertEquals(1, count($itemPersister->getInserts()));
+        self::assertCount(1, $itemPersister->getInserts());
         $persister->reset();
         $itemPersister->reset();
 
@@ -215,8 +213,8 @@ class UnitOfWorkTest extends OrmTestCase
         self::assertTrue($entity->getItems()->isDirty());
         $this->unitOfWork->commit();
         $updates = $itemPersister->getUpdates();
-        self::assertEquals(1, count($updates));
-        self::assertTrue($updates[0] === $item);
+        self::assertCount(1, $updates);
+        self::assertSame($updates[0], $item);
     }
 
     public function testChangeTrackingNotifyIndividualCommit()

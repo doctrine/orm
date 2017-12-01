@@ -42,7 +42,7 @@ class SetupTest extends OrmTestCase
     {
         Setup::registerAutoloadDirectory(__DIR__ . "/../../../../../vendor/doctrine/common/lib");
 
-        self::assertEquals($this->originalAutoloaderCount + 2, count(spl_autoload_functions()));
+        self::assertCount($this->originalAutoloaderCount + 2, spl_autoload_functions());
     }
 
     public function testAnnotationConfiguration()
