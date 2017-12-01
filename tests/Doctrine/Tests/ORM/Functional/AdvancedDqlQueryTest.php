@@ -51,7 +51,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertEquals('IT', $result[0]['department']);
         self::assertEquals(150000, $result[0]['avgSalary']);
         self::assertEquals('IT2', $result[1]['department']);
@@ -66,7 +66,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertEquals(150000, $result[0][1]);
         self::assertEquals(600000, $result[1][1]);
     }
@@ -80,7 +80,7 @@ GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department -- com
 
         $result = $this->_em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertEquals('Jonathan W.', $result[0]['name']);
         self::assertEquals(3, $result[0]['friends']);
@@ -148,11 +148,11 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        self::assertEquals(2, count($result));
-        self::assertTrue($result[0]->getId() > 0);
+        self::assertCount(2, $result);
+        self::assertGreaterThan(0, $result[0]->getId());
         self::assertNull($result[0]->getSpouse());
 
-        self::assertTrue($result[1]->getId() > 0);
+        self::assertGreaterThan(0, $result[1]->getId());
         self::assertNull($result[1]->getSpouse());
 
         $this->_em->clear();
@@ -167,7 +167,7 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getArrayResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertEquals('Caramba', $result[0]['brandName']);
 
         $this->_em->clear();
@@ -182,7 +182,7 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getScalarResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertEquals('Roman B.', $result[0]['name']);
 
         $this->_em->clear();
@@ -197,7 +197,7 @@ DQL;
         $query  = $this->_em->createQuery($dql);
         $result = $query->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         $this->_em->clear();
 

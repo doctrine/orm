@@ -640,7 +640,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        self::assertEquals(0, count($cm->getNamedQueries()));
+        self::assertCount(0, $cm->getNamedQueries());
 
         $cm->addNamedQuery(
             [
@@ -649,7 +649,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        self::assertEquals(1, count($cm->getNamedQueries()));
+        self::assertCount(1, $cm->getNamedQueries());
     }
 
     /**
@@ -660,7 +660,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        self::assertEquals(0, count($cm->getSqlResultSetMappings()));
+        self::assertCount(0, $cm->getSqlResultSetMappings());
 
         $cm->addSqlResultSetMapping(
             [
@@ -673,7 +673,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        self::assertEquals(1, count($cm->getSqlResultSetMappings()));
+        self::assertCount(1, $cm->getSqlResultSetMappings());
     }
 
     public function testExistanceOfNamedQuery(): void
@@ -854,7 +854,7 @@ class ClassMetadataTest extends OrmTestCase
         $cm = new ClassMetadata(CMS\CmsUser::class);
         $cm->initializeReflection(new RuntimeReflectionService());
 
-        self::assertEquals(0, count($cm->getNamedNativeQueries()));
+        self::assertCount(0, $cm->getNamedNativeQueries());
 
         $cm->addNamedNativeQuery(
             [
@@ -865,7 +865,7 @@ class ClassMetadataTest extends OrmTestCase
             ]
         );
 
-        self::assertEquals(1, count($cm->getNamedNativeQueries()));
+        self::assertCount(1, $cm->getNamedNativeQueries());
     }
 
     /**

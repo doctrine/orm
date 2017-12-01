@@ -118,7 +118,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->groups->isInitialized());
-        self::assertEquals(3, count($user->groups));
+        self::assertCount(3, $user->groups);
         self::assertFalse($user->groups->isInitialized());
 
         foreach ($user->groups as $group) {
@@ -141,7 +141,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->persist($newGroup);
 
         self::assertFalse($user->groups->isInitialized());
-        self::assertEquals(4, count($user->groups));
+        self::assertCount(4, $user->groups);
         self::assertFalse($user->groups->isInitialized());
     }
 
@@ -158,7 +158,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         }
 
         self::assertTrue($user->groups->isInitialized());
-        self::assertEquals(3, count($user->groups));
+        self::assertCount(3, $user->groups);
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount(), 'Should only execute one query to initialize collection, no extra query for count() more.');
     }
 
@@ -170,7 +170,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $group = $this->_em->find(CmsGroup::class, $this->groupId);
         self::assertFalse($group->users->isInitialized(), 'Pre-Condition');
 
-        self::assertEquals(4, count($group->users));
+        self::assertCount(4, $group->users);
         self::assertFalse($group->users->isInitialized(), 'Extra Lazy collection should not be initialized by counting the collection.');
     }
 
@@ -182,7 +182,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->_em->find(CmsUser::class, $this->userId);
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition');
 
-        self::assertEquals(2, count($user->articles));
+        self::assertCount(2, $user->articles);
     }
 
     /**
@@ -193,7 +193,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
         self::assertFalse($otherClass->childClasses->isInitialized(), 'Pre-Condition');
-        self::assertEquals(2, count($otherClass->childClasses));
+        self::assertCount(2, $otherClass->childClasses);
     }
 
     /**
@@ -205,7 +205,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertFalse($user->groups->isInitialized(), 'Pre-Condition: Collection is not initialized.');
 
         $someGroups = $user->groups->slice(null);
-        self::assertEquals(3, count($someGroups));
+        self::assertCount(3, $someGroups);
     }
 
     /**
@@ -222,20 +222,20 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $someGroups = $user->groups->slice(0, 2);
 
         self::assertContainsOnly(CmsGroup::class, $someGroups);
-        self::assertEquals(2, count($someGroups));
+        self::assertCount(2, $someGroups);
         self::assertFalse($user->groups->isInitialized(), "Slice should not initialize the collection if it wasn't before!");
 
         $otherGroup = $user->groups->slice(2, 1);
 
         self::assertContainsOnly(CmsGroup::class, $otherGroup);
-        self::assertEquals(1, count($otherGroup));
+        self::assertCount(1, $otherGroup);
         self::assertFalse($user->groups->isInitialized());
 
         foreach ($user->groups as $group) {
         }
 
         self::assertTrue($user->groups->isInitialized());
-        self::assertEquals(3, count($user->groups));
+        self::assertCount(3, $user->groups);
 
         self::assertEquals($queryCount + 3, $this->getCurrentQueryCount());
     }
@@ -256,7 +256,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        self::assertEquals(2, count($someGroups));
+        self::assertCount(2, $someGroups);
         self::assertTrue($user->groups->contains(array_shift($someGroups)));
         self::assertTrue($user->groups->contains(array_shift($someGroups)));
     }
@@ -275,8 +275,8 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
 
         self::assertContainsOnly(CmsUser::class, $someUsers);
         self::assertContainsOnly(CmsUser::class, $otherUsers);
-        self::assertEquals(2, count($someUsers));
-        self::assertEquals(2, count($otherUsers));
+        self::assertCount(2, $someUsers);
+        self::assertCount(2, $otherUsers);
 
         // +2 queries executed by slice
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), 'Slicing two parts should only execute two additional queries.');
@@ -430,7 +430,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
     {
         $otherClass = $this->_em->find(DDC2504OtherClass::class, $this->ddc2504OtherClassId);
 
-        self::assertEquals(2, count($otherClass->childClasses));
+        self::assertCount(2, $otherClass->childClasses);
 
         self::assertFalse($otherClass->childClasses->isInitialized());
     }
@@ -522,12 +522,12 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $this->_em->persist($newGroup);
 
         self::assertFalse($user->groups->isInitialized());
-        self::assertEquals(4, count($user->groups));
+        self::assertCount(4, $user->groups);
         self::assertFalse($user->groups->isInitialized());
 
         $this->_em->flush();
 
-        self::assertEquals(4, count($user->groups));
+        self::assertCount(4, $user->groups);
     }
 
     /**
@@ -548,7 +548,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $qc     = $this->getCurrentQueryCount();
         $groups = $user->groups->slice(0, 10);
 
-        self::assertEquals(4, count($groups));
+        self::assertCount(4, $groups);
         self::assertEquals($qc + 1, $this->getCurrentQueryCount());
     }
 

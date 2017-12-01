@@ -60,7 +60,7 @@ class DDC1193Test extends OrmFunctionalTestCase
         $this->_em->remove($company);
         $this->_em->flush();
 
-        self::assertEquals(count($this->_em->getRepository(get_class($account))->findAll()), 0);
+        self::assertCount(0, $this->_em->getRepository(get_class($account))->findAll());
     }
 }
 

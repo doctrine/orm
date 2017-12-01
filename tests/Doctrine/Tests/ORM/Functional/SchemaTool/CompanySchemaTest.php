@@ -66,6 +66,6 @@ class CompanySchemaTest extends OrmFunctionalTestCase
                 $this->_em->getClassMetadata(CompanyManager::class),
             ]
         );
-        self::assertEquals(4, count($sql));
+        self::assertCount(4, $sql);
     }
 }

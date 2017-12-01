@@ -53,9 +53,9 @@ class ResultSetMappingTest extends OrmTestCase
         self::assertFalse($this->_rsm->isScalarResult('username'));
         self::assertFalse($this->_rsm->isScalarResult('name'));
 
-        self::assertTrue($this->_rsm->getClassName('u') === CmsUser::class);
+        self::assertEquals($this->_rsm->getClassName('u'), CmsUser::class);
         $class = $this->_rsm->getDeclaringClass('id');
-        self::assertTrue($class === CmsUser::class);
+        self::assertEquals($class, CmsUser::class);
 
         self::assertEquals('u', $this->_rsm->getEntityAlias('id'));
         self::assertEquals('u', $this->_rsm->getEntityAlias('status'));

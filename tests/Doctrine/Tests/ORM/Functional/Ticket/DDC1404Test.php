@@ -53,9 +53,10 @@ class DDC1404Test extends OrmFunctionalTestCase
         self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
         self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
 
-        self::assertEquals(count($queryAll->getResult()), 2);
-        self::assertEquals(count($queryFirst->getResult()), 1);
-        self::assertEquals(count($querySecond->getResult()), 1);
+
+        self::assertCount(2, $queryAll->getResult());
+        self::assertCount(1, $queryFirst->getResult());
+        self::assertCount(1, $querySecond->getResult());
     }
 
     public function loadFixtures(): void

@@ -76,7 +76,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
         )
                 ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $poofy = $result[0];
 
         self::assertEquals('Aari', $poofy->children[0]->getName());

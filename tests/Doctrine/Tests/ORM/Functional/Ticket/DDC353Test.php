@@ -44,7 +44,7 @@ class DDC353Test extends OrmFunctionalTestCase
         $em->clear();
 
         $fileId = $file->getFileId();
-        self::assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $file = $em->getReference(DDC353File::class, $fileId);
         self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($file), 'Reference Proxy should be marked MANAGED.');
@@ -71,7 +71,7 @@ class DDC353Test extends OrmFunctionalTestCase
         $fileId    = $file->getFileId();
         $pictureId = $picture->getPictureId();
 
-        self::assertTrue($fileId > 0);
+        self::assertGreaterThan(0, $fileId);
 
         $picture = $em->find(DDC353Picture::class, $pictureId);
         self::assertEquals(UnitOfWork::STATE_MANAGED, $em->getUnitOfWork()->getEntityState($picture->getFile()), 'Lazy Proxy should be marked MANAGED.');

@@ -55,7 +55,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->_em->persist($this->product);
         $this->_em->flush();
 
-        self::assertEquals(0, count($this->product->getFeatures()));
+        self::assertCount(0, $this->product->getFeatures());
     }
 
     public function testDoesNotSaveAnInverseSideSet(): void
@@ -160,7 +160,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
     {
         $query    = $this->_em->createQuery('select f,p from Doctrine\Tests\Models\ECommerce\ECommerceFeature f join f.product p');
         $features = $query->getResult();
-        self::assertEquals(0, count($features));
+        self::assertCount(0, $features);
     }
 
     /**
@@ -178,12 +178,12 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         ));
 
         self::assertInstanceOf(Collection::class, $results);
-        self::assertEquals(1, count($results));
+        self::assertCount(1, $results);
 
         $results = $features->matching(new Criteria());
 
         self::assertInstanceOf(Collection::class, $results);
-        self::assertEquals(2, count($results));
+        self::assertCount(2, $results);
     }
 
     /**
@@ -205,7 +205,7 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
             Criteria::expr()->eq('description', 'Model writing tutorial')
         ));
 
-        self::assertEquals(2, count($results));
+        self::assertCount(2, $results);
     }
 
     public function testMatchingBis(): void

@@ -36,7 +36,7 @@ class DDC748Test extends OrmFunctionalTestCase
 
         self::assertInstanceOf(Collection::class, $user->articles);
         $this->_em->refresh($article);
-        self::assertTrue($article !== $user->articles, 'The article should not be replaced on the inverse side of the relation.');
+        self::assertNotSame($article, $user->articles, 'The article should not be replaced on the inverse side of the relation.');
         self::assertInstanceOf(Collection::class, $user->articles);
     }
 

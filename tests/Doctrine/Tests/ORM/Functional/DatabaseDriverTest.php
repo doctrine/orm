@@ -215,13 +215,13 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
         self::assertEquals(4, $metadata->fieldMappings['columnDecimal']['precision']);
         self::assertEquals(3, $metadata->fieldMappings['columnDecimal']['scale']);
 
-        self::assertTrue(! empty($metadata->table['indexes']['index1']['columns']));
+        self::assertNotEmpty($metadata->table['indexes']['index1']['columns']);
         self::assertEquals(
             ['column_index1', 'column_index2'],
             $metadata->table['indexes']['index1']['columns']
         );
 
-        self::assertTrue(! empty($metadata->table['uniqueConstraints']['unique_index1']['columns']));
+        self::assertNotEmpty($metadata->table['uniqueConstraints']['unique_index1']['columns']);
         self::assertEquals(
             ['column_unique_index1', 'column_unique_index2'],
             $metadata->table['uniqueConstraints']['unique_index1']['columns']

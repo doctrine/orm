@@ -71,7 +71,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->lte('datetime', new DateTime('today'))
         ));
 
-        self::assertEquals(2, count($dates));
+        self::assertCount(2, $dates);
     }
 
     private function loadNullFieldFixtures(): void
@@ -103,7 +103,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->isNull('time')
         ));
 
-        self::assertEquals(1, count($dates));
+        self::assertCount(1, $dates);
     }
 
     public function testEqNullComparison(): void
@@ -115,7 +115,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->eq('time', null)
         ));
 
-        self::assertEquals(1, count($dates));
+        self::assertCount(1, $dates);
     }
 
     public function testNotEqNullComparison(): void
@@ -127,7 +127,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
             Criteria::expr()->neq('time', null)
         ));
 
-        self::assertEquals(1, count($dates));
+        self::assertCount(1, $dates);
     }
 
     public function testCanCountWithoutLoadingCollection(): void
