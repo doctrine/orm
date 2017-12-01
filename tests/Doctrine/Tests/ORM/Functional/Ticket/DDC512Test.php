@@ -37,7 +37,7 @@ class DDC512Test extends OrmFunctionalTestCase
         $q = $this->em->createQuery("select u,i from ".__NAMESPACE__."\\DDC512Customer u left join u.item i");
         $result = $q->getResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertInstanceOf(DDC512Customer::class, $result[0]);
         self::assertInstanceOf(DDC512Customer::class, $result[1]);
         if ($result[0]->id == $customer1->id) {

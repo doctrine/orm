@@ -53,7 +53,7 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $results = $this->em->createQuery($dql)->setMaxResults(1)->getResult();
 
         self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        self::assertFalse( $results[0]->entitiesB[0]->entityATo instanceof GhostObjectInterface);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $results[0]->entitiesB[0]->entityATo);
         self::assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
@@ -81,12 +81,12 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $data = $this->em->createQuery($dql)->getResult();
         $this->em->clear();
 
-        self::assertFalse($data[0]->user instanceof GhostObjectInterface);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $data[0]->user);
 
         $dql = "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a";
         $data = $this->em->createQuery($dql)->getResult();
 
-        self::assertFalse($data[0]->address instanceof GhostObjectInterface);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $data[0]->address);
     }
 }
 

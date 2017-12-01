@@ -45,7 +45,7 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $found = $this->em->find(DDC1998Entity::class, "foo");
         self::assertNull($found);
 
-        self::assertEquals(0, count($this->em->getRepository(DDC1998Entity::class)->findAll()));
+        self::assertCount(0, $this->em->getRepository(DDC1998Entity::class)->findAll());
     }
 }
 

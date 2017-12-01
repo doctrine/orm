@@ -103,7 +103,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $tour = $this->em->find(NavTour::class, $tour->getId());
 
-        self::assertEquals(1, count($tour->getPointOfInterests()));
+        self::assertCount(1, $tour->getPointOfInterests());
     }
 
     public function testCompositeDqlEagerFetching()
@@ -119,11 +119,11 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
         $tours = $this->em->createQuery($dql)->getResult();
 
-        self::assertEquals(1, count($tours));
+        self::assertCount(1, $tours);
 
         $pois = $tours[0]->getPointOfInterests();
 
-        self::assertEquals(1, count($pois));
+        self::assertCount(1, $pois);
         self::assertEquals('Brandenburger Tor', $pois[0]->getName());
     }
 
@@ -142,7 +142,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery($dql);
         $tours = $query->getResult();
 
-        self::assertEquals(0, count($tours));
+        self::assertCount(0, $tours);
     }
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails()
@@ -181,6 +181,6 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
         $this->em->clear();
 
         $poi = $this->em->find(NavPointOfInterest::class, ['lat' => 100, 'long' => 200]);
-        self::assertEquals(0, count($poi->getVisitors()));
+        self::assertCount(0, $poi->getVisitors());
     }
 }

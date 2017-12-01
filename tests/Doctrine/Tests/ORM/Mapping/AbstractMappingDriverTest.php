@@ -427,7 +427,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testLifecycleCallbacks($class)
     {
-        self::assertEquals(count($class->lifecycleCallbacks), 2);
+        self::assertCount(2, $class->lifecycleCallbacks);
         self::assertEquals($class->lifecycleCallbacks['prePersist'][0], 'doStuffOnPrePersist');
         self::assertEquals($class->lifecycleCallbacks['postPersist'][0], 'doStuffOnPostPersist');
 
@@ -440,7 +440,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     public function testLifecycleCallbacksSupportMultipleMethodNames($class)
     {
-        self::assertEquals(count($class->lifecycleCallbacks['prePersist']), 2);
+        self::assertCount(2, $class->lifecycleCallbacks['prePersist']);
         self::assertEquals($class->lifecycleCallbacks['prePersist'][1], 'doOtherStuffOnPrePersistToo');
 
         return $class;

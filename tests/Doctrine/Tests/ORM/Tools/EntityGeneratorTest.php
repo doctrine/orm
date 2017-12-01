@@ -930,9 +930,9 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflClass = new \ReflectionClass($metadata->getClassName());
 
-        self::assertSame($reflClass->hasProperty('address'), false);
-        self::assertSame($reflClass->hasMethod('setAddress'), false);
-        self::assertSame($reflClass->hasMethod('getAddress'), false);
+        self::assertFalse($reflClass->hasProperty('address'));
+        self::assertFalse($reflClass->hasMethod('setAddress'));
+        self::assertFalse($reflClass->hasMethod('getAddress'));
     }
 
     /**
@@ -957,9 +957,9 @@ class EntityGeneratorTest extends OrmTestCase
 
         $reflClass = new \ReflectionClass($metadata->getClassName());
 
-        self::assertSame($reflClass->hasProperty('address'), false);
-        self::assertSame($reflClass->hasMethod('setAddress'), false);
-        self::assertSame($reflClass->hasMethod('getAddress'), false);
+        self::assertFalse($reflClass->hasProperty('address'));
+        self::assertFalse($reflClass->hasMethod('setAddress'));
+        self::assertFalse($reflClass->hasMethod('getAddress'));
     }
 
     /**

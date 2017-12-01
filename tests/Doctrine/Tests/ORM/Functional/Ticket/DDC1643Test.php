@@ -58,7 +58,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user1 = $this->em->find(get_class($user1), $user1->id);
 
-        self::assertEquals(2, count($user1->groups));
+        self::assertCount(2, $user1->groups);
     }
 
     public function testClonePersistentCollectionAndShare()
@@ -74,8 +74,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->em->find(get_class($user1), $user1->id);
         $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        self::assertEquals(2, count($user1->groups));
-        self::assertEquals(2, count($user2->groups));
+        self::assertCount(2, $user1->groups);
+        self::assertCount(2, $user2->groups);
     }
 
     public function testCloneThenDirtyPersistentCollection()
@@ -95,8 +95,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->em->find(get_class($user1), $user1->id);
         $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        self::assertEquals(3, count($user2->groups));
-        self::assertEquals(2, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(2, $user1->groups);
     }
 
     public function testNotCloneAndPassAroundFlush()
@@ -118,8 +118,8 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = $this->em->find(get_class($user1), $user1->id);
         $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        self::assertEquals(3, count($user2->groups));
-        self::assertEquals(3, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(3, $user1->groups);
     }
 }
 

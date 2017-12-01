@@ -33,7 +33,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query    = $this->em->createQuery($dql);
         $result   = $query->getResult();
 
-        self::assertEquals(sizeof($result), 3);
+        self::assertCount(3, $result);
         self::assertArrayHasKey(1, $result);
         self::assertArrayHasKey(2, $result);
         self::assertArrayHasKey(3, $result);
@@ -42,14 +42,14 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query    = $this->em->createQuery($dql);
         $result   = $query->getResult();
 
-        self::assertEquals(sizeof($result), 3);
+        self::assertCount(3, $result);
         self::assertArrayHasKey('foo@foo.com', $result);
         self::assertArrayHasKey('bar@bar.com', $result);
         self::assertArrayHasKey('foobar@foobar.com', $result);
 
-        self::assertEquals(sizeof($result['foo@foo.com']->phones), 3);
-        self::assertEquals(sizeof($result['bar@bar.com']->phones), 3);
-        self::assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
+        self::assertCount(3, $result['foo@foo.com']->phones);
+        self::assertCount(3, $result['bar@bar.com']->phones);
+        self::assertCount(3, $result['foobar@foobar.com']->phones);
 
         $foo = $result['foo@foo.com']->phones->toArray();
         $bar = $result['bar@bar.com']->phones->toArray();
@@ -76,7 +76,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        self::assertEquals(sizeof($result), 3);
+        self::assertCount(3, $result);
         self::assertArrayHasKey(1, $result);
         self::assertArrayHasKey(2, $result);
         self::assertArrayHasKey(3, $result);
@@ -91,7 +91,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        self::assertEquals(sizeof($result), 3);
+        self::assertCount(3, $result);
         self::assertArrayHasKey('foo@foo.com', $result);
         self::assertArrayHasKey('bar@bar.com', $result);
         self::assertArrayHasKey('foobar@foobar.com', $result);
@@ -108,14 +108,14 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql    = $builder->getQuery()->getDQL();
         $result = $builder->getQuery()->getResult();
 
-        self::assertEquals(sizeof($result), 3);
+        self::assertCount(3, $result);
         self::assertArrayHasKey('foo@foo.com', $result);
         self::assertArrayHasKey('bar@bar.com', $result);
         self::assertArrayHasKey('foobar@foobar.com', $result);
 
-        self::assertEquals(sizeof($result['foo@foo.com']->phones), 3);
-        self::assertEquals(sizeof($result['bar@bar.com']->phones), 3);
-        self::assertEquals(sizeof($result['foobar@foobar.com']->phones), 3);
+        self::assertCount(3, $result['foo@foo.com']->phones);
+        self::assertCount(3, $result['bar@bar.com']->phones);
+        self::assertCount(3, $result['foobar@foobar.com']->phones);
 
         self::assertArrayHasKey(1, $result['foo@foo.com']->phones->toArray());
         self::assertArrayHasKey(2, $result['foo@foo.com']->phones->toArray());

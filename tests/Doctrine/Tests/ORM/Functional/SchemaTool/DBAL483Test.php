@@ -34,7 +34,7 @@ class DBAL483Test extends OrmFunctionalTestCase
             return strpos($sql, 'DBAL483') !== false;
         });
 
-        self::assertEquals(0, count($updateSql));
+        self::assertCount(0, $updateSql);
     }
 }
 

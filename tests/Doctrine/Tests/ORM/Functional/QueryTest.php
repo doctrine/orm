@@ -45,7 +45,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CmsUser::class, $result[0][0]);
         self::assertEquals('Guilherme', $result[0][0]->name);
         self::assertEquals('gblanco', $result[0][0]->username);
@@ -53,15 +53,15 @@ class QueryTest extends OrmFunctionalTestCase
         self::assertEquals('GUILHERME', $result[0][1]);
 
         $resultArray = $query->getArrayResult();
-        self::assertEquals(1, count($resultArray));
-        self::assertTrue(is_array($resultArray[0][0]));
+        self::assertCount(1, $resultArray);
+        self::assertInternalType('array', $resultArray[0][0]);
         self::assertEquals('Guilherme', $resultArray[0][0]['name']);
         self::assertEquals('gblanco', $resultArray[0][0]['username']);
         self::assertEquals('developer', $resultArray[0][0]['status']);
         self::assertEquals('GUILHERME', $resultArray[0][1]);
 
         $scalarResult = $query->getScalarResult();
-        self::assertEquals(1, count($scalarResult));
+        self::assertCount(1, $scalarResult);
         self::assertEquals('Guilherme', $scalarResult[0]['u_name']);
         self::assertEquals('gblanco', $scalarResult[0]['u_username']);
         self::assertEquals('developer', $scalarResult[0]['u_status']);
@@ -98,9 +98,9 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery('select u, a from ' . CmsUser::class . ' u join u.articles a ORDER BY a.topic');
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
-        self::assertEquals(2, count($users[0]->articles));
+        self::assertCount(2, $users[0]->articles);
         self::assertEquals('Doctrine 2', $users[0]->articles[0]->topic);
         self::assertEquals('Symfony 2', $users[0]->articles[1]->topic);
     }
@@ -225,7 +225,7 @@ class QueryTest extends OrmFunctionalTestCase
             $found[] = $article;
         }
 
-        self::assertEquals(1, count($found));
+        self::assertCount(1, $found);
         self::assertEquals(
             [
                 [
@@ -269,7 +269,7 @@ class QueryTest extends OrmFunctionalTestCase
 
             $identityMap = $this->em->getUnitOfWork()->getIdentityMap();
             $identityMapCount = count($identityMap[CmsArticle::class]);
-            self::assertTrue($identityMapCount>$iteratedCount);
+            self::assertGreaterThan($iteratedCount, $identityMapCount);
 
             $iteratedCount++;
         }
@@ -393,7 +393,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setMaxResults(2)
                   ->getResult();
 
-        self::assertEquals(2, count($data));
+        self::assertCount(2, $data);
         self::assertEquals('gblanco1', $data[0]->username);
         self::assertEquals('gblanco2', $data[1]->username);
 
@@ -402,7 +402,7 @@ class QueryTest extends OrmFunctionalTestCase
                   ->setMaxResults(2)
                   ->getResult();
 
-        self::assertEquals(2, count($data));
+        self::assertCount(2, $data);
         self::assertEquals('gblanco3', $data[0]->username);
         self::assertEquals('gblanco4', $data[1]->username);
 
@@ -495,7 +495,7 @@ class QueryTest extends OrmFunctionalTestCase
             ->setFetchMode(CmsArticle::class, 'user', FetchMode::EAGER)
             ->getResult();
 
-        self::assertEquals(10, count($articles));
+        self::assertCount(10, $articles);
 
         foreach ($articles AS $article) {
             self::assertNotInstanceOf(GhostObjectInterface::class, $article);
@@ -599,7 +599,7 @@ class QueryTest extends OrmFunctionalTestCase
         ));
         $result = $query->getResult();
 
-        self::assertEquals(3, count($result));
+        self::assertCount(3, $result);
     }
 
     public function testDqlWithAutoInferOfParameters()
@@ -630,7 +630,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $users = $query->execute();
 
-        self::assertEquals(2, count($users));
+        self::assertCount(2, $users);
     }
 
     public function testQueryBuilderWithStringWhereClauseContainingOrAndConditionalPrimary()
@@ -644,7 +644,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $qb->getQuery();
         $users = $query->execute();
 
-        self::assertEquals(0, count($users));
+        self::assertCount(0, $users);
     }
 
     public function testQueryWithArrayOfEntitiesAsParameter()
@@ -676,7 +676,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $users = $query->execute();
 
-        self::assertEquals(2, count($users));
+        self::assertCount(2, $users);
     }
 
     public function testQueryWithHiddenAsSelectExpression()
@@ -705,7 +705,7 @@ class QueryTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery("SELECT u, (SELECT COUNT(u2.id) FROM Doctrine\Tests\Models\CMS\CmsUser u2) AS HIDDEN total FROM Doctrine\Tests\Models\CMS\CmsUser u");
         $users = $query->execute();
 
-        self::assertEquals(3, count($users));
+        self::assertCount(3, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
     }
 
@@ -768,7 +768,7 @@ class QueryTest extends OrmFunctionalTestCase
         $q->setParameter('users', $userCollection);
         $users = $q->execute();
 
-        self::assertEquals(3, count($users));
+        self::assertCount(3, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertInstanceOf(CmsUser::class, $users[1]);
         self::assertInstanceOf(CmsUser::class, $users[2]);
@@ -846,7 +846,7 @@ class QueryTest extends OrmFunctionalTestCase
         ");
         $users = $query->execute();
 
-        self::assertEquals(2, count($users));
+        self::assertCount(2, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertInstanceOf(CmsPhonenumber::class, $users[1]);
     }
@@ -879,7 +879,7 @@ class QueryTest extends OrmFunctionalTestCase
         ");
         $users = $query->execute();
 
-        self::assertEquals(4, count($users));
+        self::assertCount(4, $users);
         self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertInstanceOf(CmsPhonenumber::class, $users[1]);
         self::assertInstanceOf(CmsUser::class, $users[2]);

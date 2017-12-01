@@ -63,7 +63,7 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
             "SELECT p, c FROM Doctrine\Tests\ORM\Functional\OJTIC_Pet p JOIN p.children c WHERE p.name = 'Poofy'")
                 ->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         $poofy = $result[0];
 
         self::assertEquals('Aari', $poofy->children[0]->getName());

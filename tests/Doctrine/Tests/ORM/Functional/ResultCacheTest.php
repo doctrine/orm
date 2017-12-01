@@ -63,7 +63,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
 
         self::assertTrue($cache->contains('my_cache_id'));
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
 
         $this->em->clear();
@@ -74,7 +74,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $users = $query2->getResult();
 
         self::assertTrue($cache->contains('my_cache_id'));
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Roman', $users[0]->name);
     }
 
@@ -126,7 +126,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertEquals($sqlCount + 2, count($this->sqlLoggerStack->queries), "Two non-cached queries.");
+        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, "Two non-cached queries.");
 
         $query->setParameter(1, 1);
         $query->useResultCache(true);
@@ -135,7 +135,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
         $query->setParameter(1, 2);
         $query->getResult();
 
-        self::assertEquals($sqlCount + 2, count($this->sqlLoggerStack->queries), "The next two sql should have been cached, but were not.");
+        self::assertCount($sqlCount + 2, $this->sqlLoggerStack->queries, "The next two sql should have been cached, but were not.");
     }
 
     /**
@@ -243,7 +243,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query->getResult();
 
-        self::assertEquals(1, count($articles));
+        self::assertCount(1, $articles);
         self::assertEquals('baz', $articles[0]->topic);
 
         $this->em->clear();
@@ -255,7 +255,7 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query2->getResult();
 
-        self::assertEquals(1, count($articles));
+        self::assertCount(1, $articles);
         self::assertEquals('baz', $articles[0]->topic);
 
         $query3 = $this->em->createQuery('select a from Doctrine\Tests\Models\CMS\CmsArticle a WHERE a.user = ?1');
@@ -265,6 +265,6 @@ class ResultCacheTest extends OrmFunctionalTestCase
 
         $articles = $query3->getResult();
 
-        self::assertEquals(0, count($articles));
+        self::assertCount(0, $articles);
     }
 }

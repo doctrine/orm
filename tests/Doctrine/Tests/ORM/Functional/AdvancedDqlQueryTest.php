@@ -33,7 +33,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
         $result = $this->em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertEquals('IT', $result[0]['department']);
         self::assertEquals(150000, $result[0]['avgSalary']);
         self::assertEquals('IT2', $result[1]['department']);
@@ -48,7 +48,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
         $result = $this->em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
         self::assertEquals(150000, $result[0][1]);
         self::assertEquals(600000, $result[1][1]);
     }
@@ -62,7 +62,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
 
         $result = $this->em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertEquals("Jonathan W.", $result[0]['name']);
         self::assertEquals(3, $result[0]['friends']);
@@ -83,11 +83,11 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'WHERE p.spouse IS NULL';
         $result = $this->em->createQuery($dql)->getResult();
 
-        self::assertEquals(2, count($result));
-        self::assertTrue($result[0]->getId() > 0);
+        self::assertCount(2, $result);
+        self::assertGreaterThan(0, $result[0]->getId());
         self::assertNull($result[0]->getSpouse());
 
-        self::assertTrue($result[1]->getId() > 0);
+        self::assertGreaterThan(0, $result[1]->getId());
         self::assertNull($result[1]->getSpouse());
     }
 
@@ -97,7 +97,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
         $result = $this->em->createQuery($dql)->getArrayResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertEquals("Caramba", $result[0]['brandName']);
     }
 
@@ -107,7 +107,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                "WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')";
         $result = $this->em->createQuery($dql)->getScalarResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertEquals('Roman B.', $result[0]['name']);
     }
 
@@ -117,7 +117,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'GROUP BY p.department, p.name';
         $result = $this->em->createQuery($dql)->getResult();
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
     }
 
     public function testUpdateAs()
@@ -125,8 +125,8 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
         $this->em->createQuery($dql)->execute();
 
-        self::assertTrue(count($this->em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
+        self::assertGreaterThan(0, $this->em->createQuery(
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult());
     }
 
     public function testDeleteAs()

@@ -73,9 +73,9 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         self::assertFalse($this->rsm->isScalarResult('username'));
         self::assertFalse($this->rsm->isScalarResult('name'));
 
-        self::assertTrue($this->rsm->getClassName('u') == CmsUser::class);
+        self::assertEquals($this->rsm->getClassName('u'), CmsUser::class);
         $class = $this->rsm->getDeclaringClass('id');
-        self::assertTrue($class == CmsUser::class);
+        self::assertEquals($class, CmsUser::class);
 
         self::assertEquals('u', $this->rsm->getEntityAlias('id'));
         self::assertEquals('u', $this->rsm->getEntityAlias('status'));
@@ -298,4 +298,3 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
         self::assertTrue($this->rsm->hasIndexBy('lu'));
     }
 }
-

@@ -134,7 +134,7 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertInstanceOf(CustomTypeParent::class, $result[0][0]);
         self::assertEquals(-1, $result[0][0]->customInteger);
 
