@@ -52,14 +52,6 @@ class ORMException extends Exception
     /**
      * @return ORMException
      */
-    public static function mismatchedEventManager()
-    {
-        return new self('Cannot use different EventManager instances for EntityManager and Connection.');
-    }
-
-    /**
-     * @return ORMException
-     */
     public static function invalidResultCacheDriver()
     {
         return new self('Invalid result cache driver; it must implement Doctrine\\Common\\Cache\\Cache.');

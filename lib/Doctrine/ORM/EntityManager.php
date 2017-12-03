@@ -12,6 +12,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager\EntityManagerClosed;
 use Doctrine\ORM\EntityManager\InvalidHydrationMode;
+use Doctrine\ORM\EntityManager\MismatchedEventManager;
 use Doctrine\ORM\EntityManager\MissingMappingDriverImplementation;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -864,7 +865,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($eventManager !== null && $connection->getEventManager() !== $eventManager) {
-            throw ORMException::mismatchedEventManager();
+            throw MismatchedEventManager::create();
         }
 
         return $connection;
