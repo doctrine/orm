@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\EntityManager\UnrecognizedIdentifierFields;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -968,7 +969,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedIdentifierFields::class);
         $this->expectExceptionMessage('Unrecognized identifier fields: ');
 
         $repository = $this->em->getRepository(CmsUser::class);

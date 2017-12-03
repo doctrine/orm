@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManager\InvalidHydrationMode;
 use Doctrine\ORM\EntityManager\MismatchedEventManager;
 use Doctrine\ORM\EntityManager\MissingIdentifierField;
 use Doctrine\ORM\EntityManager\MissingMappingDriverImplementation;
+use Doctrine\ORM\EntityManager\UnrecognizedIdentifierFields;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
@@ -408,7 +409,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
         }
 
         $unitOfWork = $this->getUnitOfWork();
@@ -505,7 +506,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($scalarId) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($scalarId));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($scalarId));
         }
 
         // Check identity map first, if its already in there just return it.
@@ -567,7 +568,7 @@ final class EntityManager implements EntityManagerInterface
         }
 
         if ($id) {
-            throw ORMException::unrecognizedIdentifierFields($className, array_keys($id));
+            throw UnrecognizedIdentifierFields::fromClassAndFieldNames($className, array_keys($id));
         }
 
         // Check identity map first, if its already in there just return it.
