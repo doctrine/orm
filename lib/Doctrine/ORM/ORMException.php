@@ -99,17 +99,6 @@ class ORMException extends Exception
 
     /**
      * @param string $className
-     * @param string $fieldName
-     *
-     * @return ORMException
-     */
-    public static function missingIdentifierField($className, $fieldName)
-    {
-        return new self(sprintf('The identifier %s is missing for a query of %s', $fieldName, $className));
-    }
-
-    /**
-     * @param string   $className
      * @param string[] $fieldNames
      *
      * @return ORMException

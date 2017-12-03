@@ -13,6 +13,7 @@ use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager\EntityManagerClosed;
 use Doctrine\ORM\EntityManager\InvalidHydrationMode;
 use Doctrine\ORM\EntityManager\MismatchedEventManager;
+use Doctrine\ORM\EntityManager\MissingIdentifierField;
 use Doctrine\ORM\EntityManager\MissingMappingDriverImplementation;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
@@ -399,7 +400,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $id[$identifier];
@@ -496,7 +497,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($scalarId[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $scalarId[$identifier];
@@ -558,7 +559,7 @@ final class EntityManager implements EntityManagerInterface
 
         foreach ($class->identifier as $identifier) {
             if (! isset($id[$identifier])) {
-                throw ORMException::missingIdentifierField($className, $identifier);
+                throw MissingIdentifierField::fromFieldAndClass($identifier, $className);
             }
 
             $sortedId[$identifier] = $id[$identifier];

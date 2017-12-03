@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\Common\Util\Debug;
+use Doctrine\ORM\EntityManager\MissingIdentifierField;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Models\Navigation\NavCountry;
@@ -147,7 +149,7 @@ class CompositePrimaryKeyTest extends OrmFunctionalTestCase
 
     public function testSpecifyUnknownIdentifierPrimaryKeyFails() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(MissingIdentifierField::class);
         $this->expectExceptionMessage('The identifier long is missing for a query of Doctrine\Tests\Models\Navigation\NavPointOfInterest');
 
         $poi = $this->em->find(NavPointOfInterest::class, ['key1' => 100]);
