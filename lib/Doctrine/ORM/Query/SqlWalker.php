@@ -899,7 +899,10 @@ class SqlWalker implements TreeWalker
 
         if ($class->isInheritanceTypeJoined()) {
             if ($buildNestedJoins) {
-                $sql = '(' . $sql . $this->_generateClassTableInheritanceJoins($class, $dqlAlias) . ')';
+                $classTableInheritanceJoins = $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
+                if ($classTableInheritanceJoins != '') {
+                    $sql = '(' . $sql . $classTableInheritanceJoins . ')';
+                }
             } else {
                 $sql .= $this->_generateClassTableInheritanceJoins($class, $dqlAlias);
             }
