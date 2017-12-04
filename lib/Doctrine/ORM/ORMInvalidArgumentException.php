@@ -252,13 +252,15 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
     }
 
     /**
-     * @param array  $associationMapping
-     * @param object $entity
+     * @param AssociationMetadata $association
+     * @param object              $entity
+     *
+     * @return string
      */
-    private static function newEntityFoundThroughRelationshipMessage(array $associationMapping, $entity) : string
+    private static function newEntityFoundThroughRelationshipMessage(AssociationMetadata $association, $entity) : string
     {
         return 'A new entity was found through the relationship \''
-            . $associationMapping['sourceEntity'] . '#' . $associationMapping['fieldName'] . '\' that was not'
+            . $association->getSourceEntity() . '#' . $association->getName() . '\' that was not'
             . ' configured to cascade persist operations for entity: ' . self::objToStr($entity) . '.'
             . ' To solve this issue: Either explicitly call EntityManager#persist()'
             . ' on this unknown entity or configure cascade persist'
@@ -266,7 +268,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
             . (method_exists($entity, '__toString')
                 ? ''
                 : ' If you cannot find out which entity causes the problem implement \''
-                . $associationMapping['targetEntity'] . '#__toString()\' to get a clue.'
+                . $association->getTargetEntity() . '#__toString()\' to get a clue.'
             );
     }
 }

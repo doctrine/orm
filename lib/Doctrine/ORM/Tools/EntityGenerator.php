@@ -357,6 +357,7 @@ public function __construct(<params>)
         } elseif ($this->updateEntityIfExists) {
             file_put_contents($path, $this->generateUpdatedEntityClass($metadata, $path));
         }
+
         chmod($path, 0664);
     }
 
@@ -1106,13 +1107,6 @@ public function __construct(<params>)
 
             return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
         }
-
-        $discrColumn = $metadata->discriminatorColumn;
-        $columnDefinition = 'name="' . $discrColumn['name']
-            . '", type="' . $discrColumn['type']
-            . '", length=' . $discrColumn['length'];
-
-        return '@' . $this->annotationsPrefix . 'DiscriminatorColumn(' . $columnDefinition . ')';
     }
 
     /**
@@ -1731,7 +1725,7 @@ public function __construct(<params>)
         return implode("\n", $lines);
     }
 
-    private function generateEntityListenerAnnotation(ClassMetadataInfo $metadata): string
+    private function generateEntityListenerAnnotation(ClassMetadata $metadata): string
     {
         if (0 === \count($metadata->entityListeners)) {
             return '';

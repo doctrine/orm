@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\Tests;
 
 use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Driver\Connection;
 use Doctrine\DBAL\Logging\DebugStack;
 use Doctrine\DBAL\Types\Type;
@@ -410,12 +410,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM navigation_tours');
             $conn->executeUpdate('DELETE FROM navigation_countries');
         }
+
         if (isset($this->usedModelSets['directorytree'])) {
             $conn->executeUpdate('DELETE FROM ' . $platform->quoteIdentifier("file"));
             // MySQL doesn't know deferred deletions therefore only executing the second query gives errors.
             $conn->executeUpdate('DELETE FROM Directory WHERE parentDirectory_id IS NOT NULL');
             $conn->executeUpdate('DELETE FROM Directory');
         }
+
         if (isset($this->usedModelSets['ddc117'])) {
             $conn->executeUpdate('DELETE FROM ddc117editor_ddc117translation');
             $conn->executeUpdate('DELETE FROM DDC117Editor');
@@ -426,12 +428,14 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM DDC117Translation');
             $conn->executeUpdate('DELETE FROM DDC117Article');
         }
+
         if (isset($this->usedModelSets['stockexchange'])) {
             $conn->executeUpdate('DELETE FROM exchange_bonds_stocks');
             $conn->executeUpdate('DELETE FROM exchange_bonds');
             $conn->executeUpdate('DELETE FROM exchange_stocks');
             $conn->executeUpdate('DELETE FROM exchange_markets');
         }
+
         if (isset($this->usedModelSets['legacy'])) {
             $conn->executeUpdate('DELETE FROM legacy_users_cars');
             $conn->executeUpdate('DELETE FROM legacy_users_reference');
@@ -490,11 +494,6 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($this->usedModelSets['ddc3346'])) {
             $conn->executeUpdate('DELETE FROM ddc3346_articles');
             $conn->executeUpdate('DELETE FROM ddc3346_users');
-        }
-
-        if (isset($this->usedModelSets['ornemental_orphan_removal'])) {
-            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_person');
-            $conn->executeUpdate('DELETE FROM ornemental_orphan_removal_phone_number');
         }
 
         if (isset($this->usedModelSets['quote'])) {

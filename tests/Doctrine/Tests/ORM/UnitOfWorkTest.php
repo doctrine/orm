@@ -389,7 +389,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group #5579
      */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity() : void
+    public function testEntityChangeSetIsClearedAfterFlush() : void
     {
         $entity1 = new NotifyChangedEntity;
         $entity2 = new NotifyChangedEntity;
@@ -397,36 +397,12 @@ class UnitOfWorkTest extends OrmTestCase
         $entity1->setData('thedata');
         $entity2->setData('thedata');
 
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
+        $this->unitOfWork->persist($entity1);
+        $this->unitOfWork->persist($entity2);
+        $this->unitOfWork->commit();
 
-        $this->_unitOfWork->commit($entity1);
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
-    }
-
-    /**
-     * @group #5579
-     */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities() : void
-    {
-        $entity1 = new NotifyChangedEntity;
-        $entity2 = new NotifyChangedEntity;
-        $entity3 = new NotifyChangedEntity;
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-        $entity3->setData('thedata');
-
-        $this->_unitOfWork->persist($entity1);
-        $this->_unitOfWork->persist($entity2);
-        $this->_unitOfWork->persist($entity3);
-
-        $this->_unitOfWork->commit([$entity1, $entity3]);
-
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity1));
-        self::assertEmpty($this->_unitOfWork->getEntityChangeSet($entity3));
-        self::assertCount(1, $this->_unitOfWork->getEntityChangeSet($entity2));
+        self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity1));
+        self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**
@@ -573,9 +549,9 @@ class UnitOfWorkTest extends OrmTestCase
         $this->unitOfWork->persist($nonCascading);
         $this->unitOfWork->commit();
 
-        $this->assertCount(1, $persister1->getInserts());
-        $this->assertCount(1, $persister2->getInserts());
-        $this->assertCount(1, $persister3->getInserts());
+        self::assertCount(1, $persister1->getInserts());
+        self::assertCount(1, $persister2->getInserts());
+        self::assertCount(1, $persister3->getInserts());
     }
 
     /**
@@ -862,10 +838,10 @@ class EntityWithRandomlyGeneratedField
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class CascadePersistedEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     private $id;
 
     public function __construct()
@@ -874,13 +850,13 @@ class CascadePersistedEntity
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithCascadingAssociation
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     private $id;
 
-    /** @ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"}) */
+    /** @ORM\ManyToOne(targetEntity=CascadePersistedEntity::class, cascade={"persist"}) */
     public $cascaded;
 
     public function __construct()
@@ -889,13 +865,13 @@ class EntityWithCascadingAssociation
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class EntityWithNonCascadingAssociation
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     private $id;
 
-    /** @ManyToOne(targetEntity=CascadePersistedEntity::class) */
+    /** @ORM\ManyToOne(targetEntity=CascadePersistedEntity::class) */
     public $nonCascaded;
 
     public function __construct()

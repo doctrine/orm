@@ -405,17 +405,17 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
      */
     public function testEntityListenersAreExported($class)
     {
-        $this->assertNotEmpty($class->entityListeners);
-        $this->assertCount(2, $class->entityListeners[Events::prePersist]);
-        $this->assertCount(2, $class->entityListeners[Events::postPersist]);
-        $this->assertEquals(UserListener::class, $class->entityListeners[Events::prePersist][0]['class']);
-        $this->assertEquals('customPrePersist', $class->entityListeners[Events::prePersist][0]['method']);
-        $this->assertEquals(GroupListener::class, $class->entityListeners[Events::prePersist][1]['class']);
-        $this->assertEquals('prePersist', $class->entityListeners[Events::prePersist][1]['method']);
-        $this->assertEquals(UserListener::class, $class->entityListeners[Events::postPersist][0]['class']);
-        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][0]['method']);
-        $this->assertEquals(AddressListener::class, $class->entityListeners[Events::postPersist][1]['class']);
-        $this->assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
+        self::assertNotEmpty($class->entityListeners);
+        self::assertCount(2, $class->entityListeners[Events::prePersist]);
+        self::assertCount(2, $class->entityListeners[Events::postPersist]);
+        self::assertEquals(UserListener::class, $class->entityListeners[Events::prePersist][0]['class']);
+        self::assertEquals('customPrePersist', $class->entityListeners[Events::prePersist][0]['method']);
+        self::assertEquals(GroupListener::class, $class->entityListeners[Events::prePersist][1]['class']);
+        self::assertEquals('prePersist', $class->entityListeners[Events::prePersist][1]['method']);
+        self::assertEquals(UserListener::class, $class->entityListeners[Events::postPersist][0]['class']);
+        self::assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][0]['method']);
+        self::assertEquals(AddressListener::class, $class->entityListeners[Events::postPersist][1]['class']);
+        self::assertEquals('customPostPersist', $class->entityListeners[Events::postPersist][1]['method']);
     }
 
     public function __destruct()
@@ -427,7 +427,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         if (is_file($path)) {
             return unlink($path);
-        } else if (is_dir($path)) {
+        }
+
+        if (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
 
             if (is_array($files)) {
@@ -456,25 +458,25 @@ class Group
 class UserListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PrePersist
+     * @\Doctrine\ORM\Annotation\PrePersist
      */
     public function customPrePersist(): void {}
     /**
-     * @\Doctrine\ORM\Mapping\PostPersist
+     * @\Doctrine\ORM\Annotation\PostPersist
      */
     public function customPostPersist(): void {}
 }
 class GroupListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PrePersist
+     * @\Doctrine\ORM\Annotation\PrePersist
      */
     public function prePersist(): void {}
 }
 class AddressListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PostPersist
+     * @\Doctrine\ORM\Annotation\PostPersist
      */
     public function customPostPersist(): void {}
 }

@@ -279,15 +279,15 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->loadFixturesCountries();
         $this->em->clear();
 
-        $listener = new ListenerSecondLevelCacheTest(
-            [
-                Events::postRemove => function(){
-            throw new \RuntimeException('post remove failure');
-        }
-            ]
-        );
+        $listener = new ListenerSecondLevelCacheTest([
+            Events::postRemove => function()
+            {
+                throw new \RuntimeException('post remove failure');
+            }
+        ]);
 
-        $this->em->getEventManager()
+        $this->em
+            ->getEventManager()
             ->addEventListener(Events::postRemove, $listener);
 
         $this->cache->evictEntityRegion(Country::class);
@@ -303,7 +303,6 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         try {
             $this->em->flush();
             $this->fail('Should throw exception');
-
         } catch (\Exception $exc) {
             self::assertEquals('post remove failure', $exc->getMessage());
         }

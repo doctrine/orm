@@ -967,11 +967,10 @@ class QueryBuilder
      */
     public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $parentAlias = substr($join, 0, strpos($join, '.'));
-
-        $rootAlias = $this->findRootAlias($alias, $parentAlias);
-
-        $join = new Expr\Join(
+        $hasParentAlias = strpos($join, '.');
+        $parentAlias    = substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
+        $rootAlias      = $this->findRootAlias($alias, $parentAlias);
+        $join           = new Expr\Join(
             Expr\Join::INNER_JOIN, $join, $alias, $conditionType, $condition, $indexBy
         );
 
@@ -1002,11 +1001,10 @@ class QueryBuilder
      */
     public function leftJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $parentAlias = substr($join, 0, strpos($join, '.'));
-
-        $rootAlias = $this->findRootAlias($alias, $parentAlias);
-
-        $join = new Expr\Join(
+        $hasParentAlias = strpos($join, '.');
+        $parentAlias    = substr($join, 0, $hasParentAlias === false ? 0 : $hasParentAlias);
+        $rootAlias      = $this->findRootAlias($alias, $parentAlias);
+        $join           = new Expr\Join(
             Expr\Join::LEFT_JOIN, $join, $alias, $conditionType, $condition, $indexBy
         );
 

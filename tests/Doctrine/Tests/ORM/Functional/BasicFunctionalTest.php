@@ -800,6 +800,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $address->user = $user;
 
         $this->em->flush();
+
         self::assertEquals(1, $this->em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
 
         // remove $address to free up unique key id
@@ -815,6 +816,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $user->address = $newAddress;
 
         $this->em->flush();
+
         self::assertEquals(1, $this->em->getConnection()->fetchColumn("select count(*) from cms_addresses"));
     }
 

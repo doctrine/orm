@@ -74,10 +74,9 @@ class DDC1995Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->getResult();
 
         self::assertCount(1, $result1);
-        self::assertCount(1, $result2);
+        self::assertCount(2, $result2);
 
-        self::assertInstanceOf(CompanyEmployee::class, $result1[0]);
-        self::assertInstanceOf(CompanyPerson::class, $result2[0]);
-        self::assertNotInstanceOf(CompanyEmployee::class, $result2[0]);
+        self::assertContainsOnlyInstancesOf(CompanyEmployee::class, $result1);
+        self::assertContainsOnlyInstancesOf(CompanyPerson::class, $result2);
     }
 }

@@ -168,7 +168,7 @@ final class StaticProxyFactory implements ProxyFactory
                 $property
                     ->getDeclaringClass()
                     ->getReflectionClass()
-                    ->getProperty($name) // @TODO possible NPR. This should never be null, why is it allowed to be?
+                    ->getProperty($name) // @TODO possible NPE. This should never be null, why is it allowed to be?
             );
         }
 
@@ -185,7 +185,7 @@ final class StaticProxyFactory implements ProxyFactory
                     ->getProperty($idField)
                     ->getDeclaringClass()
                     ->getReflectionClass()
-                    ->getProperty($idField) // @TODO possible NPR. This should never be null, why is it allowed to be?
+                    ->getProperty($idField) // @TODO possible NPE. This should never be null, why is it allowed to be?
             );
         }
 

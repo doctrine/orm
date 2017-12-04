@@ -1253,7 +1253,7 @@ creating a class which extends ``AbstractHydrator``:
     {
         protected function _hydrateAll()
         {
-            return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
 

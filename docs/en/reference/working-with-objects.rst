@@ -749,7 +749,7 @@ in a central location.
     {
         public function getAllAdminUsers()
         {
-            return $this->_em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
+            return $this->em->createQuery('SELECT u FROM MyDomain\Model\User u WHERE u.status = "admin"')
                              ->getResult();
         }
     }

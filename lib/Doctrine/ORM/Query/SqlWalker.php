@@ -740,7 +740,7 @@ class SqlWalker implements TreeWalker
                 $discrColumn      = $class->discriminatorColumn;
                 $discrColumnName  = $discrColumn->getColumnName();
                 $discrColumnType  = $discrColumn->getType();
-                $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
+                $quotedColumnName = $this->platform->quoteIdentifier($discrColumnName);
                 $sqlTableAlias    = $this->getSQLTableAlias($discrColumn->getTableName(), $dqlAlias);
                 $sqlColumnAlias   = $this->getSQLColumnAlias();
 
@@ -2134,7 +2134,7 @@ class SqlWalker implements TreeWalker
     {
         $dqlAlias         = $instanceOfExpr->identificationVariable;
         $class            = $this->queryComponents[$dqlAlias]['metadata'];
-        $discrClass       = $this->em->getClassMetadata($class->rootEntityName);
+        $discrClass       = $this->em->getClassMetadata($class->getRootClassName());
         $discrColumn      = $class->discriminatorColumn;
         $discrColumnType  = $discrColumn->getType();
         $quotedColumnName = $this->platform->quoteIdentifier($discrColumn->getColumnName());
@@ -2395,6 +2395,8 @@ class SqlWalker implements TreeWalker
 
         foreach ($instanceOfExpr->value as $parameter) {
             if ($parameter instanceof AST\InputParameter) {
+                $this->rsm->discriminatorParameters[$parameter->name] = $parameter->name;
+
                 $sqlParameterList[] = $this->walkInputParameter($parameter);
 
                 continue;
@@ -2408,9 +2410,9 @@ class SqlWalker implements TreeWalker
                 if (! $entityClass->getReflectionClass()->isSubclassOf($rootClass->getClassName())) {
                     throw QueryException::instanceOfUnrelatedClass($entityClassName, $rootClass->getClassName());
                 }
-
-                $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($entityClass, $this->em);
             }
+
+            $discriminators += HierarchyDiscriminatorResolver::resolveDiscriminatorsForClass($entityClass, $this->em);
         }
 
         foreach (array_keys($discriminators) as $discriminator) {
