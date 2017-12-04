@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
@@ -35,11 +36,11 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_test_person")
+ * @ORM\InheritanceType(value="JOINED")
+ * @ORM\DiscriminatorColumn(name="kind", type="string")
+ * @ORM\DiscriminatorMap(value={
  *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646MultiLevel",
  *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646MultiLevel",
  *     "engineer": "Doctrine\Tests\ORM\Functional\Ticket\EngineerTicket4646MultiLevel",
@@ -48,9 +49,9 @@ class Ticket4646InstanceOfMultiLevelTest extends OrmFunctionalTestCase
 class PersonTicket4646MultiLevel
 {
     /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
     private $id;
 
@@ -61,16 +62,16 @@ class PersonTicket4646MultiLevel
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_employee")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_employee")
  */
 class EmployeeTicket4646MultiLevel extends PersonTicket4646MultiLevel
 {
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_multi_level_engineer")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_multi_level_engineer")
  */
 class EngineerTicket4646MultiLevel extends EmployeeTicket4646MultiLevel
 {

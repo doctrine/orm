@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -48,29 +49,29 @@ class GH6464Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6464Post
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @Column(type="integer") */
+    /** @ORM\Column(type="integer") */
     public $authorId;
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"author" = "GH6464Author"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"author" = "GH6464Author"})
  */
 abstract class GH6464User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class GH6464Author extends GH6464User
 {
 }

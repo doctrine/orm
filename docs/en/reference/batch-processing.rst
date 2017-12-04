@@ -168,13 +168,13 @@ problems using the following approach:
 .. code-block:: php
 
     <?php
-    $q = $this->_em->createQuery('select u from MyProject\Model\User u');
+    $q = $this->em->createQuery('select u from MyProject\Model\User u');
     $iterableResult = $q->iterate();
     foreach ($iterableResult as $row) {
         // do stuff with the data in the row, $row[0] is always the object
     
         // detach all entities from Doctrine, so that Garbage-Collection can kick in immediately
-        $this->_em->clear();
+        $this->em->clear();
     }
 
 .. note::

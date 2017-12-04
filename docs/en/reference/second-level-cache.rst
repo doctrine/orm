@@ -590,7 +590,7 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_
 
     <?php
     // Execute and invalidate
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+    $this->em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
         ->setHint(Query::HINT_CACHE_EVICT, true)
         ->execute();
 
@@ -601,7 +601,7 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
 
     <?php
     // Execute
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+    $this->em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
         ->execute();
     // Invoke Cache API
     $em->getCache()->evictEntityRegion('Entity\Country');
@@ -613,7 +613,7 @@ Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache
 
     <?php
     // Execute
-    $this->_em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
+    $this->em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
         ->execute();
     // Invoke Cache API
     $em->getCache()->evictEntity('Entity\Country', 1);

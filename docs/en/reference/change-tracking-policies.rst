@@ -82,11 +82,11 @@ follows:
     {
         // ...
     
-        private $_listeners = array();
+        private $listeners = array();
     
         public function addPropertyChangedListener(PropertyChangedListener $listener)
         {
-            $this->_listeners[] = $listener;
+            $this->listeners[] = $listener;
         }
     }
 
@@ -104,10 +104,10 @@ behaviour:
     {
         // ...
     
-        protected function _onPropertyChanged($propName, $oldValue, $newValue)
+        protected function onPropertyChanged($propName, $oldValue, $newValue)
         {
-            if ($this->_listeners) {
-                foreach ($this->_listeners as $listener) {
+            if ($this->listeners) {
+                foreach ($this->listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }
             }
@@ -116,13 +116,13 @@ behaviour:
         public function setData($data)
         {
             if ($data != $this->data) {
-                $this->_onPropertyChanged('data', $this->data, $data);
+                $this->onPropertyChanged('data', $this->data, $data);
                 $this->data = $data;
             }
         }
     }
 
-You have to invoke ``_onPropertyChanged`` inside every method that
+You have to invoke ``onPropertyChanged`` inside every method that
 changes the persistent state of ``MyEntity``.
 
 The check whether the new value is different from the old one is

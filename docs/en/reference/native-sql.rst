@@ -323,7 +323,7 @@ entity.
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     
-    $query = $this->_em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
+    $query = $this->em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
     
     $users = $query->getResult();
@@ -359,7 +359,7 @@ thus owns the foreign key.
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'address_id', 'address_id');
     
-    $query = $this->_em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
+    $query = $this->em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
     
     $users = $query->getResult();
@@ -390,7 +390,7 @@ associations that are lazy.
     
     $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
            'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
-    $query = $this->_em->createNativeQuery($sql, $rsm);
+    $query = $this->em->createNativeQuery($sql, $rsm);
     $query->setParameter(1, 'romanb');
     
     $users = $query->getResult();
@@ -423,7 +423,7 @@ to map the hierarchy (both use a discriminator column).
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
     $rsm->setDiscriminatorColumn('u', 'discr');
     
-    $query = $this->_em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
+    $query = $this->em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
     
     $users = $query->getResult();

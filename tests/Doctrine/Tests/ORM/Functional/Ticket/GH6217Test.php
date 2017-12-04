@@ -1,6 +1,7 @@
 <?php
 namespace Doctrine\Tests\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -49,10 +50,10 @@ final class GH6217Test extends OrmFunctionalTestCase
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/** @ORM\Entity @ORM\Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217AssociatedEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     public $id;
 
     public function __construct()
@@ -61,13 +62,13 @@ class GH6217AssociatedEntity
     }
 }
 
-/** @Entity @Cache(usage="NONSTRICT_READ_WRITE") */
+/** @ORM\Entity @ORM\Cache(usage="NONSTRICT_READ_WRITE") */
 class GH6217FetchedEntity
 {
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class) */
+    /** @ORM\Id @ORM\Cache("NONSTRICT_READ_WRITE") @ORM\ManyToOne(targetEntity=GH6217AssociatedEntity::class) */
     public $lazy;
 
-    /** @Id @Cache("NONSTRICT_READ_WRITE") @ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER") */
+    /** @ORM\Id @ORM\Cache("NONSTRICT_READ_WRITE") @ORM\ManyToOne(targetEntity=GH6217AssociatedEntity::class, fetch="EAGER") */
     public $eager;
 
     public function __construct(GH6217AssociatedEntity $lazy, GH6217AssociatedEntity $eager)

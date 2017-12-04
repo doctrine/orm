@@ -424,7 +424,7 @@ class UnitOfWorkTest extends OrmTestCase
     /**
      * @group #5579
      */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnSingleEntity() : void
+    public function testEntityChangeSetIsClearedAfterFlush() : void
     {
         $entity1 = new NotifyChangedEntity;
         $entity2 = new NotifyChangedEntity;
@@ -434,34 +434,10 @@ class UnitOfWorkTest extends OrmTestCase
 
         $this->unitOfWork->persist($entity1);
         $this->unitOfWork->persist($entity2);
-
-        $this->unitOfWork->commit($entity1);
-        self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity1));
-        self::assertCount(1, $this->unitOfWork->getEntityChangeSet($entity2));
-    }
-
-    /**
-     * @group #5579
-     */
-    public function testEntityChangeSetIsNotClearedAfterFlushOnArrayOfEntities() : void
-    {
-        $entity1 = new NotifyChangedEntity;
-        $entity2 = new NotifyChangedEntity;
-        $entity3 = new NotifyChangedEntity;
-
-        $entity1->setData('thedata');
-        $entity2->setData('thedata');
-        $entity3->setData('thedata');
-
-        $this->unitOfWork->persist($entity1);
-        $this->unitOfWork->persist($entity2);
-        $this->unitOfWork->persist($entity3);
-
-        $this->unitOfWork->commit([$entity1, $entity3]);
+        $this->unitOfWork->commit();
 
         self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity1));
-        self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity3));
-        self::assertCount(1, $this->unitOfWork->getEntityChangeSet($entity2));
+        self::assertEmpty($this->unitOfWork->getEntityChangeSet($entity2));
     }
 
     /**

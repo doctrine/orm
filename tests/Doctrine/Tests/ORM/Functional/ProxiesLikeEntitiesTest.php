@@ -138,7 +138,7 @@ class ProxiesLikeEntitiesTest extends OrmFunctionalTestCase
      */
     public function testFindWithProxyName()
     {
-        $this->assertNotEquals(CmsUser::class, $this->proxyClassName);
+        self::assertNotEquals(CmsUser::class, $this->proxyClassName);
 
         $result = $this->em->find($this->proxyClassName, $this->user->getId());
 

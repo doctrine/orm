@@ -426,7 +426,9 @@ abstract class AbstractClassMetadataExporterTest extends OrmTestCase
     {
         if (is_file($path)) {
             return unlink($path);
-        } else if (is_dir($path)) {
+        }
+
+        if (is_dir($path)) {
             $files = glob(rtrim($path,'/').'/*');
 
             if (is_array($files)) {
@@ -455,25 +457,25 @@ class Group
 class UserListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PrePersist
+     * @\Doctrine\ORM\Annotation\PrePersist
      */
     public function customPrePersist(): void {}
     /**
-     * @\Doctrine\ORM\Mapping\PostPersist
+     * @\Doctrine\ORM\Annotation\PostPersist
      */
     public function customPostPersist(): void {}
 }
 class GroupListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PrePersist
+     * @\Doctrine\ORM\Annotation\PrePersist
      */
     public function prePersist(): void {}
 }
 class AddressListener
 {
     /**
-     * @\Doctrine\ORM\Mapping\PostPersist
+     * @\Doctrine\ORM\Annotation\PostPersist
      */
     public function customPostPersist(): void {}
 }

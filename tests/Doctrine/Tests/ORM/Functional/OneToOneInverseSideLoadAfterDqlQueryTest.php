@@ -55,13 +55,13 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
         self::assertInstanceOf(InverseSide::class, $fetchedInverse);
         self::assertInstanceOf(OwningSide::class, $fetchedInverse->owning);
 
-        $this->assertSQLEquals(
-            'select o0_.id as id_0 from one_to_one_inverse_side_load_inverse o0_ where o0_.id = ?',
+        self::assertSQLEquals(
+            'select t0."id" as c0 from "one_to_one_inverse_side_load_inverse" t0 where t0."id" = ?',
             $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery - 1]['sql']
         );
 
-        $this->assertSQLEquals(
-            'select t0.id as id_1, t0.inverse as inverse_2 from one_to_one_inverse_side_load_owning t0 WHERE t0.inverse = ?',
+        self::assertSQLEquals(
+            'select t0."id" as c1, t0."inverse" as c2 from "one_to_one_inverse_side_load_owning" t0 WHERE t0."inverse" = ?',
             $this->sqlLoggerStack->queries[$this->sqlLoggerStack->currentQuery]['sql']
         );
     }

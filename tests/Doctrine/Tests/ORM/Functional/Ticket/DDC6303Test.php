@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -56,6 +57,7 @@ class DDC6303Test extends OrmFunctionalTestCase
     private function assertHydratedEntitiesSameToPersistedOnes(array $persistedEntities) : void
     {
         array_walk($persistedEntities, [$this->em, 'persist']);
+
         $this->em->flush();
         $this->em->clear();
 
@@ -77,11 +79,11 @@ class DDC6303Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
+ * @ORM\Entity
+ * @ORM\Table
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
  *      DDC6303ChildB::class = DDC6303ChildB::class,
  *      DDC6303ChildA::class = DDC6303ChildA::class,
  * })
@@ -90,14 +92,14 @@ class DDC6303Test extends OrmFunctionalTestCase
  */
 abstract class DDC6303BaseClass
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     public $id;
 }
 
-/** @Entity @Table */
+/** @ORM\Entity @ORM\Table */
 class DDC6303ChildA extends DDC6303BaseClass
 {
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     private $originalData;
 
     public function __construct(string $id, $originalData)
@@ -107,10 +109,10 @@ class DDC6303ChildA extends DDC6303BaseClass
     }
 }
 
-/** @Entity @Table */
+/** @ORM\Entity @ORM\Table */
 class DDC6303ChildB extends DDC6303BaseClass
 {
-    /** @Column(type="simple_array", nullable=true) */
+    /** @ORM\Column(type="simple_array", nullable=true) */
     private $originalData;
 
     public function __construct(string $id, array $originalData)

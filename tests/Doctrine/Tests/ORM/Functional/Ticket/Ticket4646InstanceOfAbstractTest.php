@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
@@ -32,20 +33,20 @@ class Ticket4646InstanceOfAbstractTest extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_abstract_test_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_abstract_test_person")
+ * @ORM\InheritanceType(value="JOINED")
+ * @ORM\DiscriminatorColumn(name="kind", type="string")
+ * @ORM\DiscriminatorMap(value={
  *     "employee": EmployeeTicket4646Abstract::class
  * })
  */
 abstract class PersonTicket4646Abstract
 {
     /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
     private $id;
 
@@ -56,8 +57,8 @@ abstract class PersonTicket4646Abstract
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_abstract_test_employee")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_abstract_test_employee")
  */
 class EmployeeTicket4646Abstract extends PersonTicket4646Abstract
 {

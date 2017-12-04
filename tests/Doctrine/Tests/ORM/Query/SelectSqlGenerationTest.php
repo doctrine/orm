@@ -201,7 +201,7 @@ class SelectSqlGenerationTest extends OrmTestCase
     {
         $this->assertSqlGeneration(
             'SELECT e FROM Doctrine\Tests\Models\Company\CompanyEmployee e JOIN Doctrine\Tests\Models\Company\CompanyManager m WITH e.id = m.id',
-            'SELECT t0."id" AS c0, t0."name" AS c1, t1."salary" AS c2, t1."department" AS c3, t1."startDate" AS c4, t0."discr" AS c5 FROM "company_employees" t1 INNER JOIN "company_persons" t0 ON t1."id" = t0."id" INNER JOIN ("company_managers" t2 INNER JOIN "company_employees" t4 ON t2."id" = t4."id" INNER JOIN "company_persons" t3 ON t2."id" = t3."id") AND (t0."id" = t3."id")'
+            'SELECT t0."id" AS c0, t0."name" AS c1, t1."salary" AS c2, t1."department" AS c3, t1."startDate" AS c4, t0."discr" AS c5 FROM "company_employees" t1 INNER JOIN "company_persons" t0 ON t1."id" = t0."id" INNER JOIN ("company_managers" t2 INNER JOIN "company_employees" t4 ON t2."id" = t4."id" INNER JOIN "company_persons" t3 ON t2."id" = t3."id") ON (t0."id" = t3."id")'
         );
 
         $this->assertSqlGeneration(

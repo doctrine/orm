@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunctionalTestCase
@@ -37,11 +38,11 @@ class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunction
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_test_multiple_person")
- * @InheritanceType(value="JOINED")
- * @DiscriminatorColumn(name="kind", type="string")
- * @DiscriminatorMap(value={
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_test_multiple_person")
+ * @ORM\InheritanceType(value="JOINED")
+ * @ORM\DiscriminatorColumn(name="kind", type="string")
+ * @ORM\DiscriminatorMap(value={
  *     "person": "Doctrine\Tests\ORM\Functional\Ticket\PersonTicket4646Multiple",
  *     "employee": "Doctrine\Tests\ORM\Functional\Ticket\EmployeeTicket4646Multiple",
  *     "manager": "Doctrine\Tests\ORM\Functional\Ticket\ManagerTicket4646Multiple",
@@ -51,9 +52,9 @@ class Ticket4646MultipleInstanceOfWithMultipleParametersTest extends OrmFunction
 class PersonTicket4646Multiple
 {
     /**
-     * @Id()
-     * @GeneratedValue()
-     * @Column(type="integer")
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
+     * @ORM\Column(type="integer")
      */
     private $id;
 
@@ -64,24 +65,24 @@ class PersonTicket4646Multiple
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_test_multiple_employee")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_test_multiple_employee")
  */
 class EmployeeTicket4646Multiple extends PersonTicket4646Multiple
 {
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_test_multiple_manager")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_test_multiple_manager")
  */
 class ManagerTicket4646Multiple extends PersonTicket4646Multiple
 {
 }
 
 /**
- * @Entity()
- * @Table(name="instance_of_test_multiple_intern")
+ * @ORM\Entity()
+ * @ORM\Table(name="instance_of_test_multiple_intern")
  */
 class InternTicket4646Multiple extends PersonTicket4646Multiple
 {

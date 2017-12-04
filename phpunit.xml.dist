@@ -19,6 +19,7 @@
     failOnRisky="true"
     beStrictAboutChangesToGlobalState="true"
     beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
     bootstrap="./tests/Doctrine/Tests/TestInit.php"
 >
 

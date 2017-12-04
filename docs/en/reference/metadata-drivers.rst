@@ -102,14 +102,14 @@ the ``AbstractFileDriver`` implementation for you to extend from:
         /**
          * {@inheritdoc}
          */
-        protected $_fileExtension = '.dcm.ext';
+        protected $fileExtension = '.dcm.ext';
     
         /**
          * {@inheritdoc}
          */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
-            $data = $this->_loadMappingFile($file);
+            $data = $this->loadMappingFile($file);
     
             // populate ClassMetadata instance from $data
         }
@@ -117,7 +117,7 @@ the ``AbstractFileDriver`` implementation for you to extend from:
         /**
          * {@inheritdoc}
          */
-        protected function _loadMappingFile($file)
+        protected function loadMappingFile($file)
         {
             // parse contents of $file and return php data structure
         }

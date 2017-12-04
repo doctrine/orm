@@ -1,6 +1,6 @@
 <?php
 
-namespace Doctrine\Tests\ORM\Functional\Ticket;
+namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\DBAL\Connection;
@@ -52,23 +52,27 @@ class AbstractHydratorTest extends OrmFunctionalTestCase
         $this->mockResultMapping    = $this->getMockBuilder(ResultSetMapping::class);
 
         $mockEntityManagerInterface
+            ->expects(self::any())
             ->method('getEventManager')
             ->willReturn($this->mockEventManager);
 
         $mockEntityManagerInterface
+            ->expects(self::any())
             ->method('getConnection')
             ->willReturn($mockConnection);
 
         $mockEntityManagerInterface
+            ->expects(self::any())
             ->method('getUnitOfWork')
             ->willReturn($mockUow);
 
         $mockEntityManagerInterface
+            ->expects(self::any())
             ->method('getMetadataFactory')
             ->willReturn($mockMetadataFactory);
 
         $this->mockStatement
-            ->expects(self::once())
+            ->expects(self::any())
             ->method('fetch')
             ->willReturn(false);
 

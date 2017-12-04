@@ -379,7 +379,7 @@ abstract class AbstractHydrator
 
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
-                if ($classMetadata->parentClasses && isset($this->rsm->discriminatorColumns[$ownerMap])) {
+                if ($classMetadata->getParent() && isset($this->rsm->discriminatorColumns[$ownerMap])) {
                     return $this->cache[$key] = \array_merge(
                         $columnInfo,
                         [

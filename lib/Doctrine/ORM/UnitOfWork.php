@@ -399,7 +399,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             $conn->commit();
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             $this->em->close();
             $conn->rollBack();
 
@@ -416,6 +416,18 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         $this->dispatchPostFlushEvent();
+
+        // Clean up
+        $this->entityInsertions =
+        $this->entityUpdates =
+        $this->entityDeletions =
+        $this->extraUpdates =
+        $this->entityChangeSets =
+        $this->collectionUpdates =
+        $this->collectionDeletions =
+        $this->visitedCollections =
+        $this->scheduledForSynchronization =
+        $this->orphanRemovals = [];
     }
 
     /**
@@ -2160,10 +2172,6 @@ class UnitOfWork implements PropertyChangedListener
             $this->originalEntityData[$oid] = $data;
 
             $this->identityMap[$class->getRootClassName()][$idHash] = $entity;
-
-            if ($entity instanceof NotifyPropertyChanged) {
-                $entity->addPropertyChangedListener($this);
-            }
         }
 
         if ($entity instanceof NotifyPropertyChanged) {
