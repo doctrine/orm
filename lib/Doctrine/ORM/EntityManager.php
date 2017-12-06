@@ -534,6 +534,10 @@ final class EntityManager implements EntityManagerInterface
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
 
+        if ($entity instanceof EntityManagerAware) {
+            $entity->injectEntityManager($this, $class);
+        }
+
         return $entity;
     }
 
