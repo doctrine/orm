@@ -63,6 +63,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC2231EntityManagerAwareEntity::class, $emAware);
         self::assertInstanceOf(EntityManagerAware::class, $emAware);
         self::assertFalse($emAware->isProxyInitialized());
+        self::assertSame($this->em, $emAware->em);
 
         $emAware->initializeProxy();
 
@@ -95,10 +96,11 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC2231ObjectManagerAwareEntity::class, $omAware);
         self::assertInstanceOf(ObjectManagerAware::class, $omAware);
         self::assertFalse($omAware->isProxyInitialized());
+        self::assertSame($this->em, $omAware->om);
 
         $omAware->initializeProxy();
 
-        self::assertSame($this->em, $omAware->em);
+        self::assertSame($this->em, $omAware->om);
     }
 
     public function testInjectObjectManagerInFetchedInstance()
@@ -112,7 +114,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC2231ObjectManagerAwareEntity::class, $omAware);
         self::assertInstanceOf(ObjectManagerAware::class, $omAware);
         self::assertNotInstanceOf(GhostObjectInterface::class, $omAware);
-        self::assertSame($this->em, $omAware->em);
+        self::assertSame($this->em, $omAware->om);
     }
 }
 
