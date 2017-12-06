@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as CommonMetadata;
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\EntityManagerAware;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\ToolsException;
 use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
@@ -15,60 +19,131 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
+    /**
+     * @var DDC2231EntityManagerAwareEntity
+     */
+    private $persistedEntityManagerAwareEntity;
+
+    /**
+     * @var DDC2231ObjectManagerAwareEntity
+     */
+    private $persistedObjectManagerAwareEntity;
+
     protected function setUp()
     {
         parent::setUp();
 
-        $this->schemaTool->createSchema([
-            $this->em->getClassMetadata(DDC2231EntityY::class),
-        ]);
+        try {
+            $this->schemaTool->createSchema([
+                $this->em->getClassMetadata(DDC2231EntityManagerAwareEntity::class),
+                $this->em->getClassMetadata(DDC2231ObjectManagerAwareEntity::class),
+            ]);
+        } catch (ToolsException $ignored) {
+            // ignore - schema already exists
+        }
+
+        $this->persistedEntityManagerAwareEntity = new DDC2231EntityManagerAwareEntity();
+        $this->persistedObjectManagerAwareEntity = new DDC2231ObjectManagerAwareEntity();
+
+        $this->em->persist($this->persistedEntityManagerAwareEntity);
+        $this->em->persist($this->persistedObjectManagerAwareEntity);
+        $this->em->flush();
+        $this->em->clear();
+    }
+
+    public function testInjectEntityManagerInProxyIfInitializedInUow()
+    {
+        /* @var $emAware DDC2231EntityManagerAwareEntity|GhostObjectInterface */
+        $emAware = $this->em->getReference(
+            DDC2231EntityManagerAwareEntity::class,
+            $this->persistedEntityManagerAwareEntity->id
+        );
+
+        self::assertInstanceOf(GhostObjectInterface::class, $emAware);
+        self::assertInstanceOf(DDC2231EntityManagerAwareEntity::class, $emAware);
+        self::assertInstanceOf(EntityManagerAware::class, $emAware);
+        self::assertFalse($emAware->isProxyInitialized());
+
+        $emAware->initializeProxy();
+
+        self::assertSame($this->em, $emAware->em);
+    }
+
+    public function testInjectEntityManagerInFetchedInstance()
+    {
+        /* @var $emAware DDC2231EntityManagerAwareEntity */
+        $emAware = $this->em->find(
+            DDC2231EntityManagerAwareEntity::class,
+            $this->persistedEntityManagerAwareEntity->id
+        );
+
+        self::assertInstanceOf(DDC2231EntityManagerAwareEntity::class, $emAware);
+        self::assertInstanceOf(EntityManagerAware::class, $emAware);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $emAware);
+        self::assertSame($this->em, $emAware->em);
     }
 
     public function testInjectObjectManagerInProxyIfInitializedInUow()
     {
-        $y1 = new DDC2231EntityY;
+        /* @var $omAware DDC2231ObjectManagerAwareEntity|GhostObjectInterface */
+        $omAware = $this->em->getReference(
+            DDC2231ObjectManagerAwareEntity::class,
+            $this->persistedObjectManagerAwareEntity->id
+        );
 
-        $this->em->persist($y1);
+        self::assertInstanceOf(GhostObjectInterface::class, $omAware);
+        self::assertInstanceOf(DDC2231ObjectManagerAwareEntity::class, $omAware);
+        self::assertInstanceOf(ObjectManagerAware::class, $omAware);
+        self::assertFalse($omAware->isProxyInitialized());
 
-        $this->em->flush();
-        $this->em->clear();
+        $omAware->initializeProxy();
 
-        /* @var $y1ref DDC2231EntityY|GhostObjectInterface */
-        $y1ref = $this->em->getReference(DDC2231EntityY::class, $y1->id);
+        self::assertSame($this->em, $omAware->em);
+    }
 
-        self::assertInstanceOf(GhostObjectInterface::class, $y1ref);
-        self::assertInstanceOf(DDC2231EntityY::class, $y1ref);
-        self::assertInstanceOf(EntityManagerAware::class, $y1ref);
-        self::assertFalse($y1ref->isProxyInitialized());
+    public function testInjectObjectManagerInFetchedInstance()
+    {
+        /* @var $omAware DDC2231ObjectManagerAwareEntity */
+        $omAware = $this->em->find(
+            DDC2231ObjectManagerAwareEntity::class,
+            $this->persistedObjectManagerAwareEntity->id
+        );
 
-        $y1ref->initializeProxy();
-
-        self::assertSame($this->em, $y1ref->om);
+        self::assertInstanceOf(DDC2231ObjectManagerAwareEntity::class, $omAware);
+        self::assertInstanceOf(ObjectManagerAware::class, $omAware);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $omAware);
+        self::assertSame($this->em, $omAware->em);
     }
 }
 
 
-/** @ORM\Entity @ORM\Table(name="ddc2231_y") */
-class DDC2231EntityY implements EntityManagerAware
+/** @ORM\Entity */
+class DDC2231EntityManagerAwareEntity implements EntityManagerAware
 {
-    /**
-     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
+    /** @var EntityManagerInterface|null */
+    public $em;
+
+    public function injectEntityManager(EntityManagerInterface $entityManager, ClassMetadata $classMetadata) : void
+    {
+        $this->em = $entityManager;
+    }
+}
+
+
+/** @ORM\Entity */
+class DDC2231ObjectManagerAwareEntity implements ObjectManagerAware
+{
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
+    public $id;
+
+    /** @var ObjectManager|null */
     public $om;
 
-    public function injectEntityManager(EntityManagerInterface $objectManager, ClassMetadata $classMetadata) : void
+    public function injectObjectManager(ObjectManager $objectManager, CommonMetadata $classMetadata) : void
     {
         $this->om = $objectManager;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function doSomething()
-    {
     }
 }
