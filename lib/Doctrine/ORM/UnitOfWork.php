@@ -2162,6 +2162,11 @@ class UnitOfWork implements PropertyChangedListener
                 $entity->injectObjectManager($this->em, $class);
             }
 
+            // inject EntityManager upon refresh.
+            if ($entity instanceof EntityManagerAware) {
+                $entity->injectEntityManager($this->em, $class);
+            }
+
             $this->originalEntityData[$oid] = $data;
         } else {
             $entity = $this->newInstance($class);
