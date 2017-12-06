@@ -38,6 +38,7 @@ class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertInstanceOf(GhostObjectInterface::class, $y1ref);
         self::assertInstanceOf(DDC2231EntityY::class, $y1ref);
+        self::assertInstanceOf(EntityManagerAware::class, $y1ref);
         self::assertFalse($y1ref->isProxyInitialized());
 
         $y1ref->initializeProxy();
