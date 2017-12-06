@@ -2103,6 +2103,10 @@ class UnitOfWork implements PropertyChangedListener
             $entity->injectEntityManager($this->em, $class);
         }
 
+        if ($entity instanceof ObjectManagerAware) {
+            $entity->injectObjectManager($this->em, $class);
+        }
+
         return $entity;
     }
 
