@@ -6,7 +6,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\NotifyPropertyChanged;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
 use Doctrine\Instantiator\Instantiator;
@@ -2103,10 +2102,6 @@ class UnitOfWork implements PropertyChangedListener
             $entity->injectEntityManager($this->em, $class);
         }
 
-        if ($entity instanceof ObjectManagerAware) {
-            $entity->injectObjectManager($this->em, $class);
-        }
-
         return $entity;
     }
 
@@ -2159,11 +2154,6 @@ class UnitOfWork implements PropertyChangedListener
                     || (isset($hints[Query::HINT_REFRESH_ENTITY]) && $hints[Query::HINT_REFRESH_ENTITY] !== $entity)) {
                     return $entity;
                 }
-            }
-
-            // inject ObjectManager upon refresh.
-            if ($entity instanceof ObjectManagerAware) {
-                $entity->injectObjectManager($this->em, $class);
             }
 
             // inject EntityManager upon refresh.

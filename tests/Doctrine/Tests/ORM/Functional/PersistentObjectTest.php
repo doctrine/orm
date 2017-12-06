@@ -9,7 +9,7 @@ use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
- * Test that Doctrine ORM correctly works with the ObjectManagerAware and PersistentObject
+ * Test that Doctrine ORM correctly works with the EntityManagerAware and PersistentObject
  * classes from Common.
  *
  * @group DDC-1448

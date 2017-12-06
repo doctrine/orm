@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
@@ -534,10 +533,6 @@ final class EntityManager implements EntityManagerInterface
         $entity = $this->proxyFactory->getProxy($class, $id);
 
         $this->unitOfWork->registerManaged($entity, $sortedId, []);
-
-        if ($entity instanceof ObjectManagerAware) {
-            $entity->injectObjectManager($this, $class);
-        }
 
         if ($entity instanceof EntityManagerAware) {
             $entity->injectEntityManager($this, $class);
