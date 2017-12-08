@@ -87,6 +87,6 @@ class DDC214Test extends OrmFunctionalTestCase
         $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
 
-        self::assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, "SQL: " . implode(PHP_EOL, $sql));
     }
 }

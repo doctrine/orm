@@ -30,7 +30,7 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($test);
         $this->em->flush();
 
-        self::assertTrue($test->id > 0);
+        self::assertGreaterThan(0, $test->id);
     }
 }
 

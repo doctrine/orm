@@ -51,12 +51,12 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsUser should be removed by EntityManager');
+        self::assertCount(0, $result, 'CmsUser should be removed by EntityManager');
 
         $query  = $this->em->createQuery('SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsAddress should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsAddress should be removed by orphanRemoval');
     }
 
     public function testOrphanRemovalWhenUnlink()
@@ -89,6 +89,6 @@ class OneToOneOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT e FROM Doctrine\Tests\Models\CMS\CmsEmail e');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsEmail should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsEmail should be removed by orphanRemoval');
     }
 }

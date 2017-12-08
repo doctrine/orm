@@ -53,12 +53,12 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsUser should be removed by EntityManager');
+        self::assertCount(0, $result, 'CmsUser should be removed by EntityManager');
 
         $query  = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsPhonenumber should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
     /**
@@ -76,7 +76,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
         $result = $query->getResult();
 
-        self::assertEquals(1, count($result), 'CmsPhonenumber should be removed by orphanRemoval');
+        self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
     /**
@@ -96,7 +96,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
         $result = $query->getResult();
 
-        self::assertEquals(1, count($result), 'CmsPhonenumber should be removed by orphanRemoval');
+        self::assertCount(1, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 
     /**
@@ -117,7 +117,7 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
         $result = $query->getResult();
 
-        self::assertEquals(1, count($result), 'Old CmsPhonenumbers should be removed by orphanRemoval and new one added');
+        self::assertCount(1, $result, 'Old CmsPhonenumbers should be removed by orphanRemoval and new one added');
     }
 
     /**
@@ -133,6 +133,6 @@ class OneToManyOrphanRemovalTest extends OrmFunctionalTestCase
         $query  = $this->em->createQuery('SELECT p FROM Doctrine\Tests\Models\CMS\CmsPhonenumber p');
         $result = $query->getResult();
 
-        self::assertEquals(0, count($result), 'CmsPhonenumber should be removed by orphanRemoval');
+        self::assertCount(0, $result, 'CmsPhonenumber should be removed by orphanRemoval');
     }
 }

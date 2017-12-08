@@ -107,7 +107,7 @@ class PersistentCollectionTest extends OrmTestCase
 
         self::assertSame($product, $this->collection->get(1));
         self::assertSame("dummy", $this->collection->get(2));
-        self::assertSame(null, $this->collection->get(3));
+        self::assertNull($this->collection->get(3));
     }
 
     /**

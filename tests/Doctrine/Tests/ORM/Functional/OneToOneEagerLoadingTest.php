@@ -52,9 +52,9 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $train = $this->em->find(get_class($train), $train->id);
         self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
-        self::assertEquals("Benjamin", $train->driver->name);
+        self::assertEquals('Benjamin', $train->driver->name);
 
-        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->sqlLoggerStack->queries);
     }
 
     /**
@@ -74,7 +74,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(GhostObjectInterface::class, $train->driver);
         self::assertNull($train->driver);
 
-        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->sqlLoggerStack->queries);
     }
 
     /**
@@ -95,7 +95,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(GhostObjectInterface::class, $owner->train);
         self::assertNotNull($owner->train);
 
-        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->sqlLoggerStack->queries);
     }
 
     /**
@@ -117,7 +117,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
         self::assertNotInstanceOf(GhostObjectInterface::class, $driver->train);
         self::assertNull($driver->train);
 
-        self::assertEquals($sqlCount + 1, count($this->sqlLoggerStack->queries));
+        self::assertCount($sqlCount + 1, $this->sqlLoggerStack->queries);
     }
 
     public function testEagerLoadManyToOne()
@@ -233,7 +233,7 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
 
         $this->em->refresh($order);
 
-        self::assertTrue($order->train === null, "Train reference was not refreshed to NULL.");
+        self::assertNull($order->train, "Train reference was not refreshed to NULL.");
     }
 }
 

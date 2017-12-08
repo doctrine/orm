@@ -37,12 +37,12 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->em->flush();
 
-        self::assertTrue(is_numeric($user->id));
+        self::assertInternalType('numeric', $user->id);
         self::assertTrue($this->em->contains($user));
 
         // Read
         $user2 = $this->em->find(CmsUser::class, $user->id);
-        self::assertTrue($user === $user2);
+        self::assertSame($user, $user2);
 
         // Add a phonenumber
         $ph = new CmsPhonenumber;
@@ -102,7 +102,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $this->em->flush();
 
-        self::assertEquals(1, count($user->phonenumbers));
+        self::assertCount(1, $user->phonenumbers);
         self::assertNull($ph1->user);
     }
 
@@ -129,7 +129,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $userId = $this->em->getConnection()->executeQuery(
             "SELECT user_id FROM cms_addresses WHERE id=?", [$address->id]
         )->fetchColumn();
-        self::assertTrue(is_numeric($userId));
+        self::assertInternalType('numeric', $userId);
 
         $this->em->clear();
 
@@ -194,7 +194,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->flush();
 
         $user->getPhonenumbers()->remove(0);
-        self::assertEquals(2, count($user->getPhonenumbers()));
+        self::assertCount(2, $user->getPhonenumbers());
 
         $this->em->flush();
 
@@ -221,7 +221,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Guilherme', $users[0]->name);
         self::assertEquals('gblanco', $users[0]->username);
         self::assertEquals('developer', $users[0]->status);
@@ -230,16 +230,16 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $usersArray = $query->getArrayResult();
 
-        self::assertTrue(is_array($usersArray));
-        self::assertEquals(1, count($usersArray));
+        self::assertInternalType('array', $usersArray);
+        self::assertCount(1, $usersArray);
         self::assertEquals('Guilherme', $usersArray[0]['name']);
         self::assertEquals('gblanco', $usersArray[0]['username']);
         self::assertEquals('developer', $usersArray[0]['status']);
 
         $usersScalar = $query->getScalarResult();
 
-        self::assertTrue(is_array($usersScalar));
-        self::assertEquals(1, count($usersScalar));
+        self::assertInternalType('array', $usersScalar);
+        self::assertCount(1, $usersScalar);
         self::assertEquals('Guilherme', $usersScalar[0]['u_name']);
         self::assertEquals('gblanco', $usersScalar[0]['u_username']);
         self::assertEquals('developer', $usersScalar[0]['u_status']);
@@ -258,7 +258,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        self::assertEquals(0, count($users));
+        self::assertCount(0, $users);
     }
 
     public function testBasicOneToManyLeftJoin()
@@ -274,7 +274,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $users = $query->getResult();
 
-        self::assertEquals(1, count($users));
+        self::assertCount(1, $users);
         self::assertEquals('Guilherme', $users[0]->name);
         self::assertEquals('gblanco', $users[0]->username);
         self::assertEquals('developer', $users[0]->status);
@@ -326,10 +326,10 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user->addPhonenumber($ph2);
 
-        self::assertEquals(2, count($user->phonenumbers));
+        self::assertCount(2, $user->phonenumbers);
         $this->em->refresh($user);
 
-        self::assertEquals(1, count($user->phonenumbers));
+        self::assertCount(1, $user->phonenumbers);
     }
 
     /**
@@ -358,14 +358,14 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user->addPhonenumber($ph2);
 
-        self::assertEquals(2, count($user->phonenumbers));
+        self::assertCount(2, $user->phonenumbers);
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1";
         $user = $this->em->createQuery($dql)
                           ->setParameter(1, $user->id)
                           ->setHint(Query::HINT_REFRESH, true)
                           ->getSingleResult();
 
-        self::assertEquals(1, count($user->phonenumbers));
+        self::assertCount(1, $user->phonenumbers);
     }
 
     /**
@@ -401,7 +401,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
                           ->setParameter(1, $userId)
                           ->getSingleResult();
 
-        self::assertEquals(1, count($user->phonenumbers));
+        self::assertCount(1, $user->phonenumbers);
     }
 
     public function testAddToCollectionDoesNotInitialize()
@@ -587,7 +587,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $query = $this->em->createQuery('select u,a,ad from Doctrine\Tests\Models\CMS\CmsUser u join u.articles a join u.address ad');
         $user2 = $query->getSingleResult();
 
-        self::assertEquals(1, count($user2->articles));
+        self::assertCount(1, $user2->articles);
         self::assertInstanceOf(CmsAddress::class, $user2->address);
 
         $oldLogger = $this->em->getConnection()->getConfiguration()->getSQLLogger();
@@ -595,7 +595,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->em->getConnection()->getConfiguration()->setSQLLogger($debugStack);
 
         $this->em->flush();
-        self::assertEquals(0, count($debugStack->queries));
+        self::assertCount(0, $debugStack->queries);
 
         $this->em->getConnection()->getConfiguration()->setSQLLogger($oldLogger);
     }

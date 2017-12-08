@@ -50,7 +50,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->articles->isInitialized());
-        self::assertEquals(2, count($user->articles));
+        self::assertCount(2, $user->articles);
         self::assertFalse($user->articles->isInitialized());
 
         foreach ($user->articles AS $article) { }
@@ -64,7 +64,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->references->isInitialized());
-        self::assertEquals(2, count($user->references));
+        self::assertCount(2, $user->references);
         self::assertFalse($user->references->isInitialized());
 
         foreach ($user->references AS $reference) { }
@@ -78,7 +78,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $queryCount = $this->getCurrentQueryCount();
 
         self::assertFalse($user->cars->isInitialized());
-        self::assertEquals(3, count($user->cars));
+        self::assertCount(3, $user->cars);
         self::assertFalse($user->cars->isInitialized());
 
         foreach ($user->cars AS $reference) { }

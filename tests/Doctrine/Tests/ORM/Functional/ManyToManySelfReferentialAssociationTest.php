@@ -93,15 +93,15 @@ class ManyToManySelfReferentialAssociationTest extends AbstractManyToManyAssocia
     public function assertLoadingOfOwningSide($products)
     {
         list ($firstProduct, $secondProduct) = $products;
-        self::assertEquals(2, count($firstProduct->getRelated()));
-        self::assertEquals(2, count($secondProduct->getRelated()));
+        self::assertCount(2, $firstProduct->getRelated());
+        self::assertCount(2, $secondProduct->getRelated());
 
         $categories = $firstProduct->getRelated();
         $firstRelatedBy = $categories[0]->getRelated();
         $secondRelatedBy = $categories[1]->getRelated();
 
-        self::assertEquals(2, count($firstRelatedBy));
-        self::assertEquals(2, count($secondRelatedBy));
+        self::assertCount(2, $firstRelatedBy);
+        self::assertCount(2, $secondRelatedBy);
 
         self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[0]);
         self::assertInstanceOf(ECommerceProduct::class, $firstRelatedBy[1]);

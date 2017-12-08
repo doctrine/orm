@@ -116,7 +116,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
         $refs = $this->em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
 
-        self::assertTrue(count($refs) > 0, "Has to contain at least one Reference.");
+        self::assertGreaterThan(0, $refs, "Has to contain at least one Reference.");
 
         foreach ($refs AS $ref) {
             self::assertInstanceOf(DDC117Reference::class, $ref, "Contains only Reference instances.");
@@ -164,7 +164,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
 
-        self::assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
         foreach ($this->article1->references() AS $this->reference) {
             self::assertInstanceOf(DDC117Reference::class, $this->reference);
@@ -178,7 +178,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
                                 ->setParameter(1, $this->article1->id())
                                 ->getSingleResult();
 
-        self::assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
         foreach ($this->article1->references() AS $this->reference) {
             self::assertInstanceOf(DDC117Reference::class, $this->reference);
@@ -343,14 +343,14 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testClearManyToManyCollectionOfForeignKeyEntities()
     {
         $editor = $this->loadEditorFixture();
-        self::assertEquals(3, count($editor->reviewingTranslations));
+        self::assertCount(3, $editor->reviewingTranslations);
 
         $editor->reviewingTranslations->clear();
         $this->em->flush();
         $this->em->clear();
 
         $editor = $this->em->find(get_class($editor), $editor->id);
-        self::assertEquals(0, count($editor->reviewingTranslations));
+        self::assertCount(0, $editor->reviewingTranslations);
     }
 
     /**
@@ -363,7 +363,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(DDC117Translation::class, $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();
-        self::assertEquals(1, count($reviewedBy));
+        self::assertCount(1, $reviewedBy);
         self::assertSame($editor, $reviewedBy[0]);
 
         $this->em->clear();
@@ -377,7 +377,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertInstanceOf(DDC117Translation::class, $trans);
         self::assertContainsOnly(DDC117Editor::class, $trans->reviewedByEditors);
-        self::assertEquals(1, count($trans->reviewedByEditors));
+        self::assertCount(1, $trans->reviewedByEditors);
     }
 
     /**
@@ -395,7 +395,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $lastTranslatedBy = $editor->reviewingTranslations[0]->getLastTranslatedBy();
         $lastTranslatedBy->count();
 
-        self::assertEquals(1, count($lastTranslatedBy));
+        self::assertCount(1, $lastTranslatedBy);
     }
 
     /**
@@ -453,7 +453,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $dql = "SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t";
         $data = $this->em->createQuery($dql)->getArrayResult();
 
-        self::assertEquals($before + 3, count($data));
+        self::assertCount($before + 3, $data);
     }
 
     /**
@@ -485,7 +485,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article = $this->em->find(DDC117Article::class, $this->article1->id());
 
         self::assertInstanceOf(DDC117Article::class, $article);
-        self::assertEquals(1, count($article->getLinks()));
+        self::assertCount(1, $article->getLinks());
         self::assertTrue($article->getLinks()->offsetExists($this->article2->id()));
     }
 }

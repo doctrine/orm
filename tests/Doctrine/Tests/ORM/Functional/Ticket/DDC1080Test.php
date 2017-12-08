@@ -63,10 +63,10 @@ class DDC1080Test extends OrmFunctionalTestCase
         $this->em->clear();
 
         $foo = $this->em->find(DDC1080Foo::class, $foo1->getFooID());
-        
+
         $fooBars = $foo->getFooBars();
 
-        self::assertEquals(3, count($fooBars), "Should return three foobars.");
+        self::assertCount(3, $fooBars, "Should return three foobars.");
     }
 }
 
@@ -82,11 +82,11 @@ class DDC1080Foo
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $fooID;
-    
+
     /**
      * @ORM\Column(name="fooTitle", type="string")
      */
-    
+
     protected $fooTitle;
     /**
      * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo", cascade={"persist"})
@@ -160,12 +160,12 @@ class DDC1080Bar
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $barID;
-    
+
     /**
      * @ORM\Column(name="barTitle", type="string")
      */
     protected $barTitle;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar", cascade={"persist"})
      * @ORM\OrderBy({"orderNr"="ASC"})
@@ -270,7 +270,7 @@ class DDC1080FooBar
     public function setFoo($foo)
     {
         $this->foo = $foo;
-        
+
         return $this;
     }
 
@@ -293,7 +293,7 @@ class DDC1080FooBar
     public function setBar($bar)
     {
         $this->bar = $bar;
-        
+
         return $this;
     }
 
@@ -316,8 +316,7 @@ class DDC1080FooBar
     public function setOrderNr($orderNr)
     {
         $this->orderNr = $orderNr;
-        
+
         return $this;
     }
 }
-

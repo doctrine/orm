@@ -90,7 +90,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         // test2 - eager load in DQL query
         $query = $this->em->createQuery("SELECT p,t FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t");
         $res = $query->getResult();
-        self::assertEquals(1, count($res));
+        self::assertCount(1, $res);
         self::assertInstanceOf(PhraseType::class, $res[0]->getType());
         self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         self::assertFalse($res[0]->getType()->getPhrases()->isInitialized());
@@ -100,7 +100,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         // test2 - eager load in DQL query with double-join back and forth
         $query = $this->em->createQuery("SELECT p,t,pp FROM Doctrine\Tests\ORM\Functional\Phrase p JOIN p.type t JOIN t.phrases pp");
         $res = $query->getResult();
-        self::assertEquals(1, count($res));
+        self::assertCount(1, $res);
         self::assertInstanceOf(PhraseType::class, $res[0]->getType());
         self::assertInstanceOf(PersistentCollection::class, $res[0]->getType()->getPhrases());
         self::assertTrue($res[0]->getType()->getPhrases()->isInitialized());
@@ -120,7 +120,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
         $res = $query->getResult();
         $definitions = $res[0]->getDefinitions();
 
-        self::assertEquals(1, count($res));
+        self::assertCount(1, $res);
 
         self::assertInstanceOf(Definition::class, $definitions[0]);
         self::assertEquals(2, $definitions->count());

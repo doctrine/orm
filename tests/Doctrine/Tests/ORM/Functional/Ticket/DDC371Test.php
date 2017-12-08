@@ -48,7 +48,7 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ->setHint(Query::HINT_REFRESH, true)
                 ->getResult();
 
-        self::assertEquals(1, count($children));
+        self::assertCount(1, $children);
         self::assertNotInstanceOf(GhostObjectInterface::class, $children[0]->parent);
         self::assertFalse($children[0]->parent->children->isInitialized());
         self::assertEquals(0, $children[0]->parent->children->unwrap()->count());

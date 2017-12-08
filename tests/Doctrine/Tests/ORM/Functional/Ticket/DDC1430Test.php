@@ -51,7 +51,7 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        self::assertEquals(2, sizeof($result));
+        self::assertCount(2, $result);
 
         self::assertArrayHasKey('id', $result[0]);
         self::assertArrayHasKey('id', $result[1]);
@@ -89,10 +89,10 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        self::assertEquals(2, sizeof($result));
+        self::assertCount(2, $result);
 
-        self::assertTrue($result[0][0] instanceof DDC1430Order);
-        self::assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertInstanceOf(DDC1430Order::class, $result[0][0]);
+        self::assertInstanceOf(DDC1430Order::class, $result[1][0]);
 
         self::assertEquals($result[0][0]->getId(), 1);
         self::assertEquals($result[1][0]->getId(), 2);
@@ -124,10 +124,10 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $result = $query->getResult();
 
-        self::assertEquals(2, sizeof($result));
+        self::assertCount(2, $result);
 
-        self::assertTrue($result[0][0] instanceof DDC1430Order);
-        self::assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertInstanceOf(DDC1430Order::class, $result[0][0]);
+        self::assertInstanceOf(DDC1430Order::class, $result[1][0]);
 
         self::assertEquals($result[0][0]->getId(), 1);
         self::assertEquals($result[1][0]->getId(), 2);

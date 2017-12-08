@@ -173,7 +173,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
         $contracts = $this->em->getRepository(CompanyContract::class)->findAll();
 
-        self::assertEquals(3, count($contracts));
+        self::assertCount(3, $contracts);
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
@@ -181,9 +181,9 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     {
         $this->loadFullFixture();
 
-        self::assertEquals(1, count($this->em->getRepository(CompanyFixContract::class)->findAll()));
-        self::assertEquals(2, count($this->em->getRepository(CompanyFlexContract::class)->findAll()));
-        self::assertEquals(1, count($this->em->getRepository(CompanyFlexUltraContract::class)->findAll()));
+        self::assertCount(1, $this->em->getRepository(CompanyFixContract::class)->findAll());
+        self::assertCount(2, $this->em->getRepository(CompanyFlexContract::class)->findAll());
+        self::assertCount(1, $this->em->getRepository(CompanyFlexUltraContract::class)->findAll());
     }
 
     public function testFindForAbstractBaseClass()
@@ -202,7 +202,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $contracts = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
 
-        self::assertEquals(3, count($contracts));
+        self::assertCount(3, $contracts);
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
@@ -210,9 +210,9 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
     {
         $this->loadFullFixture();
 
-        self::assertEquals(1, count($this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c')->getResult()));
-        self::assertEquals(2, count($this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexContract c')->getResult()));
-        self::assertEquals(1, count($this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult()));
+        self::assertCount(1, $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFixContract c')->getResult());
+        self::assertCount(2, $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexContract c')->getResult());
+        self::assertCount(1, $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyFlexUltraContract c')->getResult());
     }
 
     public function testQueryBaseClassWithJoin()
@@ -220,7 +220,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $this->loadFullFixture();
 
         $contracts = $this->em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\Company\CompanyContract c JOIN c.salesPerson p')->getResult();
-        self::assertEquals(3, count($contracts));
+        self::assertCount(3, $contracts);
         self::assertContainsOnly(CompanyContract::class, $contracts);
     }
 
@@ -304,7 +304,7 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         self::assertEquals(2, $affected);
 
         $contracts = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\Company\CompanyContract c')->getResult();
-        self::assertEquals(1, count($contracts));
+        self::assertCount(1, $contracts);
 
         self::assertFalse($contracts[0]->isCompleted(), "Only non completed contracts should be left.");
     }
@@ -332,19 +332,19 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
 
         $repos = $this->em->getRepository(CompanyContract::class);
         $contracts = $repos->findBy(['salesPerson' => $this->salesPerson->getId()]);
-        self::assertEquals(3, count($contracts), "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
+        self::assertCount(3, $contracts, "There should be 3 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyContract'");
 
         $repos = $this->em->getRepository(CompanyFixContract::class);
         $contracts = $repos->findBy(['salesPerson' => $this->salesPerson->getId()]);
-        self::assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
+        self::assertCount(1, $contracts, "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFixContract'");
 
         $repos = $this->em->getRepository(CompanyFlexContract::class);
         $contracts = $repos->findBy(['salesPerson' => $this->salesPerson->getId()]);
-        self::assertEquals(2, count($contracts), "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
+        self::assertCount(2, $contracts, "There should be 2 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexContract'");
 
         $repos = $this->em->getRepository(CompanyFlexUltraContract::class);
         $contracts = $repos->findBy(['salesPerson' => $this->salesPerson->getId()]);
-        self::assertEquals(1, count($contracts), "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
+        self::assertCount(1, $contracts, "There should be 1 entities related to " . $this->salesPerson->getId() . " for 'Doctrine\Tests\Models\Company\CompanyFlexUltraContract'");
     }
 
     /**
@@ -358,13 +358,13 @@ class SingleTableInheritanceTest extends OrmFunctionalTestCase
         $contracts = $repository->matching(new Criteria(
             Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
-        self::assertEquals(3, count($contracts));
+        self::assertCount(3, $contracts);
 
         $repository = $this->em->getRepository(CompanyFixContract::class);
         $contracts = $repository->matching(new Criteria(
             Criteria::expr()->eq('salesPerson', $this->salesPerson)
         ));
-        self::assertEquals(1, count($contracts));
+        self::assertCount(1, $contracts);
     }
 
     /**

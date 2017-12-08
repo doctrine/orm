@@ -54,8 +54,8 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
         self::assertEquals(1, $result[0]['id']);
         self::assertEquals('romanb', $result[0]['name']);
@@ -98,8 +98,8 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
         self::assertArrayHasKey('nameUpper', $result[0]);
         self::assertArrayNotHasKey('id', $result[0]);
@@ -146,8 +146,8 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
 
         self::assertArrayHasKey('user', $result[0]);
         self::assertEquals(1, $result[0]['user']['id']);
@@ -193,7 +193,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertEquals(1, $result[0]['id']);
         self::assertEquals('romanb', $result[0]['name']);
@@ -243,7 +243,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertArrayHasKey('user', $result[0]);
         self::assertEquals(1, $result[0]['user']['id']);
@@ -297,7 +297,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertArrayHasKey(0, $result[0]);
         self::assertEquals(1, $result[0][0]['id']);
@@ -351,7 +351,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
         self::assertArrayHasKey('user', $result[0]);
         self::assertEquals(1, $result[0]['user']['id']);
@@ -406,10 +406,10 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers
         self::assertArrayHasKey($userEntityKey, $result[0]);
@@ -470,18 +470,18 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers
-        self::assertEquals(2, count($result[0][$userEntityKey]['phonenumbers']));
+        self::assertCount(2, $result[0][$userEntityKey]['phonenumbers']);
         self::assertEquals('ROMANB', $result[0]['nameUpper']);
 
         // second user => 1 phonenumber
-        self::assertEquals(1, count($result[1][$userEntityKey]['phonenumbers']));
+        self::assertCount(1, $result[1][$userEntityKey]['phonenumbers']);
         self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
         self::assertEquals(42, $result[0][$userEntityKey]['phonenumbers'][0]['phonenumber']);
@@ -544,21 +544,21 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[1]));
-        self::assertTrue(is_array($result[2]));
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[1]);
+        self::assertInternalType('array', $result[2]);
 
         // test the scalar values
         self::assertEquals('ROMANB', $result[1]['nameUpper']);
         self::assertEquals('JWAGE', $result[2]['nameUpper']);
 
         // first user => 2 phonenumbers. notice the custom indexing by user id
-        self::assertEquals(2, count($result[1][$userEntityKey]['phonenumbers']));
+        self::assertCount(2, $result[1][$userEntityKey]['phonenumbers']);
 
         // second user => 1 phonenumber. notice the custom indexing by user id
-        self::assertEquals(1, count($result[2][$userEntityKey]['phonenumbers']));
+        self::assertCount(1, $result[2][$userEntityKey]['phonenumbers']);
 
         // test the custom indexing of the phonenumbers
         self::assertTrue(isset($result[1][$userEntityKey]['phonenumbers']['42']));
@@ -658,17 +658,17 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
         // first user => 2 phonenumbers, 2 articles
-        self::assertEquals(2, count($result[0][0]['phonenumbers']));
-        self::assertEquals(2, count($result[0][0]['articles']));
+        self::assertCount(2, $result[0][0]['phonenumbers']);
+        self::assertCount(2, $result[0][0]['articles']);
         self::assertEquals('ROMANB', $result[0]['nameUpper']);
         // second user => 1 phonenumber, 2 articles
-        self::assertEquals(1, count($result[1][0]['phonenumbers']));
-        self::assertEquals(2, count($result[1][0]['articles']));
+        self::assertCount(1, $result[1][0]['phonenumbers']);
+        self::assertCount(2, $result[1][0]['articles']);
         self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
         self::assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
@@ -797,19 +797,19 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
 
         // first user => 2 phonenumbers, 2 articles, 1 comment on first article
-        self::assertEquals(2, count($result[0][0]['phonenumbers']));
-        self::assertEquals(2, count($result[0][0]['articles']));
-        self::assertEquals(1, count($result[0][0]['articles'][0]['comments']));
+        self::assertCount(2, $result[0][0]['phonenumbers']);
+        self::assertCount(2, $result[0][0]['articles']);
+        self::assertCount(1, $result[0][0]['articles'][0]['comments']);
         self::assertEquals('ROMANB', $result[0]['nameUpper']);
         // second user => 1 phonenumber, 2 articles, no comments
-        self::assertEquals(1, count($result[1][0]['phonenumbers']));
-        self::assertEquals(2, count($result[1][0]['articles']));
+        self::assertCount(1, $result[1][0]['phonenumbers']);
+        self::assertCount(2, $result[1][0]['articles']);
         self::assertEquals('JWAGE', $result[1]['nameUpper']);
 
         self::assertEquals(42, $result[0][0]['phonenumbers'][0]['phonenumber']);
@@ -826,12 +826,12 @@ class ArrayHydratorTest extends HydrationTestCase
         self::assertTrue(isset($result[0][0]['articles'][0]['comments']));
 
         // empty comment collections
-        self::assertTrue(is_array($result[0][0]['articles'][1]['comments']));
-        self::assertEquals(0, count($result[0][0]['articles'][1]['comments']));
-        self::assertTrue(is_array($result[1][0]['articles'][0]['comments']));
-        self::assertEquals(0, count($result[1][0]['articles'][0]['comments']));
-        self::assertTrue(is_array($result[1][0]['articles'][1]['comments']));
-        self::assertEquals(0, count($result[1][0]['articles'][1]['comments']));
+        self::assertInternalType('array', $result[0][0]['articles'][1]['comments']);
+        self::assertCount(0, $result[0][0]['articles'][1]['comments']);
+        self::assertInternalType('array', $result[1][0]['articles'][0]['comments']);
+        self::assertCount(0, $result[1][0]['articles'][0]['comments']);
+        self::assertInternalType('array', $result[1][0]['articles'][1]['comments']);
+        self::assertCount(0, $result[1][0]['articles'][1]['comments']);
     }
 
     /**
@@ -911,14 +911,14 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
-        self::assertTrue(is_array($result));
-        self::assertTrue(is_array($result[0]));
-        self::assertTrue(is_array($result[1]));
+        self::assertCount(2, $result);
+        self::assertInternalType('array', $result);
+        self::assertInternalType('array', $result[0]);
+        self::assertInternalType('array', $result[1]);
         self::assertTrue(isset($result[0]['boards']));
-        self::assertEquals(3, count($result[0]['boards']));
+        self::assertCount(3, $result[0]['boards']);
         self::assertTrue(isset($result[1]['boards']));
-        self::assertEquals(1, count($result[1]['boards']));
+        self::assertCount(1, $result[1]['boards']);
     }
 
     /**
@@ -974,21 +974,21 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(3, count($result));
+        self::assertCount(3, $result);
 
-        self::assertEquals(2, count($result[0][$entityKey])); // User array
+        self::assertCount(2, $result[0][$entityKey]); // User array
         self::assertEquals(1, $result[0]['id']);
         self::assertEquals('The First', $result[0]['topic']);
         self::assertEquals(1, $result[0]['cid']);
         self::assertEquals('First Comment', $result[0]['ctopic']);
 
-        self::assertEquals(2, count($result[1][$entityKey])); // User array, duplicated
+        self::assertCount(2, $result[1][$entityKey]); // User array, duplicated
         self::assertEquals(1, $result[1]['id']); // duplicated
         self::assertEquals('The First', $result[1]['topic']); // duplicated
         self::assertEquals(2, $result[1]['cid']);
         self::assertEquals('Second Comment', $result[1]['ctopic']);
 
-        self::assertEquals(2, count($result[2][$entityKey])); // User array, duplicated
+        self::assertCount(2, $result[2][$entityKey]); // User array, duplicated
         self::assertEquals(42, $result[2]['id']);
         self::assertEquals('The Answer', $result[2]['topic']);
         self::assertNull($result[2]['cid']);
@@ -1025,8 +1025,8 @@ class ArrayHydratorTest extends HydrationTestCase
         $rowNum   = 0;
 
         while (($row = $iterator->next()) !== false) {
-            self::assertEquals(1, count($row));
-            self::assertTrue(is_array($row[0]));
+            self::assertCount(1, $row);
+            self::assertInternalType('array', $row[0]);
 
             if ($rowNum == 0) {
                 self::assertEquals(1, $row[0]['id']);
@@ -1070,7 +1070,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $rowNum   = 0;
 
         while (($row = $iterator->next()) !== false) {
-            self::assertEquals(1, count($row));
+            self::assertCount(1, $row);
             self::assertArrayHasKey(0, $row);
             self::assertArrayHasKey('user', $row[0]);
 
@@ -1113,7 +1113,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(1, count($result));
+        self::assertCount(1, $result);
         self::assertArrayHasKey('id', $result[0]);
         self::assertArrayHasKey('name', $result[0]);
         self::assertArrayNotHasKey('foo', $result[0]);
@@ -1164,7 +1164,7 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(4, count($result), "Should hydrate four results.");
+        self::assertCount(4, $result, "Should hydrate four results.");
 
         self::assertEquals('ROMANB', $result[0]['nameUpper']);
         self::assertEquals('ROMANB', $result[1]['nameUpper']);
@@ -1214,12 +1214,12 @@ class ArrayHydratorTest extends HydrationTestCase
         $hydrator = new \Doctrine\ORM\Internal\Hydration\ArrayHydrator($this->em);
         $result   = $hydrator->hydrateAll($stmt, $rsm);
 
-        self::assertEquals(2, count($result));
+        self::assertCount(2, $result);
 
-        self::assertTrue(isset($result[1]));
+        self::assertArrayHasKey(1, $result);
         self::assertEquals(1, $result[1][$userEntityKey]['id']);
 
-        self::assertTrue(isset($result[2]));
+        self::assertArrayHasKey(2, $result);
         self::assertEquals(2, $result[2][$userEntityKey]['id']);
     }
 }
