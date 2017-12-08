@@ -2,6 +2,7 @@
 
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
@@ -14,6 +15,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Id\AbstractIdGenerator;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Tests\Mocks\ConnectionMock;
@@ -26,6 +28,7 @@ use Doctrine\Tests\Models\DDC4006\DDC4006User;
 use Doctrine\Tests\Models\JoinedInheritanceType\AnotherChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\ChildClass;
 use Doctrine\Tests\Models\JoinedInheritanceType\RootClass;
+use Doctrine\Tests\Models\PropertyOrder;
 use Doctrine\Tests\Models\Quote;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
@@ -450,6 +453,70 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $userMetadata = $cmf->getMetadataFor(DDC4006User::class);
 
         $this->assertTrue($userMetadata->isIdGeneratorIdentity());
+    }
+
+    public function testPropertyOrderNoCache()
+    {
+        $cmf = $this->createPropertyOrderFactory();
+
+        /** @var ClassMetadataInfo $adminMetadata */
+        $adminMetadata = $cmf->getMetadataFor(PropertyOrder\Admin::class);
+        $this->assertSame(
+            ['id', 'name', 'group', 'email'],
+            array_keys($adminMetadata->reflFields)
+        );
+
+        /** @var ClassMetadataInfo $userMetadata */
+        $userMetadata = $cmf->getMetadataFor(PropertyOrder\User::class);
+        $this->assertSame(
+            ['id', 'name', 'group'],
+            array_keys($userMetadata->reflFields)
+        );
+    }
+
+    public function testPropertyOrderWithCache()
+    {
+        $noCacheCmf = $this->createPropertyOrderFactory();
+        $cache      = new ArrayCache();
+
+        $addCacheMetadata = function (string $className) use ($cache, $noCacheCmf) {
+            /** @var ClassMetadataInfo $metadata */
+            $metadata             = $noCacheCmf->getMetadataFor($className);
+            $metadata->reflFields = [];
+
+            $cacheSalt = '$CLASSMETADATA'; // \Doctrine\Common\Persistence\Mapping\AbstractClassMetadataFactory::$cacheSalt
+
+            $cache->save($className . $cacheSalt, $metadata);
+        };
+        $addCacheMetadata(PropertyOrder\Admin::class);
+        $addCacheMetadata(PropertyOrder\User::class);
+
+        $cmf = $this->createPropertyOrderFactory();
+        $cmf->setCacheDriver($cache);
+
+        /** @var ClassMetadataInfo $adminMetadata */
+        $adminMetadata = $cmf->getMetadataFor(PropertyOrder\Admin::class);
+        $this->assertSame(
+            ['id', 'name', 'group', 'email'],
+            array_keys($adminMetadata->reflFields)
+        );
+
+        /** @var ClassMetadataInfo $userMetadata */
+        $userMetadata = $cmf->getMetadataFor(PropertyOrder\User::class);
+        $this->assertSame(
+            ['id', 'name', 'group'],
+            array_keys($userMetadata->reflFields)
+        );
+    }
+
+    private function createPropertyOrderFactory()
+    {
+        $driver = $this->createAnnotationDriver([__DIR__ . '/../../Models/PropertyOrder']);
+        $em     = $this->_createEntityManager($driver);
+        $cmf    = new ClassMetadataFactory();
+        $cmf->setEntityManager($em);
+
+        return $cmf;
     }
 }
 
