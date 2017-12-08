@@ -401,7 +401,7 @@ use Throwable;
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
+            if ( ! array_key_exists($identifier, $id)) {
                 throw ORMException::missingIdentifierField($class->name, $identifier);
             }
 
@@ -478,7 +478,7 @@ use Throwable;
         $sortedId = [];
 
         foreach ($class->identifier as $identifier) {
-            if ( ! isset($id[$identifier])) {
+            if ( ! array_key_exists($identifier, $id)) {
                 throw ORMException::missingIdentifierField($class->name, $identifier);
             }
 
