@@ -696,17 +696,6 @@ final class EntityManager implements EntityManagerInterface
 
     /**
      * {@inheritDoc}
-     *
-     * @todo Implementation need. This is necessary since $e2 = clone $e1; throws an E_FATAL when access anything on $e:
-     * Fatal error: Maximum function nesting level of '100' reached, aborting!
-     */
-    public function copy($entity, $deep = false)
-    {
-        throw new \BadMethodCallException("Not implemented.");
-    }
-
-    /**
-     * {@inheritDoc}
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
