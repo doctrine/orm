@@ -38,7 +38,7 @@ and year of production as primary keys:
             /** @Id @Column(type="string") */
             private $name;
             /** @Id @Column(type="integer") */
-            private $year
+            private $year;
 
             public function __construct($name, $year)
             {
