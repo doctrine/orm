@@ -20,12 +20,15 @@ use Doctrine\Tests\Models\DDC753\DDC753EntityWithCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753EntityWithDefaultCustomRepository;
 use Doctrine\Tests\Models\DDC753\DDC753InvalidRepository;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\Tests\VerifyDeprecations;
 
 /**
  * @author robo
  */
 class EntityRepositoryTest extends OrmFunctionalTestCase
 {
+    use VerifyDeprecations;
+
     protected function setUp()
     {
         $this->useModelSet('cms');
@@ -969,6 +972,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $this->assertNull($usersIsNull[0]->getEmail());
         $this->assertNull($usersEqNull[0]->getEmail());
+        $this->assertHasDeprecationMessages();
     }
 
     /**

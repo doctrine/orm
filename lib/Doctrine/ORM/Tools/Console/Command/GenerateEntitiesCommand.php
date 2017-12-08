@@ -38,6 +38,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated 3.0 This class is being removed from the ORM and won't have any replacement
  */
 class GenerateEntitiesCommand extends Command
 {
@@ -87,6 +89,7 @@ EOT
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
+        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine 3.0.');
 
         $em = $this->getHelper('em')->getEntityManager();
 
