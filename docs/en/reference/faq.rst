@@ -143,23 +143,6 @@ If you set a many-to-one or one-to-one association target-entity to any parent c
 an inheritance hierarchy Doctrine does not know what PHP class the foreign is actually of.
 To find this out it has to execute a SQL query to look this information up in the database.
 
-EntityGenerator
----------------
-
-Why does the EntityGenerator not do X?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The EntityGenerator is not a full fledged code-generator that solves all tasks. Code-Generation
-is not a first-class priority in Doctrine 2 anymore (compared to Doctrine 1). The EntityGenerator
-is supposed to kick-start you, but not towards 100%.
-
-Why does the EntityGenerator not generate inheritance correctly?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Just from the details of the discriminator map the EntityGenerator cannot guess the inheritance hierarchy.
-This is why the generation of inherited entities does not fully work. You have to adjust some additional
-code to get this one working correctly.
-
 Performance
 -----------
 

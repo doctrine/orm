@@ -1,5 +1,20 @@
 # Upgrade to 3.0
 
+## BC Break: Removed code generators and related console commands
+ 
+These console commands have been removed:
+
+ * `orm:convert-mapping`
+ * `orm:generate:entities`
+ * `orm:generate-repositories`
+
+These classes have been removed:
+
+ * `Doctrine\ORM\Tools\EntityGenerator`
+ * `Doctrine\ORM\Tools\EntityRepositoryGenerator`
+
+Whole Doctrine\ORM\Tools\Export namespace with all its members has been removed as well.
+
 ## BC Break: proxies no longer implement `Doctrine\ORM\Proxy\Proxy`
 
 Proxy objects no longer implement `Doctrine\ORM\Proxy\Proxy` nor
