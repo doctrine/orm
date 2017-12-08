@@ -89,7 +89,7 @@ events for one method, this will happen before Beta 1 though.
 Now validation is performed whenever you call
 ``EntityManager#persist($order)`` or when you call
 ``EntityManager#flush()`` and an order is about to be updated. Any
-Exception that happens in the lifecycle callbacks will be cached by
+Exception that happens in the lifecycle callbacks will be caught by
 the EntityManager and the current transaction is rolled back.
 
 Of course you can do any type of primitive checks, not null,
