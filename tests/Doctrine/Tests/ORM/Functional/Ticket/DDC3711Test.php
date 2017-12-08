@@ -9,6 +9,8 @@ use Doctrine\Tests\ORM\Mapping\YamlMappingDriverTest;
 
 /**
  * @author Marc Pantel <pantel.m@gmail.com>
+ *
+ * @group legacy
  */
 class DDC3711Test extends YamlMappingDriverTest
 {

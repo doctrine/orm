@@ -39,6 +39,9 @@ class ConvertDoctrine1SchemaTest extends OrmTestCase
         return EntityManagerMock::create($conn, $config, $eventManager);
     }
 
+    /**
+     * @group legacy
+     */
     public function testTest()
     {
         if ( ! class_exists('Symfony\Component\Yaml\Yaml', true)) {

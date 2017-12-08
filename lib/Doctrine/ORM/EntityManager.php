@@ -353,6 +353,13 @@ use Throwable;
      */
     public function flush($entity = null)
     {
+        if (func_num_args() !== 0) {
+            @trigger_error(
+                'Calling ' . __METHOD__ . '() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine 3.0.',
+                E_USER_DEPRECATED
+            );
+        }
+
         $this->errorIfClosed();
 
         $this->unitOfWork->commit($entity);
@@ -652,9 +659,13 @@ use Throwable;
      * @return void
      *
      * @throws ORMInvalidArgumentException
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine 3.0.
      */
     public function detach($entity)
     {
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#detach()', $entity);
         }
@@ -673,9 +684,13 @@ use Throwable;
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine 3.0.
      */
     public function merge($entity)
     {
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+
         if ( ! is_object($entity)) {
             throw ORMInvalidArgumentException::invalidObject('EntityManager#merge()', $entity);
         }
@@ -687,9 +702,13 @@ use Throwable;
 
     /**
      * {@inheritDoc}
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine 3.0.
      */
     public function copy($entity, $deep = false)
     {
+        @trigger_error('Method ' . __METHOD__ . '() is deprecated and will be removed in Doctrine 3.0.', E_USER_DEPRECATED);
+
         throw new \BadMethodCallException("Not implemented.");
     }
 

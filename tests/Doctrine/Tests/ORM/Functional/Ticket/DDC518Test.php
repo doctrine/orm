@@ -2,6 +2,9 @@
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+/**
+ * @group legacy
+ */
 class DDC518Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()

@@ -13,6 +13,9 @@ use Doctrine\Tests\Models\DDC2372\DDC2372Admin;
 use Doctrine\Tests\Models\DDC2372\DDC2372User;
 use Doctrine\Tests\OrmTestCase;
 
+/**
+ * @group legacy
+ */
 class EntityGeneratorTest extends OrmTestCase
 {
 

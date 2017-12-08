@@ -18,6 +18,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-3699
+     * @group legacy
      */
     public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToOneUninitializedAssociations()
     {
@@ -61,6 +62,7 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-3699
+     * @group legacy
      */
     public function testMergingParentClassFieldsDoesNotStopMergingScalarFieldsForToManyUninitializedAssociations()
     {

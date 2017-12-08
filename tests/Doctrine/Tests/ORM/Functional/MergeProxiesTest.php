@@ -29,6 +29,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      */
     public function testMergeDetachedUnInitializedProxy()
     {
@@ -49,6 +50,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      */
     public function testMergeUnserializedUnInitializedProxy()
     {
@@ -72,6 +74,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      */
     public function testMergeManagedProxy()
     {
@@ -87,6 +90,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      *
      * Bug discovered while working on DDC-2704 - merging towards un-initialized proxies does not initialize them,
      * causing merged data to be lost when they are actually initialized
@@ -116,6 +120,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      */
     public function testMergingProxyFromDifferentEntityManagerWithExistingManagedInstanceDoesNotReplaceInitializer()
     {
@@ -177,6 +182,7 @@ class MergeProxiesTest extends OrmFunctionalTestCase
      * @group DDC-1734
      * @group DDC-3368
      * @group #1172
+     * @group legacy
      */
     public function testMergingUnInitializedProxyDoesNotInitializeIt()
     {

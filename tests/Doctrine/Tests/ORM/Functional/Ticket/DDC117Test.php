@@ -428,6 +428,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     /**
      * @group DDC-1519
+     * @group legacy
      */
     public function testMergeForeignKeyIdentifierEntity()
     {
@@ -435,7 +436,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $refRep = $this->_em->find(DDC117Reference::class, $idCriteria);
 
-        $this->_em->detach($refRep);
+        $this->_em->clear(DDC117Reference::class);
         $refRep = $this->_em->merge($refRep);
 
         $this->assertEquals($this->article1->id(), $refRep->source()->id());

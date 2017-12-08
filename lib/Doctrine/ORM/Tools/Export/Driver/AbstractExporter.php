@@ -29,6 +29,8 @@ use Doctrine\ORM\Tools\Export\ExportException;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
+ *
+ * @deprecated
  */
 abstract class AbstractExporter
 {
@@ -57,6 +59,8 @@ abstract class AbstractExporter
      */
     public function __construct($dir = null)
     {
+        @trigger_error(static::class . ' is deprecated and will be removed in Doctrine 3.0', E_USER_DEPRECATED);
+
         $this->_outputDir = $dir;
     }
 

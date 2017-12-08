@@ -20,6 +20,7 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * This test is DDC-1734 minus the serialization, i.e. it works
      *
      * @group DDC-1734
+     * @group legacy
      */
     public function testMergeWorksOnNonSerializedProxies()
     {
@@ -50,6 +51,7 @@ class DDC1734Test extends \Doctrine\Tests\OrmFunctionalTestCase
      * - the entity is broken because it has no identifier and no field defined
      *
      * @group DDC-1734
+     * @group legacy
      */
     public function testMergeWorksOnSerializedProxies()
     {

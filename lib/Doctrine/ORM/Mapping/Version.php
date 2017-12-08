@@ -22,6 +22,8 @@ namespace Doctrine\ORM\Mapping;
 /**
  * @Annotation
  * @Target("PROPERTY")
+ *
+ * @deprecated This class is deprecated and will be removed in Doctrine 3.0.
  */
 final class Version implements Annotation
 {

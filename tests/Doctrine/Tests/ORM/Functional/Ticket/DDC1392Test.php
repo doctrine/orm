@@ -6,6 +6,7 @@ use Doctrine\ORM\UnitOfWork;
 
 /**
  * @group DDC-1392
+ * @group legacy
  */
 class DDC1392Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

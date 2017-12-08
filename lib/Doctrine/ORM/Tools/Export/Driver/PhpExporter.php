@@ -27,6 +27,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @link    www.doctrine-project.org
  * @since   2.0
  * @author  Jonathan Wage <jonwage@gmail.com>
+ *
+ * @deprecated
  */
 class PhpExporter extends AbstractExporter
 {

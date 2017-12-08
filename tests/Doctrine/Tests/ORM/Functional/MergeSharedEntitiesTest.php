@@ -25,6 +25,9 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         }
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergeSharedNewEntities()
     {
         $file    = new MSEFile;
@@ -38,6 +41,9 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergeSharedManagedEntities()
     {
         $file    = new MSEFile;
@@ -56,6 +62,9 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
         $this->assertEquals($picture->file, $picture->otherFile, 'Identical entities must remain identical');
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergeSharedDetachedSerializedEntities()
     {
         $file    = new MSEFile;
@@ -78,6 +87,7 @@ class MergeSharedEntitiesTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-2704
+     * @group legacy
      */
     public function testMergeInheritedTransientPrivateProperties()
     {

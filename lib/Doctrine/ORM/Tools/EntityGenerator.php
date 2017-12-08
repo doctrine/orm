@@ -44,6 +44,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated
  */
 class EntityGenerator
 {
@@ -334,6 +336,8 @@ public function __construct(<params>)
      */
     public function __construct()
     {
+        @trigger_error(self::class . ' is deprecated and will be removed in Doctrine 3.0', E_USER_DEPRECATED);
+
         if (version_compare(\Doctrine\Common\Version::VERSION, '2.2.0-DEV', '>=')) {
             $this->annotationsPrefix = 'ORM\\';
         }

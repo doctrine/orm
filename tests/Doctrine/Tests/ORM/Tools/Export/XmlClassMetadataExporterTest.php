@@ -14,6 +14,8 @@ use Doctrine\ORM\Tools\Export\Driver\XmlExporter;
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
+ *
+ * @group legacy
  */
 class XmlClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {

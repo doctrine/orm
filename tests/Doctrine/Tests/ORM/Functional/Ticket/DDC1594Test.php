@@ -6,6 +6,7 @@ use Doctrine\Tests\Models\CMS\CmsUser;
 
 /**
  * @group DDC-1594
+ * @group legacy
  */
 class DDC1594Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

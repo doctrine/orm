@@ -37,6 +37,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
+ *
+ * @deprecated This class is deprecated and will be removed in Doctrine 3.0.');
  */
 class GenerateRepositoriesCommand extends Command
 {
@@ -59,6 +61,7 @@ class GenerateRepositoriesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $ui = new SymfonyStyle($input, $output);
+        $ui->warning('Command ' . $this->getName() . ' is deprecated and will be removed in Doctrine 3.0.');
 
         $em = $this->getHelper('em')->getEntityManager();
 

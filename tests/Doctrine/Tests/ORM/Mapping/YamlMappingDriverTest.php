@@ -10,6 +10,9 @@ use Doctrine\Tests\Models\DirectoryTree\File;
 use Doctrine\Tests\Models\Generic\SerializationModel;
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * @group legacy
+ */
 class YamlMappingDriverTest extends AbstractMappingDriverTest
 {
     protected function _loadDriver()
@@ -76,6 +79,14 @@ class YamlMappingDriverTest extends AbstractMappingDriverTest
 
         $this->assertEquals(255, $nameField['length']);
         $this->assertEquals(255, $valueField['length']);
+    }
+
+    /**
+     * @expectedDeprecation YAML mapping driver is deprecated and will be removed in Doctrine 3.0, please migrate to annotation or XML driver.
+     */
+    public function testDeprecation() : void
+    {
+        $this->createClassMetadata(DDC2069Entity::class);
     }
 
 }

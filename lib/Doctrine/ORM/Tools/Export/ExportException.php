@@ -21,6 +21,9 @@ namespace Doctrine\ORM\Tools\Export;
 
 use Doctrine\ORM\ORMException;
 
+/**
+ * @deprecated
+ */
 class ExportException extends ORMException
 {
     /**

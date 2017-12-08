@@ -16,6 +16,8 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
  * @PHPUnit-Version 3.4.11
  *
  * @author markus
+ *
+ * @group legacy
  */
 class DDC501Test extends OrmFunctionalTestCase
 {

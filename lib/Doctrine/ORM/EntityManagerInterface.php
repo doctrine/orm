@@ -198,6 +198,8 @@ interface EntityManagerInterface extends ObjectManager
      * @return object The new entity.
      *
      * @throws \BadMethodCallException
+     *
+     * @deprecated This method is deprecated and will be removed in Doctrine 3.0.
      */
     public function copy($entity, $deep = false);
 

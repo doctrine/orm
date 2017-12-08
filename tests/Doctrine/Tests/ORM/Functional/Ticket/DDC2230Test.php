@@ -10,6 +10,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-2230
+ * @group legacy
  */
 class DDC2230Test extends OrmFunctionalTestCase
 {

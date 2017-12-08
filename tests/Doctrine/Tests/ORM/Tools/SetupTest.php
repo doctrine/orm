@@ -68,6 +68,9 @@ class SetupTest extends OrmTestCase
         $this->assertInstanceOf(XmlDriver::class, $config->getMetadataDriverImpl());
     }
 
+    /**
+     * @group legacy
+     */
     public function testYAMLConfiguration()
     {
         $config = Setup::createYAMLMetadataConfiguration([], true);

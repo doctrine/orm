@@ -1810,7 +1810,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws OptimisticLockException If the entity uses optimistic locking through a version
      *         attribute and the version check against the managed copy fails.
      *
-     * @todo Require active transaction!? OptimisticLockException may result in undefined state!?
+     * @deprecated
      */
     public function merge($entity)
     {
@@ -2000,6 +2000,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity The entity to detach.
      *
      * @return void
+     *
+     * @deprecated
      */
     public function detach($entity)
     {

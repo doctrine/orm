@@ -26,6 +26,7 @@ class MergeCompositeToOneKeyTest extends OrmFunctionalTestCase
     /**
      * @group DDC-3378
      * @group 1176
+     * @group legacy
      */
     public function testMergingOfEntityWithCompositeIdentifierContainingToOneAssociation()
     {

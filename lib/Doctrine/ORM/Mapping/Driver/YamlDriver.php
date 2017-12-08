@@ -44,6 +44,11 @@ class YamlDriver extends FileDriver
      */
     public function __construct($locator, $fileExtension = self::DEFAULT_FILE_EXTENSION)
     {
+        @trigger_error(
+            'YAML mapping driver is deprecated and will be removed in Doctrine 3.0, please migrate to annotation or XML driver.',
+            E_USER_DEPRECATED
+        );
+
         parent::__construct($locator, $fileExtension);
     }
 

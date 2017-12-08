@@ -7,6 +7,9 @@ use Doctrine\ORM\Tools\EntityGenerator;
 use Doctrine\Tests\OrmTestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * @group legacy
+ */
 class ConvertDoctrine1SchemaCommandTest extends OrmTestCase
 {
     public function testExecution()

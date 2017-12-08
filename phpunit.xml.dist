@@ -36,6 +36,10 @@
         </exclude>
     </groups>
 
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
+
   <php>
     <!-- "Real" test database -->
     <!-- uncomment, otherwise sqlite memory runs

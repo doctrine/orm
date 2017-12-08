@@ -6,6 +6,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
 
+/**
+ * @group legacy
+ */
 class DDC758Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
 

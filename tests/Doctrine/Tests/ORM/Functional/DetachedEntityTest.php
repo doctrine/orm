@@ -24,6 +24,9 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
+    /**
+     * @group legacy
+     */
     public function testSimpleDetachMerge()
     {
         $user = new CmsUser;
@@ -46,6 +49,9 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->assertEquals('Roman B.', $user2->name);
     }
 
+    /**
+     * @group legacy
+     */
     public function testSerializeUnserializeModifyMerge()
     {
         $user = new CmsUser;
@@ -126,6 +132,9 @@ class DetachedEntityTest extends OrmFunctionalTestCase
         $this->_em->flush();
     }
 
+    /**
+     * @group legacy
+     */
     public function testUninitializedLazyAssociationsAreIgnoredOnMerge()
     {
         $user = new CmsUser;
@@ -160,6 +169,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-822
+     * @group legacy
      */
     public function testUseDetachedEntityAsQueryParameter()
     {
@@ -185,6 +195,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-920
+     * @group legacy
      */
     public function testDetachManagedUnpersistedEntity()
     {
@@ -204,6 +215,7 @@ class DetachedEntityTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-1340
+     * @group legacy
      */
     public function testMergeArticleWrongVersion()
     {

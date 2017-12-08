@@ -14,6 +14,9 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * @group legacy
+ */
 class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
 {
     /**

@@ -4,6 +4,7 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 /**
  * @group DDC-1383
+ * @group legacy
  */
 class DDC1383Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {

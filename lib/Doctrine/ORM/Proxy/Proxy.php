@@ -26,6 +26,8 @@ use Doctrine\Common\Proxy\Proxy as BaseProxy;
  *
  * @author Roman Borschel <roman@code-factory.org>
  * @since 2.0
+ *
+ * @deprecated This class is deprecated and will be removed in Doctrine 3.0, proxies will no longer implement it.
  */
 interface Proxy extends BaseProxy
 {

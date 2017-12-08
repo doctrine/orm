@@ -21,6 +21,8 @@ class MergeVersionedManyToOneTest extends OrmFunctionalTestCase
     /**
      * This test case asserts that a detached and unmodified entity could be merge without firing
      * OptimisticLockException.
+     *
+     * @group legacy
      */
     public function testSetVersionOnCreate()
     {

@@ -70,6 +70,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the directory where Doctrine generates any necessary proxy class files.
      *
      * @return string|null
+     *
+     * @deprecated
      */
     public function getProxyDir()
     {
@@ -82,6 +84,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the strategy for automatically generating proxy classes.
      *
      * @return int Possible values are constants of Doctrine\Common\Proxy\AbstractProxyFactory.
+     *
+     * @deprecated
      */
     public function getAutoGenerateProxyClasses()
     {
@@ -107,6 +111,8 @@ class Configuration extends \Doctrine\DBAL\Configuration
      * Gets the namespace where proxy classes reside.
      *
      * @return string|null
+     *
+     * @deprecated
      */
     public function getProxyNamespace()
     {

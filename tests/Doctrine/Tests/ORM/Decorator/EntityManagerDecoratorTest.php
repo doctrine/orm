@@ -69,6 +69,7 @@ class EntityManagerDecoratorTest extends TestCase
 
     /**
      * @dataProvider getMethodParameters
+     * @group legacy
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {

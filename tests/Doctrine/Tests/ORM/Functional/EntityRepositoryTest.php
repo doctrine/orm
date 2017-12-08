@@ -944,6 +944,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-2478
+     * @group legacy
      */
     public function testMatchingCriteriaNullAssocComparison()
     {

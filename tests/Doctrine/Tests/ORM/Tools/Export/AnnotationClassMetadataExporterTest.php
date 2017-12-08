@@ -11,6 +11,8 @@ namespace Doctrine\Tests\ORM\Tools\Export;
  * @link        http://www.phpdoctrine.org
  * @since       2.0
  * @version     $Revision$
+ *
+ * @group legacy
  */
 class AnnotationClassMetadataExporterTest extends AbstractClassMetadataExporterTest
 {

@@ -6,6 +6,7 @@ use \Doctrine\ORM\Mapping\Driver\SimplifiedYamlDriver;
 
 /**
  * @group DDC-1418
+ * @group legacy
  */
 class YamlDriverTest extends AbstractDriverTest
 {

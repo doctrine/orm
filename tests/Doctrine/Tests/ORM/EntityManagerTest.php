@@ -159,6 +159,7 @@ class EntityManagerTest extends OrmTestCase
 
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
+     * @group legacy
      */
     public function testThrowsExceptionOnNonObjectValues($methodName) {
         $this->expectException(ORMInvalidArgumentException::class);
@@ -181,6 +182,8 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @dataProvider dataAffectedByErrorIfClosedException
      * @param string $methodName
+     *
+     * @group legacy
      */
     public function testAffectedByErrorIfClosedException($methodName)
     {
@@ -304,5 +307,54 @@ class EntityManagerTest extends OrmTestCase
         $this->_em->clear(null);
 
         $this->assertFalse($this->_em->contains($entity));
+    }
+
+    /**
+     * @group legacy
+     * @expectedDeprecation Calling Doctrine\ORM\EntityManager::flush() with any arguments to flush specific entities is deprecated and will not be supported in Doctrine 3.0.
+     */
+    public function testDeprecatedFlushWithArguments() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+        $this->_em->flush($entity);
+    }
+
+    /**
+     * @group legacy
+     * @expectedDeprecation Method Doctrine\ORM\EntityManager::merge() is deprecated and will be removed in Doctrine 3.0.
+     */
+    public function testDeprecatedMerge() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+        $this->_em->merge($entity);
+    }
+
+    /**
+     * @group legacy
+     * @expectedDeprecation Method Doctrine\ORM\EntityManager::detach() is deprecated and will be removed in Doctrine 3.0.
+     */
+    public function testDeprecatedDetach() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+        $this->_em->detach($entity);
+    }
+
+    /**
+     * @group legacy
+     * @expectedDeprecation Method Doctrine\ORM\EntityManager::copy() is deprecated and will be removed in Doctrine 3.0.
+     */
+    public function testDeprecatedCopy() : void
+    {
+        $entity = new Country(456, 'United Kingdom');
+        $this->_em->persist($entity);
+
+        try {
+            $this->_em->copy($entity);
+        } catch (\BadMethodCallException $e) {
+            // do nothing
+        }
     }
 }

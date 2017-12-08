@@ -499,7 +499,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->_em->persist($address);
 
         $this->_em->flush();
-        $this->_em->detach($address);
+        $this->_em->clear(CmsAddress::class);
 
         $this->assertFalse($this->_em->contains($address));
         $this->assertTrue($this->_em->contains($user));
@@ -873,6 +873,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertEquals('Benjamin E.', $this->_em->find(get_class($user), $userId)->name);
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergePersistsNewEntities()
     {
         $user = new CmsUser();
@@ -896,6 +899,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertInstanceOf(CmsUser::class, $user2);
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergeNonPersistedProperties()
     {
         $user = new CmsUser();
@@ -923,6 +929,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertEquals('active', $user2->status);
     }
 
+    /**
+     * @group legacy
+     */
     public function testMergeThrowsExceptionIfEntityWithGeneratedIdentifierDoesNotExist()
     {
         $user = new CmsUser();
@@ -937,6 +946,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-634
+     * @group legacy
      */
     public function testOneToOneMergeSetNull()
     {
@@ -1044,6 +1054,9 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
         $this->assertEquals(UnitOfWork::STATE_DETACHED, $unitOfWork->getEntityState($address));
     }
 
+    /**
+     * @group legacy
+     */
     public function testFlushManyExplicitEntities()
     {
         $userA = new CmsUser;
@@ -1077,6 +1090,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushSingleManagedEntity()
     {
@@ -1098,6 +1112,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushSingleUnmanagedEntity()
     {
@@ -1114,6 +1129,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushSingleAndNewEntity()
     {
@@ -1141,6 +1157,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushAndCascadePersist()
     {
@@ -1168,6 +1185,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushSingleAndNoCascade()
     {
@@ -1195,6 +1213,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
      * @group DDC-720
      * @group DDC-1612
      * @group DDC-2267
+     * @group legacy
      */
     public function testFlushSingleNewEntityThenRemove()
     {
@@ -1217,6 +1236,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testProxyIsIgnored()
     {
@@ -1245,6 +1265,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
     /**
      * @group DDC-720
+     * @group legacy
      */
     public function testFlushSingleSaveOnlySingle()
     {

@@ -8,6 +8,7 @@ use Doctrine\Tests\Models\CMS\CmsArticle;
 
 /**
  * @group DDC-2409
+ * @group legacy
  */
 class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -53,8 +54,8 @@ class DDC2409Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(UnitOfWork::STATE_MANAGED, $uow->getEntityState($article));
         $this->assertEquals(UnitOfWork::STATE_NEW, $uow->getEntityState($user));
 
-        $em->detach($user);
-        $em->detach($article);
+        $em->clear(CmsUser::class);
+        $em->clear(CmsArticle::class);
 
         $userMerged     = $em->merge($user);
         $articleMerged  = $em->merge($article);

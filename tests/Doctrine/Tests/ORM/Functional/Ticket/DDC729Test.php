@@ -5,6 +5,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 
+/**
+ * @group legacy
+ */
 class DDC729Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function setUp()
