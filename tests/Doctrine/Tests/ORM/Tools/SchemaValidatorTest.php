@@ -182,6 +182,18 @@ class SchemaValidatorTest extends OrmTestCase
             $ce
         );
     }
+
+    public function testEmbeddableWithAssociation()
+    {
+        $class = $this->em->getClassMetadata(__NAMESPACE__ . '\EmbeddingEmbeddableWithAssociation');
+        $ce = $this->validator->validateClass($class);
+        $this->assertEquals(
+            array(
+                "Embeddables do not support associations, but one is defined on 'Doctrine\Tests\ORM\Tools\EmbeddableWithAssociation#associationTarget'."
+            ),
+            $ce
+        );
+    }
 }
 
 /**
@@ -498,4 +510,37 @@ class DDC3322Three
      * @OrderBy({"oneToOneInverse" = "ASC"})
      */
     private $invalidAssoc;
+}
+
+/**
+ * @Entity
+ */
+class EmbeddingEmbeddableWithAssociation
+{
+    /**
+     * @Id
+     * @Column
+     */
+    private  $id;
+
+    /**
+     * @Embedded(class="EmbeddableWithAssociation")
+     */
+    private $embeddableWithAssociation;
+}
+
+/** @Embeddable */
+class EmbeddableWithAssociation
+{
+    /**
+     * @ManyToOne(targetEntity="AssociationTarget")
+     */
+    private $associationTarget;
+}
+
+/**
+ * @Entity
+ */
+class AssociationTarget
+{
 }

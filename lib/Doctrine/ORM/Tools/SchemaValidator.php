@@ -254,6 +254,15 @@ class SchemaValidator
             }
         }
 
+        foreach ($class->embeddedClasses as $propertyName => $embeddedClass) {
+            $embeddedMeta = $this->em->getClassMetadata($embeddedClass['class']);
+
+            foreach ($embeddedMeta->associationMappings as $fieldName => $mapping) {
+                $ce[] = "Embeddables do not support associations, but one is defined on '" . $embeddedClass['class']
+                    . '#' . $fieldName .  "'.";
+            }
+        }
+
         return $ce;
     }
 
