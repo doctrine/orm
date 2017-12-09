@@ -562,7 +562,7 @@ following:
 ``EntityManager#getRepository($entityName)`` returns a repository
 object which provides many ways to retrieve entities of the
 specified type. By default, the repository instance is of type
-``Doctrine\ORM\EntityRepository``. You can also use custom
+``Doctrine\ORM\EntityRepositoryInterface``. You can also use custom
 repository classes as shown later.
 
 By Simple Conditions
@@ -594,7 +594,7 @@ You can also load by owning side associations through the repository:
     $number = $em->find('MyProject\Domain\Phonenumber', 1234);
     $user = $em->getRepository('MyProject\Domain\User')->findOneBy(array('phone' => $number->getId()));
 
-The ``EntityRepository#findBy()`` method additionally accepts orderings, limit and offset as second to fourth parameters:
+The ``EntityRepositoryInterface#findBy()`` method additionally accepts orderings, limit and offset as second to fourth parameters:
 
 .. code-block:: php
 
@@ -609,7 +609,7 @@ If you pass an array of values Doctrine will convert the query into a WHERE fiel
     $users = $em->getRepository('MyProject\Domain\User')->findBy(array('age' => array(20, 30, 40)));
     // translates roughly to: SELECT * FROM users WHERE age IN (20, 30, 40)
 
-An EntityRepository also provides a mechanism for more concise
+An EntityRepositoryInterface also provides a mechanism for more concise
 calls through its use of ``__call``. Thus, the following two
 examples are equivalent:
 
@@ -707,7 +707,7 @@ Custom Repositories
 ~~~~~~~~~~~~~~~~~~~
 
 By default the EntityManager returns a default implementation of
-``Doctrine\ORM\EntityRepository`` when you call
+``Doctrine\ORM\EntityRepositoryInterface`` when you call
 ``EntityManager#getRepository($entityClass)``. You can overwrite
 this behaviour by specifying the class name of your own Entity
 Repository in the Annotation, XML or YAML metadata. In large

@@ -717,7 +717,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param string $entityName The name of the entity.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository The repository class.
+     * @return EntityRepositoryInterface The repository class.
      */
     public function getRepository($entityName)
     {

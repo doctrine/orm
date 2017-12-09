@@ -200,7 +200,7 @@ Optional attributes:
 -  **table** - The Table-Name to be used for this entity. Otherwise the
    Unqualified Class-Name is used by default.
 -  **repository-class** - The fully qualified class-name of an
-   alternative ``Doctrine\ORM\EntityRepository`` implementation to be
+   alternative ``Doctrine\ORM\EntityRepositoryInterface`` implementation to be
    used with this entity.
 -  **inheritance-type** - The type of inheritance, defaults to none. A
    more detailed description follows in the

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Collections\Criteria;
 
 /**
@@ -23,7 +23,7 @@ use Doctrine\Common\Collections\Criteria;
  * @author  Jonathan Wage <jonwage@gmail.com>
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class EntityRepository implements ObjectRepository, Selectable
+class EntityRepository implements EntityRepositoryInterface
 {
     /**
      * @var string
@@ -54,14 +54,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a new QueryBuilder instance that is prepopulated for this entity name.
-     *
-     * @param string $alias
-     * @param string $indexBy The index for the from.
-     *
-     * @return QueryBuilder
+     * {@inheritdoc}
      */
-    public function createQueryBuilder($alias, $indexBy = null)
+    public function createQueryBuilder($alias, $indexBy = null) : QueryBuilder
     {
         return $this->em->createQueryBuilder()
             ->select($alias)
@@ -69,15 +64,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a new result set mapping builder for this entity.
-     *
-     * The column naming strategy is "INCREMENT".
-     *
-     * @param string $alias
-     *
-     * @return ResultSetMappingBuilder
+     * {@inheritdoc}
      */
-    public function createResultSetMappingBuilder($alias)
+    public function createResultSetMappingBuilder($alias) : ResultSetMappingBuilder
     {
         $rsm = new ResultSetMappingBuilder($this->em, ResultSetMappingBuilder::COLUMN_RENAMING_INCREMENT);
         $rsm->addRootEntityFromClassMetadata($this->entityName, $alias);
@@ -86,13 +75,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a new Query instance based on a predefined metadata named query.
-     *
-     * @param string $queryName
-     *
-     * @return Query
+     * {@inheritdoc}
      */
-    public function createNamedQuery($queryName)
+    public function createNamedQuery($queryName) : Query
     {
         $namedQuery    = $this->class->getNamedQuery($queryName);
         $resolvedQuery = str_replace('__CLASS__', $this->class->getClassName(), $namedQuery);
@@ -101,13 +86,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a native SQL query.
-     *
-     * @param string $queryName
-     *
-     * @return NativeQuery
+     * {@inheritdoc}
      */
-    public function createNativeNamedQuery($queryName)
+    public function createNativeNamedQuery($queryName) : NativeQuery
     {
         $queryMapping = $this->class->getNamedNativeQuery($queryName);
         $rsm          = new Query\ResultSetMappingBuilder($this->em);
@@ -118,54 +99,33 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Clears the repository, causing all managed entities to become detached.
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function clear()
+    public function clear() : void
     {
         $this->em->clear($this->class->getRootClassName());
     }
 
     /**
-     * Finds an entity by its primary key / identifier.
-     *
-     * @param mixed    $id          The identifier.
-     * @param int|null $lockMode    One of the \Doctrine\DBAL\LockMode::* constants
-     *                              or NULL if no specific lock mode should be used
-     *                              during the search.
-     * @param int|null $lockVersion The lock version.
-     *
-     * @return object|null The entity instance or NULL if the entity can not be found.
+     * {@inheritdoc}
      */
-    public function find($id, $lockMode = null, $lockVersion = null)
+    public function find($id, $lockMode = null, $lockVersion = null) : ?object
     {
         return $this->em->find($this->entityName, $id, $lockMode, $lockVersion);
     }
 
     /**
-     * Finds all entities in the repository.
-     *
-     * @return array The entities.
+     * {@inheritdoc}
      */
-    public function findAll()
+    public function findAll() : array
     {
         return $this->findBy([]);
     }
 
     /**
-     * Finds entities by a set of criteria.
-     *
-     * @param array    $criteria
-     * @param array    $orderBy
-     * @param int|null $limit
-     * @param int|null $offset
-     *
-     * @return array The objects.
-     *
-     * @todo guilhermeblanco Change orderBy to use a blank array by default (requires Common\Persistence change).
+     * {@inheritdoc}
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) : array
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -173,14 +133,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Finds a single entity by a set of criteria.
-     *
-     * @param array $criteria
-     * @param array $orderBy
-     *
-     * @return object|null The entity instance or NULL if the entity can not be found.
+     * {@inheritdoc}
      */
-    public function findOneBy(array $criteria, array $orderBy = [])
+    public function findOneBy(array $criteria, array $orderBy = []) : ?object
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -188,15 +143,9 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Counts entities by a set of criteria.
-     *
-     * @todo Add this method to `ObjectRepository` interface in the next major release
-     *
-     * @param array $criteria
-     *
-     * @return int The cardinality of the objects that match the given criteria.
+     * {@inheritdoc}
      */
-    public function count(array $criteria)
+    public function count(array $criteria) : int
     {
         return $this->em->getUnitOfWork()->getEntityPersister($this->entityName)->count($criteria);
     }
@@ -204,15 +153,15 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Adds support for magic method calls.
      *
-     * @param string $method
-     * @param array  $arguments
+     * @param string  $method
+     * @param mixed[] $arguments
      *
      * @return mixed The returned value from the resolved method.
      *
      * @throws ORMException
      * @throws \BadMethodCallException If the method called is invalid
      */
-    public function __call($method, $arguments)
+    public function __call(string $method, array $arguments)
     {
         if (0 === strpos($method, 'findBy')) {
             return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
@@ -232,47 +181,30 @@ class EntityRepository implements ObjectRepository, Selectable
         );
     }
 
-    /**
-     * @return string
-     */
-    protected function getEntityName()
+    protected function getEntityName() : string
     {
         return $this->entityName;
     }
 
-    /**
-     * @return string
-     */
-    public function getClassName()
+    public function getClassName() : string
     {
         return $this->getEntityName();
     }
 
-    /**
-     * @return EntityManagerInterface
-     */
-    protected function getEntityManager()
+    protected function getEntityManager() : EntityManagerInterface
     {
         return $this->em;
     }
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
-    protected function getClassMetadata()
+    protected function getClassMetadata() : ClassMetadata
     {
         return $this->class;
     }
 
     /**
-     * Select all elements from a selectable that match the expression and
-     * return a new collection containing these elements.
-     *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * {@inheritdoc}
      */
-    public function matching(Criteria $criteria)
+    public function matching(Criteria $criteria) : Collection
     {
         $persister = $this->em->getUnitOfWork()->getEntityPersister($this->entityName);
 
@@ -282,15 +214,15 @@ class EntityRepository implements ObjectRepository, Selectable
     /**
      * Resolves a magic method call to the proper existent method at `EntityRepository`.
      *
-     * @param string $method    The method to call
-     * @param string $by        The property name used as condition
-     * @param array  $arguments The arguments to pass at method call
+     * @param string  $method    The method to call
+     * @param string  $by        The property name used as condition
+     * @param mixed[] $arguments The arguments to pass at method call
      *
      * @throws ORMException If the method called is invalid or the requested field/association does not exist
      *
      * @return mixed
      */
-    private function resolveMagicCall($method, $by, array $arguments)
+    private function resolveMagicCall(string $method, string $by, array $arguments)
     {
         if (! $arguments) {
             throw ORMException::findByRequiresParameter($method . $by);

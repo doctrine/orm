@@ -1425,8 +1425,8 @@ example querying for all closed bugs:
         // do stuff
     }
 
-Compared to DQL these query methods are falling short of functionality very fast.
-Doctrine offers you a convenient way to extend the functionalities of the default ``EntityRepository``
+Compared to DQL these query methods are falling short of functionality very fast. Doctrine offers
+you a convenient way to extend the functionalities of the default ``EntityRepositoryInterface``
 and put all the specialized DQL query logic on it. For this you have to create a subclass
 of ``Doctrine\ORM\EntityRepository``, in our case a ``BugRepository`` and group all
 the previously discussed query functionality in it:
@@ -1515,7 +1515,7 @@ we have to adjust the metadata slightly.
           type: entity
           repositoryClass: BugRepository
 
-Now we can remove our query logic in all the places and instead use them through the EntityRepository.
+Now we can remove our query logic in all the places and instead use them through the repository.
 As an example here is the code of the first use case "List of Bugs":
 
 .. code-block:: php

@@ -411,7 +411,7 @@ implementations.
 Default Repository (***OPTIONAL***)
 -----------------------------------
 
-Specifies the FQCN of a subclass of the EntityRepository.
+Specifies the FQCN of a class implementing EntityRepositoryInterface.
 That will be available for all entities without a custom repository class.
 
 .. code-block:: php
@@ -421,7 +421,7 @@ That will be available for all entities without a custom repository class.
     $config->getDefaultRepositoryClassName();
 
 The default value is ``Doctrine\ORM\EntityRepository``.
-Any repository class must be a subclass of EntityRepository otherwise you got an ORMException
+Any repository class must implement EntityRepositoryInterface otherwise you got an ORMException
 
 Setting up the Console
 ----------------------

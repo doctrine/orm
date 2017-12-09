@@ -588,13 +588,13 @@ class Configuration extends DBALConfiguration
      *
      * @since 2.2
      *
-     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository implementation
+     * @throws ORMException If not is a \Doctrine\ORM\EntityRepositoryInterface implementation
      */
     public function setDefaultRepositoryClassName(string $repositoryClassName) : void
     {
         $reflectionClass = new \ReflectionClass($repositoryClassName);
 
-        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
+        if ( ! $reflectionClass->implementsInterface(EntityRepositoryInterface::class)) {
             throw ORMException::invalidEntityRepository($repositoryClassName);
         }
 

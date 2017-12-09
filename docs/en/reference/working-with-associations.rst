@@ -362,7 +362,7 @@ the details inside the classes can be challenging.
 This will however always initialize the collection, with all the
 performance penalties given the size. In some scenarios of large
 collections it might even be a good idea to completely hide the
-read access behind methods on the EntityRepository.
+read access behind methods on the EntityRepositoryInterface.
 
 There is no single, best way for association management. It greatly
 depends on the requirements of your concrete domain model as well
