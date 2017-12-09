@@ -96,12 +96,4 @@ class ORMException extends Exception
     {
         return new self('Metadata Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
     }
-
-    /**
-     * @return ORMException
-     */
-    public static function cantUseInOperatorOnCompositeKeys()
-    {
-        return new self("Can't use IN operator on entities that have composite keys.");
-    }
 }
