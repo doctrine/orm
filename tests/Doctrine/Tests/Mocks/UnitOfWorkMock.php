@@ -26,9 +26,8 @@ class UnitOfWorkMock extends UnitOfWork
      */
     public function getEntityPersister($entityName)
     {
-        return isset($this->persisterMock[$entityName])
-            ? $this->persisterMock[$entityName]
-            : parent::getEntityPersister($entityName);
+        return $this->persisterMock[$entityName]
+            ?? parent::getEntityPersister($entityName);
     }
 
     /**
