@@ -32,6 +32,7 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\CantUseInOperatorOnCompositeKeys;
+use Doctrine\ORM\Persisters\InvalidOrientation;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
@@ -1224,7 +1225,7 @@ class BasicEntityPersister implements EntityPersister
             $orientation = strtoupper(trim($orientation));
 
             if (! in_array($orientation, ['ASC', 'DESC'], true)) {
-                throw ORMException::invalidOrientation($this->class->getClassName(), $fieldName);
+                throw InvalidOrientation::fromClassNameAndField($this->class->getClassName(), $fieldName);
             }
 
             $property = $this->class->getProperty($fieldName);

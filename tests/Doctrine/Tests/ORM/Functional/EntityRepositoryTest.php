@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManager\UnrecognizedIdentifierFields;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Persisters\InvalidOrientation;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\TransactionRequiredException;
@@ -636,7 +637,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testInvalidOrientation() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(InvalidOrientation::class);
         $this->expectExceptionMessage('Invalid order by orientation specified for Doctrine\Tests\Models\CMS\CmsUser#username');
 
         $repo = $this->em->getRepository(CmsUser::class);

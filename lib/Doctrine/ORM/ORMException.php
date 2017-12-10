@@ -39,17 +39,6 @@ class ORMException extends Exception
     }
 
     /**
-     * @param string $className
-     * @param string $field
-     *
-     * @return ORMException
-     */
-    public static function invalidOrientation($className, $field)
-    {
-        return new self('Invalid order by orientation specified for ' . $className . '#' . $field);
-    }
-
-    /**
      * @return ORMException
      */
     public static function invalidResultCacheDriver()
