@@ -2280,7 +2280,7 @@ class UnitOfWork implements PropertyChangedListener
             foreach ($association->getJoinColumns() as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
                 $joinColumnName = $joinColumn->getColumnName();
-                $joinColumnValue = isset($data[$joinColumnName]) ? $data[$joinColumnName] : null;
+                $joinColumnValue = $data[$joinColumnName] ?? null;
                 $targetField     = $targetClass->fieldNames[$joinColumn->getReferencedColumnName()];
 
                 if ($joinColumnValue === null && in_array($targetField, $targetClass->identifier, true)) {

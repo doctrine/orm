@@ -310,9 +310,7 @@ class XmlDriver extends FileDriver
             $fieldMetadata->setPrimaryKey(true);
 
             if (isset($idElement->generator)) {
-                $strategy = isset($idElement->generator['strategy'])
-                    ? (string) $idElement->generator['strategy']
-                    : 'AUTO';
+                $strategy = (string) ($idElement->generator['strategy'] ?? 'AUTO');
 
                 $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, strtoupper($strategy)));
 
@@ -889,7 +887,7 @@ class XmlDriver extends FileDriver
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
-        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
+        $region = (string) ($cacheMapping['region'] ?? $defaultRegion);
         $usage  = isset($cacheMapping['usage'])
             ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper((string) $cacheMapping['usage'])))
             : Mapping\CacheUsage::READ_ONLY
