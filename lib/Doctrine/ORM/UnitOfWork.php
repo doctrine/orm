@@ -582,10 +582,8 @@ class UnitOfWork implements PropertyChangedListener
             // Entity is "fully" MANAGED: it was already fully persisted before
             // and we have a copy of the original data
             $originalData           = $this->originalEntityData[$oid];
-            $isChangeTrackingNotify = $class->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY;
-            $changeSet              = ($isChangeTrackingNotify && isset($this->entityChangeSets[$oid]))
-                ? $this->entityChangeSets[$oid]
-                : [];
+            $isChangeTrackingNotify = $class->isChangeTrackingNotify();
+            $changeSet              = ($isChangeTrackingNotify && $this->entityChangeSets[$oid] ?? []);
 
             foreach ($actualData as $propName => $actualValue) {
                 // skip field, its a partially omitted one!
@@ -1530,9 +1528,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $stringIdHash = (string) $idHash;
 
-        return isset($this->identityMap[$rootClassName][$stringIdHash])
-            ? $this->identityMap[$rootClassName][$stringIdHash]
-            : false;
+        return $this->identityMap[$rootClassName][$stringIdHash] ?? false;
     }
 
     /**
@@ -2477,9 +2473,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $oid = spl_object_hash($entity);
 
-        return isset($this->originalEntityData[$oid])
-            ? $this->originalEntityData[$oid]
-            : [];
+        return $this->originalEntityData[$oid] ?? [];
     }
 
     /**
@@ -2549,7 +2543,7 @@ class UnitOfWork implements PropertyChangedListener
             ? $this->getEntityIdentifier($entity)
             : $persister->getIdentifier($entity);
 
-        return isset($values[$class->identifier[0]]) ? $values[$class->identifier[0]] : null;
+        return $values[$class->identifier[0]] ?? null;
     }
 
     /**
@@ -2599,9 +2593,7 @@ class UnitOfWork implements PropertyChangedListener
     {
         $idHash = implode(' ', (array) $id);
 
-        return isset($this->identityMap[$rootClassName][$idHash])
-            ? $this->identityMap[$rootClassName][$idHash]
-            : false;
+        return $this->identityMap[$rootClassName][$idHash] ?? false;
     }
 
     /**
@@ -2984,12 +2976,10 @@ class UnitOfWork implements PropertyChangedListener
         $oid1 = spl_object_hash($entity1);
         $oid2 = spl_object_hash($entity2);
 
-        $id1 = isset($this->entityIdentifiers[$oid1])
-            ? $this->entityIdentifiers[$oid1]
-            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifier($entity1));
-        $id2 = isset($this->entityIdentifiers[$oid2])
-            ? $this->entityIdentifiers[$oid2]
-            : $identifierFlattener->flattenIdentifier($class, $persister->getIdentifier($entity2));
+        $id1 = $this->entityIdentifiers[$oid1]
+            ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity1));
+        $id2 = $this->entityIdentifiers[$oid2]
+            ?? $this->identifierFlattener->flattenIdentifier($class, $class->getIdentifierValues($entity2));
 
         return $id1 === $id2 || implode(' ', $id1) === implode(' ', $id2);
     }

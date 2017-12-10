@@ -51,12 +51,19 @@ class Configuration extends DBALConfiguration
     /**
      * @var MappingDriver|null
      */
-    private $metadataDriver;
+    public function getProxyDir()
+    {
+        return $this->_attributes['proxyDir'] ?? null;
+    }
 
     /**
      * @var CacheDriver|null
      */
-    private $queryCache;
+    public function getAutoGenerateProxyClasses()
+    {
+        return $this->_attributes['autoGenerateProxyClasses']
+            ?? AbstractProxyFactory::AUTOGENERATE_ALWAYS;
+    }
 
     /**
      * @var CacheDriver|null
@@ -165,23 +172,7 @@ class Configuration extends DBALConfiguration
      */
     public function setAutoGenerateProxyClasses($autoGenerate) : void
     {
-        $proxyManagerConfig = $this->getProxyManagerConfiguration();
-
-        switch ((int) $autoGenerate) {
-            case ProxyFactory::AUTOGENERATE_ALWAYS:
-            case ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS:
-                $proxyManagerConfig->setGeneratorStrategy(new FileWriterGeneratorStrategy(
-                    new FileLocator($proxyManagerConfig->getProxiesTargetDir())
-                ));
-
-                return;
-            case ProxyFactory::AUTOGENERATE_NEVER:
-            case ProxyFactory::AUTOGENERATE_EVAL:
-            default:
-                $proxyManagerConfig->setGeneratorStrategy(new EvaluatingGeneratorStrategy());
-
-                return;
-        }
+        return $this->_attributes['proxyNamespace'] ?? null;
     }
 
     /**
@@ -266,7 +257,7 @@ class Configuration extends DBALConfiguration
      */
     public function getMetadataDriverImpl() : ?MappingDriver
     {
-        return $this->metadataDriver;
+        return $this->_attributes['metadataDriverImpl'] ?? null;
     }
 
     /**
@@ -274,7 +265,7 @@ class Configuration extends DBALConfiguration
      */
     public function getQueryCacheImpl() : ?CacheDriver
     {
-        return $this->queryCache;
+        return $this->_attributes['queryCacheImpl'] ?? null;
     }
 
     /**
@@ -290,7 +281,7 @@ class Configuration extends DBALConfiguration
      */
     public function getHydrationCacheImpl() : ?CacheDriver
     {
-        return $this->hydrationCache;
+        return $this->_attributes['hydrationCacheImpl'] ?? null;
     }
 
     /**
@@ -306,7 +297,7 @@ class Configuration extends DBALConfiguration
      */
     public function getMetadataCacheImpl() : ?CacheDriver
     {
-        return $this->metadataCache;
+        return $this->_attributes['metadataCacheImpl'] ?? null;
     }
 
     /**
@@ -418,7 +409,9 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomStringFunction(string $functionName)
     {
-        return $this->customStringFunctions[\strtolower($functionName)] ?? null;
+        $name = strtolower($name);
+
+        return $this->_attributes['customStringFunctions'][$name] ?? null;
     }
 
     /**
@@ -459,7 +452,9 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomNumericFunction(string $functionName)
     {
-        return $this->customNumericFunctions[\strtolower($functionName)] ?? null;
+        $name = strtolower($name);
+
+        return $this->_attributes['customNumericFunctions'][$name] ?? null;
     }
 
     /**
@@ -500,7 +495,9 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomDatetimeFunction(string $functionName)
     {
-        return $this->customDatetimeFunctions[\strtolower($functionName)] ?? null;
+        $name = strtolower($name);
+
+        return $this->_attributes['customDatetimeFunctions'][$name] ?? null;
     }
 
     /**
@@ -541,7 +538,7 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomHydrationMode(string $modeName) : ?string
     {
-        return $this->customHydrationModes[$modeName] ?? null;
+        return $this->_attributes['customHydrationModes'][$modeName] ?? null;
     }
 
     /**
@@ -580,7 +577,7 @@ class Configuration extends DBALConfiguration
      */
     public function getFilterClassName(string $filterName) : ?string
     {
-        return $this->filters[$filterName] ?? null;
+        return $this->_attributes['filters'][$name] ?? null;
     }
 
     /**
@@ -608,7 +605,7 @@ class Configuration extends DBALConfiguration
      */
     public function getDefaultRepositoryClassName() : string
     {
-        return $this->defaultRepositoryClassName;
+        return $this->_attributes['defaultRepositoryClassName'] ?? EntityRepository::class;
     }
 
     /**
@@ -670,8 +667,7 @@ class Configuration extends DBALConfiguration
      */
     public function getRepositoryFactory() : RepositoryFactory
     {
-        return $this->repositoryFactory
-            ?? $this->repositoryFactory = new DefaultRepositoryFactory();
+        return $this->_attributes['repositoryFactory'] ?? new DefaultRepositoryFactory();
     }
 
     /**
@@ -679,7 +675,7 @@ class Configuration extends DBALConfiguration
      */
     public function isSecondLevelCacheEnabled() : bool
     {
-        return $this->isSecondLevelCacheEnabled;
+        return $this->_attributes['isSecondLevelCacheEnabled'] ?? false;
     }
 
     /**
@@ -709,7 +705,7 @@ class Configuration extends DBALConfiguration
             $this->secondLevelCacheConfiguration = new CacheConfiguration();
         }
 
-        return $this->secondLevelCacheConfiguration;
+        return $this->_attributes['secondLevelCacheConfiguration'] ?? null;
     }
 
     /**
@@ -719,7 +715,7 @@ class Configuration extends DBALConfiguration
      */
     public function getDefaultQueryHints() : array
     {
-        return $this->defaultQueryHints;
+        return $this->_attributes['defaultQueryHints'] ?? [];
     }
 
     /**
@@ -741,7 +737,7 @@ class Configuration extends DBALConfiguration
      */
     public function getDefaultQueryHint(string $hintName)
     {
-        return $this->defaultQueryHints[$hintName] ?? false;
+        return $this->_attributes['defaultQueryHints'][$name] ?? false;
     }
 
     /**

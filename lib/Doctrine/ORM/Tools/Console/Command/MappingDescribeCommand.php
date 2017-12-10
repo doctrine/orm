@@ -32,11 +32,10 @@ final class MappingDescribeCommand extends Command
      */
     protected function configure()
     {
-        $this
-            ->setName('orm:mapping:describe')
-            ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
-            ->setDescription('Display information about mapped objects')
-            ->setHelp(<<<EOT
+        $this->setName('orm:mapping:describe')
+             ->addArgument('entityName', InputArgument::REQUIRED, 'Full or partial name of entity')
+             ->setDescription('Display information about mapped objects')
+             ->setHelp(<<<EOT
 The %command.full_name% command describes the metadata for the given full or partial entity class name.
 
     <info>%command.full_name%</info> My\Namespace\Entity\MyEntity
@@ -45,7 +44,7 @@ Or:
 
     <info>%command.full_name%</info> MyEntity
 EOT
-            );
+             );
     }
 
     /**
@@ -132,10 +131,9 @@ EOT
      */
     private function getMappedEntities(EntityManagerInterface $entityManager)
     {
-        $entityClassNames = $entityManager
-            ->getConfiguration()
-            ->getMetadataDriverImpl()
-            ->getAllClassNames();
+        $entityClassNames = $entityManager->getConfiguration()
+                                          ->getMetadataDriverImpl()
+                                          ->getAllClassNames();
 
         if ( ! $entityClassNames) {
             throw new \InvalidArgumentException(
@@ -256,11 +254,7 @@ EOT
         }
 
         if (is_array($value)) {
-            if (defined('JSON_UNESCAPED_UNICODE') && defined('JSON_UNESCAPED_SLASHES')) {
-                return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-            }
-
-            return json_encode($value);
+            return json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         }
 
         if (is_object($value)) {
@@ -383,15 +377,7 @@ EOT
      */
     private function formatEntityListeners(array $entityListeners)
     {
-        return $this->formatField(
-            'Entity listeners',
-            array_map(
-                function ($entityListener) {
-                    return get_class($entityListener);
-                },
-                $entityListeners
-            )
-        );
+        return $this->formatField('Entity listeners', array_map('get_class', $entityListeners));
     }
 
     /**

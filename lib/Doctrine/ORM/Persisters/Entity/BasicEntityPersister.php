@@ -1775,11 +1775,8 @@ class BasicEntityPersister implements EntityPersister
      */
     private function getSelectConditionStatementColumnSQL($field, AssociationMetadata $association = null)
     {
-        $property = $this->class->getProperty($field);
-
-        if ($property instanceof FieldMetadata) {
-            $tableAlias = $this->getSQLTableAlias($property->getTableName());
-            $columnName = $this->platform->quoteIdentifier($property->getColumnName());
+        if (isset($this->class->fieldMappings[$field])) {
+            $className = $this->class->fieldMappings[$field]['inherited'] ?? $this->class->name;
 
             return [$tableAlias . '.' . $columnName];
         }
@@ -1812,14 +1809,7 @@ class BasicEntityPersister implements EntityPersister
                     throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $field);
                 }
 
-                $class      = $this->class->isInheritedProperty($field)
-                    ? $owningAssociation->getDeclaringClass()
-                    : $this->class
-                ;
-                $tableAlias = $this->getSQLTableAlias($class->getTableName());
-
-                foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
-                    $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
+                $className = $association['inherited'] ?? $this->class->name;
 
                     $columns[] = $tableAlias . '.' . $quotedColumnName;
                 }

@@ -19,6 +19,8 @@
         <var name="tmpdb_username" value="travis" />
         <var name="tmpdb_password" value="" />
         <var name="tmpdb_port" value="3306"/>
+
+        <env name="COLUMNS" value="120"/>
     </php>
 
     <testsuites>

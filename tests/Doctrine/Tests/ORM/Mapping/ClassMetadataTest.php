@@ -1404,25 +1404,18 @@ class ClassMetadataTest extends OrmTestCase
 
     /**
      * @group DDC-2662
+     * @group 6682
      */
-    public function testQuotedSequenceName()
+    public function testQuotedSequenceName() : void
     {
-        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
-        $cm->setTable(new Mapping\TableMetadata('cms_users'));
+        $cm = new ClassMetadata(CMS\CmsUser::class);
 
-        $id = new Mapping\FieldMetadata('id');
-        $id->setValueGenerator(new Mapping\ValueGeneratorMetadata(
-            Mapping\GeneratorType::SEQUENCE,
-            [
-                'sequenceName' => 'foo',
-                'allocationSize' => 1,
-            ]
-        ));
-        $cm->addProperty($id);
+        $cm->initializeReflection(new RuntimeReflectionService());
+        $cm->setSequenceGeneratorDefinition(['sequenceName' => '`foo`']);
 
-        self::assertEquals(
-            ['sequenceName' => 'foo', 'allocationSize' => 1],
-            $cm->getProperty('id')->getValueGenerator()->getDefinition()
+        self::assertSame(
+            ['sequenceName' => 'foo', 'quoted' => true, 'allocationSize' => '1', 'initialValue' => '1'],
+            $cm->sequenceGeneratorDefinition
         );
     }
 

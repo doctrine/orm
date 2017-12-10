@@ -40,8 +40,8 @@ and year of production as primary keys:
         {
             /** @ORM\Id @ORM\Column(type="string") */
             private $name;
-            /** @ORM\Id @ORM\Column(type="integer") */
-            private $year
+            /** @Id @Column(type="integer") */
+            private $year;
 
             public function __construct($name, $year)
             {
@@ -213,7 +213,7 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
              <entity name="Application\Model\ArticleAttribute">
                 <id name="article" association-key="true" />
                 <id name="attribute" type="string" />
-                
+
                 <field name="value" type="string" />
 
                 <many-to-one field="article" target-entity="Article" inversed-by="attributes" />
