@@ -1602,7 +1602,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : [];
+        return $this->lifecycleCallbacks[$event] ?? [];
     }
 
     /**
@@ -1839,8 +1839,8 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $this->embeddedClasses[$mapping['fieldName']] = [
             'class'          => $this->fullyQualifiedClassName($mapping['class']),
             'columnPrefix'   => $mapping['columnPrefix'],
-            'declaredField'  => isset($mapping['declaredField']) ? $mapping['declaredField'] : null,
-            'originalField'  => isset($mapping['originalField']) ? $mapping['originalField'] : null,
+            'declaredField'  => $mapping['declaredField'] ?? null,
+            'originalField'  => $mapping['originalField'] ?? null,
             'declaringClass' => $this,
         ];*/
     }

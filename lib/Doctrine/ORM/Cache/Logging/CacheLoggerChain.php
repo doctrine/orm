@@ -38,7 +38,7 @@ class CacheLoggerChain implements CacheLogger
      */
     public function getLogger($name)
     {
-        return isset($this->loggers[$name]) ? $this->loggers[$name] : null;
+        return $this->loggers[$name] ?? null;
     }
 
     /**
