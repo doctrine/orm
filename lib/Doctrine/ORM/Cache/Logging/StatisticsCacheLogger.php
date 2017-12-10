@@ -131,7 +131,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionHitCount($regionName)
     {
-        return isset($this->cacheHitCountMap[$regionName]) ? $this->cacheHitCountMap[$regionName] : 0;
+        return $this->cacheHitCountMap[$regionName] ?? 0;
     }
 
     /**
@@ -143,7 +143,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionMissCount($regionName)
     {
-        return isset($this->cacheMissCountMap[$regionName]) ? $this->cacheMissCountMap[$regionName] : 0;
+        return $this->cacheMissCountMap[$regionName] ?? 0;
     }
 
     /**
@@ -155,7 +155,7 @@ class StatisticsCacheLogger implements CacheLogger
      */
     public function getRegionPutCount($regionName)
     {
-        return isset($this->cachePutCountMap[$regionName]) ? $this->cachePutCountMap[$regionName] : 0;
+        return $this->cachePutCountMap[$regionName] ?? 0;
     }
 
     /**

@@ -829,7 +829,7 @@ abstract class AbstractQuery
      */
     public function getHint($name)
     {
-        return isset($this->hints[$name]) ? $this->hints[$name] : false;
+        return $this->_hints[$name] ?? false;
     }
 
     /**

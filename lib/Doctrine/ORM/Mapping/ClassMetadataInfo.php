@@ -960,15 +960,15 @@ class ClassMetadataInfo implements ClassMetadata
                 continue;
             }
 
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty(
+                ($mapping['declared'] ?? $this->name), $field
+            );
         }
 
         foreach ($this->associationMappings as $field => $mapping) {
-            $this->reflFields[$field] = isset($mapping['declared'])
-                ? $reflService->getAccessibleProperty($mapping['declared'], $field)
-                : $reflService->getAccessibleProperty($this->name, $field);
+            $this->reflFields[$field] = $reflService->getAccessibleProperty(
+                ($mapping['declared'] ?? $this->name), $field
+            );
         }
     }
 
@@ -1097,9 +1097,7 @@ class ClassMetadataInfo implements ClassMetadata
     public function getAssociationCacheDefaults($fieldName, array $cache)
     {
         if ( ! isset($cache['usage'])) {
-            $cache['usage'] = isset($this->cache['usage'])
-                ? $this->cache['usage']
-                : self::CACHE_USAGE_READ_ONLY;
+            $cache['usage'] = $this->cache['usage'] ?? self::CACHE_USAGE_READ_ONLY;
         }
 
         if ( ! isset($cache['region'])) {
@@ -2057,7 +2055,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getSchemaName()
     {
-        return isset($this->table['schema']) ? $this->table['schema'] : null;
+        return $this->table['schema'] ?? null;
     }
 
     /**
@@ -2667,7 +2665,7 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getLifecycleCallbacks($event)
     {
-        return isset($this->lifecycleCallbacks[$event]) ? $this->lifecycleCallbacks[$event] : [];
+        return $this->lifecycleCallbacks[$event] ?? [];
     }
 
     /**

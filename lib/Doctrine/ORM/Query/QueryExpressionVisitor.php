@@ -85,7 +85,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     private static function convertComparisonOperator($criteriaOperator)
     {
-        return isset(self::$operatorMap[$criteriaOperator]) ? self::$operatorMap[$criteriaOperator] : null;
+        return self::$operatorMap[$criteriaOperator] ?? null;
     }
 
     /**
