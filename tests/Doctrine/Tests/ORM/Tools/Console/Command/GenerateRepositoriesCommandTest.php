@@ -150,4 +150,38 @@ class GenerateRepositoriesCommandTest extends OrmFunctionalTestCase
         );
     }
 
+    public function testNoMetadataClassesToProcess() : void
+    {
+        $configuration   = $this->createMock(Configuration::class);
+        $metadataFactory = $this->createMock(ClassMetadataFactory::class);
+        $em              = $this->createMock(EntityManagerInterface::class);
+
+        $configuration->method('getDefaultRepositoryClassName')
+                      ->willReturn('fooRepository');
+
+        $metadataFactory->method('getAllMetadata')
+                        ->willReturn([]);
+
+        $em->method('getMetadataFactory')
+           ->willReturn($metadataFactory);
+
+        $em->method('getConfiguration')
+           ->willReturn($configuration);
+
+        $application = new Application();
+        $application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($em)]));
+        $application->add(new GenerateRepositoriesCommand());
+
+        $command = $application->find('orm:generate-repositories');
+        $tester  = new CommandTester($command);
+
+        $tester->execute(
+            [
+                'command'   => $command->getName(),
+                'dest-path' => $this->path,
+            ]
+        );
+
+        self::assertContains('[OK] No Metadata Classes to process.', $tester->getDisplay());
+    }
 }

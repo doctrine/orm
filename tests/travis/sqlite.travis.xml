@@ -6,6 +6,10 @@
          failOnRisky="true"
          bootstrap="../Doctrine/Tests/TestInit.php"
 >
+    <php>
+        <env name="COLUMNS" value="120"/>
+    </php>
+
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
         <directory>./../Doctrine/Tests/ORM</directory>

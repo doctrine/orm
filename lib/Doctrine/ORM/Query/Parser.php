@@ -432,7 +432,7 @@ class Parser
             $token = $this->lexer->lookahead;
         }
 
-        $tokenPos = (isset($token['position'])) ? $token['position'] : '-1';
+        $tokenPos = $token['position'] ?? '-1';
 
         $message  = "line 0, col {$tokenPos}: Error: ";
         $message .= ($expected !== '') ? "Expected {$expected}, got " : 'Unexpected ';
@@ -614,9 +614,7 @@ class Parser
             $token          = $deferredItem['token'];
             $className      = $expression->className;
             $args           = $expression->args;
-            $fromClassName  = isset($AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName)
-                ? $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName
-                : null;
+            $fromClassName  = $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName ?? null;
 
             // If the namespace is not given then assumes the first FROM entity namespace
             if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {

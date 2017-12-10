@@ -33,7 +33,7 @@ inverse sides of associations <unitofwork-associations>`
 Many-To-One, Unidirectional
 ---------------------------
 
-A many-to-one association is the most common association between objects.
+A many-to-one association is the most common association between objects. Example: Many Users have One Address:
 
 .. configuration-block::
 
@@ -46,7 +46,6 @@ A many-to-one association is the most common association between objects.
             // ...
 
             /**
-             * Many Users have One Address.
              * @ManyToOne(targetEntity="Address")
              * @JoinColumn(name="address_id", referencedColumnName="id")
              */
@@ -796,7 +795,7 @@ Take an example of two entities ``Article`` and ``Tag``. Whenever
 you want to connect an Article to a Tag and vice-versa, it is
 mostly the Article that is responsible for this relation. Whenever
 you add a new article, you want to connect it with existing or new
-tags. Your create Article form will probably support this notion
+tags. Your "Create Article" form will probably support this notion
 and allow specifying the tags directly. This is why you should pick
 the Article as owning side, as it makes the code more
 understandable:

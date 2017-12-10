@@ -323,6 +323,6 @@ class PostLoadListenerLoadEntityInEventHandler
 
     public function countHandledEvents($className)
     {
-        return isset($this->firedByClasses[$className]) ? $this->firedByClasses[$className] : 0;
+        return $this->firedByClasses[$className] ?? 0;
     }
 }

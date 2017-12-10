@@ -224,11 +224,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      */
     public static function invalidAssociation(ClassMetadata $targetClass, AssociationMetadata $association, $actualValue)
     {
-        $expectedType = 'Doctrine\Common\Collections\Collection|array';
-
-        if ($association instanceof ToOneAssociationMetadata) {
-            $expectedType = $targetClass->getClassName();
-        }
+        $expectedType = $targetClass->getName();
 
         return new self(sprintf(
             'Expected value of type "%s" for association field "%s#$%s", got "%s" instead.',

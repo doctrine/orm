@@ -224,21 +224,17 @@ class XmlDriver extends FileDriver
 
                 // Evaluate <discriminator-column...>
                 if (isset($xmlRoot->{'discriminator-column'})) {
-                    $discriminatorColumnMapping = $xmlRoot->{'discriminator-column'};
-                    $typeName                   = isset($discriminatorColumnMapping['type'])
-                        ? (string) $discriminatorColumnMapping['type']
-                        : 'string';
-
-                    $discriminatorColumn->setType(Type::getType($typeName));
-                    $discriminatorColumn->setColumnName((string) $discriminatorColumnMapping['name']);
-
-                    if (isset($discriminatorColumnMapping['column-definition'])) {
-                        $discriminatorColumn->setColumnDefinition((string) $discriminatorColumnMapping['column-definition']);
-                    }
-
-                    if (isset($discriminatorColumnMapping['length'])) {
-                        $discriminatorColumn->setLength((int) $discriminatorColumnMapping['length']);
-                    }
+                    $discrColumn = $xmlRoot->{'discriminator-column'};
+                    $metadata->setDiscriminatorColumn(
+                        [
+                            'name' => isset($discrColumn['name']) ? (string) $discrColumn['name'] : null,
+                            'type' => (string) ($discrColumn['type'] ?? 'string'),
+                            'length' => isset($discrColumn['length']) ? (string) $discrColumn['length'] : 255,
+                            'columnDefinition' => isset($discrColumn['column-definition']) ? (string) $discrColumn['column-definition'] : null
+                        ]
+                    );
+                } else {
+                    $metadata->setDiscriminatorColumn(['name' => 'dtype', 'type' => 'string', 'length' => 255]);
                 }
 
                 $metadata->setDiscriminatorColumn($discriminatorColumn);
@@ -314,9 +310,7 @@ class XmlDriver extends FileDriver
             $fieldMetadata->setPrimaryKey(true);
 
             if (isset($idElement->generator)) {
-                $strategy = isset($idElement->generator['strategy'])
-                    ? (string) $idElement->generator['strategy']
-                    : 'AUTO';
+                $strategy = (string) ($idElement->generator['strategy'] ?? 'AUTO');
 
                 $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, strtoupper($strategy)));
 
@@ -341,8 +335,10 @@ class XmlDriver extends FileDriver
                         throw Mapping\MappingException::tableIdGeneratorNotImplemented($className);
                     }
 
-                    $fieldMetadata->setValueGenerator(new Mapping\ValueGeneratorMetadata($idGeneratorType, $idGeneratorDefinition));
-                }
+            if (isset($idElement->generator)) {
+                $strategy = (string) ($idElement->generator['strategy'] ?? 'AUTO');
+                $metadata->setIdGeneratorType(constant('Doctrine\ORM\Mapping\ClassMetadata::GENERATOR_TYPE_'
+                    . $strategy));
             }
 
             $metadata->addProperty($fieldMetadata);
@@ -891,7 +887,7 @@ class XmlDriver extends FileDriver
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
-        $region = isset($cacheMapping['region']) ? (string) $cacheMapping['region'] : $defaultRegion;
+        $region = (string) ($cacheMapping['region'] ?? $defaultRegion);
         $usage  = isset($cacheMapping['usage'])
             ? constant(sprintf('%s::%s', Mapping\CacheUsage::class, strtoupper((string) $cacheMapping['usage'])))
             : Mapping\CacheUsage::READ_ONLY

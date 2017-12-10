@@ -88,6 +88,8 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
             $id = $this->em->getUnitOfWork()->getEntityIdentifier($entity);
         }
 
+                foreach ((array) $id as $idName => $idVal) {
+                    $type = $this->columnTypes[$idName] ?? Type::STRING;
 
         if ($this->class->isVersioned()) {
             $this->assignDefaultVersionValue($entity, $id);

@@ -447,8 +447,11 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $sourceClass = $this->em->getClassMetadata($association->getSourceEntity());
         $params      = [];
 
-        foreach ($joinColumns as $joinColumn) {
-            $params[] = $identifier[$sourceClass->fieldNames[$joinColumn->getReferencedColumnName()]];
+        foreach ($mapping['relationToSourceKeyColumns'] as $columnName => $refColumnName) {
+            $params[] = $identifier[
+                $sourceClass->fieldNames[$refColumnName]
+                ?? $sourceClass->getFieldForColumn($columnName)
+            ];
         }
 
         return $params;

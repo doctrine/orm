@@ -235,8 +235,7 @@ class ArrayHydrator extends AbstractHydrator
                 $resultKey = $this->resultCounter - 1;
             }
 
-            $scalarCount = (isset($rowData['scalars'])? count($rowData['scalars']): 0);
-            $onlyOneRootAlias = 0 === $scalarCount && 1 === count($rowData['newObjects']);
+            $scalarCount = (isset($rowData['scalars']) ? count($rowData['scalars']) : 0);
 
             foreach ($rowData['newObjects'] as $objIndex => $newObject) {
                 $class  = $newObject['class'];

@@ -38,7 +38,7 @@ class EntityManagerMock extends EntityManagerDecorator
      */
     public function getUnitOfWork()
     {
-        return $this->uowMock ?? $this->wrapped->getUnitOfWork();
+        return $this->_uowMock ?? parent::getUnitOfWork();
     }
 
     /**
@@ -68,7 +68,7 @@ class EntityManagerMock extends EntityManagerDecorator
      */
     public function getProxyFactory()
     {
-        return $this->proxyFactoryMock ?? $this->wrapped->getProxyFactory();
+        return $this->_proxyFactoryMock ?? parent::getProxyFactory();
     }
 
     /**
