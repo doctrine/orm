@@ -97,7 +97,7 @@ a naming strategy for database tables and columns.
 Implementing a naming strategy
 -------------------------------
 If you have database naming standards, like all table names should be prefixed
-by the application prefix, all column names should be upper case, you can easily
+by the application prefix, all column names should be lower case, you can easily
 achieve such standards by implementing a naming strategy.
 
 You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrategy``.
@@ -126,12 +126,12 @@ You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrateg
         }
         public function joinTableName($sourceEntity, $targetEntity, $propertyName = null)
         {
-            return strtoupper($this->classToTableName($sourceEntity) . '_' .
+            return strtolower($this->classToTableName($sourceEntity) . '_' .
                     $this->classToTableName($targetEntity));
         }
         public function joinKeyColumnName($entityName, $referencedColumnName = null)
         {
-            return strtoupper($this->classToTableName($entityName) . '_' .
+            return strtolower($this->classToTableName($entityName) . '_' .
                     ($referencedColumnName ?: $this->referenceColumnName()));
         }
     }
