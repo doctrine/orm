@@ -245,7 +245,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
      */
     private static function objToStr($obj) : string
     {
-        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_hash($obj);
+        return method_exists($obj, '__toString') ? (string) $obj : get_class($obj).'@'.spl_object_id($obj);
     }
 
     /**

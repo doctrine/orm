@@ -308,7 +308,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function __toString()
     {
-        return __CLASS__ . '@' . spl_object_hash($this);
+        return __CLASS__ . '@' . spl_object_id($this);
     }
 
     /**
