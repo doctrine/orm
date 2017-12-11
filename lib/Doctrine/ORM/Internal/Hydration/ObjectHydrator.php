@@ -172,7 +172,7 @@ class ObjectHydrator extends AbstractHydrator
         /** @var ToManyAssociationMetadata $association */
         $association = $class->getProperty($fieldName);
         $value       = $association->getValue($entity);
-        $oid         = spl_object_hash($entity);
+        $oid         = spl_object_id($entity);
 
         if (! $value instanceof PersistentCollection) {
             $value = $association->wrap($entity, $value, $this->em);
@@ -343,7 +343,7 @@ class ObjectHydrator extends AbstractHydrator
                     continue;
                 }
 
-                $oid = spl_object_hash($parentObject);
+                $oid = spl_object_id($parentObject);
 
                 // Check the type of the relation (many or single-valued)
                 if (! ($association instanceof ToOneAssociationMetadata)) {
@@ -421,7 +421,7 @@ class ObjectHydrator extends AbstractHydrator
                                         $inverseAssociation->setValue($element, $parentObject);
 
                                         $this->uow->setOriginalEntityProperty(
-                                            spl_object_hash($element),
+                                            spl_object_id($element),
                                             $inverseAssociation->getName(),
                                             $parentObject
                                         );
@@ -434,7 +434,7 @@ class ObjectHydrator extends AbstractHydrator
                                 $inverseAssociation->setValue($element, $parentObject);
 
                                 $this->uow->setOriginalEntityProperty(
-                                    spl_object_hash($element),
+                                    spl_object_id($element),
                                     $mappedBy,
                                     $parentObject
                                 );

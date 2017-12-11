@@ -90,7 +90,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = [
+        $this->queuedCache['delete'][spl_object_id($collection)] = [
             'key'   => $key,
             'lock'  => $lock
         ];
@@ -118,7 +118,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
             return;
         }
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
             'lock'  => $lock
         ];

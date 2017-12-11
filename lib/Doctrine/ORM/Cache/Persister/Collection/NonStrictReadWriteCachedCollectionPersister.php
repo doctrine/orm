@@ -54,7 +54,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
 
         $this->persister->delete($collection);
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+        $this->queuedCache['delete'][spl_object_id($collection)] = $key;
     }
 
     /**
@@ -78,14 +78,14 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
             ($this->association instanceof ToManyAssociationMetadata && $this->association->getOrderBy())) {
             $this->persister->update($collection);
 
-            $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+            $this->queuedCache['delete'][spl_object_id($collection)] = $key;
 
             return;
         }
 
         $this->persister->update($collection);
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
             'list'  => $collection
         ];
