@@ -38,6 +38,21 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         );
     }
 
+    public function testLimitSubqueryWithSortFunction()
+    {
+        $dql        = 'SELECT p FROM Doctrine\Tests\ORM\Tools\Pagination\MyBlogPost p JOIN p.category c GROUP BY p.id ORDER BY COUNT(c.id)';
+        $query      = $this->entityManager->createQuery($dql);
+        $limitQuery = clone $query;
+
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $this->assertEquals(
+            "SELECT DISTINCT m0_.id AS id_0 FROM MyBlogPost m0_ INNER JOIN Category c1_ ON m0_.category_id = c1_.id GROUP BY m0_.id ORDER BY COUNT(c1_.id) ASC",
+            $limitQuery->getSQL()
+        );
+    }
+
+
     public function testCountQuery_MixedResultsWithName()
     {
         $dql        = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a';
@@ -47,7 +62,35 @@ class LimitSubqueryWalkerTest extends PaginationTestCase
         $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
 
         $this->assertEquals(
-            "SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1 FROM Author a0_",
+            "SELECT DISTINCT a0_.id AS id_0 FROM Author a0_",
+            $limitQuery->getSQL()
+        );
+    }
+
+    public function testAggQuery_MixedResultsWithNameAndSort()
+    {
+        $dql        = 'SELECT a, sum(a.name) as foo FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC';
+        $query      = $this->entityManager->createQuery($dql);
+        $limitQuery = clone $query;
+
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $this->assertEquals(
+            "SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1 FROM Author a0_ ORDER BY sclr_1 DESC",
+            $limitQuery->getSQL()
+        );
+    }
+
+    public function testAggQuery_MultipleMixedResultsWithSort()
+    {
+        $dql        = 'SELECT a, sum(a.name) as foo, (SELECT count(subA.id) FROM Doctrine\Tests\ORM\Tools\Pagination\Author subA WHERE subA.id = a.id ) as bar FROM Doctrine\Tests\ORM\Tools\Pagination\Author a ORDER BY foo DESC, bar ASC';
+        $query      = $this->entityManager->createQuery($dql);
+        $limitQuery = clone $query;
+
+        $limitQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [LimitSubqueryWalker::class]);
+
+        $this->assertEquals(
+            "SELECT DISTINCT a0_.id AS id_0, sum(a0_.name) AS sclr_1, (SELECT count(a1_.id) AS sclr_3 FROM Author a1_ WHERE a1_.id = a0_.id) AS sclr_2 FROM Author a0_ ORDER BY sclr_1 DESC, sclr_2 ASC",
             $limitQuery->getSQL()
         );
     }
