@@ -1,5 +1,5 @@
 {
-    "name": "potievdev/doctrine/orm",
+    "name": "potievdev/orm",
     "type": "library",
     "description": "Object-Relational-Mapper for PHP",
     "keywords": ["orm", "database"],
