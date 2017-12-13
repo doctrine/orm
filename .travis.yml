@@ -56,8 +56,10 @@ jobs:
       install: travis_retry composer update --prefer-dist --prefer-lowest
 
     - stage: Test
-      env: DB=sqlite DEPENDENCIES=stable
-      install: travis_retry composer update --prefer-dist --prefer-stable
+      env: DB=sqlite STABILITY=dev
+      install:
+        - composer config minimum-stability $STABILITY
+        - travis_retry composer update --prefer-dist
 
     - stage: Test
       env: DB=sqlite COVERAGE
@@ -91,6 +93,7 @@ jobs:
 
   allow_failures:
     - php: nightly
+    - env: DB=sqlite STABILITY=dev
 
 cache:
   directories:
