@@ -113,7 +113,7 @@ class ResolveTargetEntityListener implements EventSubscriber
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadataInfo $classMetadata
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $classMetadata
      * @param array                                   $mapping
      *
      * @return void
