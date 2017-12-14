@@ -104,7 +104,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->walkers[] = $value;
         } else {
             $this->walkers[$offset] = $value;

@@ -214,15 +214,15 @@ class EntityRepository implements ObjectRepository, Selectable
      */
     public function __call($method, $arguments)
     {
-        if (0 === strpos($method, 'findBy')) {
+        if (strpos($method, 'findBy') === 0) {
             return $this->resolveMagicCall('findBy', substr($method, 6), $arguments);
         }
 
-        if (0 === strpos($method, 'findOneBy')) {
+        if (strpos($method, 'findOneBy') === 0) {
             return $this->resolveMagicCall('findOneBy', substr($method, 9), $arguments);
         }
 
-        if (0 === strpos($method, 'countBy')) {
+        if (strpos($method, 'countBy') === 0) {
             return $this->resolveMagicCall('count', substr($method, 7), $arguments);
         }
 
@@ -298,7 +298,7 @@ class EntityRepository implements ObjectRepository, Selectable
 
         $fieldName = lcfirst(Inflector::classify($by));
 
-        if (null === $this->class->getProperty($fieldName)) {
+        if ($this->class->getProperty($fieldName) === null) {
             throw ORMException::invalidMagicCall($this->entityName, $fieldName, $method . $by);
         }
 

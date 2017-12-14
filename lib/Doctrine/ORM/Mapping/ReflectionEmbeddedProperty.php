@@ -59,7 +59,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             return null;
         }
 
@@ -73,7 +73,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
             $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);

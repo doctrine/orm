@@ -84,7 +84,7 @@ EOT
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
-        if (true === $input->getOption('flush')) {
+        if ($input->getOption('flush') === true) {
             $result  = $cacheDriver->flushAll();
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }

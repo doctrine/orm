@@ -26,7 +26,7 @@ class Autoloader
      */
     public static function resolveFile(string $metadataDir, string $metadataNamespace, string $className) : string
     {
-        if (0 !== strpos($className, $metadataNamespace)) {
+        if (strpos($className, $metadataNamespace) !== 0) {
             throw new InvalidArgumentException(
                 sprintf('The class "%s" is not part of the metadata namespace "%s"', $className, $metadataNamespace)
             );
@@ -60,7 +60,7 @@ class Autoloader
     {
         $metadataNamespace = ltrim($metadataNamespace, '\\');
 
-        if (! (null === $notFoundCallback || is_callable($notFoundCallback))) {
+        if (! ($notFoundCallback === null || is_callable($notFoundCallback))) {
             $type = is_object($notFoundCallback) ? get_class($notFoundCallback) : gettype($notFoundCallback);
 
             throw new InvalidArgumentException(
@@ -69,7 +69,7 @@ class Autoloader
         }
 
         $autoloader = function ($className) use ($metadataDir, $metadataNamespace, $notFoundCallback) {
-            if (0 === strpos($className, $metadataNamespace)) {
+            if (strpos($className, $metadataNamespace) === 0) {
                 $file = Autoloader::resolveFile($metadataDir, $metadataNamespace, $className);
 
                 if ($notFoundCallback && ! file_exists($file)) {

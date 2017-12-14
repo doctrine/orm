@@ -156,7 +156,7 @@ class FilterCollection
      */
     public function has($name)
     {
-        return null !== $this->config->getFilterClassName($name);
+        return $this->config->getFilterClassName($name) !== null;
     }
 
     /**
@@ -176,7 +176,7 @@ class FilterCollection
      */
     public function isClean()
     {
-        return self::FILTERS_STATE_CLEAN === $this->filtersState;
+        return $this->filtersState === self::FILTERS_STATE_CLEAN;
     }
 
     /**
@@ -187,7 +187,7 @@ class FilterCollection
     public function getHash()
     {
         // If there are only clean filters, the previous hash can be returned
-        if (self::FILTERS_STATE_CLEAN === $this->filtersState) {
+        if ($this->filtersState === self::FILTERS_STATE_CLEAN) {
             return $this->filterHash;
         }
 

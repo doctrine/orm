@@ -21,7 +21,7 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
 
         $lines[] = parent::export($value, $indentationLevel);
 
-        if (null !== $value->getJoinTable()) {
+        if ($value->getJoinTable() !== null) {
             $joinTableExporter = new JoinColumnMetadataExporter();
 
             $lines[] = null;

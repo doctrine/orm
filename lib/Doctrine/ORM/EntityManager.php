@@ -434,13 +434,13 @@ final class EntityManager implements EntityManagerInterface
             }
 
             switch (true) {
-                case LockMode::OPTIMISTIC === $lockMode:
+                case $lockMode === LockMode::OPTIMISTIC:
                     $this->lock($entity, $lockMode, $lockVersion);
                     break;
 
-                case LockMode::NONE === $lockMode:
-                case LockMode::PESSIMISTIC_READ === $lockMode:
-                case LockMode::PESSIMISTIC_WRITE === $lockMode:
+                case $lockMode === LockMode::NONE:
+                case $lockMode === LockMode::PESSIMISTIC_READ:
+                case $lockMode === LockMode::PESSIMISTIC_WRITE:
                     $persister = $unitOfWork->getEntityPersister($className);
                     $persister->refresh($sortedId, $entity, $lockMode);
                     break;
@@ -452,7 +452,7 @@ final class EntityManager implements EntityManagerInterface
         $persister = $unitOfWork->getEntityPersister($className);
 
         switch (true) {
-            case LockMode::OPTIMISTIC === $lockMode:
+            case $lockMode === LockMode::OPTIMISTIC:
                 if ( ! $class->isVersioned()) {
                     throw OptimisticLockException::notVersioned($className);
                 }
@@ -463,8 +463,8 @@ final class EntityManager implements EntityManagerInterface
 
                 return $entity;
 
-            case LockMode::PESSIMISTIC_READ === $lockMode:
-            case LockMode::PESSIMISTIC_WRITE === $lockMode:
+            case $lockMode === LockMode::PESSIMISTIC_READ:
+            case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 if ( ! $this->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }
@@ -890,7 +890,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function getFilters()
     {
-        if (null === $this->filterCollection) {
+        if ($this->filterCollection === null) {
             $this->filterCollection = new FilterCollection($this);
         }
 
@@ -902,7 +902,7 @@ final class EntityManager implements EntityManagerInterface
      */
     public function isFiltersStateClean()
     {
-        return null === $this->filterCollection || $this->filterCollection->isClean();
+        return $this->filterCollection === null || $this->filterCollection->isClean();
     }
 
     /**
@@ -910,6 +910,6 @@ final class EntityManager implements EntityManagerInterface
      */
     public function hasFilters()
     {
-        return null !== $this->filterCollection;
+        return $this->filterCollection !== null;
     }
 }

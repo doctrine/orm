@@ -235,7 +235,7 @@ class DefaultCacheFactory implements CacheFactory
 
         $namespace = $cacheAdapter->getNamespace();
 
-        if ('' !== $namespace) {
+        if ($namespace !== '') {
             $namespace .= ':';
         }
 

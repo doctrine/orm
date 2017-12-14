@@ -100,7 +100,7 @@ abstract class Base
      */
     public function __toString()
     {
-        if (1 === $this->count()) {
+        if ($this->count() === 1) {
             return (string) $this->parts[0];
         }
 

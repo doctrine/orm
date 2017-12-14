@@ -1948,7 +1948,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata(get_class($entity));
 
         switch (true) {
-            case LockMode::OPTIMISTIC === $lockMode:
+            case $lockMode === LockMode::OPTIMISTIC:
                 if ( ! $class->isVersioned()) {
                     throw OptimisticLockException::notVersioned($class->getClassName());
                 }
@@ -1969,9 +1969,9 @@ class UnitOfWork implements PropertyChangedListener
 
                 break;
 
-            case LockMode::NONE === $lockMode:
-            case LockMode::PESSIMISTIC_READ === $lockMode:
-            case LockMode::PESSIMISTIC_WRITE === $lockMode:
+            case $lockMode === LockMode::NONE:
+            case $lockMode === LockMode::PESSIMISTIC_READ:
+            case $lockMode === LockMode::PESSIMISTIC_WRITE:
                 if (!$this->em->getConnection()->isTransactionActive()) {
                     throw TransactionRequiredException::transactionRequired();
                 }

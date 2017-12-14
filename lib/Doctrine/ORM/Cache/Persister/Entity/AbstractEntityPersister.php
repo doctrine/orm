@@ -177,7 +177,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
      */
     public function exists($entity, Criteria $extraConditions = null)
     {
-        if (null === $extraConditions) {
+        if ($extraConditions === null) {
             $key = new EntityCacheKey($this->class->getRootClassName(), $this->getIdentifier($entity));
 
             if ($this->region->contains($key)) {
@@ -501,7 +501,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $cacheEntry = $this->hydrator->buildCacheEntry($class, $cacheKey, $entity);
         $cached     = $this->region->put($cacheKey, $cacheEntry);
 
-        if ($cached && (null === $this->joinedAssociations || $this->joinedAssociations)) {
+        if ($cached && ($this->joinedAssociations === null || $this->joinedAssociations)) {
             $this->storeJoinedAssociations($entity);
         }
 

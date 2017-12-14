@@ -799,7 +799,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             foreach ($property->getJoinColumns() as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
                 if ($property instanceof OneToOneAssociationMetadata && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
-                    if (1 === count($property->getJoinColumns())) {
+                    if (count($property->getJoinColumns()) === 1) {
                         if (! $property->isPrimaryKey()) {
                             $joinColumn->setUnique(true);
                         }
@@ -1152,7 +1152,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function getTemporaryIdTableName() : string
     {
-        $schema = null === $this->getSchemaName()
+        $schema = $this->getSchemaName() === null
             ? ''
             : $this->getSchemaName() . '_'
         ;

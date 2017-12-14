@@ -50,7 +50,7 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
      */
     private function ensureDirectoryIsReady(string $directory)
     {
-        if (! is_dir($directory) && (false === @mkdir($directory, 0775, true))) {
+        if (! is_dir($directory) && (@mkdir($directory, 0775, true) === false)) {
             throw new \RuntimeException(sprintf('Your metadata directory "%s" must be writable', $directory));
         }
 
