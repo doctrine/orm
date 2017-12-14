@@ -102,6 +102,15 @@ with the batching strategy that was already used for bulk inserts:
     additional memory not visible to the PHP process. For large sets this
     may easily kill the process for no apparent reason.
 
+SQL Logger
+~~~~~~~~~~
+Application frameworks (such as Symfony) may set a buffered SQL Logger, meaning that
+all queries are stored in memory. Disabling the sql logger significantly improves memory usage:
+
+.. code-block:: php
+
+    <?php
+    $em->getConnection()->getConfiguration()->setSQLLogger(null);
 
 Bulk Deletes
 ------------
