@@ -35,6 +35,7 @@ use Doctrine\ORM\Persisters\CantUseInOperatorOnCompositeKeys;
 use Doctrine\ORM\Persisters\InvalidOrientation;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
+use Doctrine\ORM\Persisters\UnrecognizedField;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Repository\InvalidFindByInverseAssociation;
@@ -1260,7 +1261,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            throw ORMException::unrecognizedField($fieldName);
+            throw UnrecognizedField::byName($fieldName);
         }
 
         return ' ORDER BY ' . implode(', ', $orderByList);
@@ -1839,7 +1840,7 @@ class BasicEntityPersister implements EntityPersister
             return [$field];
         }
 
-        throw ORMException::unrecognizedField($field);
+        throw UnrecognizedField::byName($field);
     }
 
     /**

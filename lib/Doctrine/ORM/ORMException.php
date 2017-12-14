@@ -16,16 +16,6 @@ use function sprintf;
 class ORMException extends Exception
 {
     /**
-     * @param string $field
-     *
-     * @return ORMException
-     */
-    public static function unrecognizedField($field)
-    {
-        return new self('Unrecognized field: ' . $field);
-    }
-
-    /**
      * @param string $class
      * @param string $association
      * @param string $given

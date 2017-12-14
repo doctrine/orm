@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Persisters\InvalidOrientation;
+use Doctrine\ORM\Persisters\UnrecognizedField;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\TransactionRequiredException;
@@ -929,7 +930,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindByFieldInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedField::class);
         $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->em->getRepository(CmsUser::class);
@@ -953,7 +954,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testMatchingInjectionPrevented() : void
     {
-        $this->expectException(ORMException::class);
+        $this->expectException(UnrecognizedField::class);
         $this->expectExceptionMessage('Unrecognized field: ');
 
         $repository = $this->em->getRepository(CmsUser::class);
