@@ -617,9 +617,9 @@ class Expr
             return (string) $literal;
         } else if (is_bool($literal)) {
             return $literal ? "true" : "false";
-        } else {
-            return "'" . str_replace("'", "''", $literal) . "'";
         }
+
+        return "'" . str_replace("'", "''", $literal) . "'";
     }
 
     /**

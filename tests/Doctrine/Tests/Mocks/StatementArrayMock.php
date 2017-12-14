@@ -53,9 +53,9 @@ class StatementArrayMock extends StatementMock
         if ($current) {
             next($this->_result);
             return reset($current);
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public function rowCount()
