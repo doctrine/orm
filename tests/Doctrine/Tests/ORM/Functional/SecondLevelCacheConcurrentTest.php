@@ -132,6 +132,8 @@ class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 {
     private $cache;
 
+    private $regions = [];
+
     public function __construct(Cache $cache)
     {
         $this->cache = $cache;
@@ -139,10 +141,16 @@ class CacheFactorySecondLevelCacheConcurrentTest extends DefaultCacheFactory
 
     public function getRegion(CacheMetadata $cache)
     {
+        $regionName = $cache->getRegion();
+
+        if (isset($this->regions[$regionName])) {
+            return $this->regions[$regionName];
+        }
+
         $region = new DefaultRegion($cache->getRegion(), $this->cache);
         $mock   = new ConcurrentRegionMock($region);
 
-        return $mock;
+        return $this->regions[$regionName] = $mock;
     }
 
     public function getTimestampRegion()

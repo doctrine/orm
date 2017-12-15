@@ -269,6 +269,10 @@ final class EntityManager implements EntityManagerInterface
      * @param string $className
      *
      * @return Mapping\ClassMetadata
+     *
+     * @throws \ReflectionException
+     * @throws \InvalidArgumentException
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {
@@ -609,6 +613,12 @@ final class EntityManager implements EntityManagerInterface
     public function clear($entityName = null)
     {
         $this->unitOfWork->clear();
+
+        $this->unitOfWork = new UnitOfWork($this);
+
+        if ($this->eventManager->hasListeners(Events::onClear)) {
+            $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this));
+        }
     }
 
     /**

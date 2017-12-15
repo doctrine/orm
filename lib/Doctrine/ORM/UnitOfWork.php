@@ -217,6 +217,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     private $em;
 
+
     /**
      * The entity persister instances used to persist entity instances.
      *
@@ -649,10 +650,9 @@ class UnitOfWork implements PropertyChangedListener
                         // Check if original value exists
                         if ($orgValue instanceof PersistentCollection) {
                             // A PersistentCollection was de-referenced, so delete it.
-                            $coid = spl_object_hash($orgValue);
+                            if (! $this->isCollectionScheduledForDeletion($orgValue)) {
+                                $this->scheduleCollectionDeletion($orgValue);
 
-                            if (!isset($this->collectionDeletions[$coid])) {
-                                $this->collectionDeletions[$coid] = $orgValue;
                                 $changeSet[$propName] = $orgValue; // Signal changeset, to-many associations will be ignored
                             }
                         }
@@ -1815,6 +1815,8 @@ class UnitOfWork implements PropertyChangedListener
      * @param object $entity
      * @param array  $visited
      *
+     * @throws ORMInvalidArgumentException
+     *
      * @return void
      */
     private function cascadePersist($entity, array &$visited)
@@ -1901,7 +1903,7 @@ class UnitOfWork implements PropertyChangedListener
 
             switch (true) {
                 case ($relatedEntities instanceof Collection):
-                case (is_array($relatedEntities)):
+                case (\is_array($relatedEntities)):
                     // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedEntities as $relatedEntity) {
                         $entitiesToCascade[] = $relatedEntity;
@@ -1934,6 +1936,7 @@ class UnitOfWork implements PropertyChangedListener
      * @throws ORMInvalidArgumentException
      * @throws TransactionRequiredException
      * @throws OptimisticLockException
+     * @throws \InvalidArgumentException
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
@@ -1941,7 +1944,7 @@ class UnitOfWork implements PropertyChangedListener
             throw new \InvalidArgumentException("No entity passed to UnitOfWork#lock().");
         }
 
-        if ($this->getEntityState($entity, self::STATE_DETACHED) != self::STATE_MANAGED) {
+        if ($this->getEntityState($entity, self::STATE_DETACHED) !== self::STATE_MANAGED) {
             throw ORMInvalidArgumentException::entityNotManaged($entity);
         }
 
@@ -1963,7 +1966,7 @@ class UnitOfWork implements PropertyChangedListener
 
                 $entityVersion = $class->versionProperty->getValue($entity);
 
-                if ($entityVersion != $lockVersion) {
+                if ($entityVersion !== $lockVersion) {
                     throw OptimisticLockException::lockFailedVersionMismatch($entity, $lockVersion, $entityVersion);
                 }
 
@@ -2013,11 +2016,8 @@ class UnitOfWork implements PropertyChangedListener
         $this->extraUpdates =
         $this->readOnlyObjects =
         $this->visitedCollections =
+        $this->nonCascadedNewDetectedEntities =
         $this->orphanRemovals = [];
-
-        if ($this->eventManager->hasListeners(Events::onClear)) {
-            $this->eventManager->dispatchEvent(Events::onClear, new Event\OnClearEventArgs($this->em));
-        }
     }
 
     /**
