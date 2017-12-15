@@ -281,7 +281,7 @@ class DefaultCache implements Cache
      */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
-        if ( ! is_array($identifier)) {
+        if (! is_array($identifier)) {
             $identifier = $this->toIdentifierArray($metadata, $identifier);
         }
 
@@ -297,7 +297,7 @@ class DefaultCache implements Cache
      */
     private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
-        if ( ! is_array($ownerIdentifier)) {
+        if (! is_array($ownerIdentifier)) {
             $ownerIdentifier = $this->toIdentifierArray($metadata, $ownerIdentifier);
         }
 

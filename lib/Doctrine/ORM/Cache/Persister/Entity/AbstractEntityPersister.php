@@ -30,10 +30,10 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
  */
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
-     /**
-     * @var \Doctrine\ORM\UnitOfWork
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
-    protected $uow;
+    protected $em;
 
     /**
      * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
@@ -109,12 +109,12 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $cacheConfig    = $configuration->getSecondLevelCacheConfiguration();
         $cacheFactory   = $cacheConfig->getCacheFactory();
 
+        $this->em               = $em;
         $this->class            = $class;
         $this->region           = $region;
         $this->persister        = $persister;
         $this->cache            = $em->getCache();
         $this->regionName       = $region->getName();
-        $this->uow              = $em->getUnitOfWork();
         $this->metadataFactory  = $em->getMetadataFactory();
         $this->cacheLogger      = $cacheConfig->getCacheLogger();
         $this->timestampRegion  = $cacheFactory->getTimestampRegion();
@@ -245,6 +245,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             $this->joinedAssociations = $associations;
         }
 
+        $uow = $this->em->getUnitOfWork();
+
         foreach ($this->joinedAssociations as $name) {
             $association  = $this->class->getProperty($name);
             $assocEntity  = $association->getValue($entity);
@@ -254,10 +256,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
                 continue;
             }
 
-            $assocId        = $this->uow->getEntityIdentifier($assocEntity);
+            $assocId        = $uow->getEntityIdentifier($assocEntity);
             $assocMetadata  = $this->metadataFactory->getMetadataFor($targetEntity);
             $assocKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocId);
-            $assocPersister = $this->uow->getEntityPersister($targetEntity);
+            $assocPersister = $uow->getEntityPersister($targetEntity);
 
             $assocPersister->storeEntityCache($assocEntity, $assocKey);
         }
@@ -571,7 +573,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $sourceEntity,
         PersistentCollection $collection
     ) {
-        $persister = $this->uow->getCollectionPersister($association);
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getCollectionPersister($association);
         $hasCache  = ($persister instanceof CachedPersister);
         $key       = null;
 
@@ -579,7 +582,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
             return $this->persister->loadManyToManyCollection($association, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
+        $ownerId = $uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($association, $ownerId);
         $list    = $persister->loadCollectionCache($collection, $key);
 
@@ -610,14 +613,15 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
         $sourceEntity,
         PersistentCollection $collection
     ) {
-        $persister = $this->uow->getCollectionPersister($association);
+        $uow       = $this->em->getUnitOfWork();
+        $persister = $uow->getCollectionPersister($association);
         $hasCache  = ($persister instanceof CachedPersister);
 
         if ( ! $hasCache) {
             return $this->persister->loadOneToManyCollection($association, $sourceEntity, $collection);
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
+        $ownerId = $uow->getEntityIdentifier($collection->getOwner());
         $key     = $this->buildCollectionCacheKey($association, $ownerId);
         $list    = $persister->loadCollectionCache($collection, $key);
 
@@ -665,8 +669,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * @param array $association
-     * @param array $ownerId
+     * @param AssociationMetadata $association
+     * @param array               $ownerId
      *
      * @return CollectionCacheKey
      */

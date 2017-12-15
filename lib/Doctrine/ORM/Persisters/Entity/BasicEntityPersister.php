@@ -289,12 +289,12 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Fetches the current version value of a versioned entity.
      *
-     * @param \Doctrine\ORM\Mapping\VersionFieldMetadata $versionProperty
-     * @param array                                      $id
+     * @param VersionFieldMetadata $versionProperty
+     * @param array                $id
      *
      * @return mixed
      */
-    protected function fetchVersionValue(FieldMetadata $versionProperty, array $id)
+    protected function fetchVersionValue(VersionFieldMetadata $versionProperty, array $id)
     {
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
