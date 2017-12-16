@@ -90,29 +90,33 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
 
-        $AST->selectClause->selectExpressions = array(new SelectExpression($pathExpression, '_dctrn_id'));
+        $AST->selectClause->selectExpressions = [new SelectExpression($pathExpression, '_dctrn_id')];
+        $AST->selectClause->isDistinct        = true;
 
-        if (isset($AST->orderByClause)) {
-            foreach ($AST->orderByClause->orderByItems as $item) {
-                if ( ! $item->expression instanceof PathExpression) {
-                    if(is_string($item->expression) && isset($queryComponents[$item->expression])) {
-                        $qComp = $queryComponents[$item->expression];
-                        if (isset($qComp['resultVariable'])) {
-                            $AST->selectClause->selectExpressions[] = new SelectExpression($qComp['resultVariable'], $item->expression);
-                        }
-                    }
-                } else {
-
-                    $AST->selectClause->selectExpressions[] = new SelectExpression(
-                        $this->createSelectExpressionItem($item->expression),
-                        '_dctrn_ord' . $this->_aliasCounter++
-                    );
-                }
-
-            }
+        if ( ! isset($AST->orderByClause)) {
+            return;
         }
 
-        $AST->selectClause->isDistinct = true;
+        foreach ($AST->orderByClause->orderByItems as $item) {
+            if ($item->expression instanceof PathExpression) {
+                $AST->selectClause->selectExpressions[] = new SelectExpression(
+                    $this->createSelectExpressionItem($item->expression), '_dctrn_ord' . $this->_aliasCounter++
+                );
+
+                continue;
+            }
+
+            if (is_string($item->expression) && isset($queryComponents[$item->expression])) {
+                $qComp = $queryComponents[$item->expression];
+
+                if (isset($qComp['resultVariable'])) {
+                    $AST->selectClause->selectExpressions[] = new SelectExpression(
+                        $qComp['resultVariable'],
+                        $item->expression
+                    );
+                }
+            }
+        }
     }
 
     /**
