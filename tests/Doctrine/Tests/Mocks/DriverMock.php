@@ -48,9 +48,9 @@ class DriverMock implements Driver
     {
         if ($this->_schemaManagerMock == null) {
             return new SchemaManagerMock($conn);
-        } else {
-            return $this->_schemaManagerMock;
         }
+
+        return $this->_schemaManagerMock;
     }
 
     /* MOCK API */
