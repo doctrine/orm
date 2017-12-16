@@ -158,7 +158,7 @@ class YamlExporter extends AbstractExporter
                 $associationMappingArray['fetch'] = $this->_getFetchModeString($associationMapping['fetch']);
             }
 
-            if (isset($mapping['id']) && $mapping['id'] === true) {
+            if (isset($associationMapping['id']) && $associationMapping['id'] === true) {
                 $array['id'][$name]['associationKey'] = true;
             }
 

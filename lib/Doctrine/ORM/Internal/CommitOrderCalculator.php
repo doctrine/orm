@@ -52,7 +52,7 @@ class CommitOrderCalculator
      * - <b>dependencyList</b> (array<string>)
      * Map of node dependencies defined as hashes.
      *
-     * @var array<stdClass>
+     * @var array<\stdClass>
      */
     private $nodeList = [];
 
