@@ -779,6 +779,10 @@ class ClassMetadataInfo implements ClassMetadata
      */
     public function getFieldValue($entity, $field)
     {
+        if (!$entity instanceof $this->reflFields[$field]->class) {
+            return null;
+        }
+
         return $this->reflFields[$field]->getValue($entity);
     }
 
