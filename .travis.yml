@@ -56,8 +56,11 @@ jobs:
       install: travis_retry composer update --prefer-dist --prefer-lowest
 
     - stage: Test
-      env: DB=sqlite DEPENDENCIES=stable
-      install: travis_retry composer update --prefer-dist --prefer-stable
+      if: type = cron
+      env: DB=sqlite DEV_DEPENDENCIES
+      install:
+        - composer config minimum-stability dev
+        - travis_retry composer update --prefer-dist
 
     - stage: Test
       env: DB=sqlite COVERAGE
