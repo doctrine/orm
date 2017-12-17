@@ -51,8 +51,8 @@ final class GH6884Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         $people = [
-            1,
-            2
+            $person->id,
+            $person2->id
         ];
 
         foreach ($people as $person) {
