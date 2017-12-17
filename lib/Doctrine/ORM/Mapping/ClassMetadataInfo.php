@@ -28,6 +28,9 @@ namespace Doctrine\ORM\Mapping;
 class_exists('Doctrine\ORM\Mapping\ClassMetadata');
 
 if (\false) {
+    /* That's right, this piece of code will never be executed. It's not
+     * ornemental though, its purpose is to trick IDEs into providing
+     * auto-completion for this class. */
     class ClassMetadataInfo extends ClassMetadata
     {
     }
