@@ -501,11 +501,11 @@
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
-    <xs:attribute name="index-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
+    <xs:attribute name="index-by" type="xs:NMTOKEN" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
@@ -518,12 +518,12 @@
       <xs:element name="order-by" type="orm:order-by" minOccurs="0" />
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
+    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
     <xs:attribute name="index-by" type="xs:NMTOKEN" />
-    <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -538,10 +538,10 @@
       </xs:choice>
       <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xs:sequence>
-    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="field" type="xs:NMTOKEN" use="required" />
-    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
+    <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
@@ -560,8 +560,8 @@
     <xs:attribute name="target-entity" type="xs:string" use="required" />
     <xs:attribute name="mapped-by" type="xs:NMTOKEN" />
     <xs:attribute name="inversed-by" type="xs:NMTOKEN" />
-    <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:attribute name="fetch" type="orm:fetch-type" default="LAZY" />
+    <xs:attribute name="orphan-removal" type="xs:boolean" default="false" />
     <xs:anyAttribute namespace="##other"/>
   </xs:complexType>
 
