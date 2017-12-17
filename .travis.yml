@@ -57,7 +57,7 @@ jobs:
 
     - stage: Test
       if: type = cron
-      env: DB=sqlite
+      env: DB=sqlite DEV_DEPENDENCIES
       install:
         - composer config minimum-stability dev
         - travis_retry composer update --prefer-dist
