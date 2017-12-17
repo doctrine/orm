@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint;
 use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
@@ -286,7 +287,7 @@ class DatabaseDriver implements MappingDriver
 
             if ( ! $table->hasPrimaryKey()) {
                 throw new MappingException(
-                    "Table " . $table->getName() . " has no primary key. Doctrine does not ".
+                    "Table ".$table->getName()." has no primary key. Doctrine does not ".
                     "support reverse engineering from tables that don't have a primary key."
                 );
             }
@@ -407,7 +408,7 @@ class DatabaseDriver implements MappingDriver
             case Type::STRING:
             case Type::TEXT:
                 $fieldMapping['length'] = $column->getLength();
-                $fieldMapping['options']['fixed']  = $column->getFixed();
+                $fieldMapping['options']['fixed'] = $column->getFixed();
                 break;
 
             case Type::DECIMAL:
@@ -450,7 +451,6 @@ class DatabaseDriver implements MappingDriver
         foreach ($foreignKeys as $foreignKey) {
             $foreignTableName   = $foreignKey->getForeignTableName();
             $fkColumns          = $foreignKey->getColumns();
-            $fkForeignColumns   = $foreignKey->getForeignColumns();
             $localColumn        = current($fkColumns);
             $associationMapping = [
                 'fieldName'    => $this->getFieldNameForColumn($tableName, $localColumn, true),
@@ -464,12 +464,9 @@ class DatabaseDriver implements MappingDriver
             if ($primaryKeys && in_array($localColumn, $primaryKeys)) {
                 $associationMapping['id'] = true;
             }
-
-            for ($i = 0, $fkColumnsCount = count($fkColumns); $i < $fkColumnsCount; $i++) {
-                $associationMapping['joinColumns'][] = [
-                    'name'                 => $fkColumns[$i],
-                    'referencedColumnName' => $fkForeignColumns[$i],
-                ];
+            $sizeColumns = count($fkColumns);
+            for ($i = 0; $i < $sizeColumns; $i++) {
+                $associationMapping['joinColumns'][] = $this->getForeignKeyAssociationMapping($foreignKey, $i);
             }
 
             // Here we need to check if $fkColumns are the same as $primaryKeys
@@ -479,6 +476,33 @@ class DatabaseDriver implements MappingDriver
                 $metadata->mapManyToOne($associationMapping);
             }
         }
+    }
+
+    /**
+     * Return the asociation mapping array for the foreign key.
+     *
+     * @param \Doctrine\DBAL\Schema\ForeignKeyConstraint $foreignKey
+     * @param int                                        $columnIndex
+     *
+     * @access
+     * @return array
+     */
+    private function getForeignKeyAssociationMapping(ForeignKeyConstraint $foreignKey, $columnIndex) {
+
+        $fkColumns          = $foreignKey->getColumns();
+        $fkForeignColumns   = $foreignKey->getForeignColumns();
+
+        $associationMappingParameters = [
+            'name' => $fkColumns[$columnIndex],
+            'referencedColumnName' => $fkForeignColumns[$columnIndex]
+        ];
+
+        foreach ($foreignKey->getLocalTable()->getColumns() as $column) {
+            if (strtolower($column->getName()) === strtolower($fkColumns[$columnIndex]) && $column->getNotNull() === true) {
+                $associationMappingParameters['nullable'] = false;
+            }
+        }
+        return $associationMappingParameters;
     }
 
     /**
@@ -523,7 +547,7 @@ class DatabaseDriver implements MappingDriver
     private function getClassNameForTable($tableName)
     {
         if (isset($this->classNamesForTables[$tableName])) {
-            return $this->namespace . $this->classNamesForTables[$tableName];
+            return $this->namespace.$this->classNamesForTables[$tableName];
         }
 
         return $this->namespace . Inflector::classify(strtolower($tableName));

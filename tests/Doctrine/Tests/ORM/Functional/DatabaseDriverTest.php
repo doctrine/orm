@@ -218,4 +218,73 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
             $metadata->table['uniqueConstraints']['unique_index1']['columns']
         );
     }
+
+    /**
+     * Test DCC2632: testing nullable option in a foreign key
+     * @return void
+     */
+    public function testDCC2632Nullable() {
+        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+        $user = $this->getUserTable();
+        $project = $this->getProjectTableUserIdNullable();
+        $this->_sm->dropAndCreateTable($user);
+        $this->_sm->dropAndCreateTable($project);
+        $metadata = $this->extractClassMetadata(array("Ddc2059User", "Ddc2059Project"));
+
+        $this->assertArrayHasKey('user', $metadata['Ddc2059Project']->associationMappings);
+        $this->assertArrayHasKey('joinColumns', $metadata['Ddc2059Project']->associationMappings['user']);
+        $this->assertArrayHasKey('referencedColumnName', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
+        $this->assertArrayNotHasKey('nullable', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
+
+    }
+
+    /**
+     * Test DCC2632: testing nullable option in a foreign key
+     * @return void
+     */
+    public function testDCC2632NoNullable() {
+        if ( ! $this->_em->getConnection()->getDatabasePlatform()->supportsForeignKeyConstraints()) {
+            $this->markTestSkipped('Platform does not support foreign keys.');
+        }
+        $user = $this->getUserTable();
+        $project = $this->getProjectTable();
+        $this->_sm->dropTable($project);
+        $this->_sm->dropAndCreateTable($user);
+        $this->_sm->dropAndCreateTable($project);
+        $metadata = $this->extractClassMetadata(array("Ddc2059User", "Ddc2059Project"));
+
+        $this->assertArrayHasKey('user', $metadata['Ddc2059Project']->associationMappings);
+        $this->assertArrayHasKey('joinColumns', $metadata['Ddc2059Project']->associationMappings['user']);
+        $this->assertArrayHasKey('referencedColumnName', $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]);
+
+        $this->assertEquals(false, $metadata['Ddc2059Project']->associationMappings['user']['joinColumns'][0]['nullable']);
+    }
+
+
+    private function getUserTable() {
+        $user = new \Doctrine\DBAL\Schema\Table("ddc2059_user");
+        $user->addColumn('id', 'integer', array('notnull' => true));
+        $user->setPrimaryKey(array('id'));
+        return $user;
+    }
+
+    private function getProjectTable() {
+        $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
+        $project->addColumn('id', 'integer', array('notnull' => false));
+        $project->addColumn('user_id', 'integer', array('notnull' => true));
+        $project->setPrimaryKey(array('id'), true);
+        $project->addForeignKeyConstraint('ddc2059_user', array('user_id'), array('id'), array(), 'fk');
+        return $project;
+    }
+
+    private function getProjectTableUserIdNullable() {
+        $project = new \Doctrine\DBAL\Schema\Table("ddc2059_project");
+        $project->addColumn('id', 'integer', array('notnull' => false));
+        $project->addColumn('user_id', 'integer', array('notnull' => false));
+        $project->setPrimaryKey(array('id'), true);
+        $project->addForeignKeyConstraint('ddc2059_user', array('user_id'), array('id'), array(), 'fk');
+        return $project;
+    }
 }

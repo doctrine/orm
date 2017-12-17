@@ -168,7 +168,9 @@ class YamlExporter extends AbstractExporter
 
                 foreach ($joinColumns as $joinColumn) {
                     $newJoinColumns[$joinColumn['name']]['referencedColumnName'] = $joinColumn['referencedColumnName'];
-
+                    if (isset($joinColumn['nullable'])) {
+                        $newJoinColumns[$joinColumn['name']]['nullable'] = $joinColumn['nullable'];
+                    }
                     if (isset($joinColumn['onDelete'])) {
                         $newJoinColumns[$joinColumn['name']]['onDelete'] = $joinColumn['onDelete'];
                     }
