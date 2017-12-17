@@ -35,8 +35,8 @@ final class GH6884Test extends OrmFunctionalTestCase
     }
 
     /**
-     * Verify that when a flush is called in postUpdate, if any listeners exist on preUpdate and no changes have been
-     * made to the entity, the third argument passed into PreUpdateEventArgs is a valid argument type
+     * Verify that firing the PreUpdate event succeeds when a flush is called after an iteration and modification
+     * of entities that have a PostUpdate event which calls flush with no entity changes
      *
      * @return void
      */
