@@ -163,7 +163,8 @@ use Throwable;
             $this,
             $config->getProxyDir(),
             $config->getProxyNamespace(),
-            $config->getAutoGenerateProxyClasses()
+            $config->getAutoGenerateProxyClasses(),
+            $config->getProxyUmask()
         );
 
         if ($config->isSecondLevelCacheEnabled()) {
