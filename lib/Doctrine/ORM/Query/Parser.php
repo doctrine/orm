@@ -834,6 +834,8 @@ class Parser
      */
     public function QueryLanguage()
     {
+        $statement = null;
+
         $this->lexer->moveNext();
 
         switch ($this->lexer->lookahead['type']) {
@@ -3357,7 +3359,7 @@ class Parser
         switch (true) {
             case $customFunctionDeclaration !== null:
                 return $customFunctionDeclaration;
-            
+
             case (isset(self::$_STRING_FUNCTIONS[$funcName])):
                 return $this->FunctionsReturningStrings();
 

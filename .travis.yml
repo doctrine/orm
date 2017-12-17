@@ -56,6 +56,10 @@ jobs:
       install: travis_retry composer update --prefer-dist --prefer-lowest
 
     - stage: Test
+      env: DB=sqlite DEPENDENCIES=stable
+      install: travis_retry composer update --prefer-dist --prefer-stable
+
+    - stage: Test
       env: DB=sqlite COVERAGE
       before_script:
         - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
@@ -68,9 +72,10 @@ jobs:
 
     - stage: Code Quality
       env: DB=none STATIC_ANALYSIS
+      install: travis_retry composer update --prefer-dist --prefer-stable
       before_script:
         - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.8 symfony/console:^3.0
+        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.9
       script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
 
     - stage: Code Quality
