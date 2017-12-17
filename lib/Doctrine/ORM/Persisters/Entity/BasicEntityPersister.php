@@ -1301,11 +1301,17 @@ class BasicEntityPersister implements EntityPersister
                 $this->currentPersisterContext->selectJoinSql .= ' LEFT JOIN';
 
                 foreach ($association['joinColumns'] as $joinColumn) {
+
                     $sourceCol       = $this->quoteStrategy->getJoinColumnName($joinColumn, $this->class, $this->platform);
                     $targetCol       = $this->quoteStrategy->getReferencedJoinColumnName($joinColumn, $this->class, $this->platform);
 
                     $joinCondition[] = $this->getSQLTableAlias($association['sourceEntity'], $assocAlias) . '.' . $sourceCol . ' = '
                         . $this->getSQLTableAlias($association['targetEntity']) . '.' . $targetCol;
+
+                    // Add filter SQL
+                    if ($filterSql = $this->generateFilterConditionSQL($eagerEntity, $joinTableAlias)) {
+                        $joinCondition[] = $filterSql;
+                    }
                 }
             }
 
