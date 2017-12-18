@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Cache\CacheException;
+use Doctrine\ORM\Cache\CannotUpdateReadOnlyEntity;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
@@ -17,6 +17,6 @@ class ReadOnlyCachedEntityPersister extends NonStrictReadWriteCachedEntityPersis
      */
     public function update($entity)
     {
-        throw CacheException::updateReadOnlyEntity(StaticClassNameConverter::getClass($entity));
+        throw CannotUpdateReadOnlyEntity::fromEntity(StaticClassNameConverter::getClass($entity));
     }
 }

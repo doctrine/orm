@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Mapping;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
+use Doctrine\ORM\Cache\NonCacheableEntityAssociation;
 use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Sequencing\Planning\ValueGenerationPlan;
 use Doctrine\ORM\Utility\PersisterHelper;
@@ -572,7 +573,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
 
             if ($this->cache && ! $property->getCache()) {
-                throw CacheException::nonCacheableEntityAssociation($this->className, $fieldName);
+                throw NonCacheableEntityAssociation::fromEntityAndField($this->className, $fieldName);
             }
 
             if ($property instanceof ToManyAssociationMetadata) {

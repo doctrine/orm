@@ -7,6 +7,6 @@ namespace Doctrine\ORM\Cache;
 /**
  * Lock exception for cache.
  */
-class LockException extends CacheException
+class LockException implements CacheException
 {
 }
