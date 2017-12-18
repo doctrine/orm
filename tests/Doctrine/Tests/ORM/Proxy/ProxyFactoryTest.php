@@ -368,7 +368,7 @@ class ProxyFactoryTest extends OrmTestCase
         $this->uowMock->setEntityPersister(CmsUser::class, $persister);
 
         /* @var $user CmsUser|GhostObjectInterface */
-        $user = $this->proxyFactory->getProxy(CmsUser::class, ['id' => 123]);
+        $user = $this->proxyFactory->getProxy($this->emMock->getClassMetadata(CmsUser::class), ['id' => 123]);
 
         self::assertInstanceOf(GhostObjectInterface::class, $user);
         self::assertFalse($user->isProxyInitialized());

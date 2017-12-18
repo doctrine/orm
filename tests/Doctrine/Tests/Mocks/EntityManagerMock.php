@@ -10,6 +10,7 @@ use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Utility\IdentifierFlattener;
 
 /**
  * Special EntityManager mock used for testing purposes.
@@ -20,11 +21,6 @@ class EntityManagerMock extends EntityManagerDecorator
      * @var \Doctrine\ORM\UnitOfWork|null
      */
     private $uowMock;
-
-    /**
-     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory|null
-     */
-    private $proxyFactoryMock;
 
     /**
      * @return EntityManagerInterface
@@ -55,16 +51,6 @@ class EntityManagerMock extends EntityManagerDecorator
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\Factory\ProxyFactory $proxyFactory
-     *
-     * @return void
-     */
-    public function setProxyFactory($proxyFactory)
-    {
-        $this->proxyFactoryMock = $proxyFactory;
-    }
-
-    /**
      * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory()
@@ -91,8 +77,21 @@ class EntityManagerMock extends EntityManagerDecorator
             $eventManager = $conn->getEventManager();
         }
 
-        $em = EntityManager::create($conn, $config, $eventManager);
+        $em      = EntityManager::create($conn, $config, $eventManager);
+        $emMock  = new EntityManagerMock($em);
+        $uowMock = new UnitOfWorkMock($emMock);
 
-        return new EntityManagerMock($em);
+        // Ugly hacks due to cyclic dependencies
+        // in the tests, we cannot afford having two different UnitOfWork instances
+        $uowReflection                 = new \ReflectionProperty($em, 'unitOfWork');
+        $identifierFlattenerReflection = new \ReflectionProperty($em, 'identifierFlattener');
+
+        $uowReflection->setAccessible(true);
+        $identifierFlattenerReflection->setAccessible(true);
+
+        $uowReflection->setValue($em, $uowMock);
+        $identifierFlattenerReflection->setValue($em, new IdentifierFlattener($uowMock, $em->getMetadataFactory()));
+
+        return $emMock;
     }
 }
