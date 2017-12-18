@@ -87,7 +87,7 @@ class GH6884Person
     /** @Column(type="boolean", nullable=false) */
     public $isAlive = false;
 
-    /** @var false */
+    /** @var bool */
     public $nonOrmProperty = false;
 
     /**
