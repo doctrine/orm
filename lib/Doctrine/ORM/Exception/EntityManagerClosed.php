@@ -6,7 +6,7 @@ namespace Doctrine\ORM\Exception;
 
 use RuntimeException;
 
-final class EntityManagerClosed extends ORMException implements ManagerException
+final class EntityManagerClosed extends RuntimeException implements ManagerException
 {
     public static function create(): self
     {

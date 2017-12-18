@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Exception;
 use Doctrine\Persistence\ObjectRepository;
 use LogicException;
 
-final class InvalidEntityRepository extends ORMException implements ConfigurationException
+final class InvalidEntityRepository extends LogicException implements ConfigurationException
 {
     public static function fromClassName(string $className): self
     {

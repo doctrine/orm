@@ -8,7 +8,7 @@ use LogicException;
 
 use function sprintf;
 
-final class NamedQueryNotFound extends ORMException implements ConfigurationException
+final class NamedQueryNotFound extends LogicException implements ConfigurationException
 {
     public static function fromName(string $name): self
     {

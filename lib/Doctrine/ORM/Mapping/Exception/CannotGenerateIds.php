@@ -11,7 +11,7 @@ use LogicException;
 use function get_class;
 use function sprintf;
 
-final class CannotGenerateIds extends ORMException
+final class CannotGenerateIds extends LogicException implements ORMException
 {
     public static function withPlatform(AbstractPlatform $platform): self
     {

@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Export;
 
 use Doctrine\ORM\Exception\ORMException;
+use LogicException;
 
 use function sprintf;
 
 /**
  * @deprecated 2.7 This class is being removed from the ORM and won't have any replacement
  */
-class ExportException extends ORMException
+class ExportException extends LogicException implements ORMException
 {
     /**
      * @param string $type

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Exception;
 
 use Doctrine\ORM\Cache\Exception\CacheException;
+use LogicException;
 
 use function sprintf;
 

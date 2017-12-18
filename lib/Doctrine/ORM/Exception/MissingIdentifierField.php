@@ -8,7 +8,7 @@ use LogicException;
 
 use function sprintf;
 
-final class MissingIdentifierField extends ORMException implements ManagerException
+final class MissingIdentifierField extends LogicException implements ManagerException
 {
     public static function fromFieldAndClass(string $fieldName, string $className): self
     {

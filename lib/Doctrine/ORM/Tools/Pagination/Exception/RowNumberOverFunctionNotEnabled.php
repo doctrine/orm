@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Tools\Pagination\Exception;
 use Doctrine\ORM\Exception\ORMException;
 use LogicException;
 
-final class RowNumberOverFunctionNotEnabled extends ORMException
+final class RowNumberOverFunctionNotEnabled extends LogicException implements ORMException
 {
     public static function create(): self
     {

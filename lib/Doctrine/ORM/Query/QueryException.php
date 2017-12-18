@@ -15,7 +15,7 @@ use LogicException;
  *
  * @link    www.doctrine-project.org
  */
-class QueryException extends ORMException
+class QueryException extends Exception implements ORMException
 {
     /**
      * @param string $dql

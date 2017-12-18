@@ -13,7 +13,7 @@ use function sprintf;
 /**
  * Tools related Exceptions.
  */
-class ToolsException extends ORMException
+class ToolsException extends RuntimeException implements ORMException
 {
     public static function schemaToolFailure(string $sql, Throwable $e): self
     {
