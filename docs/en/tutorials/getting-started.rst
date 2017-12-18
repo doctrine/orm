@@ -135,7 +135,6 @@ step:
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
-
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
@@ -228,33 +227,154 @@ entity definition:
          * @var string
          */
         protected $name;
-
-        public function getId()
-        {
-            return $this->id;
-        }
-
-        public function getName()
-        {
-            return $this->name;
-        }
-
-        public function setName($name)
-        {
-            $this->name = $name;
-        }
     }
 
-When creating entity classes, all of the fields should be protected or private
-(not public), with getter and setter methods for each one (except $id).
+When creating entity classes, all of the fields should be protected or private (not public).
+
+Adding the Entity behaviors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You have two options to define the accessors mutators that will
+update the state of your objects.
+
+**Getters and setters**
+
+The most popular method is to create getter and setter methods for each property (except ``$id``).
 The use of mutators allows Doctrine to hook into calls which
 manipulate the entities in ways that it could not if you just
-directly set the values with ``entity#field = foo;``
+directly set the values with ``entity#field = foo;``.
 
 The id field has no setter since, generally speaking, your code
 should not set this value since it represents a database id value.
 (Note that Doctrine itself can still set the value using the
 Reflection API instead of a defined setter function)
+
+.. note::
+
+    This method, although very common, is **not** the best approach if
+    you want a perfect domain design. It can lead to unexpected behavior
+    when dealing with different steps of logic in between different
+    calls to ``EntityManager::flush()``, for example when you change
+    the state of an object via event listeners or lifecycle callbacks.
+
+**Mutators and DTOs**
+
+We recommend using a rich model design and rely on more complex
+mutators, ideally based on DTOs.
+This way, you should **not** use getters nor setters, and instead,
+implement methods that represent the **behavior** of your domain.
+
+For example, when having a ``User`` entity, we could foresee
+the following kind of optimization.
+
+Before, an anemic model with getters and setters:
+
+.. configuration-block::
+
+    .. code-block:: php
+
+        <?php
+        class User {
+            private $username;
+            private $passwordHash;
+            private $bans;
+
+            public function getUsername() :string {
+                return $this->username;
+            }
+
+            public function setUsername(string $username) {
+                $this->username = $username;
+            }
+
+            public function getPasswordHash() : string {
+                return $this->passwordHash;
+            }
+
+            public function setPasswordHash(string $passwordHash) {
+                $this->passwordHash = $passwordHash;
+            }
+
+            public function addBan(Ban $ban) {
+                $this->bans[] = $ban;
+            }
+        }
+
+After, a rich model with proper accessors and mutators:
+
+.. configuration-block::
+
+    .. code-block:: php
+        <?php
+        class User
+        {
+            private $banned;
+            private $username;
+            private $passwordHash;
+            private $bans;
+
+            public function toNickname() : string
+            {
+                return $this->username;
+            }
+
+            public function authenticate(string $password, callable $checkHash) : bool
+            {
+                return $checkHash($password, $this->passwordHash) && ! $this->hasActiveBans();
+            }
+
+            public function changePass(string $password, callable $hash)
+            {
+                $this->passwordHash = $hash($password);
+            }
+
+            public function ban()
+            {
+                $this->bans[] = new Ban($this);
+            }
+        }
+
+Additionnally, our entities should never see their state change
+partially without validation. For example, creating a ``new Product()``
+object without any data makes it an **invalid object**.
+Entities should represent **behavior**, not **data**, therefore
+they should be valid even after a ``__construct()``.
+
+To help creating such objects, we can rely on ``DTO``s, and/or make
+our entities Value Objects.
+
+You can know more about Value Objects by reading the `following article
+<https://webmozart.io/blog/2015/09/09/value-objects-in-symfony-forms/>`_.
+
+By using DTOs, if we take our previous ``User`` example, we could create
+a ``ProfileFormUser`` DTO object that will be a plain model, totally
+unrelated to our database, that will be populated via a form and validated.
+Then we can add a new mutator to our ``User``:
+
+.. configuration-block::
+
+    .. code-block:: php
+        <?php
+        class User
+        {
+            public function updateFromProfile(ProfileFormUser $profileForm) : void
+            {
+                // ...
+            }
+        }
+
+There are several advantages to using such model:
+
+* Entity **state is always valid**. No setters means that we only
+update portions of the entity that should already be valid.
+* Instead of having plain getters and setters, our entity now has
+**real behaviors**, meaning it is much easier to determine the
+logic in the domain.
+* DTOs can be reused in other components, like when deserializing
+mixed content, using forms...
+* Anemic model tends to isolate the entity from the logic, and a
+rich model fixes that because entity's logic can be put in the
+entity itself.
 
 The next step for persistence with Doctrine is to describe the
 structure of the ``Product`` entity to Doctrine using a metadata
