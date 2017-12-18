@@ -48,27 +48,20 @@ final class GH6884Test extends OrmFunctionalTestCase
         $this->_em->persist($person);
         $this->_em->persist($person2);
         $this->_em->flush();
-        $this->_em->clear();
 
         $people = [
-            $person->id,
-            $person2->id
+            $person,
+            $person2
         ];
 
-        $managedPeople = [];
         foreach ($people as $person) {
-            /** @var GH6884Person $managedPerson */
-            if ($managedPerson = $this->_em->find(GH6884Person::class, $person)) {
-                $managedPerson->isAlive = true;
-
-                $managedPeople[] = $managedPerson;
-            }
+            $person->isAlive = true;
         }
 
         $this->_em->flush();
 
-        foreach ($managedPeople as $managedPerson) {
-            $this->assertTrue($managedPerson->nonEntityProperty);
+        foreach ($people as $person) {
+            $this->assertTrue($person->nonOrmProperty);
         }
     }
 
@@ -95,7 +88,7 @@ class GH6884Person
     public $isAlive = false;
 
     /** @var false */
-    public $nonEntityProperty = false;
+    public $nonOrmProperty = false;
 
     /**
      * @param GH6884Person       $person
@@ -105,7 +98,7 @@ class GH6884Person
      */
     public function onPostUpdate(GH6884Person $person, LifecycleEventArgs $eventArgs)
     {
-        $person->nonEntityProperty = true;
+        $person->nonOrmProperty = true;
 
         $eventArgs->getEntityManager()->flush();
     }
