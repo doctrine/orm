@@ -67,12 +67,4 @@ class ORMException extends Exception
     {
         return new self('Query Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
     }
-
-    /**
-     * @return ORMException
-     */
-    public static function metadataCacheUsesNonPersistentCache(CacheDriver $cache)
-    {
-        return new self('Metadata Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
-    }
 }

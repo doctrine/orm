@@ -12,6 +12,7 @@ use Doctrine\Common\Cache\Cache as CacheDriver;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Configuration as DBALConfiguration;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\MetadataCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration\InvalidEntityRepository;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Configuration\UnknownEntityNamespace;
@@ -246,7 +247,7 @@ class Configuration extends DBALConfiguration
         }
 
         if ($metadataCacheImpl instanceof ArrayCache) {
-            throw ORMException::metadataCacheUsesNonPersistentCache($metadataCacheImpl);
+            throw MetadataCacheUsesNonPersistentCache::fromDriver($metadataCacheImpl);
         }
 
         if ($this->getProxyManagerConfiguration()->getGeneratorStrategy() instanceof EvaluatingGeneratorStrategy) {

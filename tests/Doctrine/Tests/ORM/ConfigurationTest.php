@@ -9,6 +9,7 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\MetadataCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
 use Doctrine\ORM\Configuration\UnknownEntityNamespace;
@@ -158,7 +159,7 @@ class ConfigurationTest extends DoctrineTestCase
         $this->setProductionSettings();
         $this->configuration->setMetadataCacheImpl(new ArrayCache());
 
-        $this->expectException(ORMException::class);
+        $this->expectException(MetadataCacheUsesNonPersistentCache::class);
         $this->expectExceptionMessage('Metadata Cache uses a non-persistent cache driver, Doctrine\Common\Cache\ArrayCache.');
 
         $this->configuration->ensureProductionSettings();
