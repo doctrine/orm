@@ -59,12 +59,4 @@ class ORMException extends Exception
     {
         return new self('Class Metadata Cache is not configured.');
     }
-
-    /**
-     * @return ORMException
-     */
-    public static function queryCacheUsesNonPersistentCache(CacheDriver $cache)
-    {
-        return new self('Query Cache uses a non-persistent cache driver, ' . get_class($cache) . '.');
-    }
 }
