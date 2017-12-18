@@ -43,20 +43,4 @@ class ORMException extends Exception
     {
         return new self('This behaviour is (currently) not supported by Doctrine 2');
     }
-
-    /**
-     * @return ORMException
-     */
-    public static function queryCacheNotConfigured()
-    {
-        return new self('Query Cache is not configured.');
-    }
-
-    /**
-     * @return ORMException
-     */
-    public static function metadataCacheNotConfigured()
-    {
-        return new self('Class Metadata Cache is not configured.');
-    }
 }

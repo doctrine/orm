@@ -9,7 +9,9 @@ use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Cache\CacheConfiguration;
+use Doctrine\ORM\Cache\MetadataCacheNotConfigured;
 use Doctrine\ORM\Cache\MetadataCacheUsesNonPersistentCache;
+use Doctrine\ORM\Cache\QueryCacheNotConfigured;
 use Doctrine\ORM\Cache\QueryCacheUsesNonPersistentCache;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Configuration\ProxyClassesAlwaysRegenerating;
@@ -128,7 +130,7 @@ class ConfigurationTest extends DoctrineTestCase
     {
         $this->setProductionSettings('query');
 
-        $this->expectException(ORMException::class);
+        $this->expectException(QueryCacheNotConfigured::class);
         $this->expectExceptionMessage('Query Cache is not configured.');
 
         $this->configuration->ensureProductionSettings();
@@ -138,7 +140,7 @@ class ConfigurationTest extends DoctrineTestCase
     {
         $this->setProductionSettings('metadata');
 
-        $this->expectException(ORMException::class);
+        $this->expectException(MetadataCacheNotConfigured::class);
         $this->expectExceptionMessage('Metadata Cache is not configured.');
 
         $this->configuration->ensureProductionSettings();
