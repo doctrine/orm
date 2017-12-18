@@ -51,7 +51,7 @@ class BasicEntityPersisterCompositeTypeSqlTest extends OrmTestCase
 
     public function testSelectConditionStatementIn() : void
     {
-        $this->setExpectedException(CantUseInOperatorOnCompositeKeys::class);
+        $this->expectException(CantUseInOperatorOnCompositeKeys::class);
         $this->persister->getSelectConditionStatementSQL('admin1', [], new OneToOneAssociationMetadata('admin1'), Comparison::IN);
     }
 }
