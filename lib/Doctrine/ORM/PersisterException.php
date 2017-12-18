@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-interface PersisterException extends \Throwable
+use Doctrine\ORM\ORMException;
+
+interface PersisterException extends ORMException
 {
 }

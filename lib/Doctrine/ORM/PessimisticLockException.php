@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-class PessimisticLockException extends ORMException
+use Doctrine\ORM\ORMException;
+
+class PessimisticLockException extends \Exception implements ORMException
 {
     /**
      * @return PessimisticLockException

@@ -7,7 +7,7 @@ namespace Doctrine\ORM\Persisters;
 use Doctrine\ORM\ORMException;
 use function sprintf;
 
-class PersisterException extends ORMException
+class PersisterException extends \Exception implements ORMException
 {
     /**
      * @param string $class

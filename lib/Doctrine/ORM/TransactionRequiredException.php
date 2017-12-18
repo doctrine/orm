@@ -7,7 +7,7 @@ namespace Doctrine\ORM;
 /**
  * Is thrown when a transaction is required for the current operation, but there is none open.
  */
-class TransactionRequiredException extends ORMException
+class TransactionRequiredException extends \Exception implements ORMException
 {
     /**
      * @return TransactionRequiredException

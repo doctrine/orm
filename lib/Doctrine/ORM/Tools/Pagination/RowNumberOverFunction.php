@@ -40,6 +40,6 @@ class RowNumberOverFunction extends FunctionNode
      */
     public function parse(Parser $parser)
     {
-        throw new ORMException('The RowNumberOverFunction is not intended for, nor is it enabled for use in DQL.');
+        throw RowNumberOverFunctionNotEnabled::create();
     }
 }

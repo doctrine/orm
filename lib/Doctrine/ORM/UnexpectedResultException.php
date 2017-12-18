@@ -7,6 +7,6 @@ namespace Doctrine\ORM;
 /**
  * Exception for a unexpected query result.
  */
-class UnexpectedResultException extends ORMException
+class UnexpectedResultException extends \Exception implements ORMException
 {
 }

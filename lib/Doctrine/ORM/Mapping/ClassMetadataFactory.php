@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\NotImplementedYet;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
@@ -403,16 +404,16 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::TABLE:
-                throw new ORMException('TableGenerator not yet implemented.');
+                throw TableGeneratorNotImplementedYet::create();
                 break;
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
-                if (! isset($definition['class'])) {
-                    throw new ORMException(sprintf('Cannot instantiate custom generator, no class has been defined'));
+                if ( ! isset($definition['class'])) {
+                    throw InvalidCustomGenerator::onClassNotConfigured();
                 }
-                if (! class_exists($definition['class'])) {
-                    throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
+                if ( ! class_exists($definition['class'])) {
+                    throw InvalidCustomGenerator::onMissingClass($definition);
                 }
 
                 break;
@@ -423,7 +424,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             default:
-                throw new ORMException('Unknown generator type: ' . $generator->getType());
+                throw UnknownGeneratorType::create($generator->getType());
         }
     }
 

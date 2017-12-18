@@ -12,7 +12,7 @@ use function sprintf;
 /**
  * Description of QueryException.
  */
-class QueryException extends ORMException
+class QueryException extends \Exception implements ORMException
 {
     /**
      * @param string $dql
