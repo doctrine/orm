@@ -3,19 +3,19 @@
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Event\LifecycleEventArgs;
-use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use stdClass;
 
 /**
- * @group GH-6884
+ * @group 6884
  */
 final class GH6884Test extends OrmFunctionalTestCase
 {
     /**
      * {@inheritdoc}
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -25,22 +25,17 @@ final class GH6884Test extends OrmFunctionalTestCase
             ]
         );
 
-        $this->_em->getEventManager()->addEventListener(
-            [Events::preUpdate],
-            $this
-        );
+        $listener = $this->getMock(stdClass::class, ['preUpdate']);
+
+        $listener->expects($this->atLeastOnce())->method('preUpdate');
+
+        $this->_em->getEventManager()->addEventListener([Events::preUpdate], $listener);
 
         $this->_em->getClassMetadata(GH6884Person::class)
                   ->addEntityListener(Events::postUpdate, GH6884Person::class, 'onPostUpdate');
     }
 
-    /**
-     * Verify that firing the PreUpdate event succeeds when a flush is called after an iteration and modification
-     * of entities that have a PostUpdate event which calls flush with no entity changes
-     *
-     * @return void
-     */
-    public function testIssue()
+    public function testIssue(): void
     {
         $person  = new GH6884Person();
         $person2 = new GH6884Person();
@@ -59,20 +54,6 @@ final class GH6884Test extends OrmFunctionalTestCase
         }
 
         $this->_em->flush();
-
-        foreach ($people as $person) {
-            $this->assertTrue($person->nonOrmProperty);
-        }
-    }
-
-    /**
-     * @param PreUpdateEventArgs $eventArgs
-     *
-     * @return void
-     */
-    public function preUpdate(PreUpdateEventArgs $eventArgs)
-    {
-        // preUpdate logic
     }
 }
 
@@ -90,13 +71,7 @@ class GH6884Person
     /** @var bool */
     public $nonOrmProperty = false;
 
-    /**
-     * @param GH6884Person       $person
-     * @param LifecycleEventArgs $eventArgs
-     *
-     * @return void
-     */
-    public function onPostUpdate(GH6884Person $person, LifecycleEventArgs $eventArgs)
+    public function onPostUpdate(GH6884Person $person, LifecycleEventArgs $eventArgs): void
     {
         $person->nonOrmProperty = true;
 
