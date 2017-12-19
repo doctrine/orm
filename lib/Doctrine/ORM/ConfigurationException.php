@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-interface SchemaToolException extends ORMException
+interface ConfigurationException extends ORMException
 {
 }

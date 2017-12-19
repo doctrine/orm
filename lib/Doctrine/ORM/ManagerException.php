@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
-interface ManagerException
+interface ManagerException extends ORMException
 {
 }

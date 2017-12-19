@@ -10,6 +10,6 @@ use function sprintf;
 /**
  * Exception for cache.
  */
-interface CacheException extends \Throwable
+interface CacheException extends ORMException
 {
 }
