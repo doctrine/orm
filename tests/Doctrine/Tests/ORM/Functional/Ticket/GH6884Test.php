@@ -44,14 +44,8 @@ final class GH6884Test extends OrmFunctionalTestCase
         $this->_em->persist($person2);
         $this->_em->flush();
 
-        $people = [
-            $person,
-            $person2
-        ];
-
-        foreach ($people as $person) {
-            $person->isAlive = true;
-        }
+        $person->isAlive  = true;
+        $person2->isAlive = true;
 
         $this->_em->flush();
     }
