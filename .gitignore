@@ -10,6 +10,7 @@ lib/Doctrine/DBAL
 .buildpath
 .project
 .idea
+*.iml
 vendor/
 composer.lock
 /tests/Doctrine/Performance/history.db
