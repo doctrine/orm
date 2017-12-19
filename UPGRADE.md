@@ -21,6 +21,15 @@ Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed()` was
 removed because of the choice to allow users to overwrite internal functions, ie
 `AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/doctrine2/pull/6500)
 
+## PHP 7.1 is now required
+
+Doctrine 2.6 now requires PHP 7.1 or newer.
+
+As a consequence, automatic cache setup in Doctrine\ORM\Tools\Setup::create*Configuration() was changed:
+- APCu extension (ext-apcu) will now be used instead of abandoned APC (ext-apc).
+- Memcached extension (ext-memcached) will be used instead of obsolete Memcache (ext-memcache).
+- XCache support was dropped as it doesn't work with PHP 7.
+
 # Upgrade to 2.5
 
 ## Minor BC BREAK: removed `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()`

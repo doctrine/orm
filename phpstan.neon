@@ -2,6 +2,3 @@ parameters:
     earlyTerminatingMethodCalls:
         Doctrine\ORM\Query\Parser:
             - syntaxError
-    ignoreErrors:
-        # Memcache does not exist on PHP 7
-        - '#Instantiated class Memcache not found#'

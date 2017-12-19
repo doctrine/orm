@@ -165,19 +165,16 @@ class Setup
             return new ArrayCache();
         }
 
-        if (extension_loaded('apc')) {
-            return new \Doctrine\Common\Cache\ApcCache();
+        if (extension_loaded('apcu')) {
+            return new \Doctrine\Common\Cache\ApcuCache();
         }
 
-        if (ini_get('xcache.cacher')) {
-            return new \Doctrine\Common\Cache\XcacheCache();
-        }
 
-        if (extension_loaded('memcache')) {
-            $memcache = new \Memcache();
-            $memcache->connect('127.0.0.1');
+        if (extension_loaded('memcached')) {
+            $memcache = new \Memcached();
+            $memcache->addServer('127.0.0.1', 11211);
 
-            $cache = new \Doctrine\Common\Cache\MemcacheCache();
+            $cache = new \Doctrine\Common\Cache\MemcachedCache();
             $cache->setMemcache($memcache);
 
             return $cache;
