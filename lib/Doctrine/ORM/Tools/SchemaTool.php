@@ -518,7 +518,7 @@ class SchemaTool
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
         foreach ($class->associationMappings as $id => $mapping) {
-            if (isset($mapping['inherited']) && array_search($id, $class->identifier) === false) {
+            if (isset($mapping['inherited']) && ! \in_array($id, $class->identifier, true)) {
                 continue;
             }
 
