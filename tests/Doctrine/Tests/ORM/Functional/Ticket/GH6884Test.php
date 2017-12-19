@@ -25,7 +25,11 @@ final class GH6884Test extends OrmFunctionalTestCase
             ]
         );
 
-        $listener = $this->getMock(stdClass::class, ['preUpdate']);
+        $builder = $this->getMockBuilder(stdClass::class);
+
+        $builder->setMethods(['preUpdate']);
+
+        $listener = $builder->getMock();
 
         $listener->expects($this->atLeastOnce())->method('preUpdate');
 
