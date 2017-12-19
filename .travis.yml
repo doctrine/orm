@@ -62,7 +62,7 @@ jobs:
         - composer config minimum-stability dev
         - travis_retry composer update --prefer-dist
 
-    - stage: Test
+    - stage: Code Quality
       env: DB=sqlite COVERAGE
       before_script:
         - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
