@@ -25,13 +25,9 @@ final class GH6884Test extends OrmFunctionalTestCase
             ]
         );
 
-        $builder = $this->getMockBuilder(stdClass::class);
+        $listener = $this->createPartialMock(stdClass::class, ['preUpdate']);
 
-        $builder->setMethods(['preUpdate']);
-
-        $listener = $builder->getMock();
-
-        $listener->expects($this->atLeastOnce())->method('preUpdate');
+        $listener->expects($this->exactly(3))->method('preUpdate');
 
         $this->_em->getEventManager()->addEventListener([Events::preUpdate], $listener);
 
