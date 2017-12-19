@@ -542,7 +542,7 @@ class DatabaseDriver implements MappingDriver
      */
     private function getFieldNameForColumn($tableName, $columnName, $fk = false)
     {
-        if (isset($this->fieldNamesForColumns[$tableName]) && isset($this->fieldNamesForColumns[$tableName][$columnName])) {
+        if (isset($this->fieldNamesForColumns[$tableName], $this->fieldNamesForColumns[$tableName][$columnName])) {
             return $this->fieldNamesForColumns[$tableName][$columnName];
         }
 

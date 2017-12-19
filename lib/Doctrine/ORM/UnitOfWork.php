@@ -2130,8 +2130,7 @@ class UnitOfWork implements PropertyChangedListener
             $oid = spl_object_hash($entity);
 
             if (
-                isset($hints[Query::HINT_REFRESH])
-                && isset($hints[Query::HINT_REFRESH_ENTITY])
+                isset($hints[Query::HINT_REFRESH], $hints[Query::HINT_REFRESH_ENTITY])
                 && ($unmanagedProxy = $hints[Query::HINT_REFRESH_ENTITY]) !== $entity
                 && $unmanagedProxy instanceof GhostObjectInterface
                 && $this->isIdentifierEquals($unmanagedProxy, $entity)
@@ -2201,7 +2200,7 @@ class UnitOfWork implements PropertyChangedListener
             }
 
             // Check if the association is not among the fetch-joined associations already.
-            if (isset($hints['fetchAlias']) && isset($hints['fetched'][$hints['fetchAlias']][$field])) {
+            if (isset($hints['fetchAlias'], $hints['fetched'][$hints['fetchAlias']][$field])) {
                 continue;
             }
 
