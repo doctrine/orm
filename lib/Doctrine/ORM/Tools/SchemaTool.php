@@ -231,7 +231,6 @@ class SchemaTool
 
                             foreach ($idMapping['joinColumns'] as $joinColumn) {
                                 if (isset($targetEntity->fieldMappings[$joinColumn['referencedColumnName']])) {
-                                    $idMapping = $targetEntity->fieldMappings[$joinColumn['referencedColumnName']];
                                     $columnName = $this->quoteStrategy->getJoinColumnName(
                                         $joinColumn,
                                         $class,
