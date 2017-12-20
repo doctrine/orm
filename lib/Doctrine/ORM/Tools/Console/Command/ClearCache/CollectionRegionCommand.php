@@ -53,7 +53,7 @@ class CollectionRegionCommand extends AbstractEntityManagerCommand
              ->addOption('em', null, InputOption::VALUE_REQUIRED, 'Name of the entity manager to operate on')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all entity regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear a second-level cache collection regions for an associated Entity Manager.
 It is possible to delete/invalidate all collection region, a specific collection region or flushes the cache provider.
 
