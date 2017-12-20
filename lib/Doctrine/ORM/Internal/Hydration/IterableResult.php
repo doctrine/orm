@@ -31,7 +31,7 @@ class IterableResult implements \Iterator
     /**
      * @var object|null
      */
-    private $current = null;
+    private $current;
 
     /**
      * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator

@@ -37,7 +37,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * @var int|null
      */
-    private $maxValue = null;
+    private $maxValue;
 
     /**
      * Initializes a new sequence generator.

@@ -55,7 +55,7 @@ abstract class OrmTestCase extends DoctrineTestCase
     /**
      * @var \Doctrine\Common\Cache\Cache|null
      */
-    protected $secondLevelCacheDriverImpl = null;
+    protected $secondLevelCacheDriverImpl;
 
     /**
      * @param array $paths

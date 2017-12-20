@@ -20,9 +20,9 @@ use Doctrine\ORM\Query\QueryException;
  */
 class DateAddFunction extends FunctionNode
 {
-    public $firstDateExpression = null;
-    public $intervalExpression = null;
-    public $unit = null;
+    public $firstDateExpression;
+    public $intervalExpression;
+    public $unit;
 
     /**
      * @override

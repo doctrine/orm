@@ -19,7 +19,7 @@ use Doctrine\Tests\OrmTestCase;
 class QueryTest extends OrmTestCase
 {
     /** @var EntityManagerInterface */
-    protected $em = null;
+    protected $em;
 
     protected function setUp()
     {

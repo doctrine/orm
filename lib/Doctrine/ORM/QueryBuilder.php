@@ -87,14 +87,14 @@ class QueryBuilder
      *
      * @var integer
      */
-    private $firstResult = null;
+    private $firstResult;
 
     /**
      * The maximum number of results to retrieve.
      *
      * @var integer|null
      */
-    private $maxResults = null;
+    private $maxResults;
 
     /**
      * Keeps root entity alias names for join entities.

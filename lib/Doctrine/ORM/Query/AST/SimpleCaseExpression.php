@@ -20,7 +20,7 @@ class SimpleCaseExpression extends Node
     /**
      * @var PathExpression
      */
-    public $caseOperand = null;
+    public $caseOperand;
 
     /**
      * @var array
@@ -30,7 +30,7 @@ class SimpleCaseExpression extends Node
     /**
      * @var mixed
      */
-    public $elseScalarExpression = null;
+    public $elseScalarExpression;
 
     /**
      * @param PathExpression $caseOperand
