@@ -1,4 +1,5 @@
 <?php
+
 namespace Doctrine\Tests\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
