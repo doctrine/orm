@@ -4,6 +4,8 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Query;
@@ -49,6 +51,52 @@ class LifecycleCallbackTest extends OrmFunctionalTestCase
         $this->_em->flush();
 
         $this->assertEquals('changed from preUpdate callback!', $result[0]->value);
+    }
+
+    public function testOnFlushCallbacksAreInvoked()
+    {
+        $entity = new LifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+
+        $this->_em->flush();
+
+        $this->assertTrue($entity->prePersistCallbackInvoked);
+        $this->assertTrue($entity->onFlushCallbackInvoked);
+
+        $entity->onFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->onFlushCallbackInvoked);
+
+        $entity->value = 'bye';
+        $entity->onFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->onFlushCallbackInvoked);
+    }
+
+    public function testPostFlushCallbacksAreInvoked()
+    {
+        $entity = new LifecycleCallbackTestEntity;
+        $entity->value = 'hello';
+        $this->_em->persist($entity);
+
+        $this->_em->flush();
+
+        $this->assertTrue($entity->prePersistCallbackInvoked);
+        $this->assertTrue($entity->postFlushCallbackInvoked);
+
+        $entity->postFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->postFlushCallbackInvoked);
+
+        $entity->value = 'bye';
+        $entity->postFlushCallbackInvoked = false;
+        $this->_em->flush();
+
+        $this->assertTrue($entity->postFlushCallbackInvoked);
     }
 
     public function testPreFlushCallbacksAreInvoked()
@@ -363,6 +411,8 @@ DQL;
         $this->_em->flush();
 
 
+        $this->assertArrayHasKey('onFlushHandler', $e->calls);
+        $this->assertArrayHasKey('postFlushHandler', $e->calls);
         $this->assertArrayHasKey('preFlushHandler', $e->calls);
         $this->assertArrayHasKey('postLoadHandler', $e->calls);
         $this->assertArrayHasKey('prePersistHandler', $e->calls);
@@ -372,6 +422,8 @@ DQL;
         $this->assertArrayHasKey('preRemoveHandler', $e->calls);
         $this->assertArrayHasKey('postRemoveHandler', $e->calls);
 
+        $this->assertInstanceOf(OnFlushEventArgs::class, $e->calls['onFlushHandler']);
+        $this->assertInstanceOf(PostFlushEventArgs::class, $e->calls['postFlushHandler']);
         $this->assertInstanceOf(PreFlushEventArgs::class, $e->calls['preFlushHandler']);
         $this->assertInstanceOf(LifecycleEventArgs::class, $e->calls['postLoadHandler']);
         $this->assertInstanceOf(LifecycleEventArgs::class, $e->calls['prePersistHandler']);
@@ -412,6 +464,8 @@ class LifecycleCallbackTestEntity
     public $postPersistCallbackInvoked = false;
     public $postLoadCallbackInvoked = false;
     public $postLoadCascaderNotNull = false;
+    public $onFlushCallbackInvoked = false;
+    public $postFlushCallbackInvoked = false;
     public $preFlushCallbackInvoked = false;
 
     /**
@@ -457,6 +511,16 @@ class LifecycleCallbackTestEntity
     /** @PreUpdate */
     public function doStuffOnPreUpdate() {
         $this->value = 'changed from preUpdate callback!';
+    }
+
+    /** @OnFlush */
+    public function doStuffOnOnFlush() {
+        $this->onFlushCallbackInvoked = true;
+    }
+
+    /** @PostFlush */
+    public function doStuffOnPostFlush() {
+        $this->postFlushCallbackInvoked = true;
     }
 
     /** @PreFlush */
@@ -579,6 +643,22 @@ class LifecycleCallbackEventArgEntity
      * @PreRemove
      */
     public function preRemoveHandler(LifecycleEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @OnFlush
+     */
+    public function onFlushHandler(OnFlushEventArgs $event)
+    {
+        $this->calls[__FUNCTION__] = $event;
+    }
+
+    /**
+     * @PostFlush
+     */
+    public function postFlushHandler(PostFlushEventArgs $event)
     {
         $this->calls[__FUNCTION__] = $event;
     }

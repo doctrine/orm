@@ -123,5 +123,8 @@ $metadata->addEntityListener(Events::preUpdate, 'CmsAddressListener', 'preUpdate
 $metadata->addEntityListener(Events::postRemove, 'CmsAddressListener', 'postRemove');
 $metadata->addEntityListener(Events::preRemove, 'CmsAddressListener', 'preRemove');
 
+$metadata->addEntityListener(Events::onFlush, 'CmsAddressListener', 'onFlush');
+$metadata->addEntityListener(Events::postFlush, 'CmsAddressListener', 'postFlush');
+
 $metadata->addEntityListener(Events::preFlush, 'CmsAddressListener', 'preFlush');
 $metadata->addEntityListener(Events::postLoad, 'CmsAddressListener', 'postLoad');

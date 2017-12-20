@@ -4,6 +4,9 @@ Doctrine\Tests\Models\Company\CompanyFlexUltraContract:
   entityListeners:
     CompanyContractListener:
       
+      onFlush: [onFlushHandler]
+      postFlush: [postFlushHandler]
+
       preFlush: [preFlushHandler]
       postLoad: [postLoadHandler]
 

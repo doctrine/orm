@@ -3,6 +3,8 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\Event\PreFlushEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\Tests\Models\Company\CompanyContractListener;
@@ -44,6 +46,38 @@ class EntityListenersTest extends OrmFunctionalTestCase
         $this->assertSame($fix, $this->listener->preFlushCalls[0][0]);
         $this->assertInstanceOf(CompanyFixContract::class, $this->listener->preFlushCalls[0][0]);
         $this->assertInstanceOf(PreFlushEventArgs::class, $this->listener->preFlushCalls[0][1]);
+    }
+
+    public function testOnFlushListeners()
+    {
+        $fix = new CompanyFixContract();
+        $fix->setFixPrice(2000);
+
+        $this->listener->onFlushCalls  = [];
+
+        $this->_em->persist($fix);
+        $this->_em->flush();
+
+        $this->assertCount(1,$this->listener->onFlushCalls);
+        $this->assertSame($fix, $this->listener->onFlushCalls[0][0]);
+        $this->assertInstanceOf(CompanyFixContract::class, $this->listener->onFlushCalls[0][0]);
+        $this->assertInstanceOf(OnFlushEventArgs::class, $this->listener->onFlushCalls[0][1]);
+    }
+
+    public function testPostFlushListeners()
+    {
+        $fix = new CompanyFixContract();
+        $fix->setFixPrice(2000);
+
+        $this->listener->postFlushCalls  = [];
+
+        $this->_em->persist($fix);
+        $this->_em->flush();
+
+        $this->assertCount(1,$this->listener->postFlushCalls);
+        $this->assertSame($fix, $this->listener->postFlushCalls[0][0]);
+        $this->assertInstanceOf(CompanyFixContract::class, $this->listener->postFlushCalls[0][0]);
+        $this->assertInstanceOf(PostFlushEventArgs::class, $this->listener->postFlushCalls[0][1]);
     }
 
     public function testPostLoadListeners()
