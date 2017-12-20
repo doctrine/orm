@@ -611,7 +611,7 @@ class UnitOfWork implements PropertyChangedListener
 
                     if ($owner === null) { // cloned
                         $actualValue->setOwner($entity, $property);
-                    } else if ($owner !== $entity) { // no clone, we have to fix
+                    } elseif ($owner !== $entity) { // no clone, we have to fix
                         if (! $actualValue->isInitialized()) {
                             $actualValue->initialize(); // we have to do this otherwise the cols share state
                         }
@@ -932,7 +932,7 @@ class UnitOfWork implements PropertyChangedListener
         if ($changeSet) {
             if (isset($this->entityChangeSets[$oid])) {
                 $this->entityChangeSets[$oid] = array_merge($this->entityChangeSets[$oid], $changeSet);
-            } else if ( ! isset($this->entityInsertions[$oid])) {
+            } elseif ( ! isset($this->entityInsertions[$oid])) {
                 $this->entityChangeSets[$oid] = $changeSet;
                 $this->entityUpdates[$oid]    = $entity;
             }

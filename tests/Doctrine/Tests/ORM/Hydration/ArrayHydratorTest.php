@@ -1031,7 +1031,7 @@ class ArrayHydratorTest extends HydrationTestCase
             if ($rowNum == 0) {
                 self::assertEquals(1, $row[0]['id']);
                 self::assertEquals('romanb', $row[0]['name']);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum == 1) {
                 self::assertEquals(2, $row[0]['id']);
                 self::assertEquals('jwage', $row[0]['name']);
             }
@@ -1077,7 +1077,7 @@ class ArrayHydratorTest extends HydrationTestCase
             if ($rowNum == 0) {
                 self::assertEquals(1, $row[0]['user']['id']);
                 self::assertEquals('romanb', $row[0]['user']['name']);
-            } else if ($rowNum == 1) {
+            } elseif ($rowNum == 1) {
                 self::assertEquals(2, $row[0]['user']['id']);
                 self::assertEquals('jwage', $row[0]['user']['name']);
             }

@@ -945,7 +945,7 @@ class Parser
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
 
             $schemaName = $this->lexer->token['value'];
-        } else if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+        } elseif ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $this->match(Lexer::T_IDENTIFIER);
 
             $schemaName = $this->lexer->token['value'];
@@ -3315,7 +3315,7 @@ class Parser
                 if ($this->lexer->isNextToken(Lexer::T_EQUALS)) {
                     $this->match(Lexer::T_EQUALS);
                     $operator .= '=';
-                } else if ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
+                } elseif ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
                     $this->match(Lexer::T_GREATER_THAN);
                     $operator .= '>';
                 }

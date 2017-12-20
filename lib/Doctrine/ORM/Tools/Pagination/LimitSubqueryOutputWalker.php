@@ -528,7 +528,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                         ];
                     }
                 }
-            } else if ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
