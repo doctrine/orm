@@ -39,7 +39,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
      */
     private function getCacheSize(ArrayCache $cache)
     {
-        return sizeof($this->cacheDataReflection->getValue($cache));
+        return count($this->cacheDataReflection->getValue($cache));
     }
 
 
