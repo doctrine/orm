@@ -53,7 +53,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertCount(2, $user->articles);
         self::assertFalse($user->articles->isInitialized());
 
-        foreach ($user->articles AS $article) { }
+        foreach ($user->articles as $article) { }
 
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -67,7 +67,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertCount(2, $user->references);
         self::assertFalse($user->references->isInitialized());
 
-        foreach ($user->references AS $reference) { }
+        foreach ($user->references as $reference) { }
 
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -81,7 +81,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertCount(3, $user->cars);
         self::assertFalse($user->cars->isInitialized());
 
-        foreach ($user->cars AS $reference) { }
+        foreach ($user->cars as $reference) { }
 
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }

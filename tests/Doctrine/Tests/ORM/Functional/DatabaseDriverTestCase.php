@@ -28,7 +28,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 
         $metadatas = [];
 
-        foreach ($driver->getAllClassNames() AS $className) {
+        foreach ($driver->getAllClassNames() as $className) {
             $class = new ClassMetadata($className, $metadataBuildingContext);
 
             $driver->loadMetadataForClass($className, $class, $metadataBuildingContext);

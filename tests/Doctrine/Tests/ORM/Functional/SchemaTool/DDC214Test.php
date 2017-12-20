@@ -66,7 +66,7 @@ class DDC214Test extends OrmFunctionalTestCase
     public function assertCreatedSchemaNeedsNoUpdates($classes)
     {
         $classMetadata = [];
-        foreach ($classes AS $class) {
+        foreach ($classes as $class) {
             $classMetadata[] = $this->em->getClassMetadata($class);
         }
 

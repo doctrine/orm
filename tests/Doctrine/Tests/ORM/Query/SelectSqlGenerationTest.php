@@ -47,7 +47,7 @@ class SelectSqlGenerationTest extends OrmTestCase
         try {
             $query = $this->em->createQuery($dqlToBeTested);
 
-            foreach ($queryParams AS $name => $value) {
+            foreach ($queryParams as $name => $value) {
                 $query->setParameter($name, $value);
             }
 
@@ -56,7 +56,7 @@ class SelectSqlGenerationTest extends OrmTestCase
                 ->useQueryCache(false)
             ;
 
-            foreach ($queryHints AS $name => $value) {
+            foreach ($queryHints as $name => $value) {
                 $query->setHint($name, $value);
             }
 
@@ -84,7 +84,7 @@ class SelectSqlGenerationTest extends OrmTestCase
 
         $query = $this->em->createQuery($dqlToBeTested);
 
-        foreach ($queryParams AS $name => $value) {
+        foreach ($queryParams as $name => $value) {
             $query->setParameter($name, $value);
         }
 
@@ -93,7 +93,7 @@ class SelectSqlGenerationTest extends OrmTestCase
             ->useQueryCache(false)
         ;
 
-        foreach ($queryHints AS $name => $value) {
+        foreach ($queryHints as $name => $value) {
             $query->setHint($name, $value);
         }
 

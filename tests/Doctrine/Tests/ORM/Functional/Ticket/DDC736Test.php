@@ -89,7 +89,7 @@ class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
      */
     public function walkSelectClause($selectClause)
     {
-        foreach ($selectClause->selectExpressions AS $key => $selectExpr) {
+        foreach ($selectClause->selectExpressions as $key => $selectExpr) {
             /* @var $selectExpr \Doctrine\ORM\Query\AST\SelectExpression */
             if ($selectExpr->expression == "c") {
                 unset($selectClause->selectExpressions[$key]);

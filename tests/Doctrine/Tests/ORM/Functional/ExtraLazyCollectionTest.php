@@ -100,7 +100,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(3, $user->groups);
         self::assertFalse($user->groups->isInitialized());
 
-        foreach ($user->groups AS $group) { }
+        foreach ($user->groups as $group) { }
 
         self::assertEquals($queryCount + 2, $this->getCurrentQueryCount(), "Expecting two queries to be fired for count, then iteration.");
     }
@@ -132,7 +132,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        foreach ($user->groups AS $group) { }
+        foreach ($user->groups as $group) { }
 
         self::assertTrue($user->groups->isInitialized());
         self::assertCount(3, $user->groups);
@@ -208,7 +208,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         self::assertCount(1, $otherGroup);
         self::assertFalse($user->groups->isInitialized());
 
-        foreach ($user->groups AS $group) { }
+        foreach ($user->groups as $group) { }
 
         self::assertTrue($user->groups->isInitialized());
         self::assertCount(3, $user->groups);
@@ -225,7 +225,7 @@ class ExtraLazyCollectionTest extends OrmFunctionalTestCase
         $user = $this->em->find(CmsUser::class, $this->userId);
         $queryCount = $this->getCurrentQueryCount();
 
-        foreach ($user->groups AS $group) { }
+        foreach ($user->groups as $group) { }
 
         $someGroups = $user->groups->slice(0, 2);
 
