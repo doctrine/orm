@@ -23,6 +23,8 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use PDO;
 
 /**
@@ -241,6 +243,8 @@ abstract class AbstractHydrator
      * Hydrates all rows from the current statement instance at once.
      *
      * @return array
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     abstract protected function hydrateAllData();
 
