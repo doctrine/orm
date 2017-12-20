@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
-use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\Common\Collections\Criteria;

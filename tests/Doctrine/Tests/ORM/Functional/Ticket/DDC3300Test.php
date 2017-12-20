@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Tools\ResolveTargetEntityListener;
 
 /**

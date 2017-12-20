@@ -29,7 +29,6 @@ use Doctrine\Tests\Models\Hydration\EntityWithArrayDefaultArrayValueM2M;
 use Doctrine\Tests\Models\Hydration\SimpleEntity;
 use ProxyManager\Configuration;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
-use ProxyManager\Proxy\GhostObjectInterface;
 
 class ObjectHydratorTest extends HydrationTestCase
 {

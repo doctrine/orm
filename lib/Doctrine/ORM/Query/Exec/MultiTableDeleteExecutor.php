@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Query\AST;
-use Doctrine\ORM\Utility\PersisterHelper;
 use Throwable;
 
 /**

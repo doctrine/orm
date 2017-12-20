@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\DDC1590;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\Tests\Models\DDC1590\DDC1590Entity;
 
 /**
  * @ORM\Entity
