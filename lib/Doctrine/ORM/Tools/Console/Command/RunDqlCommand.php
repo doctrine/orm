@@ -57,7 +57,7 @@ class RunDqlCommand extends Command
                 )
             ]
         )
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Executes arbitrary DQL directly from the command line.
 EOT
         );

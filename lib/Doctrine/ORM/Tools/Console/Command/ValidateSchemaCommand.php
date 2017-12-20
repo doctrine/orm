@@ -44,7 +44,7 @@ class ValidateSchemaCommand extends Command
             'Skip checking if the mapping is in sync with the database'
         )
         ->setHelp(
-            <<<EOT
+            <<<'EOT'
 'Validate that the mapping files are correct and in sync with the database.'
 EOT
         );

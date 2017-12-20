@@ -40,7 +40,7 @@ class QueryCommand extends Command
             ]
         );
 
-        $this->setHelp(<<<EOT
+        $this->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear the query cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.

@@ -44,7 +44,7 @@ class GenerateProxiesCommand extends Command
                 ),
             ]
         )
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Generates proxy classes for entity classes.
 EOT
         );
