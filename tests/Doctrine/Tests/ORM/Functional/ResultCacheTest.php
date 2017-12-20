@@ -20,8 +20,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 class ResultCacheTest extends OrmFunctionalTestCase
 {
    /**
-     * @var \ReflectionProperty
-     */
+    * @var \ReflectionProperty
+    */
     private $cacheDataReflection;
 
     protected function setUp() {

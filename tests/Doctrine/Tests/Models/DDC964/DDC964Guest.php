@@ -25,7 +25,7 @@ use Doctrine\ORM\Mapping;
  *              type     = "string",
  *              nullable = false,
  *              unique   = true,
-                length   = 240
+ *              length   = 240
  *          )
  *      )
  * })

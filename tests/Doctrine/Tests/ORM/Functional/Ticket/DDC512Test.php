@@ -74,7 +74,7 @@ class DDC512Customer {
 
 /**
  * @ORM\Entity
-  */
+ */
 class DDC512OfferItem extends DDC512Item
 {
 }

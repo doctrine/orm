@@ -35,15 +35,15 @@ class City
     protected $state;
 
      /**
-     * @ORM\ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
-     */
+      * @ORM\ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
+      */
     public $travels;
 
      /**
-     * @ORM\Cache
-     * @ORM\OrderBy({"name" = "ASC"})
-     * @ORM\OneToMany(targetEntity="Attraction", mappedBy="city")
-     */
+      * @ORM\Cache
+      * @ORM\OrderBy({"name" = "ASC"})
+      * @ORM\OneToMany(targetEntity="Attraction", mappedBy="city")
+      */
     public $attractions;
 
     public function __construct($name, State $state = null)

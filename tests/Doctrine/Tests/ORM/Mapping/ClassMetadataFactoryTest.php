@@ -328,8 +328,8 @@ class ClassMetadataFactoryTest extends OrmTestCase
     }
 
     /**
-    * @group DDC-1845
-    */
+     * @group DDC-1845
+     */
     public function testQuoteMetadata()
     {
         $cmf    = new ClassMetadataFactory();

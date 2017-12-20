@@ -42,11 +42,11 @@ interface CacheLogger
     public function entityCacheMiss($regionName, EntityCacheKey $key);
 
      /**
-     * Log an entity put into second level cache.
-     *
-     * @param string                                 $regionName The name of the cache region.
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key        The cache key of the collection.
-     */
+      * Log an entity put into second level cache.
+      *
+      * @param string                                 $regionName The name of the cache region.
+      * @param \Doctrine\ORM\Cache\CollectionCacheKey $key        The cache key of the collection.
+      */
     public function collectionCachePut($regionName, CollectionCacheKey $key);
 
     /**
