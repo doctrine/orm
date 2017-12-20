@@ -1584,7 +1584,7 @@ class SqlWalker implements TreeWalker
     public function walkNewObject($newObjectExpression, $newObjectResultAlias=null)
     {
         $sqlSelectExpressions = [];
-        $objIndex             = $newObjectResultAlias?:$this->newObjectCounter++;
+        $objIndex             = $newObjectResultAlias ?: $this->newObjectCounter++;
 
         foreach ($newObjectExpression->args as $argIndex => $e) {
             $resultAlias = $this->scalarResultCounter++;
