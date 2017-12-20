@@ -38,8 +38,8 @@ class ECommerceCart
     /**
      * @ORM\ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
      * @ORM\JoinTable(name="ecommerce_carts_products",
-            joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
-            inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")})
+     *      joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")})
      */
     private $products;
 

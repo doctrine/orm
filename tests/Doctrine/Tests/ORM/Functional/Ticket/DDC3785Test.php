@@ -107,9 +107,9 @@ class DDC3785_Asset
 class DDC3785_Attribute
 {
 	/**
-     * @ORM\Id @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
+	 * @ORM\Id @ORM\Column(type="integer")
+	 * @ORM\GeneratedValue
+	 */
     public $id;
 
 	/** @ORM\Column(type = "string") */

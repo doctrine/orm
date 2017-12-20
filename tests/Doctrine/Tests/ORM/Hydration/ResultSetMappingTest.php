@@ -206,8 +206,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     }
 
         /**
-     * @group DDC-1663
-     */
+         * @group DDC-1663
+         */
     public function testAddNamedNativeQueryResultSetMappingWithoutFields()
     {
         $cm = new ClassMetadata(CmsUser::class, $this->metadataBuildingContext);

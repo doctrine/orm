@@ -89,9 +89,9 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
  */
 class CTIParent {
    /**
-     * @ORM\Id @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    * @ORM\Id @ORM\Column(type="integer")
+    * @ORM\GeneratedValue(strategy="AUTO")
+    */
     private $id;
 
     /** @ORM\OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
@@ -116,8 +116,8 @@ class CTIParent {
  */
 class CTIChild extends CTIParent {
    /**
-     * @ORM\Column(type="string")
-     */
+    * @ORM\Column(type="string")
+    */
     private $data;
 
     public function getData() {

@@ -129,8 +129,8 @@ class OneToManyPersister extends AbstractCollectionPersister
     }
 
      /**
-     * {@inheritdoc}
-     */
+      * {@inheritdoc}
+      */
     public function contains(PersistentCollection $collection, $element)
     {
         if ( ! $this->isValidEntityState($element)) {

@@ -101,7 +101,7 @@ class DDC698Privilege
 	protected $name;
 
 	/**
-     * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
-     */
+	 * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+	 */
 	protected $roles;
 }

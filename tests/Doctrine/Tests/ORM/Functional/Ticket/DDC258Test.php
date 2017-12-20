@@ -88,7 +88,7 @@ abstract class DDC258Super
     /**
      * @ORM\Id @ORM\Column(name="id", type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-    */
+     */
     public $id;
 }
 

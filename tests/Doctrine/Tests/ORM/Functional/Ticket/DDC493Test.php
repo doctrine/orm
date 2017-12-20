@@ -60,7 +60,7 @@ class DDC493Distributor extends DDC493Customer {
 
 /**
  * @ORM\Entity
-  */
+ */
 class DDC493Contact
 {
     /**

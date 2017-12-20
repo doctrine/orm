@@ -104,10 +104,10 @@ class QueryBuilder
     private $joinRootAliases = [];
 
      /**
-     * Whether to use second level cache, if available.
-     *
-     * @var boolean
-     */
+      * Whether to use second level cache, if available.
+      *
+      * @var boolean
+      */
     protected $cacheable = false;
 
     /**
@@ -198,10 +198,10 @@ class QueryBuilder
     }
 
     /**
-    * Obtain the name of the second level query cache region in which query results will be stored
-    *
-    * @return string|null The cache region name; NULL indicates the default region.
-    */
+     * Obtain the name of the second level query cache region in which query results will be stored
+     *
+     * @return string|null The cache region name; NULL indicates the default region.
+     */
     public function getCacheRegion()
     {
         return $this->cacheRegion;

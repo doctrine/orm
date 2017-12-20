@@ -381,8 +381,8 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
     }
 
     /**
-    * @group DDC-1213
-    */
+     * @group DDC-1213
+     */
     public function testBitAndComparison()
     {
         $dql    = 'SELECT m, ' .
