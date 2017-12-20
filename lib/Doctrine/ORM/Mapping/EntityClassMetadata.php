@@ -26,7 +26,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * @var null|Property The field which is used for versioning in optimistic locking (if any).
      */
-    protected $declaredVersion = null;
+    protected $declaredVersion;
 
     /**
      * Whether this class describes the mapping of a read-only class.

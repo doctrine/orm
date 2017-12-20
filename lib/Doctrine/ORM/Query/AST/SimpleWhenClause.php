@@ -20,12 +20,12 @@ class SimpleWhenClause extends Node
     /**
      * @var mixed
      */
-    public $caseScalarExpression = null;
+    public $caseScalarExpression;
 
     /**
      * @var mixed
      */
-    public $thenScalarExpression = null;
+    public $thenScalarExpression;
 
     /**
      * @param mixed $caseScalarExpression

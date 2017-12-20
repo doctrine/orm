@@ -27,7 +27,7 @@ class RoutingRouteBooking
     /**
      * @ORM\Column(type="string")
      */
-    public $passengerName = null;
+    public $passengerName;
 
     public function getPassengerName()
     {

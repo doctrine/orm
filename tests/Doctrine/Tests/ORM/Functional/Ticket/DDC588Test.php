@@ -48,7 +48,7 @@ class DDC588Site
     /**
      * @ORM\Column(type="string", length=45)
      */
-    protected $name = null;
+    protected $name;
 
     public function __construct($name = '')
     {

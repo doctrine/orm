@@ -14,12 +14,12 @@ class SchemaValidatorTest extends OrmTestCase
     /**
      * @var EntityManagerInterface
      */
-    private $em = null;
+    private $em;
 
     /**
      * @var SchemaValidator
      */
-    private $validator = null;
+    private $validator;
 
     public function setUp()
     {

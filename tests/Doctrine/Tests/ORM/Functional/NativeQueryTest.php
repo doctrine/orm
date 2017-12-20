@@ -32,7 +32,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class NativeQueryTest extends OrmFunctionalTestCase
 {
-    private $platform = null;
+    private $platform;
 
     protected function setUp()
     {

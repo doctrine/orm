@@ -13,7 +13,7 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class GearmanLockTest extends OrmFunctionalTestCase
 {
-    private $gearman = null;
+    private $gearman;
     private $maxRunTime = 0;
     private $articleId;
 

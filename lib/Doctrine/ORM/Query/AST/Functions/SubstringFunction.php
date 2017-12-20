@@ -29,7 +29,7 @@ class SubstringFunction extends FunctionNode
     /**
      * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression|null
      */
-    public $secondSimpleArithmeticExpression = null;
+    public $secondSimpleArithmeticExpression;
 
     /**
      * @override

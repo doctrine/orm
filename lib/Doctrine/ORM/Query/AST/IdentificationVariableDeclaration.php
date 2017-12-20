@@ -18,12 +18,12 @@ class IdentificationVariableDeclaration extends Node
     /**
      * @var RangeVariableDeclaration|null
      */
-    public $rangeVariableDeclaration = null;
+    public $rangeVariableDeclaration;
 
     /**
      * @var IndexBy|null
      */
-    public $indexBy = null;
+    public $indexBy;
 
     /**
      * @var array

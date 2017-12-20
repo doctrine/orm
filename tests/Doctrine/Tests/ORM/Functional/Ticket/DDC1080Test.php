@@ -238,18 +238,18 @@ class DDC1080FooBar
      * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
      * @ORM\Id
      */
-    protected $foo = null;
+    protected $foo;
     /**
      * @ORM\ManyToOne(targetEntity="DDC1080Bar")
      * @ORM\JoinColumn(name="barID", referencedColumnName="barID")
      * @ORM\Id
      */
-    protected $bar = null;
+    protected $bar;
     /**
      * @var int orderNr
      * @ORM\Column(name="orderNr", type="integer", nullable=false)
      */
-    protected $orderNr = null;
+    protected $orderNr;
 
     /**
      * Retrieve the foo property

@@ -32,7 +32,7 @@ class DatabaseDriver implements MappingDriver
     /**
      * @var array|null
      */
-    private $tables = null;
+    private $tables;
 
     /**
      * @var array

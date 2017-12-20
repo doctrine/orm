@@ -57,19 +57,19 @@ class DDC1300Foo
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Id
      */
-    public $fooID = null;
+    public $fooID;
 
     /**
      * @var string fooReference
      * @ORM\Column(name="fooReference", type="string", nullable=true, length=45)
      */
-    public $fooReference = null;
+    public $fooReference;
 
     /**
      * @ORM\OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
      * cascade={"persist"})
      */
-    public $fooLocaleRefFoo = null;
+    public $fooLocaleRefFoo;
 
     /**
      * Constructor
@@ -95,19 +95,19 @@ class DDC1300FooLocale
      * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
      * @ORM\Id
      */
-    public $foo = null;
+    public $foo;
 
     /**
      * @var string locale
      * @ORM\Column(name="locale", type="string", nullable=false, length=5)
      * @ORM\Id
      */
-    public $locale = null;
+    public $locale;
 
     /**
      * @var string title
      * @ORM\Column(name="title", type="string", nullable=true, length=150)
      */
-    public $title = null;
+    public $title;
 
 }

@@ -28,12 +28,12 @@ class Join extends Node
     /**
      * @var Node|null
      */
-    public $joinAssociationDeclaration = null;
+    public $joinAssociationDeclaration;
 
     /**
      * @var ConditionalExpression|null
      */
-    public $conditionalExpression = null;
+    public $conditionalExpression;
 
     /**
      * @param int  $joinType
