@@ -914,7 +914,7 @@ class Parser
     }
 
     /**
-     * AbstractSchemaName ::= fully_qualified_name | aliased_name | identifier
+     * AbstractSchemaName ::= fully_qualified_name | identifier
      *
      * @return string
      */
@@ -923,20 +923,12 @@ class Parser
         if ($this->lexer->isNextToken(Lexer::T_FULLY_QUALIFIED_NAME)) {
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
 
-            $schemaName = $this->lexer->token['value'];
-        } elseif ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
-            $this->match(Lexer::T_IDENTIFIER);
-
-            $schemaName = $this->lexer->token['value'];
-        } else {
-            $this->match(Lexer::T_ALIASED_NAME);
-
-            list($namespaceAlias, $simpleClassName) = explode(':', $this->lexer->token['value']);
-
-            $schemaName = $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
+            return $this->lexer->token['value'];
         }
 
-        return $schemaName;
+        $this->match(Lexer::T_IDENTIFIER);
+
+        return $this->lexer->token['value'];
     }
 
     /**

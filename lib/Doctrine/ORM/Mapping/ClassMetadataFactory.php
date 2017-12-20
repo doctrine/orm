@@ -521,14 +521,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * {@inheritDoc}
      */
-    protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string
-    {
-        return $this->em->getConfiguration()->getEntityNamespace($namespaceAlias) . '\\' . $simpleClassName;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     protected function getDriver() : Driver\MappingDriver
     {
         return $this->driver;

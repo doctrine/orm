@@ -26,14 +26,6 @@ class PersistentCollectionCriteriaTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function tearDown()
-    {
-        if ($this->em) {
-            $this->em->getConfiguration()->setEntityNamespaces([]);
-        }
-        parent::tearDown();
-    }
-
     public function loadTweetFixture()
     {
         $author = new TweetUser();

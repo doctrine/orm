@@ -34,14 +34,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function tearDown()
-    {
-        if ($this->em) {
-            $this->em->getConfiguration()->setEntityNamespaces([]);
-        }
-        parent::tearDown();
-    }
-
     public function loadFixture()
     {
         $user = new CmsUser;
@@ -256,19 +248,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         $user1Id = $this->loadFixture();
         $repos = $this->em->getRepository(CmsUser::class);
-
-        $users = $repos->findAll();
-        self::assertCount(4, $users);
-    }
-
-    public function testFindByAlias()
-    {
-        $user1Id = $this->loadFixture();
-        $repos = $this->em->getRepository(CmsUser::class);
-
-        $this->em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $repos = $this->em->getRepository('CMS:CmsUser');
 
         $users = $repos->findAll();
         self::assertCount(4, $users);
@@ -645,22 +624,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     {
         self::assertEquals($this->em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
         $this->em->getConfiguration()->setDefaultRepositoryClassName(DDC753InvalidRepository::class);
-    }
-
-    /**
-     * @group DDC-3257
-     */
-    public function testSingleRepositoryInstanceForDifferentEntityAliases()
-    {
-        $config = $this->em->getConfiguration();
-
-        $config->addEntityNamespace('Aliased', 'Doctrine\Tests\Models\CMS');
-        $config->addEntityNamespace('AliasedAgain', 'Doctrine\Tests\Models\CMS');
-
-        $repository = $this->em->getRepository(CmsUser::class);
-
-        self::assertSame($repository, $this->em->getRepository('Aliased:CmsUser'));
-        self::assertSame($repository, $this->em->getRepository('AliasedAgain:CmsUser'));
     }
 
     /**

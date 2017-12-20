@@ -48,32 +48,6 @@ class ParserTest extends OrmTestCase
     }
 
     /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAlias()
-    {
-        $parser = $this->createParser('CMS:CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname()
-    {
-        $parser = $this->createParser('Model:CMS\CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
-
-        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
-    }
-
-    /**
      * @dataProvider validMatches
      * @covers Doctrine\ORM\Query\Parser::match
      * @group DDC-3701
