@@ -152,16 +152,16 @@ class SchemaValidator
                 $message = "The association %s#%s refers to the owning side property %s#%s which does not exist.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $mappedBy);
-            } else if ($targetAssociation instanceof FieldMetadata) {
+            } elseif ($targetAssociation instanceof FieldMetadata) {
                 $message = "The association %s#%s refers to the owning side property %s#%s which is not defined as association, but as field.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $mappedBy);
-            } else if ($targetAssociation->getInversedBy() === null) {
+            } elseif ($targetAssociation->getInversedBy() === null) {
                 $message = "The property %s#%s is on the inverse side of a bi-directional relationship, but the "
                     . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $mappedBy, $fieldName);
-            } else if ($targetAssociation->getInversedBy() !== $fieldName) {
+            } elseif ($targetAssociation->getInversedBy() !== $fieldName) {
                 $message = "The mapping between %s#%s and %s#%s are inconsistent with each other.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $mappedBy);
@@ -176,16 +176,16 @@ class SchemaValidator
                 $message = "The association %s#%s refers to the inverse side property %s#%s which does not exist.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $inversedBy);
-            } else if ($targetAssociation instanceof FieldMetadata) {
+            } elseif ($targetAssociation instanceof FieldMetadata) {
                 $message = "The association %s#%s refers to the inverse side property %s#%s which is not defined as association, but as field.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $inversedBy);
-            } else if ($targetAssociation->getMappedBy() === null) {
+            } elseif ($targetAssociation->getMappedBy() === null) {
                 $message = "The property %s#%s is on the owning side of a bi-directional relationship, but the "
                     . "specified mappedBy association on the target-entity %s#%s does not contain the required 'inversedBy=\"%s\"' attribute.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $mappedBy, $fieldName);
-            } else if ($targetAssociation->getMappedBy() !== $fieldName) {
+            } elseif ($targetAssociation->getMappedBy() !== $fieldName) {
                 $message = "The mapping between %s#%s and %s#%s are inconsistent with each other.";
 
                 $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetEntity, $inversedBy);
@@ -197,11 +197,11 @@ class SchemaValidator
                     $message = "If association %s#%s is one-to-one, then the inversed side %s#%s has to be one-to-one as well.";
 
                     $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetMetadata->getClassName(), $inversedBy);
-                } else if ($association instanceof ManyToOneAssociationMetadata && ! $targetAssociation instanceof OneToManyAssociationMetadata) {
+                } elseif ($association instanceof ManyToOneAssociationMetadata && ! $targetAssociation instanceof OneToManyAssociationMetadata) {
                     $message = "If association %s#%s is many-to-one, then the inversed side %s#%s has to be one-to-many.";
 
                     $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetMetadata->getClassName(), $inversedBy);
-                } else if ($association instanceof ManyToManyAssociationMetadata && ! $targetAssociation instanceof ManyToManyAssociationMetadata) {
+                } elseif ($association instanceof ManyToManyAssociationMetadata && ! $targetAssociation instanceof ManyToManyAssociationMetadata) {
                     $message = "If association %s#%s is many-to-many, then the inversed side %s#%s has to be many-to-many as well.";
 
                     $ce[] = sprintf($message, $class->getClassName(), $fieldName, $targetMetadata->getClassName(), $inversedBy);
@@ -262,7 +262,7 @@ class SchemaValidator
 
                     $ce[] = sprintf($message, $joinTable->getName(), $class->getClassName(), $columnString);
                 }
-            } else if ($association instanceof ToOneAssociationMetadata) {
+            } elseif ($association instanceof ToOneAssociationMetadata) {
                 $identifierColumns = array_keys($targetMetadata->getIdentifierColumns($this->em));
                 $joinColumns       = $association->getJoinColumns();
 

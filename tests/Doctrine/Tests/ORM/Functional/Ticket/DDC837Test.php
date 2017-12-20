@@ -79,12 +79,12 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
             if ($obj instanceof DDC837Class1) {
                 self::assertEquals('Foo', $obj->title);
                 self::assertEquals('Foo', $obj->description);
-            } else if ($obj instanceof DDC837Class2) {
+            } elseif ($obj instanceof DDC837Class2) {
                 self::assertSame($e2, $obj);
                 self::assertEquals('Bar', $obj->title);
                 self::assertEquals('Bar', $obj->description);
                 self::assertEquals('Bar', $obj->text);
-            } else if ($obj instanceof DDC837Class3) {
+            } elseif ($obj instanceof DDC837Class3) {
                 self::assertEquals('Baz', $obj->apples);
                 self::assertEquals('Baz', $obj->bananas);
             } else {

@@ -113,7 +113,7 @@ class CountOutputWalker extends SqlWalker
                         $sqlIdentifier[$identifier] = $alias;
                     }
                 }
-            } else if ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 

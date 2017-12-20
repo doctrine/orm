@@ -1480,7 +1480,7 @@ class QueryBuilder
                         $this->dqlParts[$part][$idx] = clone $element;
                     }
                 }
-            } else if (is_object($elements)) {
+            } elseif (is_object($elements)) {
                 $this->dqlParts[$part] = clone $elements;
             }
         }

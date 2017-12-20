@@ -1080,7 +1080,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);
-            } else if ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 $property    = $sourceClass->getProperty($fieldName);
                 $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
                 $value       = $property->getValue($sourceEntity);
@@ -1234,7 +1234,7 @@ class BasicEntityPersister implements EntityPersister
                 $orderByList[] = $tableAlias . '.' . $columnName . ' ' . $orientation;
 
                 continue;
-            } else if ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 if (! $property->isOwningSide()) {
                     throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $fieldName);
                 }
@@ -1926,7 +1926,7 @@ class BasicEntityPersister implements EntityPersister
 
             if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);
-            } else if ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 $targetClass = $this->em->getClassMetadata($property->getTargetEntity());
                 $value       = $property->getValue($sourceEntity);
 

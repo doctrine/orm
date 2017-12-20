@@ -1253,7 +1253,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             // Revert what should not be allowed to change
             $property->setDeclaringClass($originalProperty->getDeclaringClass());
             $property->setPrimaryKey($originalProperty->isPrimaryKey());
-        } else if ($property instanceof AssociationMetadata) {
+        } elseif ($property instanceof AssociationMetadata) {
             // Unset all defined fieldNames prior to override
             if ($originalProperty instanceof ToOneAssociationMetadata && $originalProperty->isOwningSide()) {
                 foreach ($originalProperty->getJoinColumns() as $joinColumn) {
@@ -1272,7 +1272,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             if ($originalProperty instanceof ToOneAssociationMetadata && $property->getJoinColumns()) {
                 $originalProperty->setJoinColumns($property->getJoinColumns());
-            } else if ($originalProperty instanceof ManyToManyAssociationMetadata && $property->getJoinTable()) {
+            } elseif ($originalProperty instanceof ManyToManyAssociationMetadata && $property->getJoinTable()) {
                 $originalProperty->setJoinTable($property->getJoinTable());
             }
 
@@ -1431,7 +1431,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
 
             $this->fieldNames[$property->getColumnName()] = $property->getName();
-        } else if ($inheritedProperty instanceof AssociationMetadata) {
+        } elseif ($inheritedProperty instanceof AssociationMetadata) {
             if ($declaringClass->isMappedSuperclass) {
                 $inheritedProperty->setSourceEntity($this->className);
             }

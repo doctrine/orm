@@ -652,7 +652,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         if (isset($GLOBALS['DOCTRINE_MARK_SQL_LOGS'])) {
             if (in_array(static::$sharedConn->getDatabasePlatform()->getName(), ["mysql", "postgresql"])) {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/');
-            } else if (static::$sharedConn->getDatabasePlatform()->getName() === "oracle") {
+            } elseif (static::$sharedConn->getDatabasePlatform()->getName() === "oracle") {
                 static::$sharedConn->executeQuery('SELECT 1 /*' . get_class($this) . '*/ FROM dual');
             }
         }
