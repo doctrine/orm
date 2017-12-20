@@ -39,7 +39,7 @@ class EnsureProductionSettingsCommand extends Command
                 )
             ]
         )
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Verify that Doctrine is properly configured for a production environment.
 EOT
         );

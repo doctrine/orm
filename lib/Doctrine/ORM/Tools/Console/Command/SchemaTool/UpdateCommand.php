@@ -56,7 +56,7 @@ class UpdateCommand extends AbstractCommand
             ]
         );
 
-        $this->setHelp(<<<EOT
+        $this->setHelp(<<<'EOT'
 The <info>%command.name%</info> command generates the SQL needed to
 synchronize the database schema with the current mapping metadata of the
 default entity manager.
@@ -84,7 +84,7 @@ described by any metadata.
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    \$config->setFilterSchemaAssetsExpression(\$regexp);
+    $config->setFilterSchemaAssetsExpression($regexp);
 EOT
         );
     }

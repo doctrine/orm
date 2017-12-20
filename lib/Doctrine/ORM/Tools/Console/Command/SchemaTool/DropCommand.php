@@ -47,7 +47,7 @@ class DropCommand extends AbstractCommand
                 ),
             ]
         )
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Processes the schema and either drop the database schema of EntityManager Storage Connection or generate the SQL output.
 Beware that the complete database is dropped by this command, even tables that are not relevant to your metadata model.
 
@@ -55,7 +55,7 @@ Beware that the complete database is dropped by this command, even tables that a
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    \$config->setFilterSchemaAssetsExpression(\$regexp);
+    $config->setFilterSchemaAssetsExpression($regexp);
 EOT
         );
     }

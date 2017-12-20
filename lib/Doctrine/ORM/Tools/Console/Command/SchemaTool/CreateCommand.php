@@ -39,14 +39,14 @@ class CreateCommand extends AbstractCommand
                 )
             ]
         )
-        ->setHelp(<<<EOT
+        ->setHelp(<<<'EOT'
 Processes the schema and either create it directly on EntityManager Storage Connection or generate the SQL output.
 
 <comment>Hint:</comment> If you have a database with tables that should not be managed
 by the ORM, you can use a DBAL functionality to filter the tables and sequences down
 on a global level:
 
-    \$config->setFilterSchemaAssetsExpression(\$regexp);
+    $config->setFilterSchemaAssetsExpression($regexp);
 EOT
         );
     }
