@@ -33,7 +33,7 @@ class DDC513Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
 /**
  * @ORM\Entity
-  */
+ */
 class DDC513OfferItem extends DDC513Item
 {
 }

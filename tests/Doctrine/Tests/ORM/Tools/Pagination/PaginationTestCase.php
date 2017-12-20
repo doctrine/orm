@@ -26,8 +26,8 @@ abstract class PaginationTestCase extends OrmTestCase
 }
 
 /**
-* @ORM\Entity
-*/
+ * @ORM\Entity
+ */
 class MyBlogPost
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
@@ -54,8 +54,8 @@ class MyAuthor
 }
 
 /**
-* @ORM\Entity
-*/
+ * @ORM\Entity
+ */
 class MyCategory
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */

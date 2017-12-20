@@ -51,8 +51,8 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $class;
 
      /**
-     * @var array
-     */
+      * @var array
+      */
     protected $queuedCache = [];
 
     /**

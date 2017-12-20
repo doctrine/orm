@@ -14,9 +14,9 @@ use Doctrine\ORM\Annotation as ORM;
  */
 abstract class CompanyEvent {
    /**
-     * @ORM\Id @ORM\Column(type="integer")
-     * @ORM\GeneratedValue
-     */
+    * @ORM\Id @ORM\Column(type="integer")
+    * @ORM\GeneratedValue
+    */
     private $id;
 
     /**

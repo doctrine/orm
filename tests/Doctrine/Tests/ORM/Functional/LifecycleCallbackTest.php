@@ -346,8 +346,8 @@ DQL;
     }
 
     /**
-    * @group DDC-1955
-    */
+     * @group DDC-1955
+     */
     public function testLifecycleCallbackEventArgs()
     {
         $e = new LifecycleCallbackEventArgEntity;

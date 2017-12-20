@@ -1658,8 +1658,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
      /**
-     * @group DDC-1430
-     */
+      * @group DDC-1430
+      */
     public function testGroupByAllFieldsWhenObjectHasForeignKeys()
     {
         $this->assertSqlGeneration(
@@ -2057,8 +2057,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-    * @group DDC-2268
-    */
+     * @group DDC-2268
+     */
     public function testCaseThenFunction()
     {
         $this->assertSqlGeneration(
@@ -2132,8 +2132,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
      /**
-     * @group DDC-2188
-     */
+      * @group DDC-2188
+      */
     public function testArithmeticPriority()
     {
         $this->assertSqlGeneration(
@@ -2153,8 +2153,8 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
-    * @group DDC-2475
-    */
+     * @group DDC-2475
+     */
     public function testOrderByClauseShouldReplaceOrderByRelationMapping()
     {
         $this->assertSqlGeneration(

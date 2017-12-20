@@ -54,7 +54,7 @@ class DDC211Test extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\Table(name="ddc211_users")
-*/
+ */
 class DDC211User
 {
     /**
@@ -70,12 +70,12 @@ class DDC211User
     protected $name;
 
     /**
-    * @ORM\ManyToMany(targetEntity="DDC211Group", inversedBy="users")
-    *   @ORM\JoinTable(name="user_groups",
-    *       joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-    *       inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
-    *   )
-    */
+     * @ORM\ManyToMany(targetEntity="DDC211Group", inversedBy="users")
+     *   @ORM\JoinTable(name="user_groups",
+     *       joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *       inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     *   )
+     */
     protected $groups;
 
     public function __construct() {
@@ -106,8 +106,8 @@ class DDC211Group
     protected $name;
 
     /**
-    * @ORM\ManyToMany(targetEntity="DDC211User", mappedBy="groups")
-    */
+     * @ORM\ManyToMany(targetEntity="DDC211User", mappedBy="groups")
+     */
     protected $users;
 
     public function __construct() {

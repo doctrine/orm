@@ -108,13 +108,13 @@ class DDC1400User
 class DDC1400UserState
 {
     /**
-      * @ORM\Id
+     * @ORM\Id
      *  @ORM\ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
      */
     public $article;
 
     /**
-      * @ORM\Id
+     * @ORM\Id
      *  @ORM\ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
      */
     public $user;
