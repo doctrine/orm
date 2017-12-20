@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
-use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\Models\DDC117\DDC117Translation;
 use Doctrine\Tests\Models\DDC3293\DDC3293User;
 use Doctrine\Tests\Models\DDC3293\DDC3293UserPrefixed;

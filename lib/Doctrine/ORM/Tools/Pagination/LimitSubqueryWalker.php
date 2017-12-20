@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\TreeWalkerAdapter;

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models;
 

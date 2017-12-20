@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Internal\Hydration\HydrationException;
 
 /**
  * @group DDC-2306

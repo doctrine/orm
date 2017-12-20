@@ -7,8 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Tests a unidirectional many-to-many association mapping (without inheritance).

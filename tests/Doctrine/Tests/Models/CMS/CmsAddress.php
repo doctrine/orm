@@ -7,7 +7,6 @@ namespace Doctrine\Tests\Models\CMS;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Mapping;
-use Doctrine\Tests\Models\CMS\CmsAddressListener;
 
 /**
  * CmsAddress

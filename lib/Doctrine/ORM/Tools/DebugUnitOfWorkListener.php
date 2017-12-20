@@ -8,7 +8,6 @@ use Doctrine\Common\Persistence\Proxy;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;

@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Reflection\ReflectionService;
-use Doctrine\ORM\Sequencing\Generator;
 
 /**
  * Class FieldMetadata

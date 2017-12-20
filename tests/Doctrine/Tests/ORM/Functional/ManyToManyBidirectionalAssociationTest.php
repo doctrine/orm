@@ -6,7 +6,6 @@ namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
 use Doctrine\Tests\Models\ECommerce\ECommerceCategory;
-use Doctrine\ORM\Mapping\AssociationMapping;
 use Doctrine\ORM\Query;
 
 /**

@@ -20,7 +20,6 @@ use Doctrine\ORM\Tools\DebugUnitOfWorkListener;
 use Doctrine\ORM\Tools\SchemaTool;
 use Doctrine\Tests\DbalTypes\Rot13Type;
 use Doctrine\Tests\EventListener\CacheMetadataListener;
-use Doctrine\Tests\Models;
 use PHPUnit\Framework\AssertionFailedError;
 
 /**

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\Models\DDC3579;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * @ORM\MappedSuperClass

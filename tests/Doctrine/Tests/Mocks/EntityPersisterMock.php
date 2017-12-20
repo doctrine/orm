@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**

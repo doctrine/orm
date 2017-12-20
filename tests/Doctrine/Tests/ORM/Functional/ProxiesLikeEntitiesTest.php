@@ -12,7 +12,6 @@ use Doctrine\Tests\Models\CMS\CmsPhonenumber;
 use Doctrine\Tests\Models\CMS\CmsTag;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Proxies\__CG__\Doctrine\Tests\Models\CMS\CmsUser as CmsUserProxy;
 use ProxyManager\Configuration;
 use ProxyManager\Proxy\GhostObjectInterface;
 

@@ -7,7 +7,6 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\CacheUsage;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Mocks\ConcurrentRegionMock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\Tests\Mocks\TimestampRegionMock;

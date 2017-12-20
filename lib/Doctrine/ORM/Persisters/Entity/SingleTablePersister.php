@@ -9,7 +9,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
-use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
 

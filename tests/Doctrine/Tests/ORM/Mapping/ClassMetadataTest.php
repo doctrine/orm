@@ -29,7 +29,6 @@ use Doctrine\Tests\Models\DDC964\DDC964Guest;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
 use Doctrine\Tests\OrmTestCase;
 use DoctrineGlobal_Article;
-use SebastianBergmann\Environment\Runtime;
 
 require_once __DIR__ . '/../../Models/Global/GlobalNamespaceModel.php';
 

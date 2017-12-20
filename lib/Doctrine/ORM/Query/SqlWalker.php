@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;

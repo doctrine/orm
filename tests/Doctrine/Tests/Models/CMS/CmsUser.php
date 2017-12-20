@@ -6,7 +6,6 @@ namespace Doctrine\Tests\Models\CMS;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * @ORM\Entity

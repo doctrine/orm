@@ -10,7 +10,6 @@ use Doctrine\DBAL\Types\Type as DBALType;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 use Doctrine\Tests\Models\CustomType\CustomTypeChild;
-use Doctrine\Tests\Models\CustomType\CustomTypeFriend;
 use Doctrine\Tests\Models\CustomType\CustomTypeParent;
 use Doctrine\Tests\Models\Generic\NonAlphaColumnsEntity;
 use Doctrine\Tests\OrmTestCase;
