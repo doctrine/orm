@@ -26,7 +26,7 @@ class InfoCommand extends Command
     {
         $this->setName('orm:info')
              ->setDescription('Show basic information about all mapped entities')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> shows basic information about which
 entities exist and possibly if their mapping information contains errors or
 not.

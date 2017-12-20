@@ -31,7 +31,7 @@ class QueryRegionCommand extends Command
              ->addArgument('region-name', InputArgument::OPTIONAL, 'The query region to clear.')
              ->addOption('all', null, InputOption::VALUE_NONE, 'If defined, all query regions will be deleted/invalidated.')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear a second-level cache query region for an associated Entity Manager.
 It is possible to delete/invalidate all query region, a specific query region or flushes the cache provider.
 

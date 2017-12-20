@@ -32,7 +32,7 @@ class ResultCommand extends Command
         $this->setName('orm:clear-cache:result')
              ->setDescription('Clear all result cache of the various cache drivers')
              ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, cache entries will be flushed instead of deleted/invalidated.')
-             ->setHelp(<<<EOT
+             ->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear the result cache of associated Entity Manager.
 It is possible to invalidate all cache entries at once - called delete -, or flushes the cache provider
 instance completely.
