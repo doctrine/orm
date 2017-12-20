@@ -109,7 +109,7 @@ class PostgreSqlSchemaToolTest extends OrmFunctionalTestCase
 
         $dropSequenceSQLs = 0;
 
-        foreach ($sql AS $stmt) {
+        foreach ($sql as $stmt) {
             if (strpos($stmt, "DROP SEQUENCE") === 0) {
                 $dropSequenceSQLs++;
             }

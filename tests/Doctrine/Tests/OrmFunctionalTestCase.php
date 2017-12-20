@@ -748,8 +748,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // get rid of more global state
         $evm = $conn->getEventManager();
 
-        foreach ($evm->getListeners() AS $event => $listeners) {
-            foreach ($listeners AS $listener) {
+        foreach ($evm->getListeners() as $event => $listeners) {
+            foreach ($listeners as $listener) {
                 $evm->removeEventListener([$event], $listener);
             }
         }
@@ -759,7 +759,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         }
 
         if (isset($GLOBALS['db_event_subscribers'])) {
-            foreach (explode(",", $GLOBALS['db_event_subscribers']) AS $subscriberClass) {
+            foreach (explode(",", $GLOBALS['db_event_subscribers']) as $subscriberClass) {
                 $subscriberInstance = new $subscriberClass();
                 $evm->addEventSubscriber($subscriberInstance);
             }
@@ -803,7 +803,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $trace = $e->getTrace();
             $traceMsg = "";
 
-            foreach($trace AS $part) {
+            foreach($trace as $part) {
                 if(isset($part['file'])) {
                     if(strpos($part['file'], "PHPUnit/") !== false) {
                         // Beginning with PHPUnit files we don't print the trace anymore.

@@ -58,7 +58,7 @@ final class UnitOfWorkComputeChangesBench
             throw new \LogicException('Unit of work should be clean at this stage');
         }
 
-        foreach ($this->users AS $user) {
+        foreach ($this->users as $user) {
             $user->status    = 'other';
             $user->username .= '++';
             $user->name      = str_replace('Mr.', 'Mrs.', $user->name);

@@ -68,7 +68,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $appointments = $this->em->createQuery("SELECT a FROM " . __NAMESPACE__ . "\DDC633Appointment a")->getResult();
 
-        foreach ($appointments AS $eagerAppointment) {
+        foreach ($appointments as $eagerAppointment) {
             self::assertInstanceOf(GhostObjectInterface::class, $eagerAppointment->patient);
             self::assertTrue($eagerAppointment->patient->isProxyInitialized(), "Proxy should already be initialized due to eager loading!");
         }

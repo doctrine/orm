@@ -221,7 +221,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $found = [];
 
-        foreach ($articles AS $article) {
+        foreach ($articles as $article) {
             $found[] = $article;
         }
 
@@ -263,7 +263,7 @@ class QueryTest extends OrmFunctionalTestCase
         $iteratedCount = 0;
         $topics = [];
 
-        foreach($articles AS $row) {
+        foreach($articles as $row) {
             $article = $row[0];
             $topics[] = $article->topic;
 
@@ -302,7 +302,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $iteratedCount = 0;
         $topics = [];
-        foreach($articles AS $row) {
+        foreach($articles as $row) {
             $article  = $row[0];
             $topics[] = $article->topic;
 
@@ -497,7 +497,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         self::assertCount(10, $articles);
 
-        foreach ($articles AS $article) {
+        foreach ($articles as $article) {
             self::assertNotInstanceOf(GhostObjectInterface::class, $article);
         }
     }
