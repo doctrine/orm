@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\ORM\Query;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Cat;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\LitterBox;
 use Doctrine\Tests\Models\OneToOneSingleTableInheritance\Pet;

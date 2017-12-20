@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\Models\Company;
 
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * Description of CompanyPerson

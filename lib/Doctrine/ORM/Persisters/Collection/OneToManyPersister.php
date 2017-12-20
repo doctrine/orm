@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;

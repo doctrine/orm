@@ -7,7 +7,6 @@ namespace Doctrine\ORM\Tools;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
 

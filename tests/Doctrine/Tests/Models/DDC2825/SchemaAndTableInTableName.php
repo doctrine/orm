@@ -6,7 +6,6 @@ namespace Doctrine\Tests\Models\DDC2825;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
-use Doctrine\ORM\Mapping;
 
 /**
  * Quoted column name to check that sequence names are

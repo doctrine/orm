@@ -12,7 +12,6 @@ use Doctrine\ORM\Cache\DefaultCacheFactory;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Doctrine\ORM\Proxy\Factory\ProxyFactory;
-use Doctrine\Tests\Mocks;
 
 /**
  * Base testcase class for all ORM testcases.

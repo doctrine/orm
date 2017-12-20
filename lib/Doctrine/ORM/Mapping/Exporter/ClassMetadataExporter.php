@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\Mapping;
 
 class ClassMetadataExporter implements Exporter

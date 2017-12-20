@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 /**

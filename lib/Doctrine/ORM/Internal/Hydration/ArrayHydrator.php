@@ -6,7 +6,6 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use PDO;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * The ArrayHydrator produces a nested array "graph" that is often (not always)

@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * @group DDC-2183
