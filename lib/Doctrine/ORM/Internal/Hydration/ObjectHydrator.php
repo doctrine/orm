@@ -293,7 +293,9 @@ class ObjectHydrator extends AbstractHydrator
             }
 
             return $this->_uow->tryGetByIdHash(ltrim($idHash), $class->rootEntityName);
-        } else if (isset($class->associationMappings[$class->identifier[0]])) {
+        }
+
+        if (isset($class->associationMappings[$class->identifier[0]])) {
             return $this->_uow->tryGetByIdHash($data[$class->associationMappings[$class->identifier[0]]['joinColumns'][0]['name']], $class->rootEntityName);
         }
 
@@ -426,7 +428,6 @@ class ObjectHydrator extends AbstractHydrator
                     } else if ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false) {
                         $reflFieldValue->setInitialized(true);
                     }
-
                 } else {
                     // PATH B: Single-valued association
                     $reflFieldValue = $reflField->getValue($parentObject);
@@ -539,7 +540,7 @@ class ObjectHydrator extends AbstractHydrator
         // Append scalar values to mixed result sets
         if (isset($rowData['scalars'])) {
             if ( ! isset($resultKey) ) {
-                $resultKey = (isset($this->_rsm->indexByMap['scalars']))
+                $resultKey = isset($this->_rsm->indexByMap['scalars'])
                     ? $row[$this->_rsm->indexByMap['scalars']]
                     : $this->resultCounter - 1;
             }
@@ -554,7 +555,6 @@ class ObjectHydrator extends AbstractHydrator
             if ( ! isset($resultKey) ) {
                 $resultKey = $this->resultCounter - 1;
             }
-
 
             $scalarCount = (isset($rowData['scalars'])? count($rowData['scalars']): 0);
 
@@ -586,7 +586,7 @@ class ObjectHydrator extends AbstractHydrator
     {
         parent::onClear($eventArgs);
 
-        $aliases             = array_keys($this->identifierMap);
+        $aliases = array_keys($this->identifierMap);
 
         $this->identifierMap = array_fill_keys($aliases, []);
     }
