@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-
 /**
  * Simple statement mock that returns result based on array.
  * Doesn't support fetch modes

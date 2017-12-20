@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Doctrine\ORM;
+
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;

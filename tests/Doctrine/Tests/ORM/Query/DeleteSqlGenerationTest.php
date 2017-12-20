@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Query;
+
 use Doctrine\Tests\OrmTestCase;
 
 /**
