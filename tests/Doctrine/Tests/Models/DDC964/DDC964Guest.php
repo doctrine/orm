@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
  *              name     = "guest_name",
  *              nullable = false,
  *              unique   = true,
-                length   = 240
+ *              length   = 240
  *          )
  *      )
  * })

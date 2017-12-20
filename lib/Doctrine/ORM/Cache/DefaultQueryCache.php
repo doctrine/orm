@@ -49,7 +49,7 @@ use function reset;
  */
 class DefaultQueryCache implements QueryCache
 {
-     /** @var EntityManagerInterface */
+    /** @var EntityManagerInterface */
     private $em;
 
     /** @var UnitOfWork */

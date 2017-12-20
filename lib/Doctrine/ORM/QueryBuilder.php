@@ -136,11 +136,11 @@ class QueryBuilder
      */
     private $joinRootAliases = [];
 
-     /**
-      * Whether to use second level cache, if available.
-      *
-      * @var bool
-      */
+    /**
+     * Whether to use second level cache, if available.
+     *
+     * @var bool
+     */
     protected $cacheable = false;
 
     /**

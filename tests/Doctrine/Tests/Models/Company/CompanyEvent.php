@@ -12,12 +12,12 @@ namespace Doctrine\Tests\Models\Company;
  */
 abstract class CompanyEvent
 {
-   /**
-    * @var int
-    * @Id
-    * @Column(type="integer")
-    * @GeneratedValue
-    */
+    /**
+     * @var int
+     * @Id
+     * @Column(type="integer")
+     * @GeneratedValue
+     */
     private $id;
 
     /**
