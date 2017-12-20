@@ -34,7 +34,7 @@ class EntityRegionCommand extends Command
         ->addOption('flush', null, InputOption::VALUE_NONE, 'If defined, all cache entries will be flushed.');
 
 
-        $this->setHelp(<<<EOT
+        $this->setHelp(<<<'EOT'
 The <info>%command.name%</info> command is meant to clear a second-level cache entity region for an associated Entity Manager.
 It is possible to delete/invalidate all entity region, a specific entity region or flushes the cache provider.
 
