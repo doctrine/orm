@@ -14,7 +14,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
     /**
      * @var \Doctrine\DBAL\Schema\AbstractSchemaManager
      */
-    protected $sm = null;
+    protected $sm;
 
     public function setUp()
     {

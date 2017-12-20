@@ -18,7 +18,7 @@ class IndexBy extends Node
     /**
      * @var PathExpression
      */
-    public $simpleStateFieldPathExpression = null;
+    public $simpleStateFieldPathExpression;
 
     /**
      * @param PathExpression $simpleStateFieldPathExpression

@@ -129,7 +129,7 @@ final class Query extends AbstractQuery
      *
      * @var string
      */
-    private $dql = null;
+    private $dql;
 
     /**
      * The parser result that holds DQL => SQL information.
@@ -143,14 +143,14 @@ final class Query extends AbstractQuery
      *
      * @var integer
      */
-    private $firstResult = null;
+    private $firstResult;
 
     /**
      * The maximum number of results to return (the "limit").
      *
      * @var integer|null
      */
-    private $maxResults = null;
+    private $maxResults;
 
     /**
      * The cache driver used for caching queries.

@@ -54,7 +54,7 @@ class AssociationMetadata implements Property
     private $orphanRemoval = false;
 
     /** @var null|CacheMetadata */
-    private $cache = null;
+    private $cache;
 
     /**
      * AssociationMetadata constructor.

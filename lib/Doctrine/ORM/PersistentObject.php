@@ -53,7 +53,7 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * @var ClassMetadata|null
      */
-    private $cm = null;
+    private $cm;
 
     /**
      * Sets the entity manager responsible for all persistent object base classes.

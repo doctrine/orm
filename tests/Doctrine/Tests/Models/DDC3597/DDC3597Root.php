@@ -31,13 +31,13 @@ abstract class DDC3597Root
      * @var \DateTime
      * @ORM\Column(name="created_at", type="datetime", nullable=false)
      */
-    protected $createdAt = null;
+    protected $createdAt;
 
     /**
      * @var \DateTime
      * @ORM\Column(name="updated_at", type="datetime", nullable=false)
      */
-    protected $updatedAt = null;
+    protected $updatedAt;
 
     /**
      * Set createdAt

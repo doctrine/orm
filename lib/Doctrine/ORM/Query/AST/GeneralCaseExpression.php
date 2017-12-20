@@ -25,7 +25,7 @@ class GeneralCaseExpression extends Node
     /**
      * @var mixed
      */
-    public $elseScalarExpression = null;
+    public $elseScalarExpression;
 
     /**
      * @param array $whenClauses
