@@ -664,7 +664,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
             if ($property->getType()->canRequireSQLConversion()) {
                 throw MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property);
-            };
+            }
 
             if (! in_array($fieldName, $this->identifier)) {
                 $this->identifier[] = $fieldName;

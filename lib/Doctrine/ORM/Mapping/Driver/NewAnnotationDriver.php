@@ -628,7 +628,7 @@ class NewAnnotationDriver implements MappingDriver
         if ($isPrimaryKey) {
             if ($fieldMetadata->getType()->canRequireSQLConversion()) {
                 throw Mapping\MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($className, $fieldMetadata);
-            };
+            }
 
             $fieldMetadata->setPrimaryKey(true);
         }
