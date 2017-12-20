@@ -87,7 +87,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
         self::assertEquals('United States of America', $person->address->country->name);
 
         // 4. check deleting works
-        $personId = $person->id;;
+        $personId = $person->id;
         $this->em->remove($person);
         $this->em->flush();
 
