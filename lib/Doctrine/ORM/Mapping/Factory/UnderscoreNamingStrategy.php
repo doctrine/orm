@@ -85,7 +85,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function referenceColumnName()
     {
-        return $this->case === CASE_UPPER ?  'ID' : 'id';
+        return $this->case === CASE_UPPER ? 'ID' : 'id';
     }
 
     /**
