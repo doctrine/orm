@@ -64,12 +64,12 @@ class DDC719Group extends Entity {
 	 * 		inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
 	 * )
 	 */
-	protected $children = NULL;
+	protected $children = null;
 
 	/**
 	 * @ORM\ManyToMany(targetEntity="DDC719Group", mappedBy="children")
 	 */
-	protected $parents = NULL;
+	protected $parents = null;
 
 	/**
 	 * construct
