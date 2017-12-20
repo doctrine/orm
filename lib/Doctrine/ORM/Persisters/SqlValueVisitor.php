@@ -41,7 +41,7 @@ class SqlValueVisitor extends ExpressionVisitor
 
         if (($operator === Comparison::EQ || $operator === Comparison::IS) && $value === null) {
             return;
-        } else if ($operator === Comparison::NEQ && $value === null) {
+        } elseif ($operator === Comparison::NEQ && $value === null) {
             return;
         }
 

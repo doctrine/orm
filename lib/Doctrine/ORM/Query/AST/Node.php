@@ -64,7 +64,7 @@ abstract class Node
             }
 
             $str .= str_repeat(' ', $ident) . ')';
-        } else if (is_array($obj)) {
+        } elseif (is_array($obj)) {
             $ident += 4;
             $str .= 'array(';
             $some = false;
@@ -77,7 +77,7 @@ abstract class Node
 
             $ident -= 4;
             $str .= ($some ? PHP_EOL . str_repeat(' ', $ident) : '') . ')';
-        } else if (is_object($obj)) {
+        } elseif (is_object($obj)) {
             $str .= 'instanceof(' . get_class($obj) . ')';
         } else {
             $str .= var_export($obj, true);

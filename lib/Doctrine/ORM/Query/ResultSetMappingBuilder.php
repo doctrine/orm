@@ -457,9 +457,9 @@ class ResultSetMappingBuilder extends ResultSetMapping
                 $class = $this->em->getClassMetadata($this->declaringClasses[$columnName]);
                 $field = $this->fieldMappings[$columnName];
                 $sql  .= $class->getProperty($field)->getColumnName();
-            } else if (isset($this->metaMappings[$columnName])) {
+            } elseif (isset($this->metaMappings[$columnName])) {
                 $sql .= $this->metaMappings[$columnName];
-            } else if (isset($this->discriminatorColumns[$dqlAlias])) {
+            } elseif (isset($this->discriminatorColumns[$dqlAlias])) {
                 $sql .= $this->discriminatorColumns[$dqlAlias];
             }
 

@@ -1035,7 +1035,7 @@ class SqlWalker implements TreeWalker
                 'table' => $targetTableName . ' ' . $targetTableAlias,
                 'condition' => implode(' AND ', $conditions),
             ];
-        } else if ($owningAssociation instanceof ManyToManyAssociationMetadata) {
+        } elseif ($owningAssociation instanceof ManyToManyAssociationMetadata) {
             // Join relation table
             $joinTable      = $owningAssociation->getJoinTable();
             $joinTableName  = $joinTable->getQuotedQualifiedName($this->platform);
@@ -1130,7 +1130,7 @@ class SqlWalker implements TreeWalker
         if ($indexBy) {
             // For Many-To-One or One-To-One associations this obviously makes no sense, but is ignored silently.
             $this->walkIndexBy($indexBy);
-        } else if ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy()) {
+        } elseif ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy()) {
             $this->rsm->addIndexBy($joinedDqlAlias, $association->getIndexedBy());
         }
 

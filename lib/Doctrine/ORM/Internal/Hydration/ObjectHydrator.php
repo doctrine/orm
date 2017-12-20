@@ -183,7 +183,7 @@ class ObjectHydrator extends AbstractHydrator
             $this->uow->setOriginalEntityProperty($oid, $fieldName, $value);
 
             $this->initializedCollections[$oid . $fieldName] = $value;
-        } else if (
+        } elseif (
             isset($this->hints[Query::HINT_REFRESH]) ||
             (isset($this->hints['fetched'][$parentDqlAlias][$fieldName]) && ! $value->isInitialized())
         ) {
@@ -329,7 +329,7 @@ class ObjectHydrator extends AbstractHydrator
                 if ($this->rsm->isMixed && isset($this->rootAliases[$parentAlias])) {
                     $objectClass = $this->resultPointers[$parentAlias];
                     $parentObject = $objectClass[key($objectClass)];
-                } else if (isset($this->resultPointers[$parentAlias])) {
+                } elseif (isset($this->resultPointers[$parentAlias])) {
                     $parentObject = $this->resultPointers[$parentAlias];
                 } else {
                     // Parent object of relation not found, mark as not-fetched again
@@ -355,7 +355,7 @@ class ObjectHydrator extends AbstractHydrator
                         $collKey = $oid . $relationField;
                         if (isset($this->initializedCollections[$collKey])) {
                             $reflFieldValue = $this->initializedCollections[$collKey];
-                        } else if (! isset($this->existingCollections[$collKey])) {
+                        } elseif (! isset($this->existingCollections[$collKey])) {
                             $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                         }
 
@@ -390,9 +390,9 @@ class ObjectHydrator extends AbstractHydrator
                             // Update result pointer
                             $this->resultPointers[$dqlAlias] = $reflFieldValue[$index];
                         }
-                    } else if ( ! $reflFieldValue) {
+                    } elseif ( ! $reflFieldValue) {
                         $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
-                    } else if ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false) {
+                    } elseif ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false) {
                         $reflFieldValue->setInitialized(true);
                     }
                 } else {
