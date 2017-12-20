@@ -698,7 +698,7 @@ class PaginationTest extends OrmFunctionalTestCase
     public function populate()
     {
         $groups = [];
-        for ($j = 0; $j < 3; $j++) {;
+        for ($j = 0; $j < 3; $j++) {
             $group = new CmsGroup();
             $group->name = "group$j";
             $groups[] = $group;

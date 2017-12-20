@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
