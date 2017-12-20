@@ -152,7 +152,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
         $groups = $user->groups->toArray();
         $user->groups->clear();
 
-        foreach ($groups AS $group) {
+        foreach ($groups as $group) {
             $user->groups[] = $group;
         }
 
@@ -232,7 +232,7 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     {
         $user = $this->addCmsUserGblancoWithGroups(2);
 
-        foreach ($user->getGroups() AS $group) {
+        foreach ($user->getGroups() as $group) {
             $this->em->remove($group);
         }
         $this->em->flush();

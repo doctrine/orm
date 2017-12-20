@@ -23,7 +23,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 
         $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
 
-        foreach ($locations AS $locationName) {
+        foreach ($locations as $locationName) {
             $location = new RoutingLocation();
             $location->name = $locationName;
             $this->em->persist($location);

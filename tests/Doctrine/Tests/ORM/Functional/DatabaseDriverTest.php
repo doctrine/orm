@@ -203,7 +203,7 @@ class DatabaseDriverTest extends DatabaseDriverTestCase
 
         // FIXME: Condition here is fugly.
         // NOTE: PostgreSQL and SQL SERVER do not support UNSIGNED integer
-        if ( ! $this->em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform AND
+        if ( ! $this->em->getConnection()->getDatabasePlatform() instanceof PostgreSqlPlatform and
              ! $this->em->getConnection()->getDatabasePlatform() instanceof SQLServerPlatform) {
             self::assertNotNull($metadata->getProperty('columnUnsigned'));
 

@@ -118,7 +118,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertGreaterThan(0, $refs, "Has to contain at least one Reference.");
 
-        foreach ($refs AS $ref) {
+        foreach ($refs as $ref) {
             self::assertInstanceOf(DDC117Reference::class, $ref, "Contains only Reference instances.");
             self::assertTrue($this->em->contains($ref), "Contains Reference in the IdentityMap.");
         }
@@ -166,7 +166,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertCount(1, $this->article1->references());
 
-        foreach ($this->article1->references() AS $this->reference) {
+        foreach ($this->article1->references() as $this->reference) {
             self::assertInstanceOf(DDC117Reference::class, $this->reference);
             self::assertSame($this->article1, $this->reference->source());
         }
@@ -180,7 +180,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertCount(1, $this->article1->references());
 
-        foreach ($this->article1->references() AS $this->reference) {
+        foreach ($this->article1->references() as $this->reference) {
             self::assertInstanceOf(DDC117Reference::class, $this->reference);
             self::assertSame($this->article1, $this->reference->source());
         }
@@ -407,7 +407,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         /* @var $article1 DDC117Article */
         $article1 = $this->em->find(get_class($this->article1), $this->article1->id());
-        foreach ($article1->getTranslations() AS $translation) {
+        foreach ($article1->getTranslations() as $translation) {
             $editor->reviewingTranslations[] = $translation;
         }
 
@@ -416,7 +416,7 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $article2->addTranslation("de", "Vanille-Krapferl"); // omnomnom
         $article2->addTranslation("fr", "Sorry can't speak french!");
 
-        foreach ($article2->getTranslations() AS $translation) {
+        foreach ($article2->getTranslations() as $translation) {
             $this->em->persist($translation); // otherwise persisting the editor won't work, reachability!
             $editor->reviewingTranslations[] = $translation;
         }
