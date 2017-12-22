@@ -128,7 +128,7 @@ class DriverChain implements MappingDriver
 
         /* @var $driver MappingDriver */
         foreach ($this->drivers as $namespace => $driver) {
-            $oid = spl_object_hash($driver);
+            $oid = spl_object_id($driver);
 
             if (!isset($driverClasses[$oid])) {
                 $driverClasses[$oid] = $driver->getAllClassNames();

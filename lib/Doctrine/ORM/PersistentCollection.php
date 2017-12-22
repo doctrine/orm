@@ -160,7 +160,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $inversedAssociation->setValue($element, $this->owner);
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_hash($element), $this->backRefFieldName, $this->owner
+                spl_object_id($element), $this->backRefFieldName, $this->owner
             );
         }
     }
@@ -187,7 +187,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $inversedAssociation->setValue($element, $this->owner);
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_hash($element), $this->backRefFieldName, $this->owner
+                spl_object_id($element), $this->backRefFieldName, $this->owner
             );
         }
     }
@@ -243,8 +243,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $collectionItems = $this->collection->toArray();
 
         return \array_values(\array_diff_key(
-            \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot),
-            \array_combine(\array_map('spl_object_hash', $collectionItems), $collectionItems)
+            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot),
+            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems)
         ));
     }
 
@@ -259,8 +259,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         $collectionItems = $this->collection->toArray();
 
         return \array_values(\array_diff_key(
-            \array_combine(\array_map('spl_object_hash', $collectionItems), $collectionItems),
-            \array_combine(\array_map('spl_object_hash', $this->snapshot), $this->snapshot)
+            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems),
+            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot)
         ));
     }
 
@@ -722,7 +722,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * @param object[] $newObjects
      *
-     * Note: the only reason why this entire looping/complexity is performed via `spl_object_hash`
+     * Note: the only reason why this entire looping/complexity is performed via `spl_object_id`
      *       is because we want to prevent using `array_udiff()`, which is likely to cause very
      *       high overhead (complexity of O(n^2)). `array_diff_key()` performs the operation in
      *       core, which is faster than using a callback for comparisons
@@ -730,8 +730,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private function restoreNewObjectsInDirtyCollection(array $newObjects) : void
     {
         $loadedObjects               = $this->collection->toArray();
-        $newObjectsByOid             = \array_combine(\array_map('spl_object_hash', $newObjects), $newObjects);
-        $loadedObjectsByOid          = \array_combine(\array_map('spl_object_hash', $loadedObjects), $loadedObjects);
+        $newObjectsByOid             = \array_combine(\array_map('spl_object_id', $newObjects), $newObjects);
+        $loadedObjectsByOid          = \array_combine(\array_map('spl_object_id', $loadedObjects), $loadedObjects);
         $newObjectsThatWereNotLoaded = \array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
         if ($newObjectsThatWereNotLoaded) {

@@ -35,7 +35,7 @@ class UnitOfWorkMock extends UnitOfWork
      */
     public function & getEntityChangeSet($entity)
     {
-        $oid = spl_object_hash($entity);
+        $oid = spl_object_id($entity);
 
         if (isset($this->mockDataChangeSets[$oid])) {
             return $this->mockDataChangeSets[$oid];

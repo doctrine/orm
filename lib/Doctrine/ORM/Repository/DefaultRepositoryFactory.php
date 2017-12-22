@@ -26,7 +26,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
      */
     public function getRepository(EntityManagerInterface $entityManager, $entityName)
     {
-        $repositoryHash = $entityManager->getClassMetadata($entityName)->getClassName() . spl_object_hash($entityManager);
+        $repositoryHash = $entityManager->getClassMetadata($entityName)->getClassName() . spl_object_id($entityManager);
 
         if (isset($this->repositoryList[$repositoryHash])) {
             return $this->repositoryList[$repositoryHash];
