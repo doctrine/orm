@@ -586,8 +586,7 @@ class ObjectHydrator extends AbstractHydrator
     {
         parent::onClear($eventArgs);
 
-        $aliases = array_keys($this->identifierMap);
-
+        $aliases             = array_keys($this->identifierMap);
         $this->identifierMap = array_fill_keys($aliases, []);
     }
 }
