@@ -1673,6 +1673,10 @@ public function __construct(<params>)
             if (isset($fieldMapping['options']['unsigned']) && $fieldMapping['options']['unsigned']) {
                 $options[] = '"unsigned"=true';
             }
+            
+            if(isset($fieldMapping['options']['comment']) && $fieldMapping['options']['comment']){
+                $options[] = '"comment"="'.$fieldMapping['options']['comment'].'"';
+            }
 
             if (isset($fieldMapping['options']['fixed']) && $fieldMapping['options']['fixed']) {
                 $options[] = '"fixed"=true';
