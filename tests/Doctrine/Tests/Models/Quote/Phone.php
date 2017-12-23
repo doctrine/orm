@@ -19,7 +19,7 @@ class Phone
     public $number;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="phones")
      * @ORM\JoinColumn(name="user-id", referencedColumnName="user-id")
      */
     public $user;

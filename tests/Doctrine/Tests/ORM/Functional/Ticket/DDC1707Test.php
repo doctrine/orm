@@ -46,7 +46,7 @@ class DDC1707Test extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"c": "DDC1707Child"})
+ * @ORM\DiscriminatorMap({"c": DDC1707Child::class})
  * @ORM\HasLifecycleCallbacks
  */
 abstract class DDC1707Base

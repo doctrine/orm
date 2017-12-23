@@ -65,7 +65,7 @@ class DDC2214Foo
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity="DDC2214Bar") */
+    /** @ORM\ManyToOne(targetEntity=DDC2214Bar::class) */
     public $bar;
 }
 

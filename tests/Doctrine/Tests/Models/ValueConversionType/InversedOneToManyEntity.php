@@ -20,7 +20,7 @@ class InversedOneToManyEntity
     public $id1;
 
     /**
-     * @ORM\OneToMany(targetEntity="OwningManyToOneEntity", mappedBy="associatedEntity")
+     * @ORM\OneToMany(targetEntity=OwningManyToOneEntity::class, mappedBy="associatedEntity")
      */
     public $associatedEntities;
 

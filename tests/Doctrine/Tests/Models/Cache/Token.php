@@ -26,19 +26,19 @@ class Token
     public $expiresAt;
 
     /**
-     * @ORM\OneToOne(targetEntity="Client")
+     * @ORM\OneToOne(targetEntity=Client::class)
      */
     public $client;
 
     /**
-     * @ORM\OneToMany(targetEntity="Login", cascade={"persist", "remove"}, mappedBy="token")
+     * @ORM\OneToMany(targetEntity=Login::class, cascade={"persist", "remove"}, mappedBy="token")
      *
      * @var array
      */
     public $logins;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Action", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\ManyToOne(targetEntity=Action::class, cascade={"persist", "remove"}, inversedBy="tokens")
      * @ORM\JoinColumn(name="action_name", referencedColumnName="name")
      *
      * @var array
@@ -46,7 +46,7 @@ class Token
     public $action;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ComplexAction", cascade={"persist", "remove"}, inversedBy="tokens")
+     * @ORM\ManyToOne(targetEntity=ComplexAction::class, cascade={"persist", "remove"}, inversedBy="tokens")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="complex_action1_name", referencedColumnName="action1_name"),
      *   @ORM\JoinColumn(name="complex_action2_name", referencedColumnName="action2_name")

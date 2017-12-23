@@ -22,7 +22,7 @@ class CustomIdObjectTypeParent
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeChild", cascade={"persist", "remove"}, mappedBy="parent")
+     * @ORM\OneToMany(targetEntity=CustomIdObjectTypeChild::class, cascade={"persist", "remove"}, mappedBy="parent")
      */
     public $children;
 

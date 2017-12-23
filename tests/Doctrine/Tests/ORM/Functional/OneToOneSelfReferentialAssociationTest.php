@@ -154,12 +154,12 @@ class MultiSelfReference
     /** @ORM\Id @ORM\GeneratedValue(strategy="AUTO") @ORM\Column(type="integer") */
     private $id;
     /**
-     * @ORM\OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=MultiSelfReference::class, cascade={"persist"})
      * @ORM\JoinColumn(name="other1", referencedColumnName="id")
      */
     private $other1;
     /**
-     * @ORM\OneToOne(targetEntity="MultiSelfReference", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=MultiSelfReference::class, cascade={"persist"})
      * @ORM\JoinColumn(name="other2", referencedColumnName="id")
      */
     private $other2;

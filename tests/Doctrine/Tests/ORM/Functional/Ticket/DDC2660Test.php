@@ -103,12 +103,12 @@ class DDC2660Customer
 class DDC2660CustomerOrder
 {
     /**
-     * @ORM\Id @ORM\ManyToOne(targetEntity="DDC2660Product")
+     * @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Product::class)
      */
     public $product;
 
     /**
-     * @ORM\Id @ORM\ManyToOne(targetEntity="DDC2660Customer")
+     * @ORM\Id @ORM\ManyToOne(targetEntity=DDC2660Customer::class)
      */
     public $customer;
 

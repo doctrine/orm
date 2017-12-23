@@ -12,8 +12,8 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *     "fix"       = "DDC3899FixContract",
- *     "flexible"  = "DDC3899FlexContract"
+ *     "fix"       = DDC3899FixContract::class,
+ *     "flexible"  = DDC3899FlexContract::class
  * })
  */
 abstract class DDC3899Contract
@@ -24,6 +24,6 @@ abstract class DDC3899Contract
     /** @ORM\Column(type="boolean") */
     public $completed = false;
 
-    /** @ORM\ManyToOne(targetEntity="DDC3899User", inversedBy="contract") */
+    /** @ORM\ManyToOne(targetEntity=DDC3899User::class, inversedBy="contract") */
     public $user;
 }

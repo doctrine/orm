@@ -30,12 +30,12 @@ class NavPointOfInterest
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="NavCountry", inversedBy="pois")
+     * @ORM\ManyToOne(targetEntity=NavCountry::class, inversedBy="pois")
      */
     private $country;
 
     /**
-     * @ORM\ManyToMany(targetEntity="NavUser", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=NavUser::class, cascade={"persist"})
      * @ORM\JoinTable(name="navigation_pois_visitors",
      *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      joinColumns={

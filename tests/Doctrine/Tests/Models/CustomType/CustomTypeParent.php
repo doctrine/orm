@@ -24,17 +24,17 @@ class CustomTypeParent
     public $customInteger;
 
     /**
-     * @ORM\OneToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeChild", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=CustomTypeChild::class, cascade={"persist", "remove"})
      */
     public $child;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", mappedBy="myFriends")
+     * @ORM\ManyToMany(targetEntity=CustomTypeParent::class, mappedBy="myFriends")
      */
     private $friendsWithMe;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CustomType\CustomTypeParent", inversedBy="friendsWithMe")
+     * @ORM\ManyToMany(targetEntity=CustomTypeParent::class, inversedBy="friendsWithMe")
      * @ORM\JoinTable(
      *     name="customtype_parent_friends",
      *     joinColumns={@ORM\JoinColumn(name="customtypeparent_id", referencedColumnName="id")},

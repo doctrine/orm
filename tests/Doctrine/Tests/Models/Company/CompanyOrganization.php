@@ -19,7 +19,12 @@ class CompanyOrganization
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="CompanyEvent", mappedBy="organization", cascade={"persist"}, fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(
+     *     targetEntity=CompanyEvent::class,
+     *     mappedBy="organization",
+     *     cascade={"persist"},
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $events;
 
@@ -40,7 +45,7 @@ class CompanyOrganization
     }
 
     /**
-     * @ORM\OneToOne(targetEntity="CompanyEvent", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=CompanyEvent::class, cascade={"persist"})
      * @ORM\JoinColumn(name="main_event_id", referencedColumnName="id", nullable=true)
      */
     private $mainevent;

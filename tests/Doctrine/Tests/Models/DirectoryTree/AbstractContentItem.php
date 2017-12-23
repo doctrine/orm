@@ -17,7 +17,7 @@ abstract class AbstractContentItem
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Directory")
+     * @ORM\ManyToOne(targetEntity=Directory::class)
      */
     protected $parentDirectory;
 

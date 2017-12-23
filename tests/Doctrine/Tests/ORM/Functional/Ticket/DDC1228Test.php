@@ -107,7 +107,7 @@ class DDC1228User
     public $name = 'Bar';
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1228Profile")
+     * @ORM\OneToOne(targetEntity=DDC1228Profile::class)
      * @var Profile
      */
     public $profile;

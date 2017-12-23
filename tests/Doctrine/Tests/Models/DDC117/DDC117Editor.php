@@ -22,7 +22,7 @@ class DDC117Editor
     public $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC117Translation", inversedBy="reviewedByEditors")
+     * @ORM\ManyToMany(targetEntity=DDC117Translation::class, inversedBy="reviewedByEditors")
      * @ORM\JoinTable(
      *   inverseJoinColumns={
      *     @ORM\JoinColumn(name="article_id", referencedColumnName="article_id"),
@@ -36,7 +36,7 @@ class DDC117Editor
     public $reviewingTranslations;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC117Translation", inversedBy="lastTranslatedBy")
+     * @ORM\ManyToOne(targetEntity=DDC117Translation::class, inversedBy="lastTranslatedBy")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="lt_article_id", referencedColumnName="article_id"),
      *   @ORM\JoinColumn(name="lt_language", referencedColumnName="language")

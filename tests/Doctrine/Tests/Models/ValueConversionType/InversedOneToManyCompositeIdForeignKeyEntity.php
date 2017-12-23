@@ -20,7 +20,7 @@ class InversedOneToManyCompositeIdForeignKeyEntity
     public $id1;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AuxiliaryEntity")
+     * @ORM\ManyToOne(targetEntity=AuxiliaryEntity::class)
      * @ORM\JoinColumn(name="foreign_id", referencedColumnName="id4")
      * @ORM\Id
      */
@@ -32,7 +32,7 @@ class InversedOneToManyCompositeIdForeignKeyEntity
     public $someProperty;
 
     /**
-     * @ORM\OneToMany(targetEntity="OwningManyToOneCompositeIdForeignKeyEntity", mappedBy="associatedEntity")
+     * @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdForeignKeyEntity::class, mappedBy="associatedEntity")
      */
     public $associatedEntities;
 

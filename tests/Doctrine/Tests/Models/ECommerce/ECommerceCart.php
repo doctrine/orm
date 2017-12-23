@@ -30,13 +30,13 @@ class ECommerceCart
     private $payment;
 
     /**
-     * @ORM\OneToOne(targetEntity="ECommerceCustomer", inversedBy="cart")
+     * @ORM\OneToOne(targetEntity=ECommerceCustomer::class, inversedBy="cart")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, cascade={"persist"})
      * @ORM\JoinTable(name="ecommerce_carts_products",
      *      joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")})

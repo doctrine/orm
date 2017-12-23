@@ -27,13 +27,13 @@ class Group
     /**
      * @var Group
      *
-     * @ORM\ManyToOne(targetEntity="Group", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity=Group::class, cascade={"persist"})
      * @ORM\JoinColumn(name="parent-id", referencedColumnName="group-id")
      */
     public $parent;
 
     /**
-     * @ORM\ManyToMany(targetEntity="User", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups")
      */
     public $users;
 

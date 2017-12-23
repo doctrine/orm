@@ -17,12 +17,12 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\NamedNativeQueries({
  *      @ORM\NamedNativeQuery(
  *          name           = "fetchIdAndUsernameWithResultClass",
- *          resultClass    = "CmsUser",
+ *          resultClass    = CmsUser::class,
  *          query          = "SELECT id, username FROM cms_users WHERE username = ?"
  *      ),
  *      @ORM\NamedNativeQuery(
  *          name           = "fetchAllColumns",
- *          resultClass    = "CmsUser",
+ *          resultClass    = CmsUser::class,
  *          query          = "SELECT * FROM cms_users WHERE username = ?"
  *      ),
  *      @ORM\NamedNativeQuery(
@@ -69,7 +69,7 @@ use Doctrine\ORM\Annotation as ORM;
  *          name    = "mappingJoinedPhonenumber",
  *          entities= {
  *              @ORM\EntityResult(
- *                  entityClass = "CmsUser",
+ *                  entityClass = CmsUser::class,
  *                  fields      = {
  *                      @ORM\FieldResult("id"),
  *                      @ORM\FieldResult("name"),
@@ -83,7 +83,7 @@ use Doctrine\ORM\Annotation as ORM;
  *          name    = "mappingUserPhonenumberCount",
  *          entities= {
  *              @ORM\EntityResult(
- *                  entityClass = "CmsUser",
+ *                  entityClass = CmsUser::class,
  *                  fields      = {
  *                      @ORM\FieldResult(name = "id"),
  *                      @ORM\FieldResult(name = "name"),
@@ -107,7 +107,7 @@ use Doctrine\ORM\Annotation as ORM;
  *                  }
  *              ),
  *              @ORM\EntityResult(
- *                  entityClass = "CmsAddress",
+ *                  entityClass = CmsAddress::class,
  *                  fields      = {
  *                      @ORM\FieldResult(name = "id",       column="a_id"),
  *                      @ORM\FieldResult(name = "zip",      column="a_zip"),
@@ -141,24 +141,42 @@ class CmsUser
      */
     public $name;
     /**
-     * @ORM\OneToMany(targetEntity="CmsPhonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(
+     *     targetEntity=CmsPhonenumber::class,
+     *     mappedBy="user",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $phonenumbers;
     /**
-     * @ORM\OneToMany(targetEntity="CmsArticle", mappedBy="user")
+     * @ORM\OneToMany(
+     *     targetEntity=CmsArticle::class,
+     *     mappedBy="user"
+     * )
      */
     public $articles;
     /**
-     * @ORM\OneToOne(targetEntity="CmsAddress", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToOne(
+     *     targetEntity=CmsAddress::class,
+     *     mappedBy="user",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $address;
     /**
-     * @ORM\OneToOne(targetEntity="CmsEmail", inversedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToOne(
+     *     targetEntity=CmsEmail::class,
+     *     inversedBy="user",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      * @ORM\JoinColumn(referencedColumnName="id", nullable=true)
      */
     public $email;
     /**
-     * @ORM\ManyToMany(targetEntity="CmsGroup", inversedBy="users", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=CmsGroup::class, inversedBy="users", cascade={"persist"})
      * @ORM\JoinTable(name="cms_users_groups",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
@@ -166,7 +184,7 @@ class CmsUser
      */
     public $groups;
     /**
-     * @ORM\ManyToMany(targetEntity="CmsTag", inversedBy="users", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity=CmsTag::class, inversedBy="users", cascade={"all"})
      * @ORM\JoinTable(name="cms_users_tags",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="tag_id", referencedColumnName="id")}

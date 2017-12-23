@@ -26,7 +26,7 @@ class CmsEmail
     public $email;
 
     /**
-     * @ORM\OneToOne(targetEntity="CmsUser", mappedBy="email")
+     * @ORM\OneToOne(targetEntity=CmsUser::class, mappedBy="email")
      */
     public $user;
 

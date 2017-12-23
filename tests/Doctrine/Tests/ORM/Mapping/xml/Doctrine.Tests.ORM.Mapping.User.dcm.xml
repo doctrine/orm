@@ -54,12 +54,12 @@
 
         <field name="version" type="integer" version="true" />
 
-        <one-to-one field="address" target-entity="Address" inversed-by="user">
+        <one-to-one field="address" target-entity="Doctrine\Tests\ORM\Mapping\Address" inversed-by="user">
             <cascade><cascade-remove /></cascade>
             <join-column name="address_id" referenced-column-name="id" on-delete="CASCADE" />
         </one-to-one>
 
-        <one-to-many field="phonenumbers" target-entity="Phonenumber" mapped-by="user" index-by="number" orphan-removal="true">
+        <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\ORM\Mapping\Phonenumber" mapped-by="user" index-by="number" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
             </cascade>
@@ -68,7 +68,7 @@
             </order-by>
         </one-to-many>
 
-        <many-to-many field="groups" target-entity="Group">
+        <many-to-many field="groups" target-entity="Doctrine\Tests\ORM\Mapping\Group">
             <cascade>
                 <cascade-all/>
             </cascade>

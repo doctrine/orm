@@ -8,7 +8,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @ORM\MappedSuperclass(repositoryClass="Doctrine\Tests\Models\DDC869\DDC869PaymentRepository")
+ * @ORM\MappedSuperclass(repositoryClass=DDC869PaymentRepository::class)
  */
 class DDC869Payment
 {

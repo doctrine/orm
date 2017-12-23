@@ -78,7 +78,7 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="integer")
- * @ORM\DiscriminatorMap({"0" = "DDC599Item", "1" = "DDC599Subitem"})
+ * @ORM\DiscriminatorMap({"0" = DDC599Item::class, "1" = DDC599Subitem::class})
  */
 class DDC599Item
 {
@@ -90,7 +90,7 @@ class DDC599Item
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC599Child", mappedBy="parent", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity=DDC599Child::class, mappedBy="parent", cascade={"remove"})
      */
     protected $children;
 
@@ -129,7 +129,7 @@ class DDC599Child
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC599Item", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity=DDC599Item::class, inversedBy="children")
      * @ORM\JoinColumn(name="parentId", referencedColumnName="id")
      */
     public $parent;

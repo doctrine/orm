@@ -15,6 +15,6 @@ class DDC3699RelationMany
     /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity="DDC3699Child", inversedBy="relations") */
+    /** @ORM\ManyToOne(targetEntity=DDC3699Child::class, inversedBy="relations") */
     public $child;
 }

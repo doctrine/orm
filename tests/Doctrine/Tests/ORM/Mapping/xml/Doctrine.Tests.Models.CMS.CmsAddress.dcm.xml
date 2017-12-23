@@ -6,7 +6,7 @@
     <entity name="Doctrine\Tests\Models\CMS\CmsAddress" table="cms_users">
 
         <entity-listeners>
-            <entity-listener class="CmsAddressListener"/>
+            <entity-listener class="Doctrine\Tests\Models\CMS\CmsAddressListener"/>
         </entity-listeners>
 
         <named-native-queries>
@@ -14,7 +14,7 @@
                 <query>SELECT id, country, city FROM cms_addresses</query>
             </named-native-query>
 
-            <named-native-query name="find-by-id" result-class="CmsAddress">
+            <named-native-query name="find-by-id" result-class="Doctrine\Tests\Models\CMS\CmsAddress">
                 <query>SELECT * FROM cms_addresses WHERE id = ?</query>
             </named-native-query>
 
@@ -25,7 +25,7 @@
 
         <sql-result-set-mappings>
             <sql-result-set-mapping name="mapping-find-all">
-                <entity-result entity-class="CmsAddress">
+                <entity-result entity-class="Doctrine\Tests\Models\CMS\CmsAddress">
                     <field-result name="id" column="id"/>
                     <field-result name="city" column="city"/>
                     <field-result name="country" column="country"/>
@@ -49,7 +49,7 @@
         <field name="city" column="city" type="string" length="50"/>
         <field name="zip" column="zip" type="string" length="50"/>
 
-        <one-to-one field="user" target-entity="CmsUser" inversed-by="address">
+        <one-to-one field="user" target-entity="Doctrine\Tests\Models\CMS\CmsUser" inversed-by="address">
             <join-column referenced-column-name="id" />
         </one-to-one>
 

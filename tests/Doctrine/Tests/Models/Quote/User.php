@@ -26,18 +26,28 @@ class User
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Phone", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="user", cascade={"persist"})
      */
     public $phones;
 
     /**
      * @ORM\JoinColumn(name="address-id", referencedColumnName="address-id")
-     * @ORM\OneToOne(targetEntity="Address", mappedBy="user", cascade={"persist"}, fetch="EAGER")
+     * @ORM\OneToOne(
+     *     targetEntity=Address::class,
+     *     mappedBy="user",
+     *     cascade={"persist"},
+     *     fetch="EAGER"
+     * )
      */
     public $address;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=Group::class,
+     *     inversedBy="users",
+     *     cascade={"all"},
+     *     fetch="EXTRA_LAZY"
+     * )
      * @ORM\JoinTable(name="quote-users-groups",
      *      joinColumns={
      *          @ORM\JoinColumn(

@@ -86,15 +86,15 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
+ * @ORM\DiscriminatorMap({"child" = DDC992Child::class, "parent" = DDC992Parent::class})
  */
 class DDC992Parent
 {
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-    /** @ORM\ManyToOne(targetEntity="DDC992Parent", inversedBy="childs") */
+    /** @ORM\ManyToOne(targetEntity=DDC992Parent::class, inversedBy="childs") */
     public $parent;
-    /** @ORM\OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
+    /** @ORM\OneToMany(targetEntity=DDC992Child::class, mappedBy="parent") */
     public $childs;
 }
 
@@ -129,11 +129,11 @@ class DDC992Role
      */
     public $name;
     /**
-     * @ORM\ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
+     * @ORM\ManyToMany (targetEntity=DDC992Role::class, mappedBy="extends")
      */
     public $extendedBy;
     /**
-     * @ORM\ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
+     * @ORM\ManyToMany (targetEntity=DDC992Role::class, inversedBy="extendedBy")
      * @ORM\JoinTable (name="RoleRelations",
      *      joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}

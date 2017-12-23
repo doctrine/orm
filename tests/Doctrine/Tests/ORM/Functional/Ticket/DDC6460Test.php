@@ -107,6 +107,6 @@ class DDC6460ParentEntity
      */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity = "DDC6460Entity", fetch="EXTRA_LAZY", cascade={"persist"}) */
+    /** @ORM\ManyToOne(targetEntity = DDC6460Entity::class, fetch="EXTRA_LAZY", cascade={"persist"}) */
     public $lazyLoaded;
 }

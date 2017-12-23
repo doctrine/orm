@@ -72,7 +72,7 @@ class DDC3170Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"product" = "DDC3170ProductJoined"})
+ * @ORM\DiscriminatorMap({"product" = DDC3170ProductJoined::class})
  */
 abstract class DDC3170AbstractEntityJoined
 {
@@ -91,7 +91,7 @@ class DDC3170ProductJoined extends DDC3170AbstractEntityJoined
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"product" = "DDC3170ProductSingleTable"})
+ * @ORM\DiscriminatorMap({"product" = DDC3170ProductSingleTable::class})
  */
 abstract class DDC3170AbstractEntitySingleTable
 {

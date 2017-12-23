@@ -31,7 +31,7 @@ class Stock
     private $price;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Market", inversedBy="stocks")
+     * @ORM\ManyToOne(targetEntity=Market::class, inversedBy="stocks")
      * @var Market
      */
     private $market;

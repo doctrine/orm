@@ -18,13 +18,17 @@ class CompanyManager extends CompanyEmployee
     private $title;
 
     /**
-     * @ORM\OneToOne(targetEntity="CompanyCar", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=CompanyCar::class, cascade={"persist"})
      * @ORM\JoinColumn(name="car_id", referencedColumnName="id")
      */
     private $car;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyFlexContract::class,
+     *     mappedBy="managers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $managedContracts;
 

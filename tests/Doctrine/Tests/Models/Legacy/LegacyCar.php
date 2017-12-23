@@ -20,7 +20,7 @@ class LegacyCar
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="LegacyUser", mappedBy="cars")
+     * @ORM\ManyToMany(targetEntity=LegacyUser::class, mappedBy="cars")
      */
     public $users;
 

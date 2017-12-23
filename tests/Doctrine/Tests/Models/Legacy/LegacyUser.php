@@ -31,17 +31,17 @@ class LegacyUser
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="LegacyArticle", mappedBy="user")
+     * @ORM\OneToMany(targetEntity=LegacyArticle::class, mappedBy="user")
      */
     public $articles;
 
     /**
-     * @ORM\OneToMany(targetEntity="LegacyUserReference", mappedBy="source", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity=LegacyUserReference::class, mappedBy="source", cascade={"remove"})
      */
     public $references;
 
     /**
-     * @ORM\ManyToMany(targetEntity="LegacyCar", inversedBy="users", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=LegacyCar::class, inversedBy="users", cascade={"persist"})
      * @ORM\JoinTable(name="legacy_users_cars",
      *      joinColumns={@ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="iCarId", referencedColumnName="iCarId")}

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="DDC3231User2NoNamespaceRepository")
+ * @ORM\Entity(repositoryClass=DDC3231User2NoNamespaceRepository::class)
  * @ORM\Table(name="no_namespace_users2")
  */
 class DDC3231User2NoNamespace

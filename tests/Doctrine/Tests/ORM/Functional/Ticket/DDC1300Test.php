@@ -66,7 +66,7 @@ class DDC1300Foo
     public $fooReference;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1300FooLocale", mappedBy="foo",
+     * @ORM\OneToMany(targetEntity=DDC1300FooLocale::class, mappedBy="foo",
      * cascade={"persist"})
      */
     public $fooLocaleRefFoo;
@@ -90,7 +90,7 @@ class DDC1300FooLocale
 {
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1300Foo")
+     * @ORM\ManyToOne(targetEntity=DDC1300Foo::class)
      * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
      * @ORM\Id
      */

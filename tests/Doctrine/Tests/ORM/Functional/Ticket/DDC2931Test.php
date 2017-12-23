@@ -96,10 +96,10 @@ class DDC2931User
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC2931User", inversedBy="child") */
+    /** @ORM\OneToOne(targetEntity=DDC2931User::class, inversedBy="child") */
     public $parent;
 
-    /** @ORM\OneToOne(targetEntity="DDC2931User", mappedBy="parent") */
+    /** @ORM\OneToOne(targetEntity=DDC2931User::class, mappedBy="parent") */
     public $child;
 
     /** @ORM\Column(type="integer") */

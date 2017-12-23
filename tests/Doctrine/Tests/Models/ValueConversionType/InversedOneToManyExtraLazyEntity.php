@@ -21,7 +21,7 @@ class InversedOneToManyExtraLazyEntity
 
     /**
      * @ORM\OneToMany(
-     *     targetEntity="OwningManyToOneExtraLazyEntity",
+     *     targetEntity=OwningManyToOneExtraLazyEntity::class,
      *     mappedBy="associatedEntity",
      *     fetch="EXTRA_LAZY",
      *     indexBy="id2"

@@ -20,20 +20,20 @@ class ComplexAction
 
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="Action", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="action1_name", referencedColumnName="name")
      */
     public $action1;
 
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="Action", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Action::class, cascade={"persist", "remove"})
      * @ORM\JoinColumn(name="action2_name", referencedColumnName="name")
      */
     public $action2;
 
     /**
-     * @ORM\OneToMany(targetEntity="Token", cascade={"persist", "remove"}, mappedBy="complexAction")
+     * @ORM\OneToMany(targetEntity=Token::class, cascade={"persist", "remove"}, mappedBy="complexAction")
      */
     public $tokens;
 

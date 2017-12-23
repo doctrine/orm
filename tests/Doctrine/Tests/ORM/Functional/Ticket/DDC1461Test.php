@@ -60,7 +60,7 @@ class DDC1461User
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1461TwitterAccount", orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
+     * @ORM\OneToOne(targetEntity=DDC1461TwitterAccount::class, orphanRemoval=true, fetch="EAGER", cascade = {"persist"}, inversedBy="user")
      * @var TwitterAccount
      */
     public $twitterAccount;
@@ -80,7 +80,7 @@ class DDC1461TwitterAccount
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1461User", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity=DDC1461User::class, fetch="EAGER")
      */
     public $user;
 }

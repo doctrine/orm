@@ -216,7 +216,7 @@ class InvalidEntity1
      */
     protected $key2;
     /**
-     * @ORM\ManyToMany (targetEntity="InvalidEntity2")
+     * @ORM\ManyToMany (targetEntity=InvalidEntity2::class)
      * @ORM\JoinTable (name="Entity1Entity2",
      *      joinColumns={@ORM\JoinColumn(name="key1", referencedColumnName="key1")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="key3", referencedColumnName="key3")}
@@ -241,7 +241,7 @@ class InvalidEntity2
     protected $key4;
 
     /**
-     * @ORM\ManyToOne(targetEntity="InvalidEntity1")
+     * @ORM\ManyToOne(targetEntity=InvalidEntity1::class)
      */
     protected $assoc;
 }
@@ -270,7 +270,7 @@ class DDC1587ValidEntity1
     /**
      * @var Identifier
      *
-     * @ORM\OneToOne(targetEntity="DDC1587ValidEntity2", cascade={"all"}, mappedBy="agent")
+     * @ORM\OneToOne(targetEntity=DDC1587ValidEntity2::class, cascade={"all"}, mappedBy="agent")
      * @ORM\JoinColumn(name="pk", referencedColumnName="pk_agent")
      */
     private $identifier;
@@ -286,7 +286,7 @@ class DDC1587ValidEntity2
      * @var DDC1587ValidEntity1
      *
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="DDC1587ValidEntity1", inversedBy="identifier")
+     * @ORM\OneToOne(targetEntity=DDC1587ValidEntity1::class, inversedBy="identifier")
      * @ORM\JoinColumn(name="pk_agent", referencedColumnName="pk", nullable=false)
      */
     private $agent;
@@ -315,7 +315,7 @@ class DDC1649One
  */
 class DDC1649Two
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity="DDC1649One")@ORM\JoinColumn(name="id", referencedColumnName="id")  */
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC1649One::class)@ORM\JoinColumn(name="id", referencedColumnName="id")  */
     public $one;
 }
 
@@ -324,7 +324,7 @@ class DDC1649Two
  */
 class DDC1649Three
 {
-    /** @ORM\Id @ORM\ManyToOne(targetEntity="DDC1649Two") @ORM\JoinColumn(name="id",
+    /** @ORM\Id @ORM\ManyToOne(targetEntity=DDC1649Two::class) @ORM\JoinColumn(name="id",
      * referencedColumnName="id") */
     private $two;
 }
@@ -340,7 +340,7 @@ class DDC3274One
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3274Two", mappedBy="one")
+     * @ORM\OneToMany(targetEntity=DDC3274Two::class, mappedBy="one")
      */
     private $two;
 }
@@ -352,7 +352,7 @@ class DDC3274Two
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC3274One")
+     * @ORM\ManyToOne(targetEntity=DDC3274One::class)
      */
     private $one;
 }
@@ -368,52 +368,52 @@ class DDC3322ValidEntity1
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322One", inversedBy="validAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="validAssoc")
      */
     private $oneValid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322One", inversedBy="invalidAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322One::class, inversedBy="invalidAssoc")
      */
     private $oneInvalid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322Two", inversedBy="validAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="validAssoc")
      */
     private $twoValid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322Two", inversedBy="invalidAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322Two::class, inversedBy="invalidAssoc")
      */
     private $twoInvalid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322Three", inversedBy="validAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="validAssoc")
      */
     private $threeValid;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322Three", inversedBy="invalidAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC3322Three::class, inversedBy="invalidAssoc")
      */
     private $threeInvalid;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity2", mappedBy="manyToOne")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity2::class, mappedBy="manyToOne")
      */
     private $oneToMany;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToMany")
+     * @ORM\ManyToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToMany")
      */
     private $manyToOne;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC3322ValidEntity2", mappedBy="oneToOneOwning")
+     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, mappedBy="oneToOneOwning")
      */
     private $oneToOneInverse;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC3322ValidEntity2", inversedBy="oneToOneInverse")
+     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity2::class, inversedBy="oneToOneInverse")
      */
     private $oneToOneOwning;
 }
@@ -429,22 +429,22 @@ class DDC3322ValidEntity2
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToMany")
+     * @ORM\ManyToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToMany")
      */
     private $manyToOne;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="manyToOne")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="manyToOne")
      */
     private $oneToMany;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC3322ValidEntity1", inversedBy="oneToOneInverse")
+     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, inversedBy="oneToOneInverse")
      */
     private $oneToOneOwning;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC3322ValidEntity1", mappedBy="oneToOneOwning")
+     * @ORM\OneToOne(targetEntity=DDC3322ValidEntity1::class, mappedBy="oneToOneOwning")
      */
     private $oneToOneInverse;
 }
@@ -460,13 +460,13 @@ class DDC3322One
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneValid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="oneValid")
      * @ORM\OrderBy({"id" = "ASC"})
      */
     private $validAssoc;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="oneInvalid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="oneInvalid")
      * @ORM\OrderBy({"invalidField" = "ASC"})
      */
     private $invalidAssoc;
@@ -483,13 +483,13 @@ class DDC3322Two
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoValid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="twoValid")
      * @ORM\OrderBy({"manyToOne" = "ASC"})
      */
     private $validAssoc;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="twoInvalid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="twoInvalid")
      * @ORM\OrderBy({"oneToMany" = "ASC"})
      */
     private $invalidAssoc;
@@ -506,13 +506,13 @@ class DDC3322Three
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeValid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="threeValid")
      * @ORM\OrderBy({"oneToOneOwning" = "ASC"})
      */
     private $validAssoc;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3322ValidEntity1", mappedBy="threeInvalid")
+     * @ORM\OneToMany(targetEntity=DDC3322ValidEntity1::class, mappedBy="threeInvalid")
      * @ORM\OrderBy({"oneToOneInverse" = "ASC"})
      */
     private $invalidAssoc;

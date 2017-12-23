@@ -28,7 +28,7 @@ class Bond
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Stock", indexBy="symbol")
+     * @ORM\ManyToMany(targetEntity=Stock::class, indexBy="symbol")
      * @ORM\JoinTable(name="exchange_bonds_stocks")
      * @var Stock[]
      */

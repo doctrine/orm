@@ -22,14 +22,14 @@ class Admin1
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\ManyToOne(targetEntity=Country::class)
      * @ORM\JoinColumn(name="country", referencedColumnName="id")
      * @ORM\Cache
      */
     public $country;
 
     /**
-     * @ORM\OneToMany(targetEntity="Admin1AlternateName", mappedBy="admin1")
+     * @ORM\OneToMany(targetEntity=Admin1AlternateName::class, mappedBy="admin1")
      * @ORM\Cache
      */
     public $names = [];

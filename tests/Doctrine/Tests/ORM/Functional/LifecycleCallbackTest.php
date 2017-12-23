@@ -447,7 +447,7 @@ class LifecycleCallbackTestEntity
     public $value;
 
     /**
-     * @ORM\ManyToOne(targetEntity="LifecycleCallbackCascader")
+     * @ORM\ManyToOne(targetEntity=LifecycleCallbackCascader::class)
      * @ORM\JoinColumn(name="cascader_id", referencedColumnName="id")
      */
     public $cascader;
@@ -511,7 +511,7 @@ class LifecycleCallbackCascader
     private $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="LifecycleCallbackTestEntity", mappedBy="cascader", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=LifecycleCallbackTestEntity::class, mappedBy="cascader", cascade={"persist"})
      */
     public $entities;
 

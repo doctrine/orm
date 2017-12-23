@@ -20,7 +20,7 @@ class NavPhotos
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="NavPointOfInterest")
+     * @ORM\ManyToOne(targetEntity=NavPointOfInterest::class)
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
      *   @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")

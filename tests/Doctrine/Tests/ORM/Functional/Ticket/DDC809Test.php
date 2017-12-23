@@ -70,7 +70,7 @@ class DDC809Variant
     protected $variantId;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC809SpecificationValue", inversedBy="Variants")
+     * @ORM\ManyToMany(targetEntity=DDC809SpecificationValue::class, inversedBy="Variants")
      * @ORM\JoinTable(name="var_spec_value_test",
      *   joinColumns={
      *     @ORM\JoinColumn(name="variant_id", referencedColumnName="variant_id")
@@ -103,7 +103,7 @@ class DDC809SpecificationValue
     /**
      * @var DDC809Variant
      *
-     * @ORM\ManyToMany(targetEntity="DDC809Variant", mappedBy="SpecificationValues")
+     * @ORM\ManyToMany(targetEntity=DDC809Variant::class, mappedBy="SpecificationValues")
      */
     protected $Variants;
 }

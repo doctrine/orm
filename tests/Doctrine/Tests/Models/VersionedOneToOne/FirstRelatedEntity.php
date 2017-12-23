@@ -16,7 +16,7 @@ class FirstRelatedEntity
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="SecondRelatedEntity", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity=SecondRelatedEntity::class, fetch="EAGER")
      * @ORM\JoinColumn(name="second_entity_id", referencedColumnName="id")
      */
     public $secondEntity;

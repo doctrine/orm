@@ -66,7 +66,7 @@ class DDC192Phonenumber
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC192User")
+     * @ORM\ManyToOne(targetEntity=DDC192User::class)
      * @ORM\JoinColumn(name="userId", referencedColumnName="id")
      */
     protected $User;

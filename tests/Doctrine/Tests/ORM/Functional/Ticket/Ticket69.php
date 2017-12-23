@@ -126,7 +126,7 @@ class Lemma
 
     /**
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @ORM\OneToMany(targetEntity="Relation", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="parent", cascade={"persist"})
      */
     private $relations;
 
@@ -220,21 +220,21 @@ class Relation
 
     /**
      * @var Lemma
-     * @ORM\ManyToOne(targetEntity="Lemma", inversedBy="relations")
+     * @ORM\ManyToOne(targetEntity=Lemma::class, inversedBy="relations")
      * @ORM\JoinColumn(name="relation_parent_id", referencedColumnName="lemma_id")
      */
     private $parent;
 
     /**
      * @var Lemma
-     * @ORM\OneToOne(targetEntity="Lemma")
+     * @ORM\OneToOne(targetEntity=Lemma::class)
      * @ORM\JoinColumn(name="relation_child_id", referencedColumnName="lemma_id")
      */
     private $child;
 
     /**
      * @var RelationType
-     * @ORM\ManyToOne(targetEntity="RelationType", inversedBy="relations")
+     * @ORM\ManyToOne(targetEntity=RelationType::class, inversedBy="relations")
      * @ORM\JoinColumn(name="relation_type_id", referencedColumnName="relation_type_id")
      */
     private $type;
@@ -359,7 +359,7 @@ class RelationType
 
     /**
      * @var kateglo\application\utilities\collections\ArrayCollection
-     * @ORM\OneToMany(targetEntity="Relation", mappedBy="type", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Relation::class, mappedBy="type", cascade={"persist"})
      */
     private $relations;
 

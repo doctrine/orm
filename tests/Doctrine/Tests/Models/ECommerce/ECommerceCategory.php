@@ -29,17 +29,21 @@ class ECommerceCategory
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ECommerceProduct", mappedBy="categories")
+     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, mappedBy="categories")
      */
     private $products;
 
     /**
-     * @ORM\OneToMany(targetEntity="ECommerceCategory", mappedBy="parent", cascade={"persist"})
+     * @ORM\OneToMany(
+     *     targetEntity=ECommerceCategory::class,
+     *     mappedBy="parent",
+     *     cascade={"persist"}
+     * )
      */
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ECommerceCategory", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity=ECommerceCategory::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;

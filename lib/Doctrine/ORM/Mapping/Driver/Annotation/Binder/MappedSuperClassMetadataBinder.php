@@ -89,7 +89,7 @@ class MappedSuperClassMetadataBinder
     {
         if ($mappedSuperclassAnnotation->repositoryClass !== null) {
             $classMetadata->setCustomRepositoryClassName(
-                $classMetadata->fullyQualifiedClassName($mappedSuperclassAnnotation->repositoryClass)
+                $mappedSuperclassAnnotation->repositoryClass
             );
         }
 

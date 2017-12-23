@@ -73,7 +73,7 @@ class MyEntity1
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="MyEntity2")
+     * @ORM\OneToOne(targetEntity=MyEntity2::class)
      * @ORM\JoinColumn(name="entity2_id", referencedColumnName="id", nullable=false)
      */
     private $entity2;

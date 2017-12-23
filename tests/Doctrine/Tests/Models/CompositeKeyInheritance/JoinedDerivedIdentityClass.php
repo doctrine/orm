@@ -19,7 +19,7 @@ class JoinedDerivedIdentityClass
     /**
      * @var JoinedDerivedRootClass[]
      * @ORM\OneToMany(
-     *     targetEntity="JoinedDerivedRootClass",
+     *     targetEntity=JoinedDerivedRootClass::class,
      *     mappedBy="keyPart1"
      * )
      */

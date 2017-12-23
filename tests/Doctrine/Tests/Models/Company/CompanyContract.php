@@ -13,11 +13,11 @@ use Doctrine\ORM\Mapping;
  * @ORM\Table(name="company_contracts")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\EntityListeners({"CompanyContractListener"})
+ * @ORM\EntityListeners({CompanyContractListener::class})
  * @ORM\DiscriminatorMap({
- *     "fix"       = "CompanyFixContract",
- *     "flexible"  = "CompanyFlexContract",
- *     "flexultra" = "CompanyFlexUltraContract"
+ *     "fix"       = CompanyFixContract::class,
+ *     "flexible"  = CompanyFlexContract::class,
+ *     "flexultra" = CompanyFlexUltraContract::class
  * })
  *
  * @ORM\NamedNativeQueries({
@@ -71,7 +71,7 @@ abstract class CompanyContract
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
+     * @ORM\ManyToOne(targetEntity=CompanyEmployee::class, inversedBy="soldContracts")
      */
     private $salesPerson;
 
@@ -82,7 +82,7 @@ abstract class CompanyContract
     private $completed = false;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
+     * @ORM\ManyToMany(targetEntity=CompanyEmployee::class, inversedBy="contracts")
      * @ORM\JoinTable(name="company_contract_employees",
      *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}

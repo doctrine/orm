@@ -181,7 +181,7 @@ class DDC1657Screen
      * Avatar
      * @var DDC1657Avatar
      *
-     * @ORM\ManyToOne(targetEntity="DDC1657Avatar")
+     * @ORM\ManyToOne(targetEntity=DDC1657Avatar::class)
      * @ORM\JoinColumn(name="pk_avatar", referencedColumnName="pk", nullable=true, onDelete="CASCADE")
      */
     private $avatar;

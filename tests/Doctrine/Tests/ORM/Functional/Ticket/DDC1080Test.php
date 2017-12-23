@@ -89,7 +89,7 @@ class DDC1080Foo
 
     protected $fooTitle;
     /**
-     * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="foo", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC1080FooBar::class, mappedBy="foo", cascade={"persist"})
      * @ORM\OrderBy({"orderNr"="ASC"})
      */
     protected $fooBars;
@@ -166,7 +166,7 @@ class DDC1080Bar
     protected $barTitle;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1080FooBar", mappedBy="bar", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC1080FooBar::class, mappedBy="bar", cascade={"persist"})
      * @ORM\OrderBy({"orderNr"="ASC"})
      */
     protected $fooBars;
@@ -232,13 +232,13 @@ class DDC1080Bar
 class DDC1080FooBar
 {
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1080Foo")
+     * @ORM\ManyToOne(targetEntity=DDC1080Foo::class)
      * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
      * @ORM\Id
      */
     protected $foo;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1080Bar")
+     * @ORM\ManyToOne(targetEntity=DDC1080Bar::class)
      * @ORM\JoinColumn(name="barID", referencedColumnName="barID")
      * @ORM\Id
      */

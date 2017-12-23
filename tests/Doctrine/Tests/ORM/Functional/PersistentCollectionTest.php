@@ -112,7 +112,7 @@ class PersistentCollectionHolder extends PersistentObject
 
     /**
      * @var \Doctrine\Common\Collections\Collection
-     * @ORM\ManyToMany(targetEntity="PersistentCollectionContent", cascade={"all"}, fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity=PersistentCollectionContent::class, cascade={"all"}, fetch="EXTRA_LAZY")
      */
     protected $collection;
 

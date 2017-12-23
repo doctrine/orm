@@ -105,7 +105,7 @@ class DDC2575Root
     public $sampleField;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
+     * @ORM\OneToOne(targetEntity=DDC2575A::class, mappedBy="rootRelation")
      */
     public $aRelation;
 
@@ -123,13 +123,13 @@ class DDC2575A
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="DDC2575Root", inversedBy="aRelation")
+     * @ORM\OneToOne(targetEntity=DDC2575Root::class, inversedBy="aRelation")
      * @ORM\JoinColumn(name="root_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */
     public $rootRelation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC2575B")
+     * @ORM\ManyToOne(targetEntity=DDC2575B::class)
      * @ORM\JoinColumn(name="b_id", referencedColumnName="id", nullable=FALSE, onDelete="CASCADE")
      */
     public $bRelation;

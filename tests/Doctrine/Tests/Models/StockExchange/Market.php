@@ -26,7 +26,7 @@ class Market
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Stock", mappedBy="market", indexBy="symbol")
+     * @ORM\OneToMany(targetEntity=Stock::class, mappedBy="market", indexBy="symbol")
      * @var Stock[]
      */
     public $stocks;

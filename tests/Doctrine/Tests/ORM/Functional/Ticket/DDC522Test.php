@@ -111,7 +111,7 @@ class DDC522Customer
     /** @ORM\Column */
     public $name;
 
-    /** @ORM\OneToOne(targetEntity="DDC522Cart", mappedBy="customer") */
+    /** @ORM\OneToOne(targetEntity=DDC522Cart::class, mappedBy="customer") */
     public $cart;
 }
 
@@ -131,7 +131,7 @@ class DDC522Cart
     public $total;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC522Customer", inversedBy="cart")
+     * @ORM\OneToOne(targetEntity=DDC522Customer::class, inversedBy="cart")
      * @ORM\JoinColumn(name="customer", referencedColumnName="id")
      */
     public $customer;
@@ -150,7 +150,7 @@ class DDC522ForeignKeyTest
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC522Cart")
+     * @ORM\OneToOne(targetEntity=DDC522Cart::class)
      * @ORM\JoinColumn(name="cart_id", referencedColumnName="id")
      */
     public $cart;

@@ -13,7 +13,7 @@ use Doctrine\ORM\Annotation as ORM;
  *
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discriminator", type="string")
- * @ORM\DiscriminatorMap({ "image" = "DDC3597Image"})
+ * @ORM\DiscriminatorMap({ "image" = DDC3597Image::class})
  * @ORM\HasLifecycleCallbacks
  */
 abstract class DDC3597Root

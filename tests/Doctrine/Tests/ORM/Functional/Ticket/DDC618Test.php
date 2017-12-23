@@ -145,7 +145,7 @@ class DDC618Author
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC618Book", mappedBy="author", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC618Book::class, mappedBy="author", cascade={"persist"})
      */
     public $books;
 
@@ -175,7 +175,7 @@ class DDC618Book
     /** @ORM\Column(type="string") */
     public $title;
 
-    /** @ORM\ManyToOne(targetEntity="DDC618Author", inversedBy="books") */
+    /** @ORM\ManyToOne(targetEntity=DDC618Author::class, inversedBy="books") */
     public $author;
 
     function __construct($title, $author)

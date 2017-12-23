@@ -27,7 +27,7 @@ class DoctrineGlobal_Article
     protected $text;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DoctrineGlobal_User")
+     * @ORM\ManyToMany(targetEntity=DoctrineGlobal_User::class)
      * @ORM\JoinTable(name="author_articles",
      *      joinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="author_id", referencedColumnName="id", unique=true)}
@@ -36,7 +36,7 @@ class DoctrineGlobal_Article
     protected $author;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DoctrineGlobal_User")
+     * @ORM\ManyToMany(targetEntity=DoctrineGlobal_User::class)
      * @ORM\JoinTable(name="editor_articles",
      *      joinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="editor_id", referencedColumnName="id", unique=true)}

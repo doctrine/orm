@@ -19,7 +19,7 @@ class DDC2504OtherClass
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC2504ChildClass", mappedBy="other", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC2504ChildClass::class, mappedBy="other", fetch="EXTRA_LAZY")
      *
      * @var ArrayCollection|\Doctrine\ORM\PersistentCollection
      */

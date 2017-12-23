@@ -28,7 +28,7 @@ class TravelerProfileInfo
     /**
      * @ORM\Cache()
      * @ORM\JoinColumn(name="profile_id", referencedColumnName="id")
-     * @ORM\OneToOne(targetEntity="TravelerProfile", inversedBy="info")
+     * @ORM\OneToOne(targetEntity=TravelerProfile::class, inversedBy="info")
      */
     private $profile;
 

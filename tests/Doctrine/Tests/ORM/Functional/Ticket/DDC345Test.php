@@ -71,7 +71,7 @@ class DDC345User
     /** @ORM\Column(type="string") */
     public $name;
 
-    /** @ORM\OneToMany(targetEntity="DDC345Membership", mappedBy="user", cascade={"persist"}) */
+    /** @ORM\OneToMany(targetEntity=DDC345Membership::class, mappedBy="user", cascade={"persist"}) */
     public $Memberships;
 
     public function __construct()
@@ -95,7 +95,7 @@ class DDC345Group
     /** @ORM\Column(type="string") */
     public $name;
 
-    /** @ORM\OneToMany(targetEntity="DDC345Membership", mappedBy="group", cascade={"persist"}) */
+    /** @ORM\OneToMany(targetEntity=DDC345Membership::class, mappedBy="group", cascade={"persist"}) */
     public $Memberships;
 
 
@@ -122,13 +122,13 @@ class DDC345Membership
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC345User", inversedBy="Memberships")
+     * @ORM\OneToOne(targetEntity=DDC345User::class, inversedBy="Memberships")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      */
     public $user;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC345Group", inversedBy="Memberships")
+     * @ORM\OneToOne(targetEntity=DDC345Group::class, inversedBy="Memberships")
      * @ORM\JoinColumn(name="group_id", referencedColumnName="id", nullable=false)
      */
     public $group;

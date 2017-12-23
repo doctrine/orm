@@ -64,8 +64,8 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity()
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorMap({
- *     "parent" = "DDC1404ParentEntity",
- *     "child" = "DDC1404ChildEntity"
+ *     "parent" = DDC1404ParentEntity::class,
+ *     "child" = DDC1404ChildEntity::class
  * })
  *
  * @ORM\NamedQueries({

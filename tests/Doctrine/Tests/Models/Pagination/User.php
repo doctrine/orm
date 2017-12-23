@@ -13,7 +13,7 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Table(name="pagination_user")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"user1"="User1"})
+ * @ORM\DiscriminatorMap({"user1"=User1::class})
  */
 abstract class User
 {

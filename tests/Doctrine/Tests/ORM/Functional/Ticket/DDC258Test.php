@@ -81,7 +81,7 @@ class DDC258Test extends OrmFunctionalTestCase
  * @ORM\Table(name="DDC258Super")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"class1" = "DDC258Class1", "class2" = "DDC258Class2", "class3"="DDC258Class3"})
+ * @ORM\DiscriminatorMap({"class1" = DDC258Class1::class, "class2" = DDC258Class2::class, "class3"=DDC258Class3::class})
  */
 abstract class DDC258Super
 {

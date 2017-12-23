@@ -21,7 +21,7 @@ class CustomIdObjectTypeChild
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Doctrine\Tests\Models\CustomType\CustomIdObjectTypeParent", inversedBy="children")
+     * @ORM\ManyToOne(targetEntity=CustomIdObjectTypeParent::class, inversedBy="children")
      */
     public $parent;
 

@@ -29,7 +29,11 @@ class Department
     public $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Company", inversedBy="departments", cascade={"persist"})
+     * @ORM\ManyToOne(
+     *     targetEntity=Company::class,
+     *     inversedBy="departments",
+     *     cascade={"persist"}
+     * )
      */
     public $company;
 }

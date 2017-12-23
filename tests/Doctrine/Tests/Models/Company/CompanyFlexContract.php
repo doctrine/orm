@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping;
  *      ),
  *      @ORM\NamedNativeQuery(
  *          name           = "all-flex",
- *          resultClass    = "CompanyFlexContract",
+ *          resultClass    = CompanyFlexContract::class,
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
  * })
@@ -68,7 +68,7 @@ class CompanyFlexContract extends CompanyContract
     private $pricePerHour = 0;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity=CompanyManager::class, inversedBy="managedContracts", fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="company_contract_managers",
      *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
      *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}

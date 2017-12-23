@@ -144,7 +144,7 @@ class DDC1654Post
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
+     * @ORM\ManyToMany(targetEntity=DDC1654Comment::class, orphanRemoval=true,
      * cascade={"persist"})
      */
     public $comments = [];

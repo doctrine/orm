@@ -25,7 +25,7 @@ class Tweet
     public $content;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="tweets")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tweets")
      */
     public $author;
 

@@ -58,7 +58,7 @@ class DDC2350User
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ORM\OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
+    /** @ORM\OneToMany(targetEntity=DDC2350Bug::class, mappedBy="user", fetch="EAGER") */
     public $reportedBugs;
 }
 
@@ -69,6 +69,6 @@ class DDC2350Bug
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ORM\ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
+    /** @ORM\ManyToOne(targetEntity=DDC2350User::class, inversedBy="reportedBugs") */
     public $user;
 }

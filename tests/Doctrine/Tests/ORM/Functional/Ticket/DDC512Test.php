@@ -67,7 +67,7 @@ class DDC512Customer
      * NOTE that we can currently not name the join column the same as the field
      * (item = item), this currently confuses Doctrine.
      *
-     * @ORM\OneToOne(targetEntity="DDC512OfferItem", cascade={"remove","persist"})
+     * @ORM\OneToOne(targetEntity=DDC512OfferItem::class, cascade={"remove","persist"})
      * @ORM\JoinColumn(name="item_id", referencedColumnName="id")
      */
     public $item;
@@ -84,7 +84,7 @@ class DDC512OfferItem extends DDC512Item
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"item" = "DDC512Item", "offerItem" = "DDC512OfferItem"})
+ * @ORM\DiscriminatorMap({"item" = DDC512Item::class, "offerItem" = DDC512OfferItem::class})
  */
 class DDC512Item
 {

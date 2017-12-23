@@ -175,7 +175,7 @@ class Lemma
     private $lemma;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Type", mappedBy="lemmas", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=Type::class, mappedBy="lemmas", cascade={"persist"})
      */
     private $types;
 
@@ -277,7 +277,7 @@ class Type
 
     /**
      * @var kateglo\application\helpers\collections\ArrayCollection
-     * @ORM\ManyToMany(targetEntity="Lemma")
+     * @ORM\ManyToMany(targetEntity=Lemma::class)
      * @ORM\JoinTable(name="lemma_type",
      *     joinColumns={@ORM\JoinColumn(name="type_id", referencedColumnName="type_id")},
      * 	   inverseJoinColumns={@ORM\JoinColumn(name="lemma_id", referencedColumnName="lemma_id")}
@@ -395,13 +395,13 @@ class Phrase
     private $phrase;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PhraseType")
+     * @ORM\ManyToOne(targetEntity=PhraseType::class)
      * @ORM\JoinColumn(name="phrase_type_id", referencedColumnName="phrase_type_id")
      */
     private $type;
 
     /**
-     * @ORM\OneToMany(targetEntity="Definition", mappedBy="phrase", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Definition::class, mappedBy="phrase", cascade={"persist"})
      */
     private $definitions;
 
@@ -501,7 +501,7 @@ class PhraseType
     private $abbreviation;
 
     /**
-     * @ORM\OneToMany(targetEntity="Phrase", mappedBy="type")
+     * @ORM\OneToMany(targetEntity=Phrase::class, mappedBy="type")
      */
     private $phrases;
 
@@ -587,7 +587,7 @@ class Definition
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Phrase")
+     * @ORM\ManyToOne(targetEntity=Phrase::class)
      * @ORM\JoinColumn(name="definition_phrase_id", referencedColumnName="phrase_id")
      */
     private $phrase;

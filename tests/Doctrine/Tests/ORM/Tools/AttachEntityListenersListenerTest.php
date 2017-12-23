@@ -130,7 +130,7 @@ class AttachEntityListenersListenerTestFooEntity
 
 /**
  * @ORM\Entity
- * @ORM\EntityListeners({"AttachEntityListenersListenerTestListener"})
+ * @ORM\EntityListeners({AttachEntityListenersListenerTestListener::class})
  */
 class AttachEntityListenersListenerTestBarEntity
 {

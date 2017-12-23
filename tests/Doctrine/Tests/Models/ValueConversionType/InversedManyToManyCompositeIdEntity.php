@@ -26,7 +26,7 @@ class InversedManyToManyCompositeIdEntity
     public $id2;
 
     /**
-     * @ORM\ManyToMany(targetEntity="OwningManyToManyCompositeIdEntity", mappedBy="associatedEntities")
+     * @ORM\ManyToMany(targetEntity=OwningManyToManyCompositeIdEntity::class, mappedBy="associatedEntities")
      */
     public $associatedEntities;
 

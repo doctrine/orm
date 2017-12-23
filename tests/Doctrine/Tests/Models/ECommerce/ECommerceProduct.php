@@ -30,18 +30,26 @@ class ECommerceProduct
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="ECommerceShipping", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=ECommerceShipping::class, cascade={"persist"})
      * @ORM\JoinColumn(name="shipping_id", referencedColumnName="id")
      */
     private $shipping;
 
     /**
-     * @ORM\OneToMany(targetEntity="ECommerceFeature", mappedBy="product", cascade={"persist"})
+     * @ORM\OneToMany(
+     *     targetEntity=ECommerceFeature::class,
+     *     mappedBy="product",
+     *     cascade={"persist"}
+     * )
      */
     private $features;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ECommerceCategory", cascade={"persist"}, inversedBy="products")
+     * @ORM\ManyToMany(
+     *     targetEntity=ECommerceCategory::class,
+     *     cascade={"persist"},
+     *     inversedBy="products"
+     * )
      * @ORM\JoinTable(name="ecommerce_products_categories",
      *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="category_id", referencedColumnName="id")})
@@ -51,7 +59,7 @@ class ECommerceProduct
     /**
      * This relation is saved with two records in the association table for
      * simplicity.
-     * @ORM\ManyToMany(targetEntity="ECommerceProduct", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity=ECommerceProduct::class, cascade={"persist"})
      * @ORM\JoinTable(name="ecommerce_products_related",
      *      joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="related_id", referencedColumnName="id")})

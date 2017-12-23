@@ -7,7 +7,7 @@ namespace Doctrine\Tests\Models\DDC753;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @ORM\Entity(repositoryClass = "\stdClass")
+ * @ORM\Entity(repositoryClass = stdClass::class)
  */
 class DDC753EntityWithInvalidRepository
 {

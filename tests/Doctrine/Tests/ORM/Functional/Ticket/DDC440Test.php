@@ -94,7 +94,7 @@ class DDC440Phone
      */
     protected $id;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC440Client",inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity=DDC440Client::class,inversedBy="phones")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      * })
@@ -153,14 +153,14 @@ class DDC440Client
      */
     protected $id;
     /**
-     * @ORM\OneToOne(targetEntity="DDC440Phone", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity=DDC440Phone::class, fetch="EAGER")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="main_phone_id", referencedColumnName="id",onDelete="SET NULL")
      * })
      */
     protected $main_phone;
     /**
-     * @ORM\OneToMany(targetEntity="DDC440Phone", mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
+     * @ORM\OneToMany(targetEntity=DDC440Phone::class, mappedBy="client", cascade={"persist", "remove"}, fetch="EAGER", indexBy="id")
      * @ORM\OrderBy({"number"="ASC"})
      */
     protected $phones;

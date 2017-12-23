@@ -62,7 +62,7 @@ class DDC371Child
     private $id;
     /** @ORM\Column(type="string") */
     public $data;
-    /** @ORM\ManyToOne(targetEntity="DDC371Parent", inversedBy="children") @ORM\JoinColumn(name="parentId") */
+    /** @ORM\ManyToOne(targetEntity=DDC371Parent::class, inversedBy="children") @ORM\JoinColumn(name="parentId") */
     public $parent;
 }
 
@@ -73,7 +73,7 @@ class DDC371Parent
     private $id;
     /** @ORM\Column(type="string") */
     public $data;
-    /** @ORM\OneToMany(targetEntity="DDC371Child", mappedBy="parent") */
+    /** @ORM\OneToMany(targetEntity=DDC371Child::class, mappedBy="parent") */
     public $children;
 }
 

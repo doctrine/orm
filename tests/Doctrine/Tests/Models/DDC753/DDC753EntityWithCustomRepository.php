@@ -7,7 +7,7 @@ namespace Doctrine\Tests\Models\DDC753;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @ORM\Entity(repositoryClass = "Doctrine\Tests\Models\DDC753\DDC753CustomRepository")
+ * @ORM\Entity(repositoryClass = DDC753CustomRepository::class)
  */
 class DDC753EntityWithCustomRepository
 {

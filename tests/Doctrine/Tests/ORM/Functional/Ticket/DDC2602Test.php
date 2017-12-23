@@ -190,7 +190,7 @@ class DDC2602User
 
     /**
      * @ORM\OneToOne(
-     *     targetEntity="DDC2602Biography",
+     *     targetEntity=DDC2602Biography::class,
      *     inversedBy="user",
      *     cascade={"persist", "refresh", "remove"}
      * )
@@ -216,7 +216,7 @@ class DDC2602Biography
 
     /**
      * @ORM\OneToOne(
-     *     targetEntity="DDC2602User",
+     *     targetEntity=DDC2602User::class,
      *     mappedBy="biography",
      *     cascade={"persist", "refresh"}
      * )
@@ -263,7 +263,7 @@ class DDC2602BiographyField
 
     /**
      * @ORM\OneToMany(
-     *     targetEntity="DDC2602BiographyFieldChoice",
+     *     targetEntity=DDC2602BiographyFieldChoice::class,
      *     mappedBy="field",
      *     cascade={"persist", "refresh"}
      * )
@@ -302,7 +302,7 @@ class DDC2602BiographyFieldChoice
 
     /**
      * @ORM\ManyToOne(
-     *     targetEntity="DDC2602BiographyField",
+     *     targetEntity=DDC2602BiographyField::class,
      *     inversedBy="choiceList"
      * )
      * @ORM\JoinColumn(onDelete="CASCADE")

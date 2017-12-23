@@ -76,9 +76,9 @@ class DDC1514EntityA
     public $id;
     /** @ORM\Column */
     public $title;
-    /** @ORM\ManyToMany(targetEntity="DDC1514EntityB", mappedBy="entityAFrom") */
+    /** @ORM\ManyToMany(targetEntity=DDC1514EntityB::class, mappedBy="entityAFrom") */
     public $entitiesB;
-    /** @ORM\ManyToOne(targetEntity="DDC1514EntityC") */
+    /** @ORM\ManyToOne(targetEntity=DDC1514EntityC::class) */
     public $entityC;
 
     public function __construct()
@@ -96,11 +96,11 @@ class DDC1514EntityB
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1514EntityA", inversedBy="entitiesB")
+     * @ORM\ManyToOne(targetEntity=DDC1514EntityA::class, inversedBy="entitiesB")
      */
     public $entityAFrom;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1514EntityA")
+     * @ORM\ManyToOne(targetEntity=DDC1514EntityA::class)
      */
     public $entityATo;
 }

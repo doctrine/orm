@@ -48,7 +48,7 @@ class DDC1548E1
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="DDC1548Rel", inversedBy="e1")
+     * @ORM\OneToOne(targetEntity=DDC1548Rel::class, inversedBy="e1")
      */
     public $rel;
 }
@@ -60,7 +60,7 @@ class DDC1548E2
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="DDC1548Rel", inversedBy="e2")
+     * @ORM\OneToOne(targetEntity=DDC1548Rel::class, inversedBy="e2")
      */
     public $rel;
 }
@@ -77,11 +77,11 @@ class DDC1548Rel
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1548E1", mappedBy="rel")
+     * @ORM\OneToOne(targetEntity=DDC1548E1::class, mappedBy="rel")
      */
     public $e1;
     /**
-     * @ORM\OneToOne(targetEntity="DDC1548E2", mappedBy="rel")
+     * @ORM\OneToOne(targetEntity=DDC1548E2::class, mappedBy="rel")
      */
     public $e2;
 }

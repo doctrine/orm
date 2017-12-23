@@ -71,7 +71,7 @@ class TestEntity
      */
     protected $value;
     /**
-     * @ORM\OneToOne(targetEntity="TestAdditionalEntity", inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=TestAdditionalEntity::class, inversedBy="entity", orphanRemoval=true, cascade={"persist", "remove"})
      */
     protected $additional;
 
@@ -107,7 +107,7 @@ class TestAdditionalEntity
      */
     protected $id;
     /**
-     * @ORM\OneToOne(targetEntity="TestEntity", mappedBy="additional")
+     * @ORM\OneToOne(targetEntity=TestEntity::class, mappedBy="additional")
      */
     protected $entity;
     /**

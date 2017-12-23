@@ -268,7 +268,7 @@ class OptimisticTest extends OrmFunctionalTestCase
  * @ORM\Table(name="optimistic_joined_parent")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"parent" = "OptimisticJoinedParent", "child" = "OptimisticJoinedChild"})
+ * @ORM\DiscriminatorMap({"parent" = OptimisticJoinedParent::class, "child" = OptimisticJoinedChild::class})
  */
 class OptimisticJoinedParent
 {

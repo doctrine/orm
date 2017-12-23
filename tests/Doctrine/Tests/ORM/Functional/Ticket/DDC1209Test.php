@@ -90,7 +90,7 @@ class DDC1209_2
 {
     /**
      *  @ORM\Id
-     *  @ORM\ManyToOne(targetEntity="DDC1209_1")
+     *  @ORM\ManyToOne(targetEntity=DDC1209_1::class)
      *  @ORM\JoinColumn(referencedColumnName="id", nullable=false)
      */
     private $future1;

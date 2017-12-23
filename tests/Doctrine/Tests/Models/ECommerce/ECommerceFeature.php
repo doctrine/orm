@@ -28,7 +28,7 @@ class ECommerceFeature
     private $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
+     * @ORM\ManyToOne(targetEntity=ECommerceProduct::class, inversedBy="features")
      * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;

@@ -78,7 +78,7 @@ class DDC1400Article
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC1400UserState::class, mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
@@ -97,7 +97,7 @@ class DDC1400User
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC1400UserState::class, mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
@@ -109,13 +109,13 @@ class DDC1400UserState
 {
     /**
      * @ORM\Id
-     *  @ORM\ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
+     *  @ORM\ManyToOne(targetEntity=DDC1400Article::class, inversedBy="userStates")
      */
     public $article;
 
     /**
      * @ORM\Id
-     *  @ORM\ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
+     *  @ORM\ManyToOne(targetEntity=DDC1400User::class, inversedBy="userStates")
      */
     public $user;
 }

@@ -317,7 +317,7 @@ class FirstEntity
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="SecondEntity")
+     * @ORM\OneToOne(targetEntity=SecondEntity::class)
      * @ORM\JoinColumn(name="id", referencedColumnName="fist_entity_id")
      */
     public $secondEntity;

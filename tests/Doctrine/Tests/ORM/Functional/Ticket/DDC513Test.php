@@ -42,7 +42,7 @@ class DDC513OfferItem extends DDC513Item
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"item" = "DDC513Item", "offerItem" = "DDC513OfferItem"})
+ * @ORM\DiscriminatorMap({"item" = DDC513Item::class, "offerItem" = DDC513OfferItem::class})
  */
 class DDC513Item
 {
@@ -54,7 +54,7 @@ class DDC513Item
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC513Price", cascade={"remove","persist"})
+     * @ORM\OneToOne(targetEntity=DDC513Price::class, cascade={"remove","persist"})
      * @ORM\JoinColumn(name="price", referencedColumnName="id")
      */
     public $price;

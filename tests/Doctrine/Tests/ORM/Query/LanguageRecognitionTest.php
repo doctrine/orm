@@ -718,7 +718,7 @@ class DQLKeywordsModelUser
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @ORM\OneToOne(targetEntity="DQLKeywordsModelGroup") */
+    /** @ORM\OneToOne(targetEntity=DQLKeywordsModelGroup::class) */
     private $group;
 }
 

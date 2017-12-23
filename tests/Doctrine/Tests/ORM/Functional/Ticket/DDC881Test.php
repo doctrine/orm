@@ -115,7 +115,7 @@ class DDC881User
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC881PhoneNumber",mappedBy="id")
+     * @ORM\OneToMany(targetEntity=DDC881PhoneNumber::class,mappedBy="id")
      */
     private $phoneNumbers;
 
@@ -142,7 +142,7 @@ class DDC881PhoneNumber
     private $id;
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC881User",cascade={"all"})
+     * @ORM\ManyToOne(targetEntity=DDC881User::class,cascade={"all"})
      */
     private $user;
     /**
@@ -151,7 +151,7 @@ class DDC881PhoneNumber
     private $phonenumber;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC881PhoneCall", mappedBy="phonenumber")
+     * @ORM\OneToMany(targetEntity=DDC881PhoneCall::class, mappedBy="phonenumber")
      */
     private $calls;
 
@@ -193,7 +193,7 @@ class DDC881PhoneCall
      */
     private $id;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC881PhoneNumber", inversedBy="calls", cascade={"all"})
+     * @ORM\ManyToOne(targetEntity=DDC881PhoneNumber::class, inversedBy="calls", cascade={"all"})
      * @ORM\JoinColumns({
      *  @ORM\JoinColumn(name="phonenumber_id", referencedColumnName="id"),
      *  @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")

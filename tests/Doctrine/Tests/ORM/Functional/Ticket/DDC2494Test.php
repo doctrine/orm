@@ -94,7 +94,7 @@ class DDC2494Currency
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="DDC2494Campaign", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity=DDC2494Campaign::class, mappedBy="currency")
      */
     protected $campaigns;
 
@@ -136,7 +136,7 @@ class DDC2494Campaign
     /**
      * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC2494Currency
      *
-     * @ORM\ManyToOne(targetEntity="DDC2494Currency", inversedBy="campaigns")
+     * @ORM\ManyToOne(targetEntity=DDC2494Currency::class, inversedBy="campaigns")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="id", nullable=false)
      */
     protected $currency;

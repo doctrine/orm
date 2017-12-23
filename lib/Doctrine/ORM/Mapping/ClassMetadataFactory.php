@@ -340,7 +340,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $duplicates[] = $shortName;
                 }
 
-                $map[$shortName] = $class->fullyQualifiedClassName($subClassCandidate);
+                $map[$shortName] = $subClassCandidate;
             }
         }
 

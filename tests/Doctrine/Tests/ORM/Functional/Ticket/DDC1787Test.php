@@ -39,7 +39,7 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
+ * @ORM\DiscriminatorMap({"bar" = DDC1787Bar::class, "foo" = DDC1787Foo::class})
  */
 class DDC1787Foo
 {

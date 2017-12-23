@@ -70,7 +70,7 @@ class DDC3785_Asset
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC3785_Attribute", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=DDC3785_Attribute::class, cascade={"persist"}, orphanRemoval=true)
      * @ORM\JoinTable(
      *     name="asset_attributes",
      *     joinColumns={@ORM\JoinColumn(name="asset_id", referencedColumnName="id")},

@@ -107,7 +107,7 @@ class PersistentEntity extends PersistentObject
     protected $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PersistentEntity")
+     * @ORM\ManyToOne(targetEntity=PersistentEntity::class)
      * @var PersistentEntity
      */
     protected $parent;

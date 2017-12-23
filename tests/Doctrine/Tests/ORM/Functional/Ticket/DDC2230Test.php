@@ -56,7 +56,7 @@ class DDC2230User
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC2230Address")
+     * @ORM\OneToOne(targetEntity=DDC2230Address::class)
      */
     public $address;
 }

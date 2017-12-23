@@ -28,7 +28,7 @@ class Address
     public $zip;
 
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="address")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="address")
      * @ORM\JoinColumn(name="user-id", referencedColumnName="user-id")
      */
     public $user;

@@ -12,9 +12,9 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *      "person"    = "Issue5989Person",
- *      "manager"   = "Issue5989Manager",
- *      "employee"  = "Issue5989Employee"
+ *      "person"    = Issue5989Person::class,
+ *      "manager"   = Issue5989Manager::class,
+ *      "employee"  = Issue5989Employee::class
  * })
  */
 class Issue5989Person

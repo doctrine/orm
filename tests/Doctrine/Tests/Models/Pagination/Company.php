@@ -34,12 +34,22 @@ class Company
     public $jurisdiction;
 
     /**
-     * @ORM\OneToOne(targetEntity="Logo", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToOne(
+     *     targetEntity=Logo::class,
+     *     mappedBy="company",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $logo;
 
     /**
-     * @ORM\OneToMany(targetEntity="Department", mappedBy="company", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(
+     *     targetEntity=Department::class,
+     *     mappedBy="company",
+     *     cascade={"persist"},
+     *     orphanRemoval=true
+     * )
      */
     public $departments;
 }

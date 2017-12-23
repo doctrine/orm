@@ -28,12 +28,20 @@ class CompanyEmployee extends CompanyPerson
     private $startDate;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyContract::class,
+     *     mappedBy="engineers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $contracts;
 
     /**
-     * @ORM\OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(
+     *     targetEntity=CompanyFlexUltraContract::class,
+     *     mappedBy="salesPerson",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $soldContracts;
 

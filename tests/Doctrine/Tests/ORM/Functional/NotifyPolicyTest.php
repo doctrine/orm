@@ -121,7 +121,7 @@ class NotifyUser extends NotifyBaseEntity
     /** @ORM\Column */
     private $name;
 
-    /** @ORM\ManyToMany(targetEntity="NotifyGroup") */
+    /** @ORM\ManyToMany(targetEntity=NotifyGroup::class) */
     private $groups;
 
     public function __construct()
@@ -160,7 +160,7 @@ class NotifyGroup extends NotifyBaseEntity
     /** @ORM\Column */
     private $name;
 
-    /** @ORM\ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
+    /** @ORM\ManyToMany(targetEntity=NotifyUser::class, mappedBy="groups") */
     private $users;
 
     public function __construct()

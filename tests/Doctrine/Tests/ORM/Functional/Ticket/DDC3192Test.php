@@ -83,7 +83,7 @@ class DDC3192Currency
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity=DDC3192Transaction::class, mappedBy="currency")
      */
     public $transactions;
 
@@ -116,7 +116,7 @@ class DDC3192Transaction
     /**
      * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC3192Currency
      *
-     * @ORM\ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
+     * @ORM\ManyToOne(targetEntity=DDC3192Currency::class, inversedBy="transactions")
      * @ORM\JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
      */
     public $currency;

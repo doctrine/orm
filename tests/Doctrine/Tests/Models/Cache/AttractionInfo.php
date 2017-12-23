@@ -12,8 +12,8 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Table("cache_attraction_info")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorMap({
- *  1  = "AttractionContactInfo",
- *  2  = "AttractionLocationInfo",
+ *  1  = AttractionContactInfo::class,
+ *  2  = AttractionLocationInfo::class,
  * })
  */
 abstract class AttractionInfo
@@ -27,7 +27,7 @@ abstract class AttractionInfo
 
     /**
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="Attraction", inversedBy="infos")
+     * @ORM\ManyToOne(targetEntity=Attraction::class, inversedBy="infos")
      * @ORM\JoinColumn(name="attraction_id", referencedColumnName="id")
      */
     protected $attraction;

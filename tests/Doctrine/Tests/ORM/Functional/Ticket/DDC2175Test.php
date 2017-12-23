@@ -54,7 +54,7 @@ class DDC2175Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"entity": "DDC2175Entity"})
+ * @ORM\DiscriminatorMap({"entity": DDC2175Entity::class})
  */
 class DDC2175Entity
 {

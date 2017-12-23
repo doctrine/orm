@@ -10,7 +10,7 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Entity
  * @ORM\Table(name="one_to_one_single_table_inheritance_pet")
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"cat" = "Cat"})
+ * @ORM\DiscriminatorMap({"cat" = Cat::class})
  */
 abstract class Pet
 {

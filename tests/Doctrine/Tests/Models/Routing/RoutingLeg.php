@@ -18,13 +18,13 @@ class RoutingLeg
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="RoutingLocation")
+     * @ORM\ManyToOne(targetEntity=RoutingLocation::class)
      * @ORM\JoinColumn(name="from_id", referencedColumnName="id")
      */
     public $fromLocation;
 
     /**
-     * @ORM\ManyToOne(targetEntity="RoutingLocation")
+     * @ORM\ManyToOne(targetEntity=RoutingLocation::class)
      * @ORM\JoinColumn(name="to_id", referencedColumnName="id")
      */
     public $toLocation;

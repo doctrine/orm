@@ -44,8 +44,8 @@ class DDC960Test extends OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorMap({
- *  "root" = "DDC960Root",
- *  "child" = "DDC960Child"
+ *  "root" = DDC960Root::class,
+ *  "child" = DDC960Child::class
  * })
  */
 class DDC960Root

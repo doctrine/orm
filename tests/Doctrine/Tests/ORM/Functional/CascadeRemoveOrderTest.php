@@ -90,14 +90,14 @@ class CascadeRemoveOrderEntityO
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG")
+     * @ORM\OneToOne(targetEntity=CascadeRemoveOrderEntityG::class)
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
      */
     private $oneToOneG;
 
     /**
      * @ORM\OneToMany(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityG",
+     *     targetEntity=CascadeRemoveOrderEntityG::class,
      *     mappedBy="ownerO",
      *     cascade={"persist", "remove"}
      * )
@@ -149,7 +149,7 @@ class CascadeRemoveOrderEntityG
 
     /**
      * @ORM\ManyToOne(
-     *     targetEntity="Doctrine\Tests\ORM\Functional\CascadeRemoveOrderEntityO",
+     *     targetEntity=CascadeRemoveOrderEntityO::class,
      *     inversedBy="oneToMany"
      * )
      */

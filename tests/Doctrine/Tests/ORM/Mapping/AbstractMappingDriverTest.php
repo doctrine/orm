@@ -1227,19 +1227,19 @@ class User
     public $email;
 
     /**
-     * @ORM\OneToOne(targetEntity="Address", cascade={"remove"}, inversedBy="user")
+     * @ORM\OneToOne(targetEntity=Address::class, cascade={"remove"}, inversedBy="user")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     public $address;
 
     /**
-     * @ORM\OneToMany(targetEntity="Phonenumber", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Phonenumber::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      * @ORM\OrderBy({"number"="ASC"})
      */
     public $phonenumbers;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Group", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity=Group::class, cascade={"all"})
      * @ORM\JoinTable(name="cms_user_groups",
      *    joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false, unique=false)},
      *    inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id", columnDefinition="INT NULL")}
@@ -1435,14 +1435,14 @@ class User
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"cat" = "Cat", "dog" = "Dog"})
+ * @ORM\DiscriminatorMap({"cat" = Cat::class, "dog" = Dog::class})
  * @ORM\DiscriminatorColumn(name="discr", length=32, type="string")
  */
 abstract class Animal
 {
     /**
      * @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="stdClass")
+     * @ORM\CustomIdGenerator(class=stdClass::class)
      */
     public $id;
 }
@@ -1502,7 +1502,7 @@ class DDC1170Entity
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"ONE" = "DDC807SubClasse1", "TWO" = "DDC807SubClasse2"})
+ * @ORM\DiscriminatorMap({"ONE" = DDC807SubClasse1::class, "TWO" = DDC807SubClasse2::class})
  * @ORM\DiscriminatorColumn(name = "dtype", columnDefinition="ENUM('ONE','TWO')")
  */
 class DDC807Entity
@@ -1538,8 +1538,8 @@ class Comment
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorMap({
- *     "ONE" = "SingleTableEntityNoDiscriminatorColumnMappingSub1",
- *     "TWO" = "SingleTableEntityNoDiscriminatorColumnMappingSub2"
+ *     "ONE" = Doctrine\Tests\ORM\Mapping\SingleTableEntityNoDiscriminatorColumnMappingSub1::class,
+ *     "TWO" = Doctrine\Tests\ORM\Mapping\SingleTableEntityNoDiscriminatorColumnMappingSub2::class
  * })
  */
 class SingleTableEntityNoDiscriminatorColumnMapping
@@ -1566,8 +1566,8 @@ class SingleTableEntityNoDiscriminatorColumnMappingSub2 extends SingleTableEntit
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorMap({
- *     "ONE" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub1",
- *     "TWO" = "SingleTableEntityIncompleteDiscriminatorColumnMappingSub2"
+ *     "ONE" = Doctrine\Tests\ORM\Mapping\SingleTableEntityIncompleteDiscriminatorColumnMappingSub1::class,
+ *     "TWO" = Doctrine\Tests\ORM\Mapping\SingleTableEntityIncompleteDiscriminatorColumnMappingSub2::class
  * })
  * @ORM\DiscriminatorColumn(name="dtype")
  */

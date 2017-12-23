@@ -149,12 +149,12 @@ class DDC3644User
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3644Address", mappedBy="user", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=DDC3644Address::class, mappedBy="user", orphanRemoval=true)
      */
     public $addresses = [];
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3644Pet", mappedBy="owner", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=DDC3644Pet::class, mappedBy="owner", orphanRemoval=true)
      */
     public $pets = [];
 
@@ -194,7 +194,7 @@ class DDC3644Address
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3644User", inversedBy="addresses")
+     * @ORM\ManyToOne(targetEntity=DDC3644User::class, inversedBy="addresses")
      * @ORM\JoinColumn(referencedColumnName="hash_id")
      */
     public $user;
@@ -214,7 +214,7 @@ class DDC3644Address
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discriminator", type="string")
- * @ORM\DiscriminatorMap({"pet" = "DDC3644Pet"})
+ * @ORM\DiscriminatorMap({"pet" = DDC3644Pet::class})
  */
 abstract class DDC3644Animal
 {
@@ -242,7 +242,7 @@ abstract class DDC3644Animal
 class DDC3644Pet extends DDC3644Animal
 {
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3644User", inversedBy="pets")
+     * @ORM\ManyToOne(targetEntity=DDC3644User::class, inversedBy="pets")
      * @ORM\JoinColumn(referencedColumnName="hash_id")
      */
     public $owner;

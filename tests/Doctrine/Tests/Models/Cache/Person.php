@@ -26,7 +26,7 @@ class Person
     public $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="Address", mappedBy="person")
+     * @ORM\OneToOne(targetEntity=Address::class, mappedBy="person")
      */
     public $address;
 

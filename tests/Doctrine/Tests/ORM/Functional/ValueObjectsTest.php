@@ -381,7 +381,7 @@ class DDC93Timestamps
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name = "t", type = "string", length = 10)
  * @ORM\DiscriminatorMap({
- *     "v" = "Doctrine\Tests\ORM\Functional\DDC93Car",
+ *     "v" = DDC93Car::class,
  * })
  */
 abstract class DDC93Vehicle
@@ -389,7 +389,7 @@ abstract class DDC93Vehicle
     /** @ORM\Id @ORM\GeneratedValue(strategy = "AUTO") @ORM\Column(type = "integer") */
     public $id;
 
-    /** @ORM\Embedded(class = "DDC93Address") */
+    /** @ORM\Embedded(class = DDC93Address::class) */
     public $address;
 
     public function __construct(DDC93Address $address)

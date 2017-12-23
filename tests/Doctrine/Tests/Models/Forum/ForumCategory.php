@@ -26,7 +26,7 @@ class ForumCategory
      */
     public $name;
     /**
-     * @ORM\OneToMany(targetEntity="ForumBoard", mappedBy="category")
+     * @ORM\OneToMany(targetEntity=ForumBoard::class, mappedBy="category")
      */
     public $boards;
 

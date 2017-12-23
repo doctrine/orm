@@ -21,7 +21,7 @@ class Admin1AlternateName
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Admin1", inversedBy="names")
+     * @ORM\ManyToOne(targetEntity=Admin1::class, inversedBy="names")
      * @ORM\JoinColumns({
      *    @ORM\JoinColumn(name="admin1", referencedColumnName="id"),
      *    @ORM\JoinColumn(name="country", referencedColumnName="country")

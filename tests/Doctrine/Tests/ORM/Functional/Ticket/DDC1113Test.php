@@ -56,7 +56,7 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"vehicle" = "DDC1113Vehicle", "car" = "DDC1113Car", "bus" = "DDC1113Bus"})
+ * @ORM\DiscriminatorMap({"vehicle" = DDC1113Vehicle::class, "car" = DDC1113Car::class, "bus" = DDC1113Bus::class})
  */
 class DDC1113Vehicle
 {
@@ -65,11 +65,11 @@ class DDC1113Vehicle
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1113Vehicle")
+     * @ORM\ManyToOne(targetEntity=DDC1113Vehicle::class)
      */
     public $parent;
 
-    /** @ORM\OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"}) */
+    /** @ORM\OneToOne(targetEntity=DDC1113Engine::class, cascade={"persist", "remove"}) */
     public $engine;
 }
 

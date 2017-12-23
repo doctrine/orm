@@ -79,7 +79,7 @@ class DDC2346Foo
     /**
      * @var DDC2346Bar[]|\Doctrine\Common\Collections\Collection
      *
-     * @ORM\OneToMany(targetEntity="DDC2346Bar", mappedBy="foo")
+     * @ORM\OneToMany(targetEntity=DDC2346Bar::class, mappedBy="foo")
      */
     public $bars;
 
@@ -94,14 +94,14 @@ class DDC2346Foo
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
+ * @ORM\DiscriminatorMap({"bar" = DDC2346Bar::class, "baz" = DDC2346Baz::class})
  */
 class DDC2346Bar
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity=DDC2346Foo::class, inversedBy="bars", fetch="EAGER") */
     public $foo;
 }
 

@@ -137,22 +137,22 @@ class ResolveTargetEntity implements ResolveTargetInterface
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
+     * @ORM\ManyToMany(targetEntity=TargetInterface::class)
      */
     private $manyToMany;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", inversedBy="oneToMany")
+     * @ORM\ManyToOne(targetEntity=ResolveTargetInterface::class, inversedBy="oneToMany")
      */
     private $manyToOne;
 
     /**
-     * @ORM\OneToMany(targetEntity="Doctrine\Tests\ORM\Tools\ResolveTargetInterface", mappedBy="manyToOne")
+     * @ORM\OneToMany(targetEntity=ResolveTargetInterface::class, mappedBy="manyToOne")
      */
     private $oneToMany;
 
     /**
-     * @ORM\OneToOne(targetEntity="Doctrine\Tests\ORM\Tools\TargetInterface")
+     * @ORM\OneToOne(targetEntity=TargetInterface::class)
      * @ORM\JoinColumn(name="target_entity_id", referencedColumnName="id")
      */
     private $oneToOne;

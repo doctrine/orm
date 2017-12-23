@@ -13,7 +13,7 @@ class DDC117ArticleDetails
 {
     /**
      * @ORM\Id
-     * @ORM\OneToOne(targetEntity="DDC117Article", inversedBy="details")
+     * @ORM\OneToOne(targetEntity=DDC117Article::class, inversedBy="details")
      * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;

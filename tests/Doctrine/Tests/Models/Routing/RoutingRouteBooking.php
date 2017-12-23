@@ -19,7 +19,7 @@ class RoutingRouteBooking
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="RoutingRoute", inversedBy="bookings")
+     * @ORM\ManyToOne(targetEntity=RoutingRoute::class, inversedBy="bookings")
      * @ORM\JoinColumn(name="route_id", referencedColumnName="id")
      */
     public $route;

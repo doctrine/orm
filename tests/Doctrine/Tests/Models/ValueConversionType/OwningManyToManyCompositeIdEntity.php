@@ -20,7 +20,7 @@ class OwningManyToManyCompositeIdEntity
     public $id3;
 
     /**
-     * @ORM\ManyToMany(targetEntity="InversedManyToManyCompositeIdEntity", inversedBy="associatedEntities")
+     * @ORM\ManyToMany(targetEntity=InversedManyToManyCompositeIdEntity::class, inversedBy="associatedEntities")
      * @ORM\JoinTable(
      *     name="vct_xref_manytomany_compositeid",
      *     joinColumns={@ORM\JoinColumn(name="owning_id", referencedColumnName="id3")},
