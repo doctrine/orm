@@ -70,6 +70,11 @@ class ObjectHydrator extends AbstractHydrator
     private $initializedCollections = [];
 
     /**
+     * @var array|PersistentCollection[]
+     */
+    private $collectionsToBeInitialized = [];
+
+    /**
      * @var array
      */
     private $existingCollections = [];
@@ -161,6 +166,11 @@ class ObjectHydrator extends AbstractHydrator
         while ($row = $this->_stmt->fetch(PDO::FETCH_ASSOC)) {
             $this->hydrateRowData($row, $result);
         }
+
+        foreach ($this->collectionsToBeInitialized as $coll) {
+                $coll->setInitialized(true);
+        }
+        $this->collectionsToBeInitialized = [];
 
         // Take snapshots from all newly initialized collections
         foreach ($this->initializedCollections as $coll) {
@@ -424,7 +434,7 @@ class ObjectHydrator extends AbstractHydrator
                     } else if ( ! $reflFieldValue) {
                         $reflFieldValue = $this->initRelatedCollection($parentObject, $parentClass, $relationField, $parentAlias);
                     } else if ($reflFieldValue instanceof PersistentCollection && $reflFieldValue->isInitialized() === false) {
-                        $reflFieldValue->setInitialized(true);
+                        $this->collectionsToBeInitialized[] = $reflFieldValue;
                     }
 
                 } else {
