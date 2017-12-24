@@ -299,7 +299,7 @@ class PostLoadListenerCheckAssociationsArePopulated
                 throw new \RuntimeException('Expected to be one user!');
             }
             $this->checked = true;
-            $this->populated = null !== $object->getEmail();
+            $this->populated = $object->getEmail() !== null;
         }
     }
 }

@@ -85,7 +85,7 @@ class ORMInvalidArgumentException extends \InvalidArgumentException
             $newEntitiesWithAssociations
         );
 
-        if (1 === count($errorMessages)) {
+        if (count($errorMessages) === 1) {
             return new self(reset($errorMessages));
         }
 

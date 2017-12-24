@@ -534,7 +534,7 @@ class Expr
     public function substring($x, $from, $len = null)
     {
         $args = [$x, $from];
-        if (null !== $len) {
+        if ($len !== null) {
             $args[] = $len;
         }
 

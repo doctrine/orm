@@ -239,11 +239,11 @@ EOT
      */
     private function formatValue($value)
     {
-        if ('' === $value) {
+        if ($value === '') {
             return '';
         }
 
-        if (null === $value) {
+        if ($value === null) {
             return '<comment>Null</comment>';
         }
 
@@ -284,7 +284,7 @@ EOT
      */
     private function formatField($label, $value)
     {
-        if (null === $value) {
+        if ($value === null) {
             $value = '<comment>None</comment>';
         }
 
@@ -351,7 +351,7 @@ EOT
     {
         $output = [];
 
-        if (null === $columnMetadata) {
+        if ($columnMetadata === null) {
             $output[] = '<comment>Null</comment>';
 
             return $output;
@@ -403,7 +403,7 @@ EOT
     {
         $output = [];
 
-        if (null === $tableMetadata) {
+        if ($tableMetadata === null) {
             $output[] = '<comment>Null</comment>';
 
             return $output;

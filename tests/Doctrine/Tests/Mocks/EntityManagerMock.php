@@ -78,7 +78,7 @@ class EntityManagerMock extends EntityManagerDecorator
      */
     public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
-        if (null === $config) {
+        if ($config === null) {
             $config = new Configuration();
 
             $config->setProxyDir(__DIR__ . '/../Proxies');
@@ -86,7 +86,7 @@ class EntityManagerMock extends EntityManagerDecorator
             $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
-        if (null === $eventManager) {
+        if ($eventManager === null) {
             $eventManager = $conn->getEventManager();
         }
 

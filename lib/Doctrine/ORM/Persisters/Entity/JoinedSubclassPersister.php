@@ -279,7 +279,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $tableAlias = $this->getSQLTableAlias($rootClass->getTableName());
         $filterSql  = $this->generateFilterConditionSQL($rootClass, $tableAlias);
 
-        if ('' !== $filterSql) {
+        if ($filterSql !== '') {
             $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;

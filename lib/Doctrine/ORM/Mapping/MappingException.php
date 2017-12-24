@@ -27,7 +27,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function identifierRequired($entityName)
     {
-        if (false !== ($parent = get_parent_class($entityName))) {
+        if (($parent = get_parent_class($entityName)) !== false) {
             return new self(sprintf(
                 'No identifier/primary key specified for Entity "%s" sub class of "%s". Every Entity must have an identifier/primary key.',
                 $entityName, $parent
@@ -326,7 +326,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function classIsNotAValidEntityOrMappedSuperClass($className)
     {
-        if (false !== ($parent = get_parent_class($className))) {
+        if (($parent = get_parent_class($className)) !== false) {
             return new self(sprintf(
                 'Class "%s" sub class of "%s" is not a valid entity or mapped super class.',
                 $className, $parent

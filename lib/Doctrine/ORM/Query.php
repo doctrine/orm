@@ -325,7 +325,7 @@ final class Query extends AbstractQuery
         array $types,
         array $connectionParams
     ) {
-        if (null === $this->queryCacheProfile || ! $this->getExpireResultCache()) {
+        if ($this->queryCacheProfile === null || ! $this->getExpireResultCache()) {
             return;
         }
 
@@ -706,7 +706,7 @@ final class Query extends AbstractQuery
     {
         $lockMode = $this->getHint(self::HINT_LOCK_MODE);
 
-        if (false === $lockMode) {
+        if ($lockMode === false) {
             return null;
         }
 

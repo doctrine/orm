@@ -110,7 +110,7 @@ class DriverChain implements MappingDriver
             }
         }
 
-        if (null !== $this->defaultDriver) {
+        if ($this->defaultDriver !== null) {
             $this->defaultDriver->loadMetadataForClass($className, $metadata, $metadataBuildingContext);
             return;
         }
@@ -141,7 +141,7 @@ class DriverChain implements MappingDriver
             }
         }
 
-        if (null !== $this->defaultDriver) {
+        if ($this->defaultDriver !== null) {
             foreach ($this->defaultDriver->getAllClassNames() as $className) {
                 $classNames[$className] = true;
             }

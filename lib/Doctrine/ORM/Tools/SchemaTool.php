@@ -453,7 +453,7 @@ class SchemaTool
             $options['notnull'] = false;
         }
 
-        if (strtolower($columnType) === 'string' && null === $options['length']) {
+        if (strtolower($columnType) === 'string' && $options['length'] === null) {
             $options['length'] = 255;
         }
 
@@ -768,7 +768,7 @@ class SchemaTool
             || 0 < count(array_diff($foreignColumns, $addedFks[$compositeName]['foreignColumns'])))
         ) {
             foreach ($theJoinTable->getForeignKeys() as $fkName => $key) {
-                if (0 === count(array_diff($key->getLocalColumns(), $localColumns))
+                if (count(array_diff($key->getLocalColumns(), $localColumns)) === 0
                     && (($key->getForeignTableName() != $foreignTableName)
                     || 0 < count(array_diff($key->getForeignColumns(), $foreignColumns)))
                 ) {

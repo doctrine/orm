@@ -100,7 +100,7 @@ class ConnectionMock extends Connection
      */
     public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        if (null !== $this->fetchOneException) {
+        if ($this->fetchOneException !== null) {
             throw $this->fetchOneException;
         }
 

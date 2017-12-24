@@ -56,7 +56,7 @@ abstract class SQLFilter
      */
     final public function setParameter($name, $value, $type = null)
     {
-        if (null === $type) {
+        if ($type === null) {
             $type = ParameterTypeInferer::inferType($value);
         }
 

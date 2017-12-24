@@ -708,7 +708,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
         $config->setProxyNamespace('Doctrine\Tests\Proxies');
 
-        if (null !== $this->resultCacheImpl) {
+        if ($this->resultCacheImpl !== null) {
             $config->setResultCacheImpl($this->resultCacheImpl);
         }
 

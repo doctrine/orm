@@ -99,14 +99,14 @@ EOT
 
         $sqls = $schemaTool->getUpdateSchemaSql($metadatas, $saveMode);
 
-        if (0 === count($sqls)) {
+        if (count($sqls) === 0) {
             $output->writeln('Nothing to update - your database is already in sync with the current entity metadata.');
 
             return 0;
         }
 
-        $dumpSql = true === $input->getOption('dump-sql');
-        $force   = true === $input->getOption('force');
+        $dumpSql = $input->getOption('dump-sql') === true;
+        $force   = $input->getOption('force') === true;
 
         if ($dumpSql) {
             $output->writeln(implode(';' . PHP_EOL, $sqls) . ';');
@@ -119,7 +119,7 @@ EOT
             $output->writeln('Updating database schema...');
             $schemaTool->updateSchema($metadatas, $saveMode);
 
-            $pluralization = (1 === count($sqls)) ? 'query was' : 'queries were';
+            $pluralization = (count($sqls) === 1) ? 'query was' : 'queries were';
 
             $output->writeln(sprintf('Database schema updated successfully! "<info>%s</info>" %s executed', count($sqls), $pluralization));
         }

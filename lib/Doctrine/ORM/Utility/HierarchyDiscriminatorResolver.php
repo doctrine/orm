@@ -36,7 +36,7 @@ final class HierarchyDiscriminatorResolver
             $currentMetadata = $entityManager->getClassMetadata($class);
             $currentDiscriminator = $currentMetadata->discriminatorValue;
 
-            if (null !== $currentDiscriminator) {
+            if ($currentDiscriminator !== null) {
                 $discriminators[$currentDiscriminator] = null;
             }
         }

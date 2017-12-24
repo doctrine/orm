@@ -503,7 +503,8 @@ class SqlWalker implements TreeWalker
         $filterClauses = [];
 
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+            if ($filterExpr !== '') {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
@@ -1106,7 +1107,7 @@ class SqlWalker implements TreeWalker
         }
 
         // Handle WITH clause
-        $withCondition = (null === $condExpr) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
+        $withCondition = ($condExpr === null) ? '' : ('(' . $this->walkConditionalExpression($condExpr) . ')');
 
         if ($targetClass->inheritanceType === InheritanceType::JOINED) {
             $ctiJoins = $this->generateClassTableInheritanceJoins($targetClass, $joinedDqlAlias);
@@ -1836,7 +1837,7 @@ class SqlWalker implements TreeWalker
      */
     public function walkWhereClause($whereClause)
     {
-        $condSql  = null !== $whereClause ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
+        $condSql  = $whereClause !== null ? $this->walkConditionalExpression($whereClause->conditionalExpression) : '';
         $discrSql = $this->generateDiscriminatorColumnConditionSql($this->rootAliases);
 
         if ($this->em->hasFilters()) {
@@ -2169,7 +2170,7 @@ class SqlWalker implements TreeWalker
                 return $this->conn->quote($literal->value);
 
             case AST\Literal::BOOLEAN:
-                return $this->conn->getDatabasePlatform()->convertBooleans('true' === strtolower($literal->value));
+                return $this->conn->getDatabasePlatform()->convertBooleans(strtolower($literal->value) === 'true');
 
             case AST\Literal::NUMERIC:
                 return $literal->value;

@@ -331,7 +331,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $rootClass   = $this->em->getClassMetadata($targetClass->getRootClassName());
         $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
 
-        if ('' === $filterSql) {
+        if ($filterSql === '') {
             return ['', ''];
         }
 

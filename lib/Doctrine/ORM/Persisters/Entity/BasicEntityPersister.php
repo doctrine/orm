@@ -210,7 +210,7 @@ class BasicEntityPersister implements EntityPersister
             $property = $this->class->getProperty($fieldName);
             $value    = $property->getValue($entity);
 
-            if (null !== $value) {
+            if ($value !== null) {
                 $id[$fieldName] = $value;
             }
         }
@@ -1153,7 +1153,7 @@ class BasicEntityPersister implements EntityPersister
         $filterSql  = $this->generateFilterConditionSQL($this->class, $tableAlias);
         $tableName  = $this->class->table->getQuotedQualifiedName($this->platform);
 
-        if ('' !== $filterSql) {
+        if ($filterSql !== '') {
             $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;
@@ -1187,7 +1187,7 @@ class BasicEntityPersister implements EntityPersister
 
         $filterSql = $this->generateFilterConditionSQL($this->class, $tableAlias);
 
-        if ('' !== $filterSql) {
+        if ($filterSql !== '') {
             $conditionSql = $conditionSql
                 ? $conditionSql . ' AND ' . $filterSql
                 : $filterSql;
@@ -1718,15 +1718,15 @@ class BasicEntityPersister implements EntityPersister
                 $placeholder = $property->getType()->convertToDatabaseValueSQL($placeholder, $this->platform);
             }
 
-            if (null !== $comparison) {
+            if ($comparison !== null) {
                 // special case null value handling
-                if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && null ===$value) {
+                if (($comparison === Comparison::EQ || $comparison === Comparison::IS) && $value ===null) {
                     $selectedColumns[] = $column . ' IS NULL';
 
                     continue;
                 }
 
-                if ($comparison === Comparison::NEQ && null === $value) {
+                if ($comparison === Comparison::NEQ && $value === null) {
                     $selectedColumns[] = $column . ' IS NOT NULL';
 
                     continue;
@@ -1740,7 +1740,7 @@ class BasicEntityPersister implements EntityPersister
             if (is_array($value)) {
                 $in = sprintf('%s IN (%s)', $column, $placeholder);
 
-                if (false !== array_search(null, $value, true)) {
+                if (array_search(null, $value, true) !== false) {
                     $selectedColumns[] = sprintf('(%s OR %s IS NULL)', $in, $column);
 
                     continue;
@@ -1751,7 +1751,7 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            if (null === $value) {
+            if ($value === null) {
                 $selectedColumns[] = sprintf('%s IS NULL', $column);
 
                 continue;
@@ -2133,7 +2133,7 @@ class BasicEntityPersister implements EntityPersister
 
         list($params, $types) = $this->expandParameters($criteria);
 
-        if (null !== $extraConditions) {
+        if ($extraConditions !== null) {
             $sql                                 .= ' AND ' . $this->getSelectConditionCriteriaSQL($extraConditions);
             list($criteriaParams, $criteriaTypes) = $this->expandCriteriaParameters($extraConditions);
 
@@ -2196,7 +2196,8 @@ class BasicEntityPersister implements EntityPersister
         $filterClauses = [];
 
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ('' !== $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+            if ($filterExpr !== '') {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
@@ -2216,7 +2217,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function switchPersisterContext($offset, $limit)
     {
-        if (null === $offset && null === $limit) {
+        if ($offset === null && $limit === null) {
             $this->currentPersisterContext = $this->noLimitsContext;
 
             return;
