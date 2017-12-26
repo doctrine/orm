@@ -99,13 +99,21 @@ class SimpleObjectHydrator extends AbstractHydrator
             }
 
             $discrMap = $this->class->discriminatorMap;
+            $discrType = $discriminatorValue = $this->class->discriminatorColumn['type'];
 
-            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
+            if (Type::hasType($discrType)) {
+                $discrValue = Type::getType($discrType)->convertToPHPValue($sqlResult[$discrColumnName], $this->_platform);
+            } else {
+                $discrValue = $sqlResult[$discrColumnName];
+            }
+
+            if ( ! isset($discrMap[$discrValue])) {
                 throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
             }
 
-            $entityName = $discrMap[$sqlResult[$discrColumnName]];
+            $entityName = $discrMap[$discrValue];
 
+            unset($discrValue);
             unset($sqlResult[$discrColumnName]);
         }
 
