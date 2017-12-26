@@ -292,11 +292,12 @@ class DatabaseDriver implements MappingDriver
             }
 
             $pkColumns = $table->getPrimaryKey()->getColumns();
+            $allColumns = $table->getColumns();
 
             sort($pkColumns);
             sort($allForeignKeyColumns);
 
-            if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2) {
+            if ($pkColumns == $allForeignKeyColumns && count($foreignKeys) == 2 && count($allColumns) <= count($allForeignKeyColumns)) {
                 $this->manyToManyTables[$tableName] = $table;
             } else {
                 // lower-casing is necessary because of Oracle Uppercase Tablenames,
