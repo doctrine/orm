@@ -513,11 +513,11 @@ class XmlDriver extends FileDriver
 
                 if (isset($manyToManyElement['mapped-by'])) {
                     $mapping['mappedBy'] = (string) $manyToManyElement['mapped-by'];
-                } else if (isset($manyToManyElement->{'join-table'})) {
-                    if (isset($manyToManyElement['inversed-by'])) {
-                        $mapping['inversedBy'] = (string) $manyToManyElement['inversed-by'];
-                    }
-
+                }
+                if (isset($manyToManyElement['inversed-by'])) {
+                    $mapping['inversedBy'] = (string) $manyToManyElement['inversed-by'];
+                }
+                if (isset($manyToManyElement->{'join-table'})) {
                     $joinTableElement = $manyToManyElement->{'join-table'};
                     $joinTable = [
                         'name' => (string) $joinTableElement['name']
