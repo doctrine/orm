@@ -265,6 +265,11 @@ class AnnotationDriver extends AbstractAnnotationDriver
             }
         }
 
+        // Evaluate DiscriminatorValue annotation
+        if (isset($classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue'])) {
+            $metadata->discriminatorValue = $classAnnotations['Doctrine\ORM\Mapping\DiscriminatorValue']->value;
+        }
+
 
         // Evaluate DoctrineChangeTrackingPolicy annotation
         if (isset($classAnnotations[Mapping\ChangeTrackingPolicy::class])) {
