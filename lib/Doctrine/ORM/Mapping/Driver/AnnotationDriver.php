@@ -362,6 +362,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                 $mapping['cascade'] = $oneToOneAnnot->cascade;
                 $mapping['orphanRemoval'] = $oneToOneAnnot->orphanRemoval;
                 $mapping['fetch'] = $this->getFetchMode($className, $oneToOneAnnot->fetch);
+                $mapping['indexName'] = $oneToOneAnnot->indexName;
                 $metadata->mapOneToOne($mapping);
             } else if ($oneToManyAnnot = $this->reader->getPropertyAnnotation($property, Mapping\OneToMany::class)) {
                 $mapping['mappedBy'] = $oneToManyAnnot->mappedBy;

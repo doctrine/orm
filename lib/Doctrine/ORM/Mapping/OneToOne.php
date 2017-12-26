@@ -58,4 +58,9 @@ final class OneToOne implements Annotation
      * @var boolean
      */
     public $orphanRemoval = false;
+
+    /**
+     * @var string
+     */
+    public $indexName;
 }
