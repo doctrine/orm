@@ -2308,6 +2308,18 @@ class SelectSqlGenerationTest extends OrmTestCase
     }
 
     /**
+     * GitHub issue #5801: https://github.com/doctrine/doctrine2/issues/5801
+     * @group Issue-5801
+     */
+    public function testCaseExpressionsAllowsNull()
+    {
+        $this->assertSqlGeneration(
+            'SELECT CASE WHEN u.id > 0 THEN u.id ELSE NULL END FROM Doctrine\Tests\Models\CMS\CmsUser u',
+            'SELECT CASE WHEN c0_.id > 0 THEN c0_.id ELSE NULL END AS sclr_0 FROM cms_users c0_'
+        );
+    }
+
+    /**
      * @return array
      */
     public function mathematicOperatorsProvider()
