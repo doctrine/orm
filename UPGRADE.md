@@ -1,5 +1,9 @@
 # Upgrade to 3.0
 
+## BC Break: Removed possibility to extends the doctrine mapping xml schema with anything
+
+If you want to extend it now you have to provide your own validation schema.
+
 ## BC Break: Removed `Doctrine\ORM\Mapping\Exporter\VariableExporter` constants
 
 This constant has been removed
