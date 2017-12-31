@@ -314,6 +314,12 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     {
         $this->em->createQuery("DELETE Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10")->execute();
         $this->em->createQuery("UPDATE Doctrine\Tests\Models\CMS\CmsUser u SET u.status = 'inactive' WHERE SIZE(u.groups) = 10")->execute();
+
+        $count = $this->em->createQuery(
+            "SELECT COUNT(u) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE SIZE(u.groups) = 10"
+        )->getSingleScalarResult();
+
+        self::assertSame(0, (int) $count);
     }
 
     /**
