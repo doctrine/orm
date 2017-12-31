@@ -68,10 +68,10 @@ class SetupTest extends OrmTestCase
      */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsNotGiven() : void
     {
-        $config = Setup::createConfiguration(false, '/foo');
+        $config = Setup::createConfiguration(false, __DIR__);
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+        self::assertSame('dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
     }
 
     /**
@@ -79,10 +79,10 @@ class SetupTest extends OrmTestCase
      */
     public function testCacheNamespaceShouldBeGeneratedWhenCacheIsGivenButHasNoNamespace() : void
     {
-        $config = Setup::createConfiguration(false, '/foo', new ArrayCache());
+        $config = Setup::createConfiguration(false, __DIR__, new ArrayCache());
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+        self::assertSame('dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
     }
 
     /**
@@ -93,11 +93,11 @@ class SetupTest extends OrmTestCase
         $originalCache = new ArrayCache();
         $originalCache->setNamespace('foo');
 
-        $config = Setup::createConfiguration(false, '/foo', $originalCache);
+        $config = Setup::createConfiguration(false, __DIR__, $originalCache);
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame($originalCache, $cache);
-        self::assertSame('foo:dc2_1effb2475fcfba4f9e8b8a1dbc8f3caf_', $cache->getNamespace());
+        self::assertSame('foo:dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
     }
 
     /**
