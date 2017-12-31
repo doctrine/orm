@@ -218,6 +218,11 @@ class UnitOfWorkTest extends OrmTestCase
 
     public function testChangeTrackingNotifyIndividualCommit()
     {
+        self::markTestIncomplete(
+            '@guilhermeblanco, this test was added directly on master#a16dc65cd206aed67a01a19f01f6318192b826af and'
+            . ' since we do not support committing individual entities I think it is invalid now...'
+        );
+
         $persister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedEntity"));
         $this->unitOfWork->setEntityPersister('Doctrine\Tests\ORM\NotifyChangedEntity', $persister);
         $itemPersister = new EntityPersisterMock($this->emMock, $this->emMock->getClassMetadata("Doctrine\Tests\ORM\NotifyChangedRelatedItem"));
