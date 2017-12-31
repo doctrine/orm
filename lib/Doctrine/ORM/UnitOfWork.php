@@ -1487,8 +1487,7 @@ class UnitOfWork implements PropertyChangedListener
         $className = $classMetadata->getRootClassName();
 
         if (isset($this->identityMap[$className][$idHash])) {
-            unset($this->identityMap[$className][$idHash]);
-            unset($this->readOnlyObjects[$oid]);
+            unset($this->identityMap[$className][$idHash], $this->readOnlyObjects[$oid]);
 
             //$this->entityStates[$oid] = self::STATE_DETACHED;
 
