@@ -36,12 +36,12 @@ is allowed to:
         public function assertCustomerAllowedBuying()
         {
             $orderLimit = $this->customer->getOrderLimit();
-    
+
             $amount = 0;
             foreach ($this->orderLines as $line) {
                 $amount += $line->getAmount();
             }
-    
+
             if ($amount > $orderLimit) {
                 throw new CustomerOrderLimitExceededException();
             }
@@ -115,11 +115,11 @@ validation callbacks.
             if (!($this->plannedShipDate instanceof DateTime)) {
                 throw new ValidateException();
             }
-    
+
             if ($this->plannedShipDate->format('U') < time()) {
                 throw new ValidateException();
             }
-    
+
             if ($this->customer == null) {
                 throw new OrderRequiresCustomerException();
             }

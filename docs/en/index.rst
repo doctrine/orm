@@ -72,9 +72,9 @@ Advanced Topics
 * :doc:`Transactions and Concurrency <reference/transactions-and-concurrency>`
 * :doc:`Filters <reference/filters>`
 * :doc:`NamingStrategy <reference/namingstrategy>`
-* :doc:`Improving Performance <reference/improving-performance>` 
-* :doc:`Caching <reference/caching>` 
-* :doc:`Partial Objects <reference/partial-objects>` 
+* :doc:`Improving Performance <reference/improving-performance>`
+* :doc:`Caching <reference/caching>`
+* :doc:`Partial Objects <reference/partial-objects>`
 * :doc:`Change Tracking Policies <reference/change-tracking-policies>`
 * :doc:`Best Practices <reference/best-practices>`
 * :doc:`Metadata Drivers <reference/metadata-drivers>`
@@ -103,7 +103,7 @@ Cookbook
 * **Patterns**:
   :doc:`Aggregate Fields <cookbook/aggregate-fields>` |
   :doc:`Decorator Pattern <cookbook/decorator-pattern>` |
-  :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>` 
+  :doc:`Strategy Pattern <cookbook/strategy-cookbook-introduction>`
 
 * **DQL Extension Points**:
   :doc:`DQL Custom Walkers <cookbook/dql-custom-walkers>` |

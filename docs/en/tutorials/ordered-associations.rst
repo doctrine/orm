@@ -24,7 +24,7 @@ you can specify the ``@ORM\OrderBy`` in the following way:
         class User
         {
             // ...
-        
+
             /**
              * @ORM\ManyToMany(targetEntity="Group")
              * @ORM\OrderBy({"name" = "ASC"})

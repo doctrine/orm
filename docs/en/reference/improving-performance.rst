@@ -11,7 +11,7 @@ request and can greatly improve performance.
     "If you care about performance and don't use a bytecode
     cache then you don't really care about performance. Please get one
     and start using it."
-    
+
     *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
 

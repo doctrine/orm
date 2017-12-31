@@ -19,7 +19,7 @@ The following rules apply to **bidirectional** associations:
   OneToMany, or ManyToMany mapping declaration. The mappedBy
   attribute contains the name of the association-field on the owning side.
 - The owning side has to have the ``inversedBy`` attribute of the
-  OneToOne, ManyToOne, or ManyToMany mapping declaration. 
+  OneToOne, ManyToOne, or ManyToMany mapping declaration.
   The inversedBy attribute contains the name of the association-field
   on the inverse-side.
 - ManyToOne is always the owning side of a bidirectional association.

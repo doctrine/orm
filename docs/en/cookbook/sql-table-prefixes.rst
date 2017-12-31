@@ -23,21 +23,21 @@ appropriate autoloaders.
 .. code-block:: php
 
     <?php
-    
+
     namespace DoctrineExtensions;
 
     use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
     use Doctrine\ORM\Mapping;
-    
+
     class TablePrefix
     {
         protected $prefix = '';
-    
+
         public function __construct($prefix)
         {
             $this->prefix = (string) $prefix;
         }
-    
+
         public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
         {
             $classMetadata = $eventArgs->getClassMetadata();
@@ -73,15 +73,15 @@ before the prefix has been set.
 .. code-block:: php
 
     <?php
-    
+
     // $connectionOptions and $config set earlier
-    
+
     $evm = new \Doctrine\Common\EventManager;
-    
+
     // Table Prefix
     $tablePrefix = new \DoctrineExtensions\TablePrefix('prefix_');
     $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
-    
+
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 
 

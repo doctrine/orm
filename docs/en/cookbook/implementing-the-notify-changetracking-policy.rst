@@ -24,15 +24,15 @@ implement the ``NotifyPropertyChanged`` interface from the
     <?php
     use Doctrine\Common\NotifyPropertyChanged;
     use Doctrine\Common\PropertyChangedListener;
-    
+
     abstract class DomainObject implements NotifyPropertyChanged
     {
         private $listeners = array();
-    
+
         public function addPropertyChangedListener(PropertyChangedListener $listener) {
             $this->listeners[] = $listener;
         }
-    
+
         /** Notifies listeners of a change. */
         protected function onPropertyChanged($propName, $oldValue, $newValue) {
             if ($this->listeners) {
@@ -55,7 +55,7 @@ listeners:
     {
         private $data;
         // ... other fields as usual
-    
+
         public function setData($data) {
             if ($data != $this->data) { // check: is it actually modified?
                 $this->onPropertyChanged('data', $this->data, $data);

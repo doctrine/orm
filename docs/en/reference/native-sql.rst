@@ -71,7 +71,7 @@ with inheritance hierarchies.
 
     use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
-    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " .
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
     $rsm = new ResultSetMappingBuilder($entityManager);
@@ -267,7 +267,7 @@ detail:
     <?php
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
-     * 
+     *
      * @param string  $alias
      * @param string  $columnAlias
      * @param string  $columnName
@@ -322,10 +322,10 @@ entity.
     $rsm->addEntityResult('User', 'u');
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
-    
+
     $query = $this->em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 The result would look like this:
@@ -358,10 +358,10 @@ thus owns the foreign key.
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'address_id', 'address_id');
-    
+
     $query = $this->em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Foreign keys are used by Doctrine for lazy-loading purposes when
@@ -387,12 +387,12 @@ associations that are lazy.
     $rsm->addFieldResult('a', 'address_id', 'id');
     $rsm->addFieldResult('a', 'street', 'street');
     $rsm->addFieldResult('a', 'city', 'city');
-    
+
     $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
            'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
     $query = $this->em->createNativeQuery($sql, $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 In this case the nested entity ``Address`` is registered with the
@@ -422,10 +422,10 @@ to map the hierarchy (both use a discriminator column).
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
     $rsm->setDiscriminatorColumn('u', 'discr');
-    
+
     $query = $this->em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Note that in the case of Class Table Inheritance, an example as
@@ -791,7 +791,7 @@ followed by a dot ("."), followed by the name or the field or property of the pr
                     6:
                       name: address.country
                       column: a_country
-                    
+
 
 
 If you retrieve a single entity and if you use the default mapping,

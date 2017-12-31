@@ -130,7 +130,7 @@ Inheritance
 
 Can I use Inheritance with Doctrine 2?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+
 Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for

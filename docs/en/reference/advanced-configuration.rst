@@ -12,15 +12,15 @@ steps of configuration.
     use Doctrine\ORM\EntityManager;
     use Doctrine\ORM\Configuration;
     use Doctrine\Common\Proxy\ProxyFactory;
-    
+
     // ...
-    
+
     if ($applicationMode == "development") {
         $cache = new \Doctrine\Common\Cache\ArrayCache;
     } else {
         $cache = new \Doctrine\Common\Cache\ApcCache;
     }
-    
+
     $config = new Configuration;
     $config->setMetadataCacheImpl($cache);
     $driverImpl = $config->newDefaultAnnotationDriver('/path/to/lib/MyProject/Entities');
@@ -29,16 +29,16 @@ steps of configuration.
     $config->setProxyDir('/path/to/myproject/lib/MyProject/Proxies');
     $config->setProxyNamespace('MyProject\Proxies');
     $config->setAutoGenerateProxyClasses($applicationMode === 'development')
-    
+
     if ('development' === $applicationMode) {
         $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_EVAL);
     }
-    
+
     $connectionOptions = [
         'driver' => 'pdo_sqlite',
         'path' => 'database.sqlite'
     ];
-    
+
     $em = EntityManager::create($connectionOptions, $config);
 
 .. note::

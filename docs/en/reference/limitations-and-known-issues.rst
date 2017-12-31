@@ -39,7 +39,7 @@ possible either. See the following example:
         name VARCHAR,
         PRIMARY KEY(id)
     );
-    
+
     CREATE TABLE product_attributes (
         product_id INTEGER,
         attribute_name VARCHAR,

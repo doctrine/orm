@@ -50,25 +50,25 @@ Customize it to your needs.
         Doctrine\ORM\EntityManager,
         Doctrine\Common\Cache\ArrayCache,
         Doctrine\DBAL\Logging\EchoSQLLogger;
-    
+
     class Doctrine {
-    
+
       public $em = null;
-    
+
       public function __construct()
       {
         // load database configuration from CodeIgniter
         require_once APPPATH.'config/database.php';
-    
+
         // Set up class loading. You could use different autoloaders, provided by your favorite framework,
         // if you want to.
         require_once APPPATH.'libraries/Doctrine/Common/ClassLoader.php';
-    
+
         $doctrineClassLoader = new ClassLoader('Doctrine',  APPPATH.'libraries');
         $doctrineClassLoader->register();
         $entitiesClassLoader = new ClassLoader('models', rtrim(APPPATH, "/" ));
         $entitiesClassLoader->register();
-    
+
         // Set up caches
         $config = new Configuration;
         $cache = new ArrayCache;
@@ -80,11 +80,11 @@ Customize it to your needs.
         $config->setQueryCacheImpl($cache);
 
         $config->setProxyDir(APPPATH.'/models/proxies');
-    
+
         // Set up logger
         $logger = new EchoSQLLogger;
         $config->setSQLLogger($logger);
-    
+
         // Database connection information
         $connectionOptions = array(
             'driver' => 'pdo_mysql',
@@ -93,7 +93,7 @@ Customize it to your needs.
             'host' =>     $db['default']['hostname'],
             'dbname' =>   $db['default']['database']
         );
-    
+
         // Create EntityManager
         $this->em = EntityManager::create($connectionOptions, $config);
       }

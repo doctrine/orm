@@ -22,9 +22,9 @@ One tip for working with relations is to read the relation from left to right, w
 - ManyToOne - Many instances of the current Entity refer to One instance of the refered Entity.
 - OneToOne - One instance of the current Entity refers to One instance of the refered Entity.
 
-See below for all the possible relations. 
+See below for all the possible relations.
 
-An association is considered to be unidirectional if only one side of the association has 
+An association is considered to be unidirectional if only one side of the association has
 a property referring to the other side.
 
 To gain a full understanding of associations you should also read about :doc:`owning and

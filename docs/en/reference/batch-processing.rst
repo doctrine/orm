@@ -172,7 +172,7 @@ problems using the following approach:
     $iterableResult = $q->iterate();
     foreach ($iterableResult as $row) {
         // do stuff with the data in the row, $row[0] is always the object
-    
+
         // detach all entities from Doctrine, so that Garbage-Collection can kick in immediately
         $this->em->clear();
     }
