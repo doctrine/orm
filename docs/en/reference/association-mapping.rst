@@ -79,7 +79,6 @@ A many-to-one association is the most common association between objects. Exampl
                 name: address_id
                 referencedColumnName: id
 
-
 .. note::
 
     The above ``@JoinColumn`` is optional as it would default
@@ -485,7 +484,6 @@ The following example sets up such a unidirectional one-to-many association:
                   phonenumber_id:
                     referencedColumnName: id
                     unique: true
-
 
 Generates the following MySQL Schema:
 

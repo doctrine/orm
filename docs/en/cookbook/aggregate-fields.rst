@@ -368,4 +368,3 @@ the related objects that make up an aggregate value. Finally I
 showed how you can ensure that your aggregate fields do not get out
 of sync due to race-conditions and concurrent access.
 
-

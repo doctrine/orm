@@ -11,7 +11,6 @@ Core Metadata Drivers
 Doctrine provides a few different ways for you to specify your
 metadata:
 
-
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
 -  **YAML files** (YamlDriver)
@@ -36,7 +35,6 @@ an entity.
 
         <?php
         $em->getConfiguration()->setMetadataCacheImpl(new ApcuCache());
-
 
 If you want to use one of the included core metadata drivers you
 just need to configure it. All the drivers are in the
@@ -133,7 +131,6 @@ the ``AbstractFileDriver`` implementation for you to extend from:
     to name the file ``Entities.User.dcm.ext`` for it to be
     recognized.
 
-
 Now you can use your ``MyMetadataDriver`` implementation by setting
 it with the ``setMetadataDriverImpl()`` method:
 
@@ -187,5 +184,4 @@ iterate over them:
     foreach ($class->fieldMappings as $fieldMapping) {
         echo $fieldMapping['fieldName'] . "\n";
     }
-
 

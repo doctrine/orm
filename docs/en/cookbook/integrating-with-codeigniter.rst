@@ -9,7 +9,6 @@ This is recipe for using Doctrine 2 in your
     This might not work for all CodeIgniter versions and may require
     slight adjustments.
 
-
 Here is how to set it up:
 
 Make a CodeIgniter library that is both a wrapper and a bootstrap
@@ -19,7 +18,6 @@ Setting up the file structure
 -----------------------------
 
 Here are the steps:
-
 
 -  Add a php file to your system/application/libraries folder
    called Doctrine.php. This is going to be your wrapper/bootstrap for
@@ -34,7 +32,6 @@ Here are the steps:
    your Doctrine library.
 
    <?php $autoload['libraries'] = array('doctrine');
-
 
 Creating your Doctrine CodeIgniter library
 ------------------------------------------
@@ -130,5 +127,4 @@ will need to put this line before you get a reference to it:
     $this->load->library('doctrine');
 
 Good luck!
-
 

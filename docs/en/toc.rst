@@ -60,7 +60,6 @@ Reference Guide
    reference/second-level-cache
    reference/security
 
-
 Cookbook
 --------
 

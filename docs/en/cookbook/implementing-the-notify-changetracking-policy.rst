@@ -69,4 +69,3 @@ not mandatory but recommended. That way you can avoid unnecessary
 updates and also have full control over when you consider a
 property changed.
 
-

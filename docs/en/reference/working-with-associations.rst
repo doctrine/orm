@@ -262,7 +262,6 @@ where n is the size of the map.
     can often be used to improve performance by avoiding the loading of
     the inverse collection.
 
-
 You can also clear the contents of a whole collection using the
 ``Collections::clear()`` method. You should be aware that using
 this method can lead to a straight and optimized database delete or
@@ -351,7 +350,6 @@ the details inside the classes can be challenging.
     entity cannot circumvent the logic you implement on your entity for
     association management. For example:
 
-
 .. code-block:: php
 
     <?php
@@ -392,7 +390,6 @@ can show the possible caveats you can encounter:
     $favoriteComment->getUserFavorites()->contains($user); // FALSE
 
 There are two approaches to handle this problem in your code:
-
 
 1. Ignore updating the inverse side of bidirectional collections,
    BUT never read from them in requests that changed their state. In
@@ -528,7 +525,6 @@ There are additional semantics that apply to the Cascade Persist
 operation. During each ``flush()`` operation Doctrine detects if there
 are new entities in any collection and three possible cases can
 happen:
-
 
 1. New entities in a collection marked as ``cascade: persist`` will be
    directly persisted by Doctrine.
@@ -718,7 +714,6 @@ methods:
 * ``contains($field, $value)``
 * ``startsWith($field, $value)``
 * ``endsWith($field, $value)``
-
 
 .. note::
 

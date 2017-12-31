@@ -135,7 +135,6 @@ optimize the performance of the Flush Operation:
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
 
-
 Query Internals
 ---------------
 

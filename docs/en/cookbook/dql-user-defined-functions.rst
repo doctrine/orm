@@ -17,7 +17,6 @@ and gain access to vendor specific functionalities using the
 ``EntityManager#createNativeQuery()`` API as described in
 the :doc:`Native Query <../reference/native-sql>` chapter.
 
-
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
@@ -247,5 +246,4 @@ vendor sql functions and extend the DQL languages scope.
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
 `in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
-
 

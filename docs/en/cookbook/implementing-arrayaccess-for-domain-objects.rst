@@ -16,7 +16,6 @@ In this implementation we will make use of PHPs highly dynamic
 nature to dynamically access properties of a subtype in a supertype
 at runtime. Note that this implementation has 2 main caveats:
 
-
 -  It will not work with private fields
 -  It will not go through any getters/setters
 
@@ -49,7 +48,6 @@ In this implementation we will dynamically invoke getters/setters.
 Again we use PHPs dynamic nature to invoke methods on a subtype
 from a supertype at runtime. This implementation has the following
 caveats:
-
 
 -  It relies on a naming convention
 -  The semantics of offsetExists can differ
@@ -108,5 +106,4 @@ exception (i.e. BadMethodCallException).
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }
     }
-
 

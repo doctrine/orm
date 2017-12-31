@@ -69,7 +69,6 @@ before the prefix has been set.
     If you set this listener up, be aware that you will need
     to clear your caches and drop then recreate your database schema.
 
-
 .. code-block:: php
 
     <?php
@@ -83,5 +82,4 @@ before the prefix has been set.
     $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
 
     $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
-
 

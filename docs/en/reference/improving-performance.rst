@@ -14,7 +14,6 @@ request and can greatly improve performance.
 
     *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
-
 Metadata and Query caches
 -------------------------
 
@@ -54,13 +53,11 @@ Temporarily change fetch mode in DQL
 
 See :ref:`Doctrine Query Language chapter <dql-temporarily-change-fetch-mode>`
 
-
 Apply Best Practices
 --------------------
 
 A lot of the points mentioned in the Best Practices chapter will
 also positively affect the performance of Doctrine.
-
 
 Change Tracking policies
 ------------------------

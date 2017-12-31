@@ -12,7 +12,6 @@ Scenario / Problem
 Given a Content-Management-System, we probably want to add / edit
 some so-called "blocks" and "panels". What are they for?
 
-
 -  A block might be a registration form, some text content, a table
    with information. A good example might also be a small calendar.
 -  A panel is by definition a block that can itself contain blocks.
@@ -22,7 +21,6 @@ some so-called "blocks" and "panels". What are they for?
 So, in this scenario, when building your CMS, you will surely add
 lots of blocks and panels to your pages and you will find yourself
 highly uncomfortable because of the following:
-
 
 -  Every existing page needs to know about the panels it contains -
    therefore, you'll have an association to your panels. But if you've
@@ -57,7 +55,6 @@ supposed to be placed in the sidebar could refuse to be placed in
 the middle of your page, for example).
 
 Such an interface could look like this:
-
 
 .. code-block:: php
 
@@ -250,5 +247,4 @@ This might look like this:
 
 In this example, even some variables are set - like a view object
 or a specific configuration object.
-
 

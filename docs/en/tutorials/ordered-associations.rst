@@ -69,7 +69,6 @@ class of the ``@ORM\ManyToMany`` or ``@ORM\OneToMany`` annotation.
 
 The semantics of this feature can be described as follows.
 
-
 -  ``@ORM\OrderBy`` acts as an implicit ORDER BY clause for the given
    fields, that is appended to all the explicitly given ORDER BY
    items.
@@ -109,5 +108,4 @@ You can reverse the order with an explicit DQL ORDER BY:
 .. code-block:: sql
 
     SELECT u, g FROM User u JOIN u.groups g WHERE u.id = 10 ORDER BY g.name DESC, g.name ASC
-
 

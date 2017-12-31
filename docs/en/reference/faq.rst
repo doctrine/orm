@@ -102,7 +102,6 @@ foreign keys as primary keys feature of Doctrine introduced in version 2.1.
 
 See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
 
-
 How can i paginate fetch-joined collections?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

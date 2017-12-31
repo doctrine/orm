@@ -15,7 +15,6 @@ especially what the strategies presented here provide help with.
     you use the tools for your particular RDBMS for these bulk
     operations.
 
-
 Bulk Inserts
 ------------
 
@@ -102,7 +101,6 @@ with the batching strategy that was already used for bulk inserts:
     additional memory not visible to the PHP process. For large sets this
     may easily kill the process for no apparent reason.
 
-
 Bulk Deletes
 ------------
 
@@ -154,7 +152,6 @@ The following example shows how to do this:
     Iterating results is not possible with queries that
     fetch-join a collection-valued association. The nature of such SQL
     result sets is not suitable for incremental hydration.
-
 
 Iterating Large Results for Data-Processing
 -------------------------------------------

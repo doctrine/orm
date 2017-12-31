@@ -122,7 +122,6 @@ included in the core of Doctrine 2. However there are already two
 extensions out there that offer support for Nested Set with
 Doctrine 2:
 
-
 -  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
 -  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
 
@@ -146,7 +145,6 @@ For compatibility reasons between all the supported vendors and
 edge case problems Doctrine 2 does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
 legacy-databases to work with Doctrine 2.
-
 
 -  You can quote column-names as described in the
    :doc:`Basic-Mapping <basic-mapping>` section.

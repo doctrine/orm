@@ -34,7 +34,6 @@ This manual mainly covers the ORM package, sometimes touching parts
 of the underlying DBAL and Common packages. The Doctrine code base
 is split in to these packages for a few reasons and they are to...
 
-
 -  ...make things more maintainable and decoupled
 -  ...allow you to use the code in Doctrine Common without the ORM
    or DBAL
@@ -72,7 +71,6 @@ Entities
 An entity is a lightweight, persistent domain object. An entity can
 be any regular PHP class observing the following restrictions:
 
-
 -  An entity class must not be final or contain final methods.
 -  All persistent properties/field of any entity class should
    always be private or protected, otherwise lazy-loading might not
@@ -96,13 +94,11 @@ classes, and non-entity classes may extend entity classes.
     never calls entity constructors, thus you are free to use them as
     you wish and even have it require arguments of any type.
 
-
 Entity states
 ~~~~~~~~~~~~~
 
 An entity instance can be characterized as being NEW, MANAGED,
 DETACHED or REMOVED.
-
 
 -  A NEW entity instance has no persistent identity, and is not yet
    associated with an EntityManager and a UnitOfWork (i.e. those just
@@ -183,5 +179,4 @@ typical implementation of the
 to keep track of all the things that need to be done the next time
 ``flush`` is invoked. You usually do not directly interact with a
 ``UnitOfWork`` but with the ``EntityManager`` instead.
-
 

@@ -172,7 +172,6 @@ directly, set ``columnPrefix=false`` (``use-column-prefix="false"`` for XML):
             <embedded name="address" class="Address" use-column-prefix="false" />
         </entity>
 
-
 DQL
 ---
 

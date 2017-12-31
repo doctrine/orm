@@ -25,7 +25,6 @@ Work that have not yet been persisted are lost.
     Not calling ``EntityManager#flush()`` will lead to all changes
     during that request being lost.
 
-
 Entities and the Identity Map
 -----------------------------
 
@@ -186,7 +185,6 @@ enable lazy-loading mechanisms:
     to heavily. Make sure to use DQL to fetch-join all the parts of the
     object-graph that you need as efficiently as possible.
 
-
 Persisting entities
 -------------------
 
@@ -209,7 +207,6 @@ be properly synchronized with the database when
     database in the most efficient way and a single, short transaction,
     taking care of maintaining referential integrity.
 
-
 Example:
 
 .. code-block:: php
@@ -230,10 +227,8 @@ Example:
     generated identifier being not available after a failed flush
     operation.
 
-
 The semantics of the persist operation, applied on an entity X, are
 as follows:
-
 
 -  If X is a new entity, it becomes managed. The entity X will be
    entered into the database as a result of the flush operation.
@@ -266,7 +261,6 @@ which means that its persistent state will be deleted once
     the section on :ref:`Database and UnitOfWork Out-Of-Sync <workingobjects_database_uow_outofsync>`
     for more information.
 
-
 Example:
 
 .. code-block:: php
@@ -277,7 +271,6 @@ Example:
 
 The semantics of the remove operation, applied to an entity X are
 as follows:
-
 
 -  If X is a new entity, it is ignored by the remove operation.
    However, the remove operation is cascaded to entities referenced by
@@ -306,7 +299,6 @@ foreign key semantics of onDelete="CASCADE".
 
 Deleting an object with all its associated objects can be achieved
 in multiple ways with very different performance impacts.
-
 
 1. If an association is marked as ``CASCADE=REMOVE`` Doctrine 2
    will fetch this association. If its a Single association it will
@@ -405,7 +397,6 @@ Synchronizing New and Managed Entities
 The flush operation applies to a managed entity with the following
 semantics:
 
-
 -  The entity itself is synchronized to the database using a SQL
    UPDATE statement, only if at least one persistent field has
    changed.
@@ -414,13 +405,11 @@ semantics:
 The flush operation applies to a new entity with the following
 semantics:
 
-
 -  The entity itself is synchronized to the database using a SQL
    INSERT statement.
 
 For all (initialized) relationships of the new or managed entity
 the following semantics apply to each associated entity X:
-
 
 -  If X is new and persist operations are configured to cascade on
    the relationship, X will be persisted.
@@ -453,7 +442,6 @@ The cost of flushing
 
 How costly a flush operation is, mainly depends on two factors:
 
-
 -  The size of the EntityManager's current UnitOfWork.
 -  The configured change tracking policies
 
@@ -480,7 +468,6 @@ during development.
     single HTTP request there should be usually no need for invoking
     ``flush`` more than 0-2 times.
 
-
 Direct access to a Unit of Work
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -499,7 +486,6 @@ instance the EntityManager is currently using.
     When working directly with the UnitOfWork API, respect methods
     marked as INTERNAL by not using them and carefully read the API
     documentation.
-
 
 Entity State
 ~~~~~~~~~~~~
@@ -762,5 +748,4 @@ You can access your repository now by calling:
     // $em instanceof EntityManager
 
     $admins = $em->getRepository('MyDomain\Model\User')->getAllAdminUsers();
-
 

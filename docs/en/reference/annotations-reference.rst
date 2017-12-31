@@ -276,12 +276,10 @@ to a string column of length 255 called ``dtype``.
 
 Required attributes:
 
-
 -  **name**: The column name of the discriminator. This name is also
    used during Array hydration as key to specify the class-name.
 
 Optional attributes:
-
 
 -  **type**: By default this is string.
 -  **length**: By default this is 255.
@@ -312,7 +310,6 @@ depending on whether the classes are in the namespace or not.
         // ...
     }
 
-
 .. _annref_embeddable:
 
 @Embeddable
@@ -339,7 +336,6 @@ annotation to establish the relationship between the two classes.
          */
         private $address;
 
-
 .. _annref_embedded:
 
 @Embedded
@@ -351,7 +347,6 @@ in order to specify that it is an embedded class.
 Required attributes:
 
 -  **class**: The embeddable class
-
 
 .. code-block:: php
 
@@ -372,7 +367,6 @@ Required attributes:
     {
     // ...
 
-
 .. _annref_entity:
 
 @Entity
@@ -382,7 +376,6 @@ Required annotation to mark a PHP class as an entity. Doctrine manages
 the persistence of all classes marked as entities.
 
 Optional attributes:
-
 
 -  **repositoryClass**: Specifies the FQCN of a subclass of the
    EntityRepository. Use of repositories for entities is encouraged to keep
@@ -433,7 +426,6 @@ Required attributes:
 
 -  **name**: Name of the persistent field or property of the class.
 
-
 Optional attributes:
 
 -  **column**: Name of the column in the SELECT clause.
@@ -452,7 +444,6 @@ If this annotation is not specified with @Id the NONE strategy is
 used as default.
 
 Optional attributes:
-
 
 -  **strategy**: Set the name of the identifier generation strategy.
    Valid values are AUTO, SEQUENCE, TABLE, IDENTITY, UUID, CUSTOM and NONE.
@@ -510,7 +501,6 @@ generate a database index on the specified table columns. It only
 has meaning in the SchemaTool schema generation context.
 
 Required attributes:
-
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.
@@ -625,7 +615,6 @@ inferred from the table and primary key names.
 
 Required attributes:
 
-
 -  **name**: Column name that holds the foreign key identifier for
    this relation. In the context of @JoinTable it specifies the column
    name in the join table.
@@ -633,7 +622,6 @@ Required attributes:
    is used for joining of this relation.
 
 Optional attributes:
-
 
 -  **unique**: Determines whether this relation is exclusive between the
    affected entities and should be enforced as such on the database
@@ -685,7 +673,6 @@ using the affected table and the column names.
 
 Optional attributes:
 
-
 -  **name**: Database name of the join-table
 -  **joinColumns**: An array of @JoinColumn annotations describing the
    join-relation between the owning entities table and the join table.
@@ -717,13 +704,11 @@ describes a many-to-one relationship between two entities.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY or EAGER
@@ -753,13 +738,11 @@ entities.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **mappedBy**: This option specifies the property name on the
    targetEntity that is the owning side of this relation. It is a
@@ -816,7 +799,6 @@ The @MappedSuperclass annotation cannot be used in conjunction with
 
 Optional attributes:
 
-
 -  **repositoryClass**: (>= 2.2) Specifies the FQCN of a subclass of the EntityRepository.
    That will be inherited for all subclasses of that Mapped Superclass.
 
@@ -853,12 +835,10 @@ Required attributes:
 -  **name**: The name used to refer to the query with the EntityManager methods that create query objects.
 -  **query**: The SQL query string.
 
-
 Optional attributes:
 
 -  **resultClass**: The class of the result.
 -  **resultSetMapping**: The name of a SqlResultSetMapping, as defined in metadata.
-
 
 Example:
 
@@ -925,13 +905,11 @@ primary key column names apply here too.
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **fetch**: One of LAZY or EAGER
@@ -959,13 +937,11 @@ Example:
 
 Required attributes:
 
-
 -  **targetEntity**: FQCN of the referenced target entity. Can be the
    unqualified class name if both classes are in the same namespace.
    *IMPORTANT:* No leading backslash!
 
 Optional attributes:
-
 
 -  **cascade**: Cascade Option
 -  **orphanRemoval**: Boolean that specifies if orphans, inverse
@@ -1091,11 +1067,9 @@ the increment size and initial values of the sequence.
 
 Required attributes:
 
-
 -  **sequenceName**: Name of the sequence
 
 Optional attributes:
-
 
 -  **allocationSize**: Increment the sequence by the allocation size
    when its fetched. A value larger than 1 allows optimization for
@@ -1126,7 +1100,6 @@ The SqlResultSetMapping annotation can be applied to an entity or mapped supercl
 Required attributes:
 
 -  **name**: The name given to the result set mapping, and used to refer to it in the methods of the Query API.
-
 
 Optional attributes:
 
@@ -1228,11 +1201,9 @@ unqualified classname.
 
 Required attributes:
 
-
 -  **name**: Name of the table
 
 Optional attributes:
-
 
 -  **indexes**: Array of @Index annotations
 -  **uniqueConstraints**: Array of @UniqueConstraint annotations.
@@ -1265,7 +1236,6 @@ columns. It only has meaning in the SchemaTool schema generation
 context.
 
 Required attributes:
-
 
 -  **name**: Name of the Index
 -  **columns**: Array of columns.

@@ -438,7 +438,6 @@ need to access the sequence once to generate the identifiers for
     configuration option is never larger than the actual sequences
     INCREMENT BY value, otherwise you may get duplicate keys.
 
-
 .. note::
 
     It is possible to use strategy="AUTO" and at the same time
@@ -446,7 +445,6 @@ need to access the sequence once to generate the identifiers for
     sequence settings are used in the case where the preferred strategy
     of the underlying platform is SEQUENCE, such as for Oracle and
     PostgreSQL.
-
 
 Composite Keys
 ~~~~~~~~~~~~~~

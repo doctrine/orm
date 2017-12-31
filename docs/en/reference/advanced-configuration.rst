@@ -105,7 +105,6 @@ classes.
 
 There are currently 4 available implementations:
 
-
 -  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\YamlDriver``
@@ -152,7 +151,6 @@ Usage of a metadata cache is highly recommended.
 
 The recommended implementations for production are:
 
-
 -  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\ApcuCache``
 -  ``Doctrine\Common\Cache\MemcacheCache``
@@ -183,7 +181,6 @@ minimal memory usage in your cache).
 Usage of a query cache is highly recommended.
 
 The recommended implementations for production are:
-
 
 -  ``Doctrine\Common\Cache\ApcCache``
 -  ``Doctrine\Common\Cache\ApcuCache``
@@ -410,7 +407,6 @@ the entity class name against the namespace using a
 ``strpos() === 0`` call. This means you need to order the drivers
 correctly if sub-namespaces use different metadata driver
 implementations.
-
 
 Default Repository (***OPTIONAL***)
 -----------------------------------

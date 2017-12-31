@@ -148,4 +148,3 @@ effectiveness. It has the best performance characteristics of the 3
 policies with larger units of work and a flush() operation is very
 cheap when nothing has changed.
 
-

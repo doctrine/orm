@@ -144,7 +144,6 @@ code before bootstrapping the ORM:
     Type::overrideType('datetime', UTCDateTimeType::class);
     Type::overrideType('datetimetz', UTCDateTimeType::class);
 
-
 To be able to transform these values
 back into their real timezone you have to save the timezone in a separate field of the entity
 requiring timezoned datetimes:

@@ -18,7 +18,6 @@ this interface.
 
 The interface defines the following public methods for you to implement:
 
-
 -  fetch($id) - Fetches an entry from the cache
 -  contains($id) - Test if an entry exists in the cache
 -  save($id, $data, $lifeTime = false) - Puts data into the cache for x seconds. 0 = infinite time
@@ -27,7 +26,6 @@ The interface defines the following public methods for you to implement:
 Each driver extends the ``CacheProvider`` class which defines a few
 abstract protected methods that each of the drivers must
 implement:
-
 
 -  \_doFetch($id)
 -  \_doContains($id)
@@ -195,7 +193,6 @@ Saving some data to the cache driver is as simple as using the
 The ``save()`` method accepts three arguments which are described
 below:
 
-
 -  ``$id`` - The cache id
 -  ``$data`` - The cache entry/data.
 -  ``$lifeTime`` - The lifetime. If != false, sets a specific
@@ -348,7 +345,6 @@ result cache driver.
         <?php
         $query->useResultCache(false);
 
-
 If you want to set the time the cache has to live you can use the
 ``setResultCacheLifetime()`` method.
 
@@ -471,5 +467,4 @@ not letting your users' requests populate the cache.
 
 You can read more about cache slams
 `in this blog post <http://notmysock.org/blog/php/user-cache-timebomb.html>`_.
-
 

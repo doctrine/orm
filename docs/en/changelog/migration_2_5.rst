@@ -287,7 +287,6 @@ This feature was contributed by `Miroslav Demovic <https://github.com/mdemo>`_
 
 - `Pull Request #963 <https://github.com/doctrine/doctrine2/pull/963>`_
 
-
 EXTRA_LAZY Improvements
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -611,7 +610,6 @@ either:
 - add that class to your inheritance map
 
 If you fail to do so, then a ``Doctrine\ORM\Mapping\MappingException`` will be thrown.
-
 
 - `DDC-3300 <http://doctrine-project.org/jira/browse/DDC-3300>`_
 - `DDC-3503 <http://doctrine-project.org/jira/browse/DDC-3503>`_

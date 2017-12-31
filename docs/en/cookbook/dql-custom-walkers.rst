@@ -28,7 +28,6 @@ generating the SQL statement.
 There are two types of custom tree walkers that you can hook into
 the DQL parser:
 
-
 -  An output walker. This one actually generates the SQL, and there
    is only ever one of them. We implemented the default SqlWalker
    implementation for it.
@@ -39,7 +38,6 @@ the DQL parser:
 Now this is all awfully technical, so let me come to some use-cases
 fast to keep you motivated. Using walker implementation you can for
 example:
-
 
 -  Modify the AST to generate a Count Query to be used with a
    paginator for any given DQL query.

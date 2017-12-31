@@ -25,7 +25,6 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
 
-
 Example:
 
 .. code-block:: php
@@ -124,7 +123,6 @@ Example:
 
 Things to note:
 
-
 -  The @InheritanceType and @DiscriminatorColumn must be specified
    on the topmost class that is part of the mapped entity hierarchy.
 -  The @DiscriminatorMap specifies which values of the
@@ -216,7 +214,6 @@ Example:
 
 Things to note:
 
-
 -  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
    must be specified on the topmost class that is part of the mapped
    entity hierarchy.
@@ -240,7 +237,6 @@ Things to note:
     inheritance makes use of the foreign key property
     ``ON DELETE CASCADE`` in all database implementations. A failure to
     implement this yourself will lead to dead rows in the database.
-
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -292,7 +288,6 @@ Overrides
 Used to override a mapping for an entity field or relationship.
 May be applied to an entity that extends a mapped superclass
 to override a relationship or field mapping defined by the mapped superclass.
-
 
 Association Override
 ~~~~~~~~~~~~~~~~~~~~
@@ -446,7 +441,6 @@ Example:
                   admingroup_id:
                     referencedColumnName: id
 
-
 Things to note:
 
 -  The "association override" specifies the overrides base on the property name.
@@ -562,7 +556,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
               nullable: true
               unique: false
           #other fields mapping
-
 
         # guest mapping
         MyProject\Model\Guest:
