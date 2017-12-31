@@ -177,13 +177,21 @@ class SchemaTool
 
                 case InheritanceType::JOINED:
                     // Add all non-inherited fields as columns
+                    $pkColumns = [];
+
                     foreach ($class->getDeclaredPropertiesIterator() as $fieldName => $property) {
                         if (! ($property instanceof FieldMetadata)) {
                             continue;
                         }
 
                         if (! $class->isInheritedProperty($fieldName)) {
+                            $columnName = $this->platform->quoteIdentifier($property->getColumnName());
+
                             $this->gatherColumn($class, $property, $table);
+
+                            if ($class->isIdentifier($fieldName)) {
+                                $pkColumns[] = $columnName;
+                            }
                         }
                     }
 
@@ -194,7 +202,6 @@ class SchemaTool
                         $this->addDiscriminatorColumnDefinition($class, $table);
                     } else {
                         // Add an ID FK column to child tables
-                        $pkColumns           = [];
                         $inheritedKeyColumns = [];
 
                         foreach ($class->identifier as $identifierField) {
@@ -207,36 +214,8 @@ class SchemaTool
                                 // TODO: This seems rather hackish, can we optimize it?
                                 $column->setAutoincrement(false);
 
-                                $pkColumns[]           = $columnName;
+                                $pkColumns[] = $columnName;
                                 $inheritedKeyColumns[] = $columnName;
-
-                                continue;
-                            }
-
-                            if (isset($class->associationMappings[$identifierField]['inherited'])) {
-                                $idMapping = $class->associationMappings[$identifierField];
-
-                                $targetEntity = current(
-                                    array_filter(
-                                        $classes,
-                                        function (ClassMetadata $class) use ($idMapping) : bool {
-                                            return $class->name === $idMapping['targetEntity'];
-                                        }
-                                    )
-                                );
-
-                                foreach ($idMapping['joinColumns'] as $joinColumn) {
-                                    if (isset($targetEntity->fieldMappings[$joinColumn['referencedColumnName']])) {
-                                        $columnName = $this->quoteStrategy->getJoinColumnName(
-                                            $joinColumn,
-                                            $class,
-                                            $this->platform
-                                        );
-
-                                        $pkColumns[]           = $columnName;
-                                        $inheritedKeyColumns[] = $columnName;
-                                    }
-                                }
                             }
                         }
 
@@ -251,11 +230,10 @@ class SchemaTool
                                 ['onDelete' => 'CASCADE']
                             );
                         }
+
                     }
 
-                    if ( ! empty($pkColumns)) {
-                        $table->setPrimaryKey($pkColumns);
-                    }
+                    $table->setPrimaryKey($pkColumns);
 
                     break;
 
