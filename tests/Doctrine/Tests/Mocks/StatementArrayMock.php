@@ -30,9 +30,9 @@ class StatementArrayMock extends StatementMock
         $row = reset($this->result);
         if ($row) {
             return count($row);
-        } else {
-            return 0;
         }
+
+        return 0;
     }
 
     public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)

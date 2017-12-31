@@ -791,7 +791,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             foreach ($last25queries as $i => $query) {
                 $params = array_map(
                     function($p) {
-                        if (is_object($p)) return get_class($p); else return var_export($p, true);
+                        return is_object($p) ? get_class($p) : var_export($p, true);
                     },
                     $query['params'] ?: []
                 );
