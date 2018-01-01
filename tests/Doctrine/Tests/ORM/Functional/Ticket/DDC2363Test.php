@@ -29,10 +29,9 @@ class DDC2363Test extends OrmFunctionalTestCase
     {
         // We create an Order with related ServicesPackage that is related to two Service.
         $order = new DDC2363Order();
-        $order->name = 'My ORDER';
+        $order->id = 'My ORDER';
 
-        $servicesPackage = $this->createNewServicesPackage();
-        $order->services_package = $servicesPackage;
+        $order->services_package = $this->createNewServicesPackage(1);
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -47,12 +46,11 @@ class DDC2363Test extends OrmFunctionalTestCase
 
         // Now we load previously persisted Order and associate it with a new ServicesPackage with two new Services.
         /** @var $order DDC2363Order */
-        $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
+        $order = $this->_em->getRepository(DDC2363Order::class)->find('My ORDER');
 
         self::assertInstanceOf(DDC2363Order::class, $order);
 
-        $servicesPackage = $this->createNewServicesPackage();
-        $order->services_package = $servicesPackage;
+        $order->services_package = $this->createNewServicesPackage(2);
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -68,7 +66,7 @@ class DDC2363Test extends OrmFunctionalTestCase
 
         // We load again the Order...
         /** @var $order DDC2363Order */
-        $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
+        $order = $this->_em->getRepository(DDC2363Order::class)->find('My ORDER');
 
         self::assertInstanceOf(DDC2363Order::class, $order);
 
@@ -76,8 +74,7 @@ class DDC2363Test extends OrmFunctionalTestCase
         // $order->getServicesPackage()->getName();
 
         // ... and create another ServicesPackage with two Services.
-        $servicesPackage = $this->createNewServicesPackage();
-        $order->services_package = $servicesPackage;
+        $order->services_package = $this->createNewServicesPackage(3);
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -88,16 +85,16 @@ class DDC2363Test extends OrmFunctionalTestCase
         $this->assertCount(2, $this->_em->getRepository(DDC2363Service::class)->findAll());
     }
 
-    private function createNewServicesPackage()
+    private function createNewServicesPackage(int $id)
     {
         $serviceA = new DDC2363Service();
-        $serviceA->name = 'BASE SERVICE A';
+        $serviceA->id = 'BASE SERVICE A ' . $id;
 
         $serviceB = new DDC2363Service();
-        $serviceB->name = 'BASE SERVICE B';
+        $serviceB->id = 'BASE SERVICE B ' . $id;
 
         $servicesPackage = new DDC2363ServicesPackage();
-        $servicesPackage->name = 'SERVICES PACKAGE';
+        $servicesPackage->id = 'SERVICES PACKAGE ' . $id;
 
         $serviceA->package = $servicesPackage;
         $serviceB->package = $servicesPackage;
@@ -112,24 +109,18 @@ class DDC2363Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2363Order
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
 
-    /** @Column(type="string") */
-    public $name;
-
-    /** @OneToOne(targetEntity=DDC2363ServicesPackage::class, inversedBy="order", cascade={"persist"}) */
+    /** @OneToOne(targetEntity=DDC2363ServicesPackage::class, inversedBy="order", cascade={"persist", "remove"}, orphanRemoval=true) */
     public $services_package;
 }
 
 /** @Entity */
 class DDC2363ServicesPackage
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
-
-    /** @Column(type="string") */
-    public $name;
 
     /** @OneToOne(targetEntity=DDC2363Order::class, mappedBy="services_package") */
     public $order;
@@ -146,11 +137,8 @@ class DDC2363ServicesPackage
 /** @Entity */
 class DDC2363Service
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
     public $id;
-
-    /** @Column(type="string") */
-    public $name;
 
     /** @ManyToOne(targetEntity=DDC2363ServicesPackage::class, inversedBy="services") */
     public $package;
