@@ -102,7 +102,6 @@ foreign keys as primary keys feature of Doctrine introduced in version 2.1.
 
 See :doc:`the tutorial on composite primary keys for more information<../tutorials/composite-primary-keys>`.
 
-
 How can i paginate fetch-joined collections?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -130,7 +129,7 @@ Inheritance
 
 Can I use Inheritance with Doctrine 2?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
+
 Yes, you can use Single- or Joined-Table Inheritance in Doctrine 2.
 
 See the documentation chapter on :doc:`inheritance mapping <inheritance-mapping>` for

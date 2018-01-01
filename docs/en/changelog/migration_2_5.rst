@@ -111,7 +111,7 @@ Second-Level-Cache
 
 Since version 2.0 of Doctrine, fetching the same object twice by primary key
 would result in just one query. This was achieved by the identity map pattern
-(first-level-cache) that kept entities in memory. 
+(first-level-cache) that kept entities in memory.
 
 The newly introduced second-level-cache works a bit differently. Instead
 of saving objects in memory, it saves them in a fast in-memory cache such
@@ -158,7 +158,7 @@ In this example we have specified a caching region name called
 
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
-    $regionConfig->setLifetime('country_region', 3600); 
+    $regionConfig->setLifetime('country_region', 3600);
 
 Now Doctrine will first check for the data of any country in the cache
 instead of the database.
@@ -287,7 +287,6 @@ This feature was contributed by `Miroslav Demovic <https://github.com/mdemo>`_
 
 - `Pull Request #963 <https://github.com/doctrine/doctrine2/pull/963>`_
 
-
 EXTRA_LAZY Improvements
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -321,7 +320,7 @@ EXTRA_LAZY Improvements
 
     - `Pull Request #937 <https://github.com/doctrine/doctrine2/pull/937>`_
 
-2. Add EXTRA_LAZY Support for get() for owning and inverse many-to-many 
+2. Add EXTRA_LAZY Support for get() for owning and inverse many-to-many
 
    This was contributed by `Sander Marechal <https://github.com/sandermarechal>`_.
 
@@ -441,7 +440,7 @@ Query API: Add support for default Query Hints
 
 To configure multiple different features such as custom AST Walker, fetch modes,
 locking and other features affecting DQL generation we have had a feature
-called "query hints" since version 2.0. 
+called "query hints" since version 2.0.
 
 It is now possible to add query hints that are always enabled for every Query:
 
@@ -564,7 +563,7 @@ NamingStrategy interface changed
 The ``Doctrine\ORM\Mapping\NamingStrategyInterface`` changed slightly
 to pass the Class Name of the entity into the join column name generation:
 
-:: 
+::
 
     -    function joinColumnName($propertyName);
     +    function joinColumnName($propertyName, $className = null);
@@ -577,8 +576,8 @@ It also received a new method for supporting embeddables:
 
 Minor BC BREAK: EntityManagerInterface instead of EntityManager in type-hints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
+
+As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require
 an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
@@ -611,7 +610,6 @@ either:
 - add that class to your inheritance map
 
 If you fail to do so, then a ``Doctrine\ORM\Mapping\MappingException`` will be thrown.
-
 
 - `DDC-3300 <http://doctrine-project.org/jira/browse/DDC-3300>`_
 - `DDC-3503 <http://doctrine-project.org/jira/browse/DDC-3503>`_
@@ -696,7 +694,7 @@ the following query:
 
     SELECT new UserDTO(u.id,u.name) as user,new AddressDTO(a.street,a.postalCode) as address, a.id as addressId
     FROM User u INNER JOIN u.addresses a WITH a.isPrimary = true
-    
+
 Previously, your result would be similar to this:
 
 ::

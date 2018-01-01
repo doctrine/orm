@@ -59,7 +59,6 @@ Reference Guide
    reference/advanced-configuration
    reference/second-level-cache
    reference/security
-   
 
 Cookbook
 --------

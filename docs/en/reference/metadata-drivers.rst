@@ -11,7 +11,6 @@ Core Metadata Drivers
 Doctrine provides a few different ways for you to specify your
 metadata:
 
-
 -  **XML files** (XmlDriver)
 -  **Class DocBlock Annotations** (AnnotationDriver)
 -  **YAML files** (YamlDriver)
@@ -37,7 +36,6 @@ an entity.
         <?php
         $em->getConfiguration()->setMetadataCacheImpl(new ApcuCache());
 
-
 If you want to use one of the included core metadata drivers you
 just need to configure it. All the drivers are in the
 ``Doctrine\ORM\Mapping\Driver`` namespace:
@@ -59,26 +57,26 @@ implements the ``Driver`` interface:
 
     <?php
     namespace Doctrine\ORM\Mapping\Driver;
-    
+
     use Doctrine\ORM\Mapping\ClassMetadata;
-    
+
     interface Driver
     {
         /**
          * Loads the metadata for the specified class into the provided container.
-         * 
+         *
          * @param string $className
          * @param ClassMetadata $metadata
          */
         function loadMetadataForClass($className, ClassMetadata $metadata);
-    
+
         /**
          * Gets the names of all mapped classes known to this driver.
-         * 
+         *
          * @return array The names of all mapped classes known to this driver.
          */
-        function getAllClassNames(); 
-    
+        function getAllClassNames();
+
         /**
          * Whether the class with the specified name should have its metadata loaded.
          * This is only the case if it is either mapped as an Entity or a
@@ -103,17 +101,17 @@ the ``AbstractFileDriver`` implementation for you to extend from:
          * {@inheritdoc}
          */
         protected $fileExtension = '.dcm.ext';
-    
+
         /**
          * {@inheritdoc}
          */
         public function loadMetadataForClass($className, ClassMetadata $metadata)
         {
             $data = $this->loadMappingFile($file);
-    
+
             // populate ClassMetadata instance from $data
         }
-    
+
         /**
          * {@inheritdoc}
          */
@@ -132,7 +130,6 @@ the ``AbstractFileDriver`` implementation for you to extend from:
     wanted to write a mapping file for your driver above you would need
     to name the file ``Entities.User.dcm.ext`` for it to be
     recognized.
-
 
 Now you can use your ``MyMetadataDriver`` implementation by setting
 it with the ``setMetadataDriverImpl()`` method:
@@ -187,5 +184,4 @@ iterate over them:
     foreach ($class->fieldMappings as $fieldMapping) {
         echo $fieldMapping['fieldName'] . "\n";
     }
-
 

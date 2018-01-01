@@ -203,7 +203,6 @@ Internal
 General Setters
 ~~~~~~~~~~~~~~~
 
-
 -  ``setTableName($tableName)``
 -  ``setPrimaryTable(array $primaryTableDefinition)``
 -  ``setCustomRepositoryClass($repositoryClassName)``
@@ -216,7 +215,6 @@ General Setters
 Inheritance Setters
 ~~~~~~~~~~~~~~~~~~~
 
-
 -  ``setInheritanceType($type)``
 -  ``setSubclasses(array $subclasses)``
 -  ``setParentClasses(array $classNames)``
@@ -226,20 +224,17 @@ Inheritance Setters
 Field Mapping Setters
 ~~~~~~~~~~~~~~~~~~~~~
 
-
 -  ``addProperty(Property $property)``
 -  ``addAssociation(AssociationMetadata $property)``
 
 Lifecycle Callback Setters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 -  ``addLifecycleCallback($callback, $event)``
 -  ``setLifecycleCallbacks(array $callbacks)``
 
 Versioning Setters
 ~~~~~~~~~~~~~~~~~~
-
 
 -  ``setVersionMapping(array &$mapping)``
 -  ``setVersioned($bool)``
@@ -248,14 +243,12 @@ Versioning Setters
 General Getters
 ~~~~~~~~~~~~~~~
 
-
 -  ``getTableName()``
 -  ``getSchemaName()``
 -  ``getTemporaryIdTableName()``
 
 Identifier Getters
 ~~~~~~~~~~~~~~~~~~
-
 
 -  ``getIdentifierColumnNames()``
 -  ``isIdentifier($fieldName)``
@@ -266,13 +259,11 @@ Identifier Getters
 Inheritance Getters
 ~~~~~~~~~~~~~~~~~~~
 
-
 -  ``isInheritedField($fieldName)``
 -  ``isInheritedAssociation($fieldName)``
 
 Field & Association Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 -  ``isUniqueField($fieldName)``
 -  ``isNullable($fieldName)``
@@ -289,8 +280,6 @@ Field & Association Getters
 Lifecycle Callback Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 -  ``hasLifecycleCallbacks($lifecycleEvent)``
 -  ``getLifecycleCallbacks($event)``
-
 

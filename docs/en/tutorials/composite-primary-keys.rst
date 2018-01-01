@@ -238,7 +238,6 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
               targetEntity: Article
               inversedBy: attributes
 
-
 Use-Case 2: Simple Derived Identity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -290,7 +289,6 @@ One good example for this is a user-address relationship:
           oneToOne:
             user:
               targetEntity: User
-
 
 Use-Case 3: Join-Table with Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -374,7 +372,6 @@ of products purchased and maybe even the current price.
             $this->offeredPrice = $product->getCurrentPrice();
         }
     }
-
 
 Performance Considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~

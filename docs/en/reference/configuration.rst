@@ -81,9 +81,9 @@ Or if you prefer YAML:
 
 .. note::
     If you want to use yml mapping you should add yaml dependency to your `composer.json`:
-    
+
     ::
-    
+
         "symfony/yaml": "*"
 
 Inside the ``Setup`` methods several assumptions are made:

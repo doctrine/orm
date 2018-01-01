@@ -34,7 +34,6 @@ Additionally even with Doctrine 2.0 the following methods do not trigger the col
 With extra lazy collections you can now not only add entities to large collections but also paginate them
 easily using a combination of ``count`` and ``slice``.
 
-
 Enabling Extra-Lazy Associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -95,7 +95,6 @@ the following contents:
         }
     }
 
-
 Install Doctrine using the Composer Dependency Management tool, by calling:
 
 ::
@@ -681,7 +680,6 @@ and Object-Relational Mapping.
     relation have to be managed in userland application code. Doctrine
     cannot magically update your collections to be consistent.
 
-
 In the case of Users and Bugs we have references back and forth to
 the assigned and reported bugs from a user, making this relation
 bi-directional. We have to change the code to ensure consistency of
@@ -904,7 +902,6 @@ the ``Product`` before:
             products:
               targetEntity: Product
 
-
 Here we have the entity, id and primitive type definitions.
 For the "created" field we have used the ``datetime`` type,
 which translates the YYYY-mm-dd HH:mm:ss database format
@@ -1024,7 +1021,6 @@ Update your database schema by running:
 ::
 
     $ vendor/bin/doctrine orm:schema-tool:update --force
-
 
 Implementing more Requirements
 ------------------------------
@@ -1163,7 +1159,6 @@ The console output of this script is then:
     of Entity-Class and property. Using the Metadata we defined before
     it allows for very short distinctive and powerful queries.
 
-
     An important reason why DQL is favourable to the Query API of most
     ORMs is its similarity to SQL. The DQL language allows query
     constructs that most ORMs don't: GROUP BY even with HAVING,
@@ -1173,11 +1168,9 @@ The console output of this script is then:
     throw your ORM into the dumpster, because it doesn't support some
     the more powerful SQL concepts.
 
-
     Instead of handwriting DQL you can use the ``QueryBuilder`` retrieved
     by calling ``$entityManager->createQueryBuilder()``. There are more
     details about this in the relevant part of the documentation.
-
 
     As a last resort you can still use Native SQL and a description of the
     result set to retrieve entities from the database. DQL boils down to a
@@ -1185,7 +1178,6 @@ The console output of this script is then:
     Native SQL you could even use stored procedures for data retrieval, or
     make use of advanced non-portable database queries like PostgreSql's
     recursive queries.
-
 
 Array Hydration of the Bug List
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1297,7 +1289,6 @@ The call prints:
     queries create an overhead. If you know that certain fields will always
     (or usually) be required by the query then you will get better performance
     by explicitly retrieving them all in the first query.
-
 
 Dashboard of the User
 ---------------------

@@ -22,7 +22,6 @@ about the use of generate entities for example, you can call:
 
     $> php vendor/bin/doctrine orm:generate-entities --help
 
-
 Configuration
 ~~~~~~~~~~~~~
 
@@ -95,7 +94,6 @@ Command Overview
 
 The following Commands are currently available:
 
-
 -  ``help`` Displays help for a command (?)
 -  ``list`` Lists commands
 -  ``dbal:import`` Import SQL file(s) directly to Database.
@@ -127,7 +125,6 @@ The following Commands are currently available:
 
 For these commands are also available aliases:
 
-
 -  ``orm:convert:d1-schema`` is alias for ``orm:convert-d1-schema``.
 -  ``orm:generate:proxies`` is alias for ``orm:generate-proxies``.
 
@@ -154,7 +151,6 @@ Database Schema Generation
     its own. Update and Drop commands will mess with other tables if
     they are not related to the current project that is using Doctrine.
     Please be careful!
-
 
 To generate your database schema from your Doctrine mapping files
 you can use the ``SchemaTool`` class or the ``schema-tool`` Console
@@ -297,7 +293,6 @@ number of elements with error messages.
     prefix backslash. PHP does this with ``get_class()`` or Reflection
     methods for backwards compatibility reasons.
 
-
 Adding own commands
 -------------------
 
@@ -342,7 +337,6 @@ defined ones) is possible through the command:
         new \MyProject\Tools\Console\Commands\AnotherCommand(),
         new \MyProject\Tools\Console\Commands\OneMoreCommand(),
     ));
-
 
 Re-use console application
 --------------------------

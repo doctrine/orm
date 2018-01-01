@@ -44,16 +44,16 @@ Our entities look like:
     {
         /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
         private $id;
-    
+
         /** @ORM\Column(type="string", unique=true) */
         private $no;
-    
+
         /** @ORM\OneToMany(targetEntity="Entry", mappedBy="account", cascade={"persist"}) */
         private $entries;
-    
+
         /** @ORM\Column(type="integer") */
         private $maxCredit = 0;
-    
+
         public function __construct($no, $maxCredit = 0)
         {
             $this->no = $no;
@@ -61,7 +61,7 @@ Our entities look like:
             $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
         }
     }
-    
+
     /**
      * @ORM\Entity
      */
@@ -69,20 +69,20 @@ Our entities look like:
     {
         /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
         private $id;
-    
+
         /** @ORM\ManyToOne(targetEntity="Account", inversedBy="entries") */
         private $account;
-    
+
         /** @ORM\Column(type="integer") */
         private $amount;
-    
+
         public function __construct($account, $amount)
         {
             $this->account = $account;
             $this->amount = $amount;
             // more stuff here, from/to whom, stated reason, execution date and such
         }
-    
+
         public function getAmount()
         {
             return $this->amount;
@@ -173,7 +173,7 @@ relation with this method:
         public function addEntry($amount)
         {
             $this->assertAcceptEntryAllowed($amount);
-    
+
             $e = new Entry($this, $amount);
             $this->entries[] = $e;
             return $e;
@@ -191,18 +191,18 @@ Now look at the following test-code for our entities:
         {
             $account = new Account("123456", $maxCredit = 200);
             $this->assertEquals(0, $account->getBalance());
-    
+
             $account->addEntry(500);
             $this->assertEquals(500, $account->getBalance());
-    
+
             $account->addEntry(-700);
             $this->assertEquals(-200, $account->getBalance());
         }
-    
+
         public function testExceedMaxLimit()
         {
             $account = new Account("123456", $maxCredit = 200);
-    
+
             $this->setExpectedException("Exception");
             $account->addEntry(-1000);
         }
@@ -264,16 +264,16 @@ entries collection) we want to add an aggregate field called
          * @ORM\Column(type="integer")
          */
         private $balance = 0;
-    
+
         public function getBalance()
         {
             return $this->balance;
         }
-    
+
         public function addEntry($amount)
         {
             $this->assertAcceptEntryAllowed($amount);
-    
+
             $e = new Entry($this, $amount);
             $this->entries[] = $e;
             $this->balance += $amount;
@@ -304,13 +304,13 @@ potentially lead to inconsistent state. See this example:
     // The Account $accId has a balance of 0 and a max credit limit of 200:
     // request 1 account
     $account1 = $em->find('Bank\Entities\Account', $accId);
-    
+
     // request 2 account
     $account2 = $em->find('Bank\Entities\Account', $accId);
-    
+
     $account1->addEntry(-200);
     $account2->addEntry(-200);
-    
+
     // now request 1 and 2 both flush the changes.
 
 The aggregate field ``Account::$balance`` is now -200, however the
@@ -345,7 +345,7 @@ the database using a FOR UPDATE.
 
     <?php
     use Doctrine\DBAL\LockMode;
-    
+
     $account = $em->find('Bank\Entities\Account', $accId, LockMode::PESSIMISTIC_READ);
 
 Keeping Updates and Deletes in Sync
@@ -367,5 +367,4 @@ field that offers serious performance benefits over iterating all
 the related objects that make up an aggregate value. Finally I
 showed how you can ensure that your aggregate fields do not get out
 of sync due to race-conditions and concurrent access.
-
 

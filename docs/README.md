@@ -8,7 +8,6 @@ Using Ubuntu 14.04 LTS:
 
 It will generate the documentation into the build directory of the checkout.
 
-
 ## Theme issues
 
 If you get a "Theme error", check if the `en/_theme` subdirectory is empty,

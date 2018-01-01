@@ -15,7 +15,6 @@ What we offer are hooks to execute any kind of validation.
     perform validations in value setters or any other method of your
     entities that are used in your code.
 
-
 Entities can register lifecycle event methods with Doctrine that
 are called on different occasions. For validation we would need to
 hook into the events called before persisting and updating. Even
@@ -36,12 +35,12 @@ is allowed to:
         public function assertCustomerAllowedBuying()
         {
             $orderLimit = $this->customer->getOrderLimit();
-    
+
             $amount = 0;
             foreach ($this->orderLines as $line) {
                 $amount += $line->getAmount();
             }
-    
+
             if ($amount > $orderLimit) {
                 throw new CustomerOrderLimitExceededException();
             }
@@ -115,11 +114,11 @@ validation callbacks.
             if (!($this->plannedShipDate instanceof DateTime)) {
                 throw new ValidateException();
             }
-    
+
             if ($this->plannedShipDate->format('U') < time()) {
                 throw new ValidateException();
             }
-    
+
             if ($this->customer == null) {
                 throw new OrderRequiresCustomerException();
             }

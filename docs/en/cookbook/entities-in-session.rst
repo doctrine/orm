@@ -28,7 +28,7 @@ the session into a managed Doctrine object looks like this:
 
     <?php
     require_once 'bootstrap.php';
-    $em = GetEntityManager(); // creates an EntityManager 
+    $em = GetEntityManager(); // creates an EntityManager
 
     session_start();
     if (isset($_SESSION['user'])) {

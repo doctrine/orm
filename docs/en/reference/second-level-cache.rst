@@ -18,7 +18,6 @@ There are some flavors of caching available, but is better to cache read-only da
 Be aware that caches are not aware of changes made to the persistent store by another application.
 They can, however, be configured to regularly expire cached data.
 
-
 Caching Regions
 ---------------
 
@@ -41,7 +40,6 @@ Something like below for an entity region :
       'region_name:entity_2_hash' => ['id'=> 2, 'name' => 'Foo', 'associationName'=>['id'=>11]],
       'region_name:entity_3_hash' => ['id'=> 3, 'name' => 'Bar', 'associationName'=>['id'=>22]]
     ];
-
 
 If the entity holds a collection that also needs to be cached.
 An collection region could look something like :
@@ -66,11 +64,9 @@ A query region might be something like :
       'region_name:query_3_hash' => ['list' => [2, 4]]
     ];
 
-
 .. note::
 
     The following data structures represents now the cache will looks like, this is not actual cached data.
-
 
 .. _reference-second-level-cache-regions:
 
@@ -86,7 +82,6 @@ Defines contracts that should be implemented by a cache provider.
 It allows you to provide your own cache implementation that might take advantage of specific cache driver.
 
 If you want to support locking for ``READ_WRITE`` strategies you should implement ``ConcurrentRegion``; ``CacheRegion`` otherwise.
-
 
 Cache region
 ~~~~~~~~~~~~
@@ -138,7 +133,6 @@ Caching mode
 
   * Read Write Cache doesn’t employ any locks but can do reads, inserts, updates and deletes.
   * Good if the application needs to update data rarely.
-    
 
 * ``READ_WRITE``
 
@@ -146,7 +140,6 @@ Caching mode
   * Use if data needs to be updated.
   * Slowest strategy.
   * To use it a the cache region implementation must support locking.
-
 
 Built-in cached persisters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -173,7 +166,6 @@ Configuration
 -------------
 Doctrine allows you to specify configurations and some points of extension for the second-level-cache
 
-
 Enable Second Level Cache
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -194,7 +186,6 @@ To enable the second-level-cache, you should provide a cache factory
     // Cache factory
     $config->getSecondLevelCacheConfiguration()
         ->setCacheFactory($factory);
-
 
 Cache Factory
 ~~~~~~~~~~~~~
@@ -228,7 +219,6 @@ To specify a default lifetime for all regions or specify a different lifetime fo
     $regionConfig->setLifetime('my_entity_region', 3600);   // Time to live for a specific region; In seconds
     $regionConfig->setDefaultLifetime(7200);                // Default time to live; In seconds
 
-
 Cache Log
 ~~~~~~~~~
 By providing a cache logger you should be able to get information about all cache operations such as hits, misses and puts.
@@ -245,7 +235,6 @@ By providing a cache logger you should be able to get information about all cach
     $config->setSecondLevelCacheEnabled(true);
     $config->getSecondLevelCacheConfiguration()
         ->setCacheLogger($logger);
-
 
     // Collect cache statistics
 
@@ -272,14 +261,12 @@ and collect all information you want.
 
 `See API Doc <http://www.doctrine-project.org/api/orm/2.5/class-Doctrine.ORM.Cache.CacheLogger.html>`_.
 
-
 Entity cache definition
 -----------------------
 * Entity cache configuration allows you to define the caching strategy and region for an entity.
 
   * ``usage`` Specifies the caching strategy: ``READ_ONLY``, ``NONSTRICT_READ_WRITE``, ``READ_WRITE``. see :ref:`reference-second-level-cache-mode`
   * ``region`` Optional value that specifies the name of the second level cache region.
-
 
 .. configuration-block::
 
@@ -337,12 +324,10 @@ Entity cache definition
             name:
               type: string
 
-
 Association cache definition
 ----------------------------
 The most common use case is to cache entities. But we can also cache relationships.
 It caches the primary keys of association and cache each element will be cached into its region.
-
 
 .. configuration-block::
 
@@ -396,7 +381,7 @@ It caches the primary keys of association and cache each element will be cached 
             </id>
 
             <field name="name" type="string" column="name"/>
-            
+
             <many-to-one field="country" target-entity="Country">
               <cache usage="NONSTRICT_READ_WRITE" />
 
@@ -443,7 +428,6 @@ It caches the primary keys of association and cache each element will be cached 
               cache:
                 usage : NONSTRICT_READ_WRITE
 
-
 > Note: for this to work, the target entity must also be marked as cacheable.
 
 Cache usage
@@ -469,7 +453,6 @@ Basic entity cache
 
     $country2  = $em->find('Country', 1); // Retrieve item from cache
                                           // Notice that $country1 and $country2 are not the same instance.
-
 
 Association cache
 
@@ -583,7 +566,6 @@ DQL UPDATE / DELETE statements are ported directly into a database and bypass th
 Entities that are already cached will NOT be invalidated.
 However the cached data could be evicted using the cache API or an special query hint.
 
-
 Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_CACHE_EVICT``
 
 .. code-block:: php
@@ -593,7 +575,6 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using ``Query::HINT_
     $this->em->createQuery("UPDATE Entity\Country u SET u.name = 'unknown' WHERE u.id = 1")
         ->setHint(Query::HINT_CACHE_EVICT, true)
         ->execute();
-
 
 Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
 
@@ -605,7 +586,6 @@ Execute the ``UPDATE`` and invalidate ``all cache entries`` using the cache API
         ->execute();
     // Invoke Cache API
     $em->getCache()->evictEntityRegion('Entity\Country');
-
 
 Execute the ``UPDATE`` and invalidate ``a specific cache entry`` using the cache API
 
@@ -722,7 +702,6 @@ should be used in conjunction with distributed caching system such as memcached,
 
 Caches should be used with care when using a load-balancer if you don't share the cache.
 While using APC or any file based cache update occurred in a specific machine would not reflect to the cache in other machines.
-
 
 Paginator
 ~~~~~~~~~

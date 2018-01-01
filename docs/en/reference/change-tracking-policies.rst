@@ -73,7 +73,7 @@ follows:
     <?php
     use Doctrine\Common\NotifyPropertyChanged,
         Doctrine\Common\PropertyChangedListener;
-    
+
     /**
      * @Entity
      * @ChangeTrackingPolicy("NOTIFY")
@@ -81,9 +81,9 @@ follows:
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
+
         private $listeners = array();
-    
+
         public function addPropertyChangedListener(PropertyChangedListener $listener)
         {
             $this->listeners[] = $listener;
@@ -99,11 +99,11 @@ behaviour:
 
     <?php
     // ...
-    
+
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
+
         protected function onPropertyChanged($propName, $oldValue, $newValue)
         {
             if ($this->listeners) {
@@ -112,7 +112,7 @@ behaviour:
                 }
             }
         }
-    
+
         public function setData($data)
         {
             if ($data != $this->data) {
@@ -147,5 +147,4 @@ The positive point and main advantage of this policy is its
 effectiveness. It has the best performance characteristics of the 3
 policies with larger units of work and a flush() operation is very
 cheap when nothing has changed.
-
 

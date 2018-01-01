@@ -104,7 +104,6 @@ functionally equivalent to the previously shown code looks as follows:
         $em->persist($user);
     });
 
-
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
@@ -375,7 +374,6 @@ transaction is running.
 
 Doctrine 2 currently supports two pessimistic lock modes:
 
-
 -  Pessimistic Write
    (``Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE``), locks the
    underlying database rows for concurrent Read and Write Operations.
@@ -384,7 +382,6 @@ Doctrine 2 currently supports two pessimistic lock modes:
    in write mode.
 
 You can use pessimistic locks in three different scenarios:
-
 
 1. Using
    ``EntityManager#find($className, $id, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
@@ -398,5 +395,4 @@ You can use pessimistic locks in three different scenarios:
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
    or
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
-
 

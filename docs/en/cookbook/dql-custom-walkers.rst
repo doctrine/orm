@@ -28,7 +28,6 @@ generating the SQL statement.
 There are two types of custom tree walkers that you can hook into
 the DQL parser:
 
-
 -  An output walker. This one actually generates the SQL, and there
    is only ever one of them. We implemented the default SqlWalker
    implementation for it.
@@ -39,7 +38,6 @@ the DQL parser:
 Now this is all awfully technical, so let me come to some use-cases
 fast to keep you motivated. Using walker implementation you can for
 example:
-
 
 -  Modify the AST to generate a Count Query to be used with a
    paginator for any given DQL query.
@@ -88,7 +86,7 @@ API would look for this use-case:
     $pageNum = 1;
     $query = $em->createQuery($dql);
     $query->setFirstResult( ($pageNum-1) * 20)->setMaxResults(20);
-    
+
     $totalResults = Paginate::count($query);
     $results = $query->getResult();
 
@@ -103,10 +101,10 @@ The ``Paginate::count(Query $query)`` looks like:
         {
             /* @var $countQuery Query */
             $countQuery = clone $query;
-    
+
             $countQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('DoctrineExtensions\Paginate\CountSqlWalker'));
             $countQuery->setFirstResult(null)->setMaxResults(null);
-    
+
             return $countQuery->getSingleScalarResult();
         }
     }
@@ -137,13 +135,13 @@ implementation is:
                     break;
                 }
             }
-    
+
             $pathExpression = new PathExpression(
                 PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION, $parentName,
                 $parent['metadata']->getSingleIdentifierFieldName()
             );
             $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
-    
+
             $AST->selectClause->selectExpressions = array(
                 new SelectExpression(
                     new AggregateExpression('count', $pathExpression, true), null
@@ -196,7 +194,7 @@ SQL\_NO\_CACHE on those queries that need it:
         public function walkSelectClause($selectClause)
         {
             $sql = parent::walkSelectClause($selectClause);
-    
+
             if ($this->getQuery()->getHint('mysqlWalker.sqlNoCache') === true) {
                 if ($selectClause->isDistinct) {
                     $sql = str_replace('SELECT DISTINCT', 'SELECT DISTINCT SQL_NO_CACHE', $sql);
@@ -204,7 +202,7 @@ SQL\_NO\_CACHE on those queries that need it:
                     $sql = str_replace('SELECT', 'SELECT SQL_NO_CACHE', $sql);
                 }
             }
-    
+
             return $sql;
         }
     }

@@ -106,7 +106,7 @@ How Doctrine Detects Changes
 Doctrine is a data-mapper that tries to achieve persistence-ignorance (PI).
 This means you map php objects into a relational database that don't
 necessarily know about the database at all. A natural question would now be,
-"how does Doctrine even detect objects have changed?". 
+"how does Doctrine even detect objects have changed?".
 
 For this Doctrine keeps a second map inside the UnitOfWork. Whenever you fetch
 an object from the database Doctrine will keep a copy of all the properties and
@@ -134,7 +134,6 @@ optimize the performance of the Flush Operation:
 - Use :doc:`Change Tracking Policies <change-tracking-policies>` to use more
   explicit strategies of notifying the UnitOfWork what objects/properties
   changed.
-
 
 Query Internals
 ---------------

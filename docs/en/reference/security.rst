@@ -81,7 +81,6 @@ this is technically impossible. The correct way is:
     $query = $entityManager->createQuery($dql);
     $query->setParameter(1, $_GET['status']);
 
-
 Preventing Mass Assignment Vulnerabilities
 ------------------------------------------
 
