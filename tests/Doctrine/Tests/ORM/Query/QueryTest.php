@@ -132,7 +132,7 @@ class QueryTest extends OrmTestCase
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     **/
+     */
     public function testIterateWithNoDistinctAndWrongSelectClause()
     {
         $q = $this->em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
@@ -141,7 +141,7 @@ class QueryTest extends OrmTestCase
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     **/
+     */
     public function testIterateWithNoDistinctAndWithValidSelectClause()
     {
         $q = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");

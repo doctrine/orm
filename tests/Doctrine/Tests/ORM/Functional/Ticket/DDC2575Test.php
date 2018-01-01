@@ -106,7 +106,7 @@ class DDC2575Root
 
     /**
      * @ORM\OneToOne(targetEntity="DDC2575A", mappedBy="rootRelation")
-     **/
+     */
     public $aRelation;
 
     public function __construct($id, $value = 0)

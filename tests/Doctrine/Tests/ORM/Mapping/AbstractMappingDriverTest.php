@@ -1214,7 +1214,7 @@ class User
      * @ORM\Column(type="integer", options={"foo": "bar", "unsigned": false})
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\SequenceGenerator(sequenceName="tablename_seq", allocationSize=100)
-     **/
+     */
     public $id;
 
     /**
@@ -1475,7 +1475,7 @@ class DDC1170Entity
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      * @ORM\Column(type="integer", columnDefinition = "INT unsigned NOT NULL")
-     **/
+     */
     private $id;
 
     /**
@@ -1513,7 +1513,7 @@ class DDC807Entity
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="NONE")
-     **/
+     */
     public $id;
 }
 
