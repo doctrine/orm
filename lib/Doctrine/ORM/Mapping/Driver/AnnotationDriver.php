@@ -250,6 +250,7 @@ class AnnotationDriver extends AbstractAnnotationDriver
                             'name'             => $discrColumnAnnot->name,
                             'type'             => $discrColumnAnnot->type ?: 'string',
                             'length'           => $discrColumnAnnot->length ?: 255,
+                            'fieldName'        => $discrColumnAnnot->fieldName,
                             'columnDefinition' => $discrColumnAnnot->columnDefinition,
                         ]
                     );
