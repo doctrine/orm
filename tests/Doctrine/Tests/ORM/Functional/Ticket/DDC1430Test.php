@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
@@ -25,7 +24,6 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
             );
             $this->loadFixtures();
         } catch (\Exception $exc) {
-
         }
     }
 
@@ -313,5 +311,4 @@ class DDC1430OrderProduct
     {
         $this->value = $value;
     }
-
 }

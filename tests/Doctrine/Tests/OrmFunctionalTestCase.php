@@ -402,7 +402,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $conn->executeUpdate('DELETE FROM RoutingLocation');
         }
 
-        if(isset($this->usedModelSets['navigation'])) {
+        if (isset($this->usedModelSets['navigation'])) {
             $conn->executeUpdate('DELETE FROM navigation_tour_pois');
             $conn->executeUpdate('DELETE FROM navigation_photos');
             $conn->executeUpdate('DELETE FROM navigation_pois');
@@ -802,9 +802,9 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             $trace = $e->getTrace();
             $traceMsg = "";
 
-            foreach($trace as $part) {
-                if(isset($part['file'])) {
-                    if(strpos($part['file'], "PHPUnit/") !== false) {
+            foreach ($trace as $part) {
+                if (isset($part['file'])) {
+                    if (strpos($part['file'], "PHPUnit/") !== false) {
                         // Beginning with PHPUnit files we don't print the trace anymore.
                         break;
                     }

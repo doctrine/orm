@@ -22,7 +22,6 @@ class PersistentCollectionTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(PersistentCollectionContent::class),
             ]);
         } catch (\Exception $e) {
-
         }
 
         PersistentObject::setEntityManager($this->em);

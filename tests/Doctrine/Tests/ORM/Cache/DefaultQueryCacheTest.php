@@ -663,7 +663,6 @@ class DefaultQueryCacheTest extends OrmTestCase
 
         self::assertFalse($this->queryCache->put($key, $rsm, $result));
     }
-
 }
 
 class CacheFactoryDefaultQueryCacheTest extends Cache\DefaultCacheFactory

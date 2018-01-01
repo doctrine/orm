@@ -80,5 +80,4 @@ class DefaultCollectionHydratorTest extends OrmFunctionalTestCase
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($collection[0]));
         self::assertEquals(UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($collection[1]));
     }
-
 }

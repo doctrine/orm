@@ -25,7 +25,7 @@ class DDC522Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC522ForeignKeyTest::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

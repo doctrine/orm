@@ -127,7 +127,7 @@ class UnitOfWorkTest extends OrmTestCase
 
         // should have an id
         self::assertInternalType('numeric', $user->id);
-}
+    }
 
     /**
      * Tests a scenario where a save() operation is cascaded from a ForumUser
@@ -734,30 +734,36 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     /** @ORM\OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
     private $items;
 
-    public function  __construct() {
+    public function  __construct()
+    {
         $this->items = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getItems() {
+    public function getItems()
+    {
         return $this->items;
     }
 
-    public function setTransient($value) {
+    public function setTransient($value)
+    {
         if ($value != $this->transient) {
             $this->onPropertyChanged('transient', $this->transient, $value);
             $this->transient = $value;
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         if ($data != $this->data) {
             $this->onPropertyChanged('data', $this->data, $data);
             $this->data = $data;
@@ -769,7 +775,8 @@ class NotifyChangedEntity implements NotifyPropertyChanged
         $this->listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue) {
+    protected function onPropertyChanged($propName, $oldValue, $newValue)
+    {
         if ($this->listeners) {
             foreach ($this->listeners as $listener) {
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -791,15 +798,18 @@ class NotifyChangedRelatedItem
     /** @ORM\ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
     private $owner;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getOwner() {
+    public function getOwner()
+    {
         return $this->owner;
     }
 
-    public function setOwner($owner) {
+    public function setOwner($owner)
+    {
         $this->owner = $owner;
     }
 }

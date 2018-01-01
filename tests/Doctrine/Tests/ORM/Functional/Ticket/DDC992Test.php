@@ -23,8 +23,7 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC992Child::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -142,7 +141,8 @@ class DDC992Role
      */
     public $extends;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->extends = new ArrayCollection;
         $this->extendedBy = new ArrayCollection;
     }

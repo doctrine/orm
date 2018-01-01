@@ -43,15 +43,18 @@ class ECommerceCustomer
      */
     private $mentor;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
@@ -64,11 +67,13 @@ class ECommerceCustomer
     }
 
     /* Does not properly maintain the bidirectional association! */
-    public function brokenSetCart(ECommerceCart $cart) {
+    public function brokenSetCart(ECommerceCart $cart)
+    {
         $this->cart = $cart;
     }
 
-    public function getCart() {
+    public function getCart()
+    {
         return $this->cart;
     }
 

@@ -233,7 +233,7 @@ class ExprTest extends OrmTestCase
      */
     public function testLiteralExprProperlyQuotesStrings()
     {
-       self::assertEquals("'00010001'", (string) $this->expr->literal('00010001'));
+        self::assertEquals("'00010001'", (string) $this->expr->literal('00010001'));
     }
 
     public function testGreaterThanOrEqualToExpr()
@@ -266,11 +266,13 @@ class ExprTest extends OrmTestCase
         self::assertEquals('u.id IS NOT NULL', (string) $this->expr->isNotNull('u.id'));
     }
 
-    public function testIsInstanceOfExpr() {
+    public function testIsInstanceOfExpr()
+    {
         self::assertEquals('u INSTANCE OF Doctrine\Tests\Models\Company\CompanyEmployee', (string) $this->expr->isInstanceOf('u', CompanyEmployee::class));
     }
 
-    public function testIsMemberOfExpr() {
+    public function testIsMemberOfExpr()
+    {
         self::assertEquals(':groupId MEMBER OF u.groups', (string) $this->expr->isMemberOf(':groupId', 'u.groups'));
     }
 

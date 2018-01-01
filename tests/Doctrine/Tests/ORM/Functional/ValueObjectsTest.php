@@ -32,7 +32,7 @@ class ValueObjectsTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC3027Dog::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

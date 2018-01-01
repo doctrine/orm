@@ -125,7 +125,6 @@ abstract class OJTIC_Pet
  */
 class OJTIC_Cat extends OJTIC_Pet
 {
-
 }
 
 /**
@@ -133,5 +132,4 @@ class OJTIC_Cat extends OJTIC_Pet
  */
 class OJTIC_Dog extends OJTIC_Pet
 {
-
 }

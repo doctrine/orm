@@ -32,11 +32,13 @@ class CmsComment
      */
     public $article;
 
-    public function setArticle(CmsArticle $article) {
+    public function setArticle(CmsArticle $article)
+    {
         $this->article = $article;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return __CLASS__."[id=".$this->id."]";
     }
 }

@@ -187,7 +187,6 @@ class DDC2862Driver
     {
         return $this->userProfile;
     }
-
 }
 
 /**
@@ -238,5 +237,4 @@ class DDC2862User
     {
         return $this->name;
     }
-
 }

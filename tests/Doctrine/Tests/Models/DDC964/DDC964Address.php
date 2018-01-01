@@ -122,5 +122,4 @@ class DDC964Address
     {
         $this->street = $street;
     }
-
 }

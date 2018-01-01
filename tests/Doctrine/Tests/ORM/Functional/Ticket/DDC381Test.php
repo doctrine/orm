@@ -18,8 +18,7 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC381Entity::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -61,6 +60,5 @@ class DDC381Entity
 
     public function getOtherMethod()
     {
-
     }
 }

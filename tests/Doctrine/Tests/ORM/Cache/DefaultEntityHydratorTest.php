@@ -195,5 +195,4 @@ class DefaultEntityHydratorTest extends OrmTestCase
             $cache->data
         );
     }
-
 }

@@ -62,7 +62,6 @@ class DDC237Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertNotSame($z, $z2);
         self::assertSame($z2->y, $x2->y);
         self::assertInstanceOf(GhostObjectInterface::class, $z2->y);
-
     }
 }
 

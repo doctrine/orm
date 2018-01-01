@@ -111,8 +111,7 @@ final class SharedArrayCache extends ArrayCache
 {
     public function createChild(): Cache
     {
-        return new class ($this) extends CacheProvider
-        {
+        return new class ($this) extends CacheProvider {
             /**
              * @var ArrayCache
              */

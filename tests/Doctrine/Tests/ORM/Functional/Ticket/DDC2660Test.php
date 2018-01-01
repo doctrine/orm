@@ -27,7 +27,7 @@ class DDC2660Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC2660CustomerOrder::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return;
         }
 

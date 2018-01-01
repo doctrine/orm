@@ -804,7 +804,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $this->secondLevelCacheLogger->clearStats();
         $this->em->clear();
 
-        $getHash = function(AbstractQuery $query){
+        $getHash = function(AbstractQuery $query) {
             $method = new \ReflectionMethod($query, 'getHash');
             $method->setAccessible(true);
 

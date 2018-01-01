@@ -230,7 +230,6 @@ class SchemaTool
                                 ['onDelete' => 'CASCADE']
                             );
                         }
-
                     }
 
                     $table->setPrimaryKey($pkColumns);

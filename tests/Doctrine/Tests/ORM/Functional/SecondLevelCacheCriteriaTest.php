@@ -156,5 +156,4 @@ class SecondLevelCacheCriteriaTest extends SecondLevelCacheAbstractTest
         self::assertInstanceOf(Collection::class, $matching);
         self::assertCount(1, $matching);
     }
-
 }

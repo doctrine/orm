@@ -42,5 +42,4 @@ class OnFlushEventArgs extends EventArgs
     {
         return $this->em;
     }
-
 }

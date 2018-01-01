@@ -381,5 +381,4 @@ class DefaultCacheFactoryTest extends OrmTestCase
 
         self::assertInstanceOf(DefaultMultiGetRegion::class, $barRegion);
     }
-
 }

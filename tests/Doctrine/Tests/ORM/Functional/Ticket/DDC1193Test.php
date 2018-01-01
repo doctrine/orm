@@ -66,7 +66,8 @@ class DDC1193Test extends OrmFunctionalTestCase
 }
 
 /** @ORM\Entity */
-class DDC1193Company {
+class DDC1193Company
+{
     /**
      * @ORM\Id @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -75,11 +76,11 @@ class DDC1193Company {
 
     /** @ORM\OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"}) */
     public $member;
-
 }
 
 /** @ORM\Entity */
-class DDC1193Person {
+class DDC1193Person
+{
     /**
      * @ORM\Id @ORM\Column(type="integer")
      * @ORM\GeneratedValue
@@ -93,11 +94,11 @@ class DDC1193Person {
 }
 
 /** @ORM\Entity */
-class DDC1193Account {
+class DDC1193Account
+{
     /**
      * @ORM\Id @ORM\Column(type="integer")
      * @ORM\GeneratedValue
      */
     public $id;
-
 }

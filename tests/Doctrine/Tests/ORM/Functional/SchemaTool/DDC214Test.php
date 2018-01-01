@@ -71,7 +71,7 @@ class DDC214Test extends OrmFunctionalTestCase
 
         try {
             $this->schemaTool->createSchema($classMetadata);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // was already created
         }
 

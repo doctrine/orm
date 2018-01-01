@@ -10,7 +10,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
@@ -24,7 +23,6 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ]
             );
         } catch (\Exception $e) {
-
         }
     }
 
@@ -97,7 +95,6 @@ class DDC881Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertInstanceOf(PersistentCollection::class, $numbers[0]->getCalls());
         self::assertTrue($numbers[0]->getCalls()->isInitialized());
     }
-
 }
 
 /**

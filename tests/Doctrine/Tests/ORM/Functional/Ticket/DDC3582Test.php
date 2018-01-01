@@ -49,7 +49,10 @@ class DDC3582Embeddable1
     /** @ORM\Embedded(class="DDC3582Embeddable2") @var DDC3582Embeddable2 */
     public $embeddable2;
 
-    public function __construct() { $this->embeddable2 = new DDC3582Embeddable2(); }
+    public function __construct()
+    {
+        $this->embeddable2 = new DDC3582Embeddable2();
+    }
 }
 
 /** @ORM\Embeddable */
@@ -58,7 +61,10 @@ class DDC3582Embeddable2
     /** @ORM\Embedded(class="DDC3582Embeddable3") @var DDC3582Embeddable3 */
     public $embeddable3;
 
-    public function __construct() { $this->embeddable3 = new DDC3582Embeddable3(); }
+    public function __construct()
+    {
+        $this->embeddable3 = new DDC3582Embeddable3();
+    }
 }
 
 /** @ORM\Embeddable */

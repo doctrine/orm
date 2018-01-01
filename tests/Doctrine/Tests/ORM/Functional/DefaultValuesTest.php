@@ -32,7 +32,8 @@ class DefaultValuesTest extends OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testSimpleDetachMerge() {
+    public function testSimpleDetachMerge()
+    {
         $user = new DefaultValueUser;
         $user->name = 'romanb';
         $this->em->persist($user);
@@ -113,7 +114,10 @@ class DefaultValueUser
      */
     public $address;
 
-    public function getId() {return $this->id;}
+    public function getId()
+    {
+        return $this->id;
+    }
 }
 
 /**
@@ -155,5 +159,8 @@ class DefaultValueAddress
      */
     public $user;
 
-    public function getUser() {return $this->user;}
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

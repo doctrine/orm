@@ -87,25 +87,29 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
  */
-class CTIParent {
-   /**
-    * @ORM\Id @ORM\Column(type="integer")
-    * @ORM\GeneratedValue(strategy="AUTO")
-    */
+class CTIParent
+{
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
     private $id;
 
     /** @ORM\OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
     private $related;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getRelated() {
+    public function getRelated()
+    {
         return $this->related;
     }
 
-    public function setRelated($related) {
+    public function setRelated($related)
+    {
         $this->related = $related;
         $related->setCTIParent($this);
     }
@@ -114,24 +118,27 @@ class CTIParent {
 /**
  * @ORM\Entity @ORM\Table(name="cti_children")
  */
-class CTIChild extends CTIParent {
-   /**
-    * @ORM\Column(type="string")
-    */
+class CTIChild extends CTIParent
+{
+    /**
+     * @ORM\Column(type="string")
+     */
     private $data;
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
-
 }
 
 /** @ORM\Entity */
-class CTIRelated {
+class CTIRelated
+{
     /**
      * @ORM\Id @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -144,15 +151,18 @@ class CTIRelated {
      */
     private $ctiParent;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getCTIParent() {
+    public function getCTIParent()
+    {
         return $this->ctiParent;
     }
 
-    public function setCTIParent($ctiParent) {
+    public function setCTIParent($ctiParent)
+    {
         $this->ctiParent = $ctiParent;
     }
 }

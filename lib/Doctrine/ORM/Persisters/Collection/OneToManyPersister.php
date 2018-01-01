@@ -127,9 +127,9 @@ class OneToManyPersister extends AbstractCollectionPersister
         return (bool) $persister->count($criteria);
     }
 
-     /**
-      * {@inheritdoc}
-      */
+    /**
+     * {@inheritdoc}
+     */
     public function contains(PersistentCollection $collection, $element)
     {
         if ( ! $this->isValidEntityState($element)) {

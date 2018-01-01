@@ -29,7 +29,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->shipping->setDays('5');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    {
         $this->product->setShipping($this->shipping);
         $this->em->persist($this->product);
         $this->em->flush();
@@ -60,7 +61,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testLazyLoadsObjects() {
+    public function testLazyLoadsObjects()
+    {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceProduct::class);
         $metadata->getProperty('shipping')->setFetchMode(FetchMode::LAZY);
@@ -73,7 +75,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals(1, $product->getShipping()->getDays());
     }
 
-    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt() {
+    public function testDoesNotLazyLoadObjectsIfConfigurationDoesNotAllowIt()
+    {
         $this->createFixture();
 
         $query = $this->em->createQuery('select p from Doctrine\Tests\Models\ECommerce\ECommerceProduct p');
@@ -99,7 +102,8 @@ class OneToOneUnidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function assertForeignKeyIs($value) {
+    public function assertForeignKeyIs($value)
+    {
         $foreignKey = $this->em->getConnection()->executeQuery(
             'SELECT shipping_id FROM ecommerce_products WHERE id=?',
             [$this->product->getId()]

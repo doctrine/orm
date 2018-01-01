@@ -33,23 +33,28 @@ class ECommerceFeature
      */
     private $product;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
     }
 
-    public function setProduct(ECommerceProduct $product) {
+    public function setProduct(ECommerceProduct $product)
+    {
         $this->product = $product;
     }
 
-    public function removeProduct() {
+    public function removeProduct()
+    {
         if ($this->product !== null) {
             $product = $this->product;
             $this->product = null;
@@ -57,7 +62,8 @@ class ECommerceFeature
         }
     }
 
-    public function getProduct() {
+    public function getProduct()
+    {
         return $this->product;
     }
 }

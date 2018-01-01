@@ -20,7 +20,7 @@ class DDC1209Test extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC1209_3::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

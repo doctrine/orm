@@ -33,20 +33,24 @@ class NavPhotos
      */
     private $file;
 
-    public function __construct($poi, $file) {
+    public function __construct($poi, $file)
+    {
         $this->poi = $poi;
         $this->file = $file;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getPointOfInterest() {
+    public function getPointOfInterest()
+    {
         return $this->poi;
     }
 
-    public function getFile() {
+    public function getFile()
+    {
         return $this->file;
     }
 }

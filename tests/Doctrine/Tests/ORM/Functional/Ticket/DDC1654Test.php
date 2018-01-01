@@ -107,7 +107,6 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
         self::assertCount(0, $comments);
-
     }
 
     /**

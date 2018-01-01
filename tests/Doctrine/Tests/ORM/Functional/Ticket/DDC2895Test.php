@@ -22,8 +22,7 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC2895::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -49,7 +48,6 @@ class DDC2895Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $ddc2895 = $this->em->find(get_class($ddc2895), $ddc2895->id);
 
         self::assertNotNull($ddc2895->getLastModified());
-
     }
 }
 

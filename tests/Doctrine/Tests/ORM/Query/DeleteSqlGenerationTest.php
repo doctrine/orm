@@ -24,7 +24,8 @@ class DeleteSqlGenerationTest extends OrmTestCase
 {
     private $em;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->em = $this->getTestEntityManager();
     }
 

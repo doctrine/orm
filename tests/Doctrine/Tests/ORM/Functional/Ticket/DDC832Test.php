@@ -28,7 +28,7 @@ class DDC832Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC832Like::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

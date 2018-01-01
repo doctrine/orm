@@ -58,7 +58,7 @@ class CacheConfiguration
      */
     public function getCacheLogger()
     {
-         return $this->cacheLogger;
+        return $this->cacheLogger;
     }
 
     /**
@@ -100,7 +100,7 @@ class CacheConfiguration
             );
         }
 
-         return $this->queryValidator;
+        return $this->queryValidator;
     }
 
     /**

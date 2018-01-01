@@ -32,7 +32,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->secondFeature->setDescription('Annotations examples');
     }
 
-    public function testSavesAOneToManyAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToManyAssociationWithCascadeSaveSet()
+    {
         $this->product->addFeature($this->firstFeature);
         $this->product->addFeature($this->secondFeature);
         $this->em->persist($this->product);
@@ -50,7 +51,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCount(0, $this->product->getFeatures());
     }
 
-    public function testDoesNotSaveAnInverseSideSet() {
+    public function testDoesNotSaveAnInverseSideSet()
+    {
         $this->product->brokenAddFeature($this->firstFeature);
         $this->em->persist($this->product);
         $this->em->flush();
@@ -234,7 +236,8 @@ class OneToManyBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature) {
+    public function assertFeatureForeignKeyIs($value, ECommerceFeature $feature)
+    {
         $foreignKey = $this->em->getConnection()->executeQuery(
             'SELECT product_id FROM ecommerce_features WHERE id=?',
             [$feature->getId()]

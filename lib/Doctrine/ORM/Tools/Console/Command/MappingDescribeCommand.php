@@ -320,12 +320,11 @@ EOT
 
             if ($property instanceof FieldMetadata) {
                 $output = array_merge($output, $this->formatColumn($property));
-            }  elseif ($property instanceof AssociationMetadata) {
+            } elseif ($property instanceof AssociationMetadata) {
                 // @todo guilhermeblanco Fix me! We are trying to iterate through an AssociationMetadata instance
                 foreach ($property as $field => $value) {
                     $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
                 }
-
             }
         }
 

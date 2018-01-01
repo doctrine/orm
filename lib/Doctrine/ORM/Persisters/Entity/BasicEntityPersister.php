@@ -1806,7 +1806,6 @@ class BasicEntityPersister implements EntityPersister
 
                     $columns[] = $joinTableName . '.' . $quotedColumnName;
                 }
-
             } else {
                 if (! $owningAssociation->isOwningSide()) {
                     throw ORMException::invalidFindByInverseAssociation($this->class->getClassName(), $field);
@@ -2163,9 +2162,9 @@ class BasicEntityPersister implements EntityPersister
 
         // if one of the join columns is nullable, return left join
         foreach ($association->getJoinColumns() as $joinColumn) {
-             if (! $joinColumn->isNullable()) {
-                 continue;
-             }
+            if (! $joinColumn->isNullable()) {
+                continue;
+            }
 
             return 'LEFT JOIN';
         }

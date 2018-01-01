@@ -40,8 +40,7 @@ class DDC618Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
             $this->em->flush();
             $this->em->clear();
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 

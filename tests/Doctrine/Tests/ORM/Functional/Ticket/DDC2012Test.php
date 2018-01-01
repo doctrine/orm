@@ -101,7 +101,6 @@ class DDC2012Item
  */
 class DDC2012ItemPerson extends DDC2012Item
 {
-
 }
 
 class DDC2012TsVectorType extends Type

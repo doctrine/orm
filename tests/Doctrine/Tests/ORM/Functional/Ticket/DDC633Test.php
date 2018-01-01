@@ -19,8 +19,7 @@ class DDC633Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC633Appointment::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -87,7 +86,6 @@ class DDC633Appointment
      * @ORM\OneToOne(targetEntity="DDC633Patient", inversedBy="appointment", fetch="EAGER")
      */
     public $patient;
-
 }
 
 /**

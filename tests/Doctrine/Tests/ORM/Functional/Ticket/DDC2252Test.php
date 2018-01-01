@@ -145,7 +145,8 @@ class DDC2252MerchantAccount
  * @ORM\Entity
  * @ORM\Table(name="ddc2252_user_account")
  */
-class DDC2252User {
+class DDC2252User
+{
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

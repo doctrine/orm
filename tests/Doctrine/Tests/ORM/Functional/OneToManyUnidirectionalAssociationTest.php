@@ -78,7 +78,7 @@ class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
         try {
             // exception depending on the underlying Database Driver
             $this->em->flush();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $exceptionThrown = true;
         }
 

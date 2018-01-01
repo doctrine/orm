@@ -52,13 +52,15 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
  */
-class DDC422Guest {
+class DDC422Guest
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
 
 /** @ORM\Entity */
-class DDC422Customer extends DDC422Guest {
+class DDC422Customer extends DDC422Guest
+{
     /**
      * @ORM\ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
      * @ORM\JoinTable(name="ddc422_customers_contacts",
@@ -68,13 +70,15 @@ class DDC422Customer extends DDC422Guest {
      */
     public $contacts;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->contacts = new \Doctrine\Common\Collections\ArrayCollection;
     }
 }
 
 /** @ORM\Entity */
-class DDC422Contact {
+class DDC422Contact
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

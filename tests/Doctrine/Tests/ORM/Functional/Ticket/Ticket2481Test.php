@@ -40,9 +40,9 @@ class Ticket2481Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class Ticket2481Product
 {
-  /**
-   * @ORM\Id @ORM\Column(type="integer")
-   * @ORM\GeneratedValue(strategy="AUTO")
-   */
-  public $id;
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    public $id;
 }

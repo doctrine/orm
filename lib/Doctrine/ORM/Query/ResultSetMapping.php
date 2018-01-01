@@ -222,7 +222,9 @@ class ResultSetMapping
         $found = false;
 
         foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
-            if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) continue;
+            if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
+                continue;
+            }
 
             $this->addIndexByColumn($alias, $columnName);
             $found = true;

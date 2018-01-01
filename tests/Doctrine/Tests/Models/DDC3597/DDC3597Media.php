@@ -34,42 +34,48 @@ abstract class DDC3597Media extends DDC3597Root
      */
     private $format;
 
-    public function __construct($distributionHash) {
+    public function __construct($distributionHash)
+    {
         $this->distributionHash = $distributionHash;
     }
 
     /**
      * @return string
      */
-    public function getDistributionHash() {
+    public function getDistributionHash()
+    {
         return $this->distributionHash;
     }
 
     /**
      * @return int
      */
-    public function getSize() {
+    public function getSize()
+    {
         return $this->size;
     }
 
     /**
      * @param int $size
      */
-    public function setSize($size) {
+    public function setSize($size)
+    {
         $this->size = $size;
     }
 
     /**
      * @return string
      */
-    public function getFormat() {
+    public function getFormat()
+    {
         return $this->format;
     }
 
     /**
      * @param string $format
      */
-    public function setFormat($format) {
+    public function setFormat($format)
+    {
         $this->format = $format;
     }
 }

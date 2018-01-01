@@ -59,7 +59,7 @@ class LanguageRecognitionTest extends OrmTestCase
         $query->setDQL($dql);
 
         foreach ($hints as $key => $value) {
-        	$query->setHint($key, $value);
+            $query->setHint($key, $value);
         }
 
         $parser = new Query\Parser($query);

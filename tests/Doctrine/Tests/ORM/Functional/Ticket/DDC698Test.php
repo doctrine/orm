@@ -18,8 +18,7 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC698Privilege::class)
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -44,38 +43,37 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
  */
 class DDC698Role
 {
-	/**
-	 *  @ORM\Id @ORM\Column(name="roleID", type="integer")
-	 *  @ORM\GeneratedValue(strategy="AUTO")
-	 *
-	 */
-	protected $roleID;
+    /**
+     *  @ORM\Id @ORM\Column(name="roleID", type="integer")
+     *  @ORM\GeneratedValue(strategy="AUTO")
+     *
+     */
+    protected $roleID;
 
-	/**
-	 * @ORM\Column(name="name", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $name;
+    /**
+     * @ORM\Column(name="name", type="string", length=45)
+     *
+     *
+     */
+    protected $name;
 
-	/**
-	 * @ORM\Column(name="shortName", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $shortName;
+    /**
+     * @ORM\Column(name="shortName", type="string", length=45)
+     *
+     *
+     */
+    protected $shortName;
 
 
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
-	 * @ORM\JoinTable(name="RolePrivileges",
-	 *     joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
-	 *     inverseJoinColumns={@ORM\JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
-	 * )
-	 */
-	protected $privilege;
-
+    /**
+     * @ORM\ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
+     * @ORM\JoinTable(name="RolePrivileges",
+     *     joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
+     * )
+     */
+    protected $privilege;
 }
 
 
@@ -86,22 +84,22 @@ class DDC698Role
  */
 class DDC698Privilege
 {
-	/**
-	 *  @ORM\Id  @ORM\Column(name="privilegeID", type="integer")
-	 *  @ORM\GeneratedValue(strategy="AUTO")
-	 *
-	 */
-	protected $privilegeID;
+    /**
+     *  @ORM\Id  @ORM\Column(name="privilegeID", type="integer")
+     *  @ORM\GeneratedValue(strategy="AUTO")
+     *
+     */
+    protected $privilegeID;
 
-	/**
-	 * @ORM\Column(name="name", type="string", length=45)
-	 *
-	 *
-	 */
-	protected $name;
+    /**
+     * @ORM\Column(name="name", type="string", length=45)
+     *
+     *
+     */
+    protected $name;
 
-	/**
-	 * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
-	 */
-	protected $roles;
+    /**
+     * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+     */
+    protected $roles;
 }

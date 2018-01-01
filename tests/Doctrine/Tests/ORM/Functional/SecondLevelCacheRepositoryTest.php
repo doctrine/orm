@@ -37,7 +37,6 @@ class SecondLevelCacheRepositoryTest extends SecondLevelCacheAbstractTest
         self::assertEquals(2, $this->secondLevelCacheLogger->getHitCount());
         self::assertEquals(0, $this->secondLevelCacheLogger->getMissCount());
         self::assertEquals(2, $this->secondLevelCacheLogger->getRegionHitCount($this->getEntityRegion(Country::class)));
-
     }
 
     public function testRepositoryCacheFindAll()

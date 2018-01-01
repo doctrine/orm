@@ -83,7 +83,6 @@ class OnFlushListener
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityInsertions() as $entity) {
-
             if ($entity instanceof CmsUser) {
                 // Adds a phonenumber to every newly persisted CmsUser ...
 
@@ -109,7 +108,6 @@ class OnFlushListener
 
                 var_dump($old);
             }*/
-
         }
     }
 }

@@ -164,7 +164,8 @@ class EntityManagerTest extends OrmTestCase
     /**
      * @dataProvider dataMethodsAffectedByNoObjectArguments
      */
-    public function testThrowsExceptionOnNonObjectValues($methodName) {
+    public function testThrowsExceptionOnNonObjectValues($methodName)
+    {
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
 

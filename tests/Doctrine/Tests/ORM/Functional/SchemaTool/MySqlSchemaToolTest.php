@@ -11,7 +11,8 @@ use Doctrine\Tests\Models;
 
 class MySqlSchemaToolTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         if ($this->em->getConnection()->getDatabasePlatform()->getName() !== 'mysql') {
             $this->markTestSkipped('The ' . __CLASS__ .' requires the use of mysql.');
@@ -91,7 +92,6 @@ class MySqlSchemaToolTest extends OrmFunctionalTestCase
 
         self::assertCount(0, $sql);
     }
-
 }
 
 /**

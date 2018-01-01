@@ -25,7 +25,7 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC1655Baz::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->fail($e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }
     }

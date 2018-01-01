@@ -31,9 +31,9 @@ class DefaultCache implements Cache
      */
     private $uow;
 
-     /**
-      * @var \Doctrine\ORM\Cache\CacheFactory
-      */
+    /**
+     * @var \Doctrine\ORM\Cache\CacheFactory
+     */
     private $cacheFactory;
 
     /**
@@ -273,12 +273,12 @@ class DefaultCache implements Cache
         return $this->queryCaches[$regionName];
     }
 
-     /**
-      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-      * @param mixed                               $identifier The entity identifier.
-      *
-      * @return \Doctrine\ORM\Cache\EntityCacheKey
-      */
+    /**
+     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
+     * @param mixed                               $identifier The entity identifier.
+     *
+     * @return \Doctrine\ORM\Cache\EntityCacheKey
+     */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
         if (! is_array($identifier)) {
@@ -322,5 +322,4 @@ class DefaultCache implements Cache
 
         return [$metadata->identifier[0] => $identifier];
     }
-
 }

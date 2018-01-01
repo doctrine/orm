@@ -177,11 +177,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
         ];
 
-        $list = array_filter($list, function($item) use ($invalid){
+        $list = array_filter($list, function($item) use ($invalid) {
             return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
         });
 
-        return array_map(function($item){
+        return array_map(function($item) {
             return [$item];
         }, $list);
     }

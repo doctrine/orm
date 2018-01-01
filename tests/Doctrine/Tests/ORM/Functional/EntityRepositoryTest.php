@@ -308,7 +308,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\ORMException
      */
-    public function testExceptionIsThrownWhenCallingFindByWithoutParameter() {
+    public function testExceptionIsThrownWhenCallingFindByWithoutParameter()
+    {
         $this->em->getRepository(CmsUser::class)
                   ->findByStatus();
     }
@@ -316,7 +317,8 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
     /**
      * @expectedException \Doctrine\ORM\ORMException
      */
-    public function testExceptionIsThrownWhenUsingInvalidFieldName() {
+    public function testExceptionIsThrownWhenUsingInvalidFieldName()
+    {
         $this->em->getRepository(CmsUser::class)
                   ->findByThisFieldDoesNotExist('testvalue');
     }
@@ -435,13 +437,13 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
      */
     public function testFindOneByOrderBy()
     {
-    	$this->loadFixture();
+        $this->loadFixture();
 
-    	$repos = $this->em->getRepository(CmsUser::class);
-    	$userAsc = $repos->findOneBy([], ["username" => "ASC"]);
-    	$userDesc = $repos->findOneBy([], ["username" => "DESC"]);
+        $repos = $this->em->getRepository(CmsUser::class);
+        $userAsc = $repos->findOneBy([], ["username" => "ASC"]);
+        $userDesc = $repos->findOneBy([], ["username" => "DESC"]);
 
-    	self::assertNotSame($userAsc, $userDesc);
+        self::assertNotSame($userAsc, $userDesc);
     }
 
     /**
@@ -639,7 +641,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         self::assertEquals($this->em->getConfiguration()->getDefaultRepositoryClassName(), DDC753DefaultRepository::class);
         $this->em->getConfiguration()->setDefaultRepositoryClassName(EntityRepository::class);
         self::assertEquals($this->em->getConfiguration()->getDefaultRepositoryClassName(), EntityRepository::class);
-
     }
 
     /**

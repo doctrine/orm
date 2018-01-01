@@ -22,7 +22,6 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCreateRetrieveUpdateDelete()
     {
-
         $user           = new User;
         $user->name     = 'FabioBatSilva';
         $this->em->persist($user);
@@ -75,5 +74,4 @@ class DDC142Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         self::assertNull($this->em->find(User::class, $id));
     }
-
 }

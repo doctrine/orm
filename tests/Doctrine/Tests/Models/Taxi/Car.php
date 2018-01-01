@@ -34,7 +34,7 @@ class Car
      */
     private $carRides;
     
-    public function getBrand() 
+    public function getBrand()
     {
         return $this->brand;
     }

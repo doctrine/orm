@@ -54,7 +54,8 @@ class DDC512Test extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  */
-class DDC512Customer {
+class DDC512Customer
+{
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

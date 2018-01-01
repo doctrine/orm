@@ -34,7 +34,7 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC742Comment::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
 
         // make sure classes will be deserialized from caches

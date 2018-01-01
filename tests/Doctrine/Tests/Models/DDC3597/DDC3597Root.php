@@ -44,7 +44,8 @@ abstract class DDC3597Root
      *
      * @ORM\PrePersist
      */
-    public function prePersist() {
+    public function prePersist()
+    {
         $this->updatedAt = $this->createdAt = new \DateTime();
     }
 
@@ -53,14 +54,16 @@ abstract class DDC3597Root
      *
      * @ORM\PreUpdate
      */
-    public function preUpdate() {
+    public function preUpdate()
+    {
         $this->updatedAt = new \DateTime();
     }
 
     /**
      * @return int
      */
-    public function getId() {
+    public function getId()
+    {
         return (int)$this->id;
     }
 
@@ -68,14 +71,16 @@ abstract class DDC3597Root
     /**
      * @return \DateTime
      */
-    public function getCreatedAt() {
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
     /**
      * @return \DateTime
      */
-    public function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 }

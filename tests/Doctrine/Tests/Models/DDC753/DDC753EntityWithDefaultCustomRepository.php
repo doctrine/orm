@@ -20,5 +20,4 @@ class DDC753EntityWithDefaultCustomRepository
 
     /** @ORM\Column(type="string") */
     protected $name;
-
 }

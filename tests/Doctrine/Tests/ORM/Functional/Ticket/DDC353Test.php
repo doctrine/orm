@@ -19,7 +19,8 @@ class DDC353Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC353Picture::class),
                 ]
             );
-        } catch(\Exception $ignored) {}
+        } catch (\Exception $ignored) {
+        }
     }
 
     public function testWorkingCase()

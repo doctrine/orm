@@ -68,7 +68,6 @@ class DDC1181Hotel
      * @var Booking[]
      */
     public $bookings;
-
 }
 
 /**

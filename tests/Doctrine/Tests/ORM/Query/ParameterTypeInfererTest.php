@@ -12,7 +12,6 @@ use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-
     public function providerParameterTypeInferer()
     {
         $data = [
