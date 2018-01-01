@@ -29,10 +29,10 @@ class DDC2363Test extends OrmFunctionalTestCase
     {
         // We create an Order with related ServicesPackage that is related to two Service.
         $order = new DDC2363Order();
-        $order->setName('My ORDER');
+        $order->name = 'My ORDER';
 
         $servicesPackage = $this->createNewServicesPackage();
-        $order->setServicesPackage($servicesPackage);
+        $order->services_package = $servicesPackage;
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -46,10 +46,13 @@ class DDC2363Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // Now we load previously persisted Order and associate it with a new ServicesPackage with two new Services.
+        /** @var $order DDC2363Order */
         $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
 
+        self::assertInstanceOf(DDC2363Order::class, $order);
+
         $servicesPackage = $this->createNewServicesPackage();
-        $order->setServicesPackage($servicesPackage);
+        $order->services_package = $servicesPackage;
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -64,14 +67,17 @@ class DDC2363Test extends OrmFunctionalTestCase
         $this->_em->clear();
 
         // We load again the Order...
+        /** @var $order DDC2363Order */
         $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
+
+        self::assertInstanceOf(DDC2363Order::class, $order);
 
         // To make test pass, uncomment the following line. So ServicesPackage will be hydrated.
         // $order->getServicesPackage()->getName();
 
         // ... and create another ServicesPackage with two Services.
         $servicesPackage = $this->createNewServicesPackage();
-        $order->setServicesPackage($servicesPackage);
+        $order->services_package = $servicesPackage;
 
         $this->_em->persist($order);
         $this->_em->flush();
@@ -85,15 +91,18 @@ class DDC2363Test extends OrmFunctionalTestCase
     private function createNewServicesPackage()
     {
         $serviceA = new DDC2363Service();
-        $serviceA->setName('BASE SERVICE A');
+        $serviceA->name = 'BASE SERVICE A';
 
         $serviceB = new DDC2363Service();
-        $serviceB->setName('BASE SERVICE B');
+        $serviceB->name = 'BASE SERVICE B';
 
         $servicesPackage = new DDC2363ServicesPackage();
-        $servicesPackage->setName('SERVICES PACKAGE');
-        $servicesPackage->addService($serviceA);
-        $servicesPackage->addService($serviceB);
+        $servicesPackage->name = 'SERVICES PACKAGE';
+
+        $serviceA->package = $servicesPackage;
+        $serviceB->package = $servicesPackage;
+        $servicesPackage->services->add($serviceA);
+        $servicesPackage->services->add($serviceB);
 
         return $servicesPackage;
     }
@@ -103,179 +112,46 @@ class DDC2363Test extends OrmFunctionalTestCase
 /** @Entity */
 class DDC2363Order
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
-    protected $id;
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
 
-    /** @Column(type="string") **/
-    protected $name;
+    /** @Column(type="string") */
+    public $name;
 
-    /**
-     * @OneToOne(
-     *   targetEntity="DDC2363ServicesPackage",
-     *   inversedBy="order",
-     *   cascade={"persist", "remove"},
-     *   orphanRemoval=true
-     * )
-     */
-    protected $services_package;
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setServicesPackage(DDC2363ServicesPackage $services_package)
-    {
-        $this->services_package = $services_package;
-    }
-
-    /**
-     * @return DDC2363ServicesPackage
-     */
-    public function getServicesPackage()
-    {
-        return $this->services_package;
-    }
+    /** @OneToOne(targetEntity=DDC2363ServicesPackage::class, inversedBy="order", cascade={"persist"}) */
+    public $services_package;
 }
 
 /** @Entity */
 class DDC2363ServicesPackage
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
-    protected $id;
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
 
-    /** @Column(type="string") **/
-    protected $name;
+    /** @Column(type="string") */
+    public $name;
 
-    /**
-     * @OneToOne(
-     *   targetEntity="DDC2363Order",
-     *   mappedBy="services_package"
-     * )
-     */
-    protected $order;
+    /** @OneToOne(targetEntity=DDC2363Order::class, mappedBy="services_package") */
+    public $order;
 
-    /**
-     * @OneToMany(
-     *   targetEntity="DDC2363Service",
-     *   mappedBy="package",
-     *   cascade={"persist", "remove"}
-     * )
-     */
-    protected $services;
+    /** @OneToMany(targetEntity=DDC2363Service::class, mappedBy="package", cascade={"persist", "remove"}) */
+    public $services;
 
     public function __construct()
     {
         $this->services = new ArrayCollection();
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setOrder(DDC2363Order $order)
-    {
-        $this->order = $order;
-    }
-
-    public function getOrder()
-    {
-        return $this->order;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param DDC2363Service $service
-     */
-    public function addService(DDC2363Service $service)
-    {
-        $service->setPackage($this);
-        $this->services->add($service);
-    }
-
-    /**
-     * @return ArrayCollection
-     */
-    public function getServices()
-    {
-        return $this->services;
     }
 }
 
 /** @Entity */
 class DDC2363Service
 {
-    /** @Id @Column(type="integer") @GeneratedValue **/
-    protected $id;
+    /** @Id @Column(type="integer") @GeneratedValue */
+    public $id;
 
-    /** @Column(type="string") **/
-    protected $name;
+    /** @Column(type="string") */
+    public $name;
 
-    /**
-     * @ManyToOne(targetEntity="DDC2363ServicesPackage", inversedBy="services")
-     */
-    protected $package;
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setName($name)
-    {
-        $this->name = $name;
-    }
-
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    public function setPackage(DDC2363ServicesPackage $package)
-    {
-        $this->package = $package;
-    }
-
-    /**
-     * @return DDC2363ServicesPackage
-     */
-    public function getPackage()
-    {
-        return $this->package;
-    }
+    /** @ManyToOne(targetEntity=DDC2363ServicesPackage::class, inversedBy="services") */
+    public $package;
 }
