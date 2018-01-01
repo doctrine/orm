@@ -50,10 +50,10 @@ class IterableResult implements \Iterator
     {
         if ($this->rewinded == true) {
             throw new HydrationException("Can only iterate a Result once.");
-        } else {
-            $this->current = $this->next();
-            $this->rewinded = true;
         }
+
+        $this->current = $this->next();
+        $this->rewinded = true;
     }
 
     /**
