@@ -14,17 +14,15 @@ class DDC2363Test extends OrmFunctionalTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setup()
+    protected function setUp()
     {
-        parent::setup();
+        parent::setUp();
 
-        $this->_schemaTool->createSchema(
-            array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2363Order'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2363ServicesPackage'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2363Service'),
-            )
-        );
+        $this->_schemaTool->createSchema([
+            $this->_em->getClassMetadata(DDC2363Order::class),
+            $this->_em->getClassMetadata(DDC2363ServicesPackage::class),
+            $this->_em->getClassMetadata(DDC2363Service::class),
+        ]);
     }
 
     public function testIssue()
@@ -41,23 +39,16 @@ class DDC2363Test extends OrmFunctionalTestCase
 
         // So, we assert that there is only one ServicesPackage and 2 PurchasedService.
         // On creation there is no problem, these assertions are green.
-        $this->assertCount(
-            1,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363ServicesPackage')->findAll()
-        );
-        $this->assertCount(
-            2,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363Service')->findAll()
-        );
+        $this->assertCount(1, $this->_em->getRepository(DDC2363ServicesPackage::class)->findAll());
+        $this->assertCount(2, $this->_em->getRepository(DDC2363Service::class)->findAll());
 
         // Reinitializing EntityManager to simulate, for example, another HTTP request.
-        $this->_em->close();
-        $this->_em = $this->_getEntityManager();
+        $this->_em->clear();
 
         // Now we load previously persisted Order and associate it with a new ServicesPackage with two new Services.
-        $order = $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363Order')->find(1);
+        $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
 
-        $servicesPackage = $this->createNewServicesPackage($this->_em);
+        $servicesPackage = $this->createNewServicesPackage();
         $order->setServicesPackage($servicesPackage);
 
         $this->_em->persist($order);
@@ -66,27 +57,20 @@ class DDC2363Test extends OrmFunctionalTestCase
         // We assert again that there is only one ServicesPackage and two Services. This is because we have
         // orphanRemoval on Order::purchased_services_package and cascade="remove" on
         // PurchasedServicesPackage::services.
-        $this->assertCount(
-            1,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363ServicesPackage')->findAll()
-        );
-        $this->assertCount(
-            2,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363Service')->findAll()
-        );
+        $this->assertCount(1, $this->_em->getRepository(DDC2363ServicesPackage::class)->findAll());
+        $this->assertCount(2, $this->_em->getRepository(DDC2363Service::class)->findAll());
 
         // Reinitializing EntityManager to simulate, for example, another HTTP request.
-        $this->_em->close();
-        $this->_em = $this->_getEntityManager();
+        $this->_em->clear();
 
         // We load again the Order...
-        $order = $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363Order')->find(1);
+        $order = $this->_em->getRepository(DDC2363Order::class)->find(1);
 
         // To make test pass, uncomment the following line. So ServicesPackage will be hydrated.
         // $order->getServicesPackage()->getName();
 
         // ... and create another ServicesPackage with two Services.
-        $servicesPackage = $this->createNewServicesPackage($this->_em);
+        $servicesPackage = $this->createNewServicesPackage();
         $order->setServicesPackage($servicesPackage);
 
         $this->_em->persist($order);
@@ -94,14 +78,8 @@ class DDC2363Test extends OrmFunctionalTestCase
         $this->_em->flush(); // <--- This is the problem!
 
         // There should be one ServicesPackage (and two Services) again, right?
-        $this->assertCount(
-            1,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363ServicesPackage')->findAll()
-        );
-        $this->assertCount(
-            2,
-            $this->_em->getRepository(__NAMESPACE__ . '\\DDC2363Service')->findAll()
-        );
+        $this->assertCount(1, $this->_em->getRepository(DDC2363ServicesPackage::class)->findAll());
+        $this->assertCount(2, $this->_em->getRepository(DDC2363Service::class)->findAll());
     }
 
     private function createNewServicesPackage()
