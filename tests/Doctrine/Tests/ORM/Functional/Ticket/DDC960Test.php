@@ -19,8 +19,7 @@ class DDC960Test extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC960Child::class)
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 

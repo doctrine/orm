@@ -11,9 +11,10 @@ use Doctrine\Tests\Models\DDC3597\DDC3597Root;
 /**
  * @group DDC-117
  */
-class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
-
-    protected function setUp() {
+class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase
+{
+    protected function setUp()
+    {
         parent::setUp();
         $this->schemaTool->createSchema(
             [
@@ -27,7 +28,8 @@ class DDC3597Test extends \Doctrine\Tests\OrmFunctionalTestCase {
     /**
      * @group DDC-3597
      */
-    public function testSaveImageEntity() {
+    public function testSaveImageEntity()
+    {
         $imageEntity = new DDC3597Image('foobar');
         $imageEntity->setFormat('JPG');
         $imageEntity->setSize(123);

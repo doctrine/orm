@@ -306,7 +306,6 @@ class ResultSetMappingBuilder extends ResultSetMapping
                         $this->addJoinedEntityResult($association->getTargetEntity(), $joinAlias, $rootAlias, $fieldName);
                     }
                 }
-
             }
         }
 

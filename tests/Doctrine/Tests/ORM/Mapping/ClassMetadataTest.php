@@ -1291,7 +1291,7 @@ class ClassMetadataTest extends OrmTestCase
         $association->setCascade(['invalid']);
 
         $cm->addProperty($association);
-     }
+    }
 
     /**
      * @group DDC-964

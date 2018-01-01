@@ -20,8 +20,7 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC1250ClientHistory::class),
                 ]
             );
-        } catch(\PDOException $e) {
-
+        } catch (\PDOException $e) {
         }
     }
 

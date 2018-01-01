@@ -14,9 +14,9 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 /**
  * @group DDC-3634
  */
-class DDC3634Test extends OrmFunctionalTestCase 
+class DDC3634Test extends OrmFunctionalTestCase
 {
-    protected function setUp() 
+    protected function setUp()
     {
         parent::setUp();
 

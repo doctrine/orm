@@ -73,7 +73,7 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
         $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
         $key       = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $fieldName, $ownerId);
 
-       // Invalidate non initialized collections OR ordered collection
+        // Invalidate non initialized collections OR ordered collection
         if (($isDirty && ! $isInitialized) ||
             ($this->association instanceof ToManyAssociationMetadata && $this->association->getOrderBy())) {
             $this->persister->update($collection);

@@ -81,7 +81,6 @@ abstract class DDC279EntityXAbstract
      * @ORM\Column(type="string")
      */
     public $data;
-
 }
 
 /**

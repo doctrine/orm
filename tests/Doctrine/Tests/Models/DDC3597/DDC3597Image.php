@@ -24,7 +24,8 @@ class DDC3597Image extends DDC3597Media
     /**
      * @param string $distributionHash
      */
-    public function __construct($distributionHash) {
+    public function __construct($distributionHash)
+    {
         parent::__construct($distributionHash);
         $this->dimension = new DDC3597Dimension();
     }
@@ -32,7 +33,8 @@ class DDC3597Image extends DDC3597Media
     /**
      * @return DDC3597Dimension
      */
-    public function getDimension() {
+    public function getDimension()
+    {
         return $this->dimension;
     }
 }

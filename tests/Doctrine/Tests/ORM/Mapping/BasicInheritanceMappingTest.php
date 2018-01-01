@@ -27,7 +27,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     /**
      * {@inheritDoc}
      */
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->cmf = new ClassMetadataFactory();
 
         $this->cmf->setEntityManager($this->getTestEntityManager());
@@ -191,7 +192,8 @@ class BasicInheritanceMappingTest extends OrmTestCase
     }
 }
 
-class TransientBaseClass {
+class TransientBaseClass
+{
     private $transient1;
     private $transient2;
 }
@@ -206,7 +208,8 @@ class EntitySubClass extends TransientBaseClass
 }
 
 /** @ORM\MappedSuperclass */
-class MappedSuperclassBase {
+class MappedSuperclassBase
+{
     /** @ORM\Column(type="integer") */
     private $mapped1;
     /** @ORM\Column(type="string") */
@@ -218,10 +221,13 @@ class MappedSuperclassBase {
     private $mappedRelated1;
     private $transient;
 }
-class MappedSuperclassRelated1 {}
+class MappedSuperclassRelated1
+{
+}
 
 /** @ORM\Entity */
-class EntitySubClass2 extends MappedSuperclassBase {
+class EntitySubClass2 extends MappedSuperclassBase
+{
     /** @ORM\Id @ORM\Column(type="integer") */
     private $id;
     /** @ORM\Column(type="string") */
@@ -231,7 +237,8 @@ class EntitySubClass2 extends MappedSuperclassBase {
 /**
  * @ORM\MappedSuperclass
  */
-class MappedSuperclassBaseIndex {
+class MappedSuperclassBaseIndex
+{
     /** @ORM\Column(type="string") */
     private $mapped1;
     /** @ORM\Column(type="string") */

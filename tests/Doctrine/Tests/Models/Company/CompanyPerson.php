@@ -84,38 +84,46 @@ class CompanyPerson
      */
     private $friends;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->friends = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return  $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getSpouse() {
+    public function getSpouse()
+    {
         return $this->spouse;
     }
 
-    public function getFriends() {
+    public function getFriends()
+    {
         return $this->friends;
     }
 
-    public function addFriend(CompanyPerson $friend) {
+    public function addFriend(CompanyPerson $friend)
+    {
         if ( ! $this->friends->contains($friend)) {
             $this->friends->add($friend);
             $friend->addFriend($this);
         }
     }
 
-    public function setSpouse(CompanyPerson $spouse) {
+    public function setSpouse(CompanyPerson $spouse)
+    {
         if ($spouse !== $this->spouse) {
             $this->spouse = $spouse;
             $this->spouse->setSpouse($this);

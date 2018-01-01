@@ -232,7 +232,6 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         self::assertNotNull($caughtException, "No OptimisticLockingException was thrown");
         self::assertSame($test, $caughtException->getEntity());
-
     }
 
     /**
@@ -261,9 +260,7 @@ class OptimisticTest extends OrmFunctionalTestCase
 
         self::assertNotNull($caughtException, "No OptimisticLockingException was thrown");
         self::assertSame($test, $caughtException->getEntity());
-
     }
-
 }
 
 /**

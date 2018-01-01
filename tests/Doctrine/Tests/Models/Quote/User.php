@@ -77,7 +77,8 @@ class User
         return $this->groups;
     }
 
-    public function setAddress(Address $address) {
+    public function setAddress(Address $address)
+    {
         if ($this->address !== $address) {
             $this->address = $address;
             $address->setUser($this);

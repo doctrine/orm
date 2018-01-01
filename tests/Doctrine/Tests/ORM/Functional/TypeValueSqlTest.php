@@ -55,7 +55,6 @@ class TypeValueSqlTest extends OrmFunctionalTestCase
      */
     public function testUpperCaseStringTypeWhenColumnNameIsDefined()
     {
-
         $entity = new CustomTypeUpperCase();
         $entity->lowerCaseString        = 'Some Value';
         $entity->namedLowerCaseString   = 'foo';

@@ -254,5 +254,4 @@ class DefaultCacheTest extends OrmTestCase
 
         self::assertEquals(['id'=>$identifier], $method->invoke($this->cache, $metadata, $identifier));
     }
-
 }

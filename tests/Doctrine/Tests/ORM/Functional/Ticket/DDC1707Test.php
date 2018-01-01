@@ -26,7 +26,6 @@ class DDC1707Test extends OrmFunctionalTestCase
                 ]
             );
         } catch (\Exception $ignored) {
-
         }
     }
 

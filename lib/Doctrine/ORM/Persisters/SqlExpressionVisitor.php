@@ -82,7 +82,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
             $expressionList[] = $this->dispatch($child);
         }
 
-        switch($expr->getType()) {
+        switch ($expr->getType()) {
             case CompositeExpression::TYPE_AND:
                 return '(' . implode(' AND ', $expressionList) . ')';
 

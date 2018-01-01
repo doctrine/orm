@@ -23,15 +23,18 @@ class CompanyCar
      */
     private $brand;
 
-    public function __construct($brand = null) {
+    public function __construct($brand = null)
+    {
         $this->brand = $brand;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getBrand() {
+    public function getBrand()
+    {
         return $this->title;
     }
 }

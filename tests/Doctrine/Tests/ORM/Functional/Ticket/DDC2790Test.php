@@ -71,8 +71,7 @@ class OnFlushListener
         $updates = $uow->getScheduledEntityUpdates();
 
         $undelete = array_intersect_key($deletions, $updates);
-        foreach ($undelete as $d)
-        {
+        foreach ($undelete as $d) {
             $em->persist($d);
         }
     }

@@ -35,7 +35,6 @@ class DDC1885Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->persist($user);
         $this->em->flush();
         $this->em->clear();
-
     }
 
     public function testCreateRetrieveUpdateDelete()

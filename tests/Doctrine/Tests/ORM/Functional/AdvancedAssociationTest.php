@@ -16,7 +16,8 @@ use Doctrine\Tests\OrmFunctionalTestCase;
  */
 class AdvancedAssociationTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
 
         try {
@@ -154,7 +155,7 @@ class AdvancedAssociationTest extends OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\Table(name="lemma")
  */
-class Lemma 
+class Lemma
 {
     const CLASS_NAME = __CLASS__;
 
@@ -206,7 +207,8 @@ class Lemma
      *
      * @return string
      */
-    public function getLemma(){
+    public function getLemma()
+    {
         return $this->lemma;
     }
 
@@ -246,7 +248,7 @@ class Lemma
  * @ORM\Entity
  * @ORM\Table(name="type")
  */
-class Type 
+class Type
 {
     const CLASS_NAME = __CLASS__;
 
@@ -376,7 +378,7 @@ class Type
  * @ORM\Entity
  * @ORM\Table(name="phrase")
  */
-class Phrase 
+class Phrase
 {
     const CLASS_NAME = __CLASS__;
 
@@ -477,7 +479,7 @@ class Phrase
  * @ORM\Entity
  * @ORM\Table(name="phrase_type")
  */
-class PhraseType 
+class PhraseType
 {
     const CLASS_NAME = __CLASS__;
 
@@ -567,7 +569,6 @@ class PhraseType
     {
         return $this->phrases;
     }
-
 }
 
 /**
@@ -621,7 +622,7 @@ class Definition
         return $this->phrase;
     }
 
-    public function removePhrase() 
+    public function removePhrase()
     {
         if ($this->phrase !== null) {
             /*@var $phrase kateglo\application\models\Phrase */

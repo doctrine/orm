@@ -63,7 +63,8 @@ class DDC513Item
 /**
  * @ORM\Entity
  */
-class DDC513Price {
+class DDC513Price
+{
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")

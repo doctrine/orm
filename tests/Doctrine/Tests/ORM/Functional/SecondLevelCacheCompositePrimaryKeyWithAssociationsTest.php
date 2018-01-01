@@ -48,7 +48,6 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
         $this->em->flush();
         $this->em->clear();
         $this->evictRegions();
-
     }
 
     public function testFindByReturnsCachedEntity()

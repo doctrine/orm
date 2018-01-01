@@ -94,7 +94,6 @@ class DDC2579Entity
         $this->assoc = $assoc;
         $this->value = $value;
     }
-
 }
 
 /**

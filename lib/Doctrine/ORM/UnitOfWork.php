@@ -1713,7 +1713,6 @@ class UnitOfWork implements PropertyChangedListener
             default:
                 throw new UnexpectedValueException("Unexpected entity state: $entityState." . self::objToStr($entity));
         }
-
     }
 
     /**

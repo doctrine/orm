@@ -760,7 +760,6 @@ class QueryBuilderTest extends OrmTestCase
            ->where($expr->gt('u.id', $expr->all('select a.id from Doctrine\Tests\Models\CMS\CmsArticle a')));
 
         self::assertValidQueryBuilder($qb, 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id > ALL(select a.id from Doctrine\Tests\Models\CMS\CmsArticle a)');
-
     }
 
     public function testMultipleIsolatedQueryConstruction()

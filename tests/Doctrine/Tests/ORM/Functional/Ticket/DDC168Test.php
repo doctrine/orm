@@ -10,7 +10,8 @@ class DDC168Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     protected $oldMetadata;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->useModelSet('company');
 
         parent::setUp();

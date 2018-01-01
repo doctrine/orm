@@ -23,5 +23,4 @@ class DDC3231User2
      * @ORM\Column(type="string", length=255)
      */
     protected $name;
-
 }

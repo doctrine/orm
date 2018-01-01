@@ -38,7 +38,7 @@ class Traveler
      * @ORM\Cache
      * @ORM\OneToOne(targetEntity="TravelerProfile")
      */
-     protected $profile;
+    protected $profile;
 
     /**
      * @param string $name

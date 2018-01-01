@@ -36,7 +36,6 @@ class DDC6303Test extends OrmFunctionalTestCase
             'a' => new DDC6303ChildA('a', 'authorized'),
             'b' => new DDC6303ChildB('b', ['accepted', 'authorized']),
         ]);
-
     }
 
     public function testEmptyValuesInJoinedInheritance() : void

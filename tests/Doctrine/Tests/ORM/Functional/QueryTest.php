@@ -263,7 +263,7 @@ class QueryTest extends OrmFunctionalTestCase
         $iteratedCount = 0;
         $topics = [];
 
-        foreach($articles as $row) {
+        foreach ($articles as $row) {
             $article = $row[0];
             $topics[] = $article->topic;
 
@@ -302,7 +302,7 @@ class QueryTest extends OrmFunctionalTestCase
 
         $iteratedCount = 0;
         $topics = [];
-        foreach($articles as $row) {
+        foreach ($articles as $row) {
             $article  = $row[0];
             $topics[] = $article->topic;
 

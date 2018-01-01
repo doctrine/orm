@@ -28,7 +28,7 @@ class SequenceGeneratorTest extends OrmFunctionalTestCase
                     $this->em->getClassMetadata(SequenceEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

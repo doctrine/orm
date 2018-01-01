@@ -56,15 +56,18 @@ class LegacyUser
         $this->cars = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
-    public function addArticle(LegacyArticle $article) {
+    public function addArticle(LegacyArticle $article)
+    {
         $this->articles[] = $article;
         $article->setAuthor($this);
     }
@@ -79,12 +82,14 @@ class LegacyUser
         return $this->references;
     }
 
-    public function addCar(LegacyCar $car) {
+    public function addCar(LegacyCar $car)
+    {
         $this->cars[] = $car;
         $car->addUser($this);
     }
 
-    public function getCars() {
+    public function getCars()
+    {
         return $this->cars;
     }
 }

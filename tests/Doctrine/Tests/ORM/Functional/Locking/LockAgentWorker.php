@@ -26,7 +26,7 @@ class LockAgentWorker
         $worker->addFunction("dqlWithLock", [$lockAgent, "dqlWithLock"]);
         $worker->addFunction('lock', [$lockAgent, 'lock']);
 
-        while($worker->work()) {
+        while ($worker->work()) {
             if ($worker->returnCode() != GEARMAN_SUCCESS) {
                 echo "return_code: " . $worker->returnCode() . "\n";
                 break;

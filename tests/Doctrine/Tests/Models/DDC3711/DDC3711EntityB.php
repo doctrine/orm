@@ -74,5 +74,4 @@ class DDC3711EntityB
     {
         $this->entityA[] = $entityA;
     }
-
 }

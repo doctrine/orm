@@ -71,7 +71,6 @@ class DDC1113Vehicle
 
     /** @ORM\OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"}) */
     public $engine;
-
 }
 
 /**
@@ -79,7 +78,6 @@ class DDC1113Vehicle
  */
 class DDC1113Car extends DDC1113Vehicle
 {
-
 }
 
 /**
@@ -87,7 +85,6 @@ class DDC1113Car extends DDC1113Vehicle
  */
 class DDC1113Bus extends DDC1113Vehicle
 {
-
 }
 
 /**
@@ -98,6 +95,5 @@ class DDC1113Engine
 
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-
 }
 

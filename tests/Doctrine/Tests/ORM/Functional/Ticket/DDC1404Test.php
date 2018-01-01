@@ -11,7 +11,6 @@ use Doctrine\ORM\Annotation as ORM;
  */
 class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
@@ -59,7 +58,6 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $this->em->flush();
     }
-
 }
 
 /**

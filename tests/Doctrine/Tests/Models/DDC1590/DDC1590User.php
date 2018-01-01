@@ -16,5 +16,4 @@ class DDC1590User extends DDC1590Entity
      * @ORM\Column(type="string", length=255)
      */
     protected $name;
-
 }

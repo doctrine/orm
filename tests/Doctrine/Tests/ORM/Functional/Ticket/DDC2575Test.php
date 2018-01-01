@@ -114,7 +114,6 @@ class DDC2575Root
         $this->id = $id;
         $this->sampleField = $value;
     }
-
 }
 
 /**

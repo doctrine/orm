@@ -18,7 +18,8 @@ class DDC599Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC599Subitem::class),
                 $this->em->getClassMetadata(DDC599Child::class),
             ]);
-        } catch (\Exception $ignored) {}
+        } catch (\Exception $ignored) {
+        }
     }
 
     public function testCascadeRemoveOnInheritanceHierarchy()

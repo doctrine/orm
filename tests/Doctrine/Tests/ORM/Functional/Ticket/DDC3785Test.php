@@ -25,7 +25,7 @@ class DDC3785Test extends \Doctrine\Tests\OrmFunctionalTestCase
                     $this->em->getClassMetadata(DDC3785_Attribute::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 
@@ -106,17 +106,17 @@ class DDC3785_Asset
  */
 class DDC3785_Attribute
 {
-	/**
-	 * @ORM\Id @ORM\Column(type="integer")
-	 * @ORM\GeneratedValue
-	 */
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
+     */
     public $id;
 
-	/** @ORM\Column(type = "string") */
-	private $name;
+    /** @ORM\Column(type = "string") */
+    private $name;
 
-	/** @ORM\Column(type = "string") */
-	private $value;
+    /** @ORM\Column(type = "string") */
+    private $value;
 
     public function __construct($name, $value)
     {

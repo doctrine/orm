@@ -38,7 +38,6 @@ class BasicEntityPersisterCompositeTypeParametersTest extends OrmTestCase
         $this->em->getClassMetadata(Admin1AlternateName::class);
 
         $this->persister = new BasicEntityPersister($this->em, $this->em->getClassMetadata(Admin1AlternateName::class));
-
     }
 
     public function testExpandParametersWillExpandCompositeEntityKeys()

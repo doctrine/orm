@@ -1237,7 +1237,6 @@ class SelectSqlGenerationTest extends OrmTestCase
         }
 
         self::assertTrue($exceptionThrown);
-
     }
 
     public function testSubSelectAliasesFromOuterQuery()
@@ -1662,9 +1661,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-     /**
-      * @group DDC-1430
-      */
+    /**
+     * @group DDC-1430
+     */
     public function testGroupByAllFieldsWhenObjectHasForeignKeys()
     {
         $this->assertSqlGeneration(
@@ -1742,7 +1741,8 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-    public function testSupportsParenthesisExpressionInSubSelect() {
+    public function testSupportsParenthesisExpressionInSubSelect()
+    {
         $this->assertSqlGeneration(
             'SELECT u.id, (SELECT (1000*SUM(subU.id)/SUM(subU.id)) FROM Doctrine\Tests\Models\CMS\CmsUser subU where subU.id = u.id) AS subSelect FROM Doctrine\Tests\Models\CMS\CmsUser u',
             'SELECT t0."id" AS c0, (SELECT (1000 * SUM(t1."id") / SUM(t1."id")) FROM "cms_users" t1 WHERE t1."id" = t0."id") AS c1 FROM "cms_users" t0'
@@ -2004,9 +2004,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-   /**
-    * @group DDC-1845
-    */
+    /**
+     * @group DDC-1845
+     */
     public function testQuotedWalkJoinVariableDeclaration()
     {
         $this->assertSqlGeneration(
@@ -2040,9 +2040,9 @@ class SelectSqlGenerationTest extends OrmTestCase
         );
     }
 
-   /**
-    * @group DDC-2208
-    */
+    /**
+     * @group DDC-2208
+     */
     public function testCaseThenParameterArithmeticExpression()
     {
         $this->assertSqlGeneration(
@@ -2130,15 +2130,15 @@ class SelectSqlGenerationTest extends OrmTestCase
             'SELECT t0.[id] AS c0 FROM [cms_users] t0 WHERE (t0.[name] + t0.[status] + \'s\') = ?'
     	);
 
-    	$this->assertSqlGeneration(
+        $this->assertSqlGeneration(
             'SELECT CONCAT(u.id, u.name, u.status) FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1',
             'SELECT (t0.[id] + t0.[name] + t0.[status]) AS c0 FROM [cms_users] t0 WHERE t0.[id] = ?'
     	);
     }
 
-     /**
-      * @group DDC-2188
-      */
+    /**
+     * @group DDC-2188
+     */
     public function testArithmeticPriority()
     {
         $this->assertSqlGeneration(
@@ -2437,5 +2437,4 @@ class DDC1474Entity
     {
         $this->value = $value;
     }
-
 }

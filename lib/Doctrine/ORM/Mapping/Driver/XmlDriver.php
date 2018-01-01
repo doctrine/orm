@@ -322,7 +322,7 @@ class XmlDriver extends FileDriver
                     // Check for SequenceGenerator/TableGenerator definition
                     if (isset($idElement->{'sequence-generator'})) {
                         $seqGenerator = $idElement->{'sequence-generator'};
-            $idGeneratorDefinition = [
+                        $idGeneratorDefinition = [
                             'sequenceName' => (string) $seqGenerator['sequence-name'],
                             'allocationSize' => (string) $seqGenerator['allocation-size'],
                         ];
@@ -770,7 +770,6 @@ class XmlDriver extends FileDriver
             } else {
                 $array[] = $value;
             }
-
         }
 
         return $array;

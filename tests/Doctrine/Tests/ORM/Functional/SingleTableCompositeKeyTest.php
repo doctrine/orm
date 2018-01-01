@@ -10,12 +10,10 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SingleTableCompositeKeyTest extends OrmFunctionalTestCase
 {
-
     public function setUp()
     {
         $this->useModelSet('compositekeyinheritance');
         parent::setUp();
-
     }
 
     /**

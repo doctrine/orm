@@ -103,11 +103,11 @@ class QueryBuilder
      */
     private $joinRootAliases = [];
 
-     /**
-      * Whether to use second level cache, if available.
-      *
-      * @var boolean
-      */
+    /**
+     * Whether to use second level cache, if available.
+     *
+     * @var boolean
+     */
     protected $cacheable = false;
 
     /**
@@ -1285,16 +1285,15 @@ class QueryBuilder
 
         if ($criteria->getOrderings()) {
             foreach ($criteria->getOrderings() as $sort => $order) {
-
                 $hasValidAlias = false;
-                foreach($allAliases as $alias) {
-                    if(strpos($sort . '.', $alias . '.') === 0) {
+                foreach ($allAliases as $alias) {
+                    if (strpos($sort . '.', $alias . '.') === 0) {
                         $hasValidAlias = true;
                         break;
                     }
                 }
 
-                if(!$hasValidAlias) {
+                if (!$hasValidAlias) {
                     $sort = $allAliases[0] . '.' . $sort;
                 }
 
@@ -1344,7 +1343,7 @@ class QueryBuilder
      */
     private function getDQLForDelete()
     {
-         return 'DELETE'
+        return 'DELETE'
               . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
               . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])
               . $this->getReducedDQLQueryPart('orderBy', ['pre' => ' ORDER BY ', 'separator' => ', ']);
@@ -1355,7 +1354,7 @@ class QueryBuilder
      */
     private function getDQLForUpdate()
     {
-         return 'UPDATE'
+        return 'UPDATE'
               . $this->getReducedDQLQueryPart('from', ['pre' => ' ', 'separator' => ', '])
               . $this->getReducedDQLQueryPart('set', ['pre' => ' SET ', 'separator' => ', '])
               . $this->getReducedDQLQueryPart('where', ['pre' => ' WHERE '])

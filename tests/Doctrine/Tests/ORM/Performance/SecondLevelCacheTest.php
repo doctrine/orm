@@ -202,9 +202,7 @@ class SecondLevelCacheTest extends OrmFunctionalTestCase
         $startFind  = microtime(true);
 
         for ($i = 0; $i < $times; $i++) {
-
             foreach ($states as $state) {
-
                 $state = $em->find(State::class, $state->getId());
 
                 foreach ($state->getCities() as $city) {

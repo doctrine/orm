@@ -93,14 +93,17 @@ class NotifyPolicyTest extends OrmFunctionalTestCase
     }
 }
 
-class NotifyBaseEntity implements NotifyPropertyChanged {
+class NotifyBaseEntity implements NotifyPropertyChanged
+{
     public $listeners = [];
 
-    public function addPropertyChangedListener(PropertyChangedListener $listener) {
+    public function addPropertyChangedListener(PropertyChangedListener $listener)
+    {
         $this->listeners[] = $listener;
     }
 
-    protected function onPropertyChanged($propName, $oldValue, $newValue) {
+    protected function onPropertyChanged($propName, $oldValue, $newValue)
+    {
         if ($this->listeners) {
             foreach ($this->listeners as $listener) {
                 $listener->propertyChanged($this, $propName, $oldValue, $newValue);
@@ -110,7 +113,8 @@ class NotifyBaseEntity implements NotifyPropertyChanged {
 }
 
 /** @ORM\Entity @ORM\ChangeTrackingPolicy("NOTIFY") */
-class NotifyUser extends NotifyBaseEntity {
+class NotifyUser extends NotifyBaseEntity
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
@@ -120,30 +124,36 @@ class NotifyUser extends NotifyBaseEntity {
     /** @ORM\ManyToMany(targetEntity="NotifyGroup") */
     private $groups;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->groups = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function getGroups() {
+    public function getGroups()
+    {
         return $this->groups;
     }
 }
 
 /** @ORM\Entity */
-class NotifyGroup extends NotifyBaseEntity {
+class NotifyGroup extends NotifyBaseEntity
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 
@@ -153,24 +163,29 @@ class NotifyGroup extends NotifyBaseEntity {
     /** @ORM\ManyToMany(targetEntity="NotifyUser", mappedBy="groups") */
     private $users;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new ArrayCollection;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
         return $this->users;
     }
 }

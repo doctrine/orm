@@ -96,5 +96,4 @@ class Token
     {
         return $this->complexAction;
     }
-
 }

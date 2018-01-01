@@ -707,7 +707,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $countMapping = $class->getSqlResultSetMapping('mapping-count');
 
         self::assertEquals(['name'=>'count'], $countMapping['columns'][0]);
-
     }
 
     /**
@@ -821,7 +820,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         self::assertEquals($guestGroups->getFetchMode(), $adminGroups->getFetchMode());
         self::assertEquals($guestGroups->getCascade(), $adminGroups->getCascade());
 
-         // assert not override attributes
+        // assert not override attributes
         $guestGroupsJoinTable          = $guestGroups->getJoinTable();
         $guestGroupsJoinColumns        = $guestGroupsJoinTable->getJoinColumns();
         $guestGroupsJoinColumn         = reset($guestGroupsJoinColumns);
@@ -1265,7 +1264,8 @@ class User
     /**
      * @ORM\PrePersist
      */
-    public function doOtherStuffOnPrePersistToo() {
+    public function doOtherStuffOnPrePersistToo()
+    {
     }
 
     /**
@@ -1273,7 +1273,6 @@ class User
      */
     public function doStuffOnPostPersist()
     {
-
     }
 
     public static function loadMetadata(ClassMetadata $metadata)
@@ -1498,7 +1497,6 @@ class DDC1170Entity
     {
         return $this->value;
     }
-
 }
 
 /**

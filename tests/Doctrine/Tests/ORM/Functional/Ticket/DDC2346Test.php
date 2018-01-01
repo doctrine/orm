@@ -84,7 +84,8 @@ class DDC2346Foo
     public $bars;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->bars = new ArrayCollection();
     }
 }
@@ -110,5 +111,4 @@ class DDC2346Bar
  */
 class DDC2346Baz extends DDC2346Bar
 {
-
 }

@@ -21,7 +21,6 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testCreateRetrieveUpdateDelete()
     {
-
         $e1 = new Group('Parent Bar 1');
         $e2 = new Group('Parent Foo 2');
 
@@ -123,5 +122,4 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertNull($e3);
         self::assertNull($e4);
     }
-
 }

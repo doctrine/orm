@@ -48,7 +48,9 @@ class HydratorMockStatement implements \IteratorAggregate, Statement
     public function fetchColumn($columnNumber = 0)
     {
         $row = current($this->resultSet);
-        if ( ! is_array($row)) return false;
+        if ( ! is_array($row)) {
+            return false;
+        }
         $val = array_shift($row);
         return $val !== null ? $val : false;
     }

@@ -8,7 +8,6 @@ use Doctrine\ORM\Annotation as ORM;
 
 class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
@@ -79,7 +78,6 @@ class DDC440Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $originalData = $uw->getOriginalEntityData($p2);
         self::assertEquals($phone2->getNumber(), $originalData['number']);
     }
-
 }
 
 /**
@@ -139,7 +137,6 @@ class DDC440Phone
     {
         $this->id = $value;
     }
-
 }
 
 /**
@@ -174,7 +171,6 @@ class DDC440Client
 
     public function __construct()
     {
-
     }
 
     public function setName($value)
@@ -217,5 +213,4 @@ class DDC440Client
     {
         $this->id = $value;
     }
-
 }

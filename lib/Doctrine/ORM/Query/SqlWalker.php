@@ -308,7 +308,6 @@ class SqlWalker implements TreeWalker
     public function getSQLColumnAlias()
     {
         return $this->platform->getSQLResultCasing('c' . $this->aliasCounter++);
-
     }
 
     /**

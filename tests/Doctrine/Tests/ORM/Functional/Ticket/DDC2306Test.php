@@ -106,7 +106,8 @@ class DDC2306User
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->addresses = new ArrayCollection();
     }
 }
@@ -128,7 +129,8 @@ class DDC2306Address
     public $zone;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new ArrayCollection();
     }
 }

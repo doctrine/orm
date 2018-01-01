@@ -146,7 +146,6 @@ class DDC1080Foo
     {
         $this->fooBars = $fooBars;
     }
-
 }
 /**
  * @ORM\Entity
@@ -224,7 +223,6 @@ class DDC1080Bar
     {
         $this->fooBars = $fooBars;
     }
-
 }
 
 /**

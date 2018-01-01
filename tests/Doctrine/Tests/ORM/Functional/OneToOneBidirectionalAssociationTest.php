@@ -28,7 +28,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->cart->setPayment('Credit card');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    {
         $this->customer->setCart($this->cart);
         $this->em->persist($this->customer);
         $this->em->flush();
@@ -36,7 +37,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertCartForeignKeyIs($this->customer->getId());
     }
 
-    public function testDoesNotSaveAnInverseSideSet() {
+    public function testDoesNotSaveAnInverseSideSet()
+    {
         $this->customer->brokenSetCart($this->cart);
         $this->em->persist($this->customer);
         $this->em->flush();
@@ -67,7 +69,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('paypal', $customer->getCart()->getPayment());
     }
 
-    public function testLazyLoadsObjectsOnTheOwningSide() {
+    public function testLazyLoadsObjectsOnTheOwningSide()
+    {
         $this->createFixture();
         $metadata = $this->em->getClassMetadata(ECommerceCart::class);
         $metadata->getProperty('customer')->setFetchMode(FetchMode::LAZY);
@@ -145,7 +148,8 @@ class OneToOneBidirectionalAssociationTest extends OrmFunctionalTestCase
         $this->em->clear();
     }
 
-    public function assertCartForeignKeyIs($value) {
+    public function assertCartForeignKeyIs($value)
+    {
         $foreignKey = $this->em->getConnection()->executeQuery('SELECT customer_id FROM ecommerce_carts WHERE id=?', [$this->cart->getId()])->fetchColumn();
         self::assertEquals($value, $foreignKey);
     }

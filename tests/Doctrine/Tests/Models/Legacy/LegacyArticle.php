@@ -35,7 +35,7 @@ class LegacyArticle
      */
     public $user;
     
-    public function setAuthor(LegacyUser $author) 
+    public function setAuthor(LegacyUser $author)
     {
         $this->user = $author;
     }

@@ -21,8 +21,7 @@ class DDC1238Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC1238User::class),
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 

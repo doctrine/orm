@@ -34,11 +34,13 @@ class LegacyCar
         return $this->description;
     }
 
-    public function addUser(LegacyUser $user) {
+    public function addUser(LegacyUser $user)
+    {
         $this->users[] = $user;
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
         return $this->users;
     }
 }

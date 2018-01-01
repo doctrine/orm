@@ -736,9 +736,9 @@ final class Query extends AbstractQuery
         );
     }
 
-     /**
-      * {@inheritdoc}
-      */
+    /**
+     * {@inheritdoc}
+     */
     protected function getHash()
     {
         return sha1(parent::getHash(). '-'. $this->firstResult . '-' . $this->maxResults);

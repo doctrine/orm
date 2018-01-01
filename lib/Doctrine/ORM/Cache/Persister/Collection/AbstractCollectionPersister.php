@@ -25,9 +25,9 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
  */
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
-     /**
-      * @var \Doctrine\ORM\UnitOfWork
-      */
+    /**
+     * @var \Doctrine\ORM\UnitOfWork
+     */
     protected $uow;
 
     /**
@@ -55,9 +55,9 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     protected $association;
 
-     /**
-      * @var array
-      */
+    /**
+     * @var array
+     */
     protected $queuedCache = [];
 
     /**

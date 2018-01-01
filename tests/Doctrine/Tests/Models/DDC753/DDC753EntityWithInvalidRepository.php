@@ -20,5 +20,4 @@ class DDC753EntityWithInvalidRepository
 
     /** @ORM\Column(type="string") */
     protected $name;
-
 }

@@ -199,9 +199,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
     {
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postFlush => function(){
-            throw new \RuntimeException('post flush failure');
-        }
+                Events::postFlush => function() {
+                    throw new \RuntimeException('post flush failure');
+                }
             ]
         );
 
@@ -233,9 +233,9 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
 
         $listener = new ListenerSecondLevelCacheTest(
             [
-                Events::postUpdate => function(){
-            throw new \RuntimeException('post update failure');
-        }
+                Events::postUpdate => function() {
+                    throw new \RuntimeException('post update failure');
+                }
             ]
         );
 
@@ -280,8 +280,7 @@ class SecondLevelCacheTest extends SecondLevelCacheAbstractTest
         $this->em->clear();
 
         $listener = new ListenerSecondLevelCacheTest([
-            Events::postRemove => function()
-            {
+            Events::postRemove => function() {
                 throw new \RuntimeException('post remove failure');
             }
         ]);

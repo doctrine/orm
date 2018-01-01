@@ -22,7 +22,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 ]
             );
             $this->loadFixture();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 
@@ -148,7 +148,6 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->em->flush();
         $this->em->clear();
     }
-
 }
 
 /**

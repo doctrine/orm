@@ -29,7 +29,8 @@ class OneToOneEagerLoadingTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(TrainOrder::class),
                 ]
             );
-        } catch(\Exception $e) {}
+        } catch (\Exception $e) {
+        }
     }
 
     /**

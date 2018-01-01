@@ -25,7 +25,8 @@ class DDC2230Test extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC2230User::class),
                 $this->em->getClassMetadata(DDC2230Address::class),
             ]);
-        } catch (ToolsException $e) {}
+        } catch (ToolsException $e) {
+        }
     }
 
     public function testNotifyTrackingCalledOnProxyInitialization()

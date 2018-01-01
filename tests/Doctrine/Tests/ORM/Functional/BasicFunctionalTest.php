@@ -637,7 +637,7 @@ class BasicFunctionalTest extends OrmFunctionalTestCase
 
         $user->setAddress($address);
 
-        $this->em->transactional(function($em) use($user) {
+        $this->em->transactional(function($em) use ($user) {
             $em->persist($user);
         });
         $this->em->clear();

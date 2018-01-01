@@ -68,5 +68,4 @@ class DDC1454File
     {
         return $this->fileId;
     }
-
 }

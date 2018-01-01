@@ -23,9 +23,9 @@ use ProxyManager\Proxy\GhostObjectInterface;
  */
 class DefaultQueryCache implements QueryCache
 {
-     /**
-      * @var \Doctrine\ORM\EntityManagerInterface
-      */
+    /**
+     * @var \Doctrine\ORM\EntityManagerInterface
+     */
     private $em;
 
     /**

@@ -316,7 +316,6 @@ class SecondLevelCacheOneToManyTest extends SecondLevelCacheAbstractTest
 
         self::assertEquals(0, $entity->getCities()->count());
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
-
     }
 
     public function testOneToManyCount()

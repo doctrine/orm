@@ -32,7 +32,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         $this->mentor->setName('Obi-wan Kenobi');
     }
 
-    public function testSavesAOneToOneAssociationWithCascadeSaveSet() {
+    public function testSavesAOneToOneAssociationWithCascadeSaveSet()
+    {
         $this->customer->setMentor($this->mentor);
         $this->em->persist($this->customer);
         $this->em->flush();
@@ -122,7 +123,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
         self::assertEquals('Obi-wan Kenobi', $customer->getMentor()->getName());
     }
 
-    public function assertForeignKeyIs($value) {
+    public function assertForeignKeyIs($value)
+    {
         $foreignKey = $this->em->getConnection()->executeQuery('SELECT mentor_id FROM ecommerce_customers WHERE id=?', [$this->customer->getId()])->fetchColumn();
         self::assertEquals($value, $foreignKey);
     }
@@ -147,7 +149,8 @@ class OneToOneSelfReferentialAssociationTest extends OrmFunctionalTestCase
 /**
  * @ORM\Entity
  */
-class MultiSelfReference {
+class MultiSelfReference
+{
     /** @ORM\Id @ORM\GeneratedValue(strategy="AUTO") @ORM\Column(type="integer") */
     private $id;
     /**
@@ -161,9 +164,24 @@ class MultiSelfReference {
      */
     private $other2;
 
-    public function getId() {return $this->id;}
-    public function setOther1($other1) {$this->other1 = $other1;}
-    public function getOther1() {return $this->other1;}
-    public function setOther2($other2) {$this->other2 = $other2;}
-    public function getOther2() {return $this->other2;}
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function setOther1($other1)
+    {
+        $this->other1 = $other1;
+    }
+    public function getOther1()
+    {
+        return $this->other1;
+    }
+    public function setOther2($other2)
+    {
+        $this->other2 = $other2;
+    }
+    public function getOther2()
+    {
+        return $this->other2;
+    }
 }

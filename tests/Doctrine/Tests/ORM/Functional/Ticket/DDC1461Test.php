@@ -22,8 +22,7 @@ class DDC1461Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC1461User::class)
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 

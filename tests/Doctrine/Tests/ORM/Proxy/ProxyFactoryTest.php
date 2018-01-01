@@ -357,5 +357,4 @@ class ProxyFactoryTest extends OrmTestCase
 
 abstract class AbstractClass
 {
-
 }

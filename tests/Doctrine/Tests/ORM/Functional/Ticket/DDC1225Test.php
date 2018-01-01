@@ -21,8 +21,7 @@ class DDC1225Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC1225_TestEntity2::class),
                 ]
             );
-        } catch(\PDOException $e) {
-
+        } catch (\PDOException $e) {
         }
     }
 

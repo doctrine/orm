@@ -19,7 +19,6 @@ class DDC144Test extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC144Operand::class),
             ]
         );
-
     }
 
     /**
@@ -66,7 +65,8 @@ abstract class DDC144Expression extends DDC144FlowElement
 }
 
 /** @ORM\Entity @ORM\Table(name="ddc144_operands") */
-class DDC144Operand extends DDC144Expression {
+class DDC144Operand extends DDC144Expression
+{
     /** @ORM\Column */
     public $operandProperty;
 

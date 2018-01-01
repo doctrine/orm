@@ -34,16 +34,16 @@ class NavPointOfInterest
      */
     private $country;
 
-     /**
-      * @ORM\ManyToMany(targetEntity="NavUser", cascade={"persist"})
-      * @ORM\JoinTable(name="navigation_pois_visitors",
-      *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-      *      joinColumns={
-      *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-      *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-      *      }
-      * )
-      */
+    /**
+     * @ORM\ManyToMany(targetEntity="NavUser", cascade={"persist"})
+     * @ORM\JoinTable(name="navigation_pois_visitors",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *      }
+     * )
+     */
     private $visitors;
 
     public function __construct($lat, $long, $name, $country)
@@ -55,19 +55,23 @@ class NavPointOfInterest
         $this->visitors = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getLong() {
+    public function getLong()
+    {
         return $this->long;
     }
 
-    public function getLat() {
+    public function getLat()
+    {
         return $this->lat;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->country;
     }
 

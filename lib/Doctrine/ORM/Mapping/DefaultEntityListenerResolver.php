@@ -54,7 +54,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
     public function resolve($className)
     {
         if (isset($this->instances[$className = trim($className, '\\')])) {
-           return $this->instances[$className];
+            return $this->instances[$className];
         }
 
         return $this->instances[$className] = new $className();

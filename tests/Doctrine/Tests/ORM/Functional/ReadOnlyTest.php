@@ -24,7 +24,7 @@ class ReadOnlyTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(ReadOnlyEntity::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
     }
 

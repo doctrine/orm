@@ -26,7 +26,7 @@ class DDC2692Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $this->em->getClassMetadata(DDC2692Foo::class),
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return;
         }
         $this->em->clear();
@@ -58,12 +58,14 @@ class DDC2692Foo
     public $id;
 }
 
-class DDC2692Listener implements EventSubscriber {
-
-    public function getSubscribedEvents() {
+class DDC2692Listener implements EventSubscriber
+{
+    public function getSubscribedEvents()
+    {
         return [\Doctrine\ORM\Events::preFlush];
     }
 
-    public function preFlush(PreFlushEventArgs $args) {
+    public function preFlush(PreFlushEventArgs $args)
+    {
     }
 }

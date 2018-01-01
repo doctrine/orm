@@ -243,6 +243,5 @@ class SecondLevelCacheManyToManyTest extends SecondLevelCacheAbstractTest
         $queryCount = $this->getCurrentQueryCount();
         self::assertEquals(0, $entity->getVisitedCities()->count());
         self::assertEquals($queryCount, $this->getCurrentQueryCount());
-
     }
 }

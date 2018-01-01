@@ -387,20 +387,39 @@ DQL;
 }
 
 /** @ORM\Entity @ORM\HasLifecycleCallbacks */
-class LifecycleCallbackTestUser {
+class LifecycleCallbackTestUser
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
     /** @ORM\Column(type="string") */
     private $value;
     /** @ORM\Column(type="string") */
     private $name;
-    public function getId() {return $this->id;}
-    public function getValue() {return $this->value;}
-    public function setValue($value) {$this->value = $value;}
-    public function getName() {return $this->name;}
-    public function setName($name) {$this->name = $name;}
+    public function getId()
+    {
+        return $this->id;
+    }
+    public function getValue()
+    {
+        return $this->value;
+    }
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+    public function getName()
+    {
+        return $this->name;
+    }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
     /** @ORM\PreUpdate */
-    public function testCallback() {$this->value = 'Hello World';}
+    public function testCallback()
+    {
+        $this->value = 'Hello World';
+    }
 }
 
 /**
@@ -433,37 +452,44 @@ class LifecycleCallbackTestEntity
      */
     public $cascader;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getValue() {
+    public function getValue()
+    {
         return $this->value;
     }
 
     /** @ORM\PrePersist */
-    public function doStuffOnPrePersist() {
+    public function doStuffOnPrePersist()
+    {
         $this->prePersistCallbackInvoked = true;
     }
 
     /** @ORM\PostPersist */
-    public function doStuffOnPostPersist() {
+    public function doStuffOnPostPersist()
+    {
         $this->postPersistCallbackInvoked = true;
     }
 
     /** @ORM\PostLoad */
-    public function doStuffOnPostLoad() {
+    public function doStuffOnPostLoad()
+    {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadCascaderNotNull = isset($this->cascader);
     }
 
     /** @ORM\PreUpdate */
-    public function doStuffOnPreUpdate() {
+    public function doStuffOnPreUpdate()
+    {
         $this->value = 'changed from preUpdate callback!';
     }
 
     /** @ORM\PreFlush */
-    public function doStuffOnPreFlush() {
+    public function doStuffOnPreFlush()
+    {
         $this->preFlushCallbackInvoked = true;
     }
 }
@@ -495,26 +521,30 @@ class LifecycleCallbackCascader
     }
 
     /** @ORM\PostLoad */
-    public function doStuffOnPostLoad() {
+    public function doStuffOnPostLoad()
+    {
         $this->postLoadCallbackInvoked = true;
         $this->postLoadEntitiesCount = count($this->entities);
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 }
 
 /** @ORM\MappedSuperclass @ORM\HasLifecycleCallbacks */
-class LifecycleCallbackParentEntity {
+class LifecycleCallbackParentEntity
+{
     /** @ORM\PrePersist */
-    function doStuff() {
-
+    function doStuff()
+    {
     }
 }
 
 /** @ORM\Entity @ORM\Table(name="lc_cb_childentity") */
-class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity {
+class LifecycleCallbackChildEntity extends LifecycleCallbackParentEntity
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
 }

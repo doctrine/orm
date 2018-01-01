@@ -81,7 +81,6 @@ class DDC1300Foo
     {
         $this->fooLocaleRefFoo = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
 }
 
 /**
@@ -109,5 +108,4 @@ class DDC1300FooLocale
      * @ORM\Column(name="title", type="string", nullable=true, length=150)
      */
     public $title;
-
 }

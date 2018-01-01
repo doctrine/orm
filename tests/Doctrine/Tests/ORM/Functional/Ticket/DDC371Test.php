@@ -56,7 +56,8 @@ class DDC371Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /** @ORM\Entity */
-class DDC371Child {
+class DDC371Child
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
     /** @ORM\Column(type="string") */
@@ -66,7 +67,8 @@ class DDC371Child {
 }
 
 /** @ORM\Entity */
-class DDC371Parent {
+class DDC371Parent
+{
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
     /** @ORM\Column(type="string") */

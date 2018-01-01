@@ -15,9 +15,9 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
  */
 class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister
 {
-     /**
-      * {@inheritdoc}
-      */
+    /**
+     * {@inheritdoc}
+     */
     public function update(PersistentCollection $collection)
     {
         if ($collection->isDirty() && $collection->getSnapshot()) {

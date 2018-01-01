@@ -38,7 +38,6 @@ class MappingException extends \Doctrine\ORM\ORMException
             'No identifier/primary key specified for Entity "%s". Every Entity must have an identifier/primary key.',
             $entityName
         ));
-
     }
 
     /**

@@ -304,7 +304,6 @@ class AnnotationParent
      */
     public function postLoad()
     {
-
     }
 
     /**
@@ -312,7 +311,6 @@ class AnnotationParent
      */
     public function preUpdate()
     {
-
     }
 }
 
@@ -322,7 +320,6 @@ class AnnotationParent
  */
 class AnnotationChild extends AnnotationParent
 {
-
 }
 
 /**

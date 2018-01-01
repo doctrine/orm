@@ -735,7 +735,7 @@ class PaginationTest extends OrmFunctionalTestCase
             $company->logo->image_width = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
-            for($j=0;$j<3;$j++) {
+            for ($j=0;$j<3;$j++) {
                 $department = new Department();
                 $department->name = "name$i$j";
                 $department->company = $company;

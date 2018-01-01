@@ -108,7 +108,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         // Two enabled filters
         self::assertCount(2, $em->getFilters()->getEnabledFilters());
-
     }
 
     public function testEntityManagerDisableFilter()
@@ -316,7 +315,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $metadata = new ClassMetadata('MyEntity\NoSoftDeleteNewsItem', $metadataBuildingContext);
 
         self::assertEquals('', $filter->addFilterConstraint($metadata, 't1_'));
-
     }
 
     public function testSQLFilterToString()
@@ -493,7 +491,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
         // We get one user after enabling the filter
         self::assertCount(1, $query->getResult());
-
     }
 
     public function testWhereFilter()
@@ -1002,7 +999,6 @@ class SQLFilterTest extends OrmFunctionalTestCase
 
     public function testOneToMany_ExtraLazySliceWithFilterOnSTI()
     {
-
         $this->loadCompanySingleTableInheritanceFixtureData();
 
         $manager = $this->em->find(CompanyManager::class, $this->managerId);

@@ -199,7 +199,6 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     {
         return $this->followedUser;
     }
-
 }
 
 /**

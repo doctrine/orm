@@ -20,7 +20,7 @@ class OneToOneInverseSideLoadAfterDqlQueryTest extends OrmFunctionalTestCase
                 $this->em->getClassMetadata(OwningSide::class),
                 $this->em->getClassMetadata(InverseSide::class),
             ]);
-        } catch(ToolsException $e) {
+        } catch (ToolsException $e) {
             // ignored
         }
     }

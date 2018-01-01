@@ -92,7 +92,6 @@ class DDC1719Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertNull($e1);
         self::assertNull($e2);
     }
-
 }
 
 /**
@@ -121,5 +120,4 @@ class DDC1719SimpleEntity
     {
         $this->value = $value;
     }
-
 }

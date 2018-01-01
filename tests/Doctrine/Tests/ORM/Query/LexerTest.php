@@ -11,7 +11,8 @@ class LexerTest extends OrmTestCase
 {
     //private $lexer;
 
-    protected function setUp() {
+    protected function setUp()
+    {
     }
 
     /**

@@ -125,7 +125,6 @@ class DDC1163ProxyHolder
     {
         return $this->specialProduct;
     }
-
 }
 
 /**
@@ -149,7 +148,6 @@ abstract class DDC1163Product
     {
         return $this->id;
     }
-
 }
 
 /**
@@ -171,7 +169,6 @@ class DDC1163SpecialProduct extends DDC1163Product
     {
         $this->subclassProperty = $value;
     }
-
 }
 
 /**
@@ -216,5 +213,4 @@ class DDC1163Tag
     {
         $this->product = $product;
     }
-
 }

@@ -32,7 +32,6 @@ class DDC211Test extends OrmFunctionalTestCase
 
         $groupNames = ['group 1', 'group 2', 'group 3', 'group 4'];
         foreach ($groupNames as $name) {
-
             $group = new DDC211Group;
             $group->setName($name);
             $this->em->persist($group);
@@ -46,7 +45,6 @@ class DDC211Test extends OrmFunctionalTestCase
         }
 
         self::assertEquals(4, $user->getGroups()->count());
-
     }
 }
 
@@ -78,13 +76,20 @@ class DDC211User
      */
     protected $groups;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->groups = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function setName($name) { $this->name = $name; }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-    public function getGroups() { return $this->groups; }
+    public function getGroups()
+    {
+        return $this->groups;
+    }
 }
 
 /**
@@ -110,12 +115,19 @@ class DDC211Group
      */
     protected $users;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
-    public function setName($name) { $this->name = $name; }
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-    public function getUsers() { return $this->users; }
+    public function getUsers()
+    {
+        return $this->users;
+    }
 }
 
