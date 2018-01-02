@@ -120,7 +120,7 @@ abstract class PersistentObject implements EntityManagerAware
 
         switch (true) {
             case ($property instanceof FieldMetadata && ! $property->isPrimaryKey()):
-                $this->$field = $args[0];
+                $this->{$field} = $args[0];
                 break;
 
             case ($property instanceof ToOneAssociationMetadata):
@@ -130,7 +130,7 @@ abstract class PersistentObject implements EntityManagerAware
                     throw new \InvalidArgumentException("Expected persistent object of type '".$targetClassName."'");
                 }
 
-                $this->$field = $args[0];
+                $this->{$field} = $args[0];
                 $this->completeOwningSide($property, $args[0]);
                 break;
         }
@@ -157,7 +157,7 @@ abstract class PersistentObject implements EntityManagerAware
             throw new \BadMethodCallException("no field with name '".$field."' exists on '".$this->cm->getClassName()."'");
         }
 
-        return $this->$field;
+        return $this->{$field};
     }
 
     /**
@@ -181,7 +181,7 @@ abstract class PersistentObject implements EntityManagerAware
         $targetProperty   = $targetMetadata->getProperty($mappedByField);
         $setterMethodName = ($targetProperty instanceof ToManyAssociationMetadata ? 'add' : 'set') . $mappedByField;
 
-        $targetObject->$setterMethodName($this);
+        $targetObject->{$setterMethodName}($this);
     }
 
     /**
@@ -215,11 +215,11 @@ abstract class PersistentObject implements EntityManagerAware
             throw new \InvalidArgumentException("Expected persistent object of type '".$targetClassName."'");
         }
 
-        if (! ($this->$field instanceof Collection)) {
-            $this->$field = new ArrayCollection($this->$field ?: []);
+        if (! ($this->{$field} instanceof Collection)) {
+            $this->{$field} = new ArrayCollection($this->{$field} ?: []);
         }
 
-        $this->$field->add($args[0]);
+        $this->{$field}->add($args[0]);
 
         $this->completeOwningSide($property, $args[0]);
 
