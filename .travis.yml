@@ -81,12 +81,13 @@ jobs:
 
     - stage: Code Quality
       env: DB=none CODING_STANDARDS
-      php: nightly
+      php: 7.2
       script:
         - ./vendor/bin/phpcs
 
   allow_failures:
     - php: nightly
+    - env: CODING_STANDARDS
 
 cache:
   directories:

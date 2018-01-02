@@ -15,10 +15,21 @@
 
     <exclude-pattern>*/tests/Doctrine/Tests/Proxies/__CG__/*</exclude-pattern>
 
-    <rule ref="Doctrine" />
+    <rule ref="Doctrine">
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingParameterTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingReturnTypeHint"/>
+        <exclude name="SlevomatCodingStandard.Exceptions.ReferenceThrowableOnly.ReferencedGeneralException"/>
+    </rule>
 
     <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses">
         <exclude-pattern>*/tests/*</exclude-pattern>
     </rule>
-</ruleset>
 
+    <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
+        <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
+    </rule>
+</ruleset>
