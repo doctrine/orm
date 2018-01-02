@@ -140,6 +140,18 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->assertEquals(2000, $result[3]['amod']);
     }
 
+    public function testFunctionRound()
+    {
+        $result = $this->_em->createQuery("SELECT d, ROUND(d.highScale, 3) AS round FROM Doctrine\Tests\Models\Generic\DecimalModel d")
+            ->getArrayResult();
+
+        $this->assertCount(4, $result);
+        $this->assertEquals(0.123, $result[0]['round']);
+        $this->assertEquals(1.234, $result[1]['round']);
+        $this->assertEquals(20.346, $result[2]['round']);
+        $this->assertEquals(100.457, $result[3]['round']);
+    }
+
     public function testFunctionSqrt()
     {
         $result = $this->_em->createQuery("SELECT m, SQRT(m.salary) AS sqrtsalary FROM Doctrine\Tests\Models\Company\CompanyManager m ORDER BY m.salary ASC")
