@@ -34,12 +34,6 @@ use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
  * It combines all configuration options from DBAL & ORM.
  *
  * Internal note: When adding a new configuration option just write a getter/setter pair.
- *
- * @since 2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Configuration extends DBALConfiguration
 {
@@ -160,8 +154,8 @@ class Configuration extends DBALConfiguration
     /**
      * Sets the strategy for automatically generating proxy classes.
      *
-     * @param boolean|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
-     *                                  True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
+     * @param bool|int $autoGenerate Possible values are constants of Doctrine\ORM\Proxy\Factory\ProxyFactory.
+     *                               True is converted to AUTOGENERATE_ALWAYS, false to AUTOGENERATE_NEVER.
      */
     public function setAutoGenerateProxyClasses($autoGenerate) : void
     {
@@ -207,8 +201,6 @@ class Configuration extends DBALConfiguration
      * Adds a new default annotation driver with a correctly configured annotation reader.
      *
      * @param string[] $paths
-     *
-     * @return AnnotationDriver
      */
     public function newDefaultAnnotationDriver(array $paths = []) : AnnotationDriver
     {
@@ -234,7 +226,7 @@ class Configuration extends DBALConfiguration
      */
     public function getEntityNamespace(string $entityNamespaceAlias) : string
     {
-        if ( ! isset($this->entityNamespaces[$entityNamespaceAlias])) {
+        if (! isset($this->entityNamespaces[$entityNamespaceAlias])) {
             throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
         }
 
@@ -332,7 +324,7 @@ class Configuration extends DBALConfiguration
      */
     public function getNamedQuery(string $queryName) : string
     {
-        if ( ! isset($this->namedQueries[$queryName])) {
+        if (! isset($this->namedQueries[$queryName])) {
             throw ORMException::namedQueryNotFound($queryName);
         }
 
@@ -356,7 +348,7 @@ class Configuration extends DBALConfiguration
      */
     public function getNamedNativeQuery(string $queryName) : array
     {
-        if ( ! isset($this->namedNativeQueries[$queryName])) {
+        if (! isset($this->namedNativeQueries[$queryName])) {
             throw ORMException::namedNativeQueryNotFound($queryName);
         }
 
@@ -374,7 +366,7 @@ class Configuration extends DBALConfiguration
     {
         $queryCacheImpl = $this->getQueryCacheImpl();
 
-        if ( ! $queryCacheImpl) {
+        if (! $queryCacheImpl) {
             throw ORMException::queryCacheNotConfigured();
         }
 
@@ -384,7 +376,7 @@ class Configuration extends DBALConfiguration
 
         $metadataCacheImpl = $this->getMetadataCacheImpl();
 
-        if ( ! $metadataCacheImpl) {
+        if (! $metadataCacheImpl) {
             throw ORMException::metadataCacheNotConfigured();
         }
 
@@ -429,7 +421,7 @@ class Configuration extends DBALConfiguration
      *
      * Any previously added string functions are discarded.
      *
-     * @param array $functions The map of custom DQL string functions.
+     * @param string[]|callable[] $functions The map of custom DQL string functions.
      */
     public function setCustomStringFunctions(array $functions) : void
     {
@@ -470,7 +462,7 @@ class Configuration extends DBALConfiguration
      *
      * Any previously added numeric functions are discarded.
      *
-     * @param array $functions The map of custom DQL numeric functions.
+     * @param string[]|callable[] $functions The map of custom DQL numeric functions.
      */
     public function setCustomNumericFunctions(array $functions) : void
     {
@@ -511,7 +503,7 @@ class Configuration extends DBALConfiguration
      *
      * Any previously added date/time functions are discarded.
      *
-     * @param array $functions The map of custom DQL date/time functions.
+     * @param iterable|string[] $functions The map of custom DQL date/time functions.
      */
     public function setCustomDatetimeFunctions(array $functions) : void
     {
@@ -523,7 +515,7 @@ class Configuration extends DBALConfiguration
     /**
      * Sets the custom hydrator modes in one pass.
      *
-     * @param iterable $modes An iterable of string $modeName => string $hydratorClassName
+     * @param iterable|string[] $modes An iterable of string $modeName => string $hydratorClassName
      */
     public function setCustomHydrationModes(iterable $modes) : void
     {
@@ -586,15 +578,13 @@ class Configuration extends DBALConfiguration
     /**
      * Sets default repository class.
      *
-     * @since 2.2
-     *
-     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository implementation
+     * @throws ORMException If not is a \Doctrine\Common\Persistence\ObjectRepository implementation.
      */
     public function setDefaultRepositoryClassName(string $repositoryClassName) : void
     {
         $reflectionClass = new \ReflectionClass($repositoryClassName);
 
-        if ( ! $reflectionClass->implementsInterface(ObjectRepository::class)) {
+        if (! $reflectionClass->implementsInterface(ObjectRepository::class)) {
             throw ORMException::invalidEntityRepository($repositoryClassName);
         }
 
@@ -603,8 +593,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Get default repository class.
-     *
-     * @since 2.2
      */
     public function getDefaultRepositoryClassName() : string
     {
@@ -613,8 +601,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Sets naming strategy.
-     *
-     * @since 2.3
      */
     public function setNamingStrategy(NamingStrategy $namingStrategy) : void
     {
@@ -623,8 +609,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Gets naming strategy..
-     *
-     * @since 2.3
      */
     public function getNamingStrategy() : ?NamingStrategy
     {
@@ -634,8 +618,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Set the entity listener resolver.
-     *
-     * @since 2.4
      */
     public function setEntityListenerResolver(EntityListenerResolver $resolver) : void
     {
@@ -644,8 +626,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Get the entity listener resolver.
-     *
-     * @since 2.4
      */
     public function getEntityListenerResolver() : EntityListenerResolver
     {
@@ -655,8 +635,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Set the entity repository factory.
-     *
-     * @since 2.4
      */
     public function setRepositoryFactory(RepositoryFactory $repositoryFactory) : void
     {
@@ -665,8 +643,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Get the entity repository factory.
-     *
-     * @since 2.4
      */
     public function getRepositoryFactory() : RepositoryFactory
     {
@@ -674,35 +650,21 @@ class Configuration extends DBALConfiguration
             ?? $this->repositoryFactory = new DefaultRepositoryFactory();
     }
 
-    /**
-     * @since 2.5
-     */
     public function isSecondLevelCacheEnabled() : bool
     {
         return $this->isSecondLevelCacheEnabled;
     }
 
-    /**
-     * @since 2.5
-     */
     public function setSecondLevelCacheEnabled(bool $flag = true) : void
     {
         $this->isSecondLevelCacheEnabled = $flag;
     }
 
-    /**
-     * @since 2.5
-     */
     public function setSecondLevelCacheConfiguration(CacheConfiguration $cacheConfig) : void
     {
         $this->secondLevelCacheConfiguration = $cacheConfig;
     }
 
-    /**
-     * @since 2.5
-     *
-     * @return  \Doctrine\ORM\Cache\CacheConfiguration|null
-     */
     public function getSecondLevelCacheConfiguration() : ?CacheConfiguration
     {
         if ($this->isSecondLevelCacheEnabled && ! $this->secondLevelCacheConfiguration) {
@@ -715,7 +677,7 @@ class Configuration extends DBALConfiguration
     /**
      * Returns query hints, which will be applied to every query in application
      *
-     * @since 2.5
+     * @return mixed[]
      */
     public function getDefaultQueryHints() : array
     {
@@ -725,7 +687,7 @@ class Configuration extends DBALConfiguration
     /**
      * Sets array of query hints, which will be applied to every query in application
      *
-     * @since 2.5
+     * @param mixed[] $defaultQueryHints
      */
     public function setDefaultQueryHints(array $defaultQueryHints) : void
     {
@@ -734,8 +696,6 @@ class Configuration extends DBALConfiguration
 
     /**
      * Gets the value of a default query hint. If the hint name is not recognized, FALSE is returned.
-     *
-     * @since 2.5
      *
      * @return mixed The value of the hint or FALSE, if the hint name is not recognized.
      */
@@ -747,9 +707,7 @@ class Configuration extends DBALConfiguration
     /**
      * Sets a default query hint. If the hint name is not recognized, it is silently ignored.
      *
-     * @since 2.5
-     *
-     * @param mixed  $value The value of the hint.
+     * @param mixed $value The value of the hint.
      */
     public function setDefaultQueryHint(string $hintName, $value) : void
     {
