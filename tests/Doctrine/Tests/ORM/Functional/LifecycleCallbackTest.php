@@ -537,7 +537,7 @@ class LifecycleCallbackCascader
 class LifecycleCallbackParentEntity
 {
     /** @ORM\PrePersist */
-    function doStuff()
+    public function doStuff()
     {
     }
 }

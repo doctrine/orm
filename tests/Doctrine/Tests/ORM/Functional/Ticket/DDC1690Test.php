@@ -109,28 +109,28 @@ class DDC1690Parent extends NotifyBaseEntity
     /** @ORM\OneToOne(targetEntity=DDC1690Child::class) */
     private $child;
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function setName($name)
+    public function setName($name)
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function setChild($child)
+    public function setChild($child)
     {
         $this->child = $child;
     }
 
-    function getChild()
+    public function getChild()
     {
         return $this->child;
     }
@@ -148,28 +148,28 @@ class DDC1690Child extends NotifyBaseEntity
     /** @ORM\OneToOne(targetEntity=DDC1690Parent::class, mappedBy="child") */
     private $parent;
 
-    function getId()
+    public function getId()
     {
         return $this->id;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->name;
     }
 
-    function setName($name)
+    public function setName($name)
     {
         $this->onPropertyChanged('name', $this->name, $name);
         $this->name = $name;
     }
 
-    function setParent($parent)
+    public function setParent($parent)
     {
         $this->parent = $parent;
     }
 
-    function getParent()
+    public function getParent()
     {
         return $this->parent;
     }

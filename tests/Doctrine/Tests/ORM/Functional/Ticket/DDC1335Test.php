@@ -98,7 +98,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         self::assertEquals('SELECT u FROM ' . __NAMESPACE__ . '\DDC1335User u INDEX BY u.email', $dql);
     }
 
-    public function  testIndexWithJoin()
+    public function testIndexWithJoin()
     {
         $builder = $this->em->createQueryBuilder();
         $builder->select('u','p')

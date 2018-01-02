@@ -150,7 +150,7 @@ class GH5762DriverRide
      */
     public $car;
 
-    function __construct(GH5762Driver $driver, GH5762Car $car)
+    public function __construct(GH5762Driver $driver, GH5762Car $car)
     {
         $this->driver = $driver;
         $this->car = $car;
