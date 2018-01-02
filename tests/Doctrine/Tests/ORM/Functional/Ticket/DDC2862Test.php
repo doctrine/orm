@@ -32,7 +32,7 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $driver1  = new DDC2862Driver('Bar', $user1);
 
         $this->em->persist($user1);
         $this->em->persist($driver1);
@@ -70,7 +70,7 @@ class DDC2862Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssueReopened()
     {
         $user1    = new DDC2862User('Foo');
-        $driver1  = new DDC2862Driver('Bar' , $user1);
+        $driver1  = new DDC2862Driver('Bar', $user1);
 
         $this->em->persist($user1);
         $this->em->persist($driver1);

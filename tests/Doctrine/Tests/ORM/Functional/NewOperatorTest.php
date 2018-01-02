@@ -744,9 +744,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['status']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['status']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
     public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAliases()
@@ -801,9 +801,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['cmsUserStatus']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['cmsUserStatus']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
     }
 
     public function testShouldSupportMultipleNewOperatorsAndSingleScalarWithAndWithoutAliases()
@@ -858,9 +858,9 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['status']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['status']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
     }
 
     public function testShouldSupportMultipleNewOperatorsAndMultipleScalars()
@@ -916,13 +916,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1][1]->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2][1]->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['status']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['status']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
 
-        self::assertEquals($this->fixtures[0]->username,$result[0]['username']);
-        self::assertEquals($this->fixtures[1]->username,$result[1]['username']);
-        self::assertEquals($this->fixtures[2]->username,$result[2]['username']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['username']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['username']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['username']);
     }
 
     public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAliases()
@@ -978,13 +978,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1]['cmsAddress']->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2]['cmsAddress']->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['cmsUserStatus']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['cmsUserStatus']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['cmsUserStatus']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['cmsUserStatus']);
 
-        self::assertEquals($this->fixtures[0]->username,$result[0]['cmsUserUsername']);
-        self::assertEquals($this->fixtures[1]->username,$result[1]['cmsUserUsername']);
-        self::assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 
     public function testShouldSupportMultipleNewOperatorsAndMultipleScalarsWithAndWithoutAliases()
@@ -1040,13 +1040,13 @@ class NewOperatorTest extends OrmFunctionalTestCase
         self::assertEquals($this->fixtures[1]->address->country, $result[1][0]->country);
         self::assertEquals($this->fixtures[2]->address->country, $result[2][0]->country);
 
-        self::assertEquals($this->fixtures[0]->status,$result[0]['status']);
-        self::assertEquals($this->fixtures[1]->status,$result[1]['status']);
-        self::assertEquals($this->fixtures[2]->status,$result[2]['status']);
+        self::assertEquals($this->fixtures[0]->status, $result[0]['status']);
+        self::assertEquals($this->fixtures[1]->status, $result[1]['status']);
+        self::assertEquals($this->fixtures[2]->status, $result[2]['status']);
 
-        self::assertEquals($this->fixtures[0]->username,$result[0]['cmsUserUsername']);
-        self::assertEquals($this->fixtures[1]->username,$result[1]['cmsUserUsername']);
-        self::assertEquals($this->fixtures[2]->username,$result[2]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[0]->username, $result[0]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[1]->username, $result[1]['cmsUserUsername']);
+        self::assertEquals($this->fixtures[2]->username, $result[2]['cmsUserUsername']);
     }
 
     /**

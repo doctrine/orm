@@ -101,7 +101,7 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIndexWithJoin()
     {
         $builder = $this->em->createQueryBuilder();
-        $builder->select('u','p')
+        $builder->select('u', 'p')
                 ->from(DDC1335User::class, 'u', 'u.email')
                 ->join('u.phones', 'p', null, null, 'p.id');
 
@@ -138,9 +138,9 @@ class DDC1335Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $p2 = ['22 xxxx-xxxx','22 yyyy-yyyy','22 zzzz-zzzz'];
         $p3 = ['33 xxxx-xxxx','33 yyyy-yyyy','33 zzzz-zzzz'];
 
-        $u1 = new DDC1335User("foo@foo.com", "Foo",$p1);
-        $u2 = new DDC1335User("bar@bar.com", "Bar",$p2);
-        $u3 = new DDC1335User("foobar@foobar.com", "Foo Bar",$p3);
+        $u1 = new DDC1335User("foo@foo.com", "Foo", $p1);
+        $u2 = new DDC1335User("bar@bar.com", "Bar", $p2);
+        $u3 = new DDC1335User("foobar@foobar.com", "Foo Bar", $p3);
 
         $this->em->persist($u1);
         $this->em->persist($u2);
@@ -183,7 +183,7 @@ class DDC1335User
         $this->phones = new \Doctrine\Common\Collections\ArrayCollection();
 
         foreach ($numbers as $number) {
-            $this->phones->add(new DDC1335Phone($this,$number));
+            $this->phones->add(new DDC1335Phone($this, $number));
         }
     }
 }

@@ -371,7 +371,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->with($this->equalTo($assoc), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
             ->will($this->returnValue([$entity]));
 
-        self::assertEquals([$entity], $persister->getManyToManyCollection($assoc, 'Foo', 1 ,2));
+        self::assertEquals([$entity], $persister->getManyToManyCollection($assoc, 'Foo', 1, 2));
     }
 
     public function testInvokeGetOneToManyCollection()
@@ -385,7 +385,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->with($this->equalTo($assoc), $this->equalTo('Foo'), $this->equalTo(1), $this->equalTo(2))
             ->will($this->returnValue([$entity]));
 
-        self::assertEquals([$entity], $persister->getOneToManyCollection($assoc, 'Foo', 1 ,2));
+        self::assertEquals([$entity], $persister->getOneToManyCollection($assoc, 'Foo', 1, 2));
     }
 
     public function testInvokeLoadManyToManyCollection()

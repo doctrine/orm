@@ -678,7 +678,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $findByIdQuery = $class->getNamedNativeQuery('find-by-id');
 
-        self::assertEquals(CmsAddress::class,$findByIdQuery['resultClass']);
+        self::assertEquals(CmsAddress::class, $findByIdQuery['resultClass']);
         self::assertEquals('SELECT * FROM cms_addresses WHERE id = ?',  $findByIdQuery['query']);
 
         $countQuery = $class->getNamedNativeQuery('count');
@@ -722,7 +722,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedAddress');
 
-        self::assertEquals([],$mapping['columns']);
+        self::assertEquals([], $mapping['columns']);
         self::assertEquals('mappingJoinedAddress', $mapping['name']);
 
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
@@ -738,7 +738,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingJoinedPhonenumber');
 
-        self::assertEquals([],$mapping['columns']);
+        self::assertEquals([], $mapping['columns']);
         self::assertEquals('mappingJoinedPhonenumber', $mapping['name']);
 
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
@@ -751,7 +751,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingUserPhonenumberCount');
 
-        self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
+        self::assertEquals(['name'=>'numphones'], $mapping['columns'][0]);
         self::assertEquals('mappingUserPhonenumberCount', $mapping['name']);
 
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);
@@ -763,7 +763,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
 
         $mapping = $userMetadata->getSqlResultSetMapping('mappingMultipleJoinsEntityResults');
 
-        self::assertEquals(['name'=>'numphones'],$mapping['columns'][0]);
+        self::assertEquals(['name'=>'numphones'], $mapping['columns'][0]);
         self::assertEquals('mappingMultipleJoinsEntityResults', $mapping['name']);
 
         self::assertNull($mapping['entities'][0]['discriminatorColumn']);

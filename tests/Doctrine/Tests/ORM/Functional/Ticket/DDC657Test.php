@@ -36,7 +36,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getScalarResult();
 
-        self::assertCount(2,$result);
+        self::assertCount(2, $result);
 
         self::assertContains('11:11:11', $result[0]['time']);
         self::assertContains('2010-01-01', $result[0]['date']);
@@ -52,7 +52,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query      = $this->em->createQuery('SELECT d FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getArrayResult();
 
-        self::assertCount(2,$result);
+        self::assertCount(2, $result);
 
         self::assertInstanceOf('DateTime', $result[0]['datetime']);
         self::assertInstanceOf('DateTime', $result[0]['time']);
@@ -80,7 +80,7 @@ class DDC657Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $query      = $this->em->createQuery('SELECT d.id, d.time, d.date, d.datetime FROM ' . DateTimeModel::class . ' d ORDER BY d.date ASC');
         $result     = $query->getResult();
 
-        self::assertCount(2,$result);
+        self::assertCount(2, $result);
 
         self::assertInstanceOf('DateTime', $result[0]['time']);
         self::assertInstanceOf('DateTime', $result[0]['date']);

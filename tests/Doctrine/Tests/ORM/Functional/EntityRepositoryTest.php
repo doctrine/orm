@@ -182,7 +182,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $repos = $this->em->getRepository(CmsUser::class);
 
         $user = $repos->find($user1Id);
-        self::assertInstanceOf(CmsUser::class,$user);
+        self::assertInstanceOf(CmsUser::class, $user);
         self::assertEquals('Roman', $user->name);
         self::assertEquals('freak', $user->status);
     }
@@ -194,7 +194,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $users = $repos->findBy(['status' => 'dev']);
         self::assertCount(2, $users);
-        self::assertInstanceOf(CmsUser::class,$users[0]);
+        self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Guilherme', $users[0]->name);
         self::assertEquals('dev', $users[0]->status);
     }
@@ -220,7 +220,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $addresses  = $repository->findBy(['user' => [$user1->getId(), $user2->getId()]]);
 
         self::assertCount(2, $addresses);
-        self::assertInstanceOf(CmsAddress::class,$addresses[0]);
+        self::assertInstanceOf(CmsAddress::class, $addresses[0]);
     }
 
     public function testFindByAssociationWithObjectAsParameter()
@@ -244,7 +244,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $addresses  = $repository->findBy(['user' => [$user1, $user2]]);
 
         self::assertCount(2, $addresses);
-        self::assertInstanceOf(CmsAddress::class,$addresses[0]);
+        self::assertInstanceOf(CmsAddress::class, $addresses[0]);
     }
 
     public function testFindFieldByMagicCall()
@@ -254,7 +254,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $users = $repos->findByStatus('dev');
         self::assertCount(2, $users);
-        self::assertInstanceOf(CmsUser::class,$users[0]);
+        self::assertInstanceOf(CmsUser::class, $users[0]);
         self::assertEquals('Guilherme', $users[0]->name);
         self::assertEquals('dev', $users[0]->status);
     }
@@ -596,7 +596,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         self::assertCount(2, $usersAsc);
         self::assertCount(2, $usersDesc);
 
-        self::assertInstanceOf(CmsUser::class,$usersAsc[0]);
+        self::assertInstanceOf(CmsUser::class, $usersAsc[0]);
         self::assertEquals('Alexander', $usersAsc[0]->name);
         self::assertEquals('dev', $usersAsc[0]->status);
 

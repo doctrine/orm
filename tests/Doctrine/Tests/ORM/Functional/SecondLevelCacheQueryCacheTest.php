@@ -422,7 +422,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         $result1    = $this->em->createQuery($dql)->setCacheable(true)->getResult();
 
         self::assertCount(2, $result1);
-        self::assertEquals($queryCount + 1 , $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
         self::assertEquals($this->countries[0]->getId(), $result1[0]->getId());
         self::assertEquals($this->countries[1]->getId(), $result1[1]->getId());
         self::assertEquals($this->countries[0]->getName(), $result1[0]->getName());
@@ -442,7 +442,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
             ->setCacheable(true)
             ->getResult();
 
-        self::assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
         self::assertCount(2, $result2);
 
         self::assertEquals(5, $this->secondLevelCacheLogger->getPutCount());
@@ -459,7 +459,7 @@ class SecondLevelCacheQueryCacheTest extends SecondLevelCacheAbstractTest
         self::assertEquals($result1[0]->getName(), $result2[0]->getName());
         self::assertEquals($result1[1]->getName(), $result2[1]->getName());
 
-        self::assertEquals($queryCount + 2 , $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 2, $this->getCurrentQueryCount());
     }
 
     public function testBasicQueryFetchJoinsOneToMany()
