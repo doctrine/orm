@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\AbstractLazyCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Selectable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\Common\Collections\Selectable;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ChangeTrackingPolicy;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -25,12 +25,6 @@ use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
  * entities from the collection, only the links in the relation table are removed (on flush).
  * Similarly, if you remove entities from a collection that is part of a one-many
  * mapping this will only result in the nulling out of the foreign keys on flush.
- *
- * @since     2.0
- * @author    Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author    Roman Borschel <roman@code-factory.org>
- * @author    Giorgio Sironi <piccoloprincipeazzurro@gmail.com>
- * @author    Stefano Rodriguez <stefano.rodriguez@fubles.com>
  */
 final class PersistentCollection extends AbstractLazyCollection implements Selectable
 {
@@ -38,7 +32,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * A snapshot of the collection at the moment it was fetched from the database.
      * This is used to create a diff of the collection at commit time.
      *
-     * @var array
+     * @var object[]
      */
     private $snapshot = [];
 
@@ -83,7 +77,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Whether the collection is dirty and needs to be synchronized with the database
      * when the UnitOfWork that manages its persistent state commits.
      *
-     * @var boolean
+     * @var bool
      */
     private $isDirty = false;
 
@@ -92,7 +86,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param EntityManagerInterface $em         The EntityManager the collection will be associated with.
      * @param ClassMetadata          $class      The class descriptor of the entity type of this collection.
-     * @param Collection             $collection The collection elements.
+     * @param Collection|object[]    $collection The collection elements.
      */
     public function __construct(EntityManagerInterface $em, $class, Collection $collection)
     {
@@ -107,10 +101,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Sets the collection's owning entity together with the AssociationMapping that
      * describes the association between the owner and the elements of the collection.
      *
-     * @param object                    $entity
-     * @param ToManyAssociationMetadata $association
-     *
-     * @return void
+     * @param object $entity
      */
     public function setOwner($entity, ToManyAssociationMetadata $association)
     {
@@ -144,8 +135,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * complete bidirectional associations in the case of a one-to-many association.
      *
      * @param mixed $element The element to add.
-     *
-     * @return void
      */
     public function hydrateAdd($element)
     {
@@ -160,7 +149,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $inversedAssociation->setValue($element, $this->owner);
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_id($element), $this->backRefFieldName, $this->owner
+                spl_object_id($element),
+                $this->backRefFieldName,
+                $this->owner
             );
         }
     }
@@ -171,8 +162,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      *
      * @param mixed $key     The key to set.
      * @param mixed $element The element to set.
-     *
-     * @return void
      */
     public function hydrateSet($key, $element)
     {
@@ -187,7 +176,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $inversedAssociation->setValue($element, $this->owner);
 
             $this->em->getUnitOfWork()->setOriginalEntityProperty(
-                spl_object_id($element), $this->backRefFieldName, $this->owner
+                spl_object_id($element),
+                $this->backRefFieldName,
+                $this->owner
             );
         }
     }
@@ -195,8 +186,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Initializes the collection by loading its contents from the database
      * if the collection is not yet initialized.
-     *
-     * @return void
      */
     public function initialize()
     {
@@ -212,8 +201,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * INTERNAL:
      * Tells this collection to take a snapshot of its current state.
-     *
-     * @return void
      */
     public function takeSnapshot()
     {
@@ -225,7 +212,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * Returns the last snapshot of the elements in the collection.
      *
-     * @return array The last snapshot of the elements.
+     * @return object[] The last snapshot of the elements.
      */
     public function getSnapshot()
     {
@@ -236,7 +223,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * getDeleteDiff
      *
-     * @return array
+     * @return object[]
      */
     public function getDeleteDiff()
     {
@@ -252,7 +239,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * INTERNAL:
      * getInsertDiff
      *
-     * @return array
+     * @return object[]
      */
     public function getInsertDiff()
     {
@@ -276,8 +263,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
     /**
      * Marks this collection as changed/dirty.
-     *
-     * @return void
      */
     private function changed()
     {
@@ -300,7 +285,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Gets a boolean flag indicating whether this collection is dirty which means
      * its state needs to be synchronized with the database.
      *
-     * @return boolean TRUE if the collection is dirty, FALSE otherwise.
+     * @return bool TRUE if the collection is dirty, FALSE otherwise.
      */
     public function isDirty()
     {
@@ -310,9 +295,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Sets a boolean flag, indicating whether this collection is dirty.
      *
-     * @param boolean $dirty Whether the collection should be marked dirty or not.
-     *
-     * @return void
+     * @param bool $dirty Whether the collection should be marked dirty or not.
      */
     public function setDirty($dirty)
     {
@@ -322,9 +305,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Sets the initialized flag of the collection, forcing it into that state.
      *
-     * @param boolean $bool
-     *
-     * @return void
+     * @param bool $bool
      */
     public function setInitialized($bool)
     {
@@ -342,7 +323,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
         //       association (table). Without initializing the collection.
         $removed = parent::remove($key);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -363,7 +344,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function removeElement($element)
     {
-        if ( ! $this->initialized &&
+        if (! $this->initialized &&
             $this->association !== null &&
             $this->association->getFetchMode() === FetchMode::EXTRA_LAZY) {
             if ($this->collection->contains($element)) {
@@ -377,7 +358,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $removed = parent::removeElement($element);
 
-        if ( ! $removed) {
+        if (! $removed) {
             return $removed;
         }
 
@@ -435,7 +416,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
             $this->association !== null &&
             $this->association->getFetchMode() === FetchMode::EXTRA_LAZY &&
             $this->association->getIndexedBy()) {
-            if (!$this->typeClass->isIdentifierComposite() && $this->typeClass->isIdentifier($this->association->getIndexedBy())) {
+            if (! $this->typeClass->isIdentifierComposite() && $this->typeClass->isIdentifier($this->association->getIndexedBy())) {
                 return $this->em->find($this->typeClass->getClassName(), $key);
             }
 
@@ -514,7 +495,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      */
     public function offsetSet($offset, $value)
     {
-        if ( ! isset($offset)) {
+        if (! isset($offset)) {
             $this->add($value);
             return;
         }
@@ -587,7 +568,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Internal note: Tried to implement Serializable first but that did not work well
      *                with circular references. This solution seems simpler and works well.
      *
-     * @return array
+     * @return string[]
      */
     public function __sleep()
     {
@@ -604,7 +585,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * @param int      $offset
      * @param int|null $length
      *
-     * @return array
+     * @return object[]
      */
     public function slice($offset, $length = null)
     {
@@ -630,8 +611,6 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * 3. Snapshot leads to invalid diffs being generated.
      * 4. Lazy loading grabs entities from old owner object.
      * 5. New collection is connected to old owner and leads to duplicate keys.
-     *
-     * @return void
      */
     public function __clone()
     {
@@ -651,9 +630,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Selects all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return Collection
+     * @return Collection|object[]
      *
      * @throws \RuntimeException
      */
@@ -691,7 +668,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|object[]
      */
     public function unwrap()
     {
