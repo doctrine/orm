@@ -76,7 +76,7 @@ class DDC2230Address implements NotifyPropertyChanged
     public $listener;
 
     /** {@inheritDoc} */
-    function addPropertyChangedListener(PropertyChangedListener $listener)
+    public function addPropertyChangedListener(PropertyChangedListener $listener)
     {
         $this->listener = $listener;
     }

@@ -734,7 +734,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
     /** @ORM\OneToMany(targetEntity=NotifyChangedRelatedItem::class, mappedBy="owner") */
     private $items;
 
-    public function  __construct()
+    public function __construct()
     {
         $this->items = new ArrayCollection;
     }
