@@ -20,11 +20,11 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('legacy');
-        
+
         parent::setUp();
 
         $class = $this->em->getClassMetadata(Models\Legacy\LegacyUser::class);
-        
+
         $class->getProperty('articles')->setFetchMode(FetchMode::EXTRA_LAZY);
         $class->getProperty('references')->setFetchMode(FetchMode::EXTRA_LAZY);
         $class->getProperty('cars')->setFetchMode(FetchMode::EXTRA_LAZY);
@@ -37,7 +37,7 @@ class DDC1301Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::tearDown();
 
         $class = $this->em->getClassMetadata(Models\Legacy\LegacyUser::class);
-        
+
         $class->getProperty('articles')->setFetchMode(FetchMode::LAZY);
         $class->getProperty('references')->setFetchMode(FetchMode::LAZY);
         $class->getProperty('cars')->setFetchMode(FetchMode::LAZY);

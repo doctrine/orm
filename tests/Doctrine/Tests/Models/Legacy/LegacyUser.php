@@ -48,7 +48,7 @@ class LegacyUser
      *      )
      */
     public $cars;
-    
+
     public function __construct()
     {
         $this->articles = new ArrayCollection;

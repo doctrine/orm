@@ -14,7 +14,7 @@ class DDC1300Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        
+
         $this->schemaTool->createSchema(
             [
                 $this->em->getClassMetadata(DDC1300Foo::class),

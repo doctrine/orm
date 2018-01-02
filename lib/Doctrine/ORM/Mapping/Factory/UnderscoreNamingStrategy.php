@@ -103,7 +103,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     {
         return $this->classToTableName($sourceEntity) . '_' . $this->classToTableName($targetEntity);
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -112,7 +112,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
         return $this->classToTableName($entityName) . '_' .
                 ($referencedColumnName ?: $this->referenceColumnName());
     }
-    
+
     /**
      * @param string $string
      *

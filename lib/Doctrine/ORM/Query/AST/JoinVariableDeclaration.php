@@ -18,12 +18,12 @@ class JoinVariableDeclaration extends Node
      * @var Join 
      */
     public $join;
-    
+
     /**
      * @var IndexBy|null 
      */
     public $indexBy;
-    
+
     /**
      * Constructor.
      * 

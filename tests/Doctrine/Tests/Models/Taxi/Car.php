@@ -33,7 +33,7 @@ class Car
      * @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="car")
      */
     private $carRides;
-    
+
     public function getBrand()
     {
         return $this->brand;

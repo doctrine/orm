@@ -33,7 +33,7 @@ class Driver
      * @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="driver")
      */
     private $driverRides;
-    
+
     public function getId()
     {
         return $this->id;
