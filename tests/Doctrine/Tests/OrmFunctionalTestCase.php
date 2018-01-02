@@ -684,7 +684,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
         // NOTE: Functional tests use their own shared metadata cache, because
         // the actual database platform used during execution has effect on some
         // metadata mapping behaviors (like the choice of the ID generation).
-        if (is_null(self::$metadataCacheImpl)) {
+        if (null === self::$metadataCacheImpl) {
             if (isset($GLOBALS['DOCTRINE_CACHE_IMPL'])) {
                 self::$metadataCacheImpl = new $GLOBALS['DOCTRINE_CACHE_IMPL'];
             } else {
@@ -692,7 +692,7 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             }
         }
 
-        if (is_null(self::$queryCacheImpl)) {
+        if (null === self::$queryCacheImpl) {
             self::$queryCacheImpl = new ArrayCache();
         }
 
