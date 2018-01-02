@@ -40,8 +40,6 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
  *
  *  $foo = new Foo();
  *  $foo->getId(); // method exists through __call
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 abstract class PersistentObject implements EntityManagerAware
 {
@@ -57,12 +55,8 @@ abstract class PersistentObject implements EntityManagerAware
 
     /**
      * Sets the entity manager responsible for all persistent object base classes.
-     *
-     * @param EntityManagerInterface|null $entityManager
-     *
-     * @return void
      */
-    static public function setEntityManager(EntityManagerInterface $entityManager = null)
+    public static function setEntityManager(?EntityManagerInterface $entityManager = null)
     {
         self::$entityManager = $entityManager;
     }
@@ -70,7 +64,7 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * @return EntityManagerInterface|null
      */
-    static public function getEntityManager()
+    public static function getEntityManager()
     {
         return self::$entityManager;
     }
@@ -78,19 +72,14 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Injects the Doctrine Object Manager.
      *
-     * @param EntityManagerInterface $entityManager
-     * @param ClassMetadata          $classMetadata
-     *
-     * @return void
-     *
      * @throws \RuntimeException
      */
     public function injectEntityManager(EntityManagerInterface $entityManager, ClassMetadata $classMetadata) : void
     {
         if ($entityManager !== self::$entityManager) {
             throw new \RuntimeException(
-                "Trying to use PersistentObject with different EntityManager instances. " .
-                "Was PersistentObject::setEntityManager() called?"
+                'Trying to use PersistentObject with different EntityManager instances. ' .
+                'Was PersistentObject::setEntityManager() called?'
             );
         }
 
@@ -100,8 +89,8 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Sets a persistent fields value.
      *
-     * @param string $field
-     * @param array  $args
+     * @param string  $field
+     * @param mixed[] $args
      *
      * @return object
      *
@@ -115,7 +104,7 @@ abstract class PersistentObject implements EntityManagerAware
         $property = $this->cm->getProperty($field);
 
         if (! $property) {
-            throw new \BadMethodCallException("no field with name '".$field."' exists on '".$this->cm->getClassName()."'");
+            throw new \BadMethodCallException("no field with name '" . $field . "' exists on '" . $this->cm->getClassName() . "'");
         }
 
         switch (true) {
@@ -127,7 +116,7 @@ abstract class PersistentObject implements EntityManagerAware
                 $targetClassName = $property->getTargetEntity();
 
                 if ($args[0] !== null && ! ($args[0] instanceof $targetClassName)) {
-                    throw new \InvalidArgumentException("Expected persistent object of type '".$targetClassName."'");
+                    throw new \InvalidArgumentException("Expected persistent object of type '" . $targetClassName . "'");
                 }
 
                 $this->$field = $args[0];
@@ -154,7 +143,7 @@ abstract class PersistentObject implements EntityManagerAware
         $property = $this->cm->getProperty($field);
 
         if (! $property) {
-            throw new \BadMethodCallException("no field with name '".$field."' exists on '".$this->cm->getClassName()."'");
+            throw new \BadMethodCallException("no field with name '" . $field . "' exists on '" . $this->cm->getClassName() . "'");
         }
 
         return $this->$field;
@@ -163,10 +152,7 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * If this is an inverse side association, completes the owning side.
      *
-     * @param AssociationMetadata $property
-     * @param object              $targetObject
-     *
-     * @return void
+     * @param object $targetObject
      */
     private function completeOwningSide(AssociationMetadata $property, $targetObject)
     {
@@ -187,8 +173,8 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Adds an object to a collection.
      *
-     * @param string $field
-     * @param array  $args
+     * @param string  $field
+     * @param mixed[] $args
      *
      * @return object
      *
@@ -202,17 +188,17 @@ abstract class PersistentObject implements EntityManagerAware
         $property = $this->cm->getProperty($field);
 
         if (! $property) {
-            throw new \BadMethodCallException("no field with name '".$field."' exists on '".$this->cm->getClassName()."'");
+            throw new \BadMethodCallException("no field with name '" . $field . "' exists on '" . $this->cm->getClassName() . "'");
         }
 
         if (! ($property instanceof ToManyAssociationMetadata)) {
-            throw new \BadMethodCallException("There is no method add".$field."() on ".$this->cm->getClassName());
+            throw new \BadMethodCallException('There is no method add' . $field . '() on ' . $this->cm->getClassName());
         }
 
         $targetClassName = $property->getTargetEntity();
 
         if (! ($args[0] instanceof $targetClassName)) {
-            throw new \InvalidArgumentException("Expected persistent object of type '".$targetClassName."'");
+            throw new \InvalidArgumentException("Expected persistent object of type '" . $targetClassName . "'");
         }
 
         if (! ($this->$field instanceof Collection)) {
@@ -229,8 +215,6 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Initializes Doctrine Metadata for this class.
      *
-     * @return void
-     *
      * @throws \RuntimeException
      */
     private function initializeDoctrine()
@@ -239,8 +223,8 @@ abstract class PersistentObject implements EntityManagerAware
             return;
         }
 
-        if (!self::$entityManager) {
-            throw new \RuntimeException("No runtime entity manager set. Call PersistentObject#setEntityManager().");
+        if (! self::$entityManager) {
+            throw new \RuntimeException('No runtime entity manager set. Call PersistentObject#setEntityManager().');
         }
 
         $this->cm = self::$entityManager->getClassMetadata(get_class($this));
@@ -249,8 +233,8 @@ abstract class PersistentObject implements EntityManagerAware
     /**
      * Magic methods.
      *
-     * @param string $method
-     * @param array  $args
+     * @param string  $method
+     * @param mixed[] $args
      *
      * @return mixed
      *
@@ -272,7 +256,7 @@ abstract class PersistentObject implements EntityManagerAware
                 return $this->add($field, $args);
 
             default:
-                throw new \BadMethodCallException("There is no method ".$method." on ".$this->cm->getClassName());
+                throw new \BadMethodCallException('There is no method ' . $method . ' on ' . $this->cm->getClassName());
         }
     }
 }
