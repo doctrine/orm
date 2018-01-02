@@ -32,8 +32,9 @@ class ManyToManyBasicAssociationTest extends OrmFunctionalTestCase
     {
         $user = $this->addCmsUserGblancoWithGroups(1);
 
-        unset($user->groups[0]->users[0]); // inverse side
-        unset($user->groups[0]); // owning side!
+        // inverse side
+        // owning side!
+        unset($user->groups[0]->users[0], $user->groups[0]);
 
         $this->em->flush();
 

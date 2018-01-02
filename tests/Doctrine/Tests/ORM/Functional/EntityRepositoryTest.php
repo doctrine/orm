@@ -72,10 +72,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
 
         $user1Id = $user->getId();
 
-        unset($user);
-        unset($user2);
-        unset($user3);
-        unset($user4);
+        unset($user, $user2, $user3, $user4);
 
         $this->em->clear();
 
@@ -210,9 +207,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
         $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
 
-        unset($address1);
-        unset($address2);
-        unset($address3);
+        unset($address1, $address2, $address3);
 
         $this->em->clear();
 
@@ -234,9 +229,7 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         $address3 = $this->buildAddress('USA', 'Nashville', 'Woo st.', '321654');
         $user3    = $this->buildUser('Jonathan', 'jwage', 'dev', $address3);
 
-        unset($address1);
-        unset($address2);
-        unset($address3);
+        unset($address1, $address2, $address3);
 
         $this->em->clear();
 

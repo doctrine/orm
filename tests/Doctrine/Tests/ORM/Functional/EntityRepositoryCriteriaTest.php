@@ -56,9 +56,7 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
 
         $this->em->flush();
 
-        unset($today);
-        unset($tomorrow);
-        unset($yesterday);
+        unset($today, $tomorrow, $yesterday);
 
         $this->em->clear();
     }
