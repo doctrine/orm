@@ -3,6 +3,7 @@
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Generic\DecimalModel;
 
 /**
  * Functional Query tests.
@@ -14,6 +15,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('company');
+        $this->useModelSet('generic');
         parent::setUp();
 
         $this->generateFixture();
@@ -407,10 +409,30 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager4->setDepartment('Administration');
         $manager4->setSalary(800000);
 
+        $decimal1 = new DecimalModel();
+        $decimal1->decimal = 0.12;
+        $decimal1->highScale = 0.1234;
+
+        $decimal2 = new DecimalModel();
+        $decimal2->decimal = 1.23;
+        $decimal2->highScale = 1.2345;
+
+        $decimal3 = new DecimalModel();
+        $decimal3->decimal = 20.34;
+        $decimal3->highScale = 20.3456;
+
+        $decimal4 = new DecimalModel();
+        $decimal4->decimal = 100.45;
+        $decimal4->highScale = 100.4567;
+
         $this->_em->persist($manager1);
         $this->_em->persist($manager2);
         $this->_em->persist($manager3);
         $this->_em->persist($manager4);
+        $this->_em->persist($decimal1);
+        $this->_em->persist($decimal2);
+        $this->_em->persist($decimal3);
+        $this->_em->persist($decimal4);
         $this->_em->flush();
         $this->_em->clear();
     }
