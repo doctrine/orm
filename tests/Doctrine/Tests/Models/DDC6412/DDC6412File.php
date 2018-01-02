@@ -22,4 +22,3 @@ class DDC6412File
      */
     public $name;
 }
-

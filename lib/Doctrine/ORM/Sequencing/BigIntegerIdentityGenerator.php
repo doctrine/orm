@@ -48,4 +48,3 @@ class BigIntegerIdentityGenerator implements Generator
         return true;
     }
 }
-

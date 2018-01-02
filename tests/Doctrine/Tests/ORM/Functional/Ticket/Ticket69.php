@@ -449,4 +449,3 @@ class RelationType
         return $this->relations;
     }
 }
-

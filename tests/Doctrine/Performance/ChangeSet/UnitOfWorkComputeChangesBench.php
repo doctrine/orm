@@ -70,4 +70,3 @@ final class UnitOfWorkComputeChangesBench
         $this->unitOfWork->computeChangeSets();
     }
 }
-

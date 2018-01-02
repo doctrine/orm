@@ -79,4 +79,3 @@ final class SimpleQueryArrayHydrationPerformanceBench
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

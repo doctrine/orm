@@ -43,4 +43,3 @@ class DDC1360DoubleQuote
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 }
-

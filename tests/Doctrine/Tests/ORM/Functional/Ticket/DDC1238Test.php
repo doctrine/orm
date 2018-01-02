@@ -113,4 +113,3 @@ class DDC1238User
         $this->name = $name;
     }
 }
-

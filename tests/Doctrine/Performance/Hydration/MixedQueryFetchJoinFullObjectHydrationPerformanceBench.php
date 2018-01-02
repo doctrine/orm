@@ -81,4 +81,3 @@ final class MixedQueryFetchJoinFullObjectHydrationPerformanceBench
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

@@ -89,4 +89,3 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 }
-
