@@ -427,7 +427,7 @@ class QueryDqlFunctionTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $decimal2 = new DecimalModel();
         $decimal2->decimal = 1.23;
-        $decimal2->highScale = 1.2345;
+        $decimal2->highScale = 1.2344;
 
         $decimal3 = new DecimalModel();
         $decimal3->decimal = 20.34;
