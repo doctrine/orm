@@ -131,7 +131,6 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     }
 
     /**
-     *
      * @return User
      */
     public function getUser()

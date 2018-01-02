@@ -61,7 +61,6 @@ final class GeneratorType
 
     /**
      * Will break upon instantiation.
-     *
      */
     private function __construct()
     {

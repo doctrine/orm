@@ -117,7 +117,6 @@ class Lemma
     private $id;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
      */
@@ -138,7 +137,6 @@ class Lemma
 
 
     /**
-     *
      * @return int
      */
     public function getId()
@@ -147,7 +145,6 @@ class Lemma
     }
 
     /**
-     *
      * @param string $lemma
      * @return void
      */
@@ -157,7 +154,6 @@ class Lemma
     }
 
     /**
-     *
      * @return string
      */
     public function getLemma()
@@ -167,7 +163,6 @@ class Lemma
 
 
     /**
-     *
      * @param Relation $relation
      * @return void
      */
@@ -178,7 +173,6 @@ class Lemma
     }
 
     /**
-     *
      * @param Relation $relation
      * @return void
      */
@@ -192,7 +186,6 @@ class Lemma
     }
 
     /**
-     *
      * @return kateglo\application\utilities\collections\ArrayCollection
      */
     public function getRelations()
@@ -202,7 +195,6 @@ class Lemma
 }
 
 /**
- *
  * @ORM\Entity
  * @ORM\Table(name="relation")
  */
@@ -240,7 +232,6 @@ class Relation
     private $type;
 
     /**
-     *
      * @param Lemma $parent
      * @return void
      */
@@ -250,7 +241,6 @@ class Relation
     }
 
     /**
-     *
      * @return Phrase
      */
     public function getParent()
@@ -259,7 +249,6 @@ class Relation
     }
 
     /**
-     *
      * @return void
      */
     public function removeParent()
@@ -273,7 +262,6 @@ class Relation
     }
 
     /**
-     *
      * @param Lemma $child
      * @return void
      */
@@ -283,7 +271,6 @@ class Relation
     }
 
     /**
-     *
      * @return Lemma
      */
     public function getChild()
@@ -292,7 +279,6 @@ class Relation
     }
 
     /**
-     *
      * @param RelationType $type
      * @return void
      */
@@ -302,7 +288,6 @@ class Relation
     }
 
     /**
-     *
      * @return RelationType
      */
     public function getType()
@@ -311,7 +296,6 @@ class Relation
     }
 
     /**
-     *
      * @return void
      */
     public function removeType()
@@ -326,7 +310,6 @@ class Relation
 }
 
 /**
- *
  * @ORM\Entity
  * @ORM\Table(name="relation_type")
  */
@@ -335,7 +318,6 @@ class RelationType
     const CLASS_NAME = __CLASS__;
 
     /**
-     *
      * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="relation_type_id")
@@ -344,14 +326,12 @@ class RelationType
     private $id;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="relation_type_name", unique=true, length=255)
      */
     private $type;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="relation_type_abbreviation", unique=true, length=255)
      */
@@ -369,7 +349,6 @@ class RelationType
     }
 
     /**
-     *
      * @return int
      */
     public function getId()
@@ -378,7 +357,6 @@ class RelationType
     }
 
     /**
-     *
      * @param string $type
      * @return void
      */
@@ -388,7 +366,6 @@ class RelationType
     }
 
     /**
-     *
      * @return string
      */
     public function getType()
@@ -397,7 +374,6 @@ class RelationType
     }
 
     /**
-     *
      * @param string $abbreviation
      * @return void
      */
@@ -407,7 +383,6 @@ class RelationType
     }
 
     /**
-     *
      * @return string
      */
     public function getAbbreviation()
@@ -416,7 +391,6 @@ class RelationType
     }
 
     /**
-     *
      * @param Relation $relation
      * @return void
      */
@@ -427,7 +401,6 @@ class RelationType
     }
 
     /**
-     *
      * @param Relation $relation
      * @return void
      */
@@ -441,7 +414,6 @@ class RelationType
     }
 
     /**
-     *
      * @return kateglo\application\utilities\collections\ArrayCollection
      */
     public function getRelations()

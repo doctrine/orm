@@ -35,7 +35,6 @@ final class FetchMode
 
     /**
      * Will break upon instantiation.
-     *
      */
     private function __construct()
     {

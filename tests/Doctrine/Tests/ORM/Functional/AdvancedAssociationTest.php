@@ -168,7 +168,6 @@ class Lemma
     private $id;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="lemma_name", unique=true, length=255)
      */
@@ -185,7 +184,6 @@ class Lemma
     }
 
     /**
-     *
      * @return int
      */
     public function getId()
@@ -194,7 +192,6 @@ class Lemma
     }
 
     /**
-     *
      * @param string $lemma
      * @return void
      */
@@ -204,7 +201,6 @@ class Lemma
     }
 
     /**
-     *
      * @return string
      */
     public function getLemma()
@@ -235,7 +231,6 @@ class Lemma
     }
 
     /**
-     *
      * @return kateglo\application\helpers\collections\ArrayCollection
      */
     public function getTypes()
@@ -253,7 +248,6 @@ class Type
     const CLASS_NAME = __CLASS__;
 
     /**
-     *
      * @var int
      * @ORM\Id
      * @ORM\Column(type="integer", name="type_id")
@@ -262,14 +256,12 @@ class Type
     private $id;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="type_name", unique=true)
      */
     private $type;
 
     /**
-     *
      * @var string
      * @ORM\Column(type="string", name="type_abbreviation", unique=true)
      */
@@ -291,7 +283,6 @@ class Type
     }
 
     /**
-     *
      * @return int
      */
     public function getId()
@@ -300,7 +291,6 @@ class Type
     }
 
     /**
-     *
      * @param string $type
      * @return void
      */
@@ -310,7 +300,6 @@ class Type
     }
 
     /**
-     *
      * @return string
      */
     public function getType()
@@ -319,7 +308,6 @@ class Type
     }
 
     /**
-     *
      * @param string $abbreviation
      * @return void
      */
@@ -329,7 +317,6 @@ class Type
     }
 
     /**
-     *
      * @return string
      */
     public function getAbbreviation()
@@ -338,7 +325,6 @@ class Type
     }
 
     /**
-     *
      * @param kateglo\application\models\Lemma $lemma
      * @return void
      */
@@ -351,7 +337,6 @@ class Type
     }
 
     /**
-     *
      * @param kateglo\application\models\Lemma $lemma
      * @return void
      */
@@ -365,7 +350,6 @@ class Type
     }
 
     /**
-     *
      * @return kateglo\application\helpers\collections\ArrayCollection
      */
     public function getCategories()
@@ -411,7 +395,6 @@ class Phrase
     }
 
     /**
-     *
      * @param Definition $definition
      * @return void
      */
@@ -447,7 +430,6 @@ class Phrase
     }
 
     /**
-     *
      * @param PhraseType $type
      * @return void
      */
@@ -457,7 +439,6 @@ class Phrase
     }
 
     /**
-     *
      * @return PhraseType
      */
     public function getType()
@@ -466,7 +447,6 @@ class Phrase
     }
 
     /**
-     *
      * @return ArrayCollection
      */
     public function getDefinitions()
@@ -562,7 +542,6 @@ class PhraseType
     }
 
     /**
-     *
      * @return ArrayCollection
      */
     public function getPhrases()

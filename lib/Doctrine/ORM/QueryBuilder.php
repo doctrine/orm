@@ -163,7 +163,6 @@ class QueryBuilder
     }
 
     /**
-     *
      * Enable/disable second level query (result) caching for this query.
      *
      * @param boolean $cacheable

@@ -96,7 +96,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
     }
 
     /**
-     *
      * @param ClassMetadata $class
      */
     public function testEntityIndexes()

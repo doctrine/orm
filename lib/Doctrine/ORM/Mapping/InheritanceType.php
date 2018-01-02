@@ -41,7 +41,6 @@ final class InheritanceType
 
     /**
      * Will break upon instantiation.
-     *
      */
     private function __construct()
     {
