@@ -19,18 +19,11 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  * and increase the coupling of database and objects.
  *
  * Every EntityManager has to implement this functionality itself.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 interface EntityManagerAware
 {
     /**
      * Injects responsible EntityManager and the ClassMetadata into this persistent object.
-     *
-     * @param EntityManagerInterface $entityManager
-     * @param ClassMetadata          $classMetadata
-     *
-     * @return void
      */
     public function injectEntityManager(EntityManagerInterface $entityManager, ClassMetadata $classMetadata) : void;
 }
