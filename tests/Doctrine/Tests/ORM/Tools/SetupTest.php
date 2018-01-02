@@ -71,7 +71,7 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(false, __DIR__);
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
+        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
@@ -82,7 +82,7 @@ class SetupTest extends OrmTestCase
         $config = Setup::createConfiguration(false, __DIR__, new ArrayCache());
         $cache  = $config->getMetadataCacheImpl();
 
-        self::assertSame('dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
+        self::assertSame('dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
@@ -97,7 +97,7 @@ class SetupTest extends OrmTestCase
         $cache  = $config->getMetadataCacheImpl();
 
         self::assertSame($originalCache, $cache);
-        self::assertSame('foo:dc2_a627434a6e484d05c284461c9abcfb8c_', $cache->getNamespace());
+        self::assertSame('foo:dc2_' . md5(__DIR__) . '_', $cache->getNamespace());
     }
 
     /**
