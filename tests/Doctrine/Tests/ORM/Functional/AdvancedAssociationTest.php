@@ -343,7 +343,7 @@ class Type
     public function removeLEmma(Lemma $lemma)
     {
         $removed = $this->lemmas->removeElement($lemma);
-        
+
         if ($removed !== null) {
             $removed->removeType($this);
         }

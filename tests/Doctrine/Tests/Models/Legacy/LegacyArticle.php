@@ -34,7 +34,7 @@ class LegacyArticle
      * @ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
     public $user;
-    
+
     public function setAuthor(LegacyUser $author)
     {
         $this->user = $author;

@@ -76,7 +76,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
         self::assertInstanceOf($className1, $obj1);
         self::assertInstanceOf($className2, $obj2);
-        
+
         self::assertSame($obj1, $this->resolver->resolve($className1));
         self::assertSame($obj2, $this->resolver->resolve($className2));
 
@@ -84,7 +84,7 @@ class EntityListenerResolverTest extends OrmTestCase
 
         self::assertInstanceOf($className1, $this->resolver->resolve($className1));
         self::assertInstanceOf($className2, $this->resolver->resolve($className2));
-        
+
         self::assertNotSame($obj1, $this->resolver->resolve($className1));
         self::assertNotSame($obj2, $this->resolver->resolve($className2));
     }

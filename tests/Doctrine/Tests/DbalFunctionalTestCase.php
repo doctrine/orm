@@ -24,7 +24,7 @@ class DbalFunctionalTestCase extends DbalTestCase
     protected function resetSharedConn()
     {
         $this->sharedFixture['conn'] = null;
-        
+
         self::$sharedConn = null;
     }
 
@@ -35,10 +35,10 @@ class DbalFunctionalTestCase extends DbalTestCase
     {
         if (isset($this->sharedFixture['conn'])) {
             $this->conn = $this->sharedFixture['conn'];
-            
+
             return;
         }
-        
+
         if (! isset(self::$sharedConn)) {
             self::$sharedConn = TestUtil::getConnection();
         }
