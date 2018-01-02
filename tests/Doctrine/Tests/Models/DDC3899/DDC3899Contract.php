@@ -1,25 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3899;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="dc3899_contracts")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *     "fix"       = "DDC3899FixContract",
- *     "flexible"  = "DDC3899FlexContract"
+ * @ORM\Entity
+ * @ORM\Table(name="dc3899_contracts")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *     "fix"       = DDC3899FixContract::class,
+ *     "flexible"  = DDC3899FlexContract::class
  * })
  */
 abstract class DDC3899Contract
 {
-    /** @Id @Column(type="integer") */
+    /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @Column(type="boolean") */
+    /** @ORM\Column(type="boolean") */
     public $completed = false;
 
-    /** @ManyToOne(targetEntity="DDC3899User", inversedBy="contract") */
+    /** @ORM\ManyToOne(targetEntity=DDC3899User::class, inversedBy="contract") */
     public $user;
 }

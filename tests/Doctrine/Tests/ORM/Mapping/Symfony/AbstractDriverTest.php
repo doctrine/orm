@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping\Symfony;
+
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-1418
  */
-abstract class AbstractDriverTest extends TestCase
+abstract class AbstractDriverTest extends DoctrineTestCase
 {
     public function testFindMappingFile()
     {
@@ -19,7 +22,7 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir.'/Foo'.$this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo'));
     }
 
     public function testFindMappingFileInSubnamespace()
@@ -31,7 +34,7 @@ abstract class AbstractDriverTest extends TestCase
         );
 
         touch($filename = $this->dir.'/Foo.Bar'.$this->getFileExtension());
-        $this->assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
+        self::assertEquals($filename, $driver->getLocator()->findMappingFile('MyNamespace\MySubnamespace\Entity\Foo\Bar'));
     }
 
     public function testFindMappingFileNamespacedFoundFileNotFound()
@@ -74,9 +77,9 @@ abstract class AbstractDriverTest extends TestCase
 
         foreach ($iterator as $path) {
             if ($path->isDir()) {
-                @rmdir($path);
+                @rmdir((string) $path);
             } else {
-                @unlink($path);
+                @unlink((string) $path);
             }
         }
 

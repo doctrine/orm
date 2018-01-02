@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -12,24 +14,24 @@ class DatabasePlatformMock extends AbstractPlatform
     /**
      * @var string
      */
-    private $_sequenceNextValSql = "";
+    private $sequenceNextValSql = "";
 
     /**
      * @var bool
      */
-    private $_prefersIdentityColumns = true;
+    private $prefersIdentityColumns = true;
 
     /**
      * @var bool
      */
-    private $_prefersSequences = false;
+    private $prefersSequences = false;
 
     /**
      * {@inheritdoc}
      */
     public function prefersIdentityColumns()
     {
-        return $this->_prefersIdentityColumns;
+        return $this->prefersIdentityColumns;
     }
 
     /**
@@ -37,7 +39,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function prefersSequences()
     {
-        return $this->_prefersSequences;
+        return $this->prefersSequences;
     }
 
     /**
@@ -45,7 +47,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function getSequenceNextValSQL($sequenceName)
     {
-        return $this->_sequenceNextValSql;
+        return $this->sequenceNextValSql;
     }
 
     /**
@@ -106,7 +108,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function setPrefersIdentityColumns($bool)
     {
-        $this->_prefersIdentityColumns = $bool;
+        $this->prefersIdentityColumns = $bool;
     }
 
     /**
@@ -116,7 +118,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function setPrefersSequences($bool)
     {
-        $this->_prefersSequences = $bool;
+        $this->prefersSequences = $bool;
     }
 
     /**
@@ -126,7 +128,7 @@ class DatabasePlatformMock extends AbstractPlatform
      */
     public function setSequenceNextValSql($sql)
     {
-        $this->_sequenceNextValSql = $sql;
+        $this->sequenceNextValSql = $sql;
     }
 
     /**

@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Annotation as ORM;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1163
@@ -12,13 +15,13 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
-        $this->_schemaTool->createSchema(
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1163Product::class),
-            $this->_em->getClassMetadata(DDC1163SpecialProduct::class),
-            $this->_em->getClassMetadata(DDC1163ProxyHolder::class),
-            $this->_em->getClassMetadata(DDC1163Tag::class),
+            $this->em->getClassMetadata(DDC1163Product::class),
+            $this->em->getClassMetadata(DDC1163SpecialProduct::class),
+            $this->em->getClassMetadata(DDC1163ProxyHolder::class),
+            $this->em->getClassMetadata(DDC1163Tag::class),
             ]
         );
     }
@@ -26,27 +29,27 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIssue()
     {
         $this->createSpecialProductAndProxyHolderReferencingIt();
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->createProxyForSpecialProduct();
 
         $this->setPropertyAndAssignTagToSpecialProduct();
 
         // fails
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     private function createSpecialProductAndProxyHolderReferencingIt()
     {
         $specialProduct = new DDC1163SpecialProduct();
-        $this->_em->persist($specialProduct);
+        $this->em->persist($specialProduct);
 
         $proxyHolder = new DDC1163ProxyHolder();
-        $this->_em->persist($proxyHolder);
+        $this->em->persist($proxyHolder);
 
         $proxyHolder->setSpecialProduct($specialProduct);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $this->productId = $specialProduct->getId();
         $this->proxyHolderId = $proxyHolder->getId();
@@ -62,49 +65,49 @@ class DDC1163Test extends \Doctrine\Tests\OrmFunctionalTestCase
     private function createProxyForSpecialProduct()
     {
         /* @var $proxyHolder DDC1163ProxyHolder */
-        $proxyHolder = $this->_em->find(DDC1163ProxyHolder::class, $this->proxyHolderId);
+        $proxyHolder = $this->em->find(DDC1163ProxyHolder::class, $this->proxyHolderId);
 
-        $this->assertInstanceOf(DDC1163SpecialProduct::class, $proxyHolder->getSpecialProduct());
+        self::assertInstanceOf(DDC1163SpecialProduct::class, $proxyHolder->getSpecialProduct());
     }
 
     private function setPropertyAndAssignTagToSpecialProduct()
     {
         /* @var $specialProduct DDC1163SpecialProduct */
-        $specialProduct = $this->_em->find(DDC1163SpecialProduct::class, $this->productId);
+        $specialProduct = $this->em->find(DDC1163SpecialProduct::class, $this->productId);
 
-        $this->assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
-        $this->assertInstanceOf(Proxy::class, $specialProduct);
+        self::assertInstanceOf(DDC1163SpecialProduct::class, $specialProduct);
+        self::assertInstanceOf(GhostObjectInterface::class, $specialProduct);
 
         $specialProduct->setSubclassProperty('foobar');
 
         // this screams violation of law of demeter ;)
-        $this->assertEquals(
+        self::assertEquals(
             DDC1163SpecialProduct::class,
-            $this->_em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->name
+            $this->em->getUnitOfWork()->getEntityPersister(get_class($specialProduct))->getClassMetadata()->getClassName()
         );
 
         $tag = new DDC1163Tag('Foo');
-        $this->_em->persist($tag);
+        $this->em->persist($tag);
         $tag->setProduct($specialProduct);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163ProxyHolder
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
      * @var SpecialProduct
-     * @OneToOne(targetEntity="DDC1163SpecialProduct")
+     * @ORM\OneToOne(targetEntity=DDC1163SpecialProduct::class)
      */
     private $specialProduct;
 
@@ -122,23 +125,22 @@ class DDC1163ProxyHolder
     {
         return $this->specialProduct;
     }
-
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"special" = "DDC1163SpecialProduct"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"special" = DDC1163SpecialProduct::class})
  */
 abstract class DDC1163Product
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -146,18 +148,17 @@ abstract class DDC1163Product
     {
         return $this->id;
     }
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163SpecialProduct extends DDC1163Product
 {
 
     /**
      * @var string
-     * @Column(name="subclass_property", type="string", nullable=true)
+     * @ORM\Column(name="subclass_property", type="string", nullable=true)
      */
     private $subclassProperty;
 
@@ -168,32 +169,31 @@ class DDC1163SpecialProduct extends DDC1163Product
     {
         $this->subclassProperty = $value;
     }
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1163Tag
 {
 
     /**
      * @var int
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
      * @var string
-     * @Column(name="name", type="string")
+     * @ORM\Column(name="name", type="string")
      */
     private $name;
     /**
      * @var Product
-     * @ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
-     * @JoinColumns({
-     *   @JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=DDC1163Product::class, inversedBy="tags")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      * })
      */
     private $product;
@@ -213,5 +213,4 @@ class DDC1163Tag
     {
         $this->product = $product;
     }
-
 }

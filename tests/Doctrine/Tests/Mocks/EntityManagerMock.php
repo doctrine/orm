@@ -1,35 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\EventManager;
 use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
-class EntityManagerMock extends EntityManager
+class EntityManagerMock extends EntityManagerDecorator
 {
     /**
      * @var \Doctrine\ORM\UnitOfWork|null
      */
-    private $_uowMock;
+    private $uowMock;
 
     /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory|null
+     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory|null
      */
-    private $_proxyFactoryMock;
+    private $proxyFactoryMock;
+
+    /**
+     * @return EntityManagerInterface
+     */
+    public function getWrappedEntityManager() : EntityManagerInterface
+    {
+        return $this->wrapped;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
     {
-        return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
+        return $this->uowMock ?? $this->wrapped->getUnitOfWork();
     }
-
-    /* Mock API */
 
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
@@ -40,25 +50,25 @@ class EntityManagerMock extends EntityManager
      */
     public function setUnitOfWork($uow)
     {
-        $this->_uowMock = $uow;
+        $this->uowMock = $uow;
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\ProxyFactory $proxyFactory
+     * @param \Doctrine\ORM\Proxy\Factory\ProxyFactory $proxyFactory
      *
      * @return void
      */
     public function setProxyFactory($proxyFactory)
     {
-        $this->_proxyFactoryMock = $proxyFactory;
+        $this->proxyFactoryMock = $proxyFactory;
     }
 
     /**
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory()
     {
-        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+        return $this->proxyFactoryMock ?? $this->wrapped->getProxyFactory();
     }
 
     /**
@@ -70,14 +80,18 @@ class EntityManagerMock extends EntityManager
     {
         if (null === $config) {
             $config = new Configuration();
+
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver([], true));
-        }
-        if (null === $eventManager) {
-            $eventManager = new EventManager();
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
-        return new EntityManagerMock($conn, $config, $eventManager);
+        if (null === $eventManager) {
+            $eventManager = $conn->getEventManager();
+        }
+
+        $em = EntityManager::create($conn, $config, $eventManager);
+
+        return new EntityManagerMock($em);
     }
 }

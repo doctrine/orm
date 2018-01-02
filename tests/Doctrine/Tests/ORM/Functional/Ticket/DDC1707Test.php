@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\Events;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\ListenersInvoker;
 
 /**
  * @group DDC-1707
@@ -15,45 +19,47 @@ class DDC1707Test extends OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1509File::class),
-                $this->_em->getClassMetadata(DDC1509Picture::class),
+                $this->em->getClassMetadata(DDC1509File::class),
+                $this->em->getClassMetadata(DDC1509Picture::class),
                 ]
             );
         } catch (\Exception $ignored) {
-
         }
     }
 
     public function testPostLoadOnChild()
     {
-        $class  = $this->_em->getClassMetadata(DDC1707Child::class);
-        $entity = new DDC1707Child();
+        $class   = $this->em->getClassMetadata(DDC1707Child::class);
+        $entity  = new DDC1707Child();
+        $event   = new LifecycleEventArgs($entity, $this->em);
+        $invoker = new ListenersInvoker($this->em);
+        $invoke  = $invoker->getSubscribedSystems($class, \Doctrine\ORM\Events::postLoad);
 
-        $class->invokeLifecycleCallbacks(Events::postLoad, $entity);
+        $invoker->invoke($class, \Doctrine\ORM\Events::postLoad, $entity, $event, $invoke);
 
-        $this->assertTrue($entity->postLoad);
+        self::assertTrue($entity->postLoad);
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"c": "DDC1707Child"})
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"c": DDC1707Child::class})
+ * @ORM\HasLifecycleCallbacks
  */
 abstract class DDC1707Base
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     public $postLoad = false;
 
     /**
-     * @PostLoad
+     * @ORM\PostLoad
      */
     public function onPostLoad()
     {
@@ -61,7 +67,7 @@ abstract class DDC1707Base
     }
 }
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1707Child extends DDC1707Base
 {

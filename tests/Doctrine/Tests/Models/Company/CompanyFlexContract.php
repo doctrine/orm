@@ -1,45 +1,52 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping;
+
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name           = "all",
  *          resultClass    = "__CLASS__",
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name           = "all-flex",
- *          resultClass    = "CompanyFlexContract",
+ *          resultClass    = CompanyFlexContract::class,
  *          query          = "SELECT id, hoursWorked, discr FROM company_contracts"
  *      ),
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all-flex",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("hoursWorked"),
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all",
  *          entities= {
- *              @EntityResult(
- *                  entityClass         = "CompanyFlexContract",
+ *              @ORM\EntityResult(
+ *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("hoursWorked"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("hoursWorked"),
  *                  }
  *              )
  *          }
@@ -49,22 +56,22 @@ namespace Doctrine\Tests\Models\Company;
 class CompanyFlexContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $hoursWorked = 0;
 
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $pricePerHour = 0;
 
     /**
-     * @ManyToMany(targetEntity="CompanyManager", inversedBy="managedContracts", fetch="EXTRA_LAZY")
-     * @JoinTable(name="company_contract_managers",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=CompanyManager::class, inversedBy="managedContracts", fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="company_contract_managers",
+     *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}
      * )
      */
     public $managers;
@@ -106,24 +113,5 @@ class CompanyFlexContract extends CompanyContract
     public function removeManager(CompanyManager $manager)
     {
         $this->managers->removeElement($manager);
-    }
-
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'hoursWorked',
-            'fieldName' => 'hoursWorked',
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'pricePerHour',
-            'fieldName' => 'pricePerHour',
-            ]
-        );
     }
 }

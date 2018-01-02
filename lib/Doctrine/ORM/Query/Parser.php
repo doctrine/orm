@@ -1,25 +1,13 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
 
@@ -134,7 +122,7 @@ class Parser
     /**
      * The EntityManager.
      *
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -239,7 +227,7 @@ class Parser
     /**
      * Gets the EntityManager used by the parser.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -443,7 +431,7 @@ class Parser
             $token = $this->lexer->lookahead;
         }
 
-        $tokenPos = (isset($token['position'])) ? $token['position'] : '-1';
+        $tokenPos = $token['position'] ?? '-1';
 
         $message  = "line 0, col {$tokenPos}: Error: ";
         $message .= ($expected !== '') ? "Expected {$expected}, got " : 'Unexpected ';
@@ -462,7 +450,7 @@ class Parser
      *
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function semanticalError($message = '', $token = null)
+    public function semanticalError($message = '', $token = null, ?\Throwable $previousFailure = null)
     {
         if ($token === null) {
             $token = $this->lexer->lookahead;
@@ -479,12 +467,15 @@ class Parser
         $length = ($pos !== false) ? $pos - $token['position'] : $distance;
 
         $tokenPos = (isset($token['position']) && $token['position'] > 0) ? $token['position'] : '-1';
-        $tokenStr = substr($dql, $token['position'], $length);
+        $tokenStr = substr($dql, (int) $token['position'], $length);
 
         // Building informative message
         $message = 'line 0, col ' . $tokenPos . " near '" . $tokenStr . "': Error: " . $message;
 
-        throw QueryException::semanticalError($message, QueryException::dqlError($this->query->getDQL()));
+        throw QueryException::semanticalError(
+            $message,
+            QueryException::dqlError($this->query->getDQL(), $previousFailure)
+        );
     }
 
     /**
@@ -622,9 +613,7 @@ class Parser
             $token          = $deferredItem['token'];
             $className      = $expression->className;
             $args           = $expression->args;
-            $fromClassName  = isset($AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName)
-                ? $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName
-                : null;
+            $fromClassName  = $AST->fromClause->identificationVariableDeclarations[0]->rangeVariableDeclaration->abstractSchemaName ?? null;
 
             // If the namespace is not given then assumes the first FROM entity namespace
             if (strpos($className, '\\') === false && ! class_exists($className) && strpos($fromClassName, '\\') !== false) {
@@ -670,24 +659,21 @@ class Parser
             $class = $this->queryComponents[$expr->identificationVariable]['metadata'];
 
             foreach ($expr->partialFieldSet as $field) {
-                if (isset($class->fieldMappings[$field])) {
-                    continue;
-                }
+                $property = $class->getProperty($field);
 
-                if (isset($class->associationMappings[$field]) &&
-                    $class->associationMappings[$field]['isOwningSide'] &&
-                    $class->associationMappings[$field]['type'] & ClassMetadata::TO_ONE) {
+                if ($property instanceof FieldMetadata ||
+                    ($property instanceof ToOneAssociationMetadata && $property->isOwningSide())) {
                     continue;
                 }
 
                 $this->semanticalError(
-                    "There is no mapped field named '$field' on class " . $class->name . ".", $deferredItem['token']
+                    "There is no mapped field named '$field' on class " . $class->getClassName() . ".", $deferredItem['token']
                 );
             }
 
             if (array_intersect($class->identifier, $expr->partialFieldSet) != $class->identifier) {
                 $this->semanticalError(
-                    "The partial field selection of class " . $class->name . " must contain the identifier.",
+                    "The partial field selection of class " . $class->getClassName() . " must contain the identifier.",
                     $deferredItem['token']
                 );
             }
@@ -753,22 +739,23 @@ class Parser
                 $field = $pathExpression->field = $class->identifier[0];
             }
 
+            $property = $class->getProperty($field);
+
             // Check if field or association exists
-            if ( ! isset($class->associationMappings[$field]) && ! isset($class->fieldMappings[$field])) {
+            if (! $property) {
                 $this->semanticalError(
-                    'Class ' . $class->name . ' has no field or association named ' . $field,
+                    'Class ' . $class->getClassName() . ' has no field or association named ' . $field,
                     $deferredItem['token']
                 );
             }
 
             $fieldType = AST\PathExpression::TYPE_STATE_FIELD;
 
-            if (isset($class->associationMappings[$field])) {
-                $assoc = $class->associationMappings[$field];
-
-                $fieldType = ($assoc['type'] & ClassMetadata::TO_ONE)
+            if ($property instanceof AssociationMetadata) {
+                $fieldType = $property instanceof ToOneAssociationMetadata
                     ? AST\PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION
-                    : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION;
+                    : AST\PathExpression::TYPE_COLLECTION_VALUED_ASSOCIATION
+                ;
             }
 
             // Validate if PathExpression is one of the expected types
@@ -795,7 +782,7 @@ class Parser
 
                 // Build the error message
                 $semanticalError  = 'Invalid PathExpression. ';
-                $semanticalError .= (count($expectedStringTypes) == 1)
+                $semanticalError .= \count($expectedStringTypes) === 1
                     ? 'Must be a ' . $expectedStringTypes[0] . '.'
                     : implode(' or ', $expectedStringTypes) . ' expected.';
 
@@ -812,7 +799,7 @@ class Parser
      */
     private function processRootEntityAliasSelected()
     {
-        if ( ! count($this->identVariableExpressions)) {
+        if ( ! $this->identVariableExpressions) {
             return;
         }
 
@@ -959,7 +946,7 @@ class Parser
             $this->match(Lexer::T_FULLY_QUALIFIED_NAME);
 
             $schemaName = $this->lexer->token['value'];
-        } else if ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
+        } elseif ($this->lexer->isNextToken(Lexer::T_IDENTIFIER)) {
             $this->match(Lexer::T_IDENTIFIER);
 
             $schemaName = $this->lexer->token['value'];
@@ -981,11 +968,24 @@ class Parser
      *
      * @throws QueryException if the name does not exist.
      */
-    private function validateAbstractSchemaName($schemaName)
+    private function validateAbstractSchemaName($schemaName) : void
     {
-        if (! (class_exists($schemaName, true) || interface_exists($schemaName, true))) {
-            $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
+        if (class_exists($schemaName, true) || interface_exists($schemaName, true)) {
+            return;
         }
+
+        try {
+            $this->getEntityManager()->getClassMetadata($schemaName);
+
+            return;
+        } catch (MappingException $mappingException) {
+            $this->semanticalError(
+                \sprintf('Class %s could not be mapped', $schemaName),
+                $this->lexer->token
+            );
+        }
+
+        $this->semanticalError("Class '$schemaName' is not defined.", $this->lexer->token);
     }
 
     /**
@@ -1052,8 +1052,8 @@ class Parser
         $qComp = $this->queryComponents[$identVariable];
         $class = $qComp['metadata'];
 
-        if ( ! $class->hasAssociation($field)) {
-            $this->semanticalError('Class ' . $class->name . ' has no association named ' . $field);
+        if (! (($property = $class->getProperty($field)) !== null && $property instanceof AssociationMetadata)) {
+            $this->semanticalError('Class ' . $class->getClassName() . ' has no association named ' . $field);
         }
 
         return new AST\JoinAssociationPathExpression($identVariable, $field);
@@ -1631,13 +1631,14 @@ class Parser
             $field                       = $associationPathExpression->associationField;
 
             $class       = $this->queryComponents[$identificationVariable]['metadata'];
-            $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+            $association = $class->getProperty($field);
+            $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
             // Building queryComponent
             $joinQueryComponent = array(
                 'metadata'     => $targetClass,
                 'parent'       => $identificationVariable,
-                'relation'     => $class->getAssociationMapping($field),
+                'relation'     => $association,
                 'map'          => null,
                 'nestingLevel' => $this->nestingLevel,
                 'token'        => $this->lexer->lookahead
@@ -1770,13 +1771,14 @@ class Parser
         $field                  = $joinAssociationPathExpression->associationField;
 
         $class       = $this->queryComponents[$identificationVariable]['metadata'];
-        $targetClass = $this->em->getClassMetadata($class->associationMappings[$field]['targetEntity']);
+        $association = $class->getProperty($field);
+        $targetClass = $this->em->getClassMetadata($association->getTargetEntity());
 
         // Building queryComponent
         $joinQueryComponent = [
             'metadata'     => $targetClass,
             'parent'       => $joinAssociationPathExpression->identificationVariable,
-            'relation'     => $class->getAssociationMapping($field),
+            'relation'     => $association,
             'map'          => null,
             'nestingLevel' => $this->nestingLevel,
             'token'        => $this->lexer->lookahead
@@ -2394,7 +2396,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalExpression
         // if only one AST\ConditionalTerm is defined
-        if (count($conditionalTerms) == 1) {
+        if (\count($conditionalTerms) === 1) {
             return $conditionalTerms[0];
         }
 
@@ -2419,7 +2421,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalTerm
         // if only one AST\ConditionalFactor is defined
-        if (count($conditionalFactors) == 1) {
+        if (\count($conditionalFactors) === 1) {
             return $conditionalFactors[0];
         }
 
@@ -2742,7 +2744,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\SimpleArithmeticExpression
         // if only one AST\ArithmeticTerm is defined
-        if (count($terms) == 1) {
+        if (\count($terms) === 1) {
             return $terms[0];
         }
 
@@ -2768,7 +2770,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticTerm
         // if only one AST\ArithmeticFactor is defined
-        if (count($factors) == 1) {
+        if (\count($factors) === 1) {
             return $factors[0];
         }
 
@@ -3314,7 +3316,7 @@ class Parser
                 if ($this->lexer->isNextToken(Lexer::T_EQUALS)) {
                     $this->match(Lexer::T_EQUALS);
                     $operator .= '=';
-                } else if ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
+                } elseif ($this->lexer->isNextToken(Lexer::T_GREATER_THAN)) {
                     $this->match(Lexer::T_GREATER_THAN);
                     $operator .= '>';
                 }

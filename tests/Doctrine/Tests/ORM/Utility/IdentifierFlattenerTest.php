@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Utility;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -30,17 +32,17 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->identifierFlattener = new IdentifierFlattener(
-            $this->_em->getUnitOfWork(),
-            $this->_em->getMetadataFactory()
+            $this->em->getUnitOfWork(),
+            $this->em->getMetadataFactory()
         );
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(FirstRelatedEntity::class),
-                    $this->_em->getClassMetadata(SecondRelatedEntity::class),
-                    $this->_em->getClassMetadata(Flight::class),
-                    $this->_em->getClassMetadata(City::class)
+                    $this->em->getClassMetadata(FirstRelatedEntity::class),
+                    $this->em->getClassMetadata(SecondRelatedEntity::class),
+                    $this->em->getClassMetadata(Flight::class),
+                    $this->em->getClassMetadata(City::class)
                 ]
             );
         } catch (ORMException $e) {
@@ -55,28 +57,29 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $secondRelatedEntity = new SecondRelatedEntity();
         $secondRelatedEntity->name = 'Bob';
 
-        $this->_em->persist($secondRelatedEntity);
-        $this->_em->flush();
+        $this->em->persist($secondRelatedEntity);
+        $this->em->flush();
 
         $firstRelatedEntity = new FirstRelatedEntity();
         $firstRelatedEntity->name = 'Fred';
         $firstRelatedEntity->secondEntity = $secondRelatedEntity;
 
-        $this->_em->persist($firstRelatedEntity);
-        $this->_em->flush();
+        $this->em->persist($firstRelatedEntity);
+        $this->em->flush();
 
-        $firstEntity = $this->_em->getRepository(FirstRelatedEntity::class)
+        $firstEntity = $this->em->getRepository(FirstRelatedEntity::class)
             ->findOneBy(['name' => 'Fred']);
 
-        $class = $this->_em->getClassMetadata(FirstRelatedEntity::class);
+        $class     = $this->em->getClassMetadata(FirstRelatedEntity::class);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(FirstRelatedEntity::class);
 
-        $id = $class->getIdentifierValues($firstEntity);
+        $id = $persister->getIdentifier($firstEntity);
 
-        $this->assertCount(1, $id, 'We should have 1 identifier');
+        self::assertCount(1, $id, 'We should have 1 identifier');
 
-        $this->assertArrayHasKey('secondEntity', $id, 'It should be called secondEntity');
+        self::assertArrayHasKey('secondEntity', $id, 'It should be called secondEntity');
 
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             '\Doctrine\Tests\Models\VersionedOneToOne\SecondRelatedEntity',
             $id['secondEntity'],
             'The entity should be an instance of SecondRelatedEntity'
@@ -84,11 +87,11 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
 
         $flatIds = $this->identifierFlattener->flattenIdentifier($class, $id);
 
-        $this->assertCount(1, $flatIds, 'We should have 1 flattened id');
+        self::assertCount(1, $flatIds, 'We should have 1 flattened id');
 
-        $this->assertArrayHasKey('secondEntity', $flatIds, 'It should be called secondEntity');
+        self::assertArrayHasKey('secondEntity', $flatIds, 'It should be called secondEntity');
 
-        $this->assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
+        self::assertEquals($id['secondEntity']->id, $flatIds['secondEntity']);
     }
 
     /**
@@ -99,34 +102,35 @@ class IdentifierFlattenerTest extends OrmFunctionalTestCase
         $leeds = new City('Leeds');
         $london = new City('London');
 
-        $this->_em->persist($leeds);
-        $this->_em->persist($london);
-        $this->_em->flush();
+        $this->em->persist($leeds);
+        $this->em->persist($london);
+        $this->em->flush();
 
         $flight = new Flight($leeds, $london);
 
-        $this->_em->persist($flight);
-        $this->_em->flush();
+        $this->em->persist($flight);
+        $this->em->flush();
 
-        $class = $this->_em->getClassMetadata(Flight::class);
-        $id = $class->getIdentifierValues($flight);
+        $class     = $this->em->getClassMetadata(Flight::class);
+        $persister = $this->em->getUnitOfWork()->getEntityPersister(Flight::class);
+        $id        = $persister->getIdentifier($flight);
 
-        $this->assertCount(2, $id);
+        self::assertCount(2, $id);
 
-        $this->assertArrayHasKey('leavingFrom', $id);
-        $this->assertArrayHasKey('goingTo', $id);
+        self::assertArrayHasKey('leavingFrom', $id);
+        self::assertArrayHasKey('goingTo', $id);
 
-        $this->assertEquals($leeds, $id['leavingFrom']);
-        $this->assertEquals($london, $id['goingTo']);
+        self::assertEquals($leeds, $id['leavingFrom']);
+        self::assertEquals($london, $id['goingTo']);
 
         $flatIds = $this->identifierFlattener->flattenIdentifier($class, $id);
 
-        $this->assertCount(2, $flatIds);
+        self::assertCount(2, $flatIds);
 
-        $this->assertArrayHasKey('leavingFrom', $flatIds);
-        $this->assertArrayHasKey('goingTo', $flatIds);
+        self::assertArrayHasKey('leavingFrom', $flatIds);
+        self::assertArrayHasKey('goingTo', $flatIds);
 
-        $this->assertEquals($id['leavingFrom']->getId(), $flatIds['leavingFrom']);
-        $this->assertEquals($id['goingTo']->getId(), $flatIds['goingTo']);
+        self::assertEquals($id['leavingFrom']->getId(), $flatIds['leavingFrom']);
+        self::assertEquals($id['goingTo']->getId(), $flatIds['goingTo']);
     }
 }

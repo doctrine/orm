@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\ECommerce\ECommerceCart;
 use Doctrine\Tests\Models\ECommerce\ECommerceProduct;
-use Doctrine\ORM\Mapping\AssociationMapping;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Tests a unidirectional many-to-many association mapping (without inheritance).
@@ -13,9 +14,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
  */
 class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociationTestCase
 {
-    protected $_firstField = 'cart_id';
-    protected $_secondField = 'product_id';
-    protected $_table = 'ecommerce_carts_products';
+    protected $firstField = 'cart_id';
+    protected $secondField = 'product_id';
+    protected $table = 'ecommerce_carts_products';
     private $firstProduct;
     private $secondProduct;
     private $firstCart;
@@ -24,11 +25,17 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     protected function setUp()
     {
         $this->useModelSet('ecommerce');
+
         parent::setUp();
+
         $this->firstProduct = new ECommerceProduct();
+
         $this->firstProduct->setName('Doctrine 1.x Manual');
+
         $this->secondProduct = new ECommerceProduct();
+
         $this->secondProduct->setName('Doctrine 2.x Manual');
+
         $this->firstCart = new ECommerceCart();
         $this->secondCart = new ECommerceCart();
     }
@@ -37,70 +44,71 @@ class ManyToManyUnidirectionalAssociationTest extends AbstractManyToManyAssociat
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
-        $this->_em->persist($this->firstCart);
-        $this->_em->flush();
 
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
+        $this->em->persist($this->firstCart);
+        $this->em->flush();
+
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->firstProduct->getId());
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testRemovesAManyToManyAssociation()
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
-        $this->_em->persist($this->firstCart);
+        $this->em->persist($this->firstCart);
         $this->firstCart->removeProduct($this->firstProduct);
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertForeignKeysNotContain($this->firstCart->getId(), $this->firstProduct->getId());
-        $this->assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
+        self::assertForeignKeysNotContain($this->firstCart->getId(), $this->firstProduct->getId());
+        self::assertForeignKeysContain($this->firstCart->getId(), $this->secondProduct->getId());
     }
 
     public function testEagerLoad()
     {
-        $this->_createFixture();
+        $this->createFixture();
 
-        $query = $this->_em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
+        $query = $this->em->createQuery('SELECT c, p FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c LEFT JOIN c.products p ORDER BY c.id, p.id');
         $result = $query->getResult();
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
-        $this->assertCollectionEquals($products, $secondCart->getProducts());
-        //$this->assertEquals("Doctrine 1.x Manual", $products[0]->getName());
-        //$this->assertEquals("Doctrine 2.x Manual", $products[1]->getName());
+        self::assertInstanceOf(ECommerceProduct::class, $products[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $products[1]);
+        self::assertCollectionEquals($products, $secondCart->getProducts());
+        //self::assertEquals("Doctrine 1.x Manual", $products[0]->getName());
+        //self::assertEquals("Doctrine 2.x Manual", $products[1]->getName());
     }
 
     public function testLazyLoadsCollection()
     {
-        $this->_createFixture();
-        $metadata = $this->_em->getClassMetadata(ECommerceCart::class);
-        $metadata->associationMappings['products']['fetch'] = ClassMetadata::FETCH_LAZY;
+        $this->createFixture();
+        $metadata = $this->em->getClassMetadata(ECommerceCart::class);
+        $metadata->getProperty('products')->setFetchMode(FetchMode::LAZY);
 
-        $query = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
+        $query = $this->em->createQuery('SELECT c FROM Doctrine\Tests\Models\ECommerce\ECommerceCart c');
         $result = $query->getResult();
         $firstCart = $result[0];
         $products = $firstCart->getProducts();
         $secondCart = $result[1];
 
-        $this->assertInstanceOf(ECommerceProduct::class, $products[0]);
-        $this->assertInstanceOf(ECommerceProduct::class, $products[1]);
-        $this->assertCollectionEquals($products, $secondCart->getProducts());
+        self::assertInstanceOf(ECommerceProduct::class, $products[0]);
+        self::assertInstanceOf(ECommerceProduct::class, $products[1]);
+        self::assertCollectionEquals($products, $secondCart->getProducts());
     }
 
-    private function _createFixture()
+    private function createFixture()
     {
         $this->firstCart->addProduct($this->firstProduct);
         $this->firstCart->addProduct($this->secondProduct);
         $this->secondCart->addProduct($this->firstProduct);
         $this->secondCart->addProduct($this->secondProduct);
-        $this->_em->persist($this->firstCart);
-        $this->_em->persist($this->secondCart);
+        $this->em->persist($this->firstCart);
+        $this->em->persist($this->secondCart);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
     }
 }

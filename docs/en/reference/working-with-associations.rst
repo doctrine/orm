@@ -37,7 +37,7 @@ information about its type and if it's the owning or inverse side.
     {
         /** @Id @GeneratedValue @Column(type="string") */
         private $id;
-    
+
         /**
          * Bidirectional - Many users have Many favorite comments (OWNING SIDE)
          *
@@ -45,7 +45,7 @@ information about its type and if it's the owning or inverse side.
          * @JoinTable(name="user_favorite_comments")
          */
         private $favorites;
-    
+
         /**
          * Unidirectional - Many users have marked many comments as read
          *
@@ -53,14 +53,14 @@ information about its type and if it's the owning or inverse side.
          * @JoinTable(name="user_read_comments")
          */
         private $commentsRead;
-    
+
         /**
          * Bidirectional - One-To-Many (INVERSE SIDE)
          *
          * @OneToMany(targetEntity="Comment", mappedBy="author")
          */
         private $commentsAuthored;
-    
+
         /**
          * Unidirectional - Many-To-One
          *
@@ -68,20 +68,20 @@ information about its type and if it's the owning or inverse side.
          */
         private $firstComment;
     }
-    
+
     /** @Entity */
     class Comment
     {
         /** @Id @GeneratedValue @Column(type="string") */
         private $id;
-    
+
         /**
          * Bidirectional - Many comments are favorited by many users (INVERSE SIDE)
          *
          * @ManyToMany(targetEntity="User", mappedBy="favorites")
          */
         private $userFavorites;
-    
+
         /**
          * Bidirectional - Many Comments are authored by one user (OWNING SIDE)
          *
@@ -100,19 +100,19 @@ definitions omitted):
         firstComment_id VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE Comment (
         id VARCHAR(255) NOT NULL,
         author_id VARCHAR(255) DEFAULT NULL,
         PRIMARY KEY(id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE user_favorite_comments (
         user_id VARCHAR(255) NOT NULL,
         favorite_comment_id VARCHAR(255) NOT NULL,
         PRIMARY KEY(user_id, favorite_comment_id)
     ) ENGINE = InnoDB;
-    
+
     CREATE TABLE user_read_comments (
         user_id VARCHAR(255) NOT NULL,
         comment_id VARCHAR(255) NOT NULL,
@@ -135,7 +135,7 @@ relations of the ``User``:
         public function getReadComments() {
              return $this->commentsRead;
         }
-    
+
         public function setFirstComment(Comment $c) {
             $this->firstComment = $c;
         }
@@ -148,17 +148,17 @@ The interaction code would then look like in the following snippet
 
     <?php
     $user = $em->find('User', $userId);
-    
+
     // unidirectional many to many
     $comment = $em->find('Comment', $readCommentId);
     $user->getReadComments()->add($comment);
-    
+
     $em->flush();
-    
+
     // unidirectional many to one
     $myFirstComment = new Comment();
     $user->setFirstComment($myFirstComment);
-    
+
     $em->persist($myFirstComment);
     $em->flush();
 
@@ -171,40 +171,40 @@ fields on both sides:
     class User
     {
         // ..
-    
+
         public function getAuthoredComments() {
             return $this->commentsAuthored;
         }
-    
+
         public function getFavoriteComments() {
             return $this->favorites;
         }
     }
-    
+
     class Comment
     {
         // ...
-    
+
         public function getUserFavorites() {
             return $this->userFavorites;
         }
-    
+
         public function setAuthor(User $author = null) {
             $this->author = $author;
         }
     }
-    
+
     // Many-to-Many
     $user->getFavorites()->add($favoriteComment);
     $favoriteComment->getUserFavorites()->add($user);
-    
+
     $em->flush();
-    
+
     // Many-To-One / One-To-Many Bidirectional
     $newComment = new Comment();
     $user->getAuthoredComments()->add($newComment);
     $newComment->setAuthor($user);
-    
+
     $em->persist($newComment);
     $em->flush();
 
@@ -225,10 +225,10 @@ element. Here are some examples:
     // Remove by Elements
     $user->getComments()->removeElement($comment);
     $comment->setAuthor(null);
-    
+
     $user->getFavorites()->removeElement($comment);
     $comment->getUserFavorites()->removeElement($user);
-    
+
     // Remove by Key
     $user->getComments()->remove($ithComment);
     $comment->setAuthor(null);
@@ -240,7 +240,7 @@ Notice how both sides of the bidirectional association are always
 updated. Unidirectional associations are consequently simpler to
 handle.
 
-Also note that if you use type-hinting in your methods, you will 
+Also note that if you use type-hinting in your methods, you will
 have to specify a nullable type, i.e. ``setAddress(?Address $address)``,
 otherwise ``setAddress(null)`` will fail to remove the association.
 Another way to deal with this is to provide a special method, like
@@ -262,7 +262,6 @@ where n is the size of the map.
     can often be used to improve performance by avoiding the loading of
     the inverse collection.
 
-
 You can also clear the contents of a whole collection using the
 ``Collections::clear()`` method. You should be aware that using
 this method can lead to a straight and optimized database delete or
@@ -271,8 +270,8 @@ entities that have been re-added to the collection.
 
 Say you clear a collection of tags by calling
 ``$post->getTags()->clear();`` and then call
-``$post->getTags()->add($tag)``. This will not recognize the tag having 
-already been added previously and will consequently issue two separate database 
+``$post->getTags()->add($tag)``. This will not recognize the tag having
+already been added previously and will consequently issue two separate database
 calls.
 
 Association Management Methods
@@ -296,7 +295,7 @@ example that encapsulate much of the association management code:
             // Collections implement ArrayAccess
             $this->commentsRead[] = $comment;
         }
-    
+
         public function addComment(Comment $comment) {
             if (count($this->commentsAuthored) == 0) {
                 $this->setFirstComment($comment);
@@ -304,30 +303,30 @@ example that encapsulate much of the association management code:
             $this->comments[] = $comment;
             $comment->setAuthor($this);
         }
-    
+
         private function setFirstComment(Comment $c) {
             $this->firstComment = $c;
         }
-    
+
         public function addFavorite(Comment $comment) {
             $this->favorites->add($comment);
             $comment->addUserFavorite($this);
         }
-    
+
         public function removeFavorite(Comment $comment) {
             $this->favorites->removeElement($comment);
             $comment->removeUserFavorite($this);
         }
     }
-    
+
     class Comment
     {
         // ..
-    
+
         public function addUserFavorite(User $user) {
             $this->userFavorites[] = $user;
         }
-    
+
         public function removeUserFavorite(User $user) {
             $this->userFavorites->removeElement($user);
         }
@@ -351,7 +350,6 @@ the details inside the classes can be challenging.
     entity cannot circumvent the logic you implement on your entity for
     association management. For example:
 
-
 .. code-block:: php
 
     <?php
@@ -373,7 +371,7 @@ as your preferences.
 Synchronizing Bidirectional Collections
 ---------------------------------------
 
-In the case of Many-To-Many associations you as the developer have the 
+In the case of Many-To-Many associations you as the developer have the
 responsibility of keeping the collections on the owning and inverse side
 in sync when you apply changes to them. Doctrine can only
 guarantee a consistent state for the hydration, not for your client
@@ -387,12 +385,11 @@ can show the possible caveats you can encounter:
     <?php
     $user->getFavorites()->add($favoriteComment);
     // not calling $favoriteComment->getUserFavorites()->add($user);
-    
+
     $user->getFavorites()->contains($favoriteComment); // TRUE
     $favoriteComment->getUserFavorites()->contains($user); // FALSE
 
 There are two approaches to handle this problem in your code:
-
 
 1. Ignore updating the inverse side of bidirectional collections,
    BUT never read from them in requests that changed their state. In
@@ -410,7 +407,7 @@ Transitive persistence / Cascade Operations
 Doctrine 2 provides a mechanism for transitive persistence through cascading of certain operations.
 Each association to another entity or a collection of
 entities can be configured to automatically cascade the following operations to the associated entities:
-``persist``, ``remove``, ``merge``, ``detach``, ``refresh`` or ``all``.
+``persist``, ``remove``, ``refresh`` or ``all``.
 
 The main use case for ``cascade: persist`` is to avoid "exposing" associated entities to your PHP application.
 Continuing with the User-Comment example of this chapter, this is how the creation of a new user and a new
@@ -422,7 +419,7 @@ comment might look like in your controller (without ``cascade: persist``):
     $user = new User();
     $myFirstComment = new Comment();
     $user->addComment($myFirstComment);
-    
+
     $em->persist($user);
     $em->persist($myFirstComment); // required, if `cascade: persist` is not set
     $em->flush();
@@ -480,7 +477,7 @@ If you then set up the cascading to the ``User#commentsAuthored`` property...
     <?php
     $user = new User();
     $user->comment('Lorem ipsum', new DateTime());
-    
+
     $em->persist($user);
     $em->flush();
 
@@ -528,7 +525,6 @@ There are additional semantics that apply to the Cascade Persist
 operation. During each ``flush()`` operation Doctrine detects if there
 are new entities in any collection and three possible cases can
 happen:
-
 
 1. New entities in a collection marked as ``cascade: persist`` will be
    directly persisted by Doctrine.
@@ -610,10 +606,10 @@ Now two examples of what happens when you remove the references:
 
     $em->flush();
 
-In this case you have not only changed the ``Contact`` entity itself but 
-you have also removed the references for standing data and as well as one 
-address reference. When flush is called not only are the references removed 
-but both the old standing data and the one address entity are also deleted 
+In this case you have not only changed the ``Contact`` entity itself but
+you have also removed the references for standing data and as well as one
+address reference. When flush is called not only are the references removed
+but both the old standing data and the one address entity are also deleted
 from the database.
 
 .. _filtering-collections:
@@ -718,7 +714,6 @@ methods:
 * ``contains($field, $value)``
 * ``startsWith($field, $value)``
 * ``endsWith($field, $value)``
-
 
 .. note::
 

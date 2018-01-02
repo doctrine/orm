@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
@@ -30,7 +33,7 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -80,13 +83,12 @@ final class MixedQueryFetchJoinArrayHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__status', 'status');
         $this->rsm->addFieldResult('u', 'u__username', 'username');
         $this->rsm->addFieldResult('u', 'u__name', 'name');
-        $this->rsm->addScalarResult('sclr0', 'nameUpper');
+        $this->rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

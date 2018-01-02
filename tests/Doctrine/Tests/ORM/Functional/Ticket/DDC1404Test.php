@@ -1,22 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1404
  */
 class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC1404ParentEntity::class),
-                $this->_em->getClassMetadata(DDC1404ChildEntity::class),
+                $this->em->getClassMetadata(DDC1404ParentEntity::class),
+                $this->em->getClassMetadata(DDC1404ChildEntity::class),
                 ]
             );
 
@@ -28,20 +31,20 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testTicket()
     {
-        $repository     = $this->_em->getRepository(DDC1404ChildEntity::class);
+        $repository     = $this->em->getRepository(DDC1404ChildEntity::class);
         $queryAll       = $repository->createNamedQuery('all');
         $queryFirst     = $repository->createNamedQuery('first');
         $querySecond    = $repository->createNamedQuery('second');
 
 
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
-        $this->assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p', $queryAll->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 1', $queryFirst->getDQL());
+        self::assertEquals('SELECT p FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1404ChildEntity p WHERE p.id = 2', $querySecond->getDQL());
 
 
-        $this->assertEquals(sizeof($queryAll->getResult()), 2);
-        $this->assertEquals(sizeof($queryFirst->getResult()), 1);
-        $this->assertEquals(sizeof($querySecond->getResult()), 1);
+        self::assertCount(2, $queryAll->getResult());
+        self::assertCount(1, $queryFirst->getResult());
+        self::assertCount(1, $querySecond->getResult());
     }
 
 
@@ -50,29 +53,32 @@ class DDC1404Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c1 = new DDC1404ChildEntity("ChildEntity 1");
         $c2 = new DDC1404ChildEntity("ChildEntity 2");
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
+        $this->em->persist($c1);
+        $this->em->persist($c2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
-
 }
 
 /**
- * @MappedSuperclass
+ * @ORM\Entity()
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({
+ *     "parent" = DDC1404ParentEntity::class,
+ *     "child" = DDC1404ChildEntity::class
+ * })
  *
- * @NamedQueries({
- *      @NamedQuery(name="all",     query="SELECT p FROM __CLASS__ p"),
- *      @NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
+ * @ORM\NamedQueries({
+ *      @ORM\NamedQuery(name="all",     query="SELECT p FROM __CLASS__ p"),
+ *      @ORM\NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
  * })
  */
 class DDC1404ParentEntity
 {
-
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
@@ -83,22 +89,20 @@ class DDC1404ParentEntity
     {
         return $this->id;
     }
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  *
- * @NamedQueries({
- *      @NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
- *      @NamedQuery(name="second",  query="SELECT p FROM __CLASS__ p WHERE p.id = 2")
+ * @ORM\NamedQueries({
+ *      @ORM\NamedQuery(name="first",   query="SELECT p FROM __CLASS__ p WHERE p.id = 1"),
+ *      @ORM\NamedQuery(name="second",  query="SELECT p FROM __CLASS__ p WHERE p.id = 2")
  * })
  */
 class DDC1404ChildEntity extends DDC1404ParentEntity
 {
-
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 
@@ -125,5 +129,4 @@ class DDC1404ChildEntity extends DDC1404ParentEntity
     {
         $this->name = $name;
     }
-
 }

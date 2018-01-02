@@ -16,7 +16,7 @@ New Features and Improvements
 Events: PostLoad now triggered after associations are loaded
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Before Doctrine 2.5 if you had an entity with a ``@PostLoad`` event
+Before Doctrine 2.5 if you had an entity with a ``@ORM\PostLoad`` event
 defined then Doctrine would trigger listeners after the fields were
 loaded, but before assocations are available.
 
@@ -62,9 +62,9 @@ Embeddable Objects
 ~~~~~~~~~~~~~~~~~~
 
 Doctrine now supports creating multiple PHP objects from one database table
-implementing a feature called "Embeddable Objects". Next to an ``@Entity``
+implementing a feature called "Embeddable Objects". Next to an ``@ORM\Entity``
 class you can now define a class that is embeddable into a database table of an
-entity using the ``@Embeddable`` annotation. Embeddable objects can never be
+entity using the ``@ORM\Embeddable`` annotation. Embeddable objects can never be
 saved, updated or deleted on their own, only as part of an entity (called
 "root-entity" or "aggregate"). Consequently embeddables don't have a primary
 key, they are identified only by their values.
@@ -75,23 +75,25 @@ Example of defining and using embeddables classes:
 
     <?php
 
-    /** @Entity */
+    use Doctrine\ORM\Mapping as ORM;
+
+    /** @ORM\Entity */
     class Product
     {
-        /** @Id @Column(type="integer") @GeneratedValue */
+        /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
         private $id;
 
-        /** @Embedded(class = "Money") */
+        /** @ORM\Embedded(class = "Money") */
         private $price;
     }
 
-    /** @Embeddable */
+    /** @ORM\Embeddable */
     class Money
     {
-        /** @Column(type = "decimal") */
+        /** @ORM\Column(type = "decimal") */
         private $value;
 
-        /** @Column(type = "string") */
+        /** @ORM\Column(type = "string") */
         private $currency = 'EUR';
     }
 
@@ -109,7 +111,7 @@ Second-Level-Cache
 
 Since version 2.0 of Doctrine, fetching the same object twice by primary key
 would result in just one query. This was achieved by the identity map pattern
-(first-level-cache) that kept entities in memory. 
+(first-level-cache) that kept entities in memory.
 
 The newly introduced second-level-cache works a bit differently. Instead
 of saving objects in memory, it saves them in a fast in-memory cache such
@@ -124,21 +126,24 @@ query to this table.
 .. code-block:: php
 
     <?php
+
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Entity
-     * @Cache(usage="READ_ONLY", region="country_region")
+     * @ORM\Entity
+     * @ORM\Cache(usage="READ_ONLY", region="country_region")
      */
     class Country
     {
         /**
-         * @Id
-         * @GeneratedValue
-         * @Column(type="integer")
+         * @ORM\Id
+         * @ORM\GeneratedValue
+         * @ORM\Column(type="integer")
          */
         protected $id;
 
         /**
-         * @Column(unique=true)
+         * @ORM\Column(unique=true)
          */
         protected $name;
     }
@@ -153,7 +158,7 @@ In this example we have specified a caching region name called
 
     $cacheConfig  =  $config->getSecondLevelCacheConfiguration();
     $regionConfig =  $cacheConfig->getRegionsConfiguration();
-    $regionConfig->setLifetime('country_region', 3600); 
+    $regionConfig->setLifetime('country_region', 3600);
 
 Now Doctrine will first check for the data of any country in the cache
 instead of the database.
@@ -198,9 +203,14 @@ lazy collection when using ``Collection::matching($criteria)``:
 
     <?php
 
+    use Doctrine\ORM\Mapping as ORM;
+
+    /**
+     * @ORM\Entity
+     */
     class Post
     {
-        /** @OneToMany(targetEntity="Comment", fetch="EXTRA_LAZY") */
+        /** @ORM\OneToMany(targetEntity="Comment", fetch="EXTRA_LAZY") */
         private $comments;
     }
 
@@ -231,8 +241,11 @@ only with a schema event listener before.
 
     <?php
 
+    use Doctrine\ORM\Mapping as ORM;
+
     /**
-     * @Table(name="product", indexes={@Index(columns={"description"},flags={"fulltext"})})
+     * @ORM\Entity
+     * @ORM\Table(name="product", indexes={@Index(columns={"description"},flags={"fulltext"})})
      */
     class Product
     {
@@ -258,7 +271,7 @@ Extending on the locale example of the documentation:
     {
         public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias)
         {
-            if (!$targetEntity->reflClass->implementsInterface('LocaleAware')) {
+            if (!$targetEntity->getReflectionClass()->implementsInterface('LocaleAware')) {
                 return "";
             }
 
@@ -274,7 +287,6 @@ This feature was contributed by `Miroslav Demovic <https://github.com/mdemo>`_
 
 - `Pull Request #963 <https://github.com/doctrine/doctrine2/pull/963>`_
 
-
 EXTRA_LAZY Improvements
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -289,9 +301,14 @@ EXTRA_LAZY Improvements
 
         <?php
 
+        use Doctrine\ORM\Mapping as ORM;
+
+        /**
+         * @ORM\Entity
+         */
         class User
         {
-            /** @OneToMany(targetEntity="Group", indexBy="id") */
+            /** @ORM\OneToMany(targetEntity="Group", indexBy="id") */
             private $groups;
         }
 
@@ -303,7 +320,7 @@ EXTRA_LAZY Improvements
 
     - `Pull Request #937 <https://github.com/doctrine/doctrine2/pull/937>`_
 
-2. Add EXTRA_LAZY Support for get() for owning and inverse many-to-many 
+2. Add EXTRA_LAZY Support for get() for owning and inverse many-to-many
 
    This was contributed by `Sander Marechal <https://github.com/sandermarechal>`_.
 
@@ -423,7 +440,7 @@ Query API: Add support for default Query Hints
 
 To configure multiple different features such as custom AST Walker, fetch modes,
 locking and other features affecting DQL generation we have had a feature
-called "query hints" since version 2.0. 
+called "query hints" since version 2.0.
 
 It is now possible to add query hints that are always enabled for every Query:
 
@@ -546,7 +563,7 @@ NamingStrategy interface changed
 The ``Doctrine\ORM\Mapping\NamingStrategyInterface`` changed slightly
 to pass the Class Name of the entity into the join column name generation:
 
-:: 
+::
 
     -    function joinColumnName($propertyName);
     +    function joinColumnName($propertyName, $className = null);
@@ -559,8 +576,8 @@ It also received a new method for supporting embeddables:
 
 Minor BC BREAK: EntityManagerInterface instead of EntityManager in type-hints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- 
-As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require 
+
+As of 2.5, classes requiring the ``EntityManager`` in any method signature will now require
 an ``EntityManagerInterface`` instead.
 If you are extending any of the following classes, then you need to check following
 signatures:
@@ -593,7 +610,6 @@ either:
 - add that class to your inheritance map
 
 If you fail to do so, then a ``Doctrine\ORM\Mapping\MappingException`` will be thrown.
-
 
 - `DDC-3300 <http://doctrine-project.org/jira/browse/DDC-3300>`_
 - `DDC-3503 <http://doctrine-project.org/jira/browse/DDC-3503>`_
@@ -678,7 +694,7 @@ the following query:
 
     SELECT new UserDTO(u.id,u.name) as user,new AddressDTO(a.street,a.postalCode) as address, a.id as addressId
     FROM User u INNER JOIN u.addresses a WITH a.isPrimary = true
-    
+
 Previously, your result would be similar to this:
 
 ::

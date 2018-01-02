@@ -1,23 +1,11 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
+
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.
@@ -234,7 +222,9 @@ class ResultSetMapping
         $found = false;
 
         foreach (array_merge($this->metaMappings, $this->fieldMappings) as $columnName => $columnFieldName) {
-            if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) continue;
+            if ( ! ($columnFieldName === $fieldName && $this->columnOwnerMap[$columnName] === $alias)) {
+                continue;
+            }
 
             $this->addIndexByColumn($alias, $columnName);
             $found = true;
@@ -375,13 +365,13 @@ class ResultSetMapping
      *
      * @param string $columnName The name of the column in the SQL result set.
      * @param string $alias      The result alias with which the scalar result should be placed in the result structure.
-     * @param string $type       The column type
+     * @param Type   $type       The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
      *
      * @todo Rename: addScalar
      */
-    public function addScalarResult($columnName, $alias, $type = 'string')
+    public function addScalarResult($columnName, $alias, Type $type)
     {
         $this->scalarMappings[$columnName] = $alias;
         $this->typeMappings[$columnName]   = $type;
@@ -391,17 +381,6 @@ class ResultSetMapping
         }
 
         return $this;
-    }
-
-    /**
-     * Adds a metadata parameter mappings.
-     *
-     * @param mixed  $parameter The parameter name in the SQL result set.
-     * @param string $attribute The metadata attribute.
-     */
-    public function addMetadataParameterMapping($parameter, $attribute)
-    {
-        $this->metadataParameterMapping[$parameter] = $attribute;
     }
 
     /**
@@ -458,7 +437,7 @@ class ResultSetMapping
     /**
      * @param string $alias
      *
-     * @return string
+     * @return AssociationMetadata
      */
     public function getRelation($alias)
     {
@@ -562,26 +541,20 @@ class ResultSetMapping
      * @param string $columnName         The name of the column in the SQL result set.
      * @param string $fieldName          The name of the field on the declaring class.
      * @param bool   $isIdentifierColumn
-     * @param string $type               The column type
+     * @param Type   $type               The column type
      *
      * @return ResultSetMapping This ResultSetMapping instance.
-     *
-     * @todo Make all methods of this class require all parameters and not infer anything
      */
-    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn = false, $type = null)
+    public function addMetaResult($alias, $columnName, $fieldName, $isIdentifierColumn, Type $type)
     {
         $this->metaMappings[$columnName] = $fieldName;
         $this->columnOwnerMap[$columnName] = $alias;
+        $this->typeMappings[$columnName] = $type;
 
         if ($isIdentifierColumn) {
             $this->isIdentifierColumn[$alias][$columnName] = true;
         }
 
-        if ($type) {
-            $this->typeMappings[$columnName] = $type;
-        }
-
         return $this;
     }
 }
-

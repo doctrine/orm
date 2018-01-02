@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -24,40 +26,40 @@ class PostFlushEventTest extends OrmFunctionalTestCase
         $this->useModelSet('cms');
         parent::setUp();
         $this->listener = new PostFlushListener();
-        $evm = $this->_em->getEventManager();
+        $evm = $this->em->getEventManager();
         $evm->addEventListener(Events::postFlush, $this->listener);
     }
 
     public function testListenerShouldBeNotified()
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
-        $this->assertTrue($this->listener->wasNotified);
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
+        self::assertTrue($this->listener->wasNotified);
     }
 
     public function testListenerShouldNotBeNotifiedWhenFlushThrowsException()
     {
         $user = new CmsUser();
         $user->username = 'dfreudenberger';
-        $this->_em->persist($user);
+        $this->em->persist($user);
         $exceptionRaised = false;
 
         try {
-            $this->_em->flush();
+            $this->em->flush();
         } catch (\Exception $ex) {
             $exceptionRaised = true;
         }
 
-        $this->assertTrue($exceptionRaised);
-        $this->assertFalse($this->listener->wasNotified);
+        self::assertTrue($exceptionRaised);
+        self::assertFalse($this->listener->wasNotified);
     }
 
     public function testListenerShouldReceiveEntityManagerThroughArgs()
     {
-        $this->_em->persist($this->createNewValidUser());
-        $this->_em->flush();
+        $this->em->persist($this->createNewValidUser());
+        $this->em->flush();
         $receivedEm = $this->listener->receivedArgs->getEntityManager();
-        $this->assertSame($this->_em, $receivedEm);
+        self::assertSame($this->em, $receivedEm);
     }
 
     /**

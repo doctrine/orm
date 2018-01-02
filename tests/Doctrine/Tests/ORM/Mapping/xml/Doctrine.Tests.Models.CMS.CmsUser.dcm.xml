@@ -12,7 +12,7 @@
         </named-queries>
 
         <named-native-queries>
-            <named-native-query name="fetchIdAndUsernameWithResultClass" result-class="CmsUser">
+            <named-native-query name="fetchIdAndUsernameWithResultClass" result-class="Doctrine\Tests\Models\CMS\CmsUser">
                 <query>SELECT id, username FROM cms_users WHERE username = ?</query>
             </named-native-query>
 
@@ -51,7 +51,7 @@
             </sql-result-set-mapping>
 
             <sql-result-set-mapping name="mappingJoinedPhonenumber">
-                <entity-result entity-class="CmsUser">
+                <entity-result entity-class="Doctrine\Tests\Models\CMS\CmsUser">
                     <field-result name="id"/>
                     <field-result name="name"/>
                     <field-result name="status"/>
@@ -60,7 +60,7 @@
             </sql-result-set-mapping>
 
             <sql-result-set-mapping name="mappingUserPhonenumberCount">
-                <entity-result entity-class="CmsUser">
+                <entity-result entity-class="Doctrine\Tests\Models\CMS\CmsUser">
                     <field-result name="id"/>
                     <field-result name="name"/>
                     <field-result name="status"/>
@@ -74,7 +74,7 @@
                     <field-result name="name" column="u_name"/>
                     <field-result name="status" column="u_status"/>
                 </entity-result>
-                <entity-result entity-class="CmsAddress">
+                <entity-result entity-class="Doctrine\Tests\Models\CMS\CmsAddress">
                     <field-result name="id" column="a_id"/>
                     <field-result name="zip" column="a_zip"/>
                     <field-result name="country" column="a_country"/>
@@ -91,38 +91,31 @@
         <field name="username" column="username" type="string" length="255" unique="true"/>
         <field name="name" column="name" type="string" length="255"/>
 
-        <one-to-one field="address" target-entity="CmsAddress" inversed-by="user" orphan-removal="true">
+        <one-to-one field="address" target-entity="Doctrine\Tests\Models\CMS\CmsAddress" inversed-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
             </cascade>
             <join-column name="address_id" referenced-column-name="id"  />
         </one-to-one>
 
-        <one-to-one field="email" target-entity="CmsEmail" inversed-by="user" orphan-removal="true">
+        <one-to-one field="email" target-entity="Doctrine\Tests\Models\CMS\CmsEmail" inversed-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
             </cascade>
             <join-column referenced-column-name="id" nullable="true" />
         </one-to-one>
 
-        <one-to-many field="phonenumbers" target-entity="CmsPhonenumber" mapped-by="user" orphan-removal="true">
+        <one-to-many field="phonenumbers" target-entity="Doctrine\Tests\Models\CMS\CmsPhonenumber" mapped-by="user" orphan-removal="true">
             <cascade>
                 <cascade-persist/>
-                <cascade-merge/>
             </cascade>
         </one-to-many>
 
-        <one-to-many field="articles" target-entity="CmsArticle" mapped-by="user">
-            <cascade>
-                <cascade-detach/>
-            </cascade>
-        </one-to-many>
-        
-        <many-to-many field="groups" target-entity="CmsGroup">
+        <one-to-many field="articles" target-entity="Doctrine\Tests\Models\CMS\CmsArticle" mapped-by="user"/>
+
+        <many-to-many field="groups" target-entity="Doctrine\Tests\Models\CMS\CmsGroup">
             <cascade>
                 <cascade-persist/>
-                <cascade-merge/>
-                <cascade-detach/>
             </cascade>
             <join-table name="cms_users_groups">
                 <join-columns>

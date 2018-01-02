@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
-use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
@@ -31,7 +32,7 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -66,9 +67,8 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('a', 'a__id', 'id');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

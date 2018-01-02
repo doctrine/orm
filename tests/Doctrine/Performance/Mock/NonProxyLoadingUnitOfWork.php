@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Mock;
 
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\Tests\ORM\Performance\PersisterMock;
 
 /**
  * An unit of work mock that prevents lazy-loading of proxies
@@ -12,7 +13,7 @@ use Doctrine\Tests\ORM\Performance\PersisterMock;
 class NonProxyLoadingUnitOfWork extends UnitOfWork
 {
     /**
-     * @var PersisterMock
+     * @var EntityPersister
      */
     private $entityPersister;
 

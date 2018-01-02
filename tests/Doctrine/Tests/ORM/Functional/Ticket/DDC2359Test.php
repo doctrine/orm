@@ -1,34 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriver;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Configuration;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
-use PHPUnit\Framework\TestCase;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * @group DDC-2359
  */
-class DDC2359Test extends TestCase
+class DDC2359Test extends DoctrineTestCase
 {
 
     /**
      * Verifies that {@see \Doctrine\ORM\Mapping\ClassMetadataFactory::wakeupReflection} is
-     * not called twice when loading metadata from a driver
+     * not called when loading metadata from a driver
      */
     public function testIssue()
     {
         $mockDriver      = $this->createMock(MappingDriver::class);
         $mockMetadata    = $this->createMock(ClassMetadata::class);
-        $entityManager   = $this->createMock(EntityManager::class);
+        $entityManager   = $this->createMock(EntityManagerInterface::class);
 
         /* @var $metadataFactory \Doctrine\ORM\Mapping\ClassMetadataFactory|\PHPUnit_Framework_MockObject_MockObject */
         $metadataFactory = $this->getMockBuilder(ClassMetadataFactory::class)
-                                ->setMethods(['newClassMetadataInstance', 'wakeupReflection'])
+                                ->setMethods(['doLoadMetadata', 'wakeupReflection'])
                                 ->getMock();
 
         $configuration = $this->getMockBuilder(Configuration::class)
@@ -42,25 +46,44 @@ class DDC2359Test extends TestCase
             ->method('getMetadataDriverImpl')
             ->will($this->returnValue($mockDriver));
 
-        $entityManager->expects($this->any())->method('getConfiguration')->will($this->returnValue($configuration));
-        $entityManager->expects($this->any())->method('getConnection')->will($this->returnValue($connection));
+        $mockMetadata
+            ->expects($this->any())
+            ->method('getDeclaredPropertiesIterator')
+            ->will($this->returnValue(new \ArrayIterator([])));
+
+        $entityManager
+            ->expects($this->any())
+            ->method('getConfiguration')
+            ->will($this->returnValue($configuration));
+
+        $entityManager
+            ->expects($this->any())
+            ->method('getConnection')
+            ->will($this->returnValue($connection));
+
         $entityManager
             ->expects($this->any())
             ->method('getEventManager')
             ->will($this->returnValue($this->createMock(EventManager::class)));
 
-        $metadataFactory->expects($this->any())->method('newClassMetadataInstance')->will($this->returnValue($mockMetadata));
-        $metadataFactory->expects($this->once())->method('wakeupReflection');
+        $metadataFactory
+            ->expects($this->any())
+            ->method('doLoadMetadata')
+            ->will($this->returnValue($mockMetadata));
+
+        $metadataFactory
+            ->expects($this->never())
+            ->method('wakeupReflection');
 
         $metadataFactory->setEntityManager($entityManager);
 
-        $this->assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
+        self::assertSame($mockMetadata, $metadataFactory->getMetadataFor(DDC2359Foo::class));
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2359Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

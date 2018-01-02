@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\ScalarHydrator;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -33,16 +36,16 @@ class ScalarHydratorTest extends HydrationTestCase
 
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         $result = $hydrator->hydrateAll($stmt, $rsm);
 
-        $this->assertInternalType('array', $result);
-        $this->assertCount(2, $result);
-        $this->assertEquals('romanb', $result[0]['u_name']);
-        $this->assertEquals(1, $result[0]['u_id']);
-        $this->assertEquals('jwage', $result[1]['u_name']);
-        $this->assertEquals(2, $result[1]['u_id']);
+        self::assertInternalType('array', $result);
+        self::assertCount(2, $result);
+        self::assertEquals('romanb', $result[0]['u_name']);
+        self::assertEquals(1, $result[0]['u_id']);
+        self::assertEquals('jwage', $result[1]['u_name']);
+        self::assertEquals(2, $result[1]['u_id']);
     }
 
     /**
@@ -51,9 +54,9 @@ class ScalarHydratorTest extends HydrationTestCase
     public function testHydrateScalarResults()
     {
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('foo1', 'foo', 'string');
-        $rsm->addScalarResult('bar2', 'bar', 'string');
-        $rsm->addScalarResult('baz3', 'baz', 'string');
+        $rsm->addScalarResult('foo1', 'foo', Type::getType('string'));
+        $rsm->addScalarResult('bar2', 'bar', Type::getType('string'));
+        $rsm->addScalarResult('baz3', 'baz', Type::getType('string'));
 
         $resultSet = [
             [
@@ -64,7 +67,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }
@@ -78,9 +81,9 @@ class ScalarHydratorTest extends HydrationTestCase
         $rsm->addEntityResult(CmsUser::class, 'u');
         $rsm->addFieldResult('u', 'u__id', 'id');
         $rsm->addFieldResult('u', 'u__name', 'name');
-        $rsm->addScalarResult('foo1', 'foo', 'string');
-        $rsm->addScalarResult('bar2', 'bar', 'string');
-        $rsm->addScalarResult('baz3', 'baz', 'string');
+        $rsm->addScalarResult('foo1', 'foo', Type::getType('string'));
+        $rsm->addScalarResult('bar2', 'bar', Type::getType('string'));
+        $rsm->addScalarResult('baz3', 'baz', Type::getType('string'));
 
         $resultSet = [
             [
@@ -94,7 +97,7 @@ class ScalarHydratorTest extends HydrationTestCase
         ];
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new ScalarHydrator($this->_em);
+        $hydrator = new ScalarHydrator($this->em);
 
         self::assertCount(1, $hydrator->hydrateAll($stmt, $rsm));
     }

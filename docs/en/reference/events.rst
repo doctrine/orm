@@ -129,7 +129,6 @@ with camelcase and the value of the corresponding constant should
 be the name of the constant itself, even with spelling. This has
 several reasons:
 
-
 -  It is easy to read.
 -  Simplicity.
 -  Each method within an EventSubscriber is named after the
@@ -147,7 +146,6 @@ Lifecycle Events
 
 The EntityManager and UnitOfWork trigger a bunch of events during
 the life-time of their registered entities.
-
 
 -  preRemove - The preRemove event occurs for a given entity before
    the respective EntityManager remove operation for that entity is
@@ -232,7 +230,6 @@ EntityManager and other relevant data.
     operations that can be executed. Please read the
     :ref:`reference-events-implementing-listeners` section very carefully
     to understand which operations are allowed in which lifecycle event.
-
 
 Lifecycle Callbacks
 -------------------
@@ -369,7 +366,6 @@ defined on your ``User`` model.
             // ...
         }
     }
-
 
 Lifecycle Callbacks Event Argument
 -----------------------------------
@@ -525,7 +521,6 @@ which has access to the entity and the entity manager.
 
 The following restrictions apply to ``prePersist``:
 
-
 -  If you are using a PrePersist Identity Generator such as
    sequences the ID value will *NOT* be available within any
    PrePersist events.
@@ -573,7 +568,6 @@ OnFlush is a very powerful event. It is called inside
 entities and their associations have been computed. This means, the
 ``onFlush`` event has access to the sets of:
 
-
 -  Entities scheduled for insert
 -  Entities scheduled for update
 -  Entities scheduled for removal
@@ -617,7 +611,6 @@ mentioned sets. See this example:
     }
 
 The following restrictions apply to the onFlush event:
-
 
 -  If you create and persist a new entity in ``onFlush``, then
    calling ``EntityManager#persist()`` is not enough.
@@ -666,7 +659,6 @@ computed change-set of this entity.
 This means you have access to all the fields that have changed for
 this entity with their old and new value. The following methods are
 available on the ``PreUpdateEventArgs``:
-
 
 -  ``getEntity()`` to get access to the actual entity.
 -  ``getEntityChangeSet()`` to get a copy of the changeset array.
@@ -720,7 +712,6 @@ lifecycle callback when there are expensive validations to call:
     }
 
 Restrictions for this event:
-
 
 -  Changes to associations of the passed entities are not
    recognized by the flush operation anymore.
@@ -892,7 +883,6 @@ you need to map the listener method using the event type mapping:
 
     The order of execution of multiple methods for the same event (e.g. multiple @PrePersist) is not guaranteed.
 
-
 Entity listeners resolver
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 Doctrine invokes the listener resolver to get the listener instance.
@@ -960,7 +950,7 @@ Load ClassMetadata Event
 ------------------------
 
 When the mapping information for an entity is read, it is populated
-in to a ``ClassMetadataInfo`` instance. You can hook in to this
+in to a ``ClassMetadata`` instance. You can hook in to this
 process and manipulate the instance.
 
 .. code-block:: php
@@ -984,5 +974,4 @@ process and manipulate the instance.
             $classMetadata->mapField($fieldMapping);
         }
     }
-
 

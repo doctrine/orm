@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Internal\Hydration\ObjectHydrator;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
@@ -31,7 +34,7 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
      */
     private $stmt;
 
-    public function init()
+    public function init() : void
     {
         $resultSet = [
             [
@@ -81,13 +84,12 @@ final class MixedQueryFetchJoinPartialObjectHydrationPerformanceBench
         $this->rsm->addFieldResult('u', 'u__status', 'status');
         $this->rsm->addFieldResult('u', 'u__username', 'username');
         $this->rsm->addFieldResult('u', 'u__name', 'name');
-        $this->rsm->addScalarResult('sclr0', 'nameUpper');
+        $this->rsm->addScalarResult('sclr0', 'nameUpper', Type::getType('string'));
         $this->rsm->addFieldResult('p', 'p__phonenumber', 'phonenumber');
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }
 }
-

@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\LazyLoading;
 
-use Doctrine\ORM\Proxy\Proxy;
 use Doctrine\Performance\EntityManagerFactory;
 use Doctrine\Performance\Mock\NonProxyLoadingEntityManager;
 use Doctrine\Tests\Models\CMS\CmsEmployee;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @BeforeMethods({"init"})
@@ -15,67 +17,70 @@ use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 final class ProxyInitializationTimeBench
 {
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $cmsUsers;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $cmsEmployees;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $initializedUsers;
 
     /**
-     * @var Proxy[]
+     * @var GhostObjectInterface[]
      */
     private $initializedEmployees;
 
-    public function init()
+    public function init() : void
     {
-        $proxyFactory = (new NonProxyLoadingEntityManager(EntityManagerFactory::getEntityManager([])))
+        $entityManager = EntityManagerFactory::getEntityManager([]);
+        $proxyFactory  = (new NonProxyLoadingEntityManager($entityManager))
             ->getProxyFactory();
 
-        for ($i = 0; $i < 10000; ++$i) {
-            $this->cmsUsers[$i]             = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
-            $this->cmsEmployees[$i]         = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
-            $this->initializedUsers[$i]     = $proxyFactory->getProxy(CmsUser::class, ['id' => $i]);
-            $this->initializedEmployees[$i] = $proxyFactory->getProxy(CmsEmployee::class, ['id' => $i]);
+        $cmsUser     = $entityManager->getClassMetadata(CmsUser::class);
+        $cmsEmployee = $entityManager->getClassMetadata(CmsEmployee::class);
 
-            $this->initializedUsers[$i]->__load();
-            $this->initializedEmployees[$i]->__load();
+        for ($i = 0; $i < 10000; ++$i) {
+            $this->cmsUsers[$i]             = $proxyFactory->getProxy($cmsUser, ['id' => $i]);
+            $this->cmsEmployees[$i]         = $proxyFactory->getProxy($cmsEmployee, ['id' => $i]);
+            $this->initializedUsers[$i]     = $proxyFactory->getProxy($cmsUser, ['id' => $i]);
+            $this->initializedEmployees[$i] = $proxyFactory->getProxy($cmsEmployee, ['id' => $i]);
+
+            $this->initializedUsers[$i]->initializeProxy();
+            $this->initializedEmployees[$i]->initializeProxy();
         }
     }
 
-    public function benchCmsUserInitialization()
+    public function benchCmsUserInitialization() : void
     {
         foreach ($this->cmsUsers as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchCmsEmployeeInitialization()
+    public function benchCmsEmployeeInitialization() : void
     {
         foreach ($this->cmsEmployees as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsUsers()
+    public function benchInitializationOfAlreadyInitializedCmsUsers() : void
     {
         foreach ($this->initializedUsers as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 
-    public function benchInitializationOfAlreadyInitializedCmsEmployees()
+    public function benchInitializationOfAlreadyInitializedCmsEmployees() : void
     {
         foreach ($this->initializedEmployees as $proxy) {
-            $proxy->__load();
+            $proxy->initializeProxy();
         }
     }
 }
-

@@ -4,8 +4,9 @@ namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Id\AbstractIdGenerator;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Sequencing\Generator;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -19,8 +20,8 @@ final class GH5804Test extends OrmFunctionalTestCase
 
         Type::addType(GH5804Type::NAME, GH5804Type::class);
 
-        $this->_schemaTool->createSchema(
-            [$this->_em->getClassMetadata(GH5804Article::class)]
+        $this->schemaTool->createSchema(
+            [$this->em->getClassMetadata(GH5804Article::class)]
         );
     }
 
@@ -28,27 +29,35 @@ final class GH5804Test extends OrmFunctionalTestCase
     {
         $firstArticle = new GH5804Article;
         $firstArticle->text = 'Max';
-        $this->_em->persist($firstArticle);
-        $this->_em->flush();
+        $this->em->persist($firstArticle);
+        $this->em->flush();
 
         self::assertSame(1, $firstArticle->version);
 
         $firstArticle->text = 'Moritz';
-        $this->_em->persist($firstArticle);
-        $this->_em->flush();
+        $this->em->persist($firstArticle);
+        $this->em->flush();
 
         self::assertSame(2, $firstArticle->version);
     }
 }
 
-final class GH5804Generator extends AbstractIdGenerator
+final class GH5804Generator implements Generator
 {
     /**
      * {@inheritdoc}
      */
-    public function generate(EntityManager $em, $entity)
+    public function generate(EntityManagerInterface $em, $entity)
     {
         return 'test5804';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isPostInsertGenerator()
+    {
+        return false;
     }
 }
 
@@ -83,26 +92,26 @@ final class GH5804Type extends Type
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class GH5804Article
 {
     /**
-     * @Id
-     * @Column(type="GH5804Type")
-     * @GeneratedValue(strategy="CUSTOM")
-     * @CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
+     * @ORM\Id
+     * @ORM\Column(type="GH5804Type")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class=\Doctrine\Tests\ORM\Functional\Ticket\GH5804Generator::class)
      */
     public $id;
 
     /**
-     * @Version
-     * @Column(type="integer")
+     * @ORM\Version
+     * @ORM\Column(type="integer")
      */
     public $version;
 
     /**
-     * @Column(type="text")
+     * @ORM\Column(type="text")
      */
     public $text;
 }

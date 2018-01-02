@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
@@ -31,9 +34,14 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, CollectionPersister $persister, Region $region, array $mapping)
+    protected function createPersister(
+        EntityManagerInterface $em,
+        CollectionPersister $persister,
+        Region $region,
+        AssociationMetadata $association
+    )
     {
-        return new ReadWriteCachedCollectionPersister($persister, $region, $em, $mapping);
+        return new ReadWriteCachedCollectionPersister($persister, $region, $em, $association);
     }
 
     /**
@@ -153,11 +161,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollBackUpdateShouldClearQueue()
@@ -184,11 +192,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollCommitDeleteShouldClearQueue()
@@ -215,11 +223,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->delete($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionRollCommitUpdateShouldClearQueue()
@@ -246,11 +254,11 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
 
         $persister->update($collection);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteLockFailureShouldIgnoreQueue()
@@ -275,7 +283,7 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->delete($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateLockFailureShouldIgnoreQueue()
@@ -300,6 +308,6 @@ class ReadWriteCachedCollectionPersisterTest extends AbstractCollectionPersister
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->update($collection);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

@@ -1,55 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\Mapping;
+
 /**
- * @Entity
- * @Table(name="company_contracts")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @EntityListeners({"CompanyContractListener"})
- * @DiscriminatorMap({
- *     "fix"       = "CompanyFixContract",
- *     "flexible"  = "CompanyFlexContract",
- *     "flexultra" = "CompanyFlexUltraContract"
+ * @ORM\Entity
+ * @ORM\Table(name="company_contracts")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\EntityListeners({CompanyContractListener::class})
+ * @ORM\DiscriminatorMap({
+ *     "fix"       = CompanyFixContract::class,
+ *     "flexible"  = CompanyFlexContract::class,
+ *     "flexultra" = CompanyFlexUltraContract::class
  * })
  *
- * @NamedNativeQueries({
- *      @NamedNativeQuery(
+ * @ORM\NamedNativeQueries({
+ *      @ORM\NamedNativeQuery(
  *          name           = "all-contracts",
  *          resultClass    = "__CLASS__",
  *          query          = "SELECT id, completed, discr FROM company_contracts"
  *      ),
- *      @NamedNativeQuery(
+ *      @ORM\NamedNativeQuery(
  *          name           = "all",
  *          resultClass    = "__CLASS__",
  *          query          = "SELECT id, completed, discr FROM company_contracts"
  *      ),
  * })
  *
- * @SqlResultSetMappings({
- *      @SqlResultSetMapping(
+ * @ORM\SqlResultSetMappings({
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all-contracts",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("completed"),
  *                  }
  *              )
  *          }
  *      ),
- *      @SqlResultSetMapping(
+ *      @ORM\SqlResultSetMapping(
  *          name    = "mapping-all",
  *          entities= {
- *              @EntityResult(
+ *              @ORM\EntityResult(
  *                  entityClass         = "__CLASS__",
  *                  discriminatorColumn = "discr",
  *                  fields              = {
- *                      @FieldResult("id"),
- *                      @FieldResult("completed"),
+ *                      @ORM\FieldResult("id"),
+ *                      @ORM\FieldResult("completed"),
  *                  }
  *              )
  *          }
@@ -59,26 +65,27 @@ namespace Doctrine\Tests\Models\Company;
 abstract class CompanyContract
 {
     /**
-     * @Id @column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="CompanyEmployee", inversedBy="soldContracts")
+     * @ORM\ManyToOne(targetEntity=CompanyEmployee::class, inversedBy="soldContracts")
      */
     private $salesPerson;
 
     /**
-     * @Column(type="boolean")
+     * @ORM\Column(type="boolean")
      * @var bool
      */
     private $completed = false;
 
     /**
-     * @ManyToMany(targetEntity="CompanyEmployee", inversedBy="contracts")
-     * @JoinTable(name="company_contract_employees",
-     *    joinColumns={@JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
-     *    inverseJoinColumns={@JoinColumn(name="employee_id", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=CompanyEmployee::class, inversedBy="contracts")
+     * @ORM\JoinTable(name="company_contract_employees",
+     *    joinColumns={@ORM\JoinColumn(name="contract_id", referencedColumnName="id", onDelete="CASCADE")},
+     *    inverseJoinColumns={@ORM\JoinColumn(name="employee_id", referencedColumnName="id")}
      * )
      */
     private $engineers;
@@ -129,52 +136,4 @@ abstract class CompanyContract
     }
 
     abstract public function calculatePrice();
-
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->setInheritanceType(\Doctrine\ORM\Mapping\ClassMetadata::INHERITANCE_TYPE_JOINED);
-        $metadata->setTableName( 'company_contracts');
-        $metadata->setDiscriminatorColumn(
-            [
-            'name' => 'discr',
-            'type' => 'string',
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'id'        => true,
-            'name'      => 'id',
-            'fieldName' => 'id',
-            ]
-        );
-
-        $metadata->mapField(
-            [
-            'type'      => 'boolean',
-            'name'      => 'completed',
-            'fieldName' => 'completed',
-            ]
-        );
-
-        $metadata->setDiscriminatorMap(
-            [
-            "fix"       => "CompanyFixContract",
-            "flexible"  => "CompanyFlexContract",
-            "flexultra" => "CompanyFlexUltraContract"
-            ]
-        );
-
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postPersist, 'CompanyContractListener', 'postPersistHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::prePersist, 'CompanyContractListener', 'prePersistHandler');
-
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postUpdate, 'CompanyContractListener', 'postUpdateHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preUpdate, 'CompanyContractListener', 'preUpdateHandler');
-
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postRemove, 'CompanyContractListener', 'postRemoveHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preRemove, 'CompanyContractListener', 'preRemoveHandler');
-
-        $metadata->addEntityListener(\Doctrine\ORM\Events::preFlush, 'CompanyContractListener', 'preFlushHandler');
-        $metadata->addEntityListener(\Doctrine\ORM\Events::postLoad, 'CompanyContractListener', 'postLoadHandler');
-    }
 }

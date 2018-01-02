@@ -1,44 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Cache
- * @Entity
- * @Table("cache_city")
+ * @ORM\Cache
+ * @ORM\Entity
+ * @ORM\Table("cache_city")
  */
 class City
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     protected $id;
 
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     protected $name;
 
     /**
-     * @Cache
-     * @ManyToOne(targetEntity="State", inversedBy="cities")
-     * @JoinColumn(name="state_id", referencedColumnName="id")
+     * @ORM\Cache
+     * @ORM\ManyToOne(targetEntity=State::class, inversedBy="cities")
+     * @ORM\JoinColumn(name="state_id", referencedColumnName="id")
      */
     protected $state;
 
-     /**
-     * @ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
+    /**
+     * @ORM\ManyToMany(targetEntity=Travel::class, mappedBy="visitedCities")
      */
     public $travels;
 
-     /**
-     * @Cache
-     * @OrderBy({"name" = "ASC"})
-     * @OneToMany(targetEntity="Attraction", mappedBy="city")
+    /**
+     * @ORM\Cache
+     * @ORM\OrderBy({"name" = "ASC"})
+     * @ORM\OneToMany(targetEntity=Attraction::class, mappedBy="city")
      */
     public $attractions;
 
@@ -98,10 +101,5 @@ class City
     public function getAttractions()
     {
         return $this->attractions;
-    }
-
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        include __DIR__ . '/../../ORM/Mapping/php/Doctrine.Tests.Models.Cache.City.php';
     }
 }

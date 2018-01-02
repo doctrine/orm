@@ -42,9 +42,9 @@ final class GH6740Test extends OrmFunctionalTestCase
         $product->addCategory($firstCategory);
         $product->addCategory($secondCategory);
 
-        $this->_em->persist($product);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($product);
+        $this->em->flush();
+        $this->em->clear();
 
         $this->productId        = $product->getId();
         $this->firstCategoryId  = $firstCategory->getId();
@@ -56,7 +56,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     public function testCollectionFilteringLteOperator() : void
     {
-        $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
+        $product  = $this->em->find(ECommerceProduct::class, $this->productId);
         $criteria = Criteria::create()->where(Criteria::expr()->lte('id', $this->secondCategoryId));
 
         self::assertCount(2, $product->getCategories()->matching($criteria));
@@ -67,7 +67,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     public function testCollectionFilteringLtOperator() : void
     {
-        $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
+        $product  = $this->em->find(ECommerceProduct::class, $this->productId);
         $criteria = Criteria::create()->where(Criteria::expr()->lt('id', $this->secondCategoryId));
 
         self::assertCount(1, $product->getCategories()->matching($criteria));
@@ -78,7 +78,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     public function testCollectionFilteringGteOperator() : void
     {
-        $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
+        $product  = $this->em->find(ECommerceProduct::class, $this->productId);
         $criteria = Criteria::create()->where(Criteria::expr()->gte('id', $this->firstCategoryId));
 
         self::assertCount(2, $product->getCategories()->matching($criteria));
@@ -89,7 +89,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     public function testCollectionFilteringGtOperator() : void
     {
-        $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
+        $product  = $this->em->find(ECommerceProduct::class, $this->productId);
         $criteria = Criteria::create()->where(Criteria::expr()->gt('id', $this->firstCategoryId));
 
         self::assertCount(1, $product->getCategories()->matching($criteria));
@@ -100,7 +100,7 @@ final class GH6740Test extends OrmFunctionalTestCase
      */
     public function testCollectionFilteringEqualsOperator() : void
     {
-        $product  = $this->_em->find(ECommerceProduct::class, $this->productId);
+        $product  = $this->em->find(ECommerceProduct::class, $this->productId);
         $criteria = Criteria::create()->where(Criteria::expr()->eq('id', $this->firstCategoryId));
 
         self::assertCount(1, $product->getCategories()->matching($criteria));

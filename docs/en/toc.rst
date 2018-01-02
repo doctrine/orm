@@ -59,7 +59,6 @@ Reference Guide
    reference/advanced-configuration
    reference/second-level-cache
    reference/security
-   
 
 Cookbook
 --------
@@ -74,7 +73,6 @@ Cookbook
    cookbook/dql-user-defined-functions
    cookbook/implementing-arrayaccess-for-domain-objects
    cookbook/implementing-the-notify-changetracking-policy
-   cookbook/implementing-wakeup-or-clone
    cookbook/integrating-with-codeigniter
    cookbook/resolve-target-entity-listener
    cookbook/sql-table-prefixes

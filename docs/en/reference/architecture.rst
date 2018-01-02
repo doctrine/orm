@@ -34,7 +34,6 @@ This manual mainly covers the ORM package, sometimes touching parts
 of the underlying DBAL and Common packages. The Doctrine code base
 is split in to these packages for a few reasons and they are to...
 
-
 -  ...make things more maintainable and decoupled
 -  ...allow you to use the code in Doctrine Common without the ORM
    or DBAL
@@ -72,27 +71,16 @@ Entities
 An entity is a lightweight, persistent domain object. An entity can
 be any regular PHP class observing the following restrictions:
 
-
 -  An entity class must not be final or contain final methods.
 -  All persistent properties/field of any entity class should
    always be private or protected, otherwise lazy-loading might not
    work as expected. In case you serialize entities (for example Session)
    properties should be protected (See Serialize section below).
--  An entity class must not implement ``__clone`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
--  An entity class must not implement ``__wakeup`` or
-   :doc:`do so safely <../cookbook/implementing-wakeup-or-clone>`.
-   Also consider implementing
-   `Serializable <http://php.net/manual/en/class.serializable.php>`_
-   instead.
 -  Any two entity classes in a class hierarchy that inherit
    directly or indirectly from one another must not have a mapped
    property with the same name. That is, if B inherits from A then B
    must not have a mapped field with the same name as an already
    mapped field that is inherited from A.
--  An entity cannot make use of func_get_args() to implement variable parameters.
-   Generated proxies do not support this for performance reasons and your code might
-   actually fail to work when violating this restriction.
 
 Entities support inheritance, polymorphic associations, and
 polymorphic queries. Both abstract and concrete classes can be
@@ -106,13 +94,11 @@ classes, and non-entity classes may extend entity classes.
     never calls entity constructors, thus you are free to use them as
     you wish and even have it require arguments of any type.
 
-
 Entity states
 ~~~~~~~~~~~~~
 
 An entity instance can be characterized as being NEW, MANAGED,
 DETACHED or REMOVED.
-
 
 -  A NEW entity instance has no persistent identity, and is not yet
    associated with an EntityManager and a UnitOfWork (i.e. those just
@@ -150,18 +136,18 @@ subsequent access must be through the interface type.
 Serializing entities
 ~~~~~~~~~~~~~~~~~~~~
 
-Serializing entities can be problematic and is not really
-recommended, at least not as long as an entity instance still holds
-references to proxy objects or is still managed by an
-EntityManager. If you intend to serialize (and unserialize) entity
+Serializing entities is generally to be avoided.
+
+If you intend to serialize (and unserialize) entity
 instances that still hold references to proxy objects you may run
-into problems with private properties because of technical
-limitations. Proxy objects implement ``__sleep`` and it is not
-possible for ``__sleep`` to return names of private properties in
-parent classes. On the other hand it is not a solution for proxy
-objects to implement ``Serializable`` because Serializable does not
-work well with any potential cyclic object references (at least we
-did not find a way yet, if you did, please contact us).
+into problems, because all proxy properties will be initialized
+recursively, leading to large serialized object graphs, especially
+for circular associations.
+
+If you really must serialize entities, regardless if proxies are
+involved or not, then consider implementing the ``Serializable``
+interface and manually checking for cyclic dependencies in your
+object graph.
 
 The EntityManager
 ~~~~~~~~~~~~~~~~~
@@ -193,5 +179,4 @@ typical implementation of the
 to keep track of all the things that need to be done the next time
 ``flush`` is invoked. You usually do not directly interact with a
 ``UnitOfWork`` but with the ``EntityManager`` instead.
-
 

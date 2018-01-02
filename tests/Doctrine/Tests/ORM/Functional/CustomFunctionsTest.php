@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
@@ -27,25 +29,25 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $user = new CmsUser();
         $user->name = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         // Instead of defining the function with the class name, we use a callback
-        $this->_em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
+        $this->em->getConfiguration()->addCustomStringFunction('FOO', function($funcName) {
             return new NoOp($funcName);
         });
-        $this->_em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
+        $this->em->getConfiguration()->addCustomNumericFunction('BAR', function($funcName) {
             return new NoOp($funcName);
         });
 
-        $query = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
+        $query = $this->em->createQuery('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u'
             . ' WHERE FOO(u.name) = \'Bob\''
             . ' AND BAR(1) = 1');
 
         $users = $query->getResult();
 
-        $this->assertEquals(1, count($users));
-        $this->assertSame($user, $users[0]);
+        self::assertCount(1, $users);
+        self::assertSame($user, $users[0]);
     }
 
     public function testCustomFunctionOverride()
@@ -53,16 +55,17 @@ class CustomFunctionsTest extends OrmFunctionalTestCase
         $user = new CmsUser();
         $user->name = 'Bob';
         $user->username = 'Dylan';
-        $this->_em->persist($user);
-        $this->_em->flush();
 
-        $this->_em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
+        $this->em->getConfiguration()->addCustomStringFunction('COUNT', 'Doctrine\Tests\ORM\Functional\CustomCount');
+
+        $query = $this->em->createQuery('SELECT COUNT(DISTINCT u.id) FROM Doctrine\Tests\Models\CMS\CmsUser u');
 
         $usersCount = $query->getSingleScalarResult();
 
-        $this->assertEquals(1, $usersCount);
+        self::assertEquals(1, $usersCount);
     }
 }
 

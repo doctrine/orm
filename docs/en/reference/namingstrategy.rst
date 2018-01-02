@@ -102,7 +102,6 @@ achieve such standards by implementing a naming strategy.
 
 You need to create a class which implements ``Doctrine\ORM\Mapping\NamingStrategy``.
 
-
 .. code-block:: php
 
     <?php

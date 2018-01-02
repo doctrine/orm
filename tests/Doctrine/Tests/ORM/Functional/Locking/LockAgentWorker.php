@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Locking;
 
 use Doctrine\Common\Cache\ArrayCache;
@@ -24,7 +26,7 @@ class LockAgentWorker
         $worker->addFunction("dqlWithLock", [$lockAgent, "dqlWithLock"]);
         $worker->addFunction('lock', [$lockAgent, 'lock']);
 
-        while($worker->work()) {
+        while ($worker->work()) {
             if ($worker->returnCode() != GEARMAN_SUCCESS) {
                 echo "return_code: " . $worker->returnCode() . "\n";
                 break;
@@ -101,7 +103,7 @@ class LockAgentWorker
         $config->setProxyNamespace('MyProject\Proxies');
         $config->setAutoGenerateProxyClasses(true);
 
-        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/'], true);
+        $annotDriver = $config->newDefaultAnnotationDriver([__DIR__ . '/../../../Models/']);
         $config->setMetadataDriverImpl($annotDriver);
 
         $cache = new ArrayCache();

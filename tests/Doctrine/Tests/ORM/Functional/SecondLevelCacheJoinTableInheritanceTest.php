@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\PersistentCollection;
@@ -19,8 +21,8 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $contactRegion  = $this->cache->getEntityCacheRegion(AttractionContactInfo::class);
         $locationRegion = $this->cache->getEntityCacheRegion(AttractionLocationInfo::class);
 
-        $this->assertEquals($infoRegion->getName(), $contactRegion->getName());
-        $this->assertEquals($infoRegion->getName(), $locationRegion->getName());
+        self::assertEquals($infoRegion->getName(), $contactRegion->getName());
+        self::assertEquals($infoRegion->getName(), $locationRegion->getName());
     }
 
     public function testPutOnPersistJoinTableInheritance()
@@ -31,12 +33,12 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[0]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[1]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[2]->getId()));
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[3]->getId()));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[0]->getId()));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[1]->getId()));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[2]->getId()));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $this->attractionsInfo[3]->getId()));
     }
 
     public function testJoinTableCountaisRootClass()
@@ -47,11 +49,11 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         foreach ($this->attractionsInfo as $info) {
-            $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $info->getId()));
-            $this->assertTrue($this->cache->containsEntity(get_class($info), $info->getId()));
+            self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $info->getId()));
+            self::assertTrue($this->cache->containsEntity(get_class($info), $info->getId()));
         }
     }
 
@@ -63,61 +65,61 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $this->cache->evictEntityRegion(AttractionInfo::class);
 
         $entityId1 = $this->attractionsInfo[0]->getId();
         $entityId2 = $this->attractionsInfo[1]->getId();
 
-        $this->assertFalse($this->cache->containsEntity(AttractionInfo::class, $entityId1));
-        $this->assertFalse($this->cache->containsEntity(AttractionInfo::class, $entityId2));
-        $this->assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId1));
-        $this->assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId2));
+        self::assertFalse($this->cache->containsEntity(AttractionInfo::class, $entityId1));
+        self::assertFalse($this->cache->containsEntity(AttractionInfo::class, $entityId2));
+        self::assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId1));
+        self::assertFalse($this->cache->containsEntity(AttractionContactInfo::class, $entityId2));
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity1    = $this->_em->find(AttractionInfo::class, $entityId1);
-        $entity2    = $this->_em->find(AttractionInfo::class, $entityId2);
+        $entity1    = $this->em->find(AttractionInfo::class, $entityId1);
+        $entity2    = $this->em->find(AttractionInfo::class, $entityId2);
 
         //load entity and relation whit sub classes
-        $this->assertEquals($queryCount + 4, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount + 4, $this->getCurrentQueryCount());
 
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId1));
-        $this->assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId2));
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::class, $entityId1));
-        $this->assertTrue($this->cache->containsEntity(AttractionContactInfo::class, $entityId2));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId1));
+        self::assertTrue($this->cache->containsEntity(AttractionInfo::class, $entityId2));
+        self::assertTrue($this->cache->containsEntity(AttractionContactInfo::class, $entityId1));
+        self::assertTrue($this->cache->containsEntity(AttractionContactInfo::class, $entityId2));
 
-        $this->assertInstanceOf(AttractionInfo::class, $entity1);
-        $this->assertInstanceOf(AttractionInfo::class, $entity2);
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity1);
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity2);
+        self::assertInstanceOf(AttractionInfo::class, $entity1);
+        self::assertInstanceOf(AttractionInfo::class, $entity2);
+        self::assertInstanceOf(AttractionContactInfo::class, $entity1);
+        self::assertInstanceOf(AttractionContactInfo::class, $entity2);
 
-        $this->assertEquals($this->attractionsInfo[0]->getId(), $entity1->getId());
-        $this->assertEquals($this->attractionsInfo[0]->getFone(), $entity1->getFone());
+        self::assertEquals($this->attractionsInfo[0]->getId(), $entity1->getId());
+        self::assertEquals($this->attractionsInfo[0]->getFone(), $entity1->getFone());
 
-        $this->assertEquals($this->attractionsInfo[1]->getId(), $entity2->getId());
-        $this->assertEquals($this->attractionsInfo[1]->getFone(), $entity2->getFone());
+        self::assertEquals($this->attractionsInfo[1]->getId(), $entity2->getId());
+        self::assertEquals($this->attractionsInfo[1]->getFone(), $entity2->getFone());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
-        $entity3    = $this->_em->find(AttractionInfo::class, $entityId1);
-        $entity4    = $this->_em->find(AttractionInfo::class, $entityId2);
+        $entity3    = $this->em->find(AttractionInfo::class, $entityId1);
+        $entity4    = $this->em->find(AttractionInfo::class, $entityId2);
 
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->assertInstanceOf(AttractionInfo::class, $entity3);
-        $this->assertInstanceOf(AttractionInfo::class, $entity4);
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity3);
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity4);
+        self::assertInstanceOf(AttractionInfo::class, $entity3);
+        self::assertInstanceOf(AttractionInfo::class, $entity4);
+        self::assertInstanceOf(AttractionContactInfo::class, $entity3);
+        self::assertInstanceOf(AttractionContactInfo::class, $entity4);
 
-        $this->assertNotSame($entity1, $entity3);
-        $this->assertEquals($entity1->getId(), $entity3->getId());
-        $this->assertEquals($entity1->getFone(), $entity3->getFone());
+        self::assertNotSame($entity1, $entity3);
+        self::assertEquals($entity1->getId(), $entity3->getId());
+        self::assertEquals($entity1->getFone(), $entity3->getFone());
 
-        $this->assertNotSame($entity2, $entity4);
-        $this->assertEquals($entity2->getId(), $entity4->getId());
-        $this->assertEquals($entity2->getFone(), $entity4->getFone());
+        self::assertNotSame($entity2, $entity4);
+        self::assertEquals($entity2->getId(), $entity4->getId());
+        self::assertEquals($entity2->getFone(), $entity4->getFone());
     }
 
     public function testQueryCacheFindAllJoinTableEntities()
@@ -128,28 +130,28 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
         $this->evictRegions();
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT i, a FROM Doctrine\Tests\Models\Cache\AttractionInfo i JOIN i.attraction a';
-        $result1    = $this->_em->createQuery($dql)
+        $result1    = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo), $result1);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo), $result1);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $result2 = $this->_em->createQuery($dql)
+        $result2 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo), $result2);
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo), $result2);
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(AttractionInfo::class, $entity);
+            self::assertInstanceOf(AttractionInfo::class, $entity);
         }
     }
 
@@ -161,33 +163,33 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
         $this->evictRegions();
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity = $this->_em->find(Attraction::class, $this->attractions[0]->getId());
+        $entity = $this->em->find(Attraction::class, $this->attractions[0]->getId());
 
-        $this->assertInstanceOf(Attraction::class, $entity);
-        $this->assertInstanceOf(PersistentCollection::class, $entity->getInfos());
-        $this->assertCount(1, $entity->getInfos());
+        self::assertInstanceOf(Attraction::class, $entity);
+        self::assertInstanceOf(PersistentCollection::class, $entity->getInfos());
+        self::assertCount(1, $entity->getInfos());
 
         $ownerId    = $this->attractions[0]->getId();
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertTrue($this->cache->containsEntity(Attraction::class, $ownerId));
-        $this->assertTrue($this->cache->containsCollection(Attraction::class, 'infos', $ownerId));
+        self::assertTrue($this->cache->containsEntity(Attraction::class, $ownerId));
+        self::assertTrue($this->cache->containsCollection(Attraction::class, 'infos', $ownerId));
 
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity->getInfos()->get(0));
-        $this->assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
+        self::assertInstanceOf(AttractionContactInfo::class, $entity->getInfos()->get(0));
+        self::assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $entity = $this->_em->find(Attraction::class, $this->attractions[0]->getId());
+        $entity = $this->em->find(Attraction::class, $this->attractions[0]->getId());
 
-        $this->assertInstanceOf(Attraction::class, $entity);
-        $this->assertInstanceOf(PersistentCollection::class, $entity->getInfos());
-        $this->assertCount(1, $entity->getInfos());
+        self::assertInstanceOf(Attraction::class, $entity);
+        self::assertInstanceOf(PersistentCollection::class, $entity->getInfos());
+        self::assertCount(1, $entity->getInfos());
 
-        $this->assertInstanceOf(AttractionContactInfo::class, $entity->getInfos()->get(0));
-        $this->assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
+        self::assertInstanceOf(AttractionContactInfo::class, $entity->getInfos()->get(0));
+        self::assertEquals($this->attractionsInfo[0]->getFone(), $entity->getInfos()->get(0)->getFone());
     }
 
     public function testQueryCacheShouldBeEvictedOnTimestampUpdate()
@@ -198,38 +200,38 @@ class SecondLevelCacheJoinTableInheritanceTest extends SecondLevelCacheAbstractT
         $this->loadFixturesAttractions();
         $this->loadFixturesAttractionsInfo();
         $this->evictRegions();
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
         $dql        = 'SELECT attractionInfo FROM Doctrine\Tests\Models\Cache\AttractionInfo attractionInfo';
 
-        $result1    = $this->_em->createQuery($dql)
+        $result1    = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo), $result1);
-        $this->assertEquals($queryCount + 5, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo), $result1);
+        self::assertEquals($queryCount + 5, $this->getCurrentQueryCount());
 
         $contact = new AttractionContactInfo(
             '1234-1234',
-            $this->_em->find(Attraction::class, $this->attractions[5]->getId())
+            $this->em->find(Attraction::class, $this->attractions[5]->getId())
         );
 
-        $this->_em->persist($contact);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($contact);
+        $this->em->flush();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $result2 = $this->_em->createQuery($dql)
+        $result2 = $this->em->createQuery($dql)
             ->setCacheable(true)
             ->getResult();
 
-        $this->assertCount(count($this->attractionsInfo) + 1, $result2);
-        $this->assertEquals($queryCount + 6, $this->getCurrentQueryCount());
+        self::assertCount(count($this->attractionsInfo) + 1, $result2);
+        self::assertEquals($queryCount + 6, $this->getCurrentQueryCount());
 
         foreach ($result2 as $entity) {
-            $this->assertInstanceOf(AttractionInfo::class, $entity);
+            self::assertInstanceOf(AttractionInfo::class, $entity);
         }
     }
 }

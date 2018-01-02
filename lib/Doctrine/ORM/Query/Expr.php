@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
@@ -445,7 +430,7 @@ class Expr
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -466,7 +451,7 @@ class Expr
         if (is_array($y)) {
             foreach ($y as &$literal) {
                 if ( ! ($literal instanceof Expr\Literal)) {
-                    $literal = $this->_quoteLiteral($literal);
+                    $literal = $this->quoteLiteral($literal);
                 }
             }
         }
@@ -601,7 +586,7 @@ class Expr
      */
     public function literal($literal)
     {
-        return new Expr\Literal($this->_quoteLiteral($literal));
+        return new Expr\Literal($this->quoteLiteral($literal));
     }
 
     /**
@@ -611,11 +596,11 @@ class Expr
      *
      * @return string
      */
-    private function _quoteLiteral($literal)
+    private function quoteLiteral($literal)
     {
         if (is_numeric($literal) && !is_string($literal)) {
             return (string) $literal;
-        } else if (is_bool($literal)) {
+        } elseif (is_bool($literal)) {
             return $literal ? "true" : "false";
         }
 

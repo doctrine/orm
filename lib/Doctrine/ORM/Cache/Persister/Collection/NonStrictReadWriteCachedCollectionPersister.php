@@ -1,26 +1,12 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 
 /**
@@ -62,12 +48,13 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
      */
     public function delete(PersistentCollection $collection)
     {
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $fieldName = $this->association->getName();
+        $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key       = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $fieldName, $ownerId);
 
         $this->persister->delete($collection);
 
-        $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+        $this->queuedCache['delete'][spl_object_id($collection)] = $key;
     }
 
     /**
@@ -82,21 +69,23 @@ class NonStrictReadWriteCachedCollectionPersister extends AbstractCollectionPers
             return;
         }
 
-        $ownerId = $this->uow->getEntityIdentifier($collection->getOwner());
-        $key     = new CollectionCacheKey($this->sourceEntity->rootEntityName, $this->association['fieldName'], $ownerId);
+        $fieldName = $this->association->getName();
+        $ownerId   = $this->uow->getEntityIdentifier($collection->getOwner());
+        $key       = new CollectionCacheKey($this->sourceEntity->getRootClassName(), $fieldName, $ownerId);
 
-       // Invalidate non initialized collections OR ordered collection
-        if ($isDirty && ! $isInitialized || isset($this->association['orderBy'])) {
+        // Invalidate non initialized collections OR ordered collection
+        if (($isDirty && ! $isInitialized) ||
+            ($this->association instanceof ToManyAssociationMetadata && $this->association->getOrderBy())) {
             $this->persister->update($collection);
 
-            $this->queuedCache['delete'][spl_object_hash($collection)] = $key;
+            $this->queuedCache['delete'][spl_object_id($collection)] = $key;
 
             return;
         }
 
         $this->persister->update($collection);
 
-        $this->queuedCache['update'][spl_object_hash($collection)] = [
+        $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
             'list'  => $collection
         ];

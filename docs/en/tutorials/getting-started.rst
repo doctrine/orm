@@ -49,13 +49,13 @@ What are Entities?
 
 Entities are PHP Objects that can be identified over many requests
 by a unique identifier or primary key. These classes don't need to extend any
-abstract base class or interface. An entity class must not be final
-or contain final methods. Additionally it must not implement
-**clone** nor **wakeup**, unless it :doc:`does so safely <../cookbook/implementing-wakeup-or-clone>`.
+abstract base class or interface.
 
 An entity contains persistable properties. A persistable property
 is an instance variable of the entity that is saved into and retrieved from the database
 by Doctrine's data mapping capabilities.
+
+An entity class must not be ``final``, although it can contain ``final`` methods.
 
 An Example Model: Bug Tracker
 -----------------------------
@@ -95,7 +95,6 @@ the following contents:
         }
     }
 
-
 Install Doctrine using the Composer Dependency Management tool, by calling:
 
 ::
@@ -103,7 +102,7 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
     $ composer install
 
 This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console into the `vendor` directory. The Symfony 
+Symfony YAML and Symfony Console into the `vendor` directory. The Symfony
 dependencies are not required by Doctrine but will be used in this tutorial.
 
 Add the following directories:
@@ -131,22 +130,22 @@ step:
     // bootstrap.php
     use Doctrine\ORM\Tools\Setup;
     use Doctrine\ORM\EntityManager;
-    
+
     require_once "vendor/autoload.php";
-    
+
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
     // or if you prefer yaml or XML
     //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
     //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
-    
+
     // database configuration parameters
     $conn = array(
         'driver' => 'pdo_sqlite',
         'path' => __DIR__ . '/db.sqlite',
     );
-    
+
     // obtaining the entity manager
     $entityManager = EntityManager::create($conn, $config);
 
@@ -180,7 +179,7 @@ cli-config.php file must exist in the project root directory:
     <?php
     // cli-config.php
     require_once "bootstrap.php";
-    
+
     return \Doctrine\ORM\Tools\Console\ConsoleRunner::createHelperSet($entityManager);
 
 Change into your project directory and call the Doctrine command-line tool:
@@ -253,12 +252,12 @@ entity definition:
 When creating entity classes, all of the fields should be protected or private
 (not public), with getter and setter methods for each one (except $id).
 The use of mutators allows Doctrine to hook into calls which
-manipulate the entities in ways that it could not if you just 
+manipulate the entities in ways that it could not if you just
 directly set the values with ``entity#field = foo;``
 
-The id field has no setter since, generally speaking, your code 
-should not set this value since it represents a database id value. 
-(Note that Doctrine itself can still set the value using the 
+The id field has no setter since, generally speaking, your code
+should not set this value since it represents a database id value.
+(Note that Doctrine itself can still set the value using the
 Reflection API instead of a defined setter function)
 
 The next step for persistence with Doctrine is to describe the
@@ -278,14 +277,18 @@ but you only need to choose one.
 
         <?php
         // src/Product.php
+
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity @Table(name="products")
+         * @ORM\Entity @ORM\Table(name="products")
          **/
         class Product
         {
-            /** @Id @Column(type="integer") @GeneratedValue **/
+            /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue **/
             protected $id;
-            /** @Column(type="string") **/
+
+            /** @ORM\Column(type="string") **/
             protected $name;
 
             // .. (other code)
@@ -458,28 +461,35 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/Bug.php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity(repositoryClass="BugRepository") @Table(name="bugs")
+     * @ORM\Entity(repositoryClass="BugRepository")
+     * @ORM\Table(name="bugs")
      */
     class Bug
     {
         /**
-         * @Id @Column(type="integer") @GeneratedValue
+         * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $description;
+
         /**
-         * @Column(type="datetime")
+         * @ORM\Column(type="datetime")
          * @var DateTime
          */
         protected $created;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $status;
@@ -524,18 +534,23 @@ classes. We'll store them in ``src/Bug.php`` and ``src/User.php``, respectively.
 
     <?php
     // src/User.php
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity @Table(name="users")
+     * @ORM\Entity
+     * @ORM\Table(name="users")
      */
     class User
     {
         /**
-         * @Id @GeneratedValue @Column(type="integer")
+         * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
          * @var int
          */
         protected $id;
+
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          * @var string
          */
         protected $name;
@@ -569,7 +584,7 @@ foreign keys through their own identities.
 For every foreign key you either have a Doctrine ManyToOne or OneToOne
 association. On the inverse sides of these foreign keys you can have
 OneToMany associations. Obviously you can have ManyToMany associations
-that connect two tables with each other through a join table with 
+that connect two tables with each other through a join table with
 two foreign keys.
 
 Now that you know the basics about references in Doctrine, we can extend the
@@ -664,7 +679,6 @@ and Object-Relational Mapping.
     Consistency of bi-directional references on the inverse side of a
     relation have to be managed in userland application code. Doctrine
     cannot magically update your collections to be consistent.
-
 
 In the case of Users and Bugs we have references back and forth to
 the assigned and reported bugs from a user, making this relation
@@ -783,44 +797,52 @@ Lets add metadata mappings for the ``Bug`` entity, as we did for
 the ``Product`` before:
 
 .. configuration-block::
+
     .. code-block:: php
 
         <?php
         // src/Bug.php
+
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity @Table(name="bugs")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="bugs")
+         */
         class Bug
         {
             /**
-             * @Id @Column(type="integer") @GeneratedValue
+             * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
              **/
             protected $id;
+
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              **/
             protected $description;
+
             /**
-             * @Column(type="datetime")
+             * @ORM\Column(type="datetime")
              **/
             protected $created;
+
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              **/
             protected $status;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="assignedBugs")
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="assignedBugs")
              **/
             protected $engineer;
 
             /**
-             * @ManyToOne(targetEntity="User", inversedBy="reportedBugs")
+             * @ORM\ManyToOne(targetEntity="User", inversedBy="reportedBugs")
              **/
             protected $reporter;
 
             /**
-             * @ManyToMany(targetEntity="Product")
+             * @ORM\ManyToMany(targetEntity="Product")
              **/
             protected $products;
 
@@ -880,10 +902,9 @@ the ``Product`` before:
             products:
               targetEntity: Product
 
-
 Here we have the entity, id and primitive type definitions.
-For the "created" field we have used the ``datetime`` type, 
-which translates the YYYY-mm-dd HH:mm:ss database format 
+For the "created" field we have used the ``datetime`` type,
+which translates the YYYY-mm-dd HH:mm:ss database format
 into a PHP DateTime instance and back.
 
 After the field definitions, the two qualified references to the
@@ -911,31 +932,35 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
         <?php
         // src/User.php
+
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity @Table(name="users")
-         **/
+         * @ORM\Entity
+         * @ORM\Table(name="users")
+         */
         class User
         {
             /**
-             * @Id @GeneratedValue @Column(type="integer")
+             * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
              * @var int
              **/
             protected $id;
 
             /**
-             * @Column(type="string")
+             * @ORM\Column(type="string")
              * @var string
              **/
             protected $name;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="reporter")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="reporter")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
             protected $reportedBugs = null;
 
             /**
-             * @OneToMany(targetEntity="Bug", mappedBy="engineer")
+             * @ORM\OneToMany(targetEntity="Bug", mappedBy="engineer")
              * @var Bug[] An ArrayCollection of Bug objects.
              **/
             protected $assignedBugs = null;
@@ -996,7 +1021,6 @@ Update your database schema by running:
 ::
 
     $ vendor/bin/doctrine orm:schema-tool:update --force
-
 
 Implementing more Requirements
 ------------------------------
@@ -1135,7 +1159,6 @@ The console output of this script is then:
     of Entity-Class and property. Using the Metadata we defined before
     it allows for very short distinctive and powerful queries.
 
-
     An important reason why DQL is favourable to the Query API of most
     ORMs is its similarity to SQL. The DQL language allows query
     constructs that most ORMs don't: GROUP BY even with HAVING,
@@ -1145,19 +1168,16 @@ The console output of this script is then:
     throw your ORM into the dumpster, because it doesn't support some
     the more powerful SQL concepts.
 
-
     Instead of handwriting DQL you can use the ``QueryBuilder`` retrieved
     by calling ``$entityManager->createQueryBuilder()``. There are more
     details about this in the relevant part of the documentation.
 
-
     As a last resort you can still use Native SQL and a description of the
-    result set to retrieve entities from the database. DQL boils down to a 
-    Native SQL statement and a ``ResultSetMapping`` instance itself. Using 
-    Native SQL you could even use stored procedures for data retrieval, or 
-    make use of advanced non-portable database queries like PostgreSql's 
+    result set to retrieve entities from the database. DQL boils down to a
+    Native SQL statement and a ``ResultSetMapping`` instance itself. Using
+    Native SQL you could even use stored procedures for data retrieval, or
+    make use of advanced non-portable database queries like PostgreSql's
     recursive queries.
-
 
 Array Hydration of the Bug List
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1168,7 +1188,7 @@ objects only from Doctrine however. For a simple list view like the
 previous one we only need read access to our entities and can
 switch the hydration from objects to simple PHP arrays instead.
 
-Hydration can be an expensive process so only retrieving what you need can 
+Hydration can be an expensive process so only retrieving what you need can
 yield considerable performance benefits for read-only requests.
 
 Implementing the same list view as before using array hydration we
@@ -1227,8 +1247,8 @@ The output of the engineer’s name is fetched from the database! What is happen
 
 Since we only retrieved the bug by primary key both the engineer and reporter
 are not immediately loaded from the database but are replaced by LazyLoading
-proxies. These proxies will load behind the scenes, when the first method
-is called on them.
+proxies. These proxies will load behind the scenes, when you attempt to access
+any of their un-initialized state.
 
 Sample code of this proxy generated code can be found in the specified Proxy
 Directory, it looks like:
@@ -1238,28 +1258,22 @@ Directory, it looks like:
     <?php
     namespace MyProject\Proxies;
 
-    /**
-     * THIS CLASS WAS GENERATED BY THE DOCTRINE ORM. DO NOT EDIT THIS FILE.
-     **/
-    class UserProxy extends \User implements \Doctrine\ORM\Proxy\Proxy
+    class UserProxyHASH extends User implements GhostObjectInterface
     {
-        // .. lazy load code here
+        // ... generated code
 
-        public function addReportedBug($bug)
+        public static function staticProxyConstructor($initializer)
         {
-            $this->_load();
-            return parent::addReportedBug($bug);
+            // ... generated code
         }
 
-        public function assignedToBug($bug)
+        private function callInitializerHASH($methodName, array $parameters)
         {
-            $this->_load();
-            return parent::assignedToBug($bug);
+            // ... generated code
         }
+
+        // ... generated code
     }
-
-See how upon each method call the proxy is lazily loaded from the
-database?
 
 The call prints:
 
@@ -1275,7 +1289,6 @@ The call prints:
     queries create an overhead. If you know that certain fields will always
     (or usually) be required by the query then you will get better performance
     by explicitly retrieving them all in the first query.
-
 
 Dashboard of the User
 ---------------------
@@ -1472,9 +1485,12 @@ we have to adjust the metadata slightly.
     .. code-block:: php
 
         <?php
+
+        use Doctrine\ORM\Annotation as ORM;
+
         /**
-         * @Entity(repositoryClass="BugRepository")
-         * @Table(name="bugs")
+         * @ORM\Entity(repositoryClass="BugRepository")
+         * @ORM\Table(name="bugs")
          **/
         class Bug
         {

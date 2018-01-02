@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
@@ -31,29 +16,29 @@ class IterableResult implements \Iterator
     /**
      * @var \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      */
-    private $_hydrator;
+    private $hydrator;
 
     /**
      * @var boolean
      */
-    private $_rewinded = false;
+    private $rewinded = false;
 
     /**
      * @var integer
      */
-    private $_key = -1;
+    private $key = -1;
 
     /**
      * @var object|null
      */
-    private $_current = null;
+    private $current;
 
     /**
      * @param \Doctrine\ORM\Internal\Hydration\AbstractHydrator $hydrator
      */
     public function __construct($hydrator)
     {
-        $this->_hydrator = $hydrator;
+        $this->hydrator = $hydrator;
     }
 
     /**
@@ -63,12 +48,12 @@ class IterableResult implements \Iterator
      */
     public function rewind()
     {
-        if ($this->_rewinded == true) {
+        if ($this->rewinded == true) {
             throw new HydrationException("Can only iterate a Result once.");
-        } else {
-            $this->_current = $this->next();
-            $this->_rewinded = true;
         }
+
+        $this->current = $this->next();
+        $this->rewinded = true;
     }
 
     /**
@@ -78,10 +63,10 @@ class IterableResult implements \Iterator
      */
     public function next()
     {
-        $this->_current = $this->_hydrator->hydrateRow();
-        $this->_key++;
+        $this->current = $this->hydrator->hydrateRow();
+        $this->key++;
 
-        return $this->_current;
+        return $this->current;
     }
 
     /**
@@ -89,7 +74,7 @@ class IterableResult implements \Iterator
      */
     public function current()
     {
-        return $this->_current;
+        return $this->current;
     }
 
     /**
@@ -97,7 +82,7 @@ class IterableResult implements \Iterator
      */
     public function key()
     {
-        return $this->_key;
+        return $this->key;
     }
 
     /**
@@ -105,6 +90,6 @@ class IterableResult implements \Iterator
      */
     public function valid()
     {
-        return ($this->_current!=false);
+        return ($this->current!=false);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
@@ -9,13 +11,13 @@ class CustomHydratorTest extends HydrationTestCase
 {
     public function testCustomHydrator()
     {
-        $em = $this->_getTestEntityManager();
+        $em = $this->getTestEntityManager();
         $config = $em->getConfiguration();
         $config->addCustomHydrationMode('CustomHydrator', CustomHydrator::class);
 
         $hydrator = $em->newHydrator('CustomHydrator');
-        $this->assertInstanceOf(CustomHydrator::class, $hydrator);
-        $this->assertNull($config->getCustomHydrationMode('does not exist'));
+        self::assertInstanceOf(CustomHydrator::class, $hydrator);
+        self::assertNull($config->getCustomHydrationMode('does not exist'));
     }
 }
 
@@ -23,6 +25,6 @@ class CustomHydrator extends AbstractHydrator
 {
     protected function hydrateAllData()
     {
-        return $this->_stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

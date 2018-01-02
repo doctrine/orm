@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\ChangeSet;
 
-use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Performance\EntityManagerFactory;
-use Doctrine\Tests\Mocks\HydratorMockStatement;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use PhpBench\Benchmark\Metadata\Annotations\BeforeMethods;
 
@@ -24,7 +24,7 @@ final class UnitOfWorkComputeChangesBench
      */
     private $unitOfWork;
 
-    public function init()
+    public function init() : void
     {
         $this->unitOfWork = EntityManagerFactory::getEntityManager([])->getUnitOfWork();
 
@@ -58,16 +58,15 @@ final class UnitOfWorkComputeChangesBench
             throw new \LogicException('Unit of work should be clean at this stage');
         }
 
-        foreach ($this->users AS $user) {
+        foreach ($this->users as $user) {
             $user->status    = 'other';
             $user->username .= '++';
             $user->name      = str_replace('Mr.', 'Mrs.', $user->name);
         }
     }
 
-    public function benchChangeSetComputation()
+    public function benchChangeSetComputation() : void
     {
         $this->unitOfWork->computeChangeSets();
     }
 }
-

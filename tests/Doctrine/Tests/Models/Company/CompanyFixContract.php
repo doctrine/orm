@@ -1,14 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class CompanyFixContract extends CompanyContract
 {
     /**
-     * @column(type="integer")
+     * @ORM\Column(type="integer")
      * @var int
      */
     private $fixPrice = 0;
@@ -26,16 +31,5 @@ class CompanyFixContract extends CompanyContract
     public function setFixPrice($fixPrice)
     {
         $this->fixPrice = $fixPrice;
-    }
-
-    static public function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-            'type'      => 'integer',
-            'name'      => 'fixPrice',
-            'fieldName' => 'fixPrice',
-            ]
-        );
     }
 }

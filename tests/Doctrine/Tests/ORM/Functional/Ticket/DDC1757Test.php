@@ -1,14 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC1757Test extends OrmFunctionalTestCase
 {
     public function testFailingCase()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         /* @var $qb \Doctrine\ORM\QueryBuilder */
 
         $qb->select('_a')
@@ -28,63 +31,63 @@ class DDC1757Test extends OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757A
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757B
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1757C")
+     * @ORM\OneToOne(targetEntity=DDC1757C::class)
      */
     private $c;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757C
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1757D")
+     * @ORM\OneToOne(targetEntity=DDC1757D::class)
      */
     private $d;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757D
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

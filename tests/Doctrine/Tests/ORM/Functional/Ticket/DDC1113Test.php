@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1113
@@ -13,12 +17,12 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC1113Engine::class),
-                    $this->_em->getClassMetadata(DDC1113Vehicle::class),
-                    $this->_em->getClassMetadata(DDC1113Car::class),
-                    $this->_em->getClassMetadata(DDC1113Bus::class),
+                    $this->em->getClassMetadata(DDC1113Engine::class),
+                    $this->em->getClassMetadata(DDC1113Vehicle::class),
+                    $this->em->getClassMetadata(DDC1113Car::class),
+                    $this->em->getClassMetadata(DDC1113Bus::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -33,67 +37,62 @@ class DDC1113Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $bus = new DDC1113Bus();
         $bus->engine = new DDC1113Engine();
 
-        $this->_em->persist($car);
-        $this->_em->flush();
+        $this->em->persist($car);
+        $this->em->flush();
 
-        $this->_em->persist($bus);
-        $this->_em->flush();
+        $this->em->persist($bus);
+        $this->em->flush();
 
-        $this->_em->remove($bus);
-        $this->_em->remove($car);
-        $this->_em->flush();
+        $this->em->remove($bus);
+        $this->em->remove($car);
+        $this->em->flush();
 
-        self::assertEmpty($this->_em->getRepository(DDC1113Car::class)->findAll());
-        self::assertEmpty($this->_em->getRepository(DDC1113Bus::class)->findAll());
-        self::assertEmpty($this->_em->getRepository(DDC1113Engine::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Car::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Bus::class)->findAll());
+        self::assertEmpty($this->em->getRepository(DDC1113Engine::class)->findAll());
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"vehicle" = "DDC1113Vehicle", "car" = "DDC1113Car", "bus" = "DDC1113Bus"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"vehicle" = DDC1113Vehicle::class, "car" = DDC1113Car::class, "bus" = DDC1113Bus::class})
  */
 class DDC1113Vehicle
 {
 
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC1113Vehicle")
+     * @ORM\ManyToOne(targetEntity=DDC1113Vehicle::class)
      */
     public $parent;
 
-    /** @OneToOne(targetEntity="DDC1113Engine", cascade={"persist", "remove"}) */
+    /** @ORM\OneToOne(targetEntity=DDC1113Engine::class, cascade={"persist", "remove"}) */
     public $engine;
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1113Car extends DDC1113Vehicle
 {
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1113Bus extends DDC1113Vehicle
 {
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1113Engine
 {
 
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-
 }
-

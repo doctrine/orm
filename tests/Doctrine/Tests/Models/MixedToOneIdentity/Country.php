@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\MixedToOneIdentity;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class Country
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="NONE") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="NONE") */
     public $country;
 }

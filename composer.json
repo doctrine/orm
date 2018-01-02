@@ -16,24 +16,22 @@
         "sort-packages": true
     },
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "ext-pdo": "*",
         "doctrine/annotations": "~1.5",
         "doctrine/cache": "~1.6",
         "doctrine/collections": "^1.4",
         "doctrine/common": "^2.7.1",
-        "doctrine/dbal": "^2.6",
+        "doctrine/dbal": "dev-develop as 3.x-dev",
         "doctrine/instantiator": "~1.1",
+        "ocramius/package-versions": "^1.1.2",
+        "ocramius/proxy-manager": "^2.1.1",
         "symfony/console": "~3.0|~4.0"
     },
     "require-dev": {
         "doctrine/coding-standard": "^1.0",
         "phpunit/phpunit": "^6.5",
-        "squizlabs/php_codesniffer": "^3.2",
-        "symfony/yaml": "~3.4|~4.0"
-    },
-    "suggest": {
-        "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
+        "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload": {
         "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
@@ -47,7 +45,7 @@
     "bin": ["bin/doctrine"],
     "extra": {
         "branch-alias": {
-            "dev-master": "2.6.x-dev"
+            "dev-master": "3.0.x-dev"
         }
     },
     "archive": {

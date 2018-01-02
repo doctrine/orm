@@ -1,24 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC869;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC869ChequePayment extends DDC869Payment
 {
-
-    /** @Column(type="string") */
+    /** @ORM\Column(type="string") */
     protected $serialNumber;
-
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->mapField(
-            [
-           'fieldName'  => 'serialNumber',
-           'type'       => 'string',
-            ]
-        );
-    }
-
 }

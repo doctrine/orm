@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\DbalTypes\CustomIdObject;
@@ -28,12 +30,12 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
     {
         $parent = new CustomIdObjectTypeParent(new CustomIdObject('foo'));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
-        $result = $this->_em->find(CustomIdObjectTypeParent::class, $parent->id);
+        $result = $this->em->find(CustomIdObjectTypeParent::class, $parent->id);
 
-        $this->assertSame($parent, $result);
+        self::assertSame($parent, $result);
     }
 
     /**
@@ -46,11 +48,11 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
@@ -58,8 +60,8 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             )
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 
     /**
@@ -72,12 +74,12 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
 
         $parent->children->add(new CustomIdObjectTypeChild(new CustomIdObject('bar'), $parent));
 
-        $this->_em->persist($parent);
-        $this->_em->flush();
+        $this->em->persist($parent);
+        $this->em->flush();
 
         // note: hydration is willingly broken in this example:
         $result = $this
-            ->_em
+            ->em
             ->createQuery(
                 'SELECT parent, children FROM '
                 . CustomIdObjectTypeParent::class
@@ -87,7 +89,7 @@ class CustomIdObjectTypeTest extends OrmFunctionalTestCase
             ->setParameter(1, $parent->children->first()->id)
             ->getResult();
 
-        $this->assertCount(1, $result);
-        $this->assertSame($parent, $result[0]);
+        self::assertCount(1, $result);
+        self::assertSame($parent, $result[0]);
     }
 }

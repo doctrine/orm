@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\Tests\ORM\Functional\DatabaseDriverTestCase;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 class DDC2387Test extends DatabaseDriverTestCase
 {
@@ -24,7 +26,7 @@ class DDC2387Test extends DatabaseDriverTestCase
 
         $metadata = $this->convertToClassMetadata([$product, $attributes], []);
 
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_NONE, $metadata['Ddc2387Attributes']->generatorType);
-        $this->assertEquals(ClassMetadataInfo::GENERATOR_TYPE_AUTO, $metadata['Ddc2387Product']->generatorType);
+        self::assertFalse($metadata['Ddc2387Attributes']->getProperty('productId')->hasValueGenerator());
+        self::assertEquals(GeneratorType::AUTO, $metadata['Ddc2387Product']->getProperty('id')->getValueGenerator()->getType());
     }
 }

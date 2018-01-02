@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping;
 use Doctrine\Tests\OrmTestCase;
 
 class ClassMetadataLoadEventTest extends OrmTestCase
@@ -13,43 +18,51 @@ class ClassMetadataLoadEventTest extends OrmTestCase
      */
     public function testEvent()
     {
-        $em = $this->_getTestEntityManager();
-        $metadataFactory = $em->getMetadataFactory();
-        $evm = $em->getEventManager();
-        $evm->addEventListener(Events::loadClassMetadata, $this);
-        $classMetadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
-        $this->assertTrue($classMetadata->hasField('about'));
-        $this->assertArrayHasKey('about', $classMetadata->reflFields);
-        $this->assertInstanceOf('ReflectionProperty', $classMetadata->reflFields['about']);
+        $entityManager   = $this->getTestEntityManager();
+        $metadataFactory = $entityManager->getMetadataFactory();
+        $eventManager    = $entityManager->getEventManager();
+
+        $eventManager->addEventListener(Events::loadClassMetadata, $this);
+
+        $metadata = $metadataFactory->getMetadataFor(LoadEventTestEntity::class);
+        $property = $metadata->getProperty('about');
+
+        self::assertInstanceOf(Mapping\FieldMetadata::class, $property);
+
+        $test = new LoadEventTestEntity();
+
+        $property->setValue($test, 'About who?');
+
+        self::assertEquals('About who?', $test->about);
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
     {
-        $classMetadata = $eventArgs->getClassMetadata();
-        $field = [
-            'fieldName' => 'about',
-            'type' => 'string',
-            'length' => 255
-        ];
-        $classMetadata->mapField($field);
+        $metadata      = $eventArgs->getClassMetadata();
+        $fieldMetadata = new Mapping\FieldMetadata('about');
+
+        $fieldMetadata->setType(Type::getType('string'));
+        $fieldMetadata->setLength(255);
+
+        $metadata->setPropertyOverride($fieldMetadata);
     }
 }
 
 /**
- * @Entity
- * @Table(name="load_event_test_entity")
+ * @ORM\Entity
+ * @ORM\Table(name="load_event_test_entity")
  */
 class LoadEventTestEntity
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $name;
 
-    private $about;
+    public $about;
 }

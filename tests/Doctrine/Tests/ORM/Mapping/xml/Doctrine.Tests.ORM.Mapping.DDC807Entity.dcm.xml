@@ -8,8 +8,8 @@
         <discriminator-column name="dtype" column-definition="ENUM('ONE','TWO')"/>
         
         <discriminator-map>
-            <discriminator-mapping value="ONE" class="DDC807SubClasse1" />
-            <discriminator-mapping value="TWO" class="DDC807SubClasse1" />
+            <discriminator-mapping value="ONE" class="Doctrine\Tests\ORM\Mapping\DDC807SubClasse1" />
+            <discriminator-mapping value="TWO" class="Doctrine\Tests\ORM\Mapping\DDC807SubClasse1" />
         </discriminator-map>
 
         <id name="id">

@@ -180,17 +180,28 @@ It also has several methods that create builders (which are necessary for advanc
 -   ``createManyToMany($name, $targetEntity)`` returns an ``ManyToManyAssociationBuilder`` instance
 -   ``createOneToMany($name, $targetEntity)`` returns an ``OneToManyAssociationBuilder`` instance
 
-ClassMetadataInfo API
+ClassMetadata API
 ---------------------
 
-The ``ClassMetadataInfo`` class is the base data object for storing
+The ``ClassMetadata`` class is the base data object for storing
 the mapping metadata for a single entity. It contains all the
 getters and setters you need populate and retrieve information for
 an entity.
 
+Internal
+~~~~~~~~
+
+-  ``getReflectionClass()``
+-  ``getReflectionProperties()``
+-  ``getReflectionProperty($name)``
+-  ``getSingleIdReflectionProperty()``
+-  ``getIdentifierValues($entity)``
+-  ``assignIdentifier($entity, $id)``
+-  ``setFieldValue($entity, $field, $value)``
+-  ``getFieldValue($entity, $field)``
+
 General Setters
 ~~~~~~~~~~~~~~~
-
 
 -  ``setTableName($tableName)``
 -  ``setPrimaryTable(array $primaryTableDefinition)``
@@ -204,7 +215,6 @@ General Setters
 Inheritance Setters
 ~~~~~~~~~~~~~~~~~~~
 
-
 -  ``setInheritanceType($type)``
 -  ``setSubclasses(array $subclasses)``
 -  ``setParentClasses(array $classNames)``
@@ -214,23 +224,17 @@ Inheritance Setters
 Field Mapping Setters
 ~~~~~~~~~~~~~~~~~~~~~
 
-
--  ``mapField(array $mapping)``
--  ``mapOneToOne(array $mapping)``
--  ``mapOneToMany(array $mapping)``
--  ``mapManyToOne(array $mapping)``
--  ``mapManyToMany(array $mapping)``
+-  ``addProperty(Property $property)``
+-  ``addAssociation(AssociationMetadata $property)``
 
 Lifecycle Callback Setters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 -  ``addLifecycleCallback($callback, $event)``
 -  ``setLifecycleCallbacks(array $callbacks)``
 
 Versioning Setters
 ~~~~~~~~~~~~~~~~~~
-
 
 -  ``setVersionMapping(array &$mapping)``
 -  ``setVersioned($bool)``
@@ -239,7 +243,6 @@ Versioning Setters
 General Getters
 ~~~~~~~~~~~~~~~
 
-
 -  ``getTableName()``
 -  ``getSchemaName()``
 -  ``getTemporaryIdTableName()``
@@ -247,14 +250,8 @@ General Getters
 Identifier Getters
 ~~~~~~~~~~~~~~~~~~
 
-
 -  ``getIdentifierColumnNames()``
--  ``usesIdGenerator()``
 -  ``isIdentifier($fieldName)``
--  ``isIdGeneratorIdentity()``
--  ``isIdGeneratorSequence()``
--  ``isIdGeneratorTable()``
--  ``isIdentifierNatural()``
 -  ``getIdentifierFieldNames()``
 -  ``getSingleIdentifierFieldName()``
 -  ``getSingleIdentifierColumnName()``
@@ -262,35 +259,18 @@ Identifier Getters
 Inheritance Getters
 ~~~~~~~~~~~~~~~~~~~
 
-
--  ``isInheritanceTypeNone()``
--  ``isInheritanceTypeJoined()``
--  ``isInheritanceTypeSingleTable()``
--  ``isInheritanceTypeTablePerClass()``
 -  ``isInheritedField($fieldName)``
 -  ``isInheritedAssociation($fieldName)``
 
-Change Tracking Getters
-~~~~~~~~~~~~~~~~~~~~~~~
-
-
--  ``isChangeTrackingDeferredExplicit()``
--  ``isChangeTrackingDeferredImplicit()``
--  ``isChangeTrackingNotify()``
-
 Field & Association Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 -  ``isUniqueField($fieldName)``
 -  ``isNullable($fieldName)``
 -  ``getColumnName($fieldName)``
 -  ``getFieldMapping($fieldName)``
--  ``getAssociationMapping($fieldName)``
--  ``getAssociationMappings()``
 -  ``getFieldName($columnName)``
 -  ``hasField($fieldName)``
--  ``getColumnNames(array $fieldNames = null)``
 -  ``getTypeOfField($fieldName)``
 -  ``getTypeOfColumn($columnName)``
 -  ``hasAssociation($fieldName)``
@@ -300,26 +280,6 @@ Field & Association Getters
 Lifecycle Callback Getters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
 -  ``hasLifecycleCallbacks($lifecycleEvent)``
 -  ``getLifecycleCallbacks($event)``
-
-ClassMetadata API
------------------
-
-The ``ClassMetadata`` class extends ``ClassMetadataInfo`` and adds
-the runtime functionality required by Doctrine. It adds a few extra
-methods related to runtime reflection for working with the entities
-themselves.
-
-
--  ``getReflectionClass()``
--  ``getReflectionProperties()``
--  ``getReflectionProperty($name)``
--  ``getSingleIdReflectionProperty()``
--  ``getIdentifierValues($entity)``
--  ``setIdentifierValues($entity, $id)``
--  ``setFieldValue($entity, $field, $value)``
--  ``getFieldValue($entity, $field)``
-
 

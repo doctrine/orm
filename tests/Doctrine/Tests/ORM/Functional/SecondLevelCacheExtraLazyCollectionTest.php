@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\Tests\Models\Cache\City;
 use Doctrine\Tests\Models\Cache\State;
 use Doctrine\Tests\Models\Cache\Travel;
-use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * @group DDC-2183
@@ -16,22 +18,22 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
     {
         parent::setUp();
 
-        $sourceEntity = $this->_em->getClassMetadata(Travel::class);
-        $targetEntity = $this->_em->getClassMetadata(City::class);
+        $sourceEntity = $this->em->getClassMetadata(Travel::class);
+        $targetEntity = $this->em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']['fetch'] = ClassMetadata::FETCH_EXTRA_LAZY;
-        $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_EXTRA_LAZY;
+        $sourceEntity->getProperty('visitedCities')->setFetchMode(FetchMode::EXTRA_LAZY);
+        $targetEntity->getProperty('travels')->setFetchMode(FetchMode::EXTRA_LAZY);
     }
 
     public function tearDown()
     {
         parent::tearDown();
 
-        $sourceEntity = $this->_em->getClassMetadata(Travel::class);
-        $targetEntity = $this->_em->getClassMetadata(City::class);
+        $sourceEntity = $this->em->getClassMetadata(Travel::class);
+        $targetEntity = $this->em->getClassMetadata(City::class);
 
-        $sourceEntity->associationMappings['visitedCities']['fetch'] = ClassMetadata::FETCH_LAZY;
-        $targetEntity->associationMappings['travels']['fetch']       = ClassMetadata::FETCH_LAZY;
+        $sourceEntity->getProperty('visitedCities')->setFetchMode(FetchMode::LAZY);
+        $targetEntity->getProperty('travels')->setFetchMode(FetchMode::LAZY);
     }
 
     public function testCacheCountAfterAddThenFlush()
@@ -42,40 +44,40 @@ class SecondLevelCacheExtraLazyCollectionTest extends SecondLevelCacheAbstractTe
         $this->loadFixturesTraveler();
         $this->loadFixturesTravels();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $ownerId    = $this->travels[0]->getId();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
-        $ref        = $this->_em->find(State::class, $this->states[1]->getId());
+        $owner      = $this->em->find(Travel::class, $ownerId);
+        $ref        = $this->em->find(State::class, $this->states[1]->getId());
 
-        $this->assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
-        $this->assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
+        self::assertTrue($this->cache->containsEntity(Travel::class, $ownerId));
+        self::assertTrue($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
         $newItem = new City("New City", $ref);
         $owner->getVisitedCities()->add($newItem);
 
-        $this->_em->persist($newItem);
-        $this->_em->persist($owner);
+        $this->em->persist($newItem);
+        $this->em->persist($owner);
 
         $queryCount = $this->getCurrentQueryCount();
 
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals(4, $owner->getVisitedCities()->count());
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals($queryCount, $this->getCurrentQueryCount());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals(4, $owner->getVisitedCities()->count());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals($queryCount, $this->getCurrentQueryCount());
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertFalse($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertFalse($this->cache->containsCollection(Travel::class, 'visitedCities', $ownerId));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queryCount = $this->getCurrentQueryCount();
-        $owner      = $this->_em->find(Travel::class, $ownerId);
+        $owner      = $this->em->find(Travel::class, $ownerId);
 
-        $this->assertEquals(4, $owner->getVisitedCities()->count());
-        $this->assertFalse($owner->getVisitedCities()->isInitialized());
-        $this->assertEquals($queryCount + 1, $this->getCurrentQueryCount());
+        self::assertEquals(4, $owner->getVisitedCities()->count());
+        self::assertFalse($owner->getVisitedCities()->isInitialized());
+        self::assertEquals($queryCount + 1, $this->getCurrentQueryCount());
     }
 }

@@ -1,45 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @AttributeOverrides({
- *      @AttributeOverride(name="id",
- *          column=@Column(
- *              name     = "guest_id",
- *              type     = "integer",
-                length   = 140
+ * @ORM\Entity
+ * @ORM\AttributeOverrides({
+ *      @ORM\AttributeOverride(
+ *          name="id",
+ *          column=@ORM\Column(
+ *              name = "guest_id",
+ *              type = "integer"
  *          )
  *      ),
- *      @AttributeOverride(name="name",
- *          column=@Column(
+ *      @ORM\AttributeOverride(
+ *          name="name",
+ *          column=@ORM\Column(
  *              name     = "guest_name",
+ *              type     = "string",
  *              nullable = false,
  *              unique   = true,
-                length   = 240
+ *              length   = 240
  *          )
  *      )
  * })
  */
 class DDC964Guest extends DDC964User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->setAttributeOverride('id', [
-            'columnName'    => 'guest_id',
-            'type'          => 'integer',
-            'length'        => 140,
-        ]
-        );
-
-        $metadata->setAttributeOverride('name',
-            [
-            'columnName'    => 'guest_name',
-            'nullable'      => false,
-            'unique'        => true,
-            'length'        => 240,
-            ]
-        );
-    }
 }

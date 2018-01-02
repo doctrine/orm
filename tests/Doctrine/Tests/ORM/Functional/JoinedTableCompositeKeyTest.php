@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedRootClass;
@@ -7,12 +10,10 @@ use Doctrine\Tests\Models\CompositeKeyInheritance\JoinedChildClass;
 
 class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
 {
-
     public function setUp()
     {
         $this->useModelSet('compositekeyinheritance');
         parent::setUp();
-
     }
 
     /**
@@ -21,13 +22,13 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testInsertWithCompositeKey()
     {
         $childEntity = new JoinedChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
-        $this->assertEquals($childEntity, $entity);
+        self::assertEquals($childEntity, $entity);
     }
 
     /**
@@ -36,20 +37,20 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
     public function testUpdateWithCompositeKey()
     {
         $childEntity = new JoinedChildClass();
-        $this->_em->persist($childEntity);
-        $this->_em->flush();
+        $this->em->persist($childEntity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity = $this->findEntity();
         $entity->extension = 'ext-new';
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $persistedEntity = $this->findEntity();
-        $this->assertEquals($entity, $persistedEntity);
+        self::assertEquals($entity, $persistedEntity);
     }
 
     /**
@@ -57,7 +58,7 @@ class JoinedTableCompositeKeyTest extends OrmFunctionalTestCase
      */
     private function findEntity()
     {
-        return $this->_em->find(
+        return $this->em->find(
             JoinedRootClass::class,
             ['keyPart1' => 'part-1', 'keyPart2' => 'part-2']
         );

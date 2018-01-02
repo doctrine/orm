@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372\Traits;
+
+use Doctrine\ORM\Annotation as ORM;
 
 trait DDC2372AddressTrait
 {
     /**
-     * @OneToOne(targetEntity="Doctrine\Tests\Models\DDC2372\DDC2372Address", inversedBy="user")
-     * @JoinColumn(name="address_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=DDC2372Address::class, inversedBy="user")
+     * @ORM\JoinColumn(name="address_id", referencedColumnName="id")
      */
     private $address;
 

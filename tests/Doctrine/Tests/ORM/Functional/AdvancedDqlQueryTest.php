@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Company\CompanyEmployee,
-    Doctrine\Tests\Models\Company\CompanyManager,
-    Doctrine\Tests\Models\Company\CompanyCar;
+use Doctrine\Tests\Models\Company\CompanyEmployee;
+use Doctrine\Tests\Models\Company\CompanyManager;
+use Doctrine\Tests\Models\Company\CompanyCar;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -17,6 +19,7 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('company');
+
         parent::setUp();
 
         $this->generateFixture();
@@ -28,13 +31,13 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
-        $result = $this->_em->createQuery($dql)->getScalarResult();
+        $result = $this->em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertEquals('IT', $result[0]['department']);
-        $this->assertEquals(150000, $result[0]['avgSalary']);
-        $this->assertEquals('IT2', $result[1]['department']);
-        $this->assertEquals(600000, $result[1]['avgSalary']);
+        self::assertCount(2, $result);
+        self::assertEquals('IT', $result[0]['department']);
+        self::assertEquals(150000, $result[0]['avgSalary']);
+        self::assertEquals('IT2', $result[1]['department']);
+        self::assertEquals(600000, $result[1]['avgSalary']);
     }
 
     public function testUnnamedScalarResultsAreOneBased()
@@ -43,11 +46,11 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
                'GROUP BY p.department HAVING SUM(p.salary) > 200000 ORDER BY p.department';
 
-        $result = $this->_em->createQuery($dql)->getScalarResult();
+        $result = $this->em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertEquals(150000, $result[0][1]);
-        $this->assertEquals(600000, $result[1][1]);
+        self::assertCount(2, $result);
+        self::assertEquals(150000, $result[0][1]);
+        self::assertEquals(600000, $result[1][1]);
     }
 
     public function testOrderByResultVariableCollectionSize()
@@ -57,84 +60,84 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
                'WHERE p.friends IS NOT EMPTY ' .
                'ORDER BY friends DESC, p.name DESC';
 
-        $result = $this->_em->createQuery($dql)->getScalarResult();
+        $result = $this->em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
 
-        $this->assertEquals("Jonathan W.", $result[0]['name']);
-        $this->assertEquals(3, $result[0]['friends']);
+        self::assertEquals("Jonathan W.", $result[0]['name']);
+        self::assertEquals(3, $result[0]['friends']);
 
-        $this->assertEquals('Guilherme B.', $result[1]['name']);
-        $this->assertEquals(2, $result[1]['friends']);
+        self::assertEquals('Guilherme B.', $result[1]['name']);
+        self::assertEquals(2, $result[1]['friends']);
 
-        $this->assertEquals('Benjamin E.', $result[2]['name']);
-        $this->assertEquals(2, $result[2]['friends']);
+        self::assertEquals('Benjamin E.', $result[2]['name']);
+        self::assertEquals(2, $result[2]['friends']);
 
-        $this->assertEquals('Roman B.', $result[3]['name']);
-        $this->assertEquals(1, $result[3]['friends']);
+        self::assertEquals('Roman B.', $result[3]['name']);
+        self::assertEquals(1, $result[3]['friends']);
     }
 
     public function testIsNullAssociation()
     {
         $dql = 'SELECT p FROM Doctrine\Tests\Models\Company\CompanyPerson p '.
                'WHERE p.spouse IS NULL';
-        $result = $this->_em->createQuery($dql)->getResult();
+        $result = $this->em->createQuery($dql)->getResult();
 
-        $this->assertEquals(2, count($result));
-        $this->assertTrue($result[0]->getId() > 0);
-        $this->assertNull($result[0]->getSpouse());
+        self::assertCount(2, $result);
+        self::assertGreaterThan(0, $result[0]->getId());
+        self::assertNull($result[0]->getSpouse());
 
-        $this->assertTrue($result[1]->getId() > 0);
-        $this->assertNull($result[1]->getSpouse());
+        self::assertGreaterThan(0, $result[1]->getId());
+        self::assertNull($result[1]->getSpouse());
     }
 
     public function testSelectSubselect()
     {
         $dql = 'SELECT p, (SELECT c.brand FROM Doctrine\Tests\Models\Company\CompanyCar c WHERE p.car = c) brandName '.
                'FROM Doctrine\Tests\Models\Company\CompanyManager p';
-        $result = $this->_em->createQuery($dql)->getArrayResult();
+        $result = $this->em->createQuery($dql)->getArrayResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertEquals("Caramba", $result[0]['brandName']);
+        self::assertCount(1, $result);
+        self::assertEquals("Caramba", $result[0]['brandName']);
     }
 
     public function testInSubselect()
     {
         $dql = "SELECT p.name FROM Doctrine\Tests\Models\Company\CompanyPerson p ".
                "WHERE p.name IN (SELECT n.name FROM Doctrine\Tests\Models\Company\CompanyPerson n WHERE n.name = 'Roman B.')";
-        $result = $this->_em->createQuery($dql)->getScalarResult();
+        $result = $this->em->createQuery($dql)->getScalarResult();
 
-        $this->assertEquals(1, count($result));
-        $this->assertEquals('Roman B.', $result[0]['name']);
+        self::assertCount(1, $result);
+        self::assertEquals('Roman B.', $result[0]['name']);
     }
 
     public function testGroupByMultipleFields()
     {
         $dql = 'SELECT p.department, p.name, count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p '.
                'GROUP BY p.department, p.name';
-        $result = $this->_em->createQuery($dql)->getResult();
+        $result = $this->em->createQuery($dql)->getResult();
 
-        $this->assertEquals(4, count($result));
+        self::assertCount(4, $result);
     }
 
     public function testUpdateAs()
     {
         $dql = 'UPDATE Doctrine\Tests\Models\Company\CompanyEmployee AS p SET p.salary = 1';
-        $this->_em->createQuery($dql)->execute();
+        $this->em->createQuery($dql)->execute();
 
-        $this->assertTrue(count($this->_em->createQuery(
-            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult()) > 0);
+        self::assertGreaterThan(0, $this->em->createQuery(
+            'SELECT count(p.id) FROM Doctrine\Tests\Models\Company\CompanyEmployee p WHERE p.salary = 1')->getResult());
     }
 
     public function testDeleteAs()
     {
         $dql = 'DELETE Doctrine\Tests\Models\Company\CompanyEmployee AS p';
-        $this->_em->createQuery($dql)->getResult();
+        $this->em->createQuery($dql)->getResult();
 
         $dql = 'SELECT count(p) FROM Doctrine\Tests\Models\Company\CompanyEmployee p';
-        $result = $this->_em->createQuery($dql)->getSingleScalarResult();
+        $result = $this->em->createQuery($dql)->getSingleScalarResult();
 
-        $this->assertEquals(0, $result);
+        self::assertEquals(0, $result);
     }
 
     public function generateFixture()
@@ -170,12 +173,12 @@ class AdvancedDqlQueryTest extends OrmFunctionalTestCase
         $person2->addFriend($person4);
         $person3->addFriend($person4);
 
-        $this->_em->persist($car);
-        $this->_em->persist($manager1);
-        $this->_em->persist($person2);
-        $this->_em->persist($person3);
-        $this->_em->persist($person4);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($car);
+        $this->em->persist($manager1);
+        $this->em->persist($person2);
+        $this->em->persist($person3);
+        $this->em->persist($person4);
+        $this->em->flush();
+        $this->em->clear();
     }
 }

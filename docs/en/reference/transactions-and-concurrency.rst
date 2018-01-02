@@ -104,18 +104,10 @@ functionally equivalent to the previously shown code looks as follows:
         $em->persist($user);
     });
 
-.. warning::
-
-    For historical reasons, ``EntityManager#transactional($func)`` will return
-    ``true`` whenever the return value of ``$func`` is loosely false.
-    Some examples of this include ``array()``, ``"0"``, ``""``, ``0``, and
-    ``null``.
-
 The difference between ``Connection#transactional($func)`` and
 ``EntityManager#transactional($func)`` is that the latter
 abstraction flushes the ``EntityManager`` prior to transaction
-commit and rolls back the transaction when an
-exception occurs.
+commit.
 
 .. _transactions-and-concurrency_exception-handling:
 
@@ -279,15 +271,15 @@ either when calling ``EntityManager#find()``:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     try {
         $entity = $em->find('User', $theEntityId, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
         // do the work
-    
+
         $em->flush();
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
@@ -300,16 +292,16 @@ Or you can use ``EntityManager#lock()`` to find out:
     <?php
     use Doctrine\DBAL\LockMode;
     use Doctrine\ORM\OptimisticLockException;
-    
+
     $theEntityId = 1;
     $expectedVersion = 184;
-    
+
     $entity = $em->find('User', $theEntityId);
-    
+
     try {
         // assert version
         $em->lock($entity, LockMode::OPTIMISTIC, $expectedVersion);
-    
+
     } catch(OptimisticLockException $e) {
         echo "Sorry, but someone else has already changed this entity. Please apply the changes again!";
     }
@@ -348,7 +340,7 @@ See the example code, The form (GET Request):
 
     <?php
     $post = $em->find('BlogPost', 123456);
-    
+
     echo '<input type="hidden" name="id" value="' . $post->getId() . '" />';
     echo '<input type="hidden" name="version" value="' . $post->getCurrentVersion() . '" />';
 
@@ -359,7 +351,7 @@ And the change headline action (POST Request):
     <?php
     $postId = (int)$_GET['id'];
     $postVersion = (int)$_GET['version'];
-    
+
     $post = $em->find('BlogPost', $postId, \Doctrine\DBAL\LockMode::OPTIMISTIC, $postVersion);
 
 .. _transactions-and-concurrency_pessimistic-locking:
@@ -382,7 +374,6 @@ transaction is running.
 
 Doctrine 2 currently supports two pessimistic lock modes:
 
-
 -  Pessimistic Write
    (``Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE``), locks the
    underlying database rows for concurrent Read and Write Operations.
@@ -391,7 +382,6 @@ Doctrine 2 currently supports two pessimistic lock modes:
    in write mode.
 
 You can use pessimistic locks in three different scenarios:
-
 
 1. Using
    ``EntityManager#find($className, $id, \Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
@@ -405,5 +395,4 @@ You can use pessimistic locks in three different scenarios:
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_WRITE)``
    or
    ``Query#setLockMode(\Doctrine\DBAL\LockMode::PESSIMISTIC_READ)``
-
 

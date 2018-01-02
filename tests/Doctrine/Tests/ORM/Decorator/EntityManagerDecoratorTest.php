@@ -1,32 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Decorator;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
-class EntityManagerDecoratorTest extends TestCase
+class EntityManagerDecoratorTest extends DoctrineTestCase
 {
-    const VOID_METHODS = [
-        'persist',
-        'remove',
-        'clear',
-        'detach',
-        'refresh',
-        'flush',
-        'initializeObject',
-    ];
-
     /**
      * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $wrapped;
 
+    /**
+     * @var EntityManagerDecorator|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $decorator;
+
     public function setUp()
     {
         $this->wrapped = $this->createMock(EntityManagerInterface::class);
+        $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {};
     }
 
     public function getMethodParameters()
@@ -52,6 +50,11 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), ['name', new ResultSetMapping()]];
         }
 
+        /** Special case EntityManager::transactional() */
+        if ($method->getName() === 'transactional') {
+            return [$method->getName(), [function () {}]];
+        }
+
         if ($method->getNumberOfRequiredParameters() === 0) {
             return [$method->getName(), []];
         }
@@ -60,7 +63,7 @@ class EntityManagerDecoratorTest extends TestCase
             return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
         }
 
-        if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
+        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
             return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
         }
 
@@ -72,16 +75,11 @@ class EntityManagerDecoratorTest extends TestCase
      */
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
-        $return = !in_array($method, self::VOID_METHODS) ? 'INNER VALUE FROM ' . $method : null;
+        $stub = $this->wrapped
+            ->expects(self::once())
+            ->method($method);
 
-        $this->wrapped->expects($this->once())
-            ->method($method)
-            ->with(...$parameters)
-            ->willReturn($return);
-
-        $decorator = new class ($this->wrapped) extends EntityManagerDecorator {
-        };
-
-        $this->assertSame($return, $decorator->$method(...$parameters));
+        call_user_func_array([$stub, 'with'], $parameters);
+        call_user_func_array([$this->decorator, $method], $parameters);
     }
 }

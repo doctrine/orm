@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Common\Cache\ArrayCache;
@@ -37,24 +39,24 @@ class QueryCacheTest extends OrmFunctionalTestCase
      */
     private function getCacheSize(ArrayCache $cache)
     {
-        return sizeof($this->cacheDataReflection->getValue($cache));
+        return count($this->cacheDataReflection->getValue($cache));
     }
 
 
     public function testQueryCache_DependsOnHints()
     {
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = new ArrayCache();
         $query->setQueryCacheDriver($cache);
 
         $query->getResult();
-        $this->assertEquals(1, $this->getCacheSize($cache));
+        self::assertEquals(1, $this->getCacheSize($cache));
 
         $query->setHint('foo', 'bar');
 
         $query->getResult();
-        $this->assertEquals(2, $this->getCacheSize($cache));
+        self::assertEquals(2, $this->getCacheSize($cache));
 
         return $query;
     }
@@ -72,7 +74,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(9999);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -87,7 +89,7 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $query->setMaxResults(10);
 
         $query->getResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     /**
@@ -100,14 +102,14 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $cacheCount = $this->getCacheSize($cache);
 
         $query->getArrayResult();
-        $this->assertEquals($cacheCount + 1, $this->getCacheSize($cache));
+        self::assertEquals($cacheCount + 1, $this->getCacheSize($cache));
     }
 
     public function testQueryCache_NoHitSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $cache = $this->createMock(Cache::class);
 
@@ -123,9 +125,9 @@ class QueryCacheTest extends OrmFunctionalTestCase
 
     public function testQueryCache_HitDoesNotSaveParserResult()
     {
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
 
-        $query = $this->_em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
+        $query = $this->em->createQuery('select ux from Doctrine\Tests\Models\CMS\CmsUser ux');
 
         $sqlExecMock = $this->getMockBuilder(AbstractSqlExecutor::class)
                             ->setMethods(['execute'])
@@ -160,4 +162,3 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
     }
 }
-

@@ -12,7 +12,6 @@ Scenario / Problem
 Given a Content-Management-System, we probably want to add / edit
 some so-called "blocks" and "panels". What are they for?
 
-
 -  A block might be a registration form, some text content, a table
    with information. A good example might also be a small calendar.
 -  A panel is by definition a block that can itself contain blocks.
@@ -22,7 +21,6 @@ some so-called "blocks" and "panels". What are they for?
 So, in this scenario, when building your CMS, you will surely add
 lots of blocks and panels to your pages and you will find yourself
 highly uncomfortable because of the following:
-
 
 -  Every existing page needs to know about the panels it contains -
    therefore, you'll have an association to your panels. But if you've
@@ -58,7 +56,6 @@ the middle of your page, for example).
 
 Such an interface could look like this:
 
-
 .. code-block:: php
 
     <?php
@@ -87,12 +84,12 @@ Such an interface could look like this:
          * @return \Zend_View_Helper_Interface
          */
         public function setView(\Zend_View_Interface $view);
-   
+
         /**
          * @return \Zend_View_Interface
          */
         public function getView();
-   
+
         /**
          * Renders this strategy. This method will be called when the user
          * displays the site.
@@ -100,7 +97,7 @@ Such an interface could look like this:
          * @return string
          */
         public function renderFrontend();
-   
+
         /**
          * Renders the backend of this block. This method will be called when
          * a user tries to reconfigure this block instance.
@@ -118,21 +115,21 @@ Such an interface could look like this:
          * @return array
          */
         public function getRequiredPanelTypes();
-   
+
         /**
          * Determines whether a Block is able to use a given type or not
          * @param string $typeName The typename
          * @return boolean
          */
         public function canUsePanelType($typeName);
-   
+
         public function setBlockEntity(AbstractBlock $block);
 
         public function getBlockEntity();
     }
-   
+
 As you can see, we have a method "setBlockEntity" which ties a potential strategy to an object of type AbstractBlock. This type will simply define the basic behaviour of our blocks and could potentially look something like this:
-   
+
 .. code-block:: php
 
     <?php
@@ -177,7 +174,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
         public function getStrategyClassName() {
             return $this->strategyClassName;
         }
-    
+
         /**
          * Returns the instantiated strategy
          *
@@ -186,7 +183,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
         public function getStrategyInstance() {
             return $this->strategyInstance;
         }
-    
+
         /**
          * Sets the strategy this block / panel should work as. Make sure that you've used
          * this method before persisting the block!
@@ -213,28 +210,28 @@ This might look like this:
 .. code-block:: php
 
     <?php
-    use \Doctrine\ORM,
-        \Doctrine\Common;
-    
+    use Doctrine\ORM,
+        Doctrine\Common;
+
     /**
      * The BlockStrategyEventListener will initialize a strategy after the
      * block itself was loaded.
      */
     class BlockStrategyEventListener implements Common\EventSubscriber {
-    
+
         protected $view;
-    
+
         public function __construct(\Zend_View_Interface $view) {
             $this->view = $view;
         }
-    
+
         public function getSubscribedEvents() {
            return array(ORM\Events::postLoad);
         }
-    
+
         public function postLoad(ORM\Event\LifecycleEventArgs $args) {
             $blockItem = $args->getEntity();
-    
+
             // Both blocks and panels are instances of Block\AbstractBlock
             if ($blockItem instanceof Block\AbstractBlock) {
                 $strategy  = $blockItem->getStrategyClassName();
@@ -250,5 +247,4 @@ This might look like this:
 
 In this example, even some variables are set - like a view object
 or a specific configuration object.
-
 

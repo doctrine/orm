@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1787
@@ -10,10 +14,10 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC1787Foo::class),
-            $this->_em->getClassMetadata(DDC1787Bar::class),
+            $this->em->getClassMetadata(DDC1787Foo::class),
+            $this->em->getClassMetadata(DDC1787Bar::class),
             ]
         );
     }
@@ -23,29 +27,29 @@ class DDC1787Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $bar = new DDC1787Bar;
         $bar2 = new DDC1787Bar;
 
-        $this->_em->persist($bar);
-        $this->_em->persist($bar2);
-        $this->_em->flush();
+        $this->em->persist($bar);
+        $this->em->persist($bar2);
+        $this->em->flush();
 
-        $this->assertSame(1, $bar->getVersion());
+        self::assertSame(1, $bar->getVersion());
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC1787Bar", "foo" = "DDC1787Foo"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"bar" = DDC1787Bar::class, "foo" = DDC1787Foo::class})
  */
 class DDC1787Foo
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Version @Column(type="integer")
+     * @ORM\Version @ORM\Column(type="integer")
      */
     private $version;
 
@@ -56,7 +60,7 @@ class DDC1787Foo
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1787Bar extends DDC1787Foo
 {

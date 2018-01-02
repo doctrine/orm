@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -23,14 +25,14 @@ class DDC1043Test extends OrmFunctionalTestCase
         $user->username = "jgalt";
         $user->status = "+44";
 
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->flush();
 
         $user->status = "44";
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(CmsUser::class, $user->id);
-        $this->assertSame("44", $user->status);
+        $user = $this->em->find(CmsUser::class, $user->id);
+        self::assertSame("44", $user->status);
     }
 }

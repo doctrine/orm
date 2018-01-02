@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -10,14 +13,13 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC735Product::class),
-                $this->_em->getClassMetadata(DDC735Review::class)
+                $this->em->getClassMetadata(DDC735Product::class),
+                $this->em->getClassMetadata(DDC735Review::class)
                 ]
             );
-        } catch(\Exception $e) {
-
+        } catch (\Exception $e) {
         }
     }
 
@@ -28,44 +30,44 @@ class DDC735Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $review  = new DDC735Review($product);
 
         // Persist and flush
-        $this->_em->persist($product);
-        $this->_em->flush();
+        $this->em->persist($product);
+        $this->em->flush();
 
         // Now you see it
-        $this->assertEquals(1, count($product->getReviews()));
+        self::assertCount(1, $product->getReviews());
 
         // Remove the review
         $reviewId = $review->getId();
         $product->removeReview($review);
-        $this->_em->flush();
+        $this->em->flush();
 
         // Now you don't
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should be 0 after removing its only Review');
+        self::assertCount(0, $product->getReviews(), 'count($reviews) should be 0 after removing its only Review');
 
         // Refresh
-        $this->_em->refresh($product);
+        $this->em->refresh($product);
 
         // It should still be 0
-        $this->assertEquals(0, count($product->getReviews()), 'count($reviews) should still be 0 after the refresh');
+        self::assertCount(0, $product->getReviews(), 'count($reviews) should still be 0 after the refresh');
 
         // Review should also not be available anymore
-        $this->assertNull($this->_em->find(DDC735Review::class, $reviewId));
+        self::assertNull($this->em->find(DDC735Review::class, $reviewId));
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC735Product
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @OneToMany(
-     *   targetEntity="DDC735Review",
+     * @ORM\OneToMany(
+     *   targetEntity=DDC735Review::class,
      *   mappedBy="product",
      *   cascade={"persist"},
      *   orphanRemoval=true
@@ -95,17 +97,17 @@ class DDC735Product
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC735Review
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
+     * @ORM\ManyToOne(targetEntity=DDC735Product::class, inversedBy="reviews")
      */
     protected $product;
 

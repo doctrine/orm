@@ -1,39 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
-* @Table(name="navigation_countries")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_countries")
  */
 class NavCountry
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 
     /**
-     * @OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
+     * @ORM\OneToMany(targetEntity=NavPointOfInterest::class, mappedBy="country")
      */
     private $pois;
 
-    function __construct($name) {
+    public function __construct($name)
+    {
         $this->name = $name;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 }

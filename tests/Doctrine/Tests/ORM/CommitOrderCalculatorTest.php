@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\Internal\CommitOrderCalculator;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\Tests\OrmTestCase;
 
 /**
@@ -15,57 +20,69 @@ use Doctrine\Tests\OrmTestCase;
  */
 class CommitOrderCalculatorTest extends OrmTestCase
 {
-    private $_calc;
+    /**
+     * @var CommitOrderCalculator
+     */
+    private $calc;
+
+    /**
+     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $metadataBuildingContext;
 
     protected function setUp()
     {
-        $this->_calc = new CommitOrderCalculator();
+        $this->calc                    = new CommitOrderCalculator();
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            new RuntimeReflectionService()
+        );
     }
 
     public function testCommitOrdering1()
     {
-        $class1 = new ClassMetadata(NodeClass1::class);
-        $class2 = new ClassMetadata(NodeClass2::class);
-        $class3 = new ClassMetadata(NodeClass3::class);
-        $class4 = new ClassMetadata(NodeClass4::class);
-        $class5 = new ClassMetadata(NodeClass5::class);
+        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
+        $class3 = new ClassMetadata(NodeClass3::class, $this->metadataBuildingContext);
+        $class4 = new ClassMetadata(NodeClass4::class, $this->metadataBuildingContext);
+        $class5 = new ClassMetadata(NodeClass5::class, $this->metadataBuildingContext);
 
-        $this->_calc->addNode($class1->name, $class1);
-        $this->_calc->addNode($class2->name, $class2);
-        $this->_calc->addNode($class3->name, $class3);
-        $this->_calc->addNode($class4->name, $class4);
-        $this->_calc->addNode($class5->name, $class5);
+        $this->calc->addNode($class1->getClassName(), $class1);
+        $this->calc->addNode($class2->getClassName(), $class2);
+        $this->calc->addNode($class3->getClassName(), $class3);
+        $this->calc->addNode($class4->getClassName(), $class4);
+        $this->calc->addNode($class5->getClassName(), $class5);
 
-        $this->_calc->addDependency($class1->name, $class2->name, 1);
-        $this->_calc->addDependency($class2->name, $class3->name, 1);
-        $this->_calc->addDependency($class3->name, $class4->name, 1);
-        $this->_calc->addDependency($class5->name, $class1->name, 1);
+        $this->calc->addDependency($class1->getClassName(), $class2->getClassName(), 1);
+        $this->calc->addDependency($class2->getClassName(), $class3->getClassName(), 1);
+        $this->calc->addDependency($class3->getClassName(), $class4->getClassName(), 1);
+        $this->calc->addDependency($class5->getClassName(), $class1->getClassName(), 1);
 
-        $sorted = $this->_calc->sort();
+        $sorted = $this->calc->sort();
 
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class5, $class1, $class2, $class3, $class4];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 
     public function testCommitOrdering2()
     {
-        $class1 = new ClassMetadata(NodeClass1::class);
-        $class2 = new ClassMetadata(NodeClass2::class);
+        $class1 = new ClassMetadata(NodeClass1::class, $this->metadataBuildingContext);
+        $class2 = new ClassMetadata(NodeClass2::class, $this->metadataBuildingContext);
 
-        $this->_calc->addNode($class1->name, $class1);
-        $this->_calc->addNode($class2->name, $class2);
+        $this->calc->addNode($class1->getClassName(), $class1);
+        $this->calc->addNode($class2->getClassName(), $class2);
 
-        $this->_calc->addDependency($class1->name, $class2->name, 0);
-        $this->_calc->addDependency($class2->name, $class1->name, 1);
+        $this->calc->addDependency($class1->getClassName(), $class2->getClassName(), 0);
+        $this->calc->addDependency($class2->getClassName(), $class1->getClassName(), 1);
 
-        $sorted = $this->_calc->sort();
+        $sorted = $this->calc->sort();
 
         // There is only 1 valid ordering for this constellation
         $correctOrder = [$class2, $class1];
 
-        $this->assertSame($correctOrder, $sorted);
+        self::assertSame($correctOrder, $sorted);
     }
 }
 

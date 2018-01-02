@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Logging\DebugStack;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2346
@@ -22,11 +25,11 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC2346Foo::class),
-            $this->_em->getClassMetadata(DDC2346Bar::class),
-            $this->_em->getClassMetadata(DDC2346Baz::class),
+            $this->em->getClassMetadata(DDC2346Foo::class),
+            $this->em->getClassMetadata(DDC2346Bar::class),
+            $this->em->getClassMetadata(DDC2346Baz::class),
             ]
         );
 
@@ -50,62 +53,62 @@ class DDC2346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foo1->bars[] = $baz1;
         $foo1->bars[] = $baz2;
 
-        $this->_em->persist($foo1);
-        $this->_em->persist($foo2);
-        $this->_em->persist($baz1);
-        $this->_em->persist($baz2);
+        $this->em->persist($foo1);
+        $this->em->persist($foo2);
+        $this->em->persist($baz1);
+        $this->em->persist($baz2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger($this->logger);
 
-        $fetchedBazs = $this->_em->getRepository(DDC2346Baz::class)->findAll();
+        $fetchedBazs = $this->em->getRepository(DDC2346Baz::class)->findAll();
 
-        $this->assertCount(2, $fetchedBazs);
-        $this->assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');
+        self::assertCount(2, $fetchedBazs);
+        self::assertCount(2, $this->logger->queries, 'The total number of executed queries is 2, and not n+1');
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2346Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
      * @var DDC2346Bar[]|\Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC2346Bar", mappedBy="foo")
+     * @ORM\OneToMany(targetEntity=DDC2346Bar::class, mappedBy="foo")
      */
     public $bars;
 
     /** Constructor */
-    public function __construct() {
+    public function __construct()
+    {
         $this->bars = new ArrayCollection();
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"bar" = "DDC2346Bar", "baz" = "DDC2346Baz"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"bar" = DDC2346Bar::class, "baz" = DDC2346Baz::class})
  */
 class DDC2346Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2346Foo", inversedBy="bars", fetch="EAGER") */
+    /** @ORM\ManyToOne(targetEntity=DDC2346Foo::class, inversedBy="bars", fetch="EAGER") */
     public $foo;
 }
 
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2346Baz extends DDC2346Bar
 {
-
 }

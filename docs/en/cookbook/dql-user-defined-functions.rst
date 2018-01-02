@@ -17,7 +17,6 @@ and gain access to vendor specific functionalities using the
 ``EntityManager#createNativeQuery()`` API as described in
 the :doc:`Native Query <../reference/native-sql>` chapter.
 
-
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
@@ -45,7 +44,7 @@ configuration:
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
-    
+
     $em = EntityManager::create($dbParams, $config);
 
 The ``$name`` is the name the function will be referred to in the
@@ -96,7 +95,7 @@ discuss it step by step:
         // (1)
         public $firstDateExpression = null;
         public $secondDateExpression = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER); // (2)
@@ -106,7 +105,7 @@ discuss it step by step:
             $this->secondDateExpression = $parser->ArithmeticPrimary(); // (6)
             $parser->match(Lexer::T_CLOSE_PARENTHESIS); // (3)
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATEDIFF(' .
@@ -180,28 +179,28 @@ I'll skip the blah and show the code for this function:
         public $firstDateExpression = null;
         public $intervalExpression = null;
         public $unit = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
-    
+
             $this->firstDateExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_COMMA);
             $parser->match(Lexer::T_IDENTIFIER);
-    
+
             $this->intervalExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_IDENTIFIER);
-    
+
             /* @var $lexer Lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
-    
+
             $parser->match(Lexer::T_CLOSE_PARENTHESIS);
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATE_ADD(' .
@@ -247,5 +246,4 @@ vendor sql functions and extend the DQL languages scope.
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
 `in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
-
 

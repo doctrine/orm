@@ -1,27 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Tweet;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="tweet_tweet")
+ * @ORM\Entity
+ * @ORM\Table(name="tweet_tweet")
  */
 class Tweet
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $content;
 
     /**
-     * @ManyToOne(targetEntity="User", inversedBy="tweets")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tweets")
      */
     public $author;
 

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
 use Doctrine\DBAL\Schema\Comparator;
-use Doctrine\ORM\Tools;
 use Doctrine\Tests\Models;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -13,18 +14,16 @@ use Doctrine\Tests\OrmFunctionalTestCase;
 class DDC214Test extends OrmFunctionalTestCase
 {
     private $classes = [];
-    private $schemaTool = null;
 
     public function setUp()
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         if (strpos($conn->getDriver()->getName(), "sqlite") !== false) {
             $this->markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
 
     /**
@@ -41,7 +40,7 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\CMS\CmsEmail::class,
         ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     /**
@@ -60,23 +59,23 @@ class DDC214Test extends OrmFunctionalTestCase
             Models\Company\CompanyCar::class
         ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     public function assertCreatedSchemaNeedsNoUpdates($classes)
     {
         $classMetadata = [];
-        foreach ($classes AS $class) {
-            $classMetadata[] = $this->_em->getClassMetadata($class);
+        foreach ($classes as $class) {
+            $classMetadata[] = $this->em->getClassMetadata($class);
         }
 
         try {
             $this->schemaTool->createSchema($classMetadata);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // was already created
         }
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->em->getConnection()->getSchemaManager();
 
         $fromSchema = $sm->createSchema();
         $toSchema = $this->schemaTool->getSchemaFromMetadata($classMetadata);
@@ -84,9 +83,9 @@ class DDC214Test extends OrmFunctionalTestCase
         $comparator = new Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
-        $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
+        $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
 
-        $this->assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, "SQL: " . implode(PHP_EOL, $sql));
     }
 }

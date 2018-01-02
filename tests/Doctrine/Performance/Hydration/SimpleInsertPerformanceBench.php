@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Performance\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +29,7 @@ final class SimpleInsertPerformanceBench
      */
     private $tableName;
 
-    public function init()
+    public function init() : void
     {
         $this->entityManager = EntityManagerFactory::getEntityManager([
             CMS\CmsUser::class,
@@ -52,7 +54,7 @@ final class SimpleInsertPerformanceBench
         $this->tableName = $this->entityManager->getClassMetadata(CMS\CmsUser::class)->getTableName();
     }
 
-    public function benchHydration()
+    public function benchHydration() : void
     {
         // Yes, this is a lot of overhead, but I have no better solution other than
         // completely mocking out the DB, which would be silly (query impact is

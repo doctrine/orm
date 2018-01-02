@@ -1,10 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\DatabaseDriver;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Common BaseClass for DatabaseDriver Tests
@@ -13,14 +18,21 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
 {
     protected function convertToClassMetadata(array $entityTables, array $manyTables = [])
     {
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
+        );
+        $sm = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
         $driver->setTables($entityTables, $manyTables);
 
         $metadatas = [];
-        foreach ($driver->getAllClassNames() AS $className) {
-            $class = new ClassMetadataInfo($className);
-            $driver->loadMetadataForClass($className, $class);
+
+        foreach ($driver->getAllClassNames() as $className) {
+            $class = new ClassMetadata($className, $metadataBuildingContext);
+
+            $driver->loadMetadataForClass($className, $class, $metadataBuildingContext);
+
             $metadatas[$className] = $class;
         }
 
@@ -33,18 +45,25 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
      */
     protected function extractClassMetadata(array $classNames)
     {
+        $metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
+        );
         $classNames = array_map('strtolower', $classNames);
         $metadatas = [];
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->em->getConnection()->getSchemaManager();
         $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
             if (!in_array(strtolower($className), $classNames)) {
                 continue;
             }
-            $class = new ClassMetadataInfo($className);
+
+            $class = new ClassMetadata($className, $metadataBuildingContext);
+
             $driver->loadMetadataForClass($className, $class);
+
             $metadatas[$className] = $class;
         }
 

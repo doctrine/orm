@@ -1,45 +1,49 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="navigation_pois")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_pois")
  */
 class NavPointOfInterest
 {
     /**
-     * @Id
-     * @Column(type="integer", name="nav_long")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="nav_long")
      */
     private $long;
 
     /**
-     * @Id
-     * @Column(type="integer", name="nav_lat")
+     * @ORM\Id
+     * @ORM\Column(type="integer", name="nav_lat")
      */
     private $lat;
 
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     private $name;
 
     /**
-     * @ManyToOne(targetEntity="NavCountry", inversedBy="pois")
+     * @ORM\ManyToOne(targetEntity=NavCountry::class, inversedBy="pois")
      */
     private $country;
 
-     /**
-      * @ManyToMany(targetEntity="NavUser", cascade={"persist"})
-      * @JoinTable(name="navigation_pois_visitors",
-      *      inverseJoinColumns={@JoinColumn(name="user_id", referencedColumnName="id")},
-      *      joinColumns={
-      *          @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-      *          @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
-      *      }
-      * )
-      */
+    /**
+     * @ORM\ManyToMany(targetEntity=NavUser::class, cascade={"persist"})
+     * @ORM\JoinTable(name="navigation_pois_visitors",
+     *      inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      joinColumns={
+     *          @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     *      }
+     * )
+     */
     private $visitors;
 
     public function __construct($lat, $long, $name, $country)
@@ -51,19 +55,23 @@ class NavPointOfInterest
         $this->visitors = new \Doctrine\Common\Collections\ArrayCollection;
     }
 
-    public function getLong() {
+    public function getLong()
+    {
         return $this->long;
     }
 
-    public function getLat() {
+    public function getLat()
+    {
         return $this->lat;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getCountry() {
+    public function getCountry()
+    {
         return $this->country;
     }
 

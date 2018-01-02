@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -11,9 +14,9 @@ class DBAL483Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConnection();
+        $this->em->getConnection();
 
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
+        $this->schemaTool = new Tools\SchemaTool($this->em);
     }
 
     /**
@@ -21,7 +24,7 @@ class DBAL483Test extends OrmFunctionalTestCase
      */
     public function testDefaultValueIsComparedCorrectly()
     {
-        $class = $this->_em->getClassMetadata(DBAL483Default::class);
+        $class = $this->em->getClassMetadata(DBAL483Default::class);
 
         $this->schemaTool->createSchema([$class]);
 
@@ -31,27 +34,27 @@ class DBAL483Test extends OrmFunctionalTestCase
             return strpos($sql, 'DBAL483') !== false;
         });
 
-        $this->assertEquals(0, count($updateSql));
+        self::assertCount(0, $updateSql);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DBAL483Default
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(type="integer", options={"default": 0})
+     * @ORM\Column(type="integer", options={"default": 0})
      */
     public $num;
 
     /**
-     * @Column(type="string", options={"default": "foo"})
+     * @ORM\Column(type="string", options={"default": "foo"})
      */
     public $str = "foo";
 }

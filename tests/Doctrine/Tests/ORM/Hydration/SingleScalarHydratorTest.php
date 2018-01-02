@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Internal\Hydration\SingleScalarHydrator;
@@ -70,23 +72,27 @@ class SingleScalarHydratorTest extends HydrationTestCase
         $rsm->addFieldResult('u', 'u__name', 'name');
 
         $stmt = new HydratorMockStatement($resultSet);
-        $hydrator = new SingleScalarHydrator($this->_em);
+        $hydrator = new SingleScalarHydrator($this->em);
 
         if ($name === 'result1') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
-            $this->assertEquals('romanb', $result);
+
+            self::assertEquals('romanb', $result);
+
             return;
         }
 
         if ($name === 'result2') {
             $result = $hydrator->hydrateAll($stmt, $rsm);
-            $this->assertEquals(1, $result);
+
+            self::assertEquals(1, $result);
 
             return;
         }
 
         if (in_array($name, ['result3', 'result4'], true)) {
             $this->expectException(NonUniqueResultException::class);
+
             $hydrator->hydrateAll($stmt, $rsm);
         }
     }

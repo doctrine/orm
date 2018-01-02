@@ -1,33 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC117;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC117Reference
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article", inversedBy="references")
-     * @JoinColumn(name="source_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="references")
+     * @ORM\JoinColumn(name="source_id", referencedColumnName="article_id")
      */
     private $source;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="DDC117Article")
-     * @JoinColumn(name="target_id", referencedColumnName="article_id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class)
+     * @ORM\JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     private $target;
 
     /**
-     * @column(type="string")
+     * @ORM\Column(type="string")
      */
     private $description;
 
     /**
-     * @column(type="datetime")
+     * @ORM\Column(type="datetime")
      */
     private $created;
 

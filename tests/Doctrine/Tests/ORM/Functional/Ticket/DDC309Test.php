@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC309Test extends OrmFunctionalTestCase
@@ -9,10 +12,10 @@ class DDC309Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC309Country::class),
-            $this->_em->getClassMetadata(DDC309User::class),
+            $this->em->getClassMetadata(DDC309Country::class),
+            $this->em->getClassMetadata(DDC309User::class),
             ]
         );
     }
@@ -24,53 +27,53 @@ class DDC309Test extends OrmFunctionalTestCase
         $u1 = new DDC309User();
         $u2 = new DDC309User();
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
-        $this->_em->persist($u1);
-        $this->_em->persist($u2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($c2);
+        $this->em->persist($u1);
+        $this->em->persist($u2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $q = $this->_em->createQuery('SELECT c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309Country c')->iterate();
+        $q = $this->em->createQuery('SELECT c FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309Country c')->iterate();
         $c = $q->next();
 
-        $this->assertEquals(1, $c[0]->id);
+        self::assertEquals(1, $c[0]->id);
 
-        $r = $this->_em->createQuery('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309User u')->iterate();
+        $r = $this->em->createQuery('SELECT u FROM Doctrine\Tests\ORM\Functional\Ticket\DDC309User u')->iterate();
         $u = $r->next(); // This line breaks
 
-        $this->assertEquals(1, $u[0]->id);
+        self::assertEquals(1, $u[0]->id);
 
         $c = $q->next();
         $u = $r->next();
 
-        $this->assertEquals(2, $c[0]->id);
-        $this->assertEquals(2, $u[0]->id);
+        self::assertEquals(2, $c[0]->id);
+        self::assertEquals(2, $u[0]->id);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC309Country
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC309User
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
@@ -37,7 +39,7 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->_em)]));
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add(new MappingDescribeCommand());
 
         $this->command = $this->application->find('orm:mapping:describe');
@@ -87,4 +89,3 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         );
     }
 }
-

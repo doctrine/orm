@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 
 /**
@@ -27,52 +28,14 @@ class EntityPersisterMock extends BasicEntityPersister
     private $deletes = [];
 
     /**
-     * @var int
-     */
-    private $identityColumnValueCounter = 0;
-
-    /**
-     * @var int|null
+     * @var string|null
      */
     private $mockIdGeneratorType;
-
-    /**
-     * @var array
-     */
-    private $postInsertIds = [];
 
     /**
      * @var bool
      */
     private $existsCalled = false;
-
-    /**
-     * @param object $entity
-     *
-     * @return mixed
-     */
-    public function addInsert($entity)
-    {
-        $this->inserts[] = $entity;
-        if ( ! is_null($this->mockIdGeneratorType) && $this->mockIdGeneratorType == ClassMetadata::GENERATOR_TYPE_IDENTITY
-                || $this->class->isIdGeneratorIdentity()) {
-            $id = $this->identityColumnValueCounter++;
-            $this->postInsertIds[] = [
-                'generatedId' => $id,
-                'entity' => $entity,
-            ];
-            return $id;
-        }
-        return null;
-    }
-
-    /**
-     * @return array
-     */
-    public function executeInserts()
-    {
-        return $this->postInsertIds;
-    }
 
     /**
      * @param int $genType
@@ -82,6 +45,18 @@ class EntityPersisterMock extends BasicEntityPersister
     public function setMockIdGeneratorType($genType)
     {
         $this->mockIdGeneratorType = $genType;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function insert($entity)
+    {
+        $this->inserts[] = $entity;
+
+        if ($this->class->getValueGenerationPlan()->containsDeferred()) {
+            $this->class->getValueGenerationPlan()->executeDeferred($this->em, $entity);
+        }
     }
 
     /**
@@ -138,7 +113,6 @@ class EntityPersisterMock extends BasicEntityPersister
     public function reset()
     {
         $this->existsCalled = false;
-        $this->identityColumnValueCounter = 0;
         $this->inserts = [];
         $this->updates = [];
         $this->deletes = [];

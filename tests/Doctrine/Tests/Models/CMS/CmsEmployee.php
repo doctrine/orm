@@ -1,44 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CmsEmployee
  *
  * @author robo
- * @Entity
- * @Table(name="cms_employees")
+ *
+ * @ORM\Entity
+ * @ORM\Table(name="cms_employees")
  */
 class CmsEmployee
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="CmsEmployee")
-     * @JoinColumn(name="spouse_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=CmsEmployee::class)
+     * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id")
      */
     private $spouse;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getSpouse() {
+    public function getSpouse()
+    {
         return $this->spouse;
     }
 }
-

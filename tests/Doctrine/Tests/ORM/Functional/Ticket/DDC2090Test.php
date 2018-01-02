@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyEmployee;
@@ -33,12 +35,12 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $employee2->setDepartment("QA");
         $employee2->setSalary(100);
 
-        $this->_em->persist($employee1);
-        $this->_em->persist($employee2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($employee1);
+        $this->em->persist($employee2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->createQueryBuilder()
+        $this->em->createQueryBuilder()
             ->update(CompanyEmployee::class, 'e')
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
@@ -54,7 +56,7 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->useQueryCache(true)
             ->execute();
 
-        $this->_em->createQueryBuilder()
+        $this->em->createQueryBuilder()
             ->update(CompanyEmployee::class, 'e')
             ->set('e.startDate', ':date')
             ->set('e.salary', ':salary')
@@ -70,17 +72,17 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->useQueryCache(true)
             ->execute();
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $e1 = $this->_em->find(CompanyEmployee::class, $employee1->getId());
-        $e2 = $this->_em->find(CompanyEmployee::class, $employee2->getId());
+        $e1 = $this->em->find(CompanyEmployee::class, $employee1->getId());
+        $e2 = $this->em->find(CompanyEmployee::class, $employee2->getId());
 
-        $this->assertEquals(101, $e1->getSalary());
-        $this->assertEquals(102, $e2->getSalary());
-        $this->assertEquals($date1, $e1->getStartDate());
-        $this->assertEquals($date2, $e2->getStartDate());
+        self::assertEquals(101, $e1->getSalary());
+        self::assertEquals(102, $e2->getSalary());
+        self::assertEquals($date1, $e1->getStartDate());
+        self::assertEquals($date2, $e2->getStartDate());
 
-        $this->_em->createQueryBuilder()
+        $this->em->createQueryBuilder()
             ->update(CompanyEmployee::class, 'e')
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
@@ -90,7 +92,7 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->useQueryCache(true)
             ->execute();
 
-        $this->_em->createQueryBuilder()
+        $this->em->createQueryBuilder()
             ->update(CompanyEmployee::class, 'e')
             ->set('e.startDate', '?1')
             ->set('e.salary', '?2')
@@ -101,14 +103,14 @@ class DDC2090Test extends \Doctrine\Tests\OrmFunctionalTestCase
             ->execute();
 
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $e1 = $this->_em->find(CompanyEmployee::class, $employee1->getId());
-        $e2 = $this->_em->find(CompanyEmployee::class, $employee2->getId());
+        $e1 = $this->em->find(CompanyEmployee::class, $employee1->getId());
+        $e2 = $this->em->find(CompanyEmployee::class, $employee2->getId());
 
-        $this->assertEquals(101, $e1->getSalary());
-        $this->assertEquals(102, $e2->getSalary());
-        $this->assertEquals($date1, $e1->getStartDate());
-        $this->assertEquals($date2, $e2->getStartDate());
+        self::assertEquals(101, $e1->getSalary());
+        self::assertEquals(102, $e2->getSalary());
+        self::assertEquals($date1, $e1->getStartDate());
+        self::assertEquals($date2, $e2->getStartDate());
     }
 }

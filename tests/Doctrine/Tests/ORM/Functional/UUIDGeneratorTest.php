@@ -1,5 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,13 +16,13 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != 'mysql') {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() != 'mysql') {
             $this->markTestSkipped('Currently restricted to MySQL platform.');
         }
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(UUIDEntity::class)
+            $this->em->getClassMetadata(UUIDEntity::class)
             ]
         );
     }
@@ -26,18 +31,18 @@ class UUIDGeneratorTest extends OrmFunctionalTestCase
     {
         $entity = new UUIDEntity();
 
-        $this->_em->persist($entity);
-        $this->assertNotNull($entity->getId());
-        $this->assertTrue(strlen($entity->getId()) > 0);
+        $this->em->persist($entity);
+        self::assertNotNull($entity->getId());
+        self::assertGreaterThan(0, strlen($entity->getId()));
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class UUIDEntity
 {
-    /** @Id @Column(type="string") @GeneratedValue(strategy="UUID") */
+    /** @ORM\Id @ORM\Column(type="string") @ORM\GeneratedValue(strategy="UUID") */
     private $id;
     /**
      * Get id.

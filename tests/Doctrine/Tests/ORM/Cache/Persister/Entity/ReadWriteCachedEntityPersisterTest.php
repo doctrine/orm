@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -32,7 +34,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
     {
         return new ReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }
@@ -150,11 +152,11 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testTransactionCommitShouldClearQueue()
@@ -181,11 +183,11 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteLockFailureShouldIgnoreQueue()
@@ -209,7 +211,7 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->delete($entity);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateLockFailureShouldIgnoreQueue()
@@ -233,6 +235,6 @@ class ReadWriteCachedEntityPersisterTest extends AbstractEntityPersisterTest
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
         $persister->update($entity);
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

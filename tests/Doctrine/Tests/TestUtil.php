@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
@@ -42,7 +44,8 @@ class TestUtil
      */
     public static function getConnection()
     {
-        $conn = DriverManager::getConnection(self::getConnectionParams());
+        $params = self::getConnectionParams();
+        $conn   = DriverManager::getConnection($params);
 
         self::addDbEventSubscribers($conn);
 

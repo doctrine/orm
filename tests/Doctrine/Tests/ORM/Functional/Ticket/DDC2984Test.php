@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2984
@@ -24,9 +27,9 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         }
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                $this->_em->getClassMetadata(DDC2984User::class),
+                $this->em->getClassMetadata(DDC2984User::class),
                 ]
             );
         } catch (\Exception $e) {
@@ -39,38 +42,38 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
 
-        $this->_em->persist($user);
-        $this->_em->flush($user);
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
+        $repository = $this->em->getRepository(__NAMESPACE__ . "\DDC2984User");
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
-        $this->assertTrue($user->sameIdentityAs($sameUser));
+        self::assertTrue($user->sameIdentityAs($sameUser));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
-        $this->assertNotSame($user, $equalUser);
-        $this->assertTrue($user->sameIdentityAs($equalUser));
+        self::assertNotSame($user, $equalUser);
+        self::assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 
-/** @Entity @Table(name="users") */
+/** @ORM\Entity @ORM\Table(name="users") */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id @ORM\Column(type="ddc2984_domain_user_id")
+     * @ORM\GeneratedValue(strategy="NONE")
      *
      * @var DDC2984DomainUserId
      */
     private $userId;
 
-    /** @Column(type="string", length=50) */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)

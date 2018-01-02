@@ -1,10 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Types\StringType;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 final class GH5562Test extends OrmFunctionalTestCase
@@ -15,11 +15,11 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-                $this->_em->getClassMetadata(GH5562User::class),
-                $this->_em->getClassMetadata(GH5562Manager::class),
-                $this->_em->getClassMetadata(GH5562Merchant::class),
+                $this->em->getClassMetadata(GH5562User::class),
+                $this->em->getClassMetadata(GH5562Manager::class),
+                $this->em->getClassMetadata(GH5562Merchant::class),
             ]
         );
     }
@@ -38,76 +38,76 @@ final class GH5562Test extends OrmFunctionalTestCase
 
         $merchant->name = 'Merchant';
 
-        $this->_em->persist($merchant);
-        $this->_em->persist($manager);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($merchant);
+        $this->em->persist($manager);
+        $this->em->flush();
+        $this->em->clear();
 
-        $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
+        $merchant = $this->em->find(GH5562Merchant::class, $merchant->id);
 
         $merchant->name = mt_rand();
         $merchant->manager->username = 'usernameUPDATE';
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $merchant = $this->_em->find(GH5562Merchant::class, $merchant->id);
+        $merchant = $this->em->find(GH5562Merchant::class, $merchant->id);
 
         self::assertEquals('usernameUPDATE', $merchant->manager->username);
     }
 }
 
 /**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class GH5562Merchant
 {
     /**
      * @var integer
      *
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="IDENTITY")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     public $id;
 
     /**
      * @var GH5562Manager
      *
-     * @OneToOne(targetEntity=GH5562Manager::class, mappedBy="merchant")
-     * @Cache(usage="NONSTRICT_READ_WRITE")
+     * @ORM\OneToOne(targetEntity=GH5562Manager::class, mappedBy="merchant")
+     * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
      */
     public $manager;
 
     /**
      * @var string
      *
-     * @Column(name="name", type="string", length=255, nullable=false)
+     * @ORM\Column(name="name", type="string", length=255, nullable=false)
      */
     public $name;
 }
 
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorMap({"MANAGER"  = GH5562Manager::class})
+ * @ORM\Entity
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorMap({"MANAGER"  = GH5562Manager::class})
  */
 abstract class GH5562User
 {
     /**
      * @var integer
      *
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="IDENTITY")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     public $id;
 }
 
 /**
- * @Entity
- * @Cache(usage="NONSTRICT_READ_WRITE")
+ * @ORM\Entity
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE")
  */
 class GH5562Manager extends GH5562User
 {
@@ -115,14 +115,14 @@ class GH5562Manager extends GH5562User
     /**
      * @var string
      *
-     * @Column
+     * @ORM\Column
      */
     public $username;
 
     /**
      * @var GH5562Merchant
      *
-     * @OneToOne(targetEntity=GH5562Merchant::class, inversedBy="manager")
+     * @ORM\OneToOne(targetEntity=GH5562Merchant::class, inversedBy="manager")
      */
     public $merchant;
 }

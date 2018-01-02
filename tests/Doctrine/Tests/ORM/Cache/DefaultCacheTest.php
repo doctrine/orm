@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache;
@@ -30,10 +32,11 @@ class DefaultCacheTest extends OrmTestCase
 
     protected function setUp()
     {
-        parent::enableSecondLevelCache();
+        $this->enableSecondLevelCache();
+
         parent::setUp();
 
-        $this->em    = $this->_getTestEntityManager();
+        $this->em    = $this->getTestEntityManager();
         $this->cache = new DefaultCache($this->em);
     }
 
@@ -45,9 +48,9 @@ class DefaultCacheTest extends OrmTestCase
     private function putEntityCacheEntry($className, array $identifier, array $data)
     {
         $metadata   = $this->em->getClassMetadata($className);
-        $cacheKey   = new EntityCacheKey($metadata->name, $identifier);
-        $cacheEntry = new EntityCacheEntry($metadata->name, $data);
-        $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->rootEntityName);
+        $cacheKey   = new EntityCacheKey($metadata->getClassName(), $identifier);
+        $cacheEntry = new EntityCacheEntry($metadata->getClassName(), $data);
+        $persister  = $this->em->getUnitOfWork()->getEntityPersister($metadata->getRootClassName());
 
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }
@@ -61,188 +64,180 @@ class DefaultCacheTest extends OrmTestCase
     private function putCollectionCacheEntry($className, $association, array $ownerIdentifier, array $data)
     {
         $metadata   = $this->em->getClassMetadata($className);
-        $cacheKey   = new CollectionCacheKey($metadata->name, $association, $ownerIdentifier);
+        $cacheKey   = new CollectionCacheKey($metadata->getClassName(), $association, $ownerIdentifier);
         $cacheEntry = new CollectionCacheEntry($data);
-        $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getAssociationMapping($association));
+        $persister  = $this->em->getUnitOfWork()->getCollectionPersister($metadata->getProperty($association));
 
         $persister->getCacheRegion()->put($cacheKey, $cacheEntry);
     }
 
     public function testImplementsCache()
     {
-        $this->assertInstanceOf(Cache::class, $this->cache);
+        self::assertInstanceOf(Cache::class, $this->cache);
     }
 
     public function testGetEntityCacheRegionAccess()
     {
-        $this->assertInstanceOf(Cache\Region::class, $this->cache->getEntityCacheRegion(State::class));
-        $this->assertNull($this->cache->getEntityCacheRegion(CmsUser::class));
+        self::assertInstanceOf(Cache\Region::class, $this->cache->getEntityCacheRegion(State::class));
+        self::assertNull($this->cache->getEntityCacheRegion(CmsUser::class));
     }
 
     public function testGetCollectionCacheRegionAccess()
     {
-        $this->assertInstanceOf(Cache\Region::class, $this->cache->getCollectionCacheRegion(State::class, 'cities'));
-        $this->assertNull($this->cache->getCollectionCacheRegion(CmsUser::class, 'phonenumbers'));
+        self::assertInstanceOf(Cache\Region::class, $this->cache->getCollectionCacheRegion(State::class, 'cities'));
+        self::assertNull($this->cache->getCollectionCacheRegion(CmsUser::class, 'phonenumbers'));
     }
 
     public function testContainsEntity()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
+        self::assertFalse($this->cache->containsEntity(Country::class, 1));
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
-        $this->assertFalse($this->cache->containsEntity(CmsUser::class, 1));
+        self::assertTrue($this->cache->containsEntity(Country::class, 1));
+        self::assertFalse($this->cache->containsEntity(CmsUser::class, 1));
     }
 
     public function testEvictEntity()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
+        self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
         $this->cache->evictEntity(Country::class, 1);
         $this->cache->evictEntity(CmsUser::class, 1);
 
-        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
+        self::assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testEvictEntityRegion()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
+        self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
         $this->cache->evictEntityRegion(Country::class);
         $this->cache->evictEntityRegion(CmsUser::class);
 
-        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
+        self::assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testEvictEntityRegions()
     {
-        $identifier = ['id'=>1];
-        $className  = Country::class;
+        $identifier = ['id' => 1];
         $cacheEntry = array_merge($identifier, ['name' => 'Brazil']);
 
-        $this->putEntityCacheEntry($className, $identifier, $cacheEntry);
+        $this->putEntityCacheEntry(Country::class, $identifier, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsEntity(Country::class, 1));
+        self::assertTrue($this->cache->containsEntity(Country::class, 1));
 
         $this->cache->evictEntityRegions();
 
-        $this->assertFalse($this->cache->containsEntity(Country::class, 1));
+        self::assertFalse($this->cache->containsEntity(Country::class, 1));
     }
 
     public function testContainsCollection()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
+        self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
-        $this->assertFalse($this->cache->containsCollection(CmsUser::class, 'phonenumbers', 1));
+        self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
+        self::assertFalse($this->cache->containsCollection(CmsUser::class, 'phonenumbers', 1));
     }
 
     public function testEvictCollection()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
+        self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->cache->evictCollection($className, $association, $ownerId);
+        $this->cache->evictCollection(State::class, $association, $ownerId);
         $this->cache->evictCollection(CmsUser::class, 'phonenumbers', 1);
 
-        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
+        self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testEvictCollectionRegion()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
+        self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
-        $this->cache->evictCollectionRegion($className, $association);
+        $this->cache->evictCollectionRegion(State::class, $association);
         $this->cache->evictCollectionRegion(CmsUser::class, 'phonenumbers');
 
-        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
+        self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testEvictCollectionRegions()
     {
-        $ownerId        = ['id'=>1];
-        $className      = State::class;
-        $association    = 'cities';
-        $cacheEntry     = [
+        $ownerId     = ['id' => 1];
+        $association = 'cities';
+        $cacheEntry  = [
             ['id' => 11],
             ['id' => 12],
         ];
 
-        $this->putCollectionCacheEntry($className, $association, $ownerId, $cacheEntry);
+        $this->putCollectionCacheEntry(State::class, $association, $ownerId, $cacheEntry);
 
-        $this->assertTrue($this->cache->containsCollection(State::class, $association, 1));
+        self::assertTrue($this->cache->containsCollection(State::class, $association, 1));
 
         $this->cache->evictCollectionRegions();
 
-        $this->assertFalse($this->cache->containsCollection(State::class, $association, 1));
+        self::assertFalse($this->cache->containsCollection(State::class, $association, 1));
     }
 
     public function testQueryCache()
     {
-        $this->assertFalse($this->cache->containsQuery('foo'));
+        self::assertFalse($this->cache->containsQuery('foo'));
 
         $defaultQueryCache = $this->cache->getQueryCache();
         $fooQueryCache     = $this->cache->getQueryCache('foo');
 
-        $this->assertInstanceOf(Cache\QueryCache::class, $defaultQueryCache);
-        $this->assertInstanceOf(Cache\QueryCache::class, $fooQueryCache);
-        $this->assertSame($defaultQueryCache, $this->cache->getQueryCache());
-        $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
+        self::assertInstanceOf(Cache\QueryCache::class, $defaultQueryCache);
+        self::assertInstanceOf(Cache\QueryCache::class, $fooQueryCache);
+        self::assertSame($defaultQueryCache, $this->cache->getQueryCache());
+        self::assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
 
         $this->cache->evictQueryRegion();
         $this->cache->evictQueryRegion('foo');
         $this->cache->evictQueryRegions();
 
-        $this->assertTrue($this->cache->containsQuery('foo'));
+        self::assertTrue($this->cache->containsQuery('foo'));
 
-        $this->assertSame($defaultQueryCache, $this->cache->getQueryCache());
-        $this->assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
+        self::assertSame($defaultQueryCache, $this->cache->getQueryCache());
+        self::assertSame($fooQueryCache, $this->cache->getQueryCache('foo'));
     }
 
     public function testToIdentifierArrayShouldLookupForEntityIdentifier()
@@ -257,7 +252,6 @@ class DefaultCacheTest extends OrmTestCase
         $method->setAccessible(true);
         $property->setValue($entity, $identifier);
 
-        $this->assertEquals(['id'=>$identifier], $method->invoke($this->cache, $metadata, $identifier));
+        self::assertEquals(['id'=>$identifier], $method->invoke($this->cache, $metadata, $identifier));
     }
-
 }

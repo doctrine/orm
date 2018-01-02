@@ -1,26 +1,12 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
 use Doctrine\ORM\Query\AST\Functions\IdentityFunction;
@@ -49,7 +35,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      *
      * @var int
      */
-    private $_aliasCounter = 0;
+    private $aliasCounter = 0;
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve DISTINCT ids
@@ -63,7 +49,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        $queryComponents = $this->_getQueryComponents();
+        $queryComponents = $this->getQueryComponents();
         // Get the root entity and alias from the AST fromClause
         $from      = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot  = reset($from);
@@ -71,21 +57,21 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $rootClass = $queryComponents[$rootAlias]['metadata'];
 
         $this->validate($AST);
-        $identifier = $rootClass->getSingleIdentifierFieldName();
+        $property = $rootClass->getProperty($rootClass->getSingleIdentifierFieldName());
 
-        if (isset($rootClass->associationMappings[$identifier])) {
-            throw new \RuntimeException("Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.");
+        if ($property instanceof AssociationMetadata) {
+            throw new \RuntimeException(
+                "Paginating an entity with foreign key as identifier only works when using the Output Walkers. " .
+                "Call Paginator#setUseOutputWalkers(true) before iterating the paginator."
+            );
         }
 
-        $this->_getQuery()->setHint(
-            self::IDENTIFIER_TYPE,
-            Type::getType($rootClass->fieldMappings[$identifier]['type'])
-        );
+        $this->getQuery()->setHint(self::IDENTIFIER_TYPE, $property->getType());
 
         $pathExpression = new PathExpression(
             PathExpression::TYPE_STATE_FIELD | PathExpression::TYPE_SINGLE_VALUED_ASSOCIATION,
             $rootAlias,
-            $identifier
+            $property->getName()
         );
 
         $pathExpression->type = PathExpression::TYPE_STATE_FIELD;
@@ -100,7 +86,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         foreach ($AST->orderByClause->orderByItems as $item) {
             if ($item->expression instanceof PathExpression) {
                 $AST->selectClause->selectExpressions[] = new SelectExpression(
-                    $this->createSelectExpressionItem($item->expression), '_dctrn_ord' . $this->_aliasCounter++
+                    $this->createSelectExpressionItem($item->expression), '_dctrn_ord' . $this->aliasCounter++
                 );
 
                 continue;
@@ -130,24 +116,24 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         // a limit, a fetched to-many join, and an order by condition that
         // references a column from the fetch joined table.
         $queryComponents = $this->getQueryComponents();
-        $query           = $this->_getQuery();
+        $query           = $this->getQuery();
         $from            = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot        = reset($from);
 
-        if ($query instanceof Query
-            && null !== $query->getMaxResults()
-            && $AST->orderByClause
-            && count($fromRoot->joins)) {
+        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && count($fromRoot->joins)) {
             // Check each orderby item.
             // TODO: check complex orderby items too...
             foreach ($AST->orderByClause->orderByItems as $orderByItem) {
                 $expression = $orderByItem->expression;
-                if ($orderByItem->expression instanceof PathExpression
-                    && isset($queryComponents[$expression->identificationVariable])) {
+
+                if ($expression instanceof PathExpression && isset($queryComponents[$expression->identificationVariable])) {
                     $queryComponent = $queryComponents[$expression->identificationVariable];
-                    if (isset($queryComponent['parent'])
-                        && $queryComponent['relation']['type'] & ClassMetadataInfo::TO_MANY) {
-                        throw new \RuntimeException("Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+
+                    if (isset($queryComponent['parent']) && $queryComponent['relation'] instanceof ToManyAssociationMetadata) {
+                        throw new \RuntimeException(
+                            "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a "
+                            . "fetch joined to-many association. Use output walkers."
+                        );
                     }
                 }
             }

@@ -1,59 +1,77 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="company_employees")
+ * @ORM\Entity
+ * @ORM\Table(name="company_employees")
  */
 class CompanyEmployee extends CompanyPerson
 {
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     private $salary;
 
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     private $department;
 
     /**
-     * @Column(type="datetime", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
-     * @ManyToMany(targetEntity="CompanyContract", mappedBy="engineers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyContract::class,
+     *     mappedBy="engineers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $contracts;
 
     /**
-     * @OneToMany(targetEntity="CompanyFlexUltraContract", mappedBy="salesPerson", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(
+     *     targetEntity=CompanyFlexUltraContract::class,
+     *     mappedBy="salesPerson",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $soldContracts;
 
-    public function getSalary() {
+    public function getSalary()
+    {
         return $this->salary;
     }
 
-    public function setSalary($salary) {
+    public function setSalary($salary)
+    {
         $this->salary = $salary;
     }
 
-    public function getDepartment() {
+    public function getDepartment()
+    {
         return $this->department;
     }
 
-    public function setDepartment($dep) {
+    public function setDepartment($dep)
+    {
         $this->department = $dep;
     }
 
-    public function getStartDate() {
+    public function getStartDate()
+    {
         return $this->startDate;
     }
 
-    public function setStartDate($date) {
+    public function setStartDate($date)
+    {
         $this->startDate = $date;
     }
 }

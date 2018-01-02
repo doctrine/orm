@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 class DDC448Test extends OrmFunctionalTestCase
@@ -9,68 +12,69 @@ class DDC448Test extends OrmFunctionalTestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
+        $this->schemaTool->createSchema(
             [
-            $this->_em->getClassMetadata(DDC448MainTable::class),
-            $this->_em->getClassMetadata(DDC448ConnectedClass::class),
-            $this->_em->getClassMetadata(DDC448SubTable::class),
+            $this->em->getClassMetadata(DDC448MainTable::class),
+            $this->em->getClassMetadata(DDC448ConnectedClass::class),
+            $this->em->getClassMetadata(DDC448SubTable::class),
             ]
         );
     }
 
     public function testIssue()
     {
-        $q = $this->_em->createQuery("select b from ".__NAMESPACE__."\\DDC448SubTable b where b.connectedClassId = ?1");
-        $this->assertEquals(
-            strtolower('SELECT d0_.id AS id_0, d0_.discr AS discr_1, d0_.connectedClassId AS connectedClassId_2 FROM SubTable s1_ INNER JOIN DDC448MainTable d0_ ON s1_.id = d0_.id WHERE d0_.connectedClassId = ?'),
-            strtolower($q->getSQL())
+        $q = $this->em->createQuery("select b from ".__NAMESPACE__."\\DDC448SubTable b where b.connectedClassId = ?1");
+
+        self::assertSQLEquals(
+            'SELECT t0."id" AS c0, t0."discr" AS c1, t0."connectedClassId" AS c2 FROM "SubTable" t1 INNER JOIN "DDC448MainTable" t0 ON t1."id" = t0."id" WHERE t0."connectedClassId" = ?',
+            $q->getSQL()
         );
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="smallint")
- * @DiscriminatorMap({
- *     "0" = "DDC448MainTable",
- *     "1" = "DDC448SubTable"
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="smallint")
+ * @ORM\DiscriminatorMap({
+ *     "0" = DDC448MainTable::class,
+ *     "1" = DDC448SubTable::class
  * })
  */
 class DDC448MainTable
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
-     * @JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
+     * @ORM\ManyToOne(targetEntity=DDC448ConnectedClass::class,  cascade={"all"}, fetch="EAGER")
+     * @ORM\JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $connectedClassId;
 }
 
 /**
- * @Entity
- * @Table(name="connectedClass")
- * @HasLifecycleCallbacks
+ * @ORM\Entity
+ * @ORM\Table(name="connectedClass")
+ * @ORM\HasLifecycleCallbacks
  */
 class DDC448ConnectedClass
 {
     /**
-     * @Id
-     * @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id; // connected with DDC448MainTable
 }
 
 /**
- * @Entity
- * @Table(name="SubTable")
+ * @ORM\Entity
+ * @ORM\Table(name="SubTable")
  */
 class DDC448SubTable extends DDC448MainTable
 {

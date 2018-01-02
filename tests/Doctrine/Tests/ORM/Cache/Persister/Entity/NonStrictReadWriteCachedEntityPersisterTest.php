@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\EntityCacheEntry;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\Persister\Entity\NonStrictReadWriteCachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\Tests\Models\Cache\Country;
@@ -19,7 +21,7 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
     {
         return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
     }
@@ -37,11 +39,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
         $persister->update($entity);
         $persister->delete($entity);
 
-        $this->assertCount(2, $property->getValue($persister));
+        self::assertCount(2, $property->getValue($persister));
 
         $persister->afterTransactionRolledBack();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testInsertTransactionCommitShouldPutCache()
@@ -59,26 +61,18 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
             ->with($this->equalTo($key), $this->equalTo($entry));
 
         $this->entityPersister->expects($this->once())
-            ->method('addInsert')
+            ->method('insert')
             ->with($this->equalTo($entity));
-
-        $this->entityPersister->expects($this->once())
-            ->method('getInserts')
-            ->will($this->returnValue([$entity]));
-
-        $this->entityPersister->expects($this->once())
-            ->method('executeInserts');
 
         $this->em->getUnitOfWork()->registerManaged($entity, ['id'=>1], ['id'=>1, 'name'=>'Foo']);
 
-        $persister->addInsert($entity);
-        $persister->executeInserts();
+        $persister->insert($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testUpdateTransactionCommitShouldPutCache()
@@ -103,11 +97,11 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $persister->update($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 
     public function testDeleteTransactionCommitShouldEvictCache()
@@ -131,10 +125,10 @@ class NonStrictReadWriteCachedEntityPersisterTest extends AbstractEntityPersiste
 
         $persister->delete($entity);
 
-        $this->assertCount(1, $property->getValue($persister));
+        self::assertCount(1, $property->getValue($persister));
 
         $persister->afterTransactionComplete();
 
-        $this->assertCount(0, $property->getValue($persister));
+        self::assertCount(0, $property->getValue($persister));
     }
 }

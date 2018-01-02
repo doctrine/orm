@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
@@ -29,24 +31,24 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->article1 = new DDC117Article("Foo");
         $this->article2 = new DDC117Article("Bar");
 
-        $this->_em->persist($this->article1);
-        $this->_em->persist($this->article2);
-        $this->_em->flush();
+        $this->em->persist($this->article1);
+        $this->em->persist($this->article2);
+        $this->em->flush();
 
         $link = new DDC117Link($this->article1, $this->article2, "Link-Description");
-        $this->_em->persist($link);
+        $this->em->persist($link);
 
         $this->reference = new DDC117Reference($this->article1, $this->article2, "Test-Description");
-        $this->_em->persist($this->reference);
+        $this->em->persist($this->reference);
 
         $this->translation = new DDC117Translation($this->article1, "en", "Bar");
-        $this->_em->persist($this->translation);
+        $this->em->persist($this->translation);
 
         $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
-        $this->_em->persist($this->articleDetails);
-        $this->_em->flush();
+        $this->em->persist($this->articleDetails);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
     }
 
     /**
@@ -56,36 +58,36 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
-        $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
-        $this->assertInstanceOf(DDC117Reference::class, $mapRef);
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->source());
-        $this->assertSame($mapRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        $mapRef = $this->em->find(DDC117Reference::class, $idCriteria);
+        self::assertInstanceOf(DDC117Reference::class, $mapRef);
+        self::assertInstanceOf(DDC117Article::class, $mapRef->target());
+        self::assertInstanceOf(DDC117Article::class, $mapRef->source());
+        self::assertSame($mapRef, $this->em->find(DDC117Reference::class, $idCriteria));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE r.source = ?1';
-        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
+        $dqlRef = $this->em->createQuery($dql)->setParameter(1, 1)->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Reference::class, $mapRef);
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $mapRef->source());
-        $this->assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertInstanceOf(DDC117Reference::class, $mapRef);
+        self::assertInstanceOf(DDC117Article::class, $mapRef->target());
+        self::assertInstanceOf(DDC117Article::class, $mapRef->source());
+        self::assertSame($dqlRef, $this->em->find(DDC117Reference::class, $idCriteria));
 
-        $this->_em->clear();
-
-        $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
-        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
-
-        $this->assertInstanceOf(DDC117Reference::class, $dqlRef);
-        $this->assertInstanceOf(DDC117Article::class, $dqlRef->target());
-        $this->assertInstanceOf(DDC117Article::class, $dqlRef->source());
-        $this->assertSame($dqlRef, $this->_em->find(DDC117Reference::class, $idCriteria));
+        $this->em->clear();
 
         $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
-        $dqlRef = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
+        $dqlRef = $this->em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
 
-        $this->_em->contains($dqlRef);
+        self::assertInstanceOf(DDC117Reference::class, $dqlRef);
+        self::assertInstanceOf(DDC117Article::class, $dqlRef->target());
+        self::assertInstanceOf(DDC117Article::class, $dqlRef->source());
+        self::assertSame($dqlRef, $this->em->find(DDC117Reference::class, $idCriteria));
+
+        $dql = 'SELECT r, s FROM ' . DDC117Reference::class . ' r JOIN r.source s WHERE s.title = ?1';
+        $dqlRef = $this->em->createQuery($dql)->setParameter(1, 'Foo')->getSingleResult();
+
+        $this->em->contains($dqlRef);
     }
 
     /**
@@ -95,15 +97,15 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
-        $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
-        $this->assertNotNull($mapRef);
+        $mapRef = $this->em->find(DDC117Reference::class, $idCriteria);
+        self::assertNotNull($mapRef);
         $mapRef->setDescription("New Description!!");
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $mapRef = $this->_em->find(DDC117Reference::class, $idCriteria);
+        $mapRef = $this->em->find(DDC117Reference::class, $idCriteria);
 
-        $this->assertEquals('New Description!!', $mapRef->getDescription());
+        self::assertEquals('New Description!!', $mapRef->getDescription());
     }
 
     /**
@@ -112,13 +114,13 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFetchDql()
     {
         $dql = "SELECT r, s FROM Doctrine\Tests\Models\DDC117\DDC117Reference r JOIN r.source s WHERE s.title = ?1";
-        $refs = $this->_em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
+        $refs = $this->em->createQuery($dql)->setParameter(1, 'Foo')->getResult();
 
-        $this->assertTrue(count($refs) > 0, "Has to contain at least one Reference.");
+        self::assertGreaterThan(0, $refs, "Has to contain at least one Reference.");
 
-        foreach ($refs AS $ref) {
-            $this->assertInstanceOf(DDC117Reference::class, $ref, "Contains only Reference instances.");
-            $this->assertTrue($this->_em->contains($ref), "Contains Reference in the IdentityMap.");
+        foreach ($refs as $ref) {
+            self::assertInstanceOf(DDC117Reference::class, $ref, "Contains only Reference instances.");
+            self::assertTrue($this->em->contains($ref), "Contains Reference in the IdentityMap.");
         }
     }
 
@@ -129,13 +131,13 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
-        $refRep = $this->_em->find(DDC117Reference::class, $idCriteria);
+        $refRep = $this->em->find(DDC117Reference::class, $idCriteria);
 
-        $this->_em->remove($refRep);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($refRep);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertNull($this->em->find(DDC117Reference::class, $idCriteria));
     }
 
     /**
@@ -147,12 +149,12 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
 
         $dql = "DELETE Doctrine\Tests\Models\DDC117\DDC117Reference r WHERE r.source = ?1 AND r.target = ?2";
-        $this->_em->createQuery($dql)
+        $this->em->createQuery($dql)
                   ->setParameter(1, $this->article1->id())
                   ->setParameter(2, $this->article2->id())
                   ->execute();
 
-        $this->assertNull($this->_em->find(DDC117Reference::class, $idCriteria));
+        self::assertNull($this->em->find(DDC117Reference::class, $idCriteria));
     }
 
     /**
@@ -160,27 +162,27 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testInverseSideAccess()
     {
-        $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
+        $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
 
-        $this->assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
-        foreach ($this->article1->references() AS $this->reference) {
-            $this->assertInstanceOf(DDC117Reference::class, $this->reference);
-            $this->assertSame($this->article1, $this->reference->source());
+        foreach ($this->article1->references() as $this->reference) {
+            self::assertInstanceOf(DDC117Reference::class, $this->reference);
+            self::assertSame($this->article1, $this->reference->source());
         }
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = 'SELECT a, r FROM Doctrine\Tests\Models\DDC117\DDC117Article a INNER JOIN a.references r WHERE a.id = ?1';
-        $articleDql = $this->_em->createQuery($dql)
+        $articleDql = $this->em->createQuery($dql)
                                 ->setParameter(1, $this->article1->id())
                                 ->getSingleResult();
 
-        $this->assertEquals(1, count($this->article1->references()));
+        self::assertCount(1, $this->article1->references());
 
-        foreach ($this->article1->references() AS $this->reference) {
-            $this->assertInstanceOf(DDC117Reference::class, $this->reference);
-            $this->assertSame($this->article1, $this->reference->source());
+        foreach ($this->article1->references() as $this->reference) {
+            self::assertInstanceOf(DDC117Reference::class, $this->reference);
+            self::assertSame($this->article1, $this->reference->source());
         }
     }
 
@@ -191,20 +193,20 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
 
-        $this->translation = $this->_em->find(DDC117Translation::class, $idCriteria);
-        $this->assertInstanceOf(DDC117Translation::class, $this->translation);
+        $this->translation = $this->em->find(DDC117Translation::class, $idCriteria);
+        self::assertInstanceOf(DDC117Translation::class, $this->translation);
 
-        $this->assertSame($this->translation, $this->_em->find(DDC117Translation::class, $idCriteria));
+        self::assertSame($this->translation, $this->em->find(DDC117Translation::class, $idCriteria));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = 'SELECT t, a FROM Doctrine\Tests\Models\DDC117\DDC117Translation t JOIN t.article a WHERE t.article = ?1 AND t.language = ?2';
-        $dqlTrans = $this->_em->createQuery($dql)
+        $dqlTrans = $this->em->createQuery($dql)
                               ->setParameter(1, $this->article1->id())
                               ->setParameter(2, 'en')
                               ->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Translation::class, $this->translation);
+        self::assertInstanceOf(DDC117Translation::class, $this->translation);
     }
 
     /**
@@ -212,19 +214,19 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testMixedCompositeKeyViolateUniqueness()
     {
-        $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
+        $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
         $this->article1->addTranslation('en', 'Bar');
         $this->article1->addTranslation('en', 'Baz');
 
         $exceptionThrown = false;
         try {
             // exception depending on the underlying Database Driver
-            $this->_em->flush();
-        } catch(\Exception $e) {
+            $this->em->flush();
+        } catch (\Exception $e) {
             $exceptionThrown = true;
         }
 
-        $this->assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
+        self::assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
     }
 
     /**
@@ -233,20 +235,20 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testOneToOneForeignObjectId()
     {
         $this->article1 = new DDC117Article("Foo");
-        $this->_em->persist($this->article1);
-        $this->_em->flush();
+        $this->em->persist($this->article1);
+        $this->em->flush();
 
         $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
-        $this->_em->persist($this->articleDetails);
-        $this->_em->flush();
+        $this->em->persist($this->articleDetails);
+        $this->em->flush();
 
         $this->articleDetails->update("not so very long text!");
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $article DDC117Article */
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
-        $this->assertEquals('not so very long text!', $article->getText());
+        $article = $this->em->find(get_class($this->article1), $this->article1->id());
+        self::assertEquals('not so very long text!', $article->getText());
     }
 
     /**
@@ -254,11 +256,11 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOneToOneCascadeRemove()
     {
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
-        $this->_em->remove($article);
-        $this->_em->flush();
+        $article = $this->em->find(get_class($this->article1), $this->article1->id());
+        $this->em->remove($article);
+        $this->em->flush();
 
-        $this->assertFalse($this->_em->contains($article->getDetails()));
+        self::assertFalse($this->em->contains($article->getDetails()));
     }
 
     /**
@@ -266,17 +268,17 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testOneToOneCascadePersist()
     {
-        if ( ! $this->_em->getConnection()->getDatabasePlatform()->prefersSequences()) {
+        if (! $this->em->getConnection()->getDatabasePlatform()->prefersSequences()) {
             $this->markTestSkipped('Test only works with databases that prefer sequences as ID strategy.');
         }
 
         $this->article1 = new DDC117Article("Foo");
         $this->articleDetails = new DDC117ArticleDetails($this->article1, "Very long text");
 
-        $this->_em->persist($this->article1);
-        $this->_em->flush();
+        $this->em->persist($this->article1);
+        $this->em->flush();
 
-        self::assertSame($this->articleDetails, $this->_em->find(DDC117ArticleDetails::class, $this->article1));
+        self::assertSame($this->articleDetails, $this->em->find(DDC117ArticleDetails::class, $this->article1));
     }
 
     /**
@@ -285,21 +287,21 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testReferencesToForeignKeyEntities()
     {
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
-        $reference = $this->_em->find(DDC117Reference::class, $idCriteria);
+        $reference = $this->em->find(DDC117Reference::class, $idCriteria);
 
         $idCriteria = ['article' => $this->article1->id(), 'language' => 'en'];
-        $translation = $this->_em->find(DDC117Translation::class, $idCriteria);
+        $translation = $this->em->find(DDC117Translation::class, $idCriteria);
 
         $approveChanges = new DDC117ApproveChanges($reference->source()->getDetails(), $reference, $translation);
-        $this->_em->persist($approveChanges);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($approveChanges);
+        $this->em->flush();
+        $this->em->clear();
 
-        $approveChanges = $this->_em->find(DDC117ApproveChanges::class, $approveChanges->getId());
+        $approveChanges = $this->em->find(DDC117ApproveChanges::class, $approveChanges->getId());
 
-        $this->assertInstanceOf(DDC117ArticleDetails::class, $approveChanges->getArticleDetails());
-        $this->assertInstanceOf(DDC117Reference::class, $approveChanges->getReference());
-        $this->assertInstanceOf(DDC117Translation::class, $approveChanges->getTranslation());
+        self::assertInstanceOf(DDC117ArticleDetails::class, $approveChanges->getArticleDetails());
+        self::assertInstanceOf(DDC117Reference::class, $approveChanges->getReference());
+        self::assertInstanceOf(DDC117Translation::class, $approveChanges->getTranslation());
     }
 
     /**
@@ -308,12 +310,12 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testLoadOneToManyCollectionOfForeignKeyEntities()
     {
         /* @var $article DDC117Article */
-        $article = $this->_em->find(get_class($this->article1), $this->article1->id());
+        $article = $this->em->find(get_class($this->article1), $this->article1->id());
 
         $translations = $article->getTranslations();
-        $this->assertFalse($translations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $translations);
-        $this->assertTrue($translations->isInitialized());
+        self::assertFalse($translations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $translations);
+        self::assertTrue($translations->isInitialized());
     }
 
     /**
@@ -323,16 +325,16 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $editor = $this->loadEditorFixture();
 
-        $this->assertFalse($editor->reviewingTranslations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
-        $this->assertTrue($editor->reviewingTranslations->isInitialized());
+        self::assertFalse($editor->reviewingTranslations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
+        self::assertTrue($editor->reviewingTranslations->isInitialized());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = "SELECT e, t FROM Doctrine\Tests\Models\DDC117\DDC117Editor e JOIN e.reviewingTranslations t WHERE e.id = ?1";
-        $editor = $this->_em->createQuery($dql)->setParameter(1, $editor->id)->getSingleResult();
-        $this->assertTrue($editor->reviewingTranslations->isInitialized());
-        $this->assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
+        $editor = $this->em->createQuery($dql)->setParameter(1, $editor->id)->getSingleResult();
+        self::assertTrue($editor->reviewingTranslations->isInitialized());
+        self::assertContainsOnly(DDC117Translation::class, $editor->reviewingTranslations);
     }
 
     /**
@@ -341,14 +343,14 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testClearManyToManyCollectionOfForeignKeyEntities()
     {
         $editor = $this->loadEditorFixture();
-        $this->assertEquals(3, count($editor->reviewingTranslations));
+        self::assertCount(3, $editor->reviewingTranslations);
 
         $editor->reviewingTranslations->clear();
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $editor = $this->_em->find(get_class($editor), $editor->id);
-        $this->assertEquals(0, count($editor->reviewingTranslations));
+        $editor = $this->em->find(get_class($editor), $editor->id);
+        self::assertCount(0, $editor->reviewingTranslations);
     }
 
     /**
@@ -358,24 +360,24 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $editor = $this->loadEditorFixture();
 
-        $this->assertInstanceOf(DDC117Translation::class, $editor->reviewingTranslations[0]);
+        self::assertInstanceOf(DDC117Translation::class, $editor->reviewingTranslations[0]);
 
         $reviewedBy = $editor->reviewingTranslations[0]->getReviewedByEditors();
-        $this->assertEquals(1, count($reviewedBy));
-        $this->assertSame($editor, $reviewedBy[0]);
+        self::assertCount(1, $reviewedBy);
+        self::assertSame($editor, $reviewedBy[0]);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $dql = "SELECT t, e FROM Doctrine\Tests\Models\DDC117\DDC117Translation t ".
                "JOIN t.reviewedByEditors e WHERE t.article = ?1 AND t.language = ?2";
-        $trans = $this->_em->createQuery($dql)
+        $trans = $this->em->createQuery($dql)
                            ->setParameter(1, $this->translation->getArticleId())
                            ->setParameter(2, $this->translation->getLanguage())
                            ->getSingleResult();
 
-        $this->assertInstanceOf(DDC117Translation::class, $trans);
-        $this->assertContainsOnly(DDC117Editor::class, $trans->reviewedByEditors);
-        $this->assertEquals(1, count($trans->reviewedByEditors));
+        self::assertInstanceOf(DDC117Translation::class, $trans);
+        self::assertContainsOnly(DDC117Editor::class, $trans->reviewedByEditors);
+        self::assertCount(1, $trans->reviewedByEditors);
     }
 
     /**
@@ -386,14 +388,14 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $editor = $this->loadEditorFixture();
 
         $editor->addLastTranslation($editor->reviewingTranslations[0]);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $editor = $this->_em->find(get_class($editor), $editor->id);
+        $editor = $this->em->find(get_class($editor), $editor->id);
         $lastTranslatedBy = $editor->reviewingTranslations[0]->getLastTranslatedBy();
         $lastTranslatedBy->count();
 
-        $this->assertEquals(1, count($lastTranslatedBy));
+        self::assertCount(1, $lastTranslatedBy);
     }
 
     /**
@@ -404,42 +406,26 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $editor = new DDC117Editor("beberlei");
 
         /* @var $article1 DDC117Article */
-        $article1 = $this->_em->find(get_class($this->article1), $this->article1->id());
-        foreach ($article1->getTranslations() AS $translation) {
+        $article1 = $this->em->find(get_class($this->article1), $this->article1->id());
+        foreach ($article1->getTranslations() as $translation) {
             $editor->reviewingTranslations[] = $translation;
         }
 
         /* @var $article2 DDC117Article */
-        $article2 = $this->_em->find(get_class($this->article2), $this->article2->id());
+        $article2 = $this->em->find(get_class($this->article2), $this->article2->id());
         $article2->addTranslation("de", "Vanille-Krapferl"); // omnomnom
         $article2->addTranslation("fr", "Sorry can't speak french!");
 
-        foreach ($article2->getTranslations() AS $translation) {
-            $this->_em->persist($translation); // otherwise persisting the editor won't work, reachability!
+        foreach ($article2->getTranslations() as $translation) {
+            $this->em->persist($translation); // otherwise persisting the editor won't work, reachability!
             $editor->reviewingTranslations[] = $translation;
         }
 
-        $this->_em->persist($editor);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($editor);
+        $this->em->flush();
+        $this->em->clear();
 
-        return $this->_em->find(get_class($editor), $editor->id);
-    }
-
-    /**
-     * @group DDC-1519
-     */
-    public function testMergeForeignKeyIdentifierEntity()
-    {
-        $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
-
-        $refRep = $this->_em->find(DDC117Reference::class, $idCriteria);
-
-        $this->_em->detach($refRep);
-        $refRep = $this->_em->merge($refRep);
-
-        $this->assertEquals($this->article1->id(), $refRep->source()->id());
-        $this->assertEquals($this->article2->id(), $refRep->target()->id());
+        return $this->em->find(get_class($editor), $editor->id);
     }
 
     /**
@@ -448,26 +434,26 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testArrayHydrationWithCompositeKey()
     {
         $dql = "SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t";
-        $before = count($this->_em->createQuery($dql)->getResult());
+        $before = count($this->em->createQuery($dql)->getResult());
 
-        $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
-        $this->article2 = $this->_em->find(DDC117Article::class, $this->article2->id());
+        $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
+        $this->article2 = $this->em->find(DDC117Article::class, $this->article2->id());
 
         $this->reference = new DDC117Reference($this->article2, $this->article1, "Test-Description");
-        $this->_em->persist($this->reference);
+        $this->em->persist($this->reference);
 
         $this->reference = new DDC117Reference($this->article1, $this->article1, "Test-Description");
-        $this->_em->persist($this->reference);
+        $this->em->persist($this->reference);
 
         $this->reference = new DDC117Reference($this->article2, $this->article2, "Test-Description");
-        $this->_em->persist($this->reference);
+        $this->em->persist($this->reference);
 
-        $this->_em->flush();
+        $this->em->flush();
 
         $dql = "SELECT r,s,t FROM Doctrine\Tests\Models\DDC117\DDC117Reference r INNER JOIN r.source s INNER JOIN r.target t";
-        $data = $this->_em->createQuery($dql)->getArrayResult();
+        $data = $this->em->createQuery($dql)->getArrayResult();
 
-        $this->assertEquals($before + 3, count($data));
+        self::assertCount($before + 3, $data);
     }
 
     /**
@@ -479,27 +465,27 @@ class DDC117Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $this->markTestIncomplete('Second level cache - not supported yet');
         }
 
-        $this->article1 = $this->_em->find(DDC117Article::class, $this->article1->id());
-        $this->article2 = $this->_em->find(DDC117Article::class, $this->article2->id());
+        $this->article1 = $this->em->find(DDC117Article::class, $this->article1->id());
+        $this->article2 = $this->em->find(DDC117Article::class, $this->article2->id());
 
         $this->reference = new DDC117Reference($this->article2, $this->article1, "Test-Description");
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->_em->getUnitOfWork()->getEntityState($this->reference));
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_NEW, $this->em->getUnitOfWork()->getEntityState($this->reference));
 
         $idCriteria = ['source' => $this->article1->id(), 'target' => $this->article2->id()];
-        $reference = $this->_em->find(DDC117Reference::class, $idCriteria);
+        $reference = $this->em->find(DDC117Reference::class, $idCriteria);
 
-        $this->assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->_em->getUnitOfWork()->getEntityState($reference));
+        self::assertEquals(\Doctrine\ORM\UnitOfWork::STATE_MANAGED, $this->em->getUnitOfWork()->getEntityState($reference));
     }
     /**
      * @group DDC-117
      */
     public function testIndexByOnCompositeKeyField()
     {
-        $article = $this->_em->find(DDC117Article::class, $this->article1->id());
+        $article = $this->em->find(DDC117Article::class, $this->article1->id());
 
-        $this->assertInstanceOf(DDC117Article::class, $article);
-        $this->assertEquals(1, count($article->getLinks()));
-        $this->assertTrue($article->getLinks()->offsetExists($this->article2->id()));
+        self::assertInstanceOf(DDC117Article::class, $article);
+        self::assertCount(1, $article->getLinks());
+        self::assertTrue($article->getLinks()->offsetExists($this->article2->id()));
     }
 }

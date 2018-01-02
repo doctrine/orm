@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
@@ -53,7 +38,6 @@ class MappingException extends \Doctrine\ORM\ORMException
             'No identifier/primary key specified for Entity "%s". Every Entity must have an identifier/primary key.',
             $entityName
         ));
-
     }
 
     /**
@@ -147,6 +131,32 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
+    public static function invalidOverridePropertyType($className, $fieldName)
+    {
+        return new self("Invalid property override named '$fieldName' for class '$className'.");
+    }
+
+    /**
+     * Exception for invalid version property override.
+     *
+     * @param string $className The entity's name.
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
+    public static function invalidOverrideVersionField($className, $fieldName)
+    {
+        return new self("Invalid version field override named '$fieldName' for class '$className'.");
+    }
+
+    /**
+     * Exception for invalid property type override.
+     *
+     * @param string $className The entity's name.
+     * @param string $fieldName
+     *
+     * @return MappingException
+     */
     public static function invalidOverrideFieldType($className, $fieldName)
     {
         return new self("The column type of attribute '$fieldName' on class '$className' could not be changed.");
@@ -183,27 +193,6 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function resultMappingNotFound($className, $resultName)
     {
         return new self("No result set mapping found named '$resultName' on class '$className'.");
-    }
-
-    /**
-     * @param string $entity
-     * @param string $queryName
-     *
-     * @return MappingException
-     */
-    public static function emptyQueryMapping($entity, $queryName)
-    {
-        return new self('Query named "'.$queryName.'" in "'.$entity.'" could not be empty.');
-    }
-
-    /**
-     * @param string $className
-     *
-     * @return MappingException
-     */
-    public static function nameIsMandatoryForQueryMapping($className)
-    {
-        return new self("Query name on entity class '$className' is not defined.");
     }
 
     /**
@@ -279,7 +268,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      *
      * @return MappingException
      */
-    static function missingRequiredOption($field, $expectedOption, $hint = '')
+    public static function missingRequiredOption($field, $expectedOption, $hint = '')
     {
         $message = "The mapping of field '{$field}' is invalid: The option '{$expectedOption}' is required.";
 
@@ -371,25 +360,19 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $entity    The entity's name.
-     * @param string $fieldName The name of the field that was already declared.
+     * @param string   $className
+     * @param Property $property
      *
      * @return MappingException
      */
-    public static function duplicateFieldMapping($entity, $fieldName)
+    public static function duplicateProperty($className, Property $property)
     {
-        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
-    }
-
-    /**
-     * @param string $entity
-     * @param string $fieldName
-     *
-     * @return MappingException
-     */
-    public static function duplicateAssociationMapping($entity, $fieldName)
-    {
-        return new self('Property "'.$fieldName.'" in "'.$entity.'" was already declared, but it must be declared only once');
+        return new self(sprintf(
+            'Property "%s" in "%s" was already declared in "%s", but it must be declared only once',
+            $property->getName(),
+            $className,
+            $property->getDeclaringClass()->getClassName()
+        ));
     }
 
     /**
@@ -435,17 +418,13 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $entity
-     * @param string $fieldName
      * @param string $unsupportedType
      *
      * @return MappingException
      */
-    public static function unsupportedOptimisticLockingType($entity, $fieldName, $unsupportedType)
+    public static function unsupportedOptimisticLockingType($unsupportedType)
     {
-        return new self('Locking type "'.$unsupportedType.'" (specified in "'.$entity.'", field "'.$fieldName.'") '
-            .'is not supported by Doctrine.'
-        );
+        return new self('Locking type "'.$unsupportedType.'" is not supported by Doctrine.');
     }
 
     /**
@@ -521,14 +500,13 @@ class MappingException extends \Doctrine\ORM\ORMException
     }
 
     /**
-     * @param string $className
      * @param string $type
      *
      * @return MappingException
      */
-    public static function invalidDiscriminatorColumnType($className, $type)
+    public static function invalidDiscriminatorColumnType($type)
     {
-        return new self("Discriminator column type on entity class '$className' is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
+        return new self("Discriminator column type is not allowed to be '$type'. 'string' or 'integer' type variables are suggested!");
     }
 
     /**
@@ -550,6 +528,24 @@ class MappingException extends \Doctrine\ORM\ORMException
     public static function cannotVersionIdField($className, $fieldName)
     {
         return new self("Setting Id field '$fieldName' as versionable in entity class '$className' is not supported.");
+    }
+
+    /**
+     * @param string   $className
+     * @param Property $property
+     *
+     * @return MappingException
+     */
+    public static function sqlConversionNotAllowedForPrimaryKeyProperties($className, Property $property)
+    {
+        return new self(sprintf(
+            'It is not possible to set id field "%s" to type "%s" in entity class "%s". ' .
+            'The type "%s" requires conversion SQL which is not allowed for identifiers.',
+            $property->getName(),
+            $property->getTypeName(),
+            $className,
+            $property->getTypeName()
+        ));
     }
 
     /**
@@ -769,7 +765,7 @@ class MappingException extends \Doctrine\ORM\ORMException
      */
     public static function invalidTargetEntityClass($targetEntity, $sourceEntity, $associationName)
     {
-        return new self("The target-entity " . $targetEntity . " cannot be found in '" . $sourceEntity."#".$associationName."'.");
+        return new self("The target-entity '" . $targetEntity . "' cannot be found in '" . $sourceEntity."#".$associationName."'.");
     }
 
     /**
@@ -784,7 +780,7 @@ class MappingException extends \Doctrine\ORM\ORMException
         $cascades = implode(", ", array_map(function ($e) { return "'" . $e . "'"; }, $cascades));
 
         return new self(sprintf(
-            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', 'refresh', 'merge', and 'detach'",
+            "You have specified invalid cascade options for %s::$%s: %s; available options: 'remove', 'persist', and 'refresh'",
             $className,
             $propertyName,
             $cascades

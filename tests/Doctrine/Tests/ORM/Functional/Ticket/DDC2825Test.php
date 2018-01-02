@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\ToolsException;
 use Doctrine\Tests\Models\DDC2825\ExplicitSchemaAndTable;
 use Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName;
@@ -20,7 +23,7 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $platform = $this->_em->getConnection()->getDatabasePlatform();
+        $platform = $this->em->getConnection()->getDatabasePlatform();
 
         if ( ! $platform->supportsSchemas() && ! $platform->canEmulateSchemas()) {
             $this->markTestSkipped("This test is only useful for databases that support schemas or can emulate them.");
@@ -36,26 +39,30 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testClassSchemaMappingsValidity($className, $expectedSchemaName, $expectedTableName)
     {
-        $classMetadata   = $this->_em->getClassMetadata($className);
-        $platform        = $this->_em->getConnection()->getDatabasePlatform();
-        $quotedTableName = $this->_em->getConfiguration()->getQuoteStrategy()->getTableName($classMetadata, $platform);
+        $classMetadata   = $this->em->getClassMetadata($className);
+        $platform        = $this->em->getConnection()->getDatabasePlatform();
+        $quotedTableName = $classMetadata->table->getQuotedQualifiedName($platform);
 
         // Check if table name and schema properties are defined in the class metadata
-        $this->assertEquals($expectedTableName, $classMetadata->table['name']);
-        $this->assertEquals($expectedSchemaName, $classMetadata->table['schema']);
+        self::assertEquals($expectedTableName, $classMetadata->table->getName());
+        self::assertEquals($expectedSchemaName, $classMetadata->table->getSchema());
 
-        if ($this->_em->getConnection()->getDatabasePlatform()->supportsSchemas()) {
-            $fullTableName = sprintf('%s.%s', $expectedSchemaName, $expectedTableName);
+        if ($platform->supportsSchemas()) {
+            $fullTableName = sprintf('"%s"."%s"', $expectedSchemaName, $expectedTableName);
         } else {
-            $fullTableName = sprintf('%s__%s', $expectedSchemaName, $expectedTableName);
+            $fullTableName = sprintf('"%s__%s"', $expectedSchemaName, $expectedTableName);
         }
 
-        $this->assertEquals($fullTableName, $quotedTableName);
+        self::assertEquals($fullTableName, $quotedTableName);
+
+        $property       = $classMetadata->getProperty($classMetadata->getSingleIdentifierFieldName());
+        $sequencePrefix = $platform->getSequencePrefix($classMetadata->getTableName(), $classMetadata->getSchemaName());
+        $idSequenceName = sprintf('%s_%s_seq', $sequencePrefix, $property->getColumnName());
 
         // Checks sequence name validity
-        $this->assertEquals(
-            $fullTableName . '_' . $classMetadata->getSingleIdentifierColumnName() . '_seq',
-            $classMetadata->getSequenceName($platform)
+        self::assertEquals(
+            str_replace('"', '', $fullTableName) . '_' . $property->getColumnName() . '_seq',
+            $idSequenceName
         );
     }
 
@@ -66,17 +73,20 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testPersistenceOfEntityWithSchemaMapping($className)
     {
+        $classMetadata = $this->em->getClassMetadata($className);
+        $repository    = $this->em->getRepository($className);
+
         try {
-            $this->_schemaTool->createSchema([$this->_em->getClassMetadata($className)]);
+            $this->schemaTool->createSchema([$classMetadata]);
         } catch (ToolsException $e) {
             // table already exists
         }
 
-        $this->_em->persist(new $className());
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist(new $className());
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->assertCount(1, $this->_em->getRepository($className)->findAll());
+        self::assertCount(1, $repository->findAll());
     }
 
     /**
@@ -95,14 +105,14 @@ class DDC2825Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="myschema.order")
+ * @ORM\Entity
+ * @ORM\Table(name="order", schema="myschema")
  */
 class DDC2825ClassWithImplicitlyDefinedSchemaAndQuotedTableName
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var integer
      */

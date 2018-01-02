@@ -1,38 +1,44 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="cms_comments")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_comments")
  */
 class CmsComment
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
      */
     public $topic;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $text;
     /**
-     * @ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
-     * @JoinColumn(name="article_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=CmsArticle::class, inversedBy="comments")
+     * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
      */
     public $article;
 
-    public function setArticle(CmsArticle $article) {
+    public function setArticle(CmsArticle $article)
+    {
         $this->article = $article;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return __CLASS__."[id=".$this->id."]";
     }
 }

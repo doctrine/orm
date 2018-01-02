@@ -1,26 +1,13 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Utility\IdentifierFlattener;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * EntityManager interface
@@ -63,6 +50,13 @@ interface EntityManagerInterface extends ObjectManager
     public function getExpressionBuilder();
 
     /**
+     * Gets an IdentifierFlattener used for converting Entities into an array of identifier values.
+     *
+     * @return IdentifierFlattener
+     */
+    public function getIdentifierFlattener();
+
+    /**
      * Starts a transaction on the underlying database connection.
      *
      * @return void
@@ -81,9 +75,11 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param callable $func The function to execute transactionally.
      *
-     * @return mixed The non-empty value returned from the closure or true instead.
+     * @return mixed The value returned from the closure.
+     *
+     * @throws \Throwable
      */
-    public function transactional($func);
+    public function transactional(callable $func);
 
     /**
      * Commits a transaction on the underlying database connection.
@@ -150,7 +146,7 @@ interface EntityManagerInterface extends ObjectManager
      * @param string $entityName The name of the entity type.
      * @param mixed  $id         The entity identifier.
      *
-     * @return object|null The entity reference.
+     * @return object|GhostObjectInterface|null The entity reference.
      *
      * @throws ORMException
      */
@@ -186,18 +182,6 @@ interface EntityManagerInterface extends ObjectManager
      * @return void
      */
     public function close();
-
-    /**
-     * Creates a copy of the given entity. Can create a shallow or a deep copy.
-     *
-     * @param object  $entity The entity to copy.
-     * @param boolean $deep   FALSE for a shallow copy, TRUE for a deep copy.
-     *
-     * @return object The new entity.
-     *
-     * @throws \BadMethodCallException
-     */
-    public function copy($entity, $deep = false);
 
     /**
      * Acquire a lock on the given entity.
@@ -242,17 +226,17 @@ interface EntityManagerInterface extends ObjectManager
     public function getUnitOfWork();
 
     /**
-    * Gets a hydrator for the given hydration mode.
-    *
-    * This method caches the hydrator instances which is used for all queries that don't
-    * selectively iterate over the result.
-    *
-    * @deprecated
-    *
-    * @param int $hydrationMode
-    *
-    * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
-    */
+     * Gets a hydrator for the given hydration mode.
+     *
+     * This method caches the hydrator instances which is used for all queries that don't
+     * selectively iterate over the result.
+     *
+     * @deprecated
+     *
+     * @param int $hydrationMode
+     *
+     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     */
     public function getHydrator($hydrationMode);
 
     /**
@@ -269,7 +253,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      *
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory();
 

@@ -8,9 +8,9 @@
     <entity name="Doctrine\Tests\Models\Company\CompanyPerson" table="company_persons" inheritance-type="JOINED">
 
         <discriminator-map >
-            <discriminator-mapping value="person"   class="CompanyPerson" />
-            <discriminator-mapping value="manager"  class="CompanyManager" />
-            <discriminator-mapping value="employee" class="CompanyEmployee" />
+            <discriminator-mapping value="person"   class="Doctrine\Tests\Models\Company\CompanyPerson" />
+            <discriminator-mapping value="manager"  class="Doctrine\Tests\Models\Company\CompanyManager" />
+            <discriminator-mapping value="employee" class="Doctrine\Tests\Models\Company\CompanyEmployee" />
         </discriminator-map>
 
         <named-native-queries>
@@ -38,11 +38,11 @@
         
         <field name="name" column="name"/>
         
-        <one-to-one field="spouse" target-entity="CompanyPerson">
+        <one-to-one field="spouse" target-entity="Doctrine\Tests\Models\Company\CompanyPerson">
             <join-column name="spouse_id" referenced-column-name="id"/>
         </one-to-one>
         
-        <many-to-many field="friends" target-entity="CompanyPerson">
+        <many-to-many field="friends" target-entity="Doctrine\Tests\Models\Company\CompanyPerson">
             <join-table name="company_persons_friends">
                 <join-columns>
                     <join-column name="person_id" referenced-column-name="id"/>

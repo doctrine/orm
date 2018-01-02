@@ -1,21 +1,26 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CompositeKeyInheritance;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
+ * @ORM\Entity
  */
 class SingleChildClass extends SingleRootClass
 {
     /**
      * @var string
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $extension = 'ext';
 
     /**
      * @var string
-     * @Column(type="string")
-     * @Id
+     * @ORM\Column(type="string")
+     * @ORM\Id
      */
     private $additionalId = 'additional';
 }

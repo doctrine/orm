@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Cache\Address;
@@ -51,7 +53,7 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
-        $this->cache = $this->_em->getCache();
+        $this->cache = $this->em->getCache();
     }
 
     protected function loadFixturesCountries()
@@ -62,9 +64,9 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->countries[] = $brazil;
         $this->countries[] = $germany;
 
-        $this->_em->persist($brazil);
-        $this->_em->persist($germany);
-        $this->_em->flush();
+        $this->em->persist($brazil);
+        $this->em->persist($germany);
+        $this->em->flush();
     }
 
     protected function loadFixturesStates()
@@ -79,12 +81,12 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->states[] = $bavaria;
         $this->states[] = $berlin;
 
-        $this->_em->persist($saopaulo);
-        $this->_em->persist($rio);
-        $this->_em->persist($bavaria);
-        $this->_em->persist($berlin);
+        $this->em->persist($saopaulo);
+        $this->em->persist($rio);
+        $this->em->persist($bavaria);
+        $this->em->persist($berlin);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesCities()
@@ -104,12 +106,12 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->cities[] = $munich;
         $this->cities[] = $berlin;
 
-        $this->_em->persist($saopaulo);
-        $this->_em->persist($rio);
-        $this->_em->persist($munich);
-        $this->_em->persist($berlin);
+        $this->em->persist($saopaulo);
+        $this->em->persist($rio);
+        $this->em->persist($munich);
+        $this->em->persist($berlin);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesTraveler()
@@ -117,13 +119,13 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $t1   = new Traveler("Fabio Silva");
         $t2   = new Traveler("Doctrine Bot");
 
-        $this->_em->persist($t1);
-        $this->_em->persist($t2);
+        $this->em->persist($t1);
+        $this->em->persist($t2);
 
         $this->travelers[] = $t1;
         $this->travelers[] = $t2;
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesTravelersWithProfile()
@@ -136,15 +138,15 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $t1->setProfile($p1);
         $t2->setProfile($p2);
 
-        $this->_em->persist($p1);
-        $this->_em->persist($p2);
-        $this->_em->persist($t1);
-        $this->_em->persist($t2);
+        $this->em->persist($p1);
+        $this->em->persist($p2);
+        $this->em->persist($t1);
+        $this->em->persist($t2);
 
         $this->travelersWithProfile[] = $t1;
         $this->travelersWithProfile[] = $t2;
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesTravelersProfileInfo()
@@ -157,12 +159,12 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $p1->setInfo($i1);
         $p2->setInfo($i2);
 
-        $this->_em->persist($i1);
-        $this->_em->persist($i2);
-        $this->_em->persist($p1);
-        $this->_em->persist($p2);
+        $this->em->persist($i1);
+        $this->em->persist($i2);
+        $this->em->persist($p1);
+        $this->em->persist($p2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesTravels()
@@ -178,15 +180,15 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $t2->addVisitedCity($this->cities[1]);
         $t2->addVisitedCity($this->cities[3]);
 
-        $this->_em->persist($t1);
-        $this->_em->persist($t2);
-        $this->_em->persist($t3);
+        $this->em->persist($t1);
+        $this->em->persist($t2);
+        $this->em->persist($t3);
 
         $this->travels[] = $t1;
         $this->travels[] = $t2;
         $this->travels[] = $t3;
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesAttractions()
@@ -208,10 +210,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->cities[3]->addAttraction($this->attractions[6]);
 
         foreach ($this->attractions as $attraction) {
-            $this->_em->persist($attraction);
+            $this->em->persist($attraction);
         }
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesAttractionsInfo()
@@ -222,10 +224,10 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->attractionsInfo[] = new AttractionLocationInfo('Some St 2', $this->attractions[3]);
 
         foreach ($this->attractionsInfo as $info) {
-            $this->_em->persist($info);
+            $this->em->persist($info);
         }
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function loadFixturesPersonWithAddress()
@@ -249,14 +251,14 @@ abstract class SecondLevelCacheAbstractTest extends OrmFunctionalTestCase
         $this->addresses[] = $address2;
 
         foreach ($this->people as $person) {
-            $this->_em->persist($person);
+            $this->em->persist($person);
         }
 
         foreach ($this->addresses as $address) {
-            $this->_em->persist($address);
+            $this->em->persist($address);
         }
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     protected function getEntityRegion($className)

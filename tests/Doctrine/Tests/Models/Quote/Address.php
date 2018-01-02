@@ -1,43 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="`quote-address`")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"simple" = Address::class, "full" = FullAddress::class})
+ * @ORM\Entity
+ * @ORM\Table(name="quote-address")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"simple" = Address::class, "full" = FullAddress::class})
  */
 class Address
 {
-
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`address-id`")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="address-id")
      */
     public $id;
 
     /**
-     * @Column(name="`address-zip`")
+     * @ORM\Column(name="address-zip")
      */
     public $zip;
 
     /**
-     * @OneToOne(targetEntity="User", inversedBy="address")
-     * @JoinColumn(name="`user-id`", referencedColumnName="`user-id`")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="address")
+     * @ORM\JoinColumn(name="user-id", referencedColumnName="user-id")
      */
     public $user;
 
-
-    public function setUser(User $user) {
+    public function setUser(User $user)
+    {
         if ($this->user !== $user) {
             $this->user = $user;
             $user->setAddress($this);
         }
     }
-
 
     public function getId()
     {
@@ -53,5 +55,4 @@ class Address
     {
         return $this->user;
     }
-
 }

@@ -1,21 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Hydration;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ParserResult;
 
 class HydrationTestCase extends \Doctrine\Tests\OrmTestCase
 {
-    protected $_em;
+    /**
+     * @var EntityManagerInterface
+     */
+    protected $em;
 
     protected function setUp()
     {
         parent::setUp();
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     /** Helper method */
-    protected function _createParserResult($resultSetMapping, $isMixedQuery = false)
+    protected function createParserResult($resultSetMapping, $isMixedQuery = false)
     {
         $parserResult = new ParserResult;
         $parserResult->setResultSetMapping($resultSetMapping);

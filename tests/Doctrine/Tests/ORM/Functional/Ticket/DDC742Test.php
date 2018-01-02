@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group non-cacheable
@@ -22,21 +25,21 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         mkdir($testDir);
 
         // using a Filesystemcache to ensure that the cached data is serialized
-        $this->_em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
+        $this->em->getMetadataFactory()->setCacheDriver(new FilesystemCache($testDir));
 
         try {
-            $this->_schemaTool->createSchema(
+            $this->schemaTool->createSchema(
                 [
-                    $this->_em->getClassMetadata(DDC742User::class),
-                    $this->_em->getClassMetadata(DDC742Comment::class)
+                    $this->em->getClassMetadata(DDC742User::class),
+                    $this->em->getClassMetadata(DDC742Comment::class)
                 ]
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
 
         // make sure classes will be deserialized from caches
-        $this->_em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
-        $this->_em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
+        $this->em->getMetadataFactory()->setMetadataFor(DDC742User::class, null);
+        $this->em->getMetadataFactory()->setMetadataFor(DDC742Comment::class, null);
     }
 
     public function testIssue()
@@ -57,49 +60,50 @@ class DDC742Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->favoriteComments->add($comment1);
         $user->favoriteComments->add($comment2);
 
-        $this->_em->persist($user);
-        $this->_em->persist($comment1);
-        $this->_em->persist($comment2);
-        $this->_em->persist($comment3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($comment1);
+        $this->em->persist($comment2);
+        $this->em->persist($comment3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find(DDC742User::class, $user->id);
-        $user->favoriteComments->add($this->_em->find(DDC742Comment::class, $comment3->id));
+        $user = $this->em->find(DDC742User::class, $user->id);
+        $user->favoriteComments->add($this->em->find(DDC742Comment::class, $comment3->id));
 
-        $this->_em->flush();
+        $this->em->flush();
+
         $this->addToAssertionCount(1);
     }
 }
 
 /**
- * @Entity
- * @Table(name="ddc742_users")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc742_users")
  */
 class DDC742User
 {
     /**
      * User Id
      *
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @var int
      */
     public $id;
 
     /**
-     * @Column(length=100, type="string")
+     * @ORM\Column(length=100, type="string")
      * @var string
      */
     public $title;
 
     /**
-     * @ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
-     * @JoinTable(
+     * @ORM\ManyToMany(targetEntity=DDC742Comment::class, cascade={"persist"}, fetch="EAGER")
+     * @ORM\JoinTable(
      *  name="user_comments",
-     *  joinColumns={@JoinColumn(name="user_id",referencedColumnName="id")},
-     *  inverseJoinColumns={@JoinColumn(name="comment_id", referencedColumnName="id")}
+     *  joinColumns={@ORM\JoinColumn(name="user_id",referencedColumnName="id")},
+     *  inverseJoinColumns={@ORM\JoinColumn(name="comment_id", referencedColumnName="id")}
      * )
      *
      * @var \Doctrine\ORM\PersistentCollection
@@ -108,23 +112,23 @@ class DDC742User
 }
 
 /**
- * @Entity
- * @Table(name="ddc742_comments")
+ * @ORM\Entity
+ * @ORM\Table(name="ddc742_comments")
  */
 class DDC742Comment
 {
     /**
      * User Id
      *
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
      * @var int
      */
     public $id;
 
     /**
-     * @Column(length=100, type="string")
+     * @ORM\Column(length=100, type="string")
      * @var string
      */
     public $content;

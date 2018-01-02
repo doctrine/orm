@@ -12,6 +12,11 @@ final class GH6682Test extends OrmFunctionalTestCase
      */
     public function testIssue() : void
     {
+        self::markTestIncomplete(
+            '@guilhermeblanco, in #6683 we added allocationSize/initialValue as to the sequence definition but with the'
+            . ' changes you have made I am not sure if we should rather test this relying on the mapping drivers instead'
+        );
+
         $parsedDefinition = [
             'sequenceName'   => 'test_sequence',
             'allocationSize' => '',

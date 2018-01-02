@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\ParameterTypeInferer;
@@ -10,7 +12,6 @@ use PDO;
 
 class ParameterTypeInfererTest extends OrmTestCase
 {
-
     public function providerParameterTypeInferer()
     {
         $data = [
@@ -39,6 +40,6 @@ class ParameterTypeInfererTest extends OrmTestCase
 
     public function testParameterTypeInferer($value, $expected)
     {
-        $this->assertEquals($expected, ParameterTypeInferer::inferType($value));
+        self::assertEquals($expected, ParameterTypeInferer::inferType($value));
     }
 }

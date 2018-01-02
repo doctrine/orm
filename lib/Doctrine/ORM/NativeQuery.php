@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
@@ -30,7 +15,7 @@ final class NativeQuery extends AbstractQuery
     /**
      * @var string
      */
-    private $_sql;
+    private $sql;
 
     /**
      * Sets the SQL of the query.
@@ -41,7 +26,7 @@ final class NativeQuery extends AbstractQuery
      */
     public function setSQL($sql)
     {
-        $this->_sql = $sql;
+        $this->sql = $sql;
 
         return $this;
     }
@@ -55,13 +40,13 @@ final class NativeQuery extends AbstractQuery
      */
     public function getSQL()
     {
-        return $this->_sql;
+        return $this->sql;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _doExecute()
+    protected function doExecute()
     {
         $parameters = [];
         $types      = [];
@@ -85,8 +70,8 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->_em->getConnection()->executeQuery(
-            $this->_sql, $parameters, $types, $this->_queryCacheProfile
+        return $this->em->getConnection()->executeQuery(
+            $this->sql, $parameters, $types, $this->queryCacheProfile
         );
     }
 }

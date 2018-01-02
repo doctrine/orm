@@ -1,28 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_client_address")
+ * @ORM\Entity
+ * @ORM\Table("cache_client_address")
  */
 class Address
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @JoinColumn(name="person_id", referencedColumnName="id")
-     * @OneToOne(targetEntity="Person", inversedBy="address")
+     * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=Person::class, inversedBy="address")
      */
     public $person;
 
     /**
-     * @Column
+     * @ORM\Column
      */
     public $location;
 

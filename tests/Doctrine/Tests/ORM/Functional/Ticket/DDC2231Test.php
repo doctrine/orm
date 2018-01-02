@@ -1,70 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectManagerAware;
-use Doctrine\ORM\Proxy\Proxy;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\ORM\EntityManagerAware;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Tools\ToolsException;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-2231
  */
-class DDC2231Test extends \Doctrine\Tests\OrmFunctionalTestCase
+final class DDC2231Test extends OrmFunctionalTestCase
 {
-    protected function setUp()
+    /**
+     * @var DDC2231EntityManagerAwareEntity
+     */
+    private $persistedEntityManagerAwareEntity;
+
+    protected function setUp() : void
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(
-            [
-            $this->_em->getClassMetadata(DDC2231EntityY::class),
-            ]
-        );
+
+        try {
+            $this->schemaTool->createSchema([
+                $this->em->getClassMetadata(DDC2231EntityManagerAwareEntity::class),
+            ]);
+        } catch (ToolsException $ignored) {
+            // ignore - schema already exists
+        }
+
+        $this->persistedEntityManagerAwareEntity = new DDC2231EntityManagerAwareEntity();
+
+        $this->em->persist($this->persistedEntityManagerAwareEntity);
+        $this->em->flush();
+        $this->em->clear();
     }
 
-    public function testInjectObjectManagerInProxyIfInitializedInUow()
+    public function testInjectEntityManagerInProxyIfInitializedInUow() : void
     {
-        $y1 = new DDC2231EntityY;
+        /* @var $emAware DDC2231EntityManagerAwareEntity|GhostObjectInterface */
+        $emAware = $this->em->getReference(
+            DDC2231EntityManagerAwareEntity::class,
+            $this->persistedEntityManagerAwareEntity->id
+        );
 
-        $this->_em->persist($y1);
+        self::assertInstanceOf(GhostObjectInterface::class, $emAware);
+        self::assertInstanceOf(DDC2231EntityManagerAwareEntity::class, $emAware);
+        self::assertInstanceOf(EntityManagerAware::class, $emAware);
+        self::assertFalse($emAware->isProxyInitialized());
+        self::assertSame($this->em, $emAware->em);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $emAware->initializeProxy();
 
-        $y1ref = $this->_em->getReference(get_class($y1), $y1->id);
+        self::assertSame($this->em, $emAware->em);
+    }
 
-        $this->assertInstanceOf(Proxy::class, $y1ref);
-        $this->assertFalse($y1ref->__isInitialized__);
+    public function testInjectEntityManagerInFetchedInstance() : void
+    {
+        /* @var $emAware DDC2231EntityManagerAwareEntity */
+        $emAware = $this->em->find(
+            DDC2231EntityManagerAwareEntity::class,
+            $this->persistedEntityManagerAwareEntity->id
+        );
 
-        $id = $y1ref->doSomething();
-
-        $this->assertTrue($y1ref->__isInitialized__);
-        $this->assertEquals($this->_em, $y1ref->om);
+        self::assertInstanceOf(DDC2231EntityManagerAwareEntity::class, $emAware);
+        self::assertInstanceOf(EntityManagerAware::class, $emAware);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $emAware);
+        self::assertSame($this->em, $emAware->em);
     }
 }
 
-
-/** @Entity @Table(name="ddc2231_y") */
-class DDC2231EntityY implements ObjectManagerAware
+/** @ORM\Entity */
+class DDC2231EntityManagerAwareEntity implements EntityManagerAware
 {
-    /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    public $om;
+    /** @var EntityManagerInterface|null */
+    public $em;
 
-    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    public function injectEntityManager(EntityManagerInterface $entityManager, ClassMetadata $classMetadata) : void
     {
-        $this->om = $objectManager;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function doSomething()
-    {
+        $this->em = $entityManager;
     }
 }

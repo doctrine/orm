@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC117\DDC117ArticleDetails;
@@ -15,40 +18,42 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
     protected function setUp()
     {
         $this->useModelSet('ddc117');
+
         parent::setUp();
 
-        $this->_em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();
+        $this->em->createQuery('DELETE FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad')->execute();
 
         $article = new DDC117Article("Foo");
-        $this->_em->persist($article);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->flush();
 
         $articleDetails = new DDC117ArticleDetails($article, "Very long text");
-        $this->_em->persist($articleDetails);
-        $this->_em->flush();
+        $this->em->persist($articleDetails);
+        $this->em->flush();
 
         $dql   = "SELECT ad FROM Doctrine\Tests\Models\DDC117\DDC117ArticleDetails ad";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $this->paginator = new Paginator($query);
     }
 
     public function testPaginateCount()
     {
-        $this->assertEquals(1, count($this->paginator));
+        self::assertCount(1, $this->paginator);
     }
 
     public function testPaginateIterate()
     {
         foreach ($this->paginator as $ad) {
-            $this->assertInstanceOf(DDC117ArticleDetails::class, $ad);
+            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 
     public function testPaginateCountNoOutputWalkers()
     {
         $this->paginator->setUseOutputWalkers(false);
-        $this->assertEquals(1, count($this->paginator));
+
+        self::assertCount(1, $this->paginator);
     }
 
     public function testPaginateIterateNoOutputWalkers()
@@ -59,8 +64,7 @@ class DDC1685Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->expectExceptionMessage('Paginating an entity with foreign key as identifier only works when using the Output Walkers. Call Paginator#setUseOutputWalkers(true) before iterating the paginator.');
 
         foreach ($this->paginator as $ad) {
-            $this->assertInstanceOf(DDC117ArticleDetails::class, $ad);
+            self::assertInstanceOf(DDC117ArticleDetails::class, $ad);
         }
     }
 }
-

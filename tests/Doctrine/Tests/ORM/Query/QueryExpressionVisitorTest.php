@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
@@ -9,14 +11,14 @@ use Doctrine\Common\Collections\ExpressionBuilder as CriteriaBuilder;
 use Doctrine\ORM\Query\Expr as QueryBuilder;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
-use PHPUnit\Framework\TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Test for QueryExpressionVisitor
  *
  * @author Kirill chEbba Chebunin <iam@chebba.org>
  */
-class QueryExpressionVisitorTest extends TestCase
+class QueryExpressionVisitorTest extends DoctrineTestCase
 {
     /**
      * @var QueryExpressionVisitor
@@ -40,9 +42,9 @@ class QueryExpressionVisitorTest extends TestCase
      */
     public function testWalkComparison(CriteriaComparison $criteriaExpr, $queryExpr, Parameter $parameter = null)
     {
-        $this->assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
+        self::assertEquals($queryExpr, $this->visitor->walkComparison($criteriaExpr));
         if ($parameter) {
-            $this->assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
+            self::assertEquals(new ArrayCollection([$parameter]), $this->visitor->getParameters());
         }
     }
 
@@ -90,8 +92,8 @@ class QueryExpressionVisitorTest extends TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Andx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Andx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
     public function testWalkOrCompositeExpression()
@@ -104,13 +106,13 @@ class QueryExpressionVisitorTest extends TestCase
             )
         );
 
-        $this->assertInstanceOf(QueryBuilder\Orx::class, $expr);
-        $this->assertCount(2, $expr->getParts());
+        self::assertInstanceOf(QueryBuilder\Orx::class, $expr);
+        self::assertCount(2, $expr->getParts());
     }
 
     public function testWalkValue()
     {
-        $this->assertEquals('value', $this->visitor->walkValue(new Value('value')));
+        self::assertEquals('value', $this->visitor->walkValue(new Value('value')));
     }
 
     public function testClearParameters()
@@ -119,6 +121,6 @@ class QueryExpressionVisitorTest extends TestCase
 
         $this->visitor->clearParameters();
 
-        $this->assertCount(0, $this->visitor->getParameters());
+        self::assertCount(0, $this->visitor->getParameters());
     }
 }

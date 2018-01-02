@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Mapping;
 
-use Doctrine\Common\Persistence\Mapping\RuntimeReflectionService;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
@@ -16,18 +17,18 @@ use Doctrine\Tests\Models\ValueObjects\Person;
 
 class XmlMappingDriverTest extends AbstractMappingDriverTest
 {
-    protected function _loadDriver()
+    protected function loadDriver()
     {
         return new XmlDriver(__DIR__ . DIRECTORY_SEPARATOR . 'xml');
     }
 
     public function testClassTableInheritanceDiscriminatorMap()
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(CTI::class);
-        $class->initializeReflection(new RuntimeReflectionService());
-        $mappingDriver->loadMetadataForClass(CTI::class, $class);
+        $class = new ClassMetadata(CTI::class, $this->metadataBuildingContext);
+
+        $mappingDriver->loadMetadataForClass(CTI::class, $class, $this->metadataBuildingContext);
 
         $expectedMap = [
             'foo' => CTIFoo::class,
@@ -35,8 +36,8 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'baz' => CTIBaz::class,
         ];
 
-        $this->assertEquals(3, count($class->discriminatorMap));
-        $this->assertEquals($expectedMap, $class->discriminatorMap);
+        self::assertCount(3, $class->discriminatorMap);
+        self::assertEquals($expectedMap, $class->discriminatorMap);
     }
 
     /**
@@ -45,16 +46,17 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
      */
     public function testFailingSecondLevelCacheAssociation()
     {
-        $mappingDriver = $this->_loadDriver();
+        $mappingDriver = $this->loadDriver();
 
-        $class = new ClassMetadata(XMLSLC::class);
-        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class);
+        $class = new ClassMetadata(XMLSLC::class, $this->metadataBuildingContext);
+
+        $mappingDriver->loadMetadataForClass(XMLSLC::class, $class, $this->metadataBuildingContext);
     }
 
     public function testIdentifierWithAssociationKey()
     {
-        $driver  = $this->_loadDriver();
-        $em      = $this->_getTestEntityManager();
+        $driver  = $this->loadDriver();
+        $em      = $this->getTestEntityManager();
         $factory = new ClassMetadataFactory();
 
         $em->getConfiguration()->setMetadataDriverImpl($driver);
@@ -62,34 +64,39 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $class = $factory->getMetadataFor(DDC117Translation::class);
 
-        $this->assertEquals(['language', 'article'], $class->identifier);
-        $this->assertArrayHasKey('article', $class->associationMappings);
+        self::assertEquals(['language', 'article'], $class->identifier);
+        self::assertArrayHasKey('article', iterator_to_array($class->getDeclaredPropertiesIterator()));
 
-        $this->assertArrayHasKey('id', $class->associationMappings['article']);
-        $this->assertTrue($class->associationMappings['article']['id']);
+        $association = $class->getProperty('article');
+
+        self::assertTrue($association->isPrimaryKey());
     }
 
+    /**
+     * @group embedded
+     */
     public function testEmbeddableMapping()
     {
         $class = $this->createClassMetadata(Name::class);
 
-        $this->assertEquals(true, $class->isEmbeddedClass);
+        self::assertTrue($class->isEmbeddedClass);
     }
 
     /**
+     * @group embedded
      * @group DDC-3293
      * @group DDC-3477
-     * @group 1238
+     * @group DDC-1238
      */
     public function testEmbeddedMappingsWithUseColumnPrefix()
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertEquals(
+        self::assertEquals(
             '__prefix__',
             $factory->getMetadataFor(DDC3293UserPrefixed::class)
                 ->embeddedClasses['address']['columnPrefix']
@@ -97,35 +104,40 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
     }
 
     /**
+     * @group embedded
      * @group DDC-3293
      * @group DDC-3477
-     * @group 1238
+     * @group DDC-1238
      */
     public function testEmbeddedMappingsWithFalseUseColumnPrefix()
     {
         $factory = new ClassMetadataFactory();
-        $em      = $this->_getTestEntityManager();
+        $em      = $this->getTestEntityManager();
 
-        $em->getConfiguration()->setMetadataDriverImpl($this->_loadDriver());
+        $em->getConfiguration()->setMetadataDriverImpl($this->loadDriver());
         $factory->setEntityManager($em);
 
-        $this->assertFalse(
+        self::assertFalse(
             $factory->getMetadataFor(DDC3293User::class)
                 ->embeddedClasses['address']['columnPrefix']
         );
     }
 
+    /**
+     * @group embedded
+     */
     public function testEmbeddedMapping()
     {
         $class = $this->createClassMetadata(Person::class);
 
-        $this->assertEquals(
+        self::assertEquals(
             [
                 'name' => [
-                    'class' => Name::class,
-                    'columnPrefix' => 'nm_',
-                    'declaredField' => null,
-                    'originalField' => null,
+                    'class'          => Name::class,
+                    'columnPrefix'   => 'nm_',
+                    'declaredField'  => null,
+                    'originalField'  => null,
+                    'declaringClass' => $class,
                 ]
             ],
             $class->embeddedClasses
@@ -155,7 +167,7 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
 
         $dom->load($xmlMappingFile);
 
-        $this->assertTrue($dom->schemaValidate($xsdSchemaFile));
+        self::assertTrue($dom->schemaValidate($xsdSchemaFile));
     }
 
     static public function dataValidSchema()
@@ -165,11 +177,11 @@ class XmlMappingDriverTest extends AbstractMappingDriverTest
             'Doctrine.Tests.Models.DDC889.DDC889Class.dcm'
         ];
 
-        $list = array_filter($list, function($item) use ($invalid){
+        $list = array_filter($list, function($item) use ($invalid) {
             return ! in_array(pathinfo($item, PATHINFO_FILENAME), $invalid);
         });
 
-        return array_map(function($item){
+        return array_map(function($item) {
             return [$item];
         }, $list);
     }

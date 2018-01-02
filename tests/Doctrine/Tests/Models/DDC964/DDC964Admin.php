@@ -1,19 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC964;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @AssociationOverrides({
- *      @AssociationOverride(name="groups",
- *          joinTable=@JoinTable(
+ * @ORM\Entity
+ * @ORM\AssociationOverrides({
+ *      @ORM\AssociationOverride(
+ *          name="groups",
+ *          joinTable=@ORM\JoinTable(
  *              name="ddc964_users_admingroups",
- *              joinColumns=@JoinColumn(name="adminuser_id"),
- *              inverseJoinColumns=@JoinColumn(name="admingroup_id")
+ *              joinColumns=@ORM\JoinColumn(name="adminuser_id"),
+ *              inverseJoinColumns=@ORM\JoinColumn(name="admingroup_id")
  *          )
  *      ),
- *      @AssociationOverride(name="address",
- *          joinColumns=@JoinColumn(
+ *      @ORM\AssociationOverride(
+ *          name="address",
+ *          joinColumns=@ORM\JoinColumn(
  *              name="adminaddress_id", referencedColumnName="id"
  *          )
  *      )
@@ -21,33 +27,4 @@ namespace Doctrine\Tests\Models\DDC964;
  */
 class DDC964Admin extends DDC964User
 {
-    public static function loadMetadata(\Doctrine\ORM\Mapping\ClassMetadataInfo $metadata)
-    {
-        $metadata->setAssociationOverride('address',
-            [
-            'joinColumns'=> [
-                [
-                'name' => 'adminaddress_id',
-                'referencedColumnName' => 'id',
-                ]
-            ]
-            ]
-        );
-
-        $metadata->setAssociationOverride('groups',
-            [
-            'joinTable' => [
-                'name'      => 'ddc964_users_admingroups',
-                'joinColumns' => [
-                    [
-                    'name' => 'adminuser_id',
-                    ]
-                ],
-                'inverseJoinColumns' => [[
-                    'name'      => 'admingroup_id',
-                ]]
-            ]
-            ]
-        );
-    }
 }

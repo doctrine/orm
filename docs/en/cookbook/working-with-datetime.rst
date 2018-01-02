@@ -15,10 +15,13 @@ these comparisons are always made **BY REFERENCE**. That means the following cha
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="datetime") */
+        /** @ORM\Column(type="datetime") */
         private $updated;
 
         public function setUpdated()
@@ -141,7 +144,6 @@ code before bootstrapping the ORM:
     Type::overrideType('datetime', UTCDateTimeType::class);
     Type::overrideType('datetimetz', UTCDateTimeType::class);
 
-
 To be able to transform these values
 back into their real timezone you have to save the timezone in a separate field of the entity
 requiring timezoned datetimes:
@@ -149,17 +151,20 @@ requiring timezoned datetimes:
 .. code-block:: php
 
     <?php
+
     namespace Shipping;
 
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Event
     {
-        /** @Column(type="datetime") */
+        /** @ORM\Column(type="datetime") */
         private $created;
 
-        /** @Column(type="string") */
+        /** @ORM\Column(type="string") */
         private $timezone;
 
         /**

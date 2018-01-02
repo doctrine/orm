@@ -1,48 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Navigation;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="navigation_photos")
+ * @ORM\Entity
+ * @ORM\Table(name="navigation_photos")
  */
 class NavPhotos
 {
     /**
-     * @Id
-     * @column(type="integer")
-     * @generatedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="NavPointOfInterest")
-     * @JoinColumns({
-     *   @JoinColumn(name="poi_long", referencedColumnName="nav_long"),
-     *   @JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
+     * @ORM\ManyToOne(targetEntity=NavPointOfInterest::class)
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="poi_long", referencedColumnName="nav_long"),
+     *   @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
      * })
      */
     private $poi;
 
     /**
-     * @column(type="string", name="file_name")
+     * @ORM\Column(type="string", name="file_name")
      */
     private $file;
 
-    function __construct($poi, $file) {
+    public function __construct($poi, $file)
+    {
         $this->poi = $poi;
         $this->file = $file;
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getPointOfInterest() {
+    public function getPointOfInterest()
+    {
         return $this->poi;
     }
 
-    public function getFile() {
+    public function getFile()
+    {
         return $this->file;
     }
 }

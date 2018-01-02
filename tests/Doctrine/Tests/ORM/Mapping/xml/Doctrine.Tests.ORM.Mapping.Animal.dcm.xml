@@ -6,8 +6,8 @@
     <entity name="Doctrine\Tests\ORM\Mapping\Animal" inheritance-type="SINGLE_TABLE">
         <discriminator-column name="discr" type="string" length="32" />
         <discriminator-map>
-            <discriminator-mapping value="cat" class="Cat" />
-            <discriminator-mapping value="dog" class="Dog" />
+            <discriminator-mapping value="cat" class="Doctrine\Tests\ORM\Mapping\Cat" />
+            <discriminator-mapping value="dog" class="Doctrine\Tests\ORM\Mapping\Dog" />
         </discriminator-map>
         <id name="id" type="integer" column="id">
             <generator strategy="CUSTOM" />

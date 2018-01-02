@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                             https://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd"
 >
-    <entity name="Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName" table="implicit_schema.implicit_table">
+    <entity name="Doctrine\Tests\Models\DDC2825\SchemaAndTableInTableName" table="implicit_table" schema="implicit_schema">
         <id name="id" column="id">
             <generator strategy="AUTO"/>
         </id>

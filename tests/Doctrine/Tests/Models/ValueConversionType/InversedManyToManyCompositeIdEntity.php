@@ -1,29 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_inversed_manytomany_compositeid")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_inversed_manytomany_compositeid")
  */
 class InversedManyToManyCompositeIdEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id1;
 
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @ManyToMany(targetEntity="OwningManyToManyCompositeIdEntity", mappedBy="associatedEntities")
+     * @ORM\ManyToMany(targetEntity=OwningManyToManyCompositeIdEntity::class, mappedBy="associatedEntities")
      */
     public $associatedEntities;
 

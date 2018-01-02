@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Query;
@@ -19,8 +21,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -33,8 +36,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT a0_.id AS id_0, a0_.name AS name_1, sum(a0_.name) AS sclr_2 FROM Author a0_ WHERE a0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t0."name" AS c1, sum(t0."name") AS c2 FROM "Author" t0 WHERE t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -47,8 +51,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE 1 = 1 AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -61,8 +66,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE 1 = 1 AND 2 = 2 AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE 1 = 1 AND 2 = 2 AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -75,8 +81,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE (1 = 1 OR 2 = 2) AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -89,8 +96,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 OR 2 = 2) AND 3 = 3 AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE (1 = 1 OR 2 = 2) AND 3 = 3 AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -103,8 +111,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (1 = 1 AND 2 = 2 OR 3 = 3) AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE (1 = 1 AND 2 = 2 OR 3 = 3) AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -117,8 +126,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT u0_.id AS id_0, g1_.id AS id_1 FROM User u0_ INNER JOIN user_group u2_ ON u0_.id = u2_.user_id INNER JOIN groups g1_ ON g1_.id = u2_.group_id WHERE (NOT 1 = 2) AND u0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t1."id" AS c1 FROM "User" t0 INNER JOIN "user_group" t2 ON t0."id" = t2."user_id" INNER JOIN "groups" t1 ON t1."id" = t2."group_id" WHERE (NOT 1 = 2) AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -133,8 +143,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Category c1_ ON (b0_.category_id = c1_.id) WHERE b0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t0."author_id" AS c1, t0."category_id" AS c2 FROM "BlogPost" t0 INNER JOIN "Category" t1 ON (t0."category_id" = t1."id") WHERE t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 
@@ -146,9 +157,9 @@ class WhereInWalkerTest extends PaginationTestCase
         $whereInQuery->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [WhereInWalker::class]);
         $whereInQuery->setHint(WhereInWalker::HINT_PAGINATOR_ID_COUNT, 10);
 
-        $this->assertEquals(
-            "SELECT b0_.id AS id_0, b0_.author_id AS author_id_1, b0_.category_id AS category_id_2 FROM BlogPost b0_ INNER JOIN Category c1_ ON (b0_.category_id = c1_.id) WHERE 1 = 1 AND b0_.id IN (?)", $whereInQuery->getSQL()
+        self::assertEquals(
+            'SELECT t0."id" AS c0, t0."author_id" AS c1, t0."category_id" AS c2 FROM "BlogPost" t0 INNER JOIN "Category" t1 ON (t0."category_id" = t1."id") WHERE 1 = 1 AND t0."id" IN (?)',
+            $whereInQuery->getSQL()
         );
     }
 }
-
