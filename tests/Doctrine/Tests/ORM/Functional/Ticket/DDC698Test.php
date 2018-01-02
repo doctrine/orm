@@ -37,7 +37,6 @@ class DDC698Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- *
  * @ORM\Table(name="Roles")
  * @ORM\Entity
  */
@@ -46,21 +45,16 @@ class DDC698Role
     /**
      *  @ORM\Id @ORM\Column(name="roleID", type="integer")
      *  @ORM\GeneratedValue(strategy="AUTO")
-     *
      */
     protected $roleID;
 
     /**
      * @ORM\Column(name="name", type="string", length=45)
-     *
-     *
      */
     protected $name;
 
     /**
      * @ORM\Column(name="shortName", type="string", length=45)
-     *
-     *
      */
     protected $shortName;
 
@@ -76,7 +70,6 @@ class DDC698Role
 
 
 /**
- *
  * @ORM\Table(name="Privileges")
  * @ORM\Entity()
  */
@@ -85,14 +78,11 @@ class DDC698Privilege
     /**
      *  @ORM\Id  @ORM\Column(name="privilegeID", type="integer")
      *  @ORM\GeneratedValue(strategy="AUTO")
-     *
      */
     protected $privilegeID;
 
     /**
      * @ORM\Column(name="name", type="string", length=45)
-     *
-     *
      */
     protected $name;
 

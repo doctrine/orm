@@ -33,7 +33,6 @@ class NavTour
      *          @ORM\JoinColumn(name="poi_lat", referencedColumnName="nav_lat")
      *      }
      * )
-     *
      */
     private $pois;
 

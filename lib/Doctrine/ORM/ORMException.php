@@ -87,7 +87,6 @@ class ORMException extends Exception
     }
 
     /**
-     *
      * @param string $class
      * @param string $association
      * @param string $given

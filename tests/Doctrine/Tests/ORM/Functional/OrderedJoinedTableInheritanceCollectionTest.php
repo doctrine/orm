@@ -90,7 +90,6 @@ abstract class OJTIC_Pet
     public $id;
 
     /**
-     *
      * @ORM\Column
      */
     public $name;

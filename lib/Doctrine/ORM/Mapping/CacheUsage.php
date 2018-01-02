@@ -32,7 +32,6 @@ final class CacheUsage
 
     /**
      * Will break upon instantiation.
-     *
      */
     private function __construct()
     {

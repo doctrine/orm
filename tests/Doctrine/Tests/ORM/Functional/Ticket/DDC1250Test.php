@@ -66,7 +66,6 @@ class DDC1250ClientHistory
 }
 
 /**
- *
 Entities\ClientsHistory:
 type: entity
 table: clients_history
@@ -91,6 +90,4 @@ targetEntity: Entities\ClientsHistory
 mappedBy: declinedClientsHistory
 lifecycleCallbacks: { }
 repositoryClass: Entities\ClientsHistoryRepository
-
-
  */

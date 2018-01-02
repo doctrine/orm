@@ -274,7 +274,6 @@ class DDC2602BiographyField
 
     /**
      * Constructor.
-     *
      */
     public function __construct()
     {
@@ -326,7 +325,6 @@ class DDC2602FieldSelection
 
     /**
      * Constructor.
-     *
      */
     public function __construct()
     {
