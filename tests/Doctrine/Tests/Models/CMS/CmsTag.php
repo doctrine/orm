@@ -49,4 +49,3 @@ class CmsTag
         return $this->users;
     }
 }
-

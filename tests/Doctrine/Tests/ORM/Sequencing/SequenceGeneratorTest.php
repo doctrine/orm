@@ -56,4 +56,3 @@ class SequenceGeneratorTest extends OrmTestCase
         }
     }
 }
-

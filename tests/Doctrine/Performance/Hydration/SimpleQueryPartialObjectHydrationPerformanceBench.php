@@ -80,4 +80,3 @@ final class SimpleQueryPartialObjectHydrationPerformanceBench
         $this->hydrator->hydrateAll($this->stmt, $this->rsm, [Query::HINT_FORCE_PARTIAL_LOAD => true]);
     }
 }
-

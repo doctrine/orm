@@ -106,4 +106,3 @@ class SqlExpressionVisitor extends ExpressionVisitor
         return '?';
     }
 }
-

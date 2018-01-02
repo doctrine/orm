@@ -29,4 +29,3 @@ class NavUser
         $this->name = $name;
     }
 }
-

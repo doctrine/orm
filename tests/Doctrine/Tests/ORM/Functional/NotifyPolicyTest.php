@@ -189,4 +189,3 @@ class NotifyGroup extends NotifyBaseEntity
         return $this->users;
     }
 }
-

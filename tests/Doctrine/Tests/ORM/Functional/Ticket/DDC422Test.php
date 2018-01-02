@@ -82,4 +82,3 @@ class DDC422Contact
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }
-

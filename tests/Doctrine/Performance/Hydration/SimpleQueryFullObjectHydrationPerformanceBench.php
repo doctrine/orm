@@ -72,4 +72,3 @@ final class SimpleQueryFullObjectHydrationPerformanceBench
         $this->hydrator->hydrateAll($this->stmt, $this->rsm);
     }
 }
-

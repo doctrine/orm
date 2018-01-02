@@ -95,4 +95,3 @@ class DDC2780Project
         $this->users = new ArrayCollection();
     }
 }
-

@@ -98,4 +98,3 @@ class DisableFetchJoinTreeWalker extends \Doctrine\ORM\Query\TreeWalkerAdapter
         }
     }
 }
-

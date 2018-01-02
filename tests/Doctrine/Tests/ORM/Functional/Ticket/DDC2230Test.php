@@ -81,4 +81,3 @@ class DDC2230Address implements NotifyPropertyChanged
         $this->listener = $listener;
     }
 }
-

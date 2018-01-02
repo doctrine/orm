@@ -118,4 +118,3 @@ class DDC2256Group
         $this->users = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }
-

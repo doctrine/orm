@@ -162,4 +162,3 @@ class QueryCacheTest extends OrmFunctionalTestCase
         $users = $query->getResult();
     }
 }
-

@@ -70,4 +70,3 @@ class DDC3160OnFlushListener
         }
     }
 }
-

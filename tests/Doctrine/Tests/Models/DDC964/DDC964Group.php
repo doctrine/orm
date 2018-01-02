@@ -66,4 +66,3 @@ class DDC964Group
         return $this->users;
     }
 }
-

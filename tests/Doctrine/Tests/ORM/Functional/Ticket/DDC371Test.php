@@ -76,4 +76,3 @@ class DDC371Parent
     /** @ORM\OneToMany(targetEntity=DDC371Child::class, mappedBy="parent") */
     public $children;
 }
-

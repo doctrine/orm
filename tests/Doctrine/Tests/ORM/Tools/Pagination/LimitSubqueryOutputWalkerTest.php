@@ -452,4 +452,3 @@ ORDER BY b.id DESC'
         );
     }
 }
-

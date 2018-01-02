@@ -163,4 +163,3 @@ class WhereInWalkerTest extends PaginationTestCase
         );
     }
 }
-

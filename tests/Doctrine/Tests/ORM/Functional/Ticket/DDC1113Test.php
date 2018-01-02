@@ -96,4 +96,3 @@ class DDC1113Engine
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 }
-

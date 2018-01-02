@@ -66,4 +66,3 @@ class DDC3579Group
         return $this->admins;
     }
 }
-

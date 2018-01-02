@@ -51,4 +51,3 @@ class CmsGroup
         return $this->users;
     }
 }
-
