@@ -85,7 +85,7 @@ class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
  * @ORM\Entity @ORM\Table(name="cti_parents")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
+ * @ORM\DiscriminatorMap({"parent" = CTIParent::class, "child" = CTIChild::class})
  */
 class CTIParent
 {
@@ -95,7 +95,7 @@ class CTIParent
      */
     private $id;
 
-    /** @ORM\OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    /** @ORM\OneToOne(targetEntity=CTIRelated::class, mappedBy="ctiParent") */
     private $related;
 
     public function getId()
@@ -146,7 +146,7 @@ class CTIRelated
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="CTIParent")
+     * @ORM\OneToOne(targetEntity=CTIParent::class)
      * @ORM\JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
     private $ctiParent;
@@ -172,7 +172,7 @@ class CTIRelated2
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @ORM\ManyToMany(targetEntity="CTIChild") */
+    /** @ORM\ManyToMany(targetEntity=CTIChild::class) */
     private $ctiChildren;
 
 

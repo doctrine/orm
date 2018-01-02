@@ -15,9 +15,9 @@ class DDC3699Child extends DDC3699Parent
     /** @ORM\Column(type="string") */
     public $childField;
 
-    /** @ORM\OneToOne(targetEntity="DDC3699RelationOne", inversedBy="child") */
+    /** @ORM\OneToOne(targetEntity=DDC3699RelationOne::class, inversedBy="child") */
     public $oneRelation;
 
-    /** @ORM\OneToMany(targetEntity="DDC3699RelationMany", mappedBy="child") */
+    /** @ORM\OneToMany(targetEntity=DDC3699RelationMany::class, mappedBy="child") */
     public $relations;
 }

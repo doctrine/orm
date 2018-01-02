@@ -154,7 +154,7 @@ class DDC2252User
     protected $uid = 222;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC2252Membership", mappedBy="userAccount", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC2252Membership::class, mappedBy="userAccount", cascade={"persist"})
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $memberships;
@@ -189,20 +189,20 @@ class DDC2252Membership
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC2252User", inversedBy="memberships")
+     * @ORM\ManyToOne(targetEntity=DDC2252User::class, inversedBy="memberships")
      * @ORM\JoinColumn(name="uid", referencedColumnName="uid")
      */
     protected $userAccount;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC2252MerchantAccount")
+     * @ORM\ManyToOne(targetEntity=DDC2252MerchantAccount::class)
      * @ORM\JoinColumn(name="mch_accountid", referencedColumnName="accountid")
      */
     protected $merchantAccount;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC2252Privilege", indexBy="privilegeid")
+     * @ORM\ManyToMany(targetEntity=DDC2252Privilege::class, indexBy="privilegeid")
      * @ORM\JoinTable(name="ddc2252_user_mch_account_privilege",
      *   joinColumns={
      *       @ORM\JoinColumn(name="mch_accountid", referencedColumnName="mch_accountid"),

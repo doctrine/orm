@@ -27,7 +27,7 @@ class CmsComment
      */
     public $text;
     /**
-     * @ORM\ManyToOne(targetEntity="CmsArticle", inversedBy="comments")
+     * @ORM\ManyToOne(targetEntity=CmsArticle::class, inversedBy="comments")
      * @ORM\JoinColumn(name="article_id", referencedColumnName="id")
      */
     public $article;

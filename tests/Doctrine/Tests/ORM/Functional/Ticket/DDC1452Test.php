@@ -99,7 +99,7 @@ class DDC1452EntityA
     public $id;
     /** @ORM\Column */
     public $title;
-    /** @ORM\OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
+    /** @ORM\OneToMany(targetEntity=DDC1452EntityB::class, mappedBy="entityAFrom") */
     public $entitiesB;
 
     public function __construct()
@@ -122,11 +122,11 @@ class DDC1452EntityB
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
+     * @ORM\ManyToOne(targetEntity=DDC1452EntityA::class, inversedBy="entitiesB")
      */
     public $entityAFrom;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1452EntityA")
+     * @ORM\ManyToOne(targetEntity=DDC1452EntityA::class)
      */
     public $entityATo;
 }

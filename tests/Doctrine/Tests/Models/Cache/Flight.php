@@ -16,7 +16,7 @@ class Flight
     /**
      * @ORM\Id
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="City")
+     * @ORM\ManyToOne(targetEntity=City::class)
      * @ORM\JoinColumn(name="leaving_from_city_id", referencedColumnName="id")
      */
     protected $leavingFrom;
@@ -24,7 +24,7 @@ class Flight
     /**
      * @ORM\Id
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="City")
+     * @ORM\ManyToOne(targetEntity=City::class)
      * @ORM\JoinColumn(name="going_to_city_id", referencedColumnName="id")
      */
     protected $goingTo;

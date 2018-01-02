@@ -1498,10 +1498,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::missingQueryMapping($this->className, $name);
         }
 
-        if (isset($queryMapping['resultClass']) && $queryMapping['resultClass'] !== '__CLASS__') {
-            $queryMapping['resultClass'] = $this->fullyQualifiedClassName($queryMapping['resultClass']);
-        }
-
         $this->namedNativeQueries[$name] = array_merge(['query' => $query], $queryMapping);
     }
 
@@ -1531,11 +1527,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                     throw MappingException::missingResultSetMappingEntity($this->className, $resultMapping['name']);
                 }
 
-                $entityClassName = ($entityResult['entityClass'] !== '__CLASS__')
-                    ? $this->fullyQualifiedClassName($entityResult['entityClass'])
-                    : $entityResult['entityClass']
-                ;
-
+                $entityClassName                                = $entityResult['entityClass'];
                 $resultMapping['entities'][$key]['entityClass'] = $entityClassName;
 
                 if (isset($entityResult['fields'])) {

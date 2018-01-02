@@ -42,7 +42,7 @@ class DDC144Test extends OrmFunctionalTestCase
  * @ORM\Table(name="ddc144_flowelements")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(type="string", name="discr")
- * @ORM\DiscriminatorMap({"flowelement" = "DDC144FlowElement", "operand" = "DDC144Operand"})
+ * @ORM\DiscriminatorMap({"flowelement" = DDC144FlowElement::class, "operand" = DDC144Operand::class})
  */
 class DDC144FlowElement
 {

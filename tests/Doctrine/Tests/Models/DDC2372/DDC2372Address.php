@@ -18,7 +18,7 @@ class DDC2372Address
     /** @ORM\Column(type="string", length=255) */
     private $street;
 
-    /** @ORM\OneToOne(targetEntity="User", mappedBy="address") */
+    /** @ORM\OneToOne(targetEntity=User::class, mappedBy="address") */
     private $user;
 
     public function getId()

@@ -1,5 +1,15 @@
 # Upgrade to 3.0
 
+## BC Break: Removed same-namespace class name resolution
+
+Support for same-namespace class name resolution in mappings has been removed.
+If you're using annotation driver, please migrate to references using `::class`.
+If you're using XML driver, please migrate to fully qualified references.
+
+These methods have been removed:
+
+ * Doctrine\ORM\Mapping\ClassMetadata::fullyQualifiedClassName()
+
 ## BC Break: Removed code generators and related console commands
  
 These console commands have been removed:

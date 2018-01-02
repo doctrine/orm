@@ -8,14 +8,14 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Table(name = "joined_derived_root")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"child" = "JoinedDerivedChildClass", "root" = "JoinedDerivedRootClass"})
+ * @ORM\DiscriminatorMap({"child" = JoinedDerivedChildClass::class, "root" = JoinedDerivedRootClass::class})
  */
 class JoinedDerivedRootClass
 {
     /**
      * @var JoinedDerivedIdentityClass
      * @ORM\ManyToOne(
-     *     targetEntity="JoinedDerivedIdentityClass",
+     *     targetEntity=JoinedDerivedIdentityClass::class,
      *     inversedBy="children"
      * )
      * @ORM\Id

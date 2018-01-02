@@ -79,7 +79,7 @@ class DDC3033Product
     public $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC3033User")
+     * @ORM\ManyToMany(targetEntity=DDC3033User::class)
      * @ORM\JoinTable(
      *   name="user_purchases_3033",
      *   joinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")},

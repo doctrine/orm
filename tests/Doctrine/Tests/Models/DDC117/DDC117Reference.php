@@ -13,14 +13,14 @@ class DDC117Reference
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC117Article", inversedBy="references")
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="references")
      * @ORM\JoinColumn(name="source_id", referencedColumnName="article_id")
      */
     private $source;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC117Article")
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class)
      * @ORM\JoinColumn(name="target_id", referencedColumnName="article_id")
      */
     private $target;

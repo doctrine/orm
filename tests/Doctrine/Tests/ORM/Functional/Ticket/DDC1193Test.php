@@ -74,7 +74,7 @@ class DDC1193Company
      */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC1193Person", cascade={"persist", "remove"}) */
+    /** @ORM\OneToOne(targetEntity=DDC1193Person::class, cascade={"persist", "remove"}) */
     public $member;
 }
 
@@ -88,7 +88,7 @@ class DDC1193Person
     public $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1193Account", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=DDC1193Account::class, cascade={"persist", "remove"})
      */
     public $account;
 }

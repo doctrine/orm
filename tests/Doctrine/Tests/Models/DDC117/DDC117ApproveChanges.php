@@ -17,13 +17,13 @@ class DDC117ApproveChanges
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC117ArticleDetails")
+     * @ORM\ManyToOne(targetEntity=DDC117ArticleDetails::class)
      * @ORM\JoinColumn(name="details_id", referencedColumnName="article_id")
      */
     private $articleDetails;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC117Reference")
+     * @ORM\ManyToOne(targetEntity=DDC117Reference::class)
      * @ORM\JoinColumns({
      *  @ORM\JoinColumn(name="source_id", referencedColumnName="source_id"),
      *  @ORM\JoinColumn(name="target_id", referencedColumnName="target_id")
@@ -32,7 +32,7 @@ class DDC117ApproveChanges
     private $reference;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC117Translation")
+     * @ORM\ManyToOne(targetEntity=DDC117Translation::class)
      * @ORM\JoinColumns({
      *  @ORM\JoinColumn(name="trans_article_id", referencedColumnName="article_id"),
      *  @ORM\JoinColumn(name="trans_language", referencedColumnName="language")

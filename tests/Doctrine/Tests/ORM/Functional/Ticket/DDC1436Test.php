@@ -68,7 +68,7 @@ class DDC1436Page
      */
     protected $id;
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1436Page")
+     * @ORM\ManyToOne(targetEntity=DDC1436Page::class)
      * @ORM\JoinColumn(name="pid", referencedColumnName="id")
      */
     protected $parent;

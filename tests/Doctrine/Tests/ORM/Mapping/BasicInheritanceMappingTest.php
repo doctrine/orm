@@ -215,7 +215,7 @@ class MappedSuperclassBase
     /** @ORM\Column(type="string") */
     private $mapped2;
     /**
-     * @ORM\OneToOne(targetEntity="MappedSuperclassRelated1")
+     * @ORM\OneToOne(targetEntity=MappedSuperclassRelated1::class)
      * @ORM\JoinColumn(name="related1_id", referencedColumnName="id")
      */
     private $mappedRelated1;
@@ -259,9 +259,9 @@ class EntityIndexSubClass extends MappedSuperclassBaseIndex
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string", length=20)
  * @ORM\DiscriminatorMap({
- *     "c"   = "HierarchyC",
- *     "d"   = "HierarchyD",
- *     "e"   = "HierarchyE"
+ *     "c"   = HierarchyC::class,
+ *     "d"   = HierarchyD::class,
+ *     "e"   = HierarchyE::class
  * })
  */
 abstract class HierarchyBase

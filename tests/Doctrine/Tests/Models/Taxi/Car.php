@@ -25,12 +25,12 @@ class Car
     private $model;
 
     /**
-     * @ORM\OneToMany(targetEntity="Ride", mappedBy="car")
+     * @ORM\OneToMany(targetEntity=Ride::class, mappedBy="car")
      */
     private $freeCarRides;
 
     /**
-     * @ORM\OneToMany(targetEntity="PaidRide", mappedBy="car")
+     * @ORM\OneToMany(targetEntity=PaidRide::class, mappedBy="car")
      */
     private $carRides;
     

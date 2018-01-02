@@ -26,7 +26,7 @@ class TravelerProfile
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="TravelerProfileInfo", mappedBy="profile")
+     * @ORM\OneToOne(targetEntity=TravelerProfileInfo::class, mappedBy="profile")
      * @ORM\Cache()
      */
     private $info;

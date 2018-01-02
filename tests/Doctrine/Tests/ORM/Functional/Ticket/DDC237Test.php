@@ -80,7 +80,7 @@ class DDC237EntityX
      */
     public $data;
     /**
-     * @ORM\OneToOne(targetEntity="DDC237EntityY")
+     * @ORM\OneToOne(targetEntity=DDC237EntityY::class)
      * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
@@ -109,7 +109,7 @@ class DDC237EntityZ
     public $data;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC237EntityY")
+     * @ORM\OneToOne(targetEntity=DDC237EntityY::class)
      * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;

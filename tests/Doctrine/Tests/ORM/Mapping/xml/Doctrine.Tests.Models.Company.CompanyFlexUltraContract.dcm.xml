@@ -8,7 +8,7 @@
     <entity name="Doctrine\Tests\Models\Company\CompanyFlexUltraContract">
 
         <entity-listeners>
-            <entity-listener class="CompanyContractListener">
+            <entity-listener class="Doctrine\Tests\Models\Company\CompanyContractListener">
                 <lifecycle-callback type="preFlush"      method="preFlushHandler"/>
                 <lifecycle-callback type="postLoad"      method="postLoadHandler"/>
 
@@ -22,7 +22,7 @@
                 <lifecycle-callback type="preRemove"     method="preRemoveHandler"/>
             </entity-listener>
 
-            <entity-listener class="CompanyFlexUltraContractListener">
+            <entity-listener class="Doctrine\Tests\Models\Company\CompanyFlexUltraContractListener">
                 <lifecycle-callback type="prePersist" method="prePersistHandler1"/>
                 <lifecycle-callback type="prePersist" method="prePersistHandler2"/>
             </entity-listener>

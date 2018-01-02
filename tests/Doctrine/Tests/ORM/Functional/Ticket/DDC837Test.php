@@ -99,7 +99,7 @@ class DDC837Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Table(name="DDC837Super")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"class1" = "DDC837Class1", "class2" = "DDC837Class2", "class3"="DDC837Class3"})
+ * @ORM\DiscriminatorMap({"class1" = DDC837Class1::class, "class2" = DDC837Class2::class, "class3"=DDC837Class3::class})
  */
 abstract class DDC837Super
 {
@@ -126,7 +126,7 @@ class DDC837Class1 extends DDC837Super
     public $description;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC837Aggregate")
+     * @ORM\OneToOne(targetEntity=DDC837Aggregate::class)
      */
     public $aggregate;
 }
@@ -152,7 +152,7 @@ class DDC837Class2 extends DDC837Super
     public $text;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC837Aggregate")
+     * @ORM\OneToOne(targetEntity=DDC837Aggregate::class)
      */
     public $aggregate;
 }

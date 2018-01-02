@@ -28,7 +28,7 @@ class DDC3579User
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="DDC3579Group")
+     * @ORM\ManyToMany(targetEntity=DDC3579Group::class)
      */
     protected $groups;
 

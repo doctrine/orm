@@ -67,7 +67,7 @@ class DDC735Product
 
     /**
      * @ORM\OneToMany(
-     *   targetEntity="DDC735Review",
+     *   targetEntity=DDC735Review::class,
      *   mappedBy="product",
      *   cascade={"persist"},
      *   orphanRemoval=true
@@ -107,7 +107,7 @@ class DDC735Review
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC735Product", inversedBy="reviews")
+     * @ORM\ManyToOne(targetEntity=DDC735Product::class, inversedBy="reviews")
      */
     protected $product;
 

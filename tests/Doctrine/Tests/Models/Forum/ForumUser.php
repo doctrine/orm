@@ -24,7 +24,7 @@ class ForumUser
     public $username;
 
     /**
-     * @ORM\OneToOne(targetEntity="ForumAvatar", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=ForumAvatar::class, cascade={"persist"})
      * @ORM\JoinColumn(name="avatar_id", referencedColumnName="id")
      */
     public $avatar;

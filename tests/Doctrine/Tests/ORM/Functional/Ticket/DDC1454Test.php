@@ -46,7 +46,7 @@ class DDC1454Picture extends DDC1454File
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"file" = "DDC1454File", "picture" = "DDC1454Picture"})
+ * @ORM\DiscriminatorMap({"file" = DDC1454File::class, "picture" = DDC1454Picture::class})
  */
 class DDC1454File
 {

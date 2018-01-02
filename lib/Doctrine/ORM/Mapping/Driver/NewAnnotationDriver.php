@@ -214,9 +214,7 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata = new Mapping\ClassMetadata($reflectionClass->getName(), $parent);
 
         if ($entityAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClassName(
-                $classMetadata->fullyQualifiedClassName($entityAnnot->repositoryClass)
-            );
+            $classMetadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
         }
 
         if ($entityAnnot->readOnly) {
@@ -294,9 +292,7 @@ class NewAnnotationDriver implements MappingDriver
             /** @var Annotation\EntityListeners $entityListenersAnnot */
             $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
 
-            foreach ($entityListenersAnnot->value as $item) {
-                $listenerClassName = $classMetadata->fullyQualifiedClassName($item);
-
+            foreach ($entityListenersAnnot->value as $listenerClassName) {
                 if (! class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(
                         $listenerClassName,
@@ -367,12 +363,7 @@ class NewAnnotationDriver implements MappingDriver
                 if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
                     /** @var Annotation\DiscriminatorMap $discriminatorMapAnnotation */
                     $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
-                    $discriminatorMap           = array_map(
-                        function ($className) use ($classMetadata) {
-                            return $classMetadata->fullyQualifiedClassName($className);
-                        },
-                        $discriminatorMapAnnotation->value
-                    );
+                    $discriminatorMap           = $discriminatorMapAnnotation->value;
 
                     $classMetadata->setDiscriminatorMap($discriminatorMap);
                 }
@@ -400,9 +391,7 @@ class NewAnnotationDriver implements MappingDriver
         $classMetadata         = new Mapping\MappedSuperClassMetadata($reflectionClass->getName(), $parent);
 
         if ($mappedSuperclassAnnot->repositoryClass !== null) {
-            $classMetadata->setCustomRepositoryClassName(
-                $classMetadata->fullyQualifiedClassName($mappedSuperclassAnnot->repositoryClass)
-            );
+            $classMetadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
         }
 
         return $classMetadata;
@@ -691,7 +680,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\OneToOneAssociationMetadata($fieldName);
-        $targetEntity  = $classMetadata->fullyQualifiedClassName($oneToOneAnnot->targetEntity);
+        $targetEntity  = $oneToOneAnnot->targetEntity;
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -775,7 +764,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\ManyToOneAssociationMetadata($fieldName);
-        $targetEntity  = $classMetadata->fullyQualifiedClassName($manyToOneAnnot->targetEntity);
+        $targetEntity  = $manyToOneAnnot->targetEntity;
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -854,7 +843,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\OneToManyAssociationMetadata($fieldName);
-        $targetEntity  = $classMetadata->fullyQualifiedClassName($oneToManyAnnot->targetEntity);
+        $targetEntity  = $oneToManyAnnot->targetEntity;
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);
@@ -915,7 +904,7 @@ class NewAnnotationDriver implements MappingDriver
         }
 
         $assocMetadata = new Mapping\ManyToManyAssociationMetadata($fieldName);
-        $targetEntity  = $classMetadata->fullyQualifiedClassName($manyToManyAnnot->targetEntity);
+        $targetEntity  = $manyToManyAnnot->targetEntity;
 
         $assocMetadata->setSourceEntity($className);
         $assocMetadata->setTargetEntity($targetEntity);

@@ -78,7 +78,7 @@ class DDC3330_Building
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC3330_Hall::class, mappedBy="building", cascade={"persist"})
      */
     public $halls;
 
@@ -101,7 +101,7 @@ class DDC3330_Hall
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls")
+     * @ORM\ManyToOne(targetEntity=DDC3330_Building::class, inversedBy="halls")
      */
     public $building;
 

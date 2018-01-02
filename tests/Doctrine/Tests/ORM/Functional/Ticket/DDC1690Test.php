@@ -106,7 +106,7 @@ class DDC1690Parent extends NotifyBaseEntity
     /** @ORM\Column */
     private $name;
 
-    /** @ORM\OneToOne(targetEntity="DDC1690Child") */
+    /** @ORM\OneToOne(targetEntity=DDC1690Child::class) */
     private $child;
 
     function getId()
@@ -145,7 +145,7 @@ class DDC1690Child extends NotifyBaseEntity
     /** @ORM\Column */
     private $name;
 
-    /** @ORM\OneToOne(targetEntity="DDC1690Parent", mappedBy="child") */
+    /** @ORM\OneToOne(targetEntity=DDC1690Parent::class, mappedBy="child") */
     private $parent;
 
     function getId()

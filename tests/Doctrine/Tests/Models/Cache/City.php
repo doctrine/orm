@@ -28,20 +28,20 @@ class City
 
     /**
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="State", inversedBy="cities")
+     * @ORM\ManyToOne(targetEntity=State::class, inversedBy="cities")
      * @ORM\JoinColumn(name="state_id", referencedColumnName="id")
      */
     protected $state;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Travel", mappedBy="visitedCities")
+     * @ORM\ManyToMany(targetEntity=Travel::class, mappedBy="visitedCities")
      */
     public $travels;
 
     /**
      * @ORM\Cache
      * @ORM\OrderBy({"name" = "ASC"})
-     * @ORM\OneToMany(targetEntity="Attraction", mappedBy="city")
+     * @ORM\OneToMany(targetEntity=Attraction::class, mappedBy="city")
      */
     public $attractions;
 

@@ -66,7 +66,7 @@ class DDC2780User
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC2780Project")
+     * @ORM\ManyToOne(targetEntity=DDC2780Project::class)
      *
      * @var DDC2780Project
      */
@@ -83,7 +83,7 @@ class DDC2780Project
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC2780User", mappedBy="project")
+     * @ORM\OneToMany(targetEntity=DDC2780User::class, mappedBy="project")
      *
      * @var DDC2780User[]
      */

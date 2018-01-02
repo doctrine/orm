@@ -30,7 +30,7 @@ class InversedOneToOneCompositeIdEntity
     public $someProperty;
 
     /**
-     * @ORM\OneToOne(targetEntity="OwningOneToOneCompositeIdEntity", mappedBy="associatedEntity")
+     * @ORM\OneToOne(targetEntity=OwningOneToOneCompositeIdEntity::class, mappedBy="associatedEntity")
      */
     public $associatedEntity;
 }

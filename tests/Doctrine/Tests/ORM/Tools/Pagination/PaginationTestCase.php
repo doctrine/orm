@@ -33,11 +33,11 @@ class MyBlogPost
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ORM\ManyToOne(targetEntity="Author")
+     * @ORM\ManyToOne(targetEntity=Author::class)
      */
     public $author;
     /**
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity=Category::class)
      */
     public $category;
     /** @ORM\Column(type="string") */
@@ -70,11 +70,11 @@ class BlogPost
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ORM\ManyToOne(targetEntity="Author")
+     * @ORM\ManyToOne(targetEntity=Author::class)
      */
     public $author;
     /**
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity=Category::class)
      */
     public $category;
 }
@@ -117,7 +117,7 @@ class Group
 {
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ORM\ManyToMany(targetEntity="User", mappedBy="groups") */
+    /** @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups") */
     public $users;
 }
 
@@ -127,7 +127,7 @@ class User
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ORM\ManyToMany(targetEntity="Group", inversedBy="users")
+     * @ORM\ManyToMany(targetEntity=Group::class, inversedBy="users")
      * @ORM\JoinTable(
      * name="user_group",
      * joinColumns = {@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
@@ -136,7 +136,7 @@ class User
      */
     public $groups;
     /**
-     * @ORM\OneToOne(targetEntity="Avatar", mappedBy="user")
+     * @ORM\OneToOne(targetEntity=Avatar::class, mappedBy="user")
      */
     public $avatar;
 }
@@ -147,7 +147,7 @@ class Avatar
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
     /**
-     * @ORM\OneToOne(targetEntity="User", inversedBy="avatar")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="avatar")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;

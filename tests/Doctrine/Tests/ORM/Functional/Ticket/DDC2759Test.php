@@ -75,7 +75,7 @@ class DDC2759Qualification
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC2759QualificationMetadata", mappedBy="content") */
+    /** @ORM\OneToOne(targetEntity=DDC2759QualificationMetadata::class, mappedBy="content") */
     public $metadata;
 }
 
@@ -85,7 +85,7 @@ class DDC2759Category
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="category") */
+    /** @ORM\OneToMany(targetEntity=DDC2759MetadataCategory::class, mappedBy="category") */
     public $metadataCategories;
 }
 
@@ -95,10 +95,10 @@ class DDC2759QualificationMetadata
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC2759Qualification", inversedBy="metadata") */
+    /** @ORM\OneToOne(targetEntity=DDC2759Qualification::class, inversedBy="metadata") */
     public $content;
 
-    /** @ORM\OneToMany(targetEntity="DDC2759MetadataCategory", mappedBy="metadata") */
+    /** @ORM\OneToMany(targetEntity=DDC2759MetadataCategory::class, mappedBy="metadata") */
     protected $metadataCategories;
 
     public function __construct(DDC2759Qualification $content)
@@ -113,10 +113,10 @@ class DDC2759MetadataCategory
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\ManyToOne(targetEntity="DDC2759QualificationMetadata", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity=DDC2759QualificationMetadata::class, inversedBy="metadataCategories") */
     public $metadata;
 
-    /** @ORM\ManyToOne(targetEntity="DDC2759Category", inversedBy="metadataCategories") */
+    /** @ORM\ManyToOne(targetEntity=DDC2759Category::class, inversedBy="metadataCategories") */
     public $category;
 
     public function __construct(DDC2759QualificationMetadata $metadata, DDC2759Category $category)

@@ -45,7 +45,7 @@ class DDC1151User
     /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
-    /** @ORM\ManyToMany(targetEntity="DDC1151Group") */
+    /** @ORM\ManyToMany(targetEntity=DDC1151Group::class) */
     public $groups;
 }
 

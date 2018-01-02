@@ -84,7 +84,7 @@ class DDC2256User
     public $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC2256Group", inversedBy="users")A
+     * @ORM\ManyToOne(targetEntity=DDC2256Group::class, inversedBy="users")A
      * @ORM\JoinColumn(name="group_id")
      */
     public $group;
@@ -109,7 +109,7 @@ class DDC2256Group
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC2256User", mappedBy="group")
+     * @ORM\OneToMany(targetEntity=DDC2256User::class, mappedBy="group")
      */
     public $users;
 

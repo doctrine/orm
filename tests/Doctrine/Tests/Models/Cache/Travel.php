@@ -28,14 +28,14 @@ class Travel
 
     /**
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="Traveler", inversedBy="travels")
+     * @ORM\ManyToOne(targetEntity=Traveler::class, inversedBy="travels")
      * @ORM\JoinColumn(name="traveler_id", referencedColumnName="id")
      */
     protected $traveler;
 
     /**
      * @ORM\Cache
-     * @ORM\ManyToMany(targetEntity="City", inversedBy="travels", cascade={"persist", "remove"})
+     * @ORM\ManyToMany(targetEntity=City::class, inversedBy="travels", cascade={"persist", "remove"})
      * @ORM\JoinTable(name="cache_visited_cities",
      *  joinColumns={
      *      @ORM\JoinColumn(name="travel_id", referencedColumnName="id")

@@ -261,7 +261,7 @@ class AnnotationDriverTest extends AbstractMappingDriverTest
 class InvalidMappedSuperClass
 {
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", mappedBy="invalid")
+     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="invalid")
      */
     private $users;
 }
@@ -289,7 +289,7 @@ class ColumnWithoutType
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorMap({"parent" = "AnnotationParent", "child" = "AnnotationChild"})
+ * @ORM\DiscriminatorMap({"parent" = AnnotationParent::class, "child" = AnnotationChild::class})
  * @ORM\HasLifecycleCallbacks
  */
 class AnnotationParent
@@ -325,7 +325,7 @@ class AnnotationChild extends AnnotationParent
 /**
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
- * @ORM\DiscriminatorMap({"s"="SuperEntity", "c"="ChildEntity"})
+ * @ORM\DiscriminatorMap({"s"=SuperEntity::class, "c"=ChildEntity::class})
  */
 class SuperEntity
 {
@@ -359,7 +359,7 @@ class ChildEntity extends MiddleMappedSuperclass
 class InvalidFetchOption
 {
     /**
-     * @ORM\OneToMany(targetEntity="Doctrine\Tests\Models\CMS\CmsUser", fetch="eager")
+     * @ORM\OneToMany(targetEntity=CmsUser::class, fetch="eager")
      */
     private $collection;
 }
@@ -372,7 +372,7 @@ class AnnotationSLC
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="AnnotationSLCFoo")
+     * @ORM\ManyToOne(targetEntity=AnnotationSLCFoo::class)
      */
     public $foo;
 }

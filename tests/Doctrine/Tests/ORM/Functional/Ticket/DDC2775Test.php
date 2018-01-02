@@ -64,7 +64,7 @@ class DDC2775Test extends OrmFunctionalTestCase
  * @ORM\Table(name="ddc2775_role")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="role_type", type="string")
- * @ORM\DiscriminatorMap({"admin"="AdminRole"})
+ * @ORM\DiscriminatorMap({"admin"=AdminRole::class})
  */
 abstract class Role
 {
@@ -76,12 +76,12 @@ abstract class Role
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="roles")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="roles")
      */
     public $user;
 
     /**
-     * @ORM\OneToMany(targetEntity="Authorization", mappedBy="role", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="role", cascade={"all"}, orphanRemoval=true)
      */
     public $authorizations;
 
@@ -109,12 +109,12 @@ class Authorization
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="authorizations")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="authorizations")
      */
     public $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Role", inversedBy="authorizations")
+     * @ORM\ManyToOne(targetEntity=Role::class, inversedBy="authorizations")
      */
     public $role;
 }
@@ -131,12 +131,12 @@ class User
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="Role", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Role::class, mappedBy="user", cascade={"all"}, orphanRemoval=true)
      */
     public $roles;
 
     /**
-     * @ORM\OneToMany(targetEntity="Authorization", mappedBy="user", cascade={"all"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Authorization::class, mappedBy="user", cascade={"all"}, orphanRemoval=true)
      */
     public $authorizations;
 

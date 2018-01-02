@@ -76,8 +76,9 @@ class OrderedJoinedTableInheritanceCollectionTest extends OrmFunctionalTestCase
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *      "cat" = "OJTIC_Cat",
- *      "dog" = "OJTIC_Dog"})
+ *      "cat" = OJTIC_Cat::class,
+ *      "dog" = OJTIC_Dog::class
+ * })
  */
 abstract class OJTIC_Pet
 {
@@ -95,18 +96,18 @@ abstract class OJTIC_Pet
     public $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="OJTIC_PET")
+     * @ORM\ManyToOne(targetEntity=OJTIC_PET::class)
      */
     public $mother;
 
     /**
-     * @ORM\OneToMany(targetEntity="OJTIC_Pet", mappedBy="mother")
+     * @ORM\OneToMany(targetEntity=OJTIC_Pet::class, mappedBy="mother")
      * @ORM\OrderBy({"name" = "ASC"})
      */
     public $children;
 
     /**
-     * @ORM\ManyToMany(targetEntity="OJTIC_Pet")
+     * @ORM\ManyToMany(targetEntity=OJTIC_Pet::class)
      * @ORM\JoinTable(name="OTJIC_Pet_Friends",
      *     joinColumns={@ORM\JoinColumn(name="pet_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="friend_id", referencedColumnName="id")})

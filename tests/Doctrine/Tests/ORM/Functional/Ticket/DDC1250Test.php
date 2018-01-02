@@ -53,13 +53,13 @@ class DDC1250ClientHistory
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
+    /** @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, inversedBy="declinedBy")
      * @ORM\JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
     public $declinedClientsHistory;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
+     * @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, mappedBy="declinedClientsHistory")
      * @var
      */
     public $declinedBy;

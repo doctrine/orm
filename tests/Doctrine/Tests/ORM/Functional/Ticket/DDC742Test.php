@@ -99,7 +99,7 @@ class DDC742User
     public $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC742Comment", cascade={"persist"}, fetch="EAGER")
+     * @ORM\ManyToMany(targetEntity=DDC742Comment::class, cascade={"persist"}, fetch="EAGER")
      * @ORM\JoinTable(
      *  name="user_comments",
      *  joinColumns={@ORM\JoinColumn(name="user_id",referencedColumnName="id")},

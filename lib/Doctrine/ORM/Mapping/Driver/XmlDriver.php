@@ -46,9 +46,7 @@ class XmlDriver extends FileDriver
 
         if ($xmlRoot->getName() === 'entity') {
             if (isset($xmlRoot['repository-class'])) {
-                $metadata->setCustomRepositoryClassName(
-                    $metadata->fullyQualifiedClassName((string) $xmlRoot['repository-class'])
-                );
+                $metadata->setCustomRepositoryClassName((string) $xmlRoot['repository-class']);
             }
 
             if (isset($xmlRoot['read-only']) && $this->evaluateBoolean($xmlRoot['read-only'])) {
@@ -56,9 +54,7 @@ class XmlDriver extends FileDriver
             }
         } elseif ($xmlRoot->getName() === 'mapped-superclass') {
             if (isset($xmlRoot['repository-class'])) {
-                $metadata->setCustomRepositoryClassName(
-                    $metadata->fullyQualifiedClassName((string) $xmlRoot['repository-class'])
-                );
+                $metadata->setCustomRepositoryClassName((string) $xmlRoot['repository-class']);
             }
 
             $metadata->isMappedSuperclass = true;
@@ -246,7 +242,7 @@ class XmlDriver extends FileDriver
                     $map = [];
 
                     foreach ($xmlRoot->{'discriminator-map'}->{'discriminator-mapping'} as $discrMapElement) {
-                        $map[(string) $discrMapElement['value']] = $metadata->fullyQualifiedClassName((string) $discrMapElement['class']);
+                        $map[(string) $discrMapElement['value']] = (string) $discrMapElement['class'];
                     }
 
                     $metadata->setDiscriminatorMap($map);
@@ -348,7 +344,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'one-to-one'})) {
             foreach ($xmlRoot->{'one-to-one'} as $oneToOneElement) {
                 $association  = new Mapping\OneToOneAssociationMetadata((string) $oneToOneElement['field']);
-                $targetEntity = $metadata->fullyQualifiedClassName((string) $oneToOneElement['target-entity']);
+                $targetEntity = (string) $oneToOneElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
 
@@ -409,7 +405,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'one-to-many'})) {
             foreach ($xmlRoot->{'one-to-many'} as $oneToManyElement) {
                 $association  = new Mapping\OneToManyAssociationMetadata((string) $oneToManyElement['field']);
-                $targetEntity = $metadata->fullyQualifiedClassName((string) $oneToManyElement['target-entity']);
+                $targetEntity = (string) $oneToManyElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
                 $association->setMappedBy((string) $oneToManyElement['mapped-by']);
@@ -467,7 +463,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'many-to-one'})) {
             foreach ($xmlRoot->{'many-to-one'} as $manyToOneElement) {
                 $association  = new Mapping\ManyToOneAssociationMetadata((string) $manyToOneElement['field']);
-                $targetEntity = $metadata->fullyQualifiedClassName((string) $manyToOneElement['target-entity']);
+                $targetEntity = (string) $manyToOneElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
 
@@ -520,7 +516,7 @@ class XmlDriver extends FileDriver
         if (isset($xmlRoot->{'many-to-many'})) {
             foreach ($xmlRoot->{'many-to-many'} as $manyToManyElement) {
                 $association  = new Mapping\ManyToManyAssociationMetadata((string) $manyToManyElement['field']);
-                $targetEntity = $metadata->fullyQualifiedClassName((string) $manyToManyElement['target-entity']);
+                $targetEntity = (string) $manyToManyElement['target-entity'];
 
                 $association->setTargetEntity($targetEntity);
 
@@ -708,7 +704,7 @@ class XmlDriver extends FileDriver
         // Evaluate entity listener
         if (isset($xmlRoot->{'entity-listeners'})) {
             foreach ($xmlRoot->{'entity-listeners'}->{'entity-listener'} as $listenerElement) {
-                $listenerClassName = $metadata->fullyQualifiedClassName((string) $listenerElement['class']);
+                $listenerClassName = (string) $listenerElement['class'];
 
                 if (! class_exists($listenerClassName)) {
                     throw Mapping\MappingException::entityListenerClassNotFound(

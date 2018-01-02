@@ -56,7 +56,7 @@ class AttachEntityListenersListener
         }
 
         foreach ($this->entityListeners[$metadata->getClassName()] as $listener) {
-            $listenerClassName = $metadata->fullyQualifiedClassName($listener['class']);
+            $listenerClassName = $listener['class'];
 
             $metadata->addEntityListener($listener['event'], $listenerClassName, $listener['method']);
         }

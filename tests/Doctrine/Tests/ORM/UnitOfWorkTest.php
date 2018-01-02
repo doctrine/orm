@@ -731,7 +731,7 @@ class NotifyChangedEntity implements NotifyPropertyChanged
 
     private $transient; // not persisted
 
-    /** @ORM\OneToMany(targetEntity="NotifyChangedRelatedItem", mappedBy="owner") */
+    /** @ORM\OneToMany(targetEntity=NotifyChangedRelatedItem::class, mappedBy="owner") */
     private $items;
 
     public function  __construct()
@@ -795,7 +795,7 @@ class NotifyChangedRelatedItem
      */
     private $id;
 
-    /** @ORM\ManyToOne(targetEntity="NotifyChangedEntity", inversedBy="items") */
+    /** @ORM\ManyToOne(targetEntity=NotifyChangedEntity::class, inversedBy="items") */
     private $owner;
 
     public function getId()

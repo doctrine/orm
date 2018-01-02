@@ -74,8 +74,8 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
  * @ORM\DiscriminatorMap({
- *     "Entity1" = "DDC1595InheritedEntity1",
- *     "Entity2" = "DDC1595InheritedEntity2"
+ *     "Entity1" = DDC1595InheritedEntity1::class,
+ *     "Entity2" = DDC1595InheritedEntity2::class
  * })
  */
 abstract class DDC1595BaseInheritance
@@ -95,7 +95,7 @@ abstract class DDC1595BaseInheritance
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
-     * @ORM\ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(targetEntity=DDC1595InheritedEntity2::class, fetch="EXTRA_LAZY")
      * @ORM\JoinTable(name="entity1_entity2",
      *     joinColumns={@ORM\JoinColumn(name="parent", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="item", referencedColumnName="id")}

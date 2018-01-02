@@ -9,7 +9,10 @@ use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @ORM\Entity
- * @ORM\EntityListeners({"CompanyContractListener","CompanyFlexUltraContractListener"})
+ * @ORM\EntityListeners({
+ *     CompanyContractListener::class,
+ *     CompanyFlexUltraContractListener::class
+ * })
  */
 class CompanyFlexUltraContract extends CompanyFlexContract
 {

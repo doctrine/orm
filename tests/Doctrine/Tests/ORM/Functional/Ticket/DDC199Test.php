@@ -58,7 +58,7 @@ class DDC199Test extends OrmFunctionalTestCase
  * @ORM\Entity @ORM\Table(name="ddc199_entities")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"parent" = "DDC199ParentClass", "child" = "DDC199ChildClass"})
+ * @ORM\DiscriminatorMap({"parent" = DDC199ParentClass::class, "child" = DDC199ChildClass::class})
  */
 class DDC199ParentClass
 {
@@ -74,7 +74,7 @@ class DDC199ParentClass
     public $parentData;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC199RelatedClass", mappedBy="parent")
+     * @ORM\OneToMany(targetEntity=DDC199RelatedClass::class, mappedBy="parent")
      */
     public $relatedEntities;
 }
@@ -98,7 +98,7 @@ class DDC199RelatedClass
     public $relatedData;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC199ParentClass", inversedBy="relatedEntities")
+     * @ORM\ManyToOne(targetEntity=DDC199ParentClass::class, inversedBy="relatedEntities")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     public $parent;

@@ -20,7 +20,7 @@ trait DDC1872ExampleTrait
     protected $foo;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC1872Bar", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=DDC1872Bar::class, cascade={"persist"})
      * @ORM\JoinColumn(name="example_trait_bar_id", referencedColumnName="id")
      */
     protected $bar;

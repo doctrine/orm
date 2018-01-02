@@ -35,7 +35,7 @@ class DDC493Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"distributor" = "DDC493Distributor", "customer" = "DDC493Customer"})
+ * @ORM\DiscriminatorMap({"distributor" = DDC493Distributor::class, "customer" = DDC493Customer::class})
  */
 class DDC493Customer
 {
@@ -46,7 +46,7 @@ class DDC493Customer
      */
     public $id;
     /**
-     * @ORM\OneToOne(targetEntity="DDC493Contact", cascade={"remove","persist"})
+     * @ORM\OneToOne(targetEntity=DDC493Contact::class, cascade={"remove","persist"})
      * @ORM\JoinColumn(name="contact", referencedColumnName="id")
      */
     public $contact;

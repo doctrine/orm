@@ -225,24 +225,4 @@ abstract class ComponentMetadata
 
         return $iterator;
     }
-
-    /**
-     * @param string|null $className
-     *
-     * @return string|null null if the input value is null
-     */
-    public function fullyQualifiedClassName(?string $className) : ?string
-    {
-        if ($className === null || ! $this->reflectionClass) {
-            return $className;
-        }
-
-        $namespaceName  = $this->reflectionClass->getNamespaceName();
-        $finalClassName = ($className !== null && strpos($className, '\\') === false && $namespaceName)
-            ? sprintf('%s\\%s', $namespaceName, $className)
-            : $className
-        ;
-
-        return ltrim($finalClassName, '\\');
-    }
 }

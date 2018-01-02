@@ -92,7 +92,7 @@ class GH6362Start
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="GH6362Base", inversedBy="starts")
+     * @ORM\ManyToOne(targetEntity=GH6362Base::class, inversedBy="starts")
      */
     private $bases;
 }
@@ -100,7 +100,7 @@ class GH6362Start
 /**
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"child" = "GH6362Child"})
+ * @ORM\DiscriminatorMap({"child" = GH6362Child::class})
  * @ORM\Entity
  */
 abstract class GH6362Base
@@ -113,7 +113,7 @@ abstract class GH6362Base
     protected $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="GH6362Start", mappedBy="bases")
+     * @ORM\OneToMany(targetEntity=GH6362Start::class, mappedBy="bases")
      */
     private $starts;
 }
@@ -124,7 +124,7 @@ abstract class GH6362Base
 class GH6362Child extends GH6362Base
 {
     /**
-     * @ORM\OneToMany(targetEntity="GH6362Join", mappedBy="child")
+     * @ORM\OneToMany(targetEntity=GH6362Join::class, mappedBy="child")
      */
     private $joins;
 }
@@ -142,7 +142,7 @@ class GH6362Join
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="GH6362Child", inversedBy="joins")
+     * @ORM\ManyToOne(targetEntity=GH6362Child::class, inversedBy="joins")
      */
     private $child;
 }

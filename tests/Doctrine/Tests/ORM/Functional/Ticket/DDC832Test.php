@@ -178,7 +178,7 @@ class DDC832Like
  * @ORM\Table(name="INDEX")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"like" = "DDC832JoinedIndex", "fuzzy" = "DDC832JoinedTreeIndex"})
+ * @ORM\DiscriminatorMap({"like" = DDC832JoinedIndex::class, "fuzzy" = DDC832JoinedTreeIndex::class})
  */
 class DDC832JoinedIndex
 {

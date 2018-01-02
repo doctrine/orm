@@ -24,7 +24,7 @@ class OwningOneToOneCompositeIdForeignKeyEntity
     public $id2;
 
     /**
-     * @ORM\OneToOne(targetEntity="InversedOneToOneCompositeIdForeignKeyEntity", inversedBy="associatedEntity")
+     * @ORM\OneToOne(targetEntity=InversedOneToOneCompositeIdForeignKeyEntity::class, inversedBy="associatedEntity")
      * @ORM\JoinColumns({
      *     @ORM\JoinColumn(name="associated_id", referencedColumnName="id1"),
      *     @ORM\JoinColumn(name="associated_foreign_id", referencedColumnName="foreign_id")

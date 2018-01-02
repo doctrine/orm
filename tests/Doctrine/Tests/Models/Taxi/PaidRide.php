@@ -16,14 +16,14 @@ class PaidRide
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Driver", inversedBy="driverRides")
+     * @ORM\ManyToOne(targetEntity=Driver::class, inversedBy="driverRides")
      * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     private $driver;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Car", inversedBy="carRides")
+     * @ORM\ManyToOne(targetEntity=Car::class, inversedBy="carRides")
      * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     private $car;

@@ -172,7 +172,7 @@ class DDC1335User
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1335Phone", mappedBy="user", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=DDC1335Phone::class, mappedBy="user", cascade={"persist", "remove"})
      */
     public $phones;
 
@@ -206,7 +206,7 @@ class DDC1335Phone
     public $numericalValue;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1335User", inversedBy="phones")
+     * @ORM\ManyToOne(targetEntity=DDC1335User::class, inversedBy="phones")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable = false)
      */
     public $user;

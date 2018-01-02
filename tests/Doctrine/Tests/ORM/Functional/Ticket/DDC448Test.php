@@ -37,8 +37,8 @@ class DDC448Test extends OrmFunctionalTestCase
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="smallint")
  * @ORM\DiscriminatorMap({
- *     "0" = "DDC448MainTable",
- *     "1" = "DDC448SubTable"
+ *     "0" = DDC448MainTable::class,
+ *     "1" = DDC448SubTable::class
  * })
  */
 class DDC448MainTable
@@ -51,7 +51,7 @@ class DDC448MainTable
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC448ConnectedClass",  cascade={"all"}, fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity=DDC448ConnectedClass::class,  cascade={"all"}, fetch="EAGER")
      * @ORM\JoinColumn(name="connectedClassId", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      */
     private $connectedClassId;

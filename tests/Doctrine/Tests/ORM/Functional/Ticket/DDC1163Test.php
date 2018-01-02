@@ -107,7 +107,7 @@ class DDC1163ProxyHolder
     private $id;
     /**
      * @var SpecialProduct
-     * @ORM\OneToOne(targetEntity="DDC1163SpecialProduct")
+     * @ORM\OneToOne(targetEntity=DDC1163SpecialProduct::class)
      */
     private $specialProduct;
 
@@ -131,7 +131,7 @@ class DDC1163ProxyHolder
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="type", type="string")
- * @ORM\DiscriminatorMap({"special" = "DDC1163SpecialProduct"})
+ * @ORM\DiscriminatorMap({"special" = DDC1163SpecialProduct::class})
  */
 abstract class DDC1163Product
 {
@@ -191,7 +191,7 @@ class DDC1163Tag
     private $name;
     /**
      * @var Product
-     * @ORM\ManyToOne(targetEntity="DDC1163Product", inversedBy="tags")
+     * @ORM\ManyToOne(targetEntity=DDC1163Product::class, inversedBy="tags")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      * })

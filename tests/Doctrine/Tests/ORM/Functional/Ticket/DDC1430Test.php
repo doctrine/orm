@@ -176,7 +176,7 @@ class DDC1430Order
     private $status;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=DDC1430OrderProduct::class, mappedBy="order", cascade={"persist", "remove"})
      *
      * @var \Doctrine\Common\Collections\ArrayCollection $products
      */
@@ -254,7 +254,7 @@ class DDC1430OrderProduct
     /**
      * @var DDC1430Order $order
      *
-     * @ORM\ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
+     * @ORM\ManyToOne(targetEntity=DDC1430Order::class, inversedBy="products")
      * @ORM\JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
     private $order;

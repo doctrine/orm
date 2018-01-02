@@ -25,7 +25,7 @@ class CmsTag
      */
     public $name;
     /**
-     * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="tags")
+     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="tags")
      */
     public $users;
 

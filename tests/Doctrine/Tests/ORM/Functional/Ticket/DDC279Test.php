@@ -66,7 +66,7 @@ class DDC279Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"DDC279EntityX" = "DDC279EntityX"})
+ * @ORM\DiscriminatorMap({"DDC279EntityX" = DDC279EntityX::class})
  */
 abstract class DDC279EntityXAbstract
 {
@@ -89,7 +89,7 @@ abstract class DDC279EntityXAbstract
 class DDC279EntityX extends DDC279EntityXAbstract
 {
     /**
-     * @ORM\OneToOne(targetEntity="DDC279EntityY")
+     * @ORM\OneToOne(targetEntity=DDC279EntityY::class)
      * @ORM\JoinColumn(name="y_id", referencedColumnName="id")
      */
     public $y;
@@ -112,7 +112,7 @@ class DDC279EntityY
     public $data;
 
     /**
-     * @ORM\OneToOne(targetEntity="DDC279EntityZ")
+     * @ORM\OneToOne(targetEntity=DDC279EntityZ::class)
      * @ORM\JoinColumn(name="z_id", referencedColumnName="id")
      */
     public $z;

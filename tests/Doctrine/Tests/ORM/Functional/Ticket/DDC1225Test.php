@@ -48,7 +48,7 @@ class DDC1225_TestEntity1
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Doctrine\Tests\ORM\Functional\Ticket\DDC1225_TestEntity2")
+     * @ORM\ManyToOne(targetEntity=DDC1225_TestEntity2::class)
      * @ORM\JoinColumn(name="test_entity2_id", referencedColumnName="id", nullable=false)
      */
     private $testEntity2;

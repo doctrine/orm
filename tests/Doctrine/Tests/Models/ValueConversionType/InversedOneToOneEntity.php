@@ -24,7 +24,7 @@ class InversedOneToOneEntity
     public $someProperty;
 
     /**
-     * @ORM\OneToOne(targetEntity="OwningOneToOneEntity", mappedBy="associatedEntity")
+     * @ORM\OneToOne(targetEntity=OwningOneToOneEntity::class, mappedBy="associatedEntity")
      */
     public $associatedEntity;
 }

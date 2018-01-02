@@ -25,7 +25,7 @@ class NavTour
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="NavPointOfInterest")
+     * @ORM\ManyToMany(targetEntity=NavPointOfInterest::class)
      * @ORM\JoinTable(name="navigation_tour_pois",
      *      joinColumns={@ORM\JoinColumn(name="tour_id", referencedColumnName="id")},
      *      inverseJoinColumns={

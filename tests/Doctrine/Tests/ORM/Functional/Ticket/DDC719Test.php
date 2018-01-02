@@ -62,7 +62,7 @@ class DDC719Group extends Entity
     protected $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC719Group", inversedBy="parents")
+     * @ORM\ManyToMany(targetEntity=DDC719Group::class, inversedBy="parents")
      * @ORM\JoinTable(name="groups_groups",
      * 		joinColumns={@ORM\JoinColumn(name="parent_id", referencedColumnName="id")},
      * 		inverseJoinColumns={@ORM\JoinColumn(name="child_id", referencedColumnName="id")}
@@ -71,7 +71,7 @@ class DDC719Group extends Entity
     protected $children;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC719Group", mappedBy="children")
+     * @ORM\ManyToMany(targetEntity=DDC719Group::class, mappedBy="children")
      */
     protected $parents;
 

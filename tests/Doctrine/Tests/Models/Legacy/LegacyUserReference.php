@@ -14,14 +14,14 @@ class LegacyUserReference
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="LegacyUser", inversedBy="references")
+     * @ORM\ManyToOne(targetEntity=LegacyUser::class, inversedBy="references")
      * @ORM\JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
     private $source;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="LegacyUser")
+     * @ORM\ManyToOne(targetEntity=LegacyUser::class)
      * @ORM\JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
      */
     private $target;

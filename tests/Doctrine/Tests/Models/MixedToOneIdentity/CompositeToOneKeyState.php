@@ -18,7 +18,7 @@ class CompositeToOneKeyState
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="Country", cascade={"MERGE"})
+     * @ORM\ManyToOne(targetEntity=Country::class, cascade={"MERGE"})
      * @ORM\JoinColumn(referencedColumnName="country")
      */
     public $country;

@@ -86,7 +86,7 @@ class EntityClassMetadataBinder
     ) : void
     {
         if ($entityAnnotation->repositoryClass !== null) {
-            $repositoryClassName = $classMetadata->fullyQualifiedClassName($entityAnnotation->repositoryClass);
+            $repositoryClassName = $entityAnnotation->repositoryClass;
 
             $classMetadata->setCustomRepositoryClassName($repositoryClassName);
         }

@@ -21,7 +21,7 @@ class Address
 
     /**
      * @ORM\JoinColumn(name="person_id", referencedColumnName="id")
-     * @ORM\OneToOne(targetEntity="Person", inversedBy="address")
+     * @ORM\OneToOne(targetEntity=Person::class, inversedBy="address")
      */
     public $person;
 

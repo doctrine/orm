@@ -15,7 +15,7 @@ class DDC5934Member
     /**
      * @var ArrayCollection
      *
-     * @ORM\ManyToMany(targetEntity="DDC5934BaseContract", mappedBy="members")
+     * @ORM\ManyToMany(targetEntity=DDC5934BaseContract::class, mappedBy="members")
      */
     public $contracts;
 

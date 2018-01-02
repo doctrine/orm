@@ -25,7 +25,7 @@ class NavCountry
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="NavPointOfInterest", mappedBy="country")
+     * @ORM\OneToMany(targetEntity=NavPointOfInterest::class, mappedBy="country")
      */
     private $pois;
 

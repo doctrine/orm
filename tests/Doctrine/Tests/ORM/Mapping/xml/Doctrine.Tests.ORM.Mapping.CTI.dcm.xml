@@ -6,9 +6,9 @@
     <entity name="Doctrine\Tests\ORM\Mapping\CTI" inheritance-type="JOINED">
         <discriminator-column name="discr" type="string" length="60"/>
         <discriminator-map>
-            <discriminator-mapping value="foo" class="CTIFoo"/>
-            <discriminator-mapping value="bar" class="CTIBar"/>
-            <discriminator-mapping value="baz" class="CTIBaz"/>
+            <discriminator-mapping value="foo" class="Doctrine\Tests\ORM\Mapping\CTIFoo"/>
+            <discriminator-mapping value="bar" class="Doctrine\Tests\ORM\Mapping\CTIBar"/>
+            <discriminator-mapping value="baz" class="Doctrine\Tests\ORM\Mapping\CTIBaz"/>
         </discriminator-map>
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>

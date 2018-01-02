@@ -10,7 +10,10 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"child" = "SingleChildClass", "root" = "SingleRootClass"})
+ * @ORM\DiscriminatorMap({
+ *     "child" = SingleChildClass::class,
+ *     "root" = SingleRootClass::class
+ * })
  */
 class SingleRootClass
 {

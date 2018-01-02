@@ -25,7 +25,7 @@ class ForumBoard
      */
     public $position;
     /**
-     * @ORM\ManyToOne(targetEntity="ForumCategory", inversedBy="boards")
+     * @ORM\ManyToOne(targetEntity=ForumCategory::class, inversedBy="boards")
      * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
      */
     public $category;

@@ -48,7 +48,7 @@ class DDC2182OptionChild
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC2182OptionParent")
+     * @ORM\ManyToOne(targetEntity=DDC2182OptionParent::class)
      * @ORM\JoinColumn(referencedColumnName="id")
      */
     private $parent;

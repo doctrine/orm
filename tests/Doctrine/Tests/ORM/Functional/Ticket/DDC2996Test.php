@@ -70,7 +70,7 @@ class DDC2996UserPreference
     public $value;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC2996User")
+     * @ORM\ManyToOne(targetEntity=DDC2996User::class)
      */
     public $user;
 

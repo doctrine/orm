@@ -68,7 +68,7 @@ class DDC211User
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC211Group", inversedBy="users")
+     * @ORM\ManyToMany(targetEntity=DDC211Group::class, inversedBy="users")
      *   @ORM\JoinTable(name="user_groups",
      *       joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *       inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
@@ -111,7 +111,7 @@ class DDC211Group
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC211User", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=DDC211User::class, mappedBy="groups")
      */
     protected $users;
 

@@ -24,7 +24,7 @@ class DDC964Group
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC964User", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=DDC964User::class, mappedBy="groups")
      */
     private $users;
 

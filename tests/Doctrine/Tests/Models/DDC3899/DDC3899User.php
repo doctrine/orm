@@ -15,6 +15,6 @@ class DDC3899User
     /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\OneToMany(targetEntity="DDC3899Contract", mappedBy="user") */
+    /** @ORM\OneToMany(targetEntity=DDC3899Contract::class, mappedBy="user") */
     public $contracts;
 }

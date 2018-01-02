@@ -10,7 +10,7 @@ use Doctrine\ORM\Annotation as ORM;
 class Cat extends Pet
 {
     /**
-     * @ORM\OneToOne(targetEntity="LitterBox")
+     * @ORM\OneToOne(targetEntity=LitterBox::class)
      *
      * @var LitterBox
      */

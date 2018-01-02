@@ -7,7 +7,7 @@ namespace Doctrine\Tests\Models\DDC3231;
 use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="DDC3231User2Repository")
+ * @ORM\Entity(repositoryClass=DDC3231User2Repository::class)
  * @ORM\Table(name="users2")
  */
 class DDC3231User2

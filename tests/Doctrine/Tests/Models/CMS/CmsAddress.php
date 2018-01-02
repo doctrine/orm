@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping;
  *      ),
  *      @ORM\NamedNativeQuery(
  *          name           = "find-by-id",
- *          resultClass    = "CmsAddress",
+ *          resultClass    = CmsAddress::class,
  *          query          = "SELECT * FROM cms_addresses WHERE id = ?"
  *      ),
  *      @ORM\NamedNativeQuery(
@@ -39,7 +39,7 @@ use Doctrine\ORM\Mapping;
  *          name    = "mapping-find-all",
  *          entities= {
  *              @ORM\EntityResult(
- *                  entityClass = "CmsAddress",
+ *                  entityClass = CmsAddress::class,
  *                  fields      = {
  *                      @ORM\FieldResult(name = "id",       column="id"),
  *                      @ORM\FieldResult(name = "city",     column="city"),
@@ -66,7 +66,7 @@ use Doctrine\ORM\Mapping;
  *      )
  * })
  *
- * @ORM\EntityListeners({"CmsAddressListener"})
+ * @ORM\EntityListeners({CmsAddressListener::class})
  */
 class CmsAddress
 {
@@ -97,7 +97,7 @@ class CmsAddress
     public $street;
 
     /**
-     * @ORM\OneToOne(targetEntity="CmsUser", inversedBy="address")
+     * @ORM\OneToOne(targetEntity=CmsUser::class, inversedBy="address")
      * @ORM\JoinColumn(referencedColumnName="id")
      */
     public $user;

@@ -25,7 +25,7 @@ class Login
     public $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Token", cascade={"persist", "remove"}, inversedBy="logins")
+     * @ORM\ManyToOne(targetEntity=Token::class, cascade={"persist", "remove"}, inversedBy="logins")
      * @ORM\JoinColumn(name="token_id", referencedColumnName="token")
      */
     public $token;

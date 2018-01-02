@@ -10,7 +10,10 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"child" = "JoinedChildClass", "root" = "JoinedRootClass"})
+ * @ORM\DiscriminatorMap({
+ *     "child" = JoinedChildClass::class,
+ *     "root" = JoinedRootClass::class
+ * })
  */
 class JoinedRootClass
 {

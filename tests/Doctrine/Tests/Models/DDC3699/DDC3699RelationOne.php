@@ -15,6 +15,6 @@ class DDC3699RelationOne
     /** @ORM\Id @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity="DDC3699Child", mappedBy="oneRelation") */
+    /** @ORM\OneToOne(targetEntity=DDC3699Child::class, mappedBy="oneRelation") */
     public $child;
 }

@@ -20,7 +20,7 @@ class RoutingRoute
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="RoutingLeg", cascade={"all"})
+     * @ORM\ManyToMany(targetEntity=RoutingLeg::class, cascade={"all"})
      * @ORM\JoinTable(name="RoutingRouteLegs",
      *     joinColumns={@ORM\JoinColumn(name="route_id", referencedColumnName="id")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="leg_id", referencedColumnName="id", unique=true)}
@@ -30,7 +30,7 @@ class RoutingRoute
     public $legs;
 
     /**
-     * @ORM\OneToMany(targetEntity="RoutingRouteBooking", mappedBy="route")
+     * @ORM\OneToMany(targetEntity=RoutingRouteBooking::class, mappedBy="route")
      * @ORM\OrderBy({"passengerName" = "ASC"})
      */
     public $bookings = [];

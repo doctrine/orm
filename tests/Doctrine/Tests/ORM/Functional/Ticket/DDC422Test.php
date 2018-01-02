@@ -50,7 +50,7 @@ class DDC422Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"guest" = "DDC422Guest", "customer" = "DDC422Customer"})
+ * @ORM\DiscriminatorMap({"guest" = DDC422Guest::class, "customer" = DDC422Customer::class})
  */
 class DDC422Guest
 {
@@ -62,7 +62,7 @@ class DDC422Guest
 class DDC422Customer extends DDC422Guest
 {
     /**
-     * @ORM\ManyToMany(targetEntity="DDC422Contact", cascade={"persist","remove"})
+     * @ORM\ManyToMany(targetEntity=DDC422Contact::class, cascade={"persist","remove"})
      * @ORM\JoinTable(name="ddc422_customers_contacts",
      *      joinColumns={@ORM\JoinColumn(name="customer_id", referencedColumnName="id", onDelete="cascade" )},
      *      inverseJoinColumns={@ORM\JoinColumn(name="contact_id", referencedColumnName="id", onDelete="cascade" )}

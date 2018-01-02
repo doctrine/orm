@@ -78,7 +78,7 @@ class GH5887Cart
      *
      * @var GH5887Customer
      *
-     * @ORM\OneToOne(targetEntity="GH5887Customer", inversedBy="cart")
+     * @ORM\OneToOne(targetEntity=GH5887Customer::class, inversedBy="cart")
      * @ORM\JoinColumn(name="customer_id", referencedColumnName="id")
      */
     private $customer;
@@ -138,7 +138,7 @@ class GH5887Customer
      *
      * @var GH5887Cart
      *
-     * @ORM\OneToOne(targetEntity="GH5887Cart", mappedBy="customer")
+     * @ORM\OneToOne(targetEntity=GH5887Cart::class, mappedBy="customer")
      */
     private $cart;
 

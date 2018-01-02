@@ -21,14 +21,14 @@ class City
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\ManyToOne(targetEntity=Country::class)
      * @ORM\JoinColumn(name="country", referencedColumnName="id")
      * @ORM\Cache
      */
     public $country;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Admin1")
+     * @ORM\ManyToOne(targetEntity=Admin1::class)
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="admin1", referencedColumnName="id"),
      *   @ORM\JoinColumn(name="country", referencedColumnName="country")

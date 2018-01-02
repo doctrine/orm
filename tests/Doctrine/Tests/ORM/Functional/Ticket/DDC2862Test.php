@@ -137,7 +137,7 @@ class DDC2862Driver
 
     /**
      * @ORM\Cache()
-     * @ORM\OneToOne(targetEntity="DDC2862User")
+     * @ORM\OneToOne(targetEntity=DDC2862User::class)
      * @var User
      */
     protected $userProfile;

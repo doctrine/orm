@@ -12,7 +12,7 @@ use Doctrine\ORM\Annotation as ORM;
 class DDC4006User
 {
     /**
-     * @ORM\Embedded(class="DDC4006UserId")
+     * @ORM\Embedded(class=DDC4006UserId::class)
      */
     private $id;
 }

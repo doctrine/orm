@@ -27,12 +27,12 @@ class CmsArticle
      */
     public $text;
     /**
-     * @ORM\ManyToOne(targetEntity="CmsUser", inversedBy="articles")
+     * @ORM\ManyToOne(targetEntity=CmsUser::class, inversedBy="articles")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
     /**
-     * @ORM\OneToMany(targetEntity="CmsComment", mappedBy="article")
+     * @ORM\OneToMany(targetEntity=CmsComment::class, mappedBy="article")
      */
     public $comments;
 

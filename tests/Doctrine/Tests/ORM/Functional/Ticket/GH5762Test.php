@@ -118,7 +118,7 @@ class GH5762Driver
     public $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="GH5762DriverRide", mappedBy="driver")
+     * @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="driver")
      */
     public $driverRides;
 
@@ -138,14 +138,14 @@ class GH5762DriverRide
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="GH5762Driver", inversedBy="driverRides")
+     * @ORM\ManyToOne(targetEntity=GH5762Driver::class, inversedBy="driverRides")
      * @ORM\JoinColumn(name="driver_id", referencedColumnName="id")
      */
     public $driver;
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="GH5762Car", inversedBy="carRides")
+     * @ORM\ManyToOne(targetEntity=GH5762Car::class, inversedBy="carRides")
      * @ORM\JoinColumn(name="car", referencedColumnName="brand")
      */
     public $car;
@@ -180,7 +180,7 @@ class GH5762Car
     public $model;
 
     /**
-     * @ORM\OneToMany(targetEntity="GH5762DriverRide", mappedBy="car")
+     * @ORM\OneToMany(targetEntity=GH5762DriverRide::class, mappedBy="car")
      */
     public $carRides;
 

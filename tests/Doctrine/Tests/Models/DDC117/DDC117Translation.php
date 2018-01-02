@@ -13,7 +13,7 @@ class DDC117Translation
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC117Article", inversedBy="translations")
+     * @ORM\ManyToOne(targetEntity=DDC117Article::class, inversedBy="translations")
      * @ORM\JoinColumn(name="article_id", referencedColumnName="article_id")
      */
     private $article;
@@ -29,12 +29,12 @@ class DDC117Translation
     private $title;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC117Editor", mappedBy="reviewingTranslations")
+     * @ORM\ManyToMany(targetEntity=DDC117Editor::class, mappedBy="reviewingTranslations")
      */
     public $reviewedByEditors;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC117Editor", mappedBy="lastTranslation")
+     * @ORM\OneToMany(targetEntity=DDC117Editor::class, mappedBy="lastTranslation")
      */
     public $lastTranslatedBy;
 

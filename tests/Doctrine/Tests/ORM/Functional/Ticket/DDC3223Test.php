@@ -72,8 +72,8 @@ class Journalist extends Participant
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *     "journalist"  = "Journalist",
- *     "participant" = "Participant",
+ *     "journalist"  = Journalist::class,
+ *     "participant" = Participant::class,
  * })
  */
 class Participant
@@ -82,7 +82,7 @@ class Participant
     public $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ProfileStatus")
+     * @ORM\ManyToOne(targetEntity=ProfileStatus::class)
      * @ORM\JoinColumn(name="status_id", nullable=false)
      * @var ProfileStatus
      */
@@ -94,8 +94,8 @@ class Participant
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *     "profile" = "ProfileStatus",
- *     "status"  = "Status",
+ *     "profile" = ProfileStatus::class,
+ *     "status"  = Status::class,
  * })
  */
 class Status

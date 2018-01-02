@@ -30,7 +30,7 @@ class LegacyArticle
     public $text;
 
     /**
-     * @ORM\ManyToOne(targetEntity="LegacyUser", inversedBy="articles")
+     * @ORM\ManyToOne(targetEntity=LegacyUser::class, inversedBy="articles")
      * @ORM\JoinColumn(name="iUserId", referencedColumnName="iUserId")
      */
     public $user;

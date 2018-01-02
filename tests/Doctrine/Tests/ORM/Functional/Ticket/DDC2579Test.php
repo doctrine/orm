@@ -78,7 +78,7 @@ class DDC2579Entity
 
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC2579EntityAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC2579EntityAssoc::class)
      * @ORM\JoinColumn(name="relation_id", referencedColumnName="association_id")
      */
     public $assoc;
@@ -103,7 +103,7 @@ class DDC2579EntityAssoc
 {
     /**
      * @ORM\Id
-     * @ORM\ManyToOne(targetEntity="DDC2579AssocAssoc")
+     * @ORM\ManyToOne(targetEntity=DDC2579AssocAssoc::class)
      * @ORM\JoinColumn(name="association_id", referencedColumnName="associationId")
      */
     public $assocAssoc;

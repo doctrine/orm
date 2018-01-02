@@ -10,7 +10,7 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\Entity @ORM\Table(name="company_events")
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="event_type", type="string")
- * @ORM\DiscriminatorMap({"auction"="CompanyAuction", "raffle"="CompanyRaffle"})
+ * @ORM\DiscriminatorMap({"auction"=CompanyAuction::class, "raffle"=CompanyRaffle::class})
  */
 abstract class CompanyEvent
 {
@@ -21,7 +21,11 @@ abstract class CompanyEvent
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="CompanyOrganization", inversedBy="events", cascade={"persist"})
+     * @ORM\ManyToOne(
+     *     targetEntity=CompanyOrganization::class,
+     *     inversedBy="events",
+     *     cascade={"persist"}
+     * )
      * @ORM\JoinColumn(name="org_id", referencedColumnName="id")
      */
     private $organization;

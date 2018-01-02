@@ -24,7 +24,7 @@ class DDC3579Group
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC3579Admin", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=DDC3579Admin::class, mappedBy="groups")
      */
     private $admins;
 

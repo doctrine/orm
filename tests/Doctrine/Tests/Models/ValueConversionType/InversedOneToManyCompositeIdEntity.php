@@ -31,7 +31,7 @@ class InversedOneToManyCompositeIdEntity
     public $someProperty;
 
     /**
-     * @ORM\OneToMany(targetEntity="OwningManyToOneCompositeIdEntity", mappedBy="associatedEntity")
+     * @ORM\OneToMany(targetEntity=OwningManyToOneCompositeIdEntity::class, mappedBy="associatedEntity")
      */
     public $associatedEntities;
 

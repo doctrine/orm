@@ -250,18 +250,18 @@ class Train
     public $id;
     /**
      * Owning side
-     * @ORM\OneToOne(targetEntity="TrainDriver", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=TrainDriver::class, inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     public $driver;
     /**
      * Owning side
-     * @ORM\OneToOne(targetEntity="TrainOwner", inversedBy="train", fetch="EAGER", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=TrainOwner::class, inversedBy="train", fetch="EAGER", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     public $owner;
     /**
-     * @ORM\OneToMany(targetEntity="Waggon", mappedBy="train", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=Waggon::class, mappedBy="train", cascade={"persist"})
      */
     public $waggons;
 
@@ -301,7 +301,7 @@ class TrainDriver
     public $name;
     /**
      * Inverse side
-     * @ORM\OneToOne(targetEntity="Train", mappedBy="driver", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity=Train::class, mappedBy="driver", fetch="EAGER")
      */
     public $train;
 
@@ -327,7 +327,7 @@ class TrainOwner
     public $name;
     /**
      * Inverse side
-     * @ORM\OneToOne(targetEntity="Train", mappedBy="owner", fetch="EAGER")
+     * @ORM\OneToOne(targetEntity=Train::class, mappedBy="owner", fetch="EAGER")
      */
     public $train;
 
@@ -350,7 +350,7 @@ class Waggon
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
     /**
-     * @ORM\ManyToOne(targetEntity="Train", inversedBy="waggons", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity=Train::class, inversedBy="waggons", fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
     public $train;
@@ -369,7 +369,7 @@ class TrainOrder
     /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @ORM\OneToOne(targetEntity = "Train", fetch = "EAGER") */
+    /** @ORM\OneToOne(targetEntity = Train::class, fetch = "EAGER") */
     public $train;
 
     public function __construct(Train $train)

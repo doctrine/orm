@@ -64,10 +64,8 @@ class DDC698Role
      */
     protected $shortName;
 
-
-
     /**
-     * @ORM\ManyToMany(targetEntity="DDC698Privilege", inversedBy="roles")
+     * @ORM\ManyToMany(targetEntity=DDC698Privilege::class, inversedBy="roles")
      * @ORM\JoinTable(name="RolePrivileges",
      *     joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
      *     inverseJoinColumns={@ORM\JoinColumn(name="privilegeID", referencedColumnName="privilegeID")}
@@ -99,7 +97,7 @@ class DDC698Privilege
     protected $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="DDC698Role", mappedBy="privilege")
+     * @ORM\ManyToMany(targetEntity=DDC698Role::class, mappedBy="privilege")
      */
     protected $roles;
 }

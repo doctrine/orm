@@ -21,7 +21,7 @@ class User
     public $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", inversedBy="authors")
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="authors")
      * @ORM\JoinTable(
      *      name="author_reader",
      *      schema="readers",
@@ -34,7 +34,7 @@ class User
     public $readers;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Doctrine\Tests\Models\NonPublicSchemaJoins\User", mappedBy="readers")
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="readers")
      *
      * @var User[]
      */

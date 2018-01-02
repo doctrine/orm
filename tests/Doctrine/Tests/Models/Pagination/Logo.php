@@ -39,7 +39,7 @@ class Logo
     public $image_width;
 
     /**
-     * @ORM\OneToOne(targetEntity="Company", inversedBy="logo", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=Company::class, inversedBy="logo", cascade={"persist"})
      * @ORM\JoinColumn(name="company_id")
      */
     public $company;

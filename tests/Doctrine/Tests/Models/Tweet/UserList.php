@@ -25,7 +25,7 @@ class UserList
     public $listName;
 
     /**
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="userLists")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="userLists")
      */
     public $owner;
 }

@@ -63,7 +63,7 @@ class GH6464Post
  * @ORM\Entity
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"author" = "GH6464Author"})
+ * @ORM\DiscriminatorMap({"author" = GH6464Author::class})
  */
 abstract class GH6464User
 {

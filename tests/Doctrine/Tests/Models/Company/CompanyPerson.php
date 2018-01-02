@@ -16,9 +16,9 @@ use Doctrine\ORM\Annotation as ORM;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({
- *      "person"    = "CompanyPerson",
- *      "manager"   = "CompanyManager",
- *      "employee"  = "CompanyEmployee"
+ *      "person"    = CompanyPerson::class,
+ *      "manager"   = CompanyManager::class,
+ *      "employee"  = CompanyEmployee::class
  * })
  *
  * @ORM\NamedNativeQueries({
@@ -65,13 +65,13 @@ class CompanyPerson
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="CompanyPerson")
+     * @ORM\OneToOne(targetEntity=CompanyPerson::class)
      * @ORM\JoinColumn(name="spouse_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $spouse;
 
     /**
-     * @ORM\ManyToMany(targetEntity="CompanyPerson")
+     * @ORM\ManyToMany(targetEntity=CompanyPerson::class)
      * @ORM\JoinTable(
      *     name="company_persons_friends",
      *     joinColumns={

@@ -85,7 +85,7 @@ class DDC353Picture
     private $pictureId;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC353File", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity=DDC353File::class, cascade={"persist", "remove"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="file_id", referencedColumnName="file_id")
      * })

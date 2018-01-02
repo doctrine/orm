@@ -28,14 +28,14 @@ class State
 
     /**
      * @ORM\Cache
-     * @ORM\ManyToOne(targetEntity="Country")
+     * @ORM\ManyToOne(targetEntity=Country::class)
      * @ORM\JoinColumn(name="country_id", referencedColumnName="id")
      */
     protected $country;
 
     /**
      * @ORM\Cache("NONSTRICT_READ_WRITE")
-     * @ORM\OneToMany(targetEntity="City", mappedBy="state")
+     * @ORM\OneToMany(targetEntity=City::class, mappedBy="state")
      */
     protected $cities;
 

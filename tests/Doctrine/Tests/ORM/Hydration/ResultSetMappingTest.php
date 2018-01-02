@@ -163,7 +163,7 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
                         ]
                     ],
                     [
-                        'entityClass'   => 'CmsEmail',
+                        'entityClass'   => CmsEmail::class,
                         'fields'        => [
                             [
                                 'name'  => 'id',

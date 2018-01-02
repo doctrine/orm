@@ -29,7 +29,11 @@ class ECommerceCustomer
     private $name;
 
     /**
-     * @ORM\OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCart::class,
+     *     mappedBy="customer",
+     *     cascade={"persist"}
+     * )
      */
     private $cart;
 
@@ -38,7 +42,11 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
-     * @ORM\OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCustomer::class,
+     *     cascade={"persist"},
+     *     fetch="EAGER"
+     * )
      * @ORM\JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;

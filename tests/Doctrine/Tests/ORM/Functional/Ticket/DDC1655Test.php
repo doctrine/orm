@@ -118,8 +118,8 @@ class DDC1655Test extends \Doctrine\Tests\OrmFunctionalTestCase
  * @ORM\Entity
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorMap({
- *    "foo" = "DDC1655Foo",
- *    "bar" = "DDC1655Bar"
+ *    "foo" = DDC1655Foo::class,
+ *    "bar" = DDC1655Bar::class
  * })
  * @ORM\HasLifecycleCallbacks
  */
@@ -131,7 +131,7 @@ class DDC1655Foo
     public $loaded = 0;
 
     /**
-     * @ORM\ManyToOne(targetEntity="DDC1655Baz", inversedBy="foos")
+     * @ORM\ManyToOne(targetEntity=DDC1655Baz::class, inversedBy="foos")
      */
     public $baz;
 
@@ -170,7 +170,7 @@ class DDC1655Baz
     public $id;
 
     /**
-     * @ORM\OneToMany(targetEntity="DDC1655Foo", mappedBy="baz")
+     * @ORM\OneToMany(targetEntity=DDC1655Foo::class, mappedBy="baz")
      */
     public $foos = [];
 }

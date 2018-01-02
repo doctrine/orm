@@ -19,7 +19,7 @@ class OwningManyToOneCompositeIdEntity
     public $id3;
 
     /**
-     * @ORM\ManyToOne(targetEntity="InversedOneToManyCompositeIdEntity", inversedBy="associatedEntities")
+     * @ORM\ManyToOne(targetEntity=InversedOneToManyCompositeIdEntity::class, inversedBy="associatedEntities")
      * @ORM\JoinColumns({
      *     @ORM\JoinColumn(name="associated_id1", referencedColumnName="id1"),
      *     @ORM\JoinColumn(name="associated_id2", referencedColumnName="id2")

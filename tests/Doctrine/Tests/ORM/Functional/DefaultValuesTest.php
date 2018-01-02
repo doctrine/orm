@@ -110,7 +110,7 @@ class DefaultValueUser
      */
     public $type = 'Poweruser';
     /**
-     * @ORM\OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=DefaultValueAddress::class, mappedBy="user", cascade={"persist"})
      */
     public $address;
 
@@ -154,7 +154,7 @@ class DefaultValueAddress
     public $street;
 
     /**
-     * @ORM\OneToOne(targetEntity="DefaultValueUser")
+     * @ORM\OneToOne(targetEntity=DefaultValueUser::class)
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;

@@ -28,7 +28,7 @@ class Traveler
 
     /**
      * @ORM\Cache("NONSTRICT_READ_WRITE")
-     * @ORM\OneToMany(targetEntity="Travel", mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Travel::class, mappedBy="traveler", cascade={"persist", "remove"}, orphanRemoval=true)
      *
      * @var \Doctrine\Common\Collections\Collection
      */
@@ -36,7 +36,7 @@ class Traveler
 
     /**
      * @ORM\Cache
-     * @ORM\OneToOne(targetEntity="TravelerProfile")
+     * @ORM\OneToOne(targetEntity=TravelerProfile::class)
      */
     protected $profile;
 

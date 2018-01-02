@@ -27,7 +27,7 @@ class CmsGroup
      */
     public $name;
     /**
-     * @ORM\ManyToMany(targetEntity="CmsUser", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="groups")
      */
     public $users;
 
