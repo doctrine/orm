@@ -574,11 +574,11 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $user = $this->em->find(CmsUser::class, $this->userId);
 
         self::assertFalse($user->articles->isInitialized());
-        self::assertCount(2, $user->articles->slice(0,10));
+        self::assertCount(2, $user->articles->slice(0, 10));
 
         $this->useCMSArticleTopicFilter();
 
-        self::assertCount(1, $user->articles->slice(0,10));
+        self::assertCount(1, $user->articles->slice(0, 10));
     }
 
     private function useCMSGroupPrefixFilter()
@@ -622,11 +622,11 @@ class SQLFilterTest extends OrmFunctionalTestCase
         $user = $this->em->find(CmsUser::class, $this->userId2);
 
         self::assertFalse($user->groups->isInitialized());
-        self::assertCount(2, $user->groups->slice(0,10));
+        self::assertCount(2, $user->groups->slice(0, 10));
 
         $this->useCMSGroupPrefixFilter();
 
-        self::assertCount(1, $user->groups->slice(0,10));
+        self::assertCount(1, $user->groups->slice(0, 10));
     }
 
     private function loadFixtureData()

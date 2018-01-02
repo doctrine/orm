@@ -97,8 +97,8 @@ class ResultSetMappingTest extends \Doctrine\Tests\OrmTestCase
     {
         $rms = $this->rsm;
 
-        $this->rsm->addEntityResult(CmsUser::class,'u');
-        $this->rsm->addJoinedEntityResult(CmsPhonenumber::class,'p','u','phonenumbers');
+        $this->rsm->addEntityResult(CmsUser::class, 'u');
+        $this->rsm->addJoinedEntityResult(CmsPhonenumber::class, 'p', 'u', 'phonenumbers');
         $this->rsm->addFieldResult('u', 'id', 'id');
         $this->rsm->addFieldResult('u', 'name', 'name');
         $this->rsm->setDiscriminatorColumn('name', 'name');

@@ -549,7 +549,7 @@ class QueryBuilderTest extends OrmTestCase
         $qb = $this->em->createQueryBuilder();
         $qb->select('u')
             ->from(CmsUser::class, 'u')
-            ->join('u.article','a');
+            ->join('u.article', 'a');
 
         $criteria = new Criteria();
         $criteria->orderBy(['a.field' => Criteria::DESC]);
@@ -889,7 +889,7 @@ class QueryBuilderTest extends OrmTestCase
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
-        $qb->join('alias1.articles','alias2');
+        $qb->join('alias1.articles', 'alias2');
 
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('field', 'value1'));
@@ -909,7 +909,7 @@ class QueryBuilderTest extends OrmTestCase
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
-        $qb->join('alias1.articles','alias2');
+        $qb->join('alias1.articles', 'alias2');
 
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('alias1.field', 'value1'));
@@ -929,7 +929,7 @@ class QueryBuilderTest extends OrmTestCase
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('alias1')->from(CmsUser::class, 'alias1');
-        $qb->join('alias1.articles','alias2');
+        $qb->join('alias1.articles', 'alias2');
 
         $criteria = new Criteria();
         $criteria->where($criteria->expr()->eq('alias1.field', 'value1'));

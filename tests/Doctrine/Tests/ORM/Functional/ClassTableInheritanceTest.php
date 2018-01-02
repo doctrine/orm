@@ -274,7 +274,7 @@ class ClassTableInheritanceTest extends OrmFunctionalTestCase
         $result = $q->getResult();
 
         self::assertCount(1, $result);
-        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s",get_class($result[0])));
+        self::assertInstanceOf(CompanyAuction::class, $result[0], sprintf("Is of class %s", get_class($result[0])));
 
         $this->em->clear();
 

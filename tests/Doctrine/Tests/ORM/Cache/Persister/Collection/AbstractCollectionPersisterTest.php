@@ -198,7 +198,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo(1), $this->equalTo(2))
             ->will($this->returnValue($slice));
 
-        self::assertEquals($slice, $persister->slice($collection, 1 , 2));
+        self::assertEquals($slice, $persister->slice($collection, 1, 2));
     }
 
     public function testInvokeContains()
@@ -215,7 +215,7 @@ abstract class AbstractCollectionPersisterTest extends OrmTestCase
             ->with($this->equalTo($collection), $this->equalTo($element))
             ->will($this->returnValue(false));
 
-        self::assertFalse($persister->contains($collection,$element));
+        self::assertFalse($persister->contains($collection, $element));
     }
 
     public function testInvokeContainsKey()
