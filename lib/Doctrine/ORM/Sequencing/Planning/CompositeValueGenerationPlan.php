@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing\Planning;
@@ -22,11 +21,11 @@ class CompositeValueGenerationPlan implements ValueGenerationPlan
      */
     public function __construct(ClassMetadata $metadata, array $executors)
     {
-        $this->class = $metadata;
+        $this->class     = $metadata;
         $this->executors = $executors;
     }
 
-    public function executeImmediate(EntityManagerInterface $entityManager, /*object*/ $entity): void
+    public function executeImmediate(EntityManagerInterface $entityManager, /*object*/ $entity) : void
     {
         foreach ($this->executors as $executor) {
             if ($executor->isDeferred()) {
@@ -37,7 +36,7 @@ class CompositeValueGenerationPlan implements ValueGenerationPlan
         }
     }
 
-    public function executeDeferred(EntityManagerInterface $entityManager, /*object*/ $entity): void
+    public function executeDeferred(EntityManagerInterface $entityManager, /*object*/ $entity) : void
     {
         foreach ($this->executors as $executor) {
             if (! $executor->isDeferred()) {
@@ -48,7 +47,7 @@ class CompositeValueGenerationPlan implements ValueGenerationPlan
         }
     }
 
-    private function dispatchExecutor(ValueGenerationExecutor $executor, /*object*/ $entity, EntityManagerInterface $entityManager): void
+    private function dispatchExecutor(ValueGenerationExecutor $executor, /*object*/ $entity, EntityManagerInterface $entityManager) : void
     {
         foreach ($executor->execute($entityManager, $entity) as $columnName => $value) {
             // TODO LocalColumnMetadata are currently shadowed and only exposed as FieldMetadata
@@ -58,7 +57,7 @@ class CompositeValueGenerationPlan implements ValueGenerationPlan
         }
     }
 
-    public function containsDeferred(): bool
+    public function containsDeferred() : bool
     {
         foreach ($this->executors as $executor) {
             if ($executor->isDeferred()) {

@@ -8,12 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Id generator that uses a single-row database table and a hi/lo algorithm.
- *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class TableGenerator implements Generator
 {
@@ -49,8 +43,8 @@ class TableGenerator implements Generator
      */
     public function __construct($tableName, $sequenceName = 'default', $allocationSize = 10)
     {
-        $this->tableName = $tableName;
-        $this->sequenceName = $sequenceName;
+        $this->tableName      = $tableName;
+        $this->sequenceName   = $sequenceName;
         $this->allocationSize = $allocationSize;
     }
 
@@ -74,7 +68,9 @@ class TableGenerator implements Generator
                     $this->maxValue  = $this->nextValue + $this->allocationSize;
 
                     $updateSql = $platform->getTableHiLoUpdateNextValSql(
-                        $this->tableName, $this->sequenceName, $this->allocationSize
+                        $this->tableName,
+                        $this->sequenceName,
+                        $this->allocationSize
                     );
 
                     if ($conn->executeUpdate($updateSql, [1 => $currentLevel, 2 => $currentLevel+1]) !== 1) {

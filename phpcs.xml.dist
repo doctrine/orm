@@ -40,4 +40,8 @@
     <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators.DisallowedNotEqualOperator">
         <exclude-pattern>lib/Doctrine/ORM/Internal/Hydration/AbstractHydrator.php</exclude-pattern>
     </rule>
+
+    <rule ref="Generic.CodeAnalysis.EmptyStatement">
+        <exclude-pattern>lib/Doctrine/ORM/Sequencing/TableGenerator.php</exclude-pattern>
+    </rule>
 </ruleset>

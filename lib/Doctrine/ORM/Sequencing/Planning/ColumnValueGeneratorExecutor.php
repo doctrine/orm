@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing\Planning;
@@ -19,15 +18,18 @@ class ColumnValueGeneratorExecutor implements ValueGenerationExecutor
 
     public function __construct(LocalColumnMetadata $column, Generator $generator)
     {
-        $this->column = $column;
+        $this->column    = $column;
         $this->generator = $generator;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function execute(EntityManagerInterface $entityManager, /*object*/ $entity) : array
     {
         $value = $this->generator->generate($entityManager, $entity);
 
-        $platform = $entityManager->getConnection()->getDatabasePlatform();
+        $platform       = $entityManager->getConnection()->getDatabasePlatform();
         $convertedValue = $this->column->getType()->convertToPHPValue($value, $platform);
 
         return [$this->column->getColumnName() => $convertedValue];
