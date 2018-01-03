@@ -6,16 +6,12 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use PDO;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
  * of transformation of an SQL result set into another structure.
- *
- * @since  2.0
- * @author Konsta Vesterinen <kvesteri@cc.hut.fi>
- * @author Roman Borschel <roman@code-factory.org>
- * @author Guilherme Blanco <guilhermeblanoc@hotmail.com>
  */
 abstract class AbstractHydrator
 {
@@ -50,14 +46,14 @@ abstract class AbstractHydrator
     /**
      * Local ClassMetadata cache to avoid going to the EntityManager all the time.
      *
-     * @var array
+     * @var ClassMetadata[]
      */
     protected $metadataCache = [];
 
     /**
      * The cache used during row-by-row hydration.
      *
-     * @var array
+     * @var mixed[][]
      */
     protected $cache = [];
 
@@ -71,7 +67,7 @@ abstract class AbstractHydrator
     /**
      * The query hints.
      *
-     * @var array
+     * @var mixed[]
      */
     protected $hints;
 
@@ -90,9 +86,9 @@ abstract class AbstractHydrator
     /**
      * Initiates a row-by-row hydration.
      *
-     * @param object $stmt
-     * @param object $resultSetMapping
-     * @param array  $hints
+     * @param object  $stmt
+     * @param object  $resultSetMapping
+     * @param mixed[] $hints
      *
      * @return IterableResult
      */
@@ -114,11 +110,11 @@ abstract class AbstractHydrator
     /**
      * Hydrates all rows returned by the passed statement instance at once.
      *
-     * @param object $stmt
-     * @param object $resultSetMapping
-     * @param array  $hints
+     * @param object  $stmt
+     * @param object  $resultSetMapping
+     * @param mixed[] $hints
      *
-     * @return array
+     * @return mixed[]
      */
     public function hydrateAll($stmt, $resultSetMapping, array $hints = [])
     {
@@ -165,8 +161,6 @@ abstract class AbstractHydrator
      * decrease memory consumption.
      *
      * @param mixed $eventArgs
-     *
-     * @return void
      */
     public function onClear($eventArgs)
     {
@@ -175,8 +169,6 @@ abstract class AbstractHydrator
     /**
      * Executes one-time preparation tasks, once each time hydration is started
      * through {@link hydrateAll} or {@link iterate()}.
-     *
-     * @return void
      */
     protected function prepare()
     {
@@ -185,8 +177,6 @@ abstract class AbstractHydrator
     /**
      * Executes one-time cleanup tasks at the end of a hydration that was initiated
      * through {@link hydrateAll} or {@link iterate()}.
-     *
-     * @return void
      */
     protected function cleanup()
     {
@@ -207,22 +197,20 @@ abstract class AbstractHydrator
      *
      * Template method.
      *
-     * @param array $data   The row data.
-     * @param array $result The result to fill.
-     *
-     * @return void
+     * @param mixed[] $data   The row data.
+     * @param mixed[] $result The result to fill.
      *
      * @throws HydrationException
      */
     protected function hydrateRowData(array $data, array &$result)
     {
-        throw new HydrationException("hydrateRowData() not implemented by this hydrator.");
+        throw new HydrationException('hydrateRowData() not implemented by this hydrator.');
     }
 
     /**
      * Hydrates all rows from the current statement instance at once.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract protected function hydrateAllData();
 
@@ -235,11 +223,11 @@ abstract class AbstractHydrator
      * field names during this procedure as well as any necessary conversions on
      * the values applied. Scalar values are kept in a specific key 'scalars'.
      *
-     * @param array  $data               SQL Result Row.
-     * @param array &$id                 Dql-Alias => ID-Hash.
-     * @param array &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
+     * @param mixed[] $data                SQL Result Row.
+     * @param mixed[] &$id                 Dql-Alias => ID-Hash.
+     * @param mixed[] &$nonemptyComponents Does this DQL-Alias has at least one non NULL value?
      *
-     * @return array  An array with all the fields (name => value) of the data row,
+     * @return mixed[] An array with all the fields (name => value) of the data row,
      *                grouped by their component alias.
      */
     protected function gatherRowData(array $data, array &$id, array &$nonemptyComponents)
@@ -247,7 +235,8 @@ abstract class AbstractHydrator
         $rowData = ['data' => []];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
@@ -278,10 +267,9 @@ abstract class AbstractHydrator
 
                     // If there are field name collisions in the child class, then we need
                     // to only hydrate if we are looking at the correct discriminator value
-                    if (
-                        isset($cacheKeyInfo['discriminatorColumn'],$data[$cacheKeyInfo['discriminatorColumn']]) &&
+                    if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']]) &&
                         // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
-                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue']
+                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue'] // TODO get rid of loose comparison
                     ) {
                         break;
                     }
@@ -298,7 +286,7 @@ abstract class AbstractHydrator
                         : $value;
 
                     if ($cacheKeyInfo['isIdentifier'] && $value !== null) {
-                        $id[$dqlAlias] .= '|' . $value;
+                        $id[$dqlAlias]                .= '|' . $value;
                         $nonemptyComponents[$dqlAlias] = true;
                     }
                     break;
@@ -316,16 +304,17 @@ abstract class AbstractHydrator
      * values according to their types. The resulting row has the same number
      * of elements as before.
      *
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array The processed row.
+     * @return mixed[] The processed row.
      */
     protected function gatherScalarRowData(&$data)
     {
         $rowData = [];
 
         foreach ($data as $key => $value) {
-            if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
+            $cacheKeyInfo = $this->hydrateColumnInfo($key);
+            if ($cacheKeyInfo === null) {
                 continue;
             }
 
@@ -333,7 +322,7 @@ abstract class AbstractHydrator
 
             // WARNING: BC break! We know this is the desired behavior to type convert values, but this
             // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
-            if ( ! isset($cacheKeyInfo['isScalar'])) {
+            if (! isset($cacheKeyInfo['isScalar'])) {
                 $dqlAlias  = $cacheKeyInfo['dqlAlias'];
                 $type      = $cacheKeyInfo['type'];
                 $fieldName = $dqlAlias . '_' . $fieldName;
@@ -353,7 +342,7 @@ abstract class AbstractHydrator
      *
      * @param string $key Column name
      *
-     * @return array|null
+     * @return mixed[]|null
      */
     protected function hydrateColumnInfo($key)
     {
@@ -383,7 +372,7 @@ abstract class AbstractHydrator
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
-                            'discriminatorValue'  => $classMetadata->discriminatorValue
+                            'discriminatorValue'  => $classMetadata->discriminatorValue,
                         ]
                     );
                 }
@@ -442,7 +431,7 @@ abstract class AbstractHydrator
      */
     protected function getClassMetadata($className)
     {
-        if ( ! isset($this->metadataCache[$className])) {
+        if (! isset($this->metadataCache[$className])) {
             $this->metadataCache[$className] = $this->em->getClassMetadata($className);
         }
 

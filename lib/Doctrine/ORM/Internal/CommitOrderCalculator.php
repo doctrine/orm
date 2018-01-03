@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal;
@@ -11,16 +10,12 @@ namespace Doctrine\ORM\Internal;
  * using a depth-first searching (DFS) to traverse the graph built in memory.
  * This algorithm have a linear running time based on nodes (V) and dependency
  * between the nodes (E), resulting in a computational complexity of O(V + E).
- *
- * @since  2.0
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
  */
 class CommitOrderCalculator
 {
-    const NOT_VISITED = 0;
-    const IN_PROGRESS = 1;
-    const VISITED     = 2;
+    public const NOT_VISITED = 0;
+    public const IN_PROGRESS = 1;
+    public const VISITED     = 2;
 
     /**
      * Matrix of nodes (aka. vertex).
@@ -37,14 +32,14 @@ class CommitOrderCalculator
      * - <b>dependencyList</b> (array<string>)
      * Map of node dependencies defined as hashes.
      *
-     * @var array<\stdClass>
+     * @var \stdClass[]
      */
     private $nodeList = [];
 
     /**
      * Volatile variable holding calculated nodes during sorting process.
      *
-     * @var array
+     * @var object[]
      */
     private $sortedNodeList = [];
 
@@ -53,7 +48,7 @@ class CommitOrderCalculator
      *
      * @param string $hash
      *
-     * @return boolean
+     * @return bool
      */
     public function hasNode($hash)
     {
@@ -65,8 +60,6 @@ class CommitOrderCalculator
      *
      * @param string $hash
      * @param object $node
-     *
-     * @return void
      */
     public function addNode($hash, $node)
     {
@@ -83,11 +76,9 @@ class CommitOrderCalculator
     /**
      * Adds a new dependency (edge) to the graph using their hashes.
      *
-     * @param string  $fromHash
-     * @param string  $toHash
-     * @param integer $weight
-     *
-     * @return void
+     * @param string $fromHash
+     * @param string $toHash
+     * @param int    $weight
      */
     public function addDependency($fromHash, $toHash, $weight)
     {
@@ -107,7 +98,7 @@ class CommitOrderCalculator
      *
      * {@internal Highly performance-sensitive method.}
      *
-     * @return array
+     * @return object[]
      */
     public function sort()
     {

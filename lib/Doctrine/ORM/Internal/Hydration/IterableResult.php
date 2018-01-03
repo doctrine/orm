@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Internal\Hydration;
 /**
  * Represents a result structure that can be iterated over, hydrating row-by-row
  * during the iteration. An IterableResult is obtained by AbstractHydrator#iterate().
- *
- * @author robo
- * @since 2.0
  */
 class IterableResult implements \Iterator
 {
@@ -19,12 +16,12 @@ class IterableResult implements \Iterator
     private $hydrator;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $rewinded = false;
 
     /**
-     * @var integer
+     * @var int
      */
     private $key = -1;
 
@@ -42,24 +39,22 @@ class IterableResult implements \Iterator
     }
 
     /**
-     * @return void
-     *
      * @throws HydrationException
      */
     public function rewind()
     {
-        if ($this->rewinded == true) {
-            throw new HydrationException("Can only iterate a Result once.");
+        if ($this->rewinded === true) {
+            throw new HydrationException('Can only iterate a Result once.');
         }
 
-        $this->current = $this->next();
+        $this->current  = $this->next();
         $this->rewinded = true;
     }
 
     /**
      * Gets the next set of results.
      *
-     * @return array|false
+     * @return mixed[]|false
      */
     public function next()
     {
@@ -90,6 +85,6 @@ class IterableResult implements \Iterator
      */
     public function valid()
     {
-        return ($this->current!=false);
+        return $this->current!==false;
     }
 }
