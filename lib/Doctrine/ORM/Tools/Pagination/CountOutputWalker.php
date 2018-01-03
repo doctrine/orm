@@ -6,8 +6,8 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * Wraps the query in order to accurately count the root objects.
@@ -17,8 +17,6 @@ use Doctrine\ORM\Query\AST\SelectStatement;
  *
  * Works with composite keys but cannot deal with queries that have multiple
  * root entities (e.g. `SELECT f, b from Foo, Bar`)
- *
- * @author Sander Marechal <s.marechal@jejik.com>
  */
 class CountOutputWalker extends SqlWalker
 {
@@ -33,7 +31,7 @@ class CountOutputWalker extends SqlWalker
     private $rsm;
 
     /**
-     * @var array
+     * @var mixed[][]
      */
     private $queryComponents;
 
@@ -46,12 +44,12 @@ class CountOutputWalker extends SqlWalker
      *
      * @param \Doctrine\ORM\Query              $query
      * @param \Doctrine\ORM\Query\ParserResult $parserResult
-     * @param array                            $queryComponents
+     * @param mixed[][]                        $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->platform = $query->getEntityManager()->getConnection()->getDatabasePlatform();
-        $this->rsm = $parserResult->getResultSetMapping();
+        $this->platform        = $query->getEntityManager()->getConnection()->getDatabasePlatform();
+        $this->rsm             = $parserResult->getResultSetMapping();
         $this->queryComponents = $queryComponents;
 
         parent::__construct($query, $parserResult, $queryComponents);
@@ -64,15 +62,13 @@ class CountOutputWalker extends SqlWalker
      * are able to cache subqueries. By keeping the ORDER BY clause intact, the limitSubQuery
      * that will most likely be executed next can be read from the native SQL cache.
      *
-     * @param SelectStatement $AST
-     *
      * @return string
      *
      * @throws \RuntimeException
      */
     public function walkSelectStatement(SelectStatement $AST)
     {
-        if ($this->platform->getName() === "mssql") {
+        if ($this->platform->getName() === 'mssql') {
             $AST->orderByClause = null;
         }
 
@@ -94,7 +90,7 @@ class CountOutputWalker extends SqlWalker
         // Get the root entity and alias from the AST fromClause
         $from = $AST->fromClause->identificationVariableDeclarations;
         if (count($from) > 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot       = reset($from);
@@ -109,7 +105,7 @@ class CountOutputWalker extends SqlWalker
 
             if ($property instanceof FieldMetadata) {
                 foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
-                    if ($this->rsm->columnOwnerMap[$alias] == $rootAlias) {
+                    if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
                 }
@@ -125,7 +121,7 @@ class CountOutputWalker extends SqlWalker
             }
         }
 
-        if (count($rootIdentifier) != count($sqlIdentifier)) {
+        if (count($rootIdentifier) !== count($sqlIdentifier)) {
             throw new \RuntimeException(sprintf(
                 'Not all identifier properties can be found in the ResultSetMapping: %s',
                 implode(', ', array_diff($rootIdentifier, array_keys($sqlIdentifier)))
@@ -133,7 +129,8 @@ class CountOutputWalker extends SqlWalker
         }
 
         // Build the counter query
-        return sprintf('SELECT %s AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
+        return sprintf(
+            'SELECT %s AS dctrn_count FROM (SELECT DISTINCT %s FROM (%s) dctrn_result) dctrn_table',
             $this->platform->getCountExpression('*'),
             implode(', ', $sqlIdentifier),
             $sql
