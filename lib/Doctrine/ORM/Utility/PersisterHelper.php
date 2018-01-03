@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Utility;
@@ -17,18 +16,12 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
  * The PersisterHelper contains logic to infer binding types which is used in
  * several persisters.
  *
- * @link   www.doctrine-project.org
- * @since  2.5
- * @author Jasper N. Brouwer <jasper@nerdsweide.nl>
- *
  * @internal do not use in your own codebase: no BC compliance on this class
  */
 class PersisterHelper
 {
     /**
-     * @param string                 $columnName
-     * @param ClassMetadata          $class
-     * @param EntityManagerInterface $em
+     * @param string $columnName
      *
      * @return Type
      *

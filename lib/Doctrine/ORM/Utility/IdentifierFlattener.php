@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Utility;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\UnitOfWork;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 
 /**
  * The IdentifierFlattener utility now houses some of the identifier manipulation logic from unit of work, so that it
  * can be re-used elsewhere.
- *
- * @since       2.5
- * @author      Rob Caiger <rob@clocal.co.uk>
  *
  * @internal do not use in your own codebase: no BC compliance on this class
  */
@@ -36,23 +33,19 @@ final class IdentifierFlattener
 
     /**
      * Initializes a new IdentifierFlattener instance, bound to the given EntityManager.
-     *
-     * @param UnitOfWork           $unitOfWork
-     * @param ClassMetadataFactory $metadataFactory
      */
     public function __construct(UnitOfWork $unitOfWork, ClassMetadataFactory $metadataFactory)
     {
-        $this->unitOfWork = $unitOfWork;
+        $this->unitOfWork      = $unitOfWork;
         $this->metadataFactory = $metadataFactory;
     }
 
     /**
      * convert foreign identifiers into scalar foreign key values to avoid object to string conversion failures.
      *
-     * @param ClassMetadata $class
-     * @param array         $id
+     * @param mixed[] $id
      *
-     * @return array
+     * @return mixed[]
      */
     public function flattenIdentifier(ClassMetadata $class, array $id)
     {
@@ -76,7 +69,7 @@ final class IdentifierFlattener
                 //     ? $this->unitOfWork->getEntityIdentifier($id[$field])
                 //     : $targetClassPersister->getIdentifier($id[$field])
                 // ;
-                $identifiers          = $targetClassPersister->getIdentifier($id[$field]);
+                $identifiers = $targetClassPersister->getIdentifier($id[$field]);
 
                 $associatedId = $this->flattenIdentifier($targetClassMetadata, $identifiers);
 
