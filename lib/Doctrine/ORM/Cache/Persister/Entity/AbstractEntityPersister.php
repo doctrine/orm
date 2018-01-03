@@ -268,7 +268,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     /**
      * Generates a string of currently query
      *
-     * @param array   $query
+     * @param string  $query
      * @param string  $criteria
      * @param array   $orderBy
      * @param integer $limit
