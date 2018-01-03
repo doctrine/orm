@@ -9,11 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the postFlush event.
- *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Daniel Freudenberger <df@rebuy.de>
  */
 class PostFlushEventArgs extends EventArgs
 {
@@ -24,8 +19,6 @@ class PostFlushEventArgs extends EventArgs
 
     /**
      * Constructor.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {

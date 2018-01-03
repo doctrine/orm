@@ -11,9 +11,6 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventAr
  * of entities.
  *
  * @link   www.doctrine-project.org
- * @since  2.0
- * @author Roman Borschel <roman@code-factory.de>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class LifecycleEventArgs extends BaseLifecycleEventArgs
 {

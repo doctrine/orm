@@ -9,12 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the preFlush event.
- *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Roman Borschel <roman@code-factory.de>
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
 class OnFlushEventArgs extends EventArgs
 {
@@ -25,8 +19,6 @@ class OnFlushEventArgs extends EventArgs
 
     /**
      * Constructor.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {

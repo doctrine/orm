@@ -10,16 +10,13 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * A method invoker based on entity lifecycle.
- *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.4
  */
 class ListenersInvoker
 {
-    const INVOKE_NONE       = 0;
-    const INVOKE_LISTENERS  = 1;
-    const INVOKE_CALLBACKS  = 2;
-    const INVOKE_MANAGER    = 4;
+    public const INVOKE_NONE      = 0;
+    public const INVOKE_LISTENERS = 1;
+    public const INVOKE_CALLBACKS = 2;
+    public const INVOKE_MANAGER   = 4;
 
     /**
      * @var \Doctrine\ORM\Mapping\EntityListenerResolver The Entity listener resolver.
@@ -35,8 +32,6 @@ class ListenersInvoker
 
     /**
      * Initializes a new ListenersInvoker instance.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {
@@ -50,7 +45,7 @@ class ListenersInvoker
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
      * @param string                              $eventName The entity lifecycle event.
      *
-     * @return integer Bitmask of subscribed event systems.
+     * @return int Bitmask of subscribed event systems.
      */
     public function getSubscribedSystems(ClassMetadata $metadata, $eventName)
     {
@@ -78,7 +73,7 @@ class ListenersInvoker
      * @param string                              $eventName The entity lifecycle event.
      * @param object                              $entity    The Entity on which the event occurred.
      * @param \Doctrine\Common\EventArgs          $event     The Event args.
-     * @param integer                             $invoke    Bitmask to invoke listeners.
+     * @param int                                 $invoke    Bitmask to invoke listeners.
      */
     public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
     {
@@ -90,9 +85,9 @@ class ListenersInvoker
 
         if ($invoke & self::INVOKE_LISTENERS) {
             foreach ($metadata->entityListeners[$eventName] as $listener) {
-                $class      = $listener['class'];
-                $method     = $listener['method'];
-                $instance   = $this->resolver->resolve($class);
+                $class    = $listener['class'];
+                $method   = $listener['method'];
+                $instance = $this->resolver->resolve($class);
 
                 $instance->$method($entity, $event);
             }
