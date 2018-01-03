@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Annotation;
 /**
  * Is used to map the columns specified in the SELECT list of the query to the properties or fields of the entity class.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("ANNOTATION")
  */

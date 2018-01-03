@@ -8,9 +8,6 @@ namespace Doctrine\ORM\Annotation;
  * Is used to specify an array of mappings.
  * The SqlResultSetMappings annotation can be applied to an entity or mapped superclass.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("CLASS")
  */
