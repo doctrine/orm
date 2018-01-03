@@ -14,13 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to execute DQL queries in a given EntityManager.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class RunDqlCommand extends Command
 {
@@ -48,39 +41,44 @@ class RunDqlCommand extends Command
         $ui = new SymfonyStyle($input, $output);
 
         /* @var $em \Doctrine\ORM\EntityManagerInterface */
-        $em = $this->getHelper('em')->getEntityManager();
+        $em  = $this->getHelper('em')->getEntityManager();
+        $dql = $input->getArgument('dql');
 
-        if (($dql = $input->getArgument('dql')) === null) {
+        if ($dql === null) {
             throw new \RuntimeException("Argument 'dql' is required in order to execute this command correctly.");
         }
 
         $depth = $input->getOption('depth');
 
-        if ( ! is_numeric($depth)) {
+        if (! is_numeric($depth)) {
             throw new \LogicException("Option 'depth' must contain an integer value");
         }
 
         $hydrationModeName = $input->getOption('hydrate');
-        $hydrationMode = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
+        $hydrationMode     = 'Doctrine\ORM\Query::HYDRATE_' . strtoupper(str_replace('-', '_', $hydrationModeName));
 
-        if ( ! defined($hydrationMode)) {
-            throw new \RuntimeException(
-                "Hydration mode '$hydrationModeName' does not exist. It should be either: object. array, scalar or single-scalar."
-            );
+        if (! defined($hydrationMode)) {
+            throw new \RuntimeException(sprintf(
+                "Hydration mode '%s' does not exist. It should be either: object. array, scalar or single-scalar.",
+                $hydrationModeName
+            ));
         }
 
-        $query = $em->createQuery($dql);
+        $query       = $em->createQuery($dql);
+        $firstResult = $input->getOption('first-result');
 
-        if (($firstResult = $input->getOption('first-result')) !== null) {
-            if ( ! is_numeric($firstResult)) {
+        if ($firstResult !== null) {
+            if (! is_numeric($firstResult)) {
                 throw new \LogicException("Option 'first-result' must contain an integer value");
             }
 
             $query->setFirstResult((int) $firstResult);
         }
 
-        if (($maxResult = $input->getOption('max-result')) !== null) {
-            if ( ! is_numeric($maxResult)) {
+        $maxResult = $input->getOption('max-result');
+
+        if ($maxResult !== null) {
+            if (! is_numeric($maxResult)) {
                 throw new \LogicException("Option 'max-result' must contain an integer value");
             }
 

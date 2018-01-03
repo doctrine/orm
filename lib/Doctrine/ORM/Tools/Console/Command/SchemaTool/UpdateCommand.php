@@ -13,14 +13,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Command to generate the SQL needed to update the database schema to match
  * the current mapping information.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  Ryan Weaver <ryan@thatsquality.com>
  */
 class UpdateCommand extends AbstractCommand
 {
@@ -88,8 +80,8 @@ EOT
             return 0;
         }
 
-        $dumpSql = true === $input->getOption('dump-sql');
-        $force   = true === $input->getOption('force');
+        $dumpSql = $input->getOption('dump-sql') === true;
+        $force   = $input->getOption('force') === true;
 
         if ($dumpSql) {
             $ui->text('The following SQL statements will be executed:');
@@ -109,7 +101,7 @@ EOT
 
             $schemaTool->updateSchema($metadatas, $saveMode);
 
-            $pluralization = (1 === count($sqls)) ? 'query was' : 'queries were';
+            $pluralization = (count($sqls) === 1) ? 'query was' : 'queries were';
 
             $ui->text(sprintf('    <info>%s</info> %s executed', count($sqls), $pluralization));
             $ui->success('Database schema updated successfully!');

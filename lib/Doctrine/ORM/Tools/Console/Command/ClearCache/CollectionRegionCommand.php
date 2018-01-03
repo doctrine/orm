@@ -15,9 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to clear a collection cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CollectionRegionCommand extends Command
 {
@@ -67,13 +64,13 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em          = $this->getHelper('em')->getEntityManager();
-        $ownerClass  = $input->getArgument('owner-class');
-        $assoc       = $input->getArgument('association');
-        $ownerId     = $input->getArgument('owner-id');
-        $cache       = $em->getCache();
+        $em         = $this->getHelper('em')->getEntityManager();
+        $ownerClass = $input->getArgument('owner-class');
+        $assoc      = $input->getArgument('association');
+        $ownerId    = $input->getArgument('owner-id');
+        $cache      = $em->getCache();
 
-        if ( ! $cache instanceof Cache) {
+        if (! $cache instanceof Cache) {
             throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
@@ -82,9 +79,9 @@ EOT
         }
 
         if ($input->getOption('flush')) {
-            $collectionRegion  = $cache->getCollectionCacheRegion($ownerClass, $assoc);
+            $collectionRegion = $cache->getCollectionCacheRegion($ownerClass, $assoc);
 
-            if ( ! $collectionRegion instanceof DefaultRegion) {
+            if (! $collectionRegion instanceof DefaultRegion) {
                 throw new \InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($collectionRegion) ? get_class($collectionRegion) : gettype($collectionRegion)
