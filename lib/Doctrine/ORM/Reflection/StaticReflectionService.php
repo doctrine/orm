@@ -1,14 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Reflection;
 
 /**
  * PHP Runtime Reflection Service.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class StaticReflectionService implements ReflectionService
 {
@@ -26,7 +23,7 @@ class StaticReflectionService implements ReflectionService
     public function getClassShortName(string $className) : string
     {
         if (strpos($className, '\\') !== false) {
-            $className = substr($className, strrpos($className, "\\")+1);
+            $className = substr($className, strrpos($className, '\\')+1);
         }
         return $className;
     }
@@ -39,7 +36,7 @@ class StaticReflectionService implements ReflectionService
         $namespace = '';
 
         if (strpos($className, '\\') !== false) {
-            $namespace = strrev(substr( strrev($className), strpos(strrev($className), '\\')+1 ));
+            $namespace = strrev(substr(strrev($className), strpos(strrev($className), '\\')+1));
         }
 
         return $namespace;
