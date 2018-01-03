@@ -950,18 +950,17 @@ Load ClassMetadata Event
 ------------------------
 
 When the mapping information for an entity is read, it is populated
-in to a ``ClassMetadata`` instance. You can hook in to this
+in to a ``Doctrine\ORM\Mapping\ClassMetadata`` instance. You can hook in to this
 process and manipulate the instance.
 
 .. code-block:: php
 
     <?php
-    $test = new TestEvent();
-    $metadataFactory = $em->getMetadataFactory();
+    $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(Events::loadClassMetadata, $test);
+    $evm->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $test);
 
-    class TestEvent
+    class TestEventListener
     {
         public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
         {
