@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
@@ -9,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
-use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
@@ -18,11 +16,6 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 
-/**
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.5
- */
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
     /**
@@ -56,7 +49,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $association;
 
     /**
-     * @var array
+     * @var mixed[][][]
      */
     protected $queuedCache = [];
 
@@ -91,22 +84,21 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         Region $region,
         EntityManagerInterface $em,
         AssociationMetadata $association
-    )
-    {
-        $configuration  = $em->getConfiguration();
-        $cacheConfig    = $configuration->getSecondLevelCacheConfiguration();
-        $cacheFactory   = $cacheConfig->getCacheFactory();
+    ) {
+        $configuration = $em->getConfiguration();
+        $cacheConfig   = $configuration->getSecondLevelCacheConfiguration();
+        $cacheFactory  = $cacheConfig->getCacheFactory();
 
-        $this->region           = $region;
-        $this->persister        = $persister;
-        $this->association      = $association;
-        $this->regionName       = $region->getName();
-        $this->uow              = $em->getUnitOfWork();
-        $this->metadataFactory  = $em->getMetadataFactory();
-        $this->cacheLogger      = $cacheConfig->getCacheLogger();
-        $this->hydrator         = $cacheFactory->buildCollectionHydrator($em, $association);
-        $this->sourceEntity     = $em->getClassMetadata($association->getSourceEntity());
-        $this->targetEntity     = $em->getClassMetadata($association->getTargetEntity());
+        $this->region          = $region;
+        $this->persister       = $persister;
+        $this->association     = $association;
+        $this->regionName      = $region->getName();
+        $this->uow             = $em->getUnitOfWork();
+        $this->metadataFactory = $em->getMetadataFactory();
+        $this->cacheLogger     = $cacheConfig->getCacheLogger();
+        $this->hydrator        = $cacheFactory->buildCollectionHydrator($em, $association);
+        $this->sourceEntity    = $em->getClassMetadata($association->getSourceEntity());
+        $this->targetEntity    = $em->getClassMetadata($association->getTargetEntity());
     }
 
     /**
@@ -134,18 +126,20 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection     $collection
-     * @param \Doctrine\ORM\Cache\CollectionCacheKey $key
      *
      * @return \Doctrine\ORM\PersistentCollection|null
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
-        if (($cache = $this->region->get($key)) === null) {
+        $cache = $this->region->get($key);
+
+        if ($cache === null) {
             return null;
         }
 
-        if (($cache = $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection)) === null) {
+        $cache = $this->hydrator->loadCacheEntry($this->sourceEntity, $key, $cache, $collection);
+
+        if ($cache === null) {
             return null;
         }
 
@@ -176,15 +170,15 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
                 continue;
             }
 
-            $class      = $this->targetEntity;
-            $className  = StaticClassNameConverter::getClass($elements[$index]);
+            $class     = $this->targetEntity;
+            $className = StaticClassNameConverter::getClass($elements[$index]);
 
             if ($className !== $this->targetEntity->getClassName()) {
                 $class = $this->metadataFactory->getMetadataFor($className);
             }
 
-            $entity       = $elements[$index];
-            $entityEntry  = $targetHydrator->buildCacheEntry($class, $entityKey, $entity);
+            $entity      = $elements[$index];
+            $entityEntry = $targetHydrator->buildCacheEntry($class, $entityKey, $entity);
 
             $targetRegion->put($entityKey, $entityEntry);
         }
@@ -242,7 +236,9 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
      */
     public function removeElement(PersistentCollection $collection, $element)
     {
-        if ($persisterResult = $this->persister->removeElement($collection, $element)) {
+        $persisterResult = $this->persister->removeElement($collection, $element);
+
+        if ($persisterResult) {
             $this->evictCollectionCache($collection);
             $this->evictElementCache($this->sourceEntity->getRootClassName(), $collection->getOwner());
             $this->evictElementCache($this->targetEntity->getRootClassName(), $element);
@@ -269,8 +265,6 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
 
     /**
      * Clears cache entries related to the current collection
-     *
-     * @param PersistentCollection $collection
      */
     protected function evictCollectionCache(PersistentCollection $collection)
     {

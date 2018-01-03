@@ -1,22 +1,17 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Specific read-write entity persister
- *
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.5
  */
 class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
@@ -101,7 +96,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         $this->queuedCache['delete'][] = [
             'lock'   => $lock,
-            'key'    => $key
+            'key'    => $key,
         ];
 
         return $deleted;
@@ -124,7 +119,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 
         $this->queuedCache['update'][] = [
             'lock'   => $lock,
-            'key'    => $key
+            'key'    => $key,
         ];
     }
 }
