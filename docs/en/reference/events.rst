@@ -992,11 +992,11 @@ instance and class metadata.
     <?php
     $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(Doctrine\ORM\Tools\ToolEvents::postGenerateSchemaTable, $test);
+    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchemaTable, $test);
 
     class TestEventListener
     {
-        public function postGenerateSchemaTable(Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $eventArgs)
+        public function postGenerateSchemaTable(\Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $eventArgs)
         {
             $classMetadata = $eventArgs->getClassMetadata();
             $schema = $eventArgs->getSchema();
@@ -1016,11 +1016,11 @@ and the EntityManager.
     <?php
     $test = new TestEventListener();
     $evm = $em->getEventManager();
-    $evm->addEventListener(Doctrine\ORM\Tools\ToolEvents::postGenerateSchema, $test);
+    $evm->addEventListener(\Doctrine\ORM\Tools\ToolEvents::postGenerateSchema, $test);
 
     class TestEventListener
     {
-        public function postGenerateSchema(Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs $eventArgs)
+        public function postGenerateSchema(\Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs $eventArgs)
         {
             $schema = $eventArgs->getSchema();
             $em = $eventArgs->getEntityManager();
