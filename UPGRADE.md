@@ -246,6 +246,10 @@ Method `Doctrine\ORM\Query\Parser#overwriteInternalDQLFunctionNotAllowed()` was
 removed because of the choice to allow users to overwrite internal functions, ie
 `AVG`, `SUM`, `COUNT`, `MIN` and `MAX`. [#6500](https://github.com/doctrine/doctrine2/pull/6500)
 
+## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
+
+As `$className` parameter was not used in the method, it was safely removed.
+
 ## PHP 7.1 is now required
 
 Doctrine 2.6 now requires PHP 7.1 or newer.
@@ -261,10 +265,6 @@ As a consequence, automatic cache setup in Doctrine\ORM\Tools\Setup::create*Conf
 
 Method `Doctrine\ORM\Query\SqlWalker#walkCaseExpression()` was unused and part
 of the internal API of the ORM, so it was removed. [#5600](https://github.com/doctrine/doctrine2/pull/5600).
-
-## Minor BC BREAK: removed $className parameter on `AbstractEntityInheritancePersister#getSelectJoinColumnSQL()`
-
-As `$className` parameter was not used in the method, it was safely removed.
 
 ## Minor BC BREAK: query cache key time is now a float
 
