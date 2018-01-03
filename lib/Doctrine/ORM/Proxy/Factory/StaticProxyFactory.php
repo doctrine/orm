@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Proxy\Factory;
@@ -15,13 +14,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Static factory for proxy objects.
- *
- * @package Doctrine\ORM\Proxy\Factory
- * @since 3.0
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Marco Pivetta <ocramius@gmail.com>
  *
  * @internal this class is to be used by ORM internals only
  */
@@ -58,8 +50,8 @@ final class StaticProxyFactory implements ProxyFactory
         EntityManagerInterface $entityManager,
         LazyLoadingGhostFactory $proxyFactory
     ) {
-        $this->entityManager     = $entityManager;
-        $this->proxyFactory      = $proxyFactory;
+        $this->entityManager = $entityManager;
+        $this->proxyFactory  = $proxyFactory;
     }
 
     /**
@@ -95,22 +87,22 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface
     {
-        $className = $metadata->getClassName();
-        $persister = $this->cachedPersisters[$className]
+        $className                                 = $metadata->getClassName();
+        $persister                                 = $this->cachedPersisters[$className]
             ?? $this->cachedPersisters[$className] = $this
                 ->entityManager
                 ->getUnitOfWork()
                 ->getEntityPersister($metadata->getClassName());
 
-        $proxyInstance = $this
+        $proxyInstance                                            = $this
             ->proxyFactory
             ->createProxy(
                 $metadata->getClassName(),
                 $this->cachedInitializers[$className]
-                    ?? $this->cachedInitializers[$className] = $this->makeInitializer($metadata, $persister),
+                    ?? $this->cachedInitializers[$className]      = $this->makeInitializer($metadata, $persister),
                 $this->cachedSkippedProperties[$className]
                     ?? $this->cachedSkippedProperties[$className] = [
-                        self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata)
+                        self::SKIPPED_PROPERTIES => $this->skippedFieldsFqns($metadata),
                     ]
             );
 
@@ -123,13 +115,18 @@ final class StaticProxyFactory implements ProxyFactory
     {
         return function (
             GhostObjectInterface $ghostObject,
-            string $method, // we don't care
-            array $parameters, // we don't care
+            string $method,
+            // we don't care
+            array $parameters,
+            // we don't care
             & $initializer,
             array $properties // we currently do not use this
-        ) use ($metadata, $persister) : bool {
+        ) use (
+            $metadata,
+            $persister
+) : bool {
             $originalInitializer = $initializer;
-            $initializer = null;
+            $initializer         = null;
 
             $identifier = $persister->getIdentifier($ghostObject);
 
@@ -147,6 +144,9 @@ final class StaticProxyFactory implements ProxyFactory
         };
     }
 
+    /**
+     * @return string[]
+     */
     private function skippedFieldsFqns(ClassMetadata $metadata) : array
     {
         return \array_merge(
@@ -155,6 +155,9 @@ final class StaticProxyFactory implements ProxyFactory
         );
     }
 
+    /**
+     * @return string[]
+     */
     private function transientFieldsFqns(ClassMetadata $metadata) : array
     {
         $transientFieldsFqns = [];
@@ -175,6 +178,9 @@ final class StaticProxyFactory implements ProxyFactory
         return $transientFieldsFqns;
     }
 
+    /**
+     * @return string[]
+     */
     private function identifierFieldFqns(ClassMetadata $metadata) : array
     {
         $idFieldFqcns = [];
