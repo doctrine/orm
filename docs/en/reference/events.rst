@@ -368,7 +368,7 @@ defined on your ``User`` model.
     }
 
 Lifecycle Callbacks Event Argument
------------------------------------
+----------------------------------
 
 .. versionadded:: 2.4
 
@@ -884,7 +884,7 @@ you need to map the listener method using the event type mapping:
     The order of execution of multiple methods for the same event (e.g. multiple @PrePersist) is not guaranteed.
 
 Entity listeners resolver
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
 Doctrine invokes the listener resolver to get the listener instance.
 
 - A resolver allows you register a specific entity listener instance.
@@ -975,3 +975,55 @@ process and manipulate the instance.
         }
     }
 
+SchemaTool Events
+-----------------
+
+It is possible to access the schema metadata during schema changes that are happening in ``Doctrine\ORM\Tools\SchemaTool``.
+There are two different events where you can hook in.
+
+postGenerateSchemaTable
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This event is fired for each ``Doctrine\DBAL\Schema\Table`` instance, after one was created and built up with the current class metadata
+of an entity. It is possible to access to the current state of ``Doctrine\DBAL\Schema\Schema``, the current table schema
+instance and class metadata.
+
+.. code-block:: php
+
+    <?php
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(Doctrine\ORM\Tools\ToolEvents::postGenerateSchemaTable, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateSchemaTable(Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs $eventArgs)
+        {
+            $classMetadata = $eventArgs->getClassMetadata();
+            $schema = $eventArgs->getSchema();
+            $table = $eventArgs->getClassTable();
+        }
+    }
+
+postGenerateSchema
+~~~~~~~~~~~~~~~~~~
+
+This event is fired after the schema instance was successfully built and before SQL queries are generated from the
+schema information of ``Doctrine\DBAL\Schema\Schema``. It allows to access the full object representation of the database schema
+and the EntityManager.
+
+.. code-block:: php
+
+    <?php
+    $test = new TestEventListener();
+    $evm = $em->getEventManager();
+    $evm->addEventListener(Doctrine\ORM\Tools\ToolEvents::postGenerateSchema, $test);
+
+    class TestEventListener
+    {
+        public function postGenerateSchema(Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs $eventArgs)
+        {
+            $schema = $eventArgs->getSchema();
+            $em = $eventArgs->getEntityManager();
+        }
+    }
