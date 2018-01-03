@@ -4,34 +4,28 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters;
 
-use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
-use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
+use Doctrine\Common\Collections\Expr\Value;
 
 /**
  * Extract the values from a criteria/expression
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SqlValueVisitor extends ExpressionVisitor
 {
     /**
-     * @var array
+     * @var mixed[]
      */
     private $values = [];
 
     /**
-     * @var array
+     * @var mixed[][]
      */
-    private $types  = [];
+    private $types = [];
 
     /**
      * Converts a comparison expression into the target query language output.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
-     *
-     * @return void
      */
     public function walkComparison(Comparison $comparison)
     {
@@ -51,10 +45,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a composite expression into the target query language output.
-     *
-     * @param \Doctrine\Common\Collections\Expr\CompositeExpression $expr
-     *
-     * @return void
      */
     public function walkCompositeExpression(CompositeExpression $expr)
     {
@@ -65,10 +55,6 @@ class SqlValueVisitor extends ExpressionVisitor
 
     /**
      * Converts a value expression into the target query language part.
-     *
-     * @param \Doctrine\Common\Collections\Expr\Value $value
-     *
-     * @return mixed
      */
     public function walkValue(Value $value)
     {
@@ -78,7 +64,7 @@ class SqlValueVisitor extends ExpressionVisitor
     /**
      * Returns the Parameters and Types necessary for matching the last visited expression.
      *
-     * @return array
+     * @return mixed[]
      */
     public function getParamsAndTypes()
     {
@@ -89,7 +75,6 @@ class SqlValueVisitor extends ExpressionVisitor
      * Returns the value from a Comparison. In case of a CONTAINS comparison,
      * the value is wrapped in %-signs, because it will be used in a LIKE clause.
      *
-     * @param \Doctrine\Common\Collections\Expr\Comparison $comparison
      * @return mixed
      */
     protected function getValueFromComparison(Comparison $comparison)
@@ -98,13 +83,13 @@ class SqlValueVisitor extends ExpressionVisitor
 
         switch ($comparison->getOperator()) {
             case Comparison::CONTAINS:
-                return "%{$value}%";
+                return '%' . $value . '%';
 
             case Comparison::STARTS_WITH:
-                return "{$value}%";
+                return $value . '%';
 
             case Comparison::ENDS_WITH:
-                return "%{$value}";
+                return '%' . $value;
 
             default:
                 return $value;
