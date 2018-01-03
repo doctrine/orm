@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
@@ -11,8 +10,6 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 /**
  * A cache region that enables the retrieval of multiple elements with one call
  *
- * @since   2.5
- * @author  Asmir Mustafic <goetas@gmail.com>
  */
 class DefaultMultiGetRegion extends DefaultRegion
 {
