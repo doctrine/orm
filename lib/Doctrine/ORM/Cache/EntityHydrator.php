@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -9,9 +8,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Hydrator cache entry for entities
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface EntityHydrator
 {

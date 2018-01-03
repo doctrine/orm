@@ -1,23 +1,19 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultCache implements Cache
 {
@@ -66,7 +62,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return null;
         }
 
@@ -81,7 +77,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return null;
         }
 
@@ -93,10 +89,10 @@ class DefaultCache implements Cache
      */
     public function containsEntity($className, $identifier)
     {
-        $metadata   = $this->em->getClassMetadata($className);
-        $persister  = $this->uow->getEntityPersister($metadata->getRootClassName());
+        $metadata  = $this->em->getClassMetadata($className);
+        $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return false;
         }
 
@@ -111,7 +107,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -126,7 +122,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -143,7 +139,7 @@ class DefaultCache implements Cache
         foreach ($metadatas as $metadata) {
             $persister = $this->uow->getEntityPersister($metadata->getRootClassName());
 
-            if ( ! ($persister instanceof CachedPersister)) {
+            if (! ($persister instanceof CachedPersister)) {
                 continue;
             }
 
@@ -159,7 +155,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return false;
         }
 
@@ -174,7 +170,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -189,7 +185,7 @@ class DefaultCache implements Cache
         $metadata  = $this->em->getClassMetadata($className);
         $persister = $this->uow->getCollectionPersister($metadata->getProperty($association));
 
-        if ( ! ($persister instanceof CachedPersister)) {
+        if (! ($persister instanceof CachedPersister)) {
             return;
         }
 
@@ -211,7 +207,7 @@ class DefaultCache implements Cache
 
                 $persister = $this->uow->getCollectionPersister($association);
 
-                if ( ! ($persister instanceof CachedPersister)) {
+                if (! ($persister instanceof CachedPersister)) {
                     continue;
                 }
 
@@ -266,7 +262,7 @@ class DefaultCache implements Cache
                 $this->defaultQueryCache = $this->cacheFactory->buildQueryCache($this->em);
         }
 
-        if ( ! isset($this->queryCaches[$regionName])) {
+        if (! isset($this->queryCaches[$regionName])) {
             $this->queryCaches[$regionName] = $this->cacheFactory->buildQueryCache($this->em, $regionName);
         }
 
@@ -308,7 +304,7 @@ class DefaultCache implements Cache
      * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
      * @param mixed                               $identifier The entity identifier.
      *
-     * @return array
+     * @return mixed[]
      */
     private function toIdentifierArray(ClassMetadata $metadata, $identifier)
     {

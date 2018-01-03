@@ -1,14 +1,9 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-/**
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- */
 class TimestampQueryCacheValidator implements QueryCacheValidator
 {
     /**
@@ -16,9 +11,6 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
      */
     private $timestampRegion;
 
-    /**
-     * @param TimestampRegion $timestampRegion
-     */
     public function __construct(TimestampRegion $timestampRegion)
     {
         $this->timestampRegion = $timestampRegion;
@@ -33,7 +25,7 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
             return false;
         }
 
-        if ($key->lifetime == 0) {
+        if ($key->lifetime === 0) {
             return true;
         }
 
@@ -41,8 +33,6 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
     }
 
     /**
-     * @param QueryCacheKey   $key
-     * @param QueryCacheEntry $entry
      *
      * @return bool
      */

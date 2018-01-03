@@ -1,15 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Cache Lock
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class Lock
 {
@@ -19,13 +15,13 @@ class Lock
     public $value;
 
     /**
-     * @var integer
+     * @var int
      */
     public $time;
 
     /**
-     * @param string  $value
-     * @param integer $time
+     * @param string $value
+     * @param int    $time
      */
     public function __construct($value, $time = null)
     {

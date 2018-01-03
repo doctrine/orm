@@ -1,20 +1,16 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\Query;
-use Doctrine\ORM\PersistentCollection;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query;
 
 /**
  * Default hydrator cache for collections
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultCollectionHydrator implements CollectionHydrator
 {
@@ -29,7 +25,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     private $uow;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
@@ -64,8 +60,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
         CollectionCacheKey $key,
         CollectionCacheEntry $entry,
         PersistentCollection $collection
-    )
-    {
+    ) {
         /* @var $targetPersister \Doctrine\ORM\Cache\Persister\CachedPersister */
         $association     = $metadata->getProperty($key->association);
         $targetPersister = $this->uow->getEntityPersister($association->getTargetEntity());

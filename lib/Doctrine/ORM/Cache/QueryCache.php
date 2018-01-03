@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -10,33 +9,26 @@ use Doctrine\ORM\Query\ResultSetMapping;
 /**
  * Defines the contract for caches capable of storing query results.
  * These caches should only concern themselves with storing the matching result ids.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface QueryCache
 {
     /**
-     * @return boolean
+     * @return bool
      */
     public function clear();
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey    $key
-     * @param \Doctrine\ORM\Query\ResultSetMapping $rsm
-     * @param mixed                                $result
-     * @param array                                $hints
+     * @param mixed   $result
+     * @param mixed[] $hints
      *
-     * @return boolean
+     * @return bool
      */
     public function put(QueryCacheKey $key, ResultSetMapping $rsm, $result, array $hints = []);
 
     /**
-     * @param \Doctrine\ORM\Cache\QueryCacheKey     $key
-     * @param \Doctrine\ORM\Query\ResultSetMapping  $rsm
-     * @param array                                 $hints
+     * @param mixed[] $hints
      *
-     * @return array|null
+     * @return object[]|null
      */
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []);
 

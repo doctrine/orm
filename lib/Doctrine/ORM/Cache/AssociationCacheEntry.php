@@ -1,22 +1,18 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Association cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class AssociationCacheEntry implements CacheEntry
 {
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array The entity identifier
+     * @var mixed[] The entity identifier
      */
     public $identifier;
 
@@ -28,13 +24,13 @@ class AssociationCacheEntry implements CacheEntry
     public $class;
 
     /**
-     * @param string $class      The entity class.
-     * @param array  $identifier The entity identifier.
+     * @param string  $class      The entity class.
+     * @param mixed[] $identifier The entity identifier.
      */
     public function __construct($class, array $identifier)
     {
-        $this->class       = $class;
-        $this->identifier  = $identifier;
+        $this->class      = $class;
+        $this->identifier = $identifier;
     }
 
     /**
@@ -42,7 +38,7 @@ class AssociationCacheEntry implements CacheEntry
      *
      * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
      *
-     * @param array $values array containing property values
+     * @param mixed[] $values array containing property values
      *
      * @return AssociationCacheEntry
      */
