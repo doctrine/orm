@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\Expr;
 
 /**
  * Expression class for building DQL OR clauses.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Orx extends Composite
 {
@@ -21,17 +15,17 @@ class Orx extends Composite
     protected $separator = ' OR ';
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $allowedClasses = [
         Comparison::class,
         Func::class,
         Andx::class,
-        Orx::class,
+        self::class,
     ];
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getParts()
     {
