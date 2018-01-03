@@ -8,15 +8,11 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
 /**
  * Mechanism to programmatically attach entity listeners.
- *
- * @author Fabio B. SIlva <fabio.bat.silva@gmail.com>
- *
- * @since 2.5
  */
 class AttachEntityListenersListener
 {
     /**
-     * @var array[]
+     * @var mixed[][]
      */
     private $entityListeners = [];
 
@@ -28,30 +24,25 @@ class AttachEntityListenersListener
      * @param string      $eventName        The entity lifecycle event.
      * @param string|null $listenerCallback The listener callback method or NULL to use $eventName.
      *
-     * @return void
      */
     public function addEntityListener($entityClass, $listenerClass, $eventName, $listenerCallback = null)
     {
         $this->entityListeners[ltrim($entityClass, '\\')][] = [
             'event'  => $eventName,
             'class'  => $listenerClass,
-            'method' => $listenerCallback ?: $eventName
+            'method' => $listenerCallback ?: $eventName,
         ];
     }
 
     /**
      * Processes event and attach the entity listener.
-     *
-     * @param \Doctrine\ORM\Event\LoadClassMetadataEventArgs $event
-     *
-     * @return void
      */
     public function loadClassMetadata(LoadClassMetadataEventArgs $event)
     {
-        /** @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
+        /** @var \Doctrine\ORM\Mapping\ClassMetadata $metadata */
         $metadata = $event->getClassMetadata();
 
-        if ( ! isset($this->entityListeners[$metadata->getClassName()])) {
+        if (! isset($this->entityListeners[$metadata->getClassName()])) {
             return;
         }
 

@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
-use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\AssociationMetadata;
 
 /**
  * ResolveTargetEntityListener
  *
  * Mechanism to overwrite interfaces or classes specified as association
  * targets.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since 2.2
  */
 class ResolveTargetEntityListener implements EventSubscriber
 {
     /**
-     * @var array[] indexed by original entity name
+     * @var string[] indexed by original entity name
      */
     private $resolveTargetEntities = [];
 
@@ -33,7 +30,7 @@ class ResolveTargetEntityListener implements EventSubscriber
     {
         return [
             Events::loadClassMetadata,
-            Events::onClassMetadataNotFound
+            Events::onClassMetadataNotFound,
         ];
     }
 
@@ -43,19 +40,14 @@ class ResolveTargetEntityListener implements EventSubscriber
      * @param string $originalEntity
      * @param string $newEntity
      *
-     * @return void
      */
     public function addResolveTargetEntity($originalEntity, $newEntity)
     {
-        $this->resolveTargetEntities[ltrim($originalEntity, "\\")] = ltrim($newEntity, "\\");
+        $this->resolveTargetEntities[ltrim($originalEntity, '\\')] = ltrim($newEntity, '\\');
     }
 
     /**
-     * @param OnClassMetadataNotFoundEventArgs $args
-     *
      * @internal this is an event callback, and should not be called directly
-     *
-     * @return void
      */
     public function onClassMetadataNotFound(OnClassMetadataNotFoundEventArgs $args)
     {
@@ -69,10 +61,6 @@ class ResolveTargetEntityListener implements EventSubscriber
 
     /**
      * Processes event and resolves new target entity names.
-     *
-     * @param LoadClassMetadataEventArgs $args
-     *
-     * @return void
      *
      * @internal this is an event callback, and should not be called directly
      */

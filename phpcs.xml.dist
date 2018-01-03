@@ -31,6 +31,7 @@
 
     <rule ref="Generic.NamingConventions.UpperCaseConstantName.ClassConstantNotUpperCase">
         <exclude-pattern>lib/Doctrine/ORM/Events.php</exclude-pattern>
+        <exclude-pattern>lib/Doctrine/ORM/Tools/ToolEvents.php</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversablePropertyTypeHintSpecification">
