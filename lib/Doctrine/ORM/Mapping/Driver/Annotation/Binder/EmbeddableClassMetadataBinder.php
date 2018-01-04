@@ -9,11 +9,6 @@ use Doctrine\ORM\Mapping;
 
 /**
  * Class EmbeddableClassMetadataBinder
- *
- * @package Doctrine\ORM\Mapping\Driver\Annotation\Binder
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class EmbeddableClassMetadataBinder
 {
@@ -30,7 +25,7 @@ class EmbeddableClassMetadataBinder
     /**
      * [dreaming] One day we would eliminate this and only do: $reflectionClass->getAnnotations()
      *
-     * @var array<string, object>
+     * @var Annotation\Annotation[]
      */
     private $classAnnotations;
 
@@ -44,27 +39,20 @@ class EmbeddableClassMetadataBinder
     /**
      * ComponentMetadataBinder constructor.
      *
-     * @param \ReflectionClass                     $reflectionClass
-     * @param array<string, object>                $classAnnotations
-     * @param Mapping\ClassMetadata                $classMetadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(
         \ReflectionClass $reflectionClass,
         array $classAnnotations,
         Mapping\ClassMetadata $classMetadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         $this->reflectionClass         = $reflectionClass;
         $this->classAnnotations        = $classAnnotations;
         $this->classMetadata           = $classMetadata;
         $this->metadataBuildingContext = $metadataBuildingContext;
     }
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
     public function bind() : Mapping\ClassMetadata
     {
         $classMetadata = $this->classMetadata;
@@ -74,18 +62,11 @@ class EmbeddableClassMetadataBinder
         return $classMetadata;
     }
 
-    /**
-     * @param Mapping\ClassMetadata $classMetadata
-     * @param Annotation\Embeddable $embeddableAnnotation
-     *
-     * @return void
-     */
     private function processEmbeddableAnnotation(
         Mapping\ClassMetadata $classMetadata,
         Annotation\Embeddable $embeddableAnnotation
-    ) : void
-    {
+    ) : void {
         $classMetadata->isMappedSuperclass = false;
-        $classMetadata->isEmbeddedClass = true;
+        $classMetadata->isEmbeddedClass    = true;
     }
 }

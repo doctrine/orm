@@ -12,17 +12,11 @@ use Doctrine\ORM\Mapping;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.
- *
- * @since 2.0
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman Borschel <roman@code-factory.org>
  */
 class AnnotationDriver implements Mapping\Driver\MappingDriver
 {
     /**
-     * {@inheritdoc}
+     * @var int[]
      */
     protected $entityAnnotationClasses = [
         Annotation\Entity::class           => 1,
@@ -40,14 +34,14 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * The paths where to look for mapping files.
      *
-     * @var array
+     * @var string[]
      */
     protected $paths = [];
 
     /**
      * The paths excluded from path where to look for mapping files.
      *
-     * @var array
+     * @var string[]
      */
     protected $excludePaths = [];
 
@@ -61,7 +55,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Cache for AnnotationDriver#getAllClassNames().
      *
-     * @var array|null
+     * @var string[]|null
      */
     protected $classNames;
 
@@ -69,8 +63,8 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
      * Initializes a new AnnotationDriver that uses the given AnnotationReader for reading
      * docblock annotations.
      *
-     * @param AnnotationReader  $reader The AnnotationReader to use, duck-typed.
-     * @param string|array|null $paths  One or multiple paths where mapping classes can be found.
+     * @param AnnotationReader     $reader The AnnotationReader to use, duck-typed.
+     * @param string|string[]|null $paths  One or multiple paths where mapping classes can be found.
      */
     public function __construct($reader, $paths = null)
     {
@@ -84,9 +78,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Appends lookup paths to metadata driver.
      *
-     * @param array $paths
-     *
-     * @return void
+     * @param string[] $paths
      */
     public function addPaths(array $paths)
     {
@@ -96,7 +88,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Retrieves the defined metadata lookup paths.
      *
-     * @return array
+     * @return string[]
      */
     public function getPaths()
     {
@@ -106,7 +98,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Append exclude lookup paths to metadata driver.
      *
-     * @param array $paths
+     * @param string[] $paths
      */
     public function addExcludePaths(array $paths)
     {
@@ -116,7 +108,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Retrieve the defined metadata lookup exclude paths.
      *
-     * @return array
+     * @return string[]
      */
     public function getExcludePaths()
     {
@@ -147,8 +139,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
      * Sets the file extension used to look for mapping files under.
      *
      * @param string $fileExtension The file extension to set.
-     *
-     * @return void
      */
     public function setFileExtension($fileExtension)
     {
@@ -164,7 +154,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
      *
      * @param string $className
      *
-     * @return boolean
+     * @return bool
      */
     public function isTransient($className)
     {
@@ -187,15 +177,15 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             return $this->classNames;
         }
 
-        if (!$this->paths) {
+        if (! $this->paths) {
             throw Mapping\MappingException::pathRequired();
         }
 
-        $classes = [];
+        $classes       = [];
         $includedFiles = [];
 
         foreach ($this->paths as $path) {
-            if ( ! is_dir($path)) {
+            if (! is_dir($path)) {
                 throw Mapping\MappingException::fileMappingDriversRequireConfiguredDirectoryPath($path);
             }
 
@@ -211,7 +201,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             foreach ($iterator as $file) {
                 $sourceFile = $file[0];
 
-                if ( ! preg_match('(^phar:)i', $sourceFile)) {
+                if (! preg_match('(^phar:)i', $sourceFile)) {
                     $sourceFile = realpath($sourceFile);
                 }
 
@@ -233,7 +223,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         $declared = get_declared_classes();
 
         foreach ($declared as $className) {
-            $rc = new \ReflectionClass($className);
+            $rc         = new \ReflectionClass($className);
             $sourceFile = $rc->getFileName();
             if (in_array($sourceFile, $includedFiles) && ! $this->isTransient($className)) {
                 $classes[] = $className;
@@ -256,8 +246,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         string $className,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata
-    {
+    ) : Mapping\ClassMetadata {
         $reflectionClass = $metadata->getReflectionClass();
 
         if (! $reflectionClass) {
@@ -310,12 +299,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionClass                     $reflectionClass
-     * @param array                                $classAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\ClassMetadata
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws \UnexpectedValueException
      * @throws Mapping\MappingException
@@ -325,8 +309,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $classAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata
-    {
+    ) : Mapping\ClassMetadata {
         switch (true) {
             case isset($classAnnotations[Annotation\Entity::class]):
                 $binder = new Binder\EntityClassMetadataBinder(
@@ -364,10 +347,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                                $classAnnotations
-     * @param \ReflectionClass                     $reflectionClass
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @return Mapping\ClassMetadata
      *
@@ -379,10 +359,9 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         /** @var Annotation\Entity $entityAnnot */
-        $entityAnnot  = $classAnnotations[Annotation\Entity::class];
+        $entityAnnot = $classAnnotations[Annotation\Entity::class];
 
         if ($entityAnnot->repositoryClass !== null) {
             $metadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
@@ -393,7 +372,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         }
 
         $metadata->isMappedSuperclass = false;
-        $metadata->isEmbeddedClass = false;
+        $metadata->isEmbeddedClass    = false;
 
         $this->attachTable($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
 
@@ -428,20 +407,14 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                                $classAnnotations
-     * @param \ReflectionClass                     $reflectionClass
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\ClassMetadata
+     * @param Annotation\Annotation[] $classAnnotations
      */
     private function convertClassAnnotationsToMappedSuperClassMetadata(
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata
-    {
+    ) : Mapping\ClassMetadata {
         /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
         $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
 
@@ -450,7 +423,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         }
 
         $metadata->isMappedSuperclass = true;
-        $metadata->isEmbeddedClass = false;
+        $metadata->isEmbeddedClass    = false;
 
         $this->attachNamedQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
@@ -461,13 +434,9 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $propertyAnnotations
-     * @param \ReflectionProperty   $reflectionProperty
-     * @param Mapping\ClassMetadata $metadata
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @todo guilhermeblanco Remove nullable typehint once embeddables are back
-     *
-     * @return Mapping\Property|null
      *
      * @throws Mapping\MappingException
      */
@@ -476,8 +445,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         \ReflectionProperty $reflectionProperty,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ?Mapping\Property
-    {
+    ) : ?Mapping\Property {
         switch (true) {
             case isset($propertyAnnotations[Annotation\Column::class]):
                 return $this->convertReflectionPropertyToFieldMetadata(
@@ -528,12 +496,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty                  $reflProperty
-     * @param array                                $propertyAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\FieldMetadata
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @throws Mapping\MappingException
      */
@@ -542,14 +505,13 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\FieldMetadata
-    {
+    ) : Mapping\FieldMetadata {
         $className   = $metadata->getClassName();
         $fieldName   = $reflProperty->getName();
         $isVersioned = isset($propertyAnnotations[Annotation\Version::class]);
         $columnAnnot = $propertyAnnotations[Annotation\Column::class];
 
-        if ($columnAnnot->type == null) {
+        if ($columnAnnot->type === null) {
             throw Mapping\MappingException::propertyTypeIsRequired($className, $fieldName);
         }
 
@@ -563,8 +525,8 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         // Check for GeneratedValue strategy
         if (isset($propertyAnnotations[Annotation\GeneratedValue::class])) {
             $generatedValueAnnot = $propertyAnnotations[Annotation\GeneratedValue::class];
-            $strategy = strtoupper($generatedValueAnnot->strategy);
-            $idGeneratorType = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
+            $strategy            = strtoupper($generatedValueAnnot->strategy);
+            $idGeneratorType     = constant(sprintf('%s::%s', Mapping\GeneratorType::class, $strategy));
 
             if ($idGeneratorType !== Mapping\GeneratorType::NONE) {
                 $idGeneratorDefinition = [];
@@ -604,10 +566,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty                  $reflectionProperty
-     * @param array                                $propertyAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @return Mapping\OneToOneAssociationMetadata
      */
@@ -616,8 +575,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         $className     = $metadata->getClassName();
         $fieldName     = $reflectionProperty->getName();
         $oneToOneAnnot = $propertyAnnotations[Annotation\OneToOne::class];
@@ -671,10 +629,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty                  $reflectionProperty
-     * @param array                                $propertyAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @return Mapping\ManyToOneAssociationMetadata
      */
@@ -683,8 +638,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $manyToOneAnnot = $propertyAnnotations[Annotation\ManyToOne::class];
@@ -733,12 +687,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty                  $reflectionProperty
-     * @param array                                $propertyAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\OneToManyAssociationMetadata
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @throws Mapping\MappingException
      */
@@ -747,8 +696,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\OneToManyAssociationMetadata
-    {
+    ) : Mapping\OneToManyAssociationMetadata {
         $className      = $metadata->getClassName();
         $fieldName      = $reflectionProperty->getName();
         $oneToManyAnnot = $propertyAnnotations[Annotation\OneToMany::class];
@@ -786,12 +734,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty                  $reflectionProperty
-     * @param array                                $propertyAnnotations
-     * @param Mapping\ClassMetadata                $metadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-     *
-     * @return Mapping\ManyToManyAssociationMetadata
+     * @param Annotation\Annotation[] $propertyAnnotations
      *
      * @throws Mapping\MappingException
      */
@@ -800,8 +743,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $propertyAnnotations,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ManyToManyAssociationMetadata
-    {
+    ) : Mapping\ManyToManyAssociationMetadata {
         $className       = $metadata->getClassName();
         $fieldName       = $reflectionProperty->getName();
         $manyToManyAnnot = $propertyAnnotations[Annotation\ManyToMany::class];
@@ -852,19 +794,12 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
 
     /**
      * Parse the given Column as FieldMetadata
-     *
-     * @param Annotation\Column $columnAnnot
-     * @param string            $fieldName
-     * @param bool              $isVersioned
-     *
-     * @return Mapping\FieldMetadata
      */
     private function convertColumnAnnotationToFieldMetadata(
         Annotation\Column $columnAnnot,
         string $fieldName,
         bool $isVersioned
-    ) : Mapping\FieldMetadata
-    {
+    ) : Mapping\FieldMetadata {
         $fieldMetadata = $isVersioned
             ? new Mapping\VersionFieldMetadata($fieldName)
             : new Mapping\FieldMetadata($fieldName)
@@ -898,17 +833,11 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
 
     /**
      * Parse the given Table as TableMetadata
-     *
-     * @param Annotation\Table      $tableAnnot
-     * @param Mapping\TableMetadata $table
-     *
-     * @return void
      */
     private function convertTableAnnotationToTableMetadata(
         Annotation\Table $tableAnnot,
         Mapping\TableMetadata $table
-    ) : void
-    {
+    ) : void {
         if (! empty($tableAnnot->name)) {
             $table->setName($tableAnnot->name);
         }
@@ -945,15 +874,10 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
 
     /**
      * Parse the given JoinTable as JoinTableMetadata
-     *
-     * @param Annotation\JoinTable $joinTableAnnot
-     *
-     * @return Mapping\JoinTableMetadata
      */
     private function convertJoinTableAnnotationToJoinTableMetadata(
         Annotation\JoinTable $joinTableAnnot
-    ) : Mapping\JoinTableMetadata
-    {
+    ) : Mapping\JoinTableMetadata {
         $joinTable = new Mapping\JoinTableMetadata();
 
         if (! empty($joinTableAnnot->name)) {
@@ -981,15 +905,10 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
 
     /**
      * Parse the given JoinColumn as JoinColumnMetadata
-     *
-     * @param Annotation\JoinColumn $joinColumnAnnot
-     *
-     * @return Mapping\JoinColumnMetadata
      */
     private function convertJoinColumnAnnotationToJoinColumnMetadata(
         Annotation\JoinColumn $joinColumnAnnot
-    ) : Mapping\JoinColumnMetadata
-    {
+    ) : Mapping\JoinColumnMetadata {
         $joinColumn = new Mapping\JoinColumnMetadata();
 
         // @todo Remove conditionals for name and referencedColumnName once naming strategy is brought into drivers
@@ -1022,31 +941,24 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Parse the given Cache as CacheMetadata
      *
-     * @param Annotation\Cache      $cacheAnnot
-     * @param Mapping\ClassMetadata $metadata
-     * @param null|string           $fieldName
-     *
-     * @return Mapping\CacheMetadata
+     * @param string|null $fieldName
      */
     private function convertCacheAnnotationToCacheMetadata(
         Annotation\Cache $cacheAnnot,
         Mapping\ClassMetadata $metadata,
         $fieldName = null
-    ) : Mapping\CacheMetadata
-    {
+    ) : Mapping\CacheMetadata {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
-        $usage = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
+        $usage  = constant(sprintf('%s::%s', Mapping\CacheUsage::class, $cacheAnnot->usage));
         $region = $cacheAnnot->region ?: $defaultRegion;
 
         return new Mapping\CacheMetadata($usage, $region);
     }
 
     /**
-     * @param Annotation\SqlResultSetMapping $resultSetMapping
-     *
-     * @return array
+     * @return mixed[]
      */
     private function convertSqlResultSetMapping(Annotation\SqlResultSetMapping $resultSetMapping)
     {
@@ -1062,7 +974,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
                 $entityResult['fields'][] = [
                     'name'      => $fieldResultAnnot->name,
-                    'column'    => $fieldResultAnnot->column
+                    'column'    => $fieldResultAnnot->column,
                 ];
             }
 
@@ -1080,17 +992,19 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         return [
             'name'     => $resultSetMapping->name,
             'entities' => $entities,
-            'columns'  => $columns
+            'columns'  => $columns,
         ];
     }
 
+    /**
+     * @param Annotation\Annotation[] $classAnnotations
+     */
     private function attachTable(
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void
-    {
+    ) : void {
         $parent = $metadata->getParent();
 
         if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
@@ -1115,11 +1029,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws Mapping\MappingException
      */
@@ -1128,8 +1038,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void
-    {
+    ) : void {
         $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
 
         $discriminatorColumn->setTableName($metadata->getTableName());
@@ -1169,11 +1078,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws \UnexpectedValueException
      * @throws Mapping\MappingException
@@ -1182,19 +1087,18 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata
-    ) : void
-    {
+    ) : void {
         // Evaluate @NamedQueries annotation
         if (isset($classAnnotations[Annotation\NamedQueries::class])) {
             $namedQueriesAnnot = $classAnnotations[Annotation\NamedQueries::class];
 
             if (! is_array($namedQueriesAnnot->value)) {
-                throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
             }
 
             foreach ($namedQueriesAnnot->value as $namedQuery) {
                 if (! ($namedQuery instanceof Annotation\NamedQuery)) {
-                    throw new \UnexpectedValueException("@NamedQueries should contain an array of @NamedQuery annotations.");
+                    throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
                 }
 
                 $metadata->addNamedQuery($namedQuery->name, $namedQuery->query);
@@ -1203,18 +1107,13 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachNamedNativeQueries(
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata
-    ) : void
-    {
+    ) : void {
         // Evaluate @NamedNativeQueries annotation
         if (isset($classAnnotations[Annotation\NamedNativeQueries::class])) {
             $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
@@ -1244,18 +1143,13 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachLifecycleCallbacks(
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata
-    ) : void
-    {
+    ) : void {
         // Evaluate @HasLifecycleCallbacks annotation
         if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
             /* @var $method \ReflectionMethod */
@@ -1268,11 +1162,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws \ReflectionException
      * @throws Mapping\MappingException
@@ -1281,8 +1171,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         array $classAnnotations,
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata
-    ) : void
-    {
+    ) : void {
         // Evaluate @EntityListeners annotation
         if (isset($classAnnotations[Annotation\EntityListeners::class])) {
             /** @var Annotation\EntityListeners $entityListenersAnnot */
@@ -1309,11 +1198,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param array                 $classAnnotations
-     * @param \ReflectionClass      $reflectionClass
-     * @param Mapping\ClassMetadata $metadata
-     *
-     * @return void
+     * @param Annotation\Annotation[] $classAnnotations
      *
      * @throws Mapping\MappingException
      */
@@ -1322,8 +1207,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         \ReflectionClass $reflectionClass,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void
-    {
+    ) : void {
         // Evaluate AssociationOverrides annotation
         if (isset($classAnnotations[Annotation\AssociationOverrides::class])) {
             $associationOverridesAnnot = $classAnnotations[Annotation\AssociationOverrides::class];
@@ -1390,13 +1274,15 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         }
     }
 
+    /**
+     * @param Annotation\Annotation[] $propertyAnnotations
+     */
     private function attachAssociationPropertyCache(
         array $propertyAnnotations,
         \ReflectionProperty $reflectionProperty,
         Mapping\AssociationMetadata $assocMetadata,
         Mapping\ClassMetadata $metadata
-    ) : void
-    {
+    ) : void {
         // Check for Cache
         if (isset($propertyAnnotations[Annotation\Cache::class])) {
             $cacheAnnot    = $propertyAnnotations[Annotation\Cache::class];
@@ -1413,11 +1299,11 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Attempts to resolve the cascade modes.
      *
-     * @param string $className        The class name.
-     * @param string $fieldName        The field name.
-     * @param array  $originalCascades The original unprocessed field cascades.
+     * @param string   $className        The class name.
+     * @param string   $fieldName        The field name.
+     * @param string[] $originalCascades The original unprocessed field cascades.
      *
-     * @return array The processed field cascades.
+     * @return string[] The processed field cascades.
      *
      * @throws Mapping\MappingException If a cascade option is not valid.
      */
@@ -1463,9 +1349,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Parses the given method.
      *
-     * @param \ReflectionMethod $method
-     *
-     * @return array
+     * @return string[]
      */
     private function getMethodCallbacks(\ReflectionMethod $method) : array
     {
@@ -1494,9 +1378,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionClass $reflectionClass
-     *
-     * @return array
+     * @return Annotation\Annotation[]
      */
     private function getClassAnnotations(\ReflectionClass $reflectionClass) : array
     {
@@ -1514,9 +1396,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionProperty $reflectionProperty
-     *
-     * @return array
+     * @return Annotation\Annotation[]
      */
     private function getPropertyAnnotations(\ReflectionProperty $reflectionProperty) : array
     {
@@ -1534,9 +1414,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @param \ReflectionMethod $reflectionMethod
-     *
-     * @return array
+     * @return Annotation\Annotation[]
      */
     private function getMethodAnnotations(\ReflectionMethod $reflectionMethod) : array
     {
@@ -1556,14 +1434,13 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     /**
      * Factory method for the Annotation Driver.
      *
-     * @param array|string          $paths
-     * @param AnnotationReader|null $reader
+     * @param string|string[] $paths
      *
      * @return AnnotationDriver
      */
-    static public function create($paths = [], AnnotationReader $reader = null)
+    public static function create($paths = [], ?AnnotationReader $reader = null)
     {
-        if ($reader == null) {
+        if ($reader === null) {
             $reader = new AnnotationReader();
         }
 

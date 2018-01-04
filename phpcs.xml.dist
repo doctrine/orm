@@ -49,4 +49,12 @@
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
         <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
     </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.WriteOnlyProperty">
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedMethod">
+        <exclude-pattern>lib/Doctrine/ORM/Mapping/*</exclude-pattern>
+    </rule>
 </ruleset>

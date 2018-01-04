@@ -9,11 +9,6 @@ use Doctrine\ORM\Mapping;
 
 /**
  * Class ComponentMetadataBinder
- *
- * @package Doctrine\ORM\Mapping\Driver\Annotation\Binder
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class EntityClassMetadataBinder
 {
@@ -30,7 +25,7 @@ class EntityClassMetadataBinder
     /**
      * [dreaming] One day we would eliminate this and only do: $reflectionClass->getAnnotations()
      *
-     * @var array<string, object>
+     * @var Annotation\Annotation[]
      */
     private $classAnnotations;
 
@@ -44,27 +39,20 @@ class EntityClassMetadataBinder
     /**
      * ComponentMetadataBinder constructor.
      *
-     * @param \ReflectionClass                     $reflectionClass
-     * @param array<string, object>                $classAnnotations
-     * @param Mapping\ClassMetadata                $classMetadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(
         \ReflectionClass $reflectionClass,
         array $classAnnotations,
         Mapping\ClassMetadata $classMetadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         $this->reflectionClass         = $reflectionClass;
         $this->classAnnotations        = $classAnnotations;
         $this->classMetadata           = $classMetadata;
         $this->metadataBuildingContext = $metadataBuildingContext;
     }
 
-    /**
-     * @return Mapping\ClassMetadata
-     */
     public function bind() : Mapping\ClassMetadata
     {
         $classMetadata = $this->classMetadata;
@@ -74,17 +62,10 @@ class EntityClassMetadataBinder
         return $classMetadata;
     }
 
-    /**
-     * @param Mapping\ClassMetadata $classMetadata
-     * @param Annotation\Entity     $entityAnnotation
-     *
-     * @return void
-     */
     private function processEntityAnnotation(
         Mapping\ClassMetadata $classMetadata,
         Annotation\Entity $entityAnnotation
-    ) : void
-    {
+    ) : void {
         if ($entityAnnotation->repositoryClass !== null) {
             $repositoryClassName = $entityAnnotation->repositoryClass;
 
@@ -96,6 +77,6 @@ class EntityClassMetadataBinder
         }
 
         $classMetadata->isMappedSuperclass = false;
-        $classMetadata->isEmbeddedClass = false;
+        $classMetadata->isEmbeddedClass    = false;
     }
 }

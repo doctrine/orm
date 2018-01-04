@@ -11,18 +11,10 @@ use SimpleXMLElement;
 
 /**
  * XmlDriver is a metadata driver that enables mapping through XML files.
- *
- * @license 	http://www.opensource.org/licenses/mit-license.php MIT
- * @link    	www.doctrine-project.org
- * @since   	2.0
- * @author		Benjamin Eberlei <kontakt@beberlei.de>
- * @author		Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Jonathan H. Wage <jonwage@gmail.com>
- * @author      Roman Borschel <roman@code-factory.org>
  */
 class XmlDriver extends FileDriver
 {
-    const DEFAULT_FILE_EXTENSION = '.dcm.xml';
+    public const DEFAULT_FILE_EXTENSION = '.dcm.xml';
 
     /**
      * {@inheritDoc}
@@ -39,8 +31,7 @@ class XmlDriver extends FileDriver
         string $className,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         /* @var \SimpleXMLElement $xmlRoot */
         $xmlRoot = $this->getElement($className);
 
@@ -163,8 +154,8 @@ class XmlDriver extends FileDriver
         // Evaluate sql result set mapping
         if (isset($xmlRoot->{'sql-result-set-mappings'})) {
             foreach ($xmlRoot->{'sql-result-set-mappings'}->{'sql-result-set-mapping'} as $rsmElement) {
-                $entities   = [];
-                $columns    = [];
+                $entities = [];
+                $columns  = [];
 
                 foreach ($rsmElement as $entityElement) {
                     //<entity-result/>
@@ -197,7 +188,7 @@ class XmlDriver extends FileDriver
                     [
                         'name'          => (string) $rsmElement['name'],
                         'entities'      => $entities,
-                        'columns'       => $columns
+                        'columns'       => $columns,
                     ]
                 );
             }
@@ -250,7 +241,6 @@ class XmlDriver extends FileDriver
             }
         }
 
-
         // Evaluate <change-tracking-policy...>
         if (isset($xmlRoot['change-tracking-policy'])) {
             $changeTrackingPolicy = strtoupper((string) $xmlRoot['change-tracking-policy']);
@@ -284,7 +274,7 @@ class XmlDriver extends FileDriver
                 $mapping = [
                     'fieldName' => (string) $embeddedMapping['name'],
                     'class' => (string) $embeddedMapping['class'],
-                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false
+                    'columnPrefix' => $useColumnPrefix ? $columnPrefix : false,
                 ];
 
                 $metadata->mapEmbedded($mapping);
@@ -317,7 +307,7 @@ class XmlDriver extends FileDriver
 
                     // Check for SequenceGenerator/TableGenerator definition
                     if (isset($idElement->{'sequence-generator'})) {
-                        $seqGenerator = $idElement->{'sequence-generator'};
+                        $seqGenerator          = $idElement->{'sequence-generator'};
                         $idGeneratorDefinition = [
                             'sequenceName' => (string) $seqGenerator['sequence-name'],
                             'allocationSize' => (string) $seqGenerator['allocation-size'],
@@ -441,7 +431,7 @@ class XmlDriver extends FileDriver
                 if (isset($oneToManyElement['index-by'])) {
                     $association->setIndexedBy((string) $oneToManyElement['index-by']);
                 } elseif (isset($oneToManyElement->{'index-by'})) {
-                    throw new \InvalidArgumentException("<index-by /> is not a valid tag");
+                    throw new \InvalidArgumentException('<index-by /> is not a valid tag');
                 }
 
                 // Evaluate second level cache
@@ -588,7 +578,7 @@ class XmlDriver extends FileDriver
                 if (isset($manyToManyElement['index-by'])) {
                     $association->setIndexedBy((string) $manyToManyElement['index-by']);
                 } elseif (isset($manyToManyElement->{'index-by'})) {
-                    throw new \InvalidArgumentException("<index-by /> is not a valid tag");
+                    throw new \InvalidArgumentException('<index-by /> is not a valid tag');
                 }
 
                 // Evaluate second level cache
@@ -645,8 +635,8 @@ class XmlDriver extends FileDriver
 
                 // Check for join-table
                 if ($overrideElement->{'join-table'}) {
-                    $joinTableElement   = $overrideElement->{'join-table'};
-                    $joinTable          = new Mapping\JoinTableMetadata();
+                    $joinTableElement = $overrideElement->{'join-table'};
+                    $joinTable        = new Mapping\JoinTableMetadata();
 
                     if (isset($joinTableElement['name'])) {
                         $joinTable->setName((string) $joinTableElement['name']);
@@ -694,8 +684,8 @@ class XmlDriver extends FileDriver
         // Evaluate <lifecycle-callbacks...>
         if (isset($xmlRoot->{'lifecycle-callbacks'})) {
             foreach ($xmlRoot->{'lifecycle-callbacks'}->{'lifecycle-callback'} as $lifecycleCallback) {
-                $eventName   = constant(Events::class . '::' . (string) $lifecycleCallback['type']);
-                $methodName  = (string) $lifecycleCallback['method'];
+                $eventName  = constant(Events::class . '::' . (string) $lifecycleCallback['type']);
+                $methodName = (string) $lifecycleCallback['method'];
 
                 $metadata->addLifecycleCallback($methodName, $eventName);
             }
@@ -728,8 +718,8 @@ class XmlDriver extends FileDriver
                 }
 
                 foreach ($listenerElement as $callbackElement) {
-                    $eventName   = (string) $callbackElement['type'];
-                    $methodName  = (string) $callbackElement['method'];
+                    $eventName  = (string) $callbackElement['type'];
+                    $methodName = (string) $callbackElement['method'];
 
                     $metadata->addEntityListener($eventName, $listenerClassName, $methodName);
                 }
@@ -742,7 +732,7 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $options The XML element.
      *
-     * @return array The options array.
+     * @return mixed[] The options array.
      */
     private function parseOptions(SimpleXMLElement $options)
     {
@@ -759,7 +749,7 @@ class XmlDriver extends FileDriver
             $attributes = $option->attributes();
 
             if (isset($attributes->name)) {
-                $nameAttribute = (string) $attributes->name;
+                $nameAttribute         = (string) $attributes->name;
                 $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'])
                     ? $this->evaluateBoolean($value)
                     : $value;
@@ -772,10 +762,6 @@ class XmlDriver extends FileDriver
     }
 
     /**
-     * @param SimpleXMLElement $fieldElement
-     * @param string           $fieldName
-     * @param bool             $isVersioned
-     *
      * @return Mapping\FieldMetadata
      */
     private function convertFieldElementToFieldMetadata(SimpleXMLElement $fieldElement, string $fieldName, bool $isVersioned)
@@ -867,9 +853,7 @@ class XmlDriver extends FileDriver
     /**
      * Parse the given Cache as CacheMetadata
      *
-     * @param \SimpleXMLElement     $cacheMapping
-     * @param Mapping\ClassMetadata $metadata
-     * @param null|string           $fieldName
+     * @param string|null $fieldName
      *
      * @return Mapping\CacheMetadata
      */
@@ -877,8 +861,7 @@ class XmlDriver extends FileDriver
         SimpleXMLElement $cacheMapping,
         Mapping\ClassMetadata $metadata,
         $fieldName = null
-    )
-    {
+    ) {
         $baseRegion    = strtolower(str_replace('\\', '_', $metadata->getRootClassName()));
         $defaultRegion = $baseRegion . ($fieldName ? '__' . $fieldName : '');
 
@@ -894,9 +877,7 @@ class XmlDriver extends FileDriver
     /**
      * Parses the given method.
      *
-     * @param \ReflectionMethod $method
-     *
-     * @return array
+     * @return string[]
      */
     private function getMethodCallbacks(\ReflectionMethod $method)
     {
@@ -921,7 +902,7 @@ class XmlDriver extends FileDriver
      *
      * @param SimpleXMLElement $cascadeElement The cascade element.
      *
-     * @return array The list of cascade options.
+     * @return string[] The list of cascade options.
      */
     private function getCascadeMappings(SimpleXMLElement $cascadeElement)
     {
@@ -951,17 +932,17 @@ class XmlDriver extends FileDriver
 
         if (isset($xmlElement->entity)) {
             foreach ($xmlElement->entity as $entityElement) {
-                $entityName = (string) $entityElement['name'];
+                $entityName          = (string) $entityElement['name'];
                 $result[$entityName] = $entityElement;
             }
         } elseif (isset($xmlElement->{'mapped-superclass'})) {
             foreach ($xmlElement->{'mapped-superclass'} as $mappedSuperClass) {
-                $className = (string) $mappedSuperClass['name'];
+                $className          = (string) $mappedSuperClass['name'];
                 $result[$className] = $mappedSuperClass;
             }
         } elseif (isset($xmlElement->embeddable)) {
             foreach ($xmlElement->embeddable as $embeddableElement) {
-                $embeddableName = (string) $embeddableElement['name'];
+                $embeddableName          = (string) $embeddableElement['name'];
                 $result[$embeddableName] = $embeddableElement;
             }
         }
@@ -978,6 +959,6 @@ class XmlDriver extends FileDriver
     {
         $flag = (string) $element;
 
-        return ($flag == "true" || $flag == "1");
+        return $flag === 'true' || $flag === '1';
     }
 }
