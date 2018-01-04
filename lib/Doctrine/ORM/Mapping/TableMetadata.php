@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -10,12 +9,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 /**
  * Class TableMetadata
  *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
  * @todo guilhermeblanco Add constructor requiring tableName and optional schemaName
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class TableMetadata
 {
@@ -25,20 +19,17 @@ class TableMetadata
     /** @var string|null */
     protected $name;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $options = [];
 
-    /** @var array */
+    /** @var mixed[][] */
     protected $indexes = [];
 
-    /** @var array */
+    /** @var mixed[][] */
     protected $uniqueConstraints = [];
 
     /**
      * TableMetadata constructor.
-     *
-     * @param null|string $name
-     * @param null|string $schema
      */
     public function __construct(?string $name = null, ?string $schema = null)
     {
@@ -46,46 +37,29 @@ class TableMetadata
         $this->schema = $schema;
     }
 
-    /**
-     * @return string|null
-     */
     public function getSchema() : ?string
     {
         return $this->schema;
     }
 
-    /**
-     * @param string $schema
-     */
     public function setSchema(string $schema) : void
     {
         $this->schema = $schema;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name) : void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string|null
-     */
     public function getName() : ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param AbstractPlatform $platform
-     *
-     * @return string
-     */
     public function getQuotedQualifiedName(AbstractPlatform $platform) : string
     {
-        if (!$this->schema) {
+        if (! $this->schema) {
             return $platform->quoteIdentifier($this->name);
         }
 
@@ -95,7 +69,7 @@ class TableMetadata
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getOptions() : array
     {
@@ -103,7 +77,7 @@ class TableMetadata
     }
 
     /**
-     * @param array $options
+     * @param mixed[] $options
      */
     public function setOptions(array $options) : void
     {
@@ -111,8 +85,6 @@ class TableMetadata
     }
 
     /**
-     * @param string $name
-     *
      * @return mixed
      */
     public function getOption(string $name)
@@ -120,19 +92,13 @@ class TableMetadata
         return $this->options[$name];
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasOption(string $name) : bool
     {
         return isset($this->options[$name]);
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
+     * @param mixed $value
      */
     public function addOption(string $name, $value) : void
     {
@@ -140,7 +106,7 @@ class TableMetadata
     }
 
     /**
-     * @return array
+     * @return mixed[][]
      */
     public function getIndexes() : array
     {
@@ -148,27 +114,20 @@ class TableMetadata
     }
 
     /**
-     * @param string $name
-     *
-     * @return array
+     * @return mixed[]
      */
     public function getIndex(string $name) : array
     {
         return $this->indexes[$name];
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasIndex(string $name) : bool
     {
         return isset($this->indexes[$name]);
     }
 
     /**
-     * @param array $index
+     * @param mixed[] $index
      */
     public function addIndex(array $index) : void
     {
@@ -182,7 +141,7 @@ class TableMetadata
     }
 
     /**
-     * @return array
+     * @return mixed[][]
      */
     public function getUniqueConstraints() : array
     {
@@ -190,27 +149,20 @@ class TableMetadata
     }
 
     /**
-     * @param string $name
-     *
-     * @return array
+     * @return mixed[]
      */
     public function getUniqueConstraint(string $name) : array
     {
         return $this->uniqueConstraints[$name];
     }
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
     public function hasUniqueConstraint(string $name) : bool
     {
         return isset($this->uniqueConstraints[$name]);
     }
 
     /**
-     * @param array $constraint
+     * @param mixed[] $constraint
      */
     public function addUniqueConstraint(array $constraint) : void
     {

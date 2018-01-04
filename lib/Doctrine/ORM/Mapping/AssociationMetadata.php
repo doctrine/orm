@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -10,10 +9,6 @@ use Doctrine\ORM\Reflection\ReflectionService;
 /**
  * Class AssociationMetadata
  *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class AssociationMetadata implements Property
 {
@@ -26,7 +21,7 @@ class AssociationMetadata implements Property
     /** @var string */
     private $name;
 
-    /** @var boolean */
+    /** @var bool */
     protected $primaryKey = false;
 
     /** @var string */
@@ -38,13 +33,13 @@ class AssociationMetadata implements Property
     /** @var string */
     private $sourceEntity;
 
-    /** @var null|string */
+    /** @var string|null */
     private $mappedBy;
 
-    /** @var null|string */
+    /** @var string|null */
     private $inversedBy;
 
-    /** @var array<string> */
+    /** @var string[] */
     private $cascade = [];
 
     /** @var bool */
@@ -53,13 +48,11 @@ class AssociationMetadata implements Property
     /** @var bool */
     private $orphanRemoval = false;
 
-    /** @var null|CacheMetadata */
+    /** @var CacheMetadata|null */
     private $cache;
 
     /**
      * AssociationMetadata constructor.
-     *
-     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -74,9 +67,6 @@ class AssociationMetadata implements Property
         return $this->declaringClass;
     }
 
-    /**
-     * @param ComponentMetadata $declaringClass
-     */
     public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
@@ -98,56 +88,38 @@ class AssociationMetadata implements Property
         $this->name = $name;
     }
 
-    /**
-     * @param bool $isPrimaryKey
-     */
     public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
 
-    /**
-     * @return bool
-     */
     public function isPrimaryKey() : bool
     {
         return $this->primaryKey;
     }
 
-    /**
-     * @return string
-     */
     public function getTargetEntity() : string
     {
         return $this->targetEntity;
     }
 
-    /**
-     * @param string $targetEntity
-     */
     public function setTargetEntity(string $targetEntity) : void
     {
         $this->targetEntity = $targetEntity;
     }
 
-    /**
-     * @return string
-     */
     public function getSourceEntity() : string
     {
         return $this->sourceEntity;
     }
 
-    /**
-     * @param string $sourceEntity
-     */
     public function setSourceEntity(string $sourceEntity) : void
     {
         $this->sourceEntity = $sourceEntity;
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getCascade() : array
     {
@@ -155,105 +127,69 @@ class AssociationMetadata implements Property
     }
 
     /**
-     * @param array $cascade
+     * @param string[] $cascade
      */
     public function setCascade(array $cascade) : void
     {
         $this->cascade = $cascade;
     }
 
-    /**
-     * @param bool $owningSide
-     */
     public function setOwningSide(bool $owningSide) : void
     {
         $this->owningSide = $owningSide;
     }
 
-    /**
-     * @return bool
-     */
     public function isOwningSide() : bool
     {
         return $this->owningSide;
     }
 
-    /**
-     * @return string
-     */
     public function getFetchMode() : string
     {
         return $this->fetchMode;
     }
 
-    /**
-     * @param string $fetchMode
-     */
     public function setFetchMode(string $fetchMode) : void
     {
         $this->fetchMode = $fetchMode;
     }
 
-    /**
-     * @return string|null
-     */
     public function getMappedBy() : ?string
     {
         return $this->mappedBy;
     }
 
-    /**
-     * @param string $mappedBy
-     */
     public function setMappedBy(string $mappedBy) : void
     {
         $this->mappedBy = $mappedBy;
     }
 
-    /**
-     * @return null|string
-     */
     public function getInversedBy() : ?string
     {
         return $this->inversedBy;
     }
 
-    /**
-     * @param null|string $inversedBy
-     */
-    public function setInversedBy(string $inversedBy = null) : void
+    public function setInversedBy(?string $inversedBy = null) : void
     {
         $this->inversedBy = $inversedBy;
     }
 
-    /**
-     * @param bool $orphanRemoval
-     */
     public function setOrphanRemoval(bool $orphanRemoval) : void
     {
         $this->orphanRemoval = $orphanRemoval;
     }
 
-    /**
-     * @return bool
-     */
     public function isOrphanRemoval() : bool
     {
         return $this->orphanRemoval;
     }
 
-    /**
-     * @return null|CacheMetadata
-     */
     public function getCache() : ?CacheMetadata
     {
         return $this->cache;
     }
 
-    /**
-     * @param null|CacheMetadata $cache
-     */
-    public function setCache(CacheMetadata $cache = null) : void
+    public function setCache(?CacheMetadata $cache = null) : void
     {
         $this->cache = $cache;
     }

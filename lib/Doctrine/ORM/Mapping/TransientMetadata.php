@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -9,11 +8,6 @@ use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * Class TransientMetadata
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class TransientMetadata implements Property
 {
@@ -28,8 +22,6 @@ class TransientMetadata implements Property
 
     /**
      * TransientMetadata constructor.
-     *
-     * @param string $name
      */
     public function __construct(string $name)
     {
@@ -44,9 +36,6 @@ class TransientMetadata implements Property
         return $this->declaringClass;
     }
 
-    /**
-     * @param ComponentMetadata $declaringClass
-     */
     public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
