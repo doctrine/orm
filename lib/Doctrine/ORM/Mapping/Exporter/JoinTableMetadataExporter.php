@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -9,7 +8,7 @@ use Doctrine\ORM\Mapping\JoinTableMetadata;
 
 class JoinTableMetadataExporter extends TableMetadataExporter
 {
-    const VARIABLE = '$joinTable';
+    public const VARIABLE = '$joinTable';
 
     /**
      * {@inheritdoc}
@@ -37,11 +36,6 @@ class JoinTableMetadataExporter extends TableMetadataExporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param JoinTableMetadata $metadata
-     *
-     * @return string
-     */
     protected function exportInstantiation(JoinTableMetadata $metadata) : string
     {
         return sprintf(
