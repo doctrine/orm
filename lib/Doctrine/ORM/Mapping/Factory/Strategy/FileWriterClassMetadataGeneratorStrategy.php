@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory\Strategy;
@@ -17,8 +16,6 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
 
     /**
      * FileWriterDefinitionGeneratorStrategy constructor.
-     *
-     * @param ClassMetadataGenerator $generator
      */
     public function __construct(ClassMetadataGenerator $generator)
     {
@@ -28,7 +25,7 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition): void
+    public function generate(string $filePath, ClassMetadataDefinition $definition) : void
     {
         $sourceCode = $this->generator->generate($definition);
 
@@ -44,13 +41,11 @@ class FileWriterClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     }
 
     /**
-     * @param string $directory
-     *
      * @throws \RuntimeException
      */
     private function ensureDirectoryIsReady(string $directory)
     {
-        if (! is_dir($directory) && (false === @mkdir($directory, 0775, true))) {
+        if (! is_dir($directory) && (@mkdir($directory, 0775, true) === false)) {
             throw new \RuntimeException(sprintf('Your metadata directory "%s" must be writable', $directory));
         }
 

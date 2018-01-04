@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
@@ -22,9 +21,6 @@ class ClassMetadataDefinitionFactory
 
     /**
      * ClassMetadataDefinitionFactory constructor.
-     *
-     * @param ClassMetadataResolver          $resolver
-     * @param ClassMetadataGeneratorStrategy $generatorStrategy
      */
     public function __construct(ClassMetadataResolver $resolver, ClassMetadataGeneratorStrategy $generatorStrategy)
     {
@@ -32,12 +28,6 @@ class ClassMetadataDefinitionFactory
         $this->generatorStrategy = $generatorStrategy;
     }
 
-    /**
-     * @param string             $className
-     * @param ClassMetadata|null $parentMetadata
-     *
-     * @return ClassMetadataDefinition
-     */
     public function build(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
     {
         $definition = $this->createDefinition($className, $parentMetadata);
@@ -51,12 +41,6 @@ class ClassMetadataDefinitionFactory
         return $definition;
     }
 
-    /**
-     * @param string             $className
-     * @param ClassMetadata|null $parentMetadata
-     *
-     * @return ClassMetadataDefinition
-     */
     private function createDefinition(string $className, ?ClassMetadata $parentMetadata) : ClassMetadataDefinition
     {
         $metadataClassName = $this->resolver->resolveMetadataClassName($className);

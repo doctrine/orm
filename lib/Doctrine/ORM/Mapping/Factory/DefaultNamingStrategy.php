@@ -1,17 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
 /**
  * The default NamingStrategy
- *
- *
- * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultNamingStrategy implements NamingStrategy
 {
@@ -40,7 +34,7 @@ class DefaultNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $propertyName.'_'.$embeddedColumnName;
+        return $propertyName . '_' . $embeddedColumnName;
     }
 
     /**
