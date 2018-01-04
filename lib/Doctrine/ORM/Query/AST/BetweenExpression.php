@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * Description of BetweenExpression.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class BetweenExpression extends Node
 {
@@ -42,8 +36,8 @@ class BetweenExpression extends Node
      */
     public function __construct($expr, $leftExpr, $rightExpr)
     {
-        $this->expression = $expr;
-        $this->leftBetweenExpression = $leftExpr;
+        $this->expression             = $expr;
+        $this->leftBetweenExpression  = $leftExpr;
         $this->rightBetweenExpression = $rightExpr;
     }
 

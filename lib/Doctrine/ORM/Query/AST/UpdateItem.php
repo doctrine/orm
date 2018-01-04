@@ -8,12 +8,6 @@ namespace Doctrine\ORM\Query\AST;
  * UpdateItem ::= [IdentificationVariable "."] {StateField | SingleValuedAssociationField} "=" NewValue
  * NewValue ::= SimpleArithmeticExpression | StringPrimary | DatetimePrimary | BooleanPrimary |
  *              EnumPrimary | SimpleEntityExpression | "NULL"
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class UpdateItem extends Node
 {
@@ -34,7 +28,7 @@ class UpdateItem extends Node
     public function __construct($pathExpression, $newValue)
     {
         $this->pathExpression = $pathExpression;
-        $this->newValue = $newValue;
+        $this->newValue       = $newValue;
     }
 
     /**

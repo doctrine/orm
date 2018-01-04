@@ -7,12 +7,6 @@ namespace Doctrine\ORM\Query\AST;
 /**
  * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
  * InstanceOfParameter  ::= AbstractSchemaName | InputParameter
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class InstanceOfExpression extends Node
 {
@@ -27,7 +21,7 @@ class InstanceOfExpression extends Node
     public $identificationVariable;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     public $value;
 

@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * InExpression ::= StateFieldPathExpression ["NOT"] "IN" "(" (Literal {"," Literal}* | Subselect) ")"
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class InExpression extends Node
 {
@@ -26,7 +20,7 @@ class InExpression extends Node
     public $expression;
 
     /**
-     * @var array
+     * @var Literal[]
      */
     public $literals = [];
 
