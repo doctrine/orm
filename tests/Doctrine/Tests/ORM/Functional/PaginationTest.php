@@ -131,7 +131,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -147,7 +147,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -163,7 +163,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "3", $result[0]->$checkField);
+        self::assertEquals($checkField . "3", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -176,7 +176,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -191,7 +191,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
@@ -206,7 +206,7 @@ class PaginationTest extends OrmFunctionalTestCase
         $iter = $paginator->getIterator();
         self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        self::assertEquals($checkField . "5", $result[0]->$checkField);
+        self::assertEquals($checkField . "5", $result[0]->{$checkField});
     }
 
     /**

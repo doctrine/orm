@@ -84,7 +84,7 @@ class ListenersInvoker
     {
         if ($invoke & self::INVOKE_CALLBACKS) {
             foreach ($metadata->lifecycleCallbacks[$eventName] as $callback) {
-                $entity->$callback($event);
+                $entity->{$callback}($event);
             }
         }
 
@@ -94,7 +94,7 @@ class ListenersInvoker
                 $method     = $listener['method'];
                 $instance   = $this->resolver->resolve($class);
 
-                $instance->$method($entity, $event);
+                $instance->{$method}($entity, $event);
             }
         }
 

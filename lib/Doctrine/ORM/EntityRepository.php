@@ -302,6 +302,6 @@ class EntityRepository implements ObjectRepository, Selectable
             throw ORMException::invalidMagicCall($this->entityName, $fieldName, $method . $by);
         }
 
-        return $this->$method([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
+        return $this->{$method}([$fieldName => $arguments[0]], ...array_slice($arguments, 1));
     }
 }

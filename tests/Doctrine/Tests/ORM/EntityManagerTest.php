@@ -169,7 +169,7 @@ class EntityManagerTest extends OrmTestCase
         $this->expectException(ORMInvalidArgumentException::class);
         $this->expectExceptionMessage('EntityManager#' . $methodName . '() expects parameter 1 to be an entity object, NULL given.');
 
-        $this->em->$methodName(null);
+        $this->em->{$methodName}(null);
     }
 
     static public function dataAffectedByErrorIfClosedException()
@@ -192,7 +192,7 @@ class EntityManagerTest extends OrmTestCase
         $this->expectExceptionMessage('closed');
 
         $this->em->close();
-        $this->em->$methodName(new \stdClass());
+        $this->em->{$methodName}(new \stdClass());
     }
 
     public function dataToBeReturnedByTransactional()
