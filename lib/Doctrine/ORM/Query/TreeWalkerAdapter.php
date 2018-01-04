@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Query;
 /**
  * An adapter implementation of the TreeWalker interface. The methods in this class
  * are empty. ﻿This class exists as convenience for creating tree walkers.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 abstract class TreeWalkerAdapter implements TreeWalker
 {
@@ -30,7 +27,7 @@ abstract class TreeWalkerAdapter implements TreeWalker
     /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
-     * @var array
+     * @var mixed[][]
      */
     private $queryComponents;
 
@@ -39,8 +36,8 @@ abstract class TreeWalkerAdapter implements TreeWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->query = $query;
-        $this->parserResult = $parserResult;
+        $this->query           = $query;
+        $this->parserResult    = $parserResult;
         $this->queryComponents = $queryComponents;
     }
 

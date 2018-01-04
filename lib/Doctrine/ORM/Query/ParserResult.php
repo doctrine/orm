@@ -7,13 +7,6 @@ namespace Doctrine\ORM\Query;
 /**
  * Encapsulates the resulting components from a DQL query parsing process that
  * can be serialized.
- *
- * @author      Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author      Janne Vanhala <jpvanhal@cc.hut.fi>
- * @author		Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @link        http://www.doctrine-project.org
- * @since       2.0
  */
 class ParserResult
 {
@@ -34,7 +27,7 @@ class ParserResult
     /**
      * The mappings of DQL parameter names/positions to SQL parameter positions.
      *
-     * @var array
+     * @var int[][]
      */
     private $parameterMappings = [];
 
@@ -60,10 +53,6 @@ class ParserResult
 
     /**
      * Sets the ResultSetMapping of the parsed query.
-     *
-     * @param ResultSetMapping $rsm
-     *
-     * @return void
      */
     public function setResultSetMapping(ResultSetMapping $rsm)
     {
@@ -74,8 +63,6 @@ class ParserResult
      * Sets the SQL executor that should be used for this ParserResult.
      *
      * @param \Doctrine\ORM\Query\Exec\AbstractSqlExecutor $executor
-     *
-     * @return void
      */
     public function setSqlExecutor($executor)
     {
@@ -96,10 +83,8 @@ class ParserResult
      * Adds a DQL to SQL parameter mapping. One DQL parameter name/position can map to
      * several SQL parameter positions.
      *
-     * @param string|integer $dqlPosition
-     * @param integer        $sqlPosition
-     *
-     * @return void
+     * @param string|int $dqlPosition
+     * @param int        $sqlPosition
      */
     public function addParameterMapping($dqlPosition, $sqlPosition)
     {
@@ -109,7 +94,7 @@ class ParserResult
     /**
      * Gets all DQL to SQL parameter mappings.
      *
-     * @return array The parameter mappings.
+     * @return int[][] The parameter mappings.
      */
     public function getParameterMappings()
     {
@@ -119,9 +104,9 @@ class ParserResult
     /**
      * Gets the SQL parameter positions for a DQL parameter name/position.
      *
-     * @param string|integer $dqlPosition The name or position of the DQL parameter.
+     * @param string|int $dqlPosition The name or position of the DQL parameter.
      *
-     * @return array The positions of the corresponding SQL parameters.
+     * @return int[] The positions of the corresponding SQL parameters.
      */
     public function getSqlParameterPositions($dqlPosition)
     {

@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
-/**
- *
- */
+use Doctrine\ORM\Query;
+
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {
     /**
@@ -18,19 +17,19 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     private $treeWalkerChain;
     /**
-     * @var
+     * @var Query
      */
     private $query;
     /**
-     * @var
+     * @var ParserResult
      */
     private $parserResult;
 
     public function __construct(TreeWalkerChain $treeWalkerChain, $query, $parserResult)
     {
         $this->treeWalkerChain = $treeWalkerChain;
-        $this->query = $query;
-        $this->parserResult = $parserResult;
+        $this->query           = $query;
+        $this->parserResult    = $parserResult;
     }
 
     /**
@@ -104,7 +103,7 @@ class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
      */
     public function offsetSet($offset, $value)
     {
-        if (null === $offset) {
+        if ($offset === null) {
             $this->walkers[] = $value;
         } else {
             $this->walkers[$offset] = $value;

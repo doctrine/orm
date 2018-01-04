@@ -45,4 +45,8 @@
     <rule ref="Generic.CodeAnalysis.EmptyStatement">
         <exclude-pattern>lib/Doctrine/ORM/Sequencing/TableGenerator.php</exclude-pattern>
     </rule>
+
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>lib/Doctrine/ORM/Query/Parser.php</exclude-pattern>
+    </rule>
 </ruleset>

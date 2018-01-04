@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Query;
 
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 interface TreeWalker
 {
@@ -17,22 +14,22 @@ interface TreeWalker
      *
      * @param \Doctrine\ORM\AbstractQuery      $query           The parsed Query.
      * @param \Doctrine\ORM\Query\ParserResult $parserResult    The result of the parsing process.
-     * @param array                            $queryComponents The query components (symbol table).
+     * @param mixed[][]                        $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents);
 
     /**
      * Returns internal queryComponents array.
      *
-     * @return array
+     * @return mixed[][]
      */
     public function getQueryComponents();
 
     /**
      * Sets or overrides a query component for a given dql alias.
      *
-     * @param string $dqlAlias       The DQL alias.
-     * @param array  $queryComponent
+     * @param string  $dqlAlias       The DQL alias.
+     * @param mixed[] $queryComponent
      *
      * @return void
      */
@@ -40,8 +37,6 @@ interface TreeWalker
 
     /**
      * Walks down a SelectStatement AST node, thereby generating the appropriate SQL.
-     *
-     * @param AST\SelectStatement $AST
      *
      * @return string The SQL.
      */
@@ -194,8 +189,6 @@ interface TreeWalker
     /**
      * Walks down an UpdateStatement AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\UpdateStatement $AST
-     *
      * @return string The SQL.
      */
     public function walkUpdateStatement(AST\UpdateStatement $AST);
@@ -203,7 +196,6 @@ interface TreeWalker
     /**
      * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
      *
-     * @param AST\DeleteStatement $AST
      *
      * @return string The SQL.
      */
@@ -211,8 +203,6 @@ interface TreeWalker
 
     /**
      * Walks down a DeleteClause AST node, thereby generating the appropriate SQL.
-     *
-     * @param AST\DeleteClause $deleteClause
      *
      * @return string The SQL.
      */

@@ -6,10 +6,6 @@ namespace Doctrine\ORM\Query;
 
 /**
  * Defines a Query Parameter.
- *
- * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class Parameter
 {
