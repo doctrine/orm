@@ -17,7 +17,7 @@ use ProxyManager\Proxy\GhostObjectInterface;
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
  *
- * Internal note: Highly performance-sensitive code.
+ * {@internal Highly performance-sensitive code. }}
  *
  * @since  2.0
  * @author Roman Borschel <roman@code-factory.org>

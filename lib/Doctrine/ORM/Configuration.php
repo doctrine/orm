@@ -33,7 +33,7 @@ use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
  * Configuration container for all configuration options of Doctrine.
  * It combines all configuration options from DBAL & ORM.
  *
- * Internal note: When adding a new configuration option just write a getter/setter pair.
+ * {@internal When adding a new configuration option just write a getter/setter pair. }}
  *
  * @since 2.0
  * @author  Benjamin Eberlei <kontakt@beberlei.de>

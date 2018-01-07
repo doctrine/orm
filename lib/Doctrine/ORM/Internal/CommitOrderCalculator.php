@@ -105,7 +105,7 @@ class CommitOrderCalculator
      * Return a valid order list of all current nodes.
      * The desired topological sorting is the reverse post order of these searches.
      *
-     * {@internal Highly performance-sensitive method.}
+     * {@internal Highly performance-sensitive method. }}
      *
      * @return array
      */
@@ -130,7 +130,7 @@ class CommitOrderCalculator
     /**
      * Visit a given node definition for reordering.
      *
-     * {@internal Highly performance-sensitive method.}
+     * {@internal Highly performance-sensitive method. }}
      *
      * @param \stdClass $vertex
      */
