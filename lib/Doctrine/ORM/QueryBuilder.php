@@ -364,7 +364,7 @@ class QueryBuilder
     {
         $rootAlias = null;
 
-        if (in_array($parentAlias, $this->getRootAliases())) {
+        if (in_array($parentAlias, $this->getRootAliases(), true)) {
             $rootAlias = $parentAlias;
         } elseif (isset($this->joinRootAliases[$parentAlias])) {
             $rootAlias = $this->joinRootAliases[$parentAlias];
@@ -882,7 +882,7 @@ class QueryBuilder
     {
         $rootAliases = $this->getRootAliases();
 
-        if (! in_array($alias, $rootAliases)) {
+        if (! in_array($alias, $rootAliases, true)) {
             throw new Query\QueryException(
                 sprintf('Specified root alias %s must be set before invoking indexBy().', $alias)
             );

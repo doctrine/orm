@@ -191,7 +191,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
             return true;
         }
 
-        return ! in_array($metadata->inheritanceType, [InheritanceType::SINGLE_TABLE, InheritanceType::JOINED]);
+        return ! in_array($metadata->inheritanceType, [InheritanceType::SINGLE_TABLE, InheritanceType::JOINED], true);
     }
 
     /**

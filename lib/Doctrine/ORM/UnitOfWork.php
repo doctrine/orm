@@ -780,7 +780,7 @@ class UnitOfWork implements PropertyChangedListener
 
             switch ($state) {
                 case self::STATE_NEW:
-                    if (! in_array('persist', $association->getCascade())) {
+                    if (! in_array('persist', $association->getCascade(), true)) {
                         $this->nonCascadedNewDetectedEntities[\spl_object_id($entry)] = [$association, $entry];
 
                         break;
@@ -1733,7 +1733,7 @@ class UnitOfWork implements PropertyChangedListener
         $class = $this->em->getClassMetadata(get_class($entity));
 
         foreach ($class->getDeclaredPropertiesIterator() as $association) {
-            if (! ($association instanceof AssociationMetadata && in_array('refresh', $association->getCascade()))) {
+            if (! ($association instanceof AssociationMetadata && in_array('refresh', $association->getCascade(), true))) {
                 continue;
             }
 
@@ -1780,7 +1780,7 @@ class UnitOfWork implements PropertyChangedListener
         }
 
         foreach ($class->getDeclaredPropertiesIterator() as $association) {
-            if (! ($association instanceof AssociationMetadata && in_array('persist', $association->getCascade()))) {
+            if (! ($association instanceof AssociationMetadata && in_array('persist', $association->getCascade(), true))) {
                 continue;
             }
 
@@ -1840,7 +1840,7 @@ class UnitOfWork implements PropertyChangedListener
         $class             = $this->em->getClassMetadata(get_class($entity));
 
         foreach ($class->getDeclaredPropertiesIterator() as $association) {
-            if (! ($association instanceof AssociationMetadata && in_array('remove', $association->getCascade()))) {
+            if (! ($association instanceof AssociationMetadata && in_array('remove', $association->getCascade(), true))) {
                 continue;
             }
 

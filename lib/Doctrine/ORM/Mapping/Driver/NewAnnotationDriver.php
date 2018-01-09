@@ -1075,7 +1075,7 @@ class NewAnnotationDriver implements MappingDriver
         $cascadeTypes = ['remove', 'persist', 'refresh'];
         $cascades     = array_map('strtolower', $originalCascades);
 
-        if (in_array('all', $cascades)) {
+        if (in_array('all', $cascades, true)) {
             $cascades = $cascadeTypes;
         }
 

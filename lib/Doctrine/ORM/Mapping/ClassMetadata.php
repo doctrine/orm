@@ -622,7 +622,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 throw MappingException::sqlConversionNotAllowedForPrimaryKeyProperties($property);
             }
 
-            if (! in_array($fieldName, $this->identifier)) {
+            if (! in_array($fieldName, $this->identifier, true)) {
                 $this->identifier[] = $fieldName;
             }
         }
@@ -645,7 +645,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             return;
         }
 
-        if (in_array($property->getTypeName(), ['integer', 'bigint', 'smallint'])) {
+        if (in_array($property->getTypeName(), ['integer', 'bigint', 'smallint'], true)) {
             $property->setOptions(array_merge($options, ['default' => 1]));
 
             return;
@@ -686,7 +686,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->className, $fieldName);
             }
 
-            if (! in_array($property->getName(), $this->identifier)) {
+            if (! in_array($property->getName(), $this->identifier, true)) {
                 if ($property instanceof ToOneAssociationMetadata && count($property->getJoinColumns()) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $property->getTargetEntity(),
@@ -711,7 +711,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         $cascadeTypes = ['remove', 'persist', 'refresh'];
         $cascades     = array_map('strtolower', $property->getCascade());
 
-        if (in_array('all', $cascades)) {
+        if (in_array('all', $cascades, true)) {
             $cascades = $cascadeTypes;
         }
 
@@ -794,7 +794,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         if ($property->isOrphanRemoval()) {
             $cascades = $property->getCascade();
 
-            if (! in_array('remove', $cascades)) {
+            if (! in_array('remove', $cascades, true)) {
                 $cascades[] = 'remove';
 
                 $property->setCascade($cascades);
@@ -867,7 +867,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         if ($property->isOrphanRemoval()) {
             $cascades = $property->getCascade();
 
-            if (! in_array('remove', $cascades)) {
+            if (! in_array('remove', $cascades, true)) {
                 $cascades[] = 'remove';
 
                 $property->setCascade($cascades);
@@ -1512,7 +1512,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function addLifecycleCallback($callback, $event)
     {
-        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event])) {
+        if (isset($this->lifecycleCallbacks[$event]) && in_array($callback, $this->lifecycleCallbacks[$event], true)) {
             return;
         }
 

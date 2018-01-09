@@ -1440,7 +1440,7 @@ class SqlWalker implements TreeWalker
                         continue;
                     }
 
-                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet)) {
+                    if ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true)) {
                         continue;
                     }
 
@@ -1475,7 +1475,7 @@ class SqlWalker implements TreeWalker
                                 continue;
                             }
 
-                            if ($subClass->isInheritedProperty($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet))) {
+                            if ($subClass->isInheritedProperty($fieldName) || ($partialFieldSet && ! in_array($fieldName, $partialFieldSet, true))) {
                                 continue;
                             }
 

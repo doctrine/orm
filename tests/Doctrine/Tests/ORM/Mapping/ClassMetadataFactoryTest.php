@@ -190,9 +190,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $childClass = ChildClass::class;
         $anotherChildClass = AnotherChildClass::class;
 
-        $rootClassKey = array_search($rootClass, $rootDiscriminatorMap);
-        $childClassKey = array_search($childClass, $rootDiscriminatorMap);
-        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
+        $rootClassKey = array_search($rootClass, $rootDiscriminatorMap, true);
+        $childClassKey = array_search($childClass, $rootDiscriminatorMap, true);
+        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap, true);
 
         self::assertEquals('rootclass', $rootClassKey);
         self::assertEquals('childclass', $childClassKey);

@@ -750,7 +750,7 @@ class XmlDriver extends FileDriver
 
             if (isset($attributes->name)) {
                 $nameAttribute         = (string) $attributes->name;
-                $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'])
+                $array[$nameAttribute] = in_array($nameAttribute, ['unsigned', 'fixed'], true)
                     ? $this->evaluateBoolean($value)
                     : $value;
             } else {

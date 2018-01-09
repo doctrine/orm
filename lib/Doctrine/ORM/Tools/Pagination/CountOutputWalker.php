@@ -104,7 +104,7 @@ class CountOutputWalker extends SqlWalker
             $property = $rootClass->getProperty($identifier);
 
             if ($property instanceof FieldMetadata) {
-                foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
+                foreach (array_keys($this->rsm->fieldMappings, $identifier, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
@@ -113,7 +113,7 @@ class CountOutputWalker extends SqlWalker
                 $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {
+                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName(), true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = $alias;
                     }
