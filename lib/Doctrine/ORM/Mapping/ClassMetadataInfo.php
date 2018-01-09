@@ -25,10 +25,7 @@ namespace Doctrine\ORM\Mapping;
     ClassMetadata::class
 ), E_USER_DEPRECATED);
 
-class_alias(
-    'Doctrine\ORM\Mapping\ClassMetadata',
-    'Doctrine\ORM\Mapping\ClassMetadataInfo'
-);
+class_alias(ClassMetadata::class, ClassMetadataInfo::class);
 
 if (\false) {
     /* That's right, this piece of code will never be executed. It's not
