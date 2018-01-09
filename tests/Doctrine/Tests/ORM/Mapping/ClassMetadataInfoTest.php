@@ -18,6 +18,10 @@ class ClassMetadataInfoTest extends TestCase
         $this->assertTrue(class_exists(ClassMetadataInfo::class));
     }
 
+    /**
+     * @group legacy
+     * @expectedDeprecation Doctrine\ORM\Mapping\ClassMetadataInfo is deprecated since 2.x and will be removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
+     */
     public function testExtendingClassWithOldSignatureStillWorks() : void
     {
         $object = new class () extends ClassMetadataInfoTest {

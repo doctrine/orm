@@ -3397,9 +3397,3 @@ class ClassMetadata implements BaseClassMetadata
         }
     }
 }
-
-class_alias(
-    'Doctrine\ORM\Mapping\ClassMetadata',
-    'Doctrine\ORM\Mapping\ClassMetadataInfo',
-    false
-);
