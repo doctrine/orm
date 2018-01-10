@@ -111,8 +111,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param array             $model
+     * @param string        $className
+     * @param array         $model
      * @param ClassMetadata $metadata
      *
      * @return void
@@ -132,8 +132,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param array             $model
+     * @param string        $className
+     * @param array         $model
      * @param ClassMetadata $metadata
      *
      * @return void
@@ -165,9 +165,9 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param string            $name
-     * @param string|array      $column
+     * @param string        $className
+     * @param string        $name
+     * @param string|array  $column
      * @param ClassMetadata $metadata
      *
      * @return array
@@ -256,8 +256,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param array             $model
+     * @param string        $className
+     * @param array         $model
      * @param ClassMetadata $metadata
      *
      * @return void
@@ -279,8 +279,8 @@ class ConvertDoctrine1Schema
     }
 
     /**
-     * @param string            $className
-     * @param array             $model
+     * @param string        $className
+     * @param array         $model
      * @param ClassMetadata $metadata
      *
      * @return void

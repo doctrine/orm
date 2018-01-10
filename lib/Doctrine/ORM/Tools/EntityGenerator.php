@@ -358,7 +358,7 @@ public function __construct(<params>)
      * Generates and writes entity class to disk for the given ClassMetadata instance.
      *
      * @param ClassMetadata $metadata
-     * @param string            $outputDirectory
+     * @param string        $outputDirectory
      *
      * @return void
      *
@@ -432,7 +432,7 @@ public function __construct(<params>)
      * Generates the updated code for the given ClassMetadata and entity at path.
      *
      * @param ClassMetadata $metadata
-     * @param string            $path
+     * @param string        $path
      *
      * @return string
      */
@@ -853,7 +853,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string            $property
+     * @param string        $property
      * @param ClassMetadata $metadata
      *
      * @return bool
@@ -882,7 +882,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string            $method
+     * @param string        $method
      * @param ClassMetadata $metadata
      *
      * @return bool
@@ -1352,10 +1352,10 @@ public function __construct(<params>)
 
     /**
      * @param ClassMetadata $metadata
-     * @param string            $type
-     * @param string            $fieldName
-     * @param string|null       $typeHint
-     * @param string|null       $defaultValue
+     * @param string        $type
+     * @param string        $fieldName
+     * @param string|null   $typeHint
+     * @param string|null   $defaultValue
      *
      * @return string
      */
@@ -1406,8 +1406,8 @@ public function __construct(<params>)
     }
 
     /**
-     * @param string            $name
-     * @param string            $methodName
+     * @param string        $name
+     * @param string        $methodName
      * @param ClassMetadata $metadata
      *
      * @return string
@@ -1471,7 +1471,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array             $associationMapping
+     * @param array         $associationMapping
      * @param ClassMetadata $metadata
      *
      * @return string
@@ -1623,7 +1623,7 @@ public function __construct(<params>)
     }
 
     /**
-     * @param array             $fieldMapping
+     * @param array         $fieldMapping
      * @param ClassMetadata $metadata
      *
      * @return string

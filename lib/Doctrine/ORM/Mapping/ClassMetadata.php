@@ -3302,7 +3302,7 @@ class ClassMetadata implements BaseClassMetadata
     /**
      * Inline the embeddable class
      *
-     * @param string            $property
+     * @param string        $property
      * @param ClassMetadata $embeddable
      */
     public function inlineEmbeddable($property, ClassMetadata $embeddable)

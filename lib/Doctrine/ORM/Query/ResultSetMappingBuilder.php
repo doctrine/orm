@@ -254,7 +254,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Adds the mappings of the results of native SQL queries to the result set.
      *
      * @param ClassMetadata $class
-     * @param array             $queryMapping
+     * @param array         $queryMapping
      *
      * @return ResultSetMappingBuilder
      */
@@ -271,7 +271,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Adds the class mapping of the results of native SQL queries to the result set.
      *
      * @param ClassMetadata $class
-     * @param string            $resultClassName
+     * @param string        $resultClassName
      *
      * @return  ResultSetMappingBuilder
      */
@@ -316,7 +316,7 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Adds the result set mapping of the results of native SQL queries to the result set.
      *
      * @param ClassMetadata $class
-     * @param string            $resultSetMappingName
+     * @param string        $resultSetMappingName
      *
      * @return ResultSetMappingBuilder
      */
@@ -367,8 +367,8 @@ class ResultSetMappingBuilder extends ResultSetMapping
      * Adds the entity result mapping of the results of native SQL queries to the result set.
      *
      * @param ClassMetadata $classMetadata
-     * @param array             $entityMapping
-     * @param string            $alias
+     * @param array         $entityMapping
+     * @param string        $alias
      *
      * @return ResultSetMappingBuilder
      *
