@@ -13,6 +13,8 @@ class DiscriminatorColumnMetadataExporter extends LocalColumnMetadataExporter
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
+        assert($metadata instanceof DiscriminatorColumnMetadata);
+
         return sprintf(
             'new Mapping\DiscriminatorColumnMetadata("%s", Type::getType("%s"));',
             $metadata->getColumnName(),

@@ -13,6 +13,8 @@ class VersionFieldMetadataExporter extends FieldMetadataExporter
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
+        assert($metadata instanceof VersionFieldMetadata);
+
         return sprintf(
             'new Mapping\VersionFieldMetadata("%s", "%s", Type::getType("%s"));',
             $metadata->getName(),

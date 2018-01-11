@@ -38,6 +38,8 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
      */
     protected function exportInstantiation(AssociationMetadata $metadata) : string
     {
+        assert($metadata instanceof ManyToManyAssociationMetadata);
+
         return sprintf(
             'new Mapping\ManyToManyAssociationMetadata("%s");',
             $metadata->getName()

@@ -31,6 +31,8 @@ class JoinColumnMetadataExporter extends ColumnMetadataExporter
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
+        assert($metadata instanceof JoinColumnMetadata);
+
         return sprintf(
             'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
             $metadata->getColumnName(),

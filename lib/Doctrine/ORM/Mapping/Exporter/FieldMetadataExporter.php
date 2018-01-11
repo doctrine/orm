@@ -13,6 +13,8 @@ class FieldMetadataExporter extends LocalColumnMetadataExporter
 
     protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
+        assert($metadata instanceof FieldMetadata);
+
         $lines   = [];
         $lines[] = sprintf(
             'new Mapping\FieldMetadata("%s", "%s", Type::getType("%s"));',

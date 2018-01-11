@@ -39,6 +39,8 @@ class JoinTableMetadataExporter extends TableMetadataExporter
 
     protected function exportInstantiation(TableMetadata $metadata) : string
     {
+        assert($metadata instanceof JoinTableMetadata);
+
         return sprintf(
             'new Mapping\JoinTableMetadata("%s");',
             $metadata->getName()
