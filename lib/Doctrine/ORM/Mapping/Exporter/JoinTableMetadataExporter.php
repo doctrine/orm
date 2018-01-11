@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
+use Doctrine\ORM\Mapping\TableMetadata;
 use Doctrine\ORM\Mapping\JoinTableMetadata;
 
 class JoinTableMetadataExporter extends TableMetadataExporter
@@ -36,7 +37,7 @@ class JoinTableMetadataExporter extends TableMetadataExporter
         return implode(PHP_EOL, $lines);
     }
 
-    protected function exportInstantiation(JoinTableMetadata $metadata) : string
+    protected function exportInstantiation(TableMetadata $metadata) : string
     {
         return sprintf(
             'new Mapping\JoinTableMetadata("%s");',

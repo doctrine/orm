@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
+use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ManyToOneAssociationMetadata;
 
 class ManyToOneAssociationMetadataExporter extends ToOneAssociationMetadataExporter
@@ -11,7 +12,7 @@ class ManyToOneAssociationMetadataExporter extends ToOneAssociationMetadataExpor
     /**
      * {@inheritdoc}
      */
-    protected function exportInstantiation(ManyToOneAssociationMetadata $metadata) : string
+    protected function exportInstantiation(AssociationMetadata $metadata) : string
     {
         return sprintf(
             'new Mapping\ManyToOneAssociationMetadata("%s");',
