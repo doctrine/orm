@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Annotation;
@@ -8,9 +7,6 @@ namespace Doctrine\ORM\Annotation;
 /**
  * The EntityListeners annotation specifies the callback listener classes to be used for an entity or mapped superclass.
  * The EntityListeners annotation may be applied to an entity class or mapped superclass.
- *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.4
  *
  * @Annotation
  * @Target("CLASS")

@@ -4,18 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Event;
 
+use Doctrine\Common\EventArgs;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Provides event arguments for the onClear event.
- *
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @link        www.doctrine-project.org
- * @since       2.0
- * @author      Roman Borschel <roman@code-factory.de>
- * @author      Benjamin Eberlei <kontakt@beberlei.de>
  */
-class OnClearEventArgs extends \Doctrine\Common\EventArgs
+class OnClearEventArgs extends EventArgs
 {
     /**
      * @var EntityManagerInterface
@@ -24,8 +19,6 @@ class OnClearEventArgs extends \Doctrine\Common\EventArgs
 
     /**
      * Constructor.
-     *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {

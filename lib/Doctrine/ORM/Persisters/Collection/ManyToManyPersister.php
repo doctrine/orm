@@ -11,18 +11,13 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
 
 /**
  * Persister for many-to-many collections.
- *
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Alexander <iam.asm89@gmail.com>
- * @since   2.0
  */
 class ManyToManyPersister extends AbstractCollectionPersister
 {
@@ -97,7 +92,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $association = $collection->getMapping();
 
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
-            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+            throw new \BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
         $persister = $this->uow->getEntityPersister($association->getTargetEntity());
@@ -106,7 +101,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             : $association->getMappedBy()
         ;
 
-        $criteria  = [
+        $criteria = [
             $mappedKey                   => $collection->getOwner(),
             $association->getIndexedBy() => $index,
         ];
@@ -131,9 +126,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
             : $association
         ;
 
-        $joinTable      = $owningAssociation->getJoinTable();
-        $joinTableName  = $joinTable->getQuotedQualifiedName($this->platform);
-        $joinColumns    = $association->isOwningSide()
+        $joinTable     = $owningAssociation->getJoinTable();
+        $joinTableName = $joinTable->getQuotedQualifiedName($this->platform);
+        $joinColumns   = $association->isOwningSide()
             ? $joinTable->getJoinColumns()
             : $joinTable->getInverseJoinColumns()
         ;
@@ -147,9 +142,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $joinColumn->setType(PersisterHelper::getTypeOfColumn($referencedColumnName, $sourceClass, $this->em));
             }
 
-            $conditions[]   = sprintf('t.%s = ?', $quotedColumnName);
-            $params[]       = $identifier[$sourceClass->fieldNames[$referencedColumnName]];
-            $types[]        = $joinColumn->getType();
+            $conditions[] = sprintf('t.%s = ?', $quotedColumnName);
+            $params[]     = $identifier[$sourceClass->fieldNames[$referencedColumnName]];
+            $types[]      = $joinColumn->getType();
         }
 
         list($joinTargetEntitySQL, $filterSql) = $this->getFilterSql($association);
@@ -201,7 +196,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $association = $collection->getMapping();
 
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
-            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+            throw new \BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
         list($quotedJoinTable, $whereClauses, $params, $types) = $this->getJoinTableRestrictionsWithKey($collection, $key, true);
@@ -216,7 +211,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function contains(PersistentCollection $collection, $element)
     {
-        if ( ! $this->isValidEntityState($element)) {
+        if (! $this->isValidEntityState($element)) {
             return false;
         }
 
@@ -232,7 +227,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      */
     public function removeElement(PersistentCollection $collection, $element)
     {
-        if ( ! $this->isValidEntityState($element)) {
+        if (! $this->isValidEntityState($element)) {
             return false;
         }
 
@@ -273,15 +268,14 @@ class ManyToManyPersister extends AbstractCollectionPersister
             }
 
             $whereClauses[] = sprintf('t.%s = ?', $quotedColumnName);
-            $params[] = $identifier[$ownerMetadata->fieldNames[$referencedColumnName]];
-            $types[] = $joinColumn->getType();
+            $params[]       = $identifier[$ownerMetadata->fieldNames[$referencedColumnName]];
+            $types[]        = $joinColumn->getType();
         }
 
         $parameters = $this->expandCriteriaParameters($criteria);
 
         foreach ($parameters as $parameter) {
             [$name, $value, $operator] = $parameter;
-
 
             $property   = $targetClass->getProperty($name);
             $columnName = $this->platform->quoteIdentifier($property->getColumnName());
@@ -320,8 +314,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * have to join in the actual entities table leading to additional
      * JOIN.
      *
-     * @param ManyToManyAssociationMetadata $association
-     *
      * @return string[] ordered tuple:
      *                   - JOIN condition to add to the SQL
      *                   - WHERE condition to add to the SQL
@@ -332,7 +324,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $rootClass   = $this->em->getClassMetadata($targetClass->getRootClassName());
         $filterSql   = $this->generateFilterConditionSQL($rootClass, 'te');
 
-        if ('' === $filterSql) {
+        if ($filterSql === '') {
             return ['', ''];
         }
 
@@ -357,7 +349,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $filterClauses = [];
 
         foreach ($this->em->getFilters()->getEnabledFilters() as $filter) {
-            if ($filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias)) {
+            $filterExpr = $filter->addFilterConstraint($targetEntity, $targetTableAlias);
+
+            if ($filterExpr) {
                 $filterClauses[] = '(' . $filterExpr . ')';
             }
         }
@@ -377,9 +371,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Generate ON condition
      *
-     * @param ManyToManyAssociationMetadata $association
-     *
-     * @return array
+     * @return string[]
      */
     protected function getOnConditionSQL(ManyToManyAssociationMetadata $association)
     {
@@ -400,7 +392,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
             $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-            $conditions[] = ' t.' . $quotedColumnName . ' = ' . 'te.' . $quotedReferencedColumnName;
+            $conditions[] = ' t.' . $quotedColumnName . ' = te.' . $quotedReferencedColumnName;
         }
 
         return $conditions;
@@ -457,8 +449,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
     /**
      * Gets the SQL statement used for deleting a row from the collection.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     *
      * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
      *                             of types for bound parameters
      */
@@ -511,10 +501,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * Internal note: Order of the parameters must be the same as the order of the columns in getDeleteRowSql.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param mixed                              $element
+     * @param mixed $element
      *
-     * @return array
+     * @return mixed[]
      */
     protected function getDeleteRowSQLParameters(PersistentCollection $collection, $element)
     {
@@ -523,8 +512,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * Gets the SQL statement used for inserting a row in the collection.
-     *
-     * @param \Doctrine\ORM\PersistentCollection $collection
      *
      * @return string[]|string[][] ordered tuple containing the SQL to be executed and an array
      *                             of types for bound parameters
@@ -581,10 +568,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      *
      * Internal note: Order of the parameters must be the same as the order of the columns in getInsertRowSql.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param mixed                              $element
+     * @param mixed $element
      *
-     * @return array
+     * @return mixed[]
      */
     protected function getInsertRowSQLParameters(PersistentCollection $collection, $element)
     {
@@ -595,10 +581,9 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Collects the parameters for inserting/deleting on the join table in the order
      * of the join table columns.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param object                             $element
+     * @param object $element
      *
-     * @return array
+     * @return mixed[]
      */
     private function collectJoinTableColumnParameters(PersistentCollection $collection, $element)
     {
@@ -626,11 +611,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param string                             $key
-     * @param boolean                            $addFilters Whether the filter SQL should be included or not.
+     * @param string $key
+     * @param bool   $addFilters Whether the filter SQL should be included or not.
      *
-     * @return array ordered vector:
+     * @return mixed[] ordered vector:
      *                - quoted join table name
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
@@ -671,7 +655,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
                 $quotedColumnName           = $this->platform->quoteIdentifier($joinColumn->getColumnName());
                 $quotedReferencedColumnName = $this->platform->quoteIdentifier($joinColumn->getReferencedColumnName());
 
-                $joinConditions[] = ' t.' . $quotedColumnName . ' = ' . 'tr.' . $quotedReferencedColumnName;
+                $joinConditions[] = ' t.' . $quotedColumnName . ' = tr.' . $quotedReferencedColumnName;
             }
 
             $tableName        = $targetClass->table->getQuotedQualifiedName($this->platform);
@@ -728,7 +712,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
-                $whereClauses[] = $filterSql;
+                $whereClauses[]   = $filterSql;
             }
         }
 
@@ -736,11 +720,10 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param \Doctrine\ORM\PersistentCollection $collection
-     * @param object                             $element
-     * @param boolean                            $addFilters Whether the filter SQL should be included or not.
+     * @param object $element
+     * @param bool   $addFilters Whether the filter SQL should be included or not.
      *
-     * @return array ordered vector:
+     * @return mixed[] ordered vector:
      *                - quoted join table name
      *                - where clauses to be added for filtering
      *                - parameters to be bound for filtering
@@ -807,7 +790,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
             if ($filterSql) {
                 $quotedJoinTable .= ' ' . $joinTargetEntitySQL;
-                $whereClauses[] = $filterSql;
+                $whereClauses[]   = $filterSql;
             }
         }
 
@@ -818,9 +801,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
      * Expands Criteria Parameters by walking the expressions and grabbing all
      * parameters and types from it.
      *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array
+     * @return mixed[]
      */
     private function expandCriteriaParameters(Criteria $criteria)
     {
@@ -840,8 +821,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param Criteria $criteria
-     * @param ClassMetadata $targetClass
      * @return string
      */
     private function getOrderingSql(Criteria $criteria, ClassMetadata $targetClass)
@@ -864,7 +843,6 @@ class ManyToManyPersister extends AbstractCollectionPersister
     }
 
     /**
-     * @param Criteria $criteria
      * @return string
      * @throws \Doctrine\DBAL\DBALException
      */

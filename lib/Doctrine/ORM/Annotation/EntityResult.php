@@ -10,9 +10,6 @@ namespace Doctrine\ORM\Annotation;
  * This should include foreign key columns to related entities.
  * The results obtained when insufficient data is available are undefined.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("ANNOTATION")
  */

@@ -8,9 +8,6 @@ namespace Doctrine\ORM;
  * Container for all ORM events.
  *
  * This class cannot be instantiated.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 final class Events
 {
@@ -29,7 +26,7 @@ final class Events
      *
      * @var string
      */
-    const preRemove = 'preRemove';
+    public const preRemove = 'preRemove';
 
     /**
      * The postRemove event occurs for an entity after the entity has
@@ -39,7 +36,7 @@ final class Events
      *
      * @var string
      */
-    const postRemove = 'postRemove';
+    public const postRemove = 'postRemove';
 
     /**
      * The prePersist event occurs for a given entity before the respective
@@ -49,7 +46,7 @@ final class Events
      *
      * @var string
      */
-    const prePersist = 'prePersist';
+    public const prePersist = 'prePersist';
 
     /**
      * The postPersist event occurs for an entity after the entity has
@@ -60,7 +57,7 @@ final class Events
      *
      * @var string
      */
-    const postPersist = 'postPersist';
+    public const postPersist = 'postPersist';
 
     /**
      * The preUpdate event occurs before the database update operations to
@@ -70,7 +67,7 @@ final class Events
      *
      * @var string
      */
-    const preUpdate = 'preUpdate';
+    public const preUpdate = 'preUpdate';
 
     /**
      * The postUpdate event occurs after the database update operations to
@@ -80,7 +77,7 @@ final class Events
      *
      * @var string
      */
-    const postUpdate = 'postUpdate';
+    public const postUpdate = 'postUpdate';
 
     /**
      * The postLoad event occurs for an entity after the entity has been loaded
@@ -95,7 +92,7 @@ final class Events
      *
      * @var string
      */
-    const postLoad = 'postLoad';
+    public const postLoad = 'postLoad';
 
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
@@ -103,7 +100,7 @@ final class Events
      *
      * @var string
      */
-    const loadClassMetadata = 'loadClassMetadata';
+    public const loadClassMetadata = 'loadClassMetadata';
 
     /**
      * The onClassMetadataNotFound event occurs whenever loading metadata for a class
@@ -111,14 +108,14 @@ final class Events
      *
      * @var string
      */
-    const onClassMetadataNotFound = 'onClassMetadataNotFound';
+    public const onClassMetadataNotFound = 'onClassMetadataNotFound';
 
     /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
      * but before any changes to managed entities have been calculated. This event is
      * always raised right after EntityManager#flush() call.
      */
-    const preFlush = 'preFlush';
+    public const preFlush = 'preFlush';
 
     /**
      * The onFlush event occurs when the EntityManager#flush() operation is invoked,
@@ -129,7 +126,7 @@ final class Events
      *
      * @var string
      */
-    const onFlush = 'onFlush';
+    public const onFlush = 'onFlush';
 
     /**
      * The postFlush event occurs when the EntityManager#flush() operation is invoked and
@@ -140,7 +137,7 @@ final class Events
      *
      * @var string
      */
-    const postFlush = 'postFlush';
+    public const postFlush = 'postFlush';
 
     /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
@@ -148,5 +145,5 @@ final class Events
      *
      * @var string
      */
-    const onClear = 'onClear';
+    public const onClear = 'onClear';
 }

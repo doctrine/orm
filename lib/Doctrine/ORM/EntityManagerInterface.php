@@ -12,9 +12,6 @@ use ProxyManager\Proxy\GhostObjectInterface;
 /**
  * EntityManager interface
  *
- * @since   2.4
- * @author  Lars Strojny <lars@strojny.net>
- *
  * @method Mapping\ClassMetadata getClassMetadata($className)
  */
 interface EntityManagerInterface extends ObjectManager
@@ -267,14 +264,14 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Checks whether the state of the filter collection is clean.
      *
-     * @return boolean True, if the filter collection is clean.
+     * @return bool True, if the filter collection is clean.
      */
     public function isFiltersStateClean();
 
     /**
      * Checks whether the Entity Manager has filters.
      *
-     * @return boolean True, if the EM has a filter collection.
+     * @return bool True, if the EM has a filter collection.
      */
     public function hasFilters();
 }

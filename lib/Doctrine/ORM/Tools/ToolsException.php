@@ -9,8 +9,6 @@ use Throwable;
 
 /**
  * Tools related Exceptions.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class ToolsException extends ORMException
 {

@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -8,10 +7,6 @@ namespace Doctrine\ORM\Mapping;
 /**
  * Class EntityClassMetadata
  *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 abstract class EntityClassMetadata extends ComponentMetadata
 {
@@ -19,12 +14,12 @@ abstract class EntityClassMetadata extends ComponentMetadata
     protected $entityName;
 
     /**
-     * @var null|string The name of the custom repository class used for the entity class.
+     * @var string|null The name of the custom repository class used for the entity class.
      */
     protected $customRepositoryClassName;
 
     /**
-     * @var null|Property The field which is used for versioning in optimistic locking (if any).
+     * @var Property|null The field which is used for versioning in optimistic locking (if any).
      */
     protected $declaredVersion;
 
@@ -35,21 +30,21 @@ abstract class EntityClassMetadata extends ComponentMetadata
      * either in your domain or through the relation database (coming from a view,
      * or a history table for example).
      *
-     * @var boolean
+     * @var bool
      */
     protected $readOnly = false;
 
     /**
      * List of all sub-classes (descendants) metadata.
      *
-     * @var array<SubClassMetadata>
+     * @var SubClassMetadata[]
      */
     protected $subClasses = [];
 
     /**
      * The named queries allowed to be called directly from Repository.
      *
-     * @var array
+     * @var string[]
      */
     protected $namedQueries = [];
 
@@ -66,7 +61,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      * )
      * </pre>
      *
-     * @var array
+     * @var string[][]
      */
     protected $namedNativeQueries = [];
 
@@ -82,21 +77,21 @@ abstract class EntityClassMetadata extends ComponentMetadata
      * )
      * </pre>
      *
-     * @var array
+     * @var mixed[][]
      */
     protected $sqlResultSetMappings = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
-     * @var array
+     * @var string[][]
      */
     protected $lifecycleCallbacks = [];
 
     /**
      * READ-ONLY: The registered entity listeners.
      *
-     * @var array
+     * @var string[][]
      */
     protected $entityListeners = [];
 
@@ -104,7 +99,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      * READ-ONLY: The field names of all fields that are part of the identifier/primary key
      * of the mapped entity class.
      *
-     * @var array
+     * @var string[]
      */
     protected $identifier = [];
 
@@ -117,9 +112,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
 
     /**
      * MappedSuperClassMetadata constructor.
-     *
-     * @param string                       $className
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
      */
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
@@ -128,57 +120,36 @@ abstract class EntityClassMetadata extends ComponentMetadata
         $this->entityName = $className;
     }
 
-    /**
-     * @return string
-     */
     public function getEntityName() : string
     {
         return $this->entityName;
     }
 
-    /**
-     * @param string $entityName
-     */
     public function setEntityName(string $entityName) : void
     {
         $this->entityName = $entityName;
     }
 
-    /**
-     * @return null|string
-     */
     public function getCustomRepositoryClassName() : ?string
     {
         return $this->customRepositoryClassName;
     }
 
-    /**
-     * @param null|string customRepositoryClassName
-     */
     public function setCustomRepositoryClassName(?string $customRepositoryClassName) : void
     {
         $this->customRepositoryClassName = $customRepositoryClassName;
     }
 
-    /**
-     * @return Property|null
-     */
     public function getDeclaredVersion() : ?Property
     {
         return $this->declaredVersion;
     }
 
-    /**
-     * @param Property $property
-     */
     public function setDeclaredVersion(Property $property) : void
     {
         $this->declaredVersion = $property;
     }
 
-    /**
-     * @return Property|null
-     */
     public function getVersion() : ?Property
     {
         /** @var ComponentMetadata|null $parent */
@@ -192,32 +163,22 @@ abstract class EntityClassMetadata extends ComponentMetadata
         return $version;
     }
 
-    /**
-     * @return bool
-     */
     public function isVersioned() : bool
     {
         return $this->getVersion() !== null;
     }
 
-    /**
-     * @param bool $readOnly
-     */
     public function setReadOnly(bool $readOnly) : void
     {
         $this->readOnly = $readOnly;
     }
 
-    /**
-     * @return bool
-     */
     public function isReadOnly() : bool
     {
         return $this->readOnly;
     }
 
     /**
-     * @param SubClassMetadata $subClassMetadata
      *
      * @throws MappingException
      */
@@ -244,17 +205,11 @@ abstract class EntityClassMetadata extends ComponentMetadata
         $this->subClasses[] = $subClassMetadata;
     }
 
-    /**
-     * @return bool
-     */
     public function hasSubClasses() : bool
     {
         return (bool) $this->subClasses;
     }
 
-    /**
-     * @return \Iterator
-     */
     public function getSubClassIterator() : \Iterator
     {
         $iterator = new \AppendIterator();
@@ -270,9 +225,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
 
     /**
      * Adds a named query.
-     *
-     * @param string $name
-     * @param string $dqlQuery
      *
      * @throws MappingException
      */
@@ -290,8 +242,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @param string $queryName The query name.
      *
-     * @return string
-     *
      * @throws MappingException
      */
     public function getNamedQuery($queryName) : string
@@ -306,7 +256,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * Gets all named queries of the class.
      *
-     * @return array
+     * @return string[]
      */
     public function getNamedQueries() : array
     {
@@ -318,7 +268,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @param string $queryName The native query name.
      *
-     * @return array
+     * @return string[]
      *
      * @throws MappingException
      *
@@ -336,7 +286,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * Gets all named native queries of the class.
      *
-     * @return array
+     * @return string[][]
      */
     public function getNamedNativeQueries() : array
     {
@@ -348,7 +298,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      *
      * @param string $name The result set mapping name.
      *
-     * @return array
+     * @return mixed[]
      *
      * @throws MappingException
      *
@@ -366,7 +316,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
     /**
      * Gets all sql result set mappings of the class.
      *
-     * @return array
+     * @return mixed[][]
      */
     public function getSqlResultSetMappings() : array
     {
@@ -385,8 +335,5 @@ abstract class EntityClassMetadata extends ComponentMetadata
         }
     }
 
-    /**
-     * @return RootClassMetadata
-     */
     abstract public function getRootClass() : RootClassMetadata;
 }

@@ -1,15 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Timestamp cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class TimestampCacheEntry implements CacheEntry
 {
@@ -33,7 +29,7 @@ class TimestampCacheEntry implements CacheEntry
      *
      * This method allow Doctrine\Common\Cache\PhpFileCache compatibility
      *
-     * @param array $values array containing property values
+     * @param mixed[] $values array containing property values
      *
      * @return TimestampCacheEntry
      */

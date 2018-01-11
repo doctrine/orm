@@ -15,9 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to clear a query cache region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class QueryRegionCommand extends Command
 {
@@ -73,7 +70,7 @@ EOT
             $name = Cache::DEFAULT_QUERY_REGION_NAME;
         }
 
-        if ( ! $cache instanceof Cache) {
+        if (! $cache instanceof Cache) {
             throw new \InvalidArgumentException('No second-level cache is configured on the given EntityManager.');
         }
 
@@ -81,7 +78,7 @@ EOT
             $queryCache  = $cache->getQueryCache($name);
             $queryRegion = $queryCache->getRegion();
 
-            if ( ! $queryRegion instanceof DefaultRegion) {
+            if (! $queryRegion instanceof DefaultRegion) {
                 throw new \InvalidArgumentException(sprintf(
                     'The option "--flush" expects a "Doctrine\ORM\Cache\Region\DefaultRegion", but got "%s".',
                     is_object($queryRegion) ? get_class($queryRegion) : gettype($queryRegion)

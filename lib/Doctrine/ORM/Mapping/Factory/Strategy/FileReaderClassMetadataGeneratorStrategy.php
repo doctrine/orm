@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory\Strategy;
@@ -12,7 +11,7 @@ class FileReaderClassMetadataGeneratorStrategy implements ClassMetadataGenerator
     /**
      * {@inheritdoc}
      */
-    public function generate(string $filePath, ClassMetadataDefinition $definition): void
+    public function generate(string $filePath, ClassMetadataDefinition $definition) : void
     {
         require $filePath;
     }

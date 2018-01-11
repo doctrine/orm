@@ -7,9 +7,6 @@ namespace Doctrine\ORM\Annotation;
 /**
  * This annotation is used to override association mapping of property for an entity relationship.
  *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since   2.3
- *
  * @Annotation
  * @Target("ANNOTATION")
  */
@@ -17,8 +14,8 @@ final class AssociationOverride implements Annotation
 {
     /**
      * The name of the relationship property whose mapping is being overridden.
-     * 
-     * @var string 
+     *
+     * @var string
      */
     public $name;
 

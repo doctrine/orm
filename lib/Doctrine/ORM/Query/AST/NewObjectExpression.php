@@ -6,10 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * NewObjectExpression ::= "NEW" IdentificationVariable "(" NewObjectArg {"," NewObjectArg}* ")"
- *
- * @link    www.doctrine-project.org
- * @since   2.4
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class NewObjectExpression extends Node
 {
@@ -19,13 +15,13 @@ class NewObjectExpression extends Node
     public $className;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     public $args;
 
     /**
-     * @param string $className
-     * @param array  $args
+     * @param string  $className
+     * @param mixed[] $args
      */
     public function __construct($className, array $args)
     {

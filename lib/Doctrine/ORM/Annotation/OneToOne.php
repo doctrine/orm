@@ -40,7 +40,7 @@ final class OneToOne implements Annotation
     public $fetch = 'LAZY';
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $orphanRemoval = false;
 }

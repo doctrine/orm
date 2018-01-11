@@ -1,23 +1,5 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
@@ -27,12 +9,6 @@ use Doctrine\ORM\Mapping;
 /**
  * The DriverChain allows you to add multiple other mapping drivers for
  * certain namespaces.
- *
- * @since  2.2
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman Borschel <roman@code-factory.org>
  */
 class DriverChain implements MappingDriver
 {
@@ -44,7 +20,7 @@ class DriverChain implements MappingDriver
     private $defaultDriver;
 
     /**
-     * @var array
+     * @var MappingDriver[]
      */
     private $drivers = [];
 
@@ -60,10 +36,6 @@ class DriverChain implements MappingDriver
 
     /**
      * Set the default driver.
-     *
-     * @param MappingDriver $driver
-     *
-     * @return void
      */
     public function setDefaultDriver(MappingDriver $driver)
     {
@@ -73,10 +45,7 @@ class DriverChain implements MappingDriver
     /**
      * Adds a nested driver.
      *
-     * @param MappingDriver $nestedDriver
-     * @param string        $namespace
-     *
-     * @return void
+     * @param string $namespace
      */
     public function addDriver(MappingDriver $nestedDriver, $namespace)
     {
@@ -86,7 +55,7 @@ class DriverChain implements MappingDriver
     /**
      * Gets the array of nested drivers.
      *
-     * @return array $drivers
+     * @return MappingDriver[] $drivers
      */
     public function getDrivers()
     {
@@ -100,8 +69,7 @@ class DriverChain implements MappingDriver
         string $className,
         Mapping\ClassMetadata $metadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         /* @var $driver MappingDriver */
         foreach ($this->drivers as $namespace => $driver) {
             if (strpos($className, $namespace) === 0) {
@@ -110,7 +78,7 @@ class DriverChain implements MappingDriver
             }
         }
 
-        if (null !== $this->defaultDriver) {
+        if ($this->defaultDriver !== null) {
             $this->defaultDriver->loadMetadataForClass($className, $metadata, $metadataBuildingContext);
             return;
         }
@@ -123,14 +91,14 @@ class DriverChain implements MappingDriver
      */
     public function getAllClassNames()
     {
-        $classNames = [];
+        $classNames    = [];
         $driverClasses = [];
 
         /* @var $driver MappingDriver */
         foreach ($this->drivers as $namespace => $driver) {
             $oid = spl_object_id($driver);
 
-            if (!isset($driverClasses[$oid])) {
+            if (! isset($driverClasses[$oid])) {
                 $driverClasses[$oid] = $driver->getAllClassNames();
             }
 
@@ -141,7 +109,7 @@ class DriverChain implements MappingDriver
             }
         }
 
-        if (null !== $this->defaultDriver) {
+        if ($this->defaultDriver !== null) {
             foreach ($this->defaultDriver->getAllClassNames() as $className) {
                 $classNames[$className] = true;
             }

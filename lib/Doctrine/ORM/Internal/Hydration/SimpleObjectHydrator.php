@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\Mapping\InheritanceType;
-use PDO;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Query;
+use PDO;
 
 class SimpleObjectHydrator extends AbstractHydrator
 {
@@ -22,11 +22,11 @@ class SimpleObjectHydrator extends AbstractHydrator
     protected function prepare()
     {
         if (count($this->rsm->aliasMap) !== 1) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.");
+            throw new \RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains more than one object result.');
         }
 
         if ($this->rsm->scalarMappings) {
-            throw new \RuntimeException("Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.");
+            throw new \RuntimeException('Cannot use SimpleObjectHydrator with a ResultSetMapping that contains scalar mappings.');
         }
 
         $this->class = $this->getClassMetadata(reset($this->rsm->aliasMap));
@@ -69,14 +69,17 @@ class SimpleObjectHydrator extends AbstractHydrator
 
         // We need to find the correct entity class name if we have inheritance in resultset
         if ($this->class->inheritanceType !== InheritanceType::NONE) {
-            $discrColumnName = $this->platform->getSQLResultCasing($this->class->discriminatorColumn->getColumnName());
+            $discrColumnName            = $this->platform->getSQLResultCasing(
+                $this->class->discriminatorColumn->getColumnName()
+            );
+            $metaMappingDiscrColumnName = array_search($discrColumnName, $this->rsm->metaMappings);
 
             // Find mapped discriminator column from the result set.
-            if ($metaMappingDiscrColumnName = array_search($discrColumnName, $this->rsm->metaMappings)) {
+            if ($metaMappingDiscrColumnName) {
                 $discrColumnName = $metaMappingDiscrColumnName;
             }
 
-            if ( ! isset($sqlResult[$discrColumnName])) {
+            if (! isset($sqlResult[$discrColumnName])) {
                 throw HydrationException::missingDiscriminatorColumn($entityName, $discrColumnName, key($this->rsm->aliasMap));
             }
 
@@ -86,7 +89,7 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $discrMap = $this->class->discriminatorMap;
 
-            if ( ! isset($discrMap[$sqlResult[$discrColumnName]])) {
+            if (! isset($discrMap[$sqlResult[$discrColumnName]])) {
                 throw HydrationException::invalidDiscriminatorValue($sqlResult[$discrColumnName], array_keys($discrMap));
             }
 
@@ -103,12 +106,12 @@ class SimpleObjectHydrator extends AbstractHydrator
 
             $cacheKeyInfo = $this->hydrateColumnInfo($column);
 
-            if ( ! $cacheKeyInfo) {
+            if (! $cacheKeyInfo) {
                 continue;
             }
 
             // Check if value is null before conversion (because some types convert null to something else)
-            $valueIsNull = null === $value;
+            $valueIsNull = $value === null;
 
             // Convert field to a valid PHP value
             if (isset($cacheKeyInfo['type'])) {
@@ -119,7 +122,7 @@ class SimpleObjectHydrator extends AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
 
             // Prevent overwrite in case of inherit classes using same property name (See AbstractHydrator)
-            if ( ! isset($data[$fieldName]) || ! $valueIsNull) {
+            if (! isset($data[$fieldName]) || ! $valueIsNull) {
                 $data[$fieldName] = $value;
             }
         }

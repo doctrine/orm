@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * "DATE_DIFF" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
- *
- * 
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DateDiffFunction extends FunctionNode
 {
+    /** @var Node */
     public $date1;
+
+    /** @var Node */
     public $date2;
 
     /**

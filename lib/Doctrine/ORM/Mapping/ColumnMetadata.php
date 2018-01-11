@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -9,11 +8,6 @@ use Doctrine\DBAL\Types\Type;
 
 /**
  * Class ColumnMetadata
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 abstract class ColumnMetadata
 {
@@ -38,30 +32,27 @@ abstract class ColumnMetadata
     protected $columnDefinition;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $options = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $primaryKey = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $nullable = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $unique = false;
 
     /**
      * ColumnMetadata constructor.
-     *
-     * @param string $columnName
-     * @param Type   $type
      *
      * @todo Leverage this implementation instead of default, blank constructor
      */
@@ -72,7 +63,7 @@ abstract class ColumnMetadata
     }*/
 
     /**
-     * @return string|null
+     * Table name
      */
     public function getTableName() : ?string
     {
@@ -84,69 +75,48 @@ abstract class ColumnMetadata
      *
      * @param string $tableName
      */
-    public function setTableName(/*string*/ $tableName) : void
+    public function setTableName($tableName) : void
     {
         $this->tableName = $tableName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getColumnName() : ?string
     {
         return $this->columnName;
     }
 
-    /**
-     * @param string $columnName
-     */
     public function setColumnName(string $columnName) : void
     {
         $this->columnName = $columnName;
     }
 
-    /**
-     * @return Type|null
-     */
     public function getType() : ?Type
     {
         return $this->type;
     }
 
-    /**
-     * @param Type $type
-     */
     public function setType(Type $type) : void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
     public function getTypeName() : string
     {
         return $this->type->getName();
     }
 
-    /**
-     * @return string|null
-     */
     public function getColumnDefinition() : ?string
     {
         return $this->columnDefinition;
     }
 
-    /**
-     * @param string $columnDefinition
-     */
     public function setColumnDefinition(string $columnDefinition) : void
     {
         $this->columnDefinition = $columnDefinition;
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getOptions() : array
     {
@@ -154,56 +124,38 @@ abstract class ColumnMetadata
     }
 
     /**
-     * @param array $options
+     * @param mixed[] $options
      */
     public function setOptions(array $options) : void
     {
         $this->options = $options;
     }
 
-    /**
-     * @param bool $isPrimaryKey
-     */
     public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
 
-    /**
-     * @return bool
-     */
     public function isPrimaryKey() : bool
     {
         return $this->primaryKey;
     }
 
-    /**
-     * @param bool $isNullable
-     */
     public function setNullable(bool $isNullable) : void
     {
         $this->nullable = $isNullable;
     }
 
-    /**
-     * @return bool
-     */
     public function isNullable() : bool
     {
         return $this->nullable;
     }
 
-    /**
-     * @param bool $isUnique
-     */
     public function setUnique(bool $isUnique) : void
     {
         $this->unique = $isUnique;
     }
 
-    /**
-     * @return bool
-     */
     public function isUnique() : bool
     {
         return $this->unique;

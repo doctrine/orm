@@ -1,15 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Defines a contract for accessing a particular named region.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface Region extends MultiGetRegion
 {
@@ -25,7 +21,7 @@ interface Region extends MultiGetRegion
      *
      * @param \Doctrine\ORM\Cache\CacheKey $key The cache key
      *
-     * @return boolean TRUE if the underlying cache contains corresponding data; FALSE otherwise.
+     * @return bool TRUE if the underlying cache contains corresponding data; FALSE otherwise.
      */
     public function contains(CacheKey $key);
 
@@ -49,7 +45,7 @@ interface Region extends MultiGetRegion
      *
      * @throws \Doctrine\ORM\Cache\CacheException Indicates a problem accessing the region.
      */
-    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null);
+    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null);
 
     /**
      * Remove an item from the cache.

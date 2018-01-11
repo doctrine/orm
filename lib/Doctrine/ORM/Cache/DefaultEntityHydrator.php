@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -16,9 +15,6 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Default hydrator cache for entities
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultEntityHydrator implements EntityHydrator
 {
@@ -33,7 +29,7 @@ class DefaultEntityHydrator implements EntityHydrator
     private $uow;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
@@ -73,10 +69,10 @@ class DefaultEntityHydrator implements EntityHydrator
             $targetPersister     = $this->uow->getEntityPersister($targetEntity);
 
             if (! $association->getCache()) {
-                $owningAssociation   = ! $association->isOwningSide()
+                $owningAssociation = ! $association->isOwningSide()
                     ? $targetClassMetadata->getProperty($association->getMappedBy())
                     : $association;
-                $associationIds      = $identifierFlattener->flattenIdentifier(
+                $associationIds    = $identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
                     $targetPersister->getIdentifier($data[$name])
                 );
@@ -148,14 +144,13 @@ class DefaultEntityHydrator implements EntityHydrator
         EntityCacheKey $key,
         EntityCacheEntry $entry,
         $entity = null
-    )
-    {
+    ) {
         $data  = $entry->data;
         $hints = self::$hints;
 
         if ($entity !== null) {
-            $hints[Query::HINT_REFRESH]         = true;
-            $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
+            $hints[Query::HINT_REFRESH]        = true;
+            $hints[Query::HINT_REFRESH_ENTITY] = $entity;
         }
 
         foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
@@ -163,9 +158,9 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            $assocClass     = $data[$name]->class;
-            $assocId        = $data[$name]->identifier;
-            $isEagerLoad    = (
+            $assocClass  = $data[$name]->class;
+            $assocId     = $data[$name]->identifier;
+            $isEagerLoad = (
                 $association->getFetchMode() === FetchMode::EAGER ||
                 ($association instanceof OneToOneAssociationMetadata && ! $association->isOwningSide())
             );

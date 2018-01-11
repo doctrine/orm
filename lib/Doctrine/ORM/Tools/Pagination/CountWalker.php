@@ -6,34 +6,24 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\Query\TreeWalkerAdapter;
-use Doctrine\ORM\Query\AST\SelectStatement;
-use Doctrine\ORM\Query\AST\SelectExpression;
-use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\AggregateExpression;
+use Doctrine\ORM\Query\AST\PathExpression;
+use Doctrine\ORM\Query\AST\SelectExpression;
+use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\TreeWalkerAdapter;
 
 /**
  * Replaces the selectClause of the AST with a COUNT statement.
- *
- * @category    DoctrineExtensions
- * @package     DoctrineExtensions\Paginate
- * @author      David Abdemoulaie <dave@hobodave.com>
- * @copyright   Copyright (c) 2010 David Abdemoulaie (http://hobodave.com/)
- * @license     http://hobodave.com/license.txt New BSD License
  */
 class CountWalker extends TreeWalkerAdapter
 {
     /**
      * Distinct mode hint name.
      */
-    const HINT_DISTINCT = 'doctrine_paginator.distinct';
+    public const HINT_DISTINCT = 'doctrine_paginator.distinct';
 
     /**
      * Walks down a SelectStatement AST node, modifying it to retrieve a COUNT.
-     *
-     * @param SelectStatement $AST
-     *
-     * @return void
      *
      * @throws \RuntimeException
      */
@@ -48,7 +38,7 @@ class CountWalker extends TreeWalkerAdapter
         $from = $AST->fromClause->identificationVariableDeclarations;
 
         if (count($from) > 1) {
-            throw new \RuntimeException("Cannot count query which selects two FROM components, cannot make distinction");
+            throw new \RuntimeException('Cannot count query which selects two FROM components, cannot make distinction');
         }
 
         $fromRoot  = reset($from);
@@ -74,10 +64,10 @@ class CountWalker extends TreeWalkerAdapter
 
         $distinct = $this->getQuery()->getHint(self::HINT_DISTINCT);
 
-        $AST->selectClause->selectExpressions = [
-            new SelectExpression(
-                new AggregateExpression('count', $pathExpression, $distinct), null
-            )
+        $AST->selectClause->selectExpressions = [new SelectExpression(
+            new AggregateExpression('count', $pathExpression, $distinct),
+            null
+        ),
         ];
 
         // ORDER BY is not needed, only increases query execution through unnecessary sorting.

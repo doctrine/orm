@@ -6,17 +6,11 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
- *
- *
- * @link    www.doctrine-project.org
- * @since   2.2
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class IdentityFunction extends FunctionNode
 {
@@ -35,19 +29,21 @@ class IdentityFunction extends FunctionNode
      */
     public function getSql(SqlWalker $sqlWalker)
     {
-        $entityManager  = $sqlWalker->getEntityManager();
-        $platform       = $entityManager->getConnection()->getDatabasePlatform();
-        $dqlAlias       = $this->pathExpression->identificationVariable;
-        $assocField     = $this->pathExpression->field;
-        $qComp          = $sqlWalker->getQueryComponent($dqlAlias);
-        $class          = $qComp['metadata'];
-        $association    = $class->getProperty($assocField);
-        $targetEntity   = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
-        $joinColumns    = $association->getJoinColumns();
-        $joinColumn     = reset($joinColumns);
+        $entityManager = $sqlWalker->getEntityManager();
+        $platform      = $entityManager->getConnection()->getDatabasePlatform();
+        $dqlAlias      = $this->pathExpression->identificationVariable;
+        $assocField    = $this->pathExpression->field;
+        $qComp         = $sqlWalker->getQueryComponent($dqlAlias);
+        $class         = $qComp['metadata'];
+        $association   = $class->getProperty($assocField);
+        $targetEntity  = $sqlWalker->getEntityManager()->getClassMetadata($association->getTargetEntity());
+        $joinColumns   = $association->getJoinColumns();
+        $joinColumn    = reset($joinColumns);
 
         if ($this->fieldMapping !== null) {
-            if (($property = $targetEntity->getProperty($this->fieldMapping)) === null) {
+            $property = $targetEntity->getProperty($this->fieldMapping);
+
+            if ($property === null) {
                 throw new QueryException(sprintf('Undefined reference field mapping "%s"', $this->fieldMapping));
             }
 

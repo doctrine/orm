@@ -40,7 +40,7 @@ final class ManyToMany implements Annotation
     public $fetch = 'LAZY';
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $orphanRemoval = false;
 

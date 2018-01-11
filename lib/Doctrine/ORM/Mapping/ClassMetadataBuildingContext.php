@@ -28,11 +28,6 @@ use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * Class ClassMetadataBuildingContext
- *
- * @package Doctrine\ORM\Mapping\Factory
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class ClassMetadataBuildingContext
 {
@@ -46,7 +41,7 @@ class ClassMetadataBuildingContext
     private $namingStrategy;
 
     /**
-     * @var array<SecondPass>
+     * @var SecondPass[]
      */
     protected $secondPassList = [];
 
@@ -57,67 +52,42 @@ class ClassMetadataBuildingContext
 
     /**
      * ClassMetadataBuildingContext constructor.
-     *
-     * @param AbstractClassMetadataFactory $classMetadataFactory
-     * @param ReflectionService            $reflectionService
-     * @param NamingStrategy|null          $namingStrategy
      */
     public function __construct(
         AbstractClassMetadataFactory $classMetadataFactory,
         ReflectionService $reflectionService,
         ?NamingStrategy $namingStrategy = null
-    )
-    {
+    ) {
         $this->classMetadataFactory = $classMetadataFactory;
         $this->reflectionService    = $reflectionService;
         $this->namingStrategy       = $namingStrategy ?: new DefaultNamingStrategy();
     }
 
-    /**
-     * @return AbstractClassMetadataFactory
-     */
     public function getClassMetadataFactory() : AbstractClassMetadataFactory
     {
         return $this->classMetadataFactory;
     }
 
-    /**
-     * @return ReflectionService
-     */
     public function getReflectionService() : ReflectionService
     {
         return $this->reflectionService;
     }
 
-    /**
-     * @return NamingStrategy
-     */
     public function getNamingStrategy() : NamingStrategy
     {
         return $this->namingStrategy;
     }
 
-    /**
-     * @param SecondPass $secondPass
-     *
-     * @return void
-     */
     public function addSecondPass(SecondPass $secondPass) : void
     {
         $this->secondPassList[] = $secondPass;
     }
 
-    /**
-     * @return bool
-     */
     public function isInSecondPass() : bool
     {
         return $this->inSecondPass;
     }
 
-    /**
-     * @return void
-     */
     public function validate() : void
     {
         $this->inSecondPass = true;

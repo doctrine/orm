@@ -6,21 +6,16 @@ namespace Doctrine\ORM\Mapping;
 
 /**
  * Class ToOneAssociationMetadata
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class ToOneAssociationMetadata extends AssociationMetadata
 {
     /**
-     * @var array<JoinColumnMetadata>
+     * @var JoinColumnMetadata[]
      */
     private $joinColumns = [];
 
     /**
-     * @param array<JoinColumnMetadata> $joinColumns
+     * @param JoinColumnMetadata[] $joinColumns
      */
     public function setJoinColumns(array $joinColumns) : void
     {
@@ -28,16 +23,13 @@ class ToOneAssociationMetadata extends AssociationMetadata
     }
 
     /**
-     * @return array<JoinColumnMetadata>
+     * @return JoinColumnMetadata[]
      */
     public function getJoinColumns() : array
     {
         return $this->joinColumns;
     }
 
-    /**
-     * @param JoinColumnMetadata $joinColumn
-     */
     public function addJoinColumn(JoinColumnMetadata $joinColumn) : void
     {
         $this->joinColumns[] = $joinColumn;

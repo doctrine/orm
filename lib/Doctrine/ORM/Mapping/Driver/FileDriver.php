@@ -15,13 +15,6 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
  * classes on demand. This requires the user to adhere to the convention of 1 mapping
  * file per class and the file names of the mapping files must correspond to the full
  * class name, including namespace, with the namespace delimiters '\', replaced by dots '.'.
- *
- * @link   www.doctrine-project.org
- * @since  2.2
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class FileDriver implements MappingDriver
 {
@@ -31,7 +24,7 @@ abstract class FileDriver implements MappingDriver
     protected $locator;
 
     /**
-     * @var array|null
+     * @var mixed[]|null
      */
     protected $classCache;
 
@@ -44,16 +37,16 @@ abstract class FileDriver implements MappingDriver
      * Initializes a new FileDriver that looks in the given path(s) for mapping
      * documents and operates in the specified operating mode.
      *
-     * @param string|array|FileLocator $locator       A FileLocator or one/multiple paths
-     *                                                where mapping documents can be found.
-     * @param string|null              $fileExtension
+     * @param string|string[]|FileLocator $locator       A FileLocator or one/multiple paths
+     *                                                   where mapping documents can be found.
+     * @param string|null                 $fileExtension
      */
     public function __construct($locator, $fileExtension = null)
     {
         if ($locator instanceof FileLocator) {
             $this->locator = $locator;
         } else {
-            $this->locator = new DefaultFileLocator((array)$locator, $fileExtension);
+            $this->locator = new DefaultFileLocator((array) $locator, $fileExtension);
         }
     }
 
@@ -69,8 +62,6 @@ abstract class FileDriver implements MappingDriver
 
     /**
      * Sets the locator used to discover mapping files by className.
-     *
-     * @param FileLocator $locator
      */
     public function setLocator(FileLocator $locator)
     {
@@ -81,8 +72,6 @@ abstract class FileDriver implements MappingDriver
      * Sets the global basename.
      *
      * @param string $file
-     *
-     * @return void
      */
     public function setGlobalBasename($file)
     {
@@ -105,7 +94,7 @@ abstract class FileDriver implements MappingDriver
      *
      * @param string $className
      *
-     * @return array The element of schema meta data.
+     * @return mixed[] The element of schema meta data.
      *
      * @throws MappingException
      */
@@ -120,7 +109,7 @@ abstract class FileDriver implements MappingDriver
         }
 
         $result = $this->loadMappingFile($this->locator->findMappingFile($className));
-        if (!isset($result[$className])) {
+        if (! isset($result[$className])) {
             throw MappingException::invalidMappingFile($className, str_replace('\\', '.', $className) . $this->locator->getFileExtension());
         }
 
@@ -142,7 +131,7 @@ abstract class FileDriver implements MappingDriver
             return false;
         }
 
-        return !$this->locator->fileExists($className);
+        return ! $this->locator->fileExists($className);
     }
 
     /**
@@ -170,7 +159,7 @@ abstract class FileDriver implements MappingDriver
      *
      * @param string $file The mapping file to load.
      *
-     * @return array
+     * @return mixed[]
      */
     abstract protected function loadMappingFile($file);
 
@@ -182,15 +171,13 @@ abstract class FileDriver implements MappingDriver
      * necessary. This may not be relevant to scenarios where caching of
      * metadata is in place, however hits very hard in scenarios where no
      * caching is used.
-     *
-     * @return void
      */
     protected function initialize()
     {
         $this->classCache = [];
-        if (null !== $this->globalBasename) {
+        if ($this->globalBasename !== null) {
             foreach ($this->locator->getPaths() as $path) {
-                $file = $path.'/'.$this->globalBasename.$this->locator->getFileExtension();
+                $file = $path . '/' . $this->globalBasename . $this->locator->getFileExtension();
                 if (is_file($file)) {
                     $this->classCache = array_merge(
                         $this->classCache,

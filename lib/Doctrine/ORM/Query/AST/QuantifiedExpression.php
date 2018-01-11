@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class QuantifiedExpression extends Node
 {
@@ -38,7 +32,7 @@ class QuantifiedExpression extends Node
      */
     public function isAll()
     {
-        return strtoupper($this->type) == 'ALL';
+        return strtoupper($this->type) === 'ALL';
     }
 
     /**
@@ -46,7 +40,7 @@ class QuantifiedExpression extends Node
      */
     public function isAny()
     {
-        return strtoupper($this->type) == 'ANY';
+        return strtoupper($this->type) === 'ANY';
     }
 
     /**
@@ -54,7 +48,7 @@ class QuantifiedExpression extends Node
      */
     public function isSome()
     {
-        return strtoupper($this->type) == 'SOME';
+        return strtoupper($this->type) === 'SOME';
     }
 
     /**

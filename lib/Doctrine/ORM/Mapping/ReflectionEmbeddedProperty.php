@@ -39,15 +39,13 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     private $instantiator;
 
     /**
-     * @param ReflectionProperty $parentProperty
-     * @param ReflectionProperty $childProperty
-     * @param string             $embeddedClass
+     * @param string $embeddedClass
      */
     public function __construct(ReflectionProperty $parentProperty, ReflectionProperty $childProperty, $embeddedClass)
     {
-        $this->parentProperty  = $parentProperty;
-        $this->childProperty   = $childProperty;
-        $this->embeddedClass   = (string) $embeddedClass;
+        $this->parentProperty = $parentProperty;
+        $this->childProperty  = $childProperty;
+        $this->embeddedClass  = (string) $embeddedClass;
 
         parent::__construct($childProperty->getDeclaringClass()->getName(), $childProperty->getName());
     }
@@ -59,7 +57,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             return null;
         }
 
@@ -73,7 +71,7 @@ class ReflectionEmbeddedProperty extends ReflectionProperty
     {
         $embeddedObject = $this->parentProperty->getValue($object);
 
-        if (null === $embeddedObject) {
+        if ($embeddedObject === null) {
             $this->instantiator = $this->instantiator ?: new Instantiator();
 
             $embeddedObject = $this->instantiator->instantiate($this->embeddedClass);

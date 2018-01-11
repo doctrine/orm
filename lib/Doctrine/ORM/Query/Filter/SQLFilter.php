@@ -12,10 +12,6 @@ use Doctrine\ORM\Query\ParameterTypeInferer;
  * The base class that user defined filters should extend.
  *
  * Handles the setting and escaping of parameters.
- *
- * @author Alexander <iam.asm89@gmail.com>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @abstract
  */
 abstract class SQLFilter
 {
@@ -29,7 +25,7 @@ abstract class SQLFilter
     /**
      * Parameters for the filter.
      *
-     * @var array
+     * @var mixed[][]
      */
     private $parameters = [];
 
@@ -56,7 +52,7 @@ abstract class SQLFilter
      */
     final public function setParameter($name, $value, $type = null)
     {
-        if (null === $type) {
+        if ($type === null) {
             $type = ParameterTypeInferer::inferType($value);
         }
 
@@ -85,7 +81,7 @@ abstract class SQLFilter
      */
     final public function getParameter($name)
     {
-        if (!isset($this->parameters[$name])) {
+        if (! isset($this->parameters[$name])) {
             throw new \InvalidArgumentException("Parameter '" . $name . "' does not exist.");
         }
 
@@ -97,11 +93,11 @@ abstract class SQLFilter
      *
      * @param string $name Name of the parameter.
      *
-     * @return boolean
+     * @return bool
      */
     final public function hasParameter($name)
     {
-        if (!isset($this->parameters[$name])) {
+        if (! isset($this->parameters[$name])) {
             return false;
         }
 
@@ -131,8 +127,7 @@ abstract class SQLFilter
     /**
      * Gets the SQL query part to add to a query.
      *
-     * @param ClassMetaData $targetEntity
-     * @param string        $targetTableAlias
+     * @param string $targetTableAlias
      *
      * @return string The constraint SQL if there is available, empty string otherwise.
      */

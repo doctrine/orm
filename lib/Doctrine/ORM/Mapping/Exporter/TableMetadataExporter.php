@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -9,7 +8,7 @@ use Doctrine\ORM\Mapping\TableMetadata;
 
 class TableMetadataExporter implements Exporter
 {
-    const VARIABLE = '$table';
+    public const VARIABLE = '$table';
 
     /**
      * {@inheritdoc}
@@ -20,7 +19,7 @@ class TableMetadataExporter implements Exporter
         $variableExporter = new VariableExporter();
         $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
         $objectReference  = $indentation . static::VARIABLE;
-        $lines = [];
+        $lines            = [];
 
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
 
@@ -41,11 +40,6 @@ class TableMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param TableMetadata $metadata
-     *
-     * @return string
-     */
     protected function exportInstantiation(TableMetadata $metadata) : string
     {
         return sprintf(

@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Cache\Persister;
 
 /**
  * Interface for persister that support second level cache.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CachedPersister
 {

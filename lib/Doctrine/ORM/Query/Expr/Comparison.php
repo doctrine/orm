@@ -6,21 +6,15 @@ namespace Doctrine\ORM\Query\Expr;
 
 /**
  * Expression class for DQL comparison expressions.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Comparison
 {
-    const EQ  = '=';
-    const NEQ = '<>';
-    const LT  = '<';
-    const LTE = '<=';
-    const GT  = '>';
-    const GTE = '>=';
+    public const EQ  = '=';
+    public const NEQ = '<>';
+    public const LT  = '<';
+    public const LTE = '<=';
+    public const GT  = '>';
+    public const GTE = '>=';
 
     /**
      * @var mixed
@@ -39,7 +33,7 @@ class Comparison
 
     /**
      * Creates a comparison expression with the given arguments.
-     * 
+     *
      * @param mixed  $leftExpr
      * @param string $operator
      * @param mixed  $rightExpr

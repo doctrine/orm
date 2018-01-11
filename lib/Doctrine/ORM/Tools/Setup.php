@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\Common\Cache\ApcuCache;
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\CacheProvider;
+use Doctrine\Common\Cache\MemcachedCache;
+use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
 
 /**
  * Convenience class for setting up Doctrine from different installations and configurations.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class Setup
 {
@@ -23,33 +24,30 @@ class Setup
      * Pick the directory the library was uncompressed into.
      *
      * @param string $directory
-     *
-     * @return void
      */
     public static function registerAutoloadDirectory($directory)
     {
-        if (!class_exists('Doctrine\Common\ClassLoader', false)) {
-            require_once $directory . "/Doctrine/Common/ClassLoader.php";
+        if (! class_exists('Doctrine\Common\ClassLoader', false)) {
+            require_once $directory . '/Doctrine/Common/ClassLoader.php';
         }
 
-        $loader = new ClassLoader("Doctrine", $directory);
+        $loader = new ClassLoader('Doctrine', $directory);
         $loader->register();
 
-        $loader = new ClassLoader('Symfony\Component', $directory . "/Doctrine");
+        $loader = new ClassLoader('Symfony\Component', $directory . '/Doctrine');
         $loader->register();
     }
 
     /**
      * Creates a configuration with an annotation metadata driver.
      *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
+     * @param string[] $paths
+     * @param bool     $isDevMode
+     * @param string   $proxyDir
      *
      * @return Configuration
      */
-    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createAnnotationMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver($paths));
@@ -60,14 +58,13 @@ class Setup
     /**
      * Creates a configuration with a xml metadata driver.
      *
-     * @param array   $paths
-     * @param boolean $isDevMode
-     * @param string  $proxyDir
-     * @param Cache   $cache
+     * @param string[] $paths
+     * @param bool     $isDevMode
+     * @param string   $proxyDir
      *
      * @return Configuration
      */
-    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createXMLMetadataConfiguration(array $paths, $isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
         $config = self::createConfiguration($isDevMode, $proxyDir, $cache);
         $config->setMetadataDriverImpl(new XmlDriver($paths));
@@ -80,11 +77,10 @@ class Setup
      *
      * @param bool   $isDevMode
      * @param string $proxyDir
-     * @param Cache  $cache
      *
      * @return Configuration
      */
-    public static function createConfiguration($isDevMode = false, $proxyDir = null, Cache $cache = null)
+    public static function createConfiguration($isDevMode = false, $proxyDir = null, ?Cache $cache = null)
     {
         $proxyDir = $proxyDir ?: sys_get_temp_dir();
 
@@ -101,11 +97,11 @@ class Setup
         return $config;
     }
 
-    private static function createCacheConfiguration(bool $isDevMode, string $proxyDir, ?Cache $cache) :  Cache
+    private static function createCacheConfiguration(bool $isDevMode, string $proxyDir, ?Cache $cache) : Cache
     {
         $cache = self::createCacheInstance($isDevMode, $cache);
 
-        if ( ! $cache instanceof CacheProvider) {
+        if (! $cache instanceof CacheProvider) {
             return $cache;
         }
 
@@ -131,15 +127,14 @@ class Setup
         }
 
         if (extension_loaded('apcu')) {
-            return new \Doctrine\Common\Cache\ApcuCache();
+            return new ApcuCache();
         }
-
 
         if (extension_loaded('memcached')) {
             $memcache = new \Memcached();
             $memcache->addServer('127.0.0.1', 11211);
 
-            $cache = new \Doctrine\Common\Cache\MemcachedCache();
+            $cache = new MemcachedCache();
             $cache->setMemcache($memcache);
 
             return $cache;
@@ -149,7 +144,7 @@ class Setup
             $redis = new \Redis();
             $redis->connect('127.0.0.1');
 
-            $cache = new \Doctrine\Common\Cache\RedisCache();
+            $cache = new RedisCache();
             $cache->setRedis($redis);
 
             return $cache;

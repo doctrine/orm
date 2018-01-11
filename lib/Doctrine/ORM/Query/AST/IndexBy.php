@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * IndexBy ::= "INDEX" "BY" SimpleStateFieldPathExpression
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class IndexBy extends Node
 {

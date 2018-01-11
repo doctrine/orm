@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\Expr;
 
 /**
  * Expression class for generating DQL functions.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Func
 {
@@ -21,24 +15,24 @@ class Func
     protected $name;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     protected $arguments;
 
     /**
      * Creates a function, with the given argument.
      *
-     * @param string $name
-     * @param array  $arguments
+     * @param string  $name
+     * @param mixed[] $arguments
      */
     public function __construct($name, $arguments)
     {
-        $this->name         = $name;
-        $this->arguments    = (array) $arguments;
+        $this->name      = $name;
+        $this->arguments = (array) $arguments;
     }
 
     /**
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -46,7 +40,7 @@ class Func
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getArguments()
     {

@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -27,10 +26,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
-/**
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
- */
 class DefaultCacheFactory implements CacheFactory
 {
     /**
@@ -58,10 +53,6 @@ class DefaultCacheFactory implements CacheFactory
      */
     private $fileLockRegionDirectory;
 
-    /**
-     * @param RegionsConfiguration $cacheConfig
-     * @param CacheAdapter         $cache
-     */
     public function __construct(RegionsConfiguration $cacheConfig, CacheAdapter $cache)
     {
         $this->regionsConfig = $cacheConfig;
@@ -84,17 +75,11 @@ class DefaultCacheFactory implements CacheFactory
         return $this->fileLockRegionDirectory;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\Region $region
-     */
     public function setRegion(Region $region)
     {
         $this->regions[$region->getName()] = $region;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\TimestampRegion $region
-     */
     public function setTimestampRegion(TimestampRegion $region)
     {
         $this->timestampRegion = $region;
@@ -107,8 +92,7 @@ class DefaultCacheFactory implements CacheFactory
         EntityManagerInterface $em,
         EntityPersister $persister,
         ClassMetadata $metadata
-    )
-    {
+    ) {
         $cache  = $metadata->getCache();
         $region = $this->getRegion($cache);
         $usage  = $cache->getUsage();
@@ -124,7 +108,7 @@ class DefaultCacheFactory implements CacheFactory
                 return new NonStrictReadWriteCachedEntityPersister($persister, $region, $em, $metadata);
 
             default:
-                throw new \InvalidArgumentException(sprintf("Unrecognized access strategy type [%s]", $usage));
+                throw new \InvalidArgumentException(sprintf('Unrecognized access strategy type [%s]', $usage));
         }
     }
 
@@ -135,8 +119,7 @@ class DefaultCacheFactory implements CacheFactory
         EntityManagerInterface $em,
         CollectionPersister $persister,
         AssociationMetadata $association
-    )
-    {
+    ) {
         $cache  = $association->getCache();
         $region = $this->getRegion($cache);
         $usage  = $cache->getUsage();
@@ -153,7 +136,7 @@ class DefaultCacheFactory implements CacheFactory
 
             default:
                 throw new \InvalidArgumentException(
-                    sprintf("Unrecognized access strategy type [%s]", $usage)
+                    sprintf('Unrecognized access strategy type [%s]', $usage)
                 );
         }
     }
@@ -206,7 +189,7 @@ class DefaultCacheFactory implements CacheFactory
         ;
 
         if ($cache->getUsage() === CacheUsage::READ_WRITE) {
-            if ( ! $this->fileLockRegionDirectory) {
+            if (! $this->fileLockRegionDirectory) {
                 throw new \LogicException(
                     'If you want to use a "READ_WRITE" cache an implementation of "Doctrine\ORM\Cache\ConcurrentRegion" is required, ' .
                     'The default implementation provided by doctrine is "Doctrine\ORM\Cache\Region\FileLockRegion" if you want to use it please provide a valid directory, DefaultCacheFactory#setFileLockRegionDirectory(). '
@@ -229,13 +212,13 @@ class DefaultCacheFactory implements CacheFactory
     {
         $cacheAdapter = clone $this->cache;
 
-        if (!$cacheAdapter instanceof CacheProvider) {
+        if (! $cacheAdapter instanceof CacheProvider) {
             return $cacheAdapter;
         }
 
         $namespace = $cacheAdapter->getNamespace();
 
-        if ('' !== $namespace) {
+        if ($namespace !== '') {
             $namespace .= ':';
         }
 

@@ -10,15 +10,15 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
  * Base class for entity persisters that implement a certain inheritance mapping strategy.
  * All these persisters are assumed to use a discriminator column to discriminate entity
  * types in the hierarchy.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @since 2.0
  */
 abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
 {
     /**
      * {@inheritdoc}
+     *
+     * @param object $entity
+     *
+     * @return mixed[]
      */
     protected function prepareInsertData($entity) : array
     {
@@ -37,8 +37,6 @@ abstract class AbstractEntityInheritancePersister extends BasicEntityPersister
     }
 
     /**
-     * @param JoinColumnMetadata $joinColumnMetadata
-     *
      * @return string
      */
     protected function getSelectJoinColumnSQL(JoinColumnMetadata $joinColumnMetadata)

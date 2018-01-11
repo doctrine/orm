@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
@@ -16,11 +16,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * Persister for entities that participate in a hierarchy mapped with the
  * SINGLE_TABLE strategy.
  *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author Roman Borschel <roman@code-factory.org>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @author Alexander <iam.asm89@gmail.com>
- * @since 2.0
  * @link http://martinfowler.com/eaaCatalog/singleTableInheritance.html
  */
 class SingleTablePersister extends AbstractEntityInheritancePersister
@@ -117,7 +112,7 @@ class SingleTablePersister extends AbstractEntityInheritancePersister
     /**
      * {@inheritdoc}
      */
-    protected function getSelectConditionSQL(array $criteria, AssociationMetadata $association = null)
+    protected function getSelectConditionSQL(array $criteria, ?AssociationMetadata $association = null)
     {
         $conditionSql = parent::getSelectConditionSQL($criteria, $association);
 

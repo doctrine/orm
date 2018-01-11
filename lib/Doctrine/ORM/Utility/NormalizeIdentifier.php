@@ -10,9 +10,6 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 
 /**
- * @since  3.0
- * @author Marco Pivetta <ocramius@gmail.com>
- *
  * @internal do not use in your own codebase: no BC compliance on this class
  */
 final class NormalizeIdentifier
@@ -20,6 +17,10 @@ final class NormalizeIdentifier
     /**
      * Given a flat identifier, this method will produce another flat identifier, but with all
      * association fields that are mapped as identifiers replaced by entity references, recursively.
+     *
+     * @param mixed[] $flatIdentifier
+     *
+     * @return mixed[]
      *
      * @throws \Doctrine\ORM\ORMException
      */

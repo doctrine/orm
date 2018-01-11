@@ -21,12 +21,6 @@ use ReflectionException;
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
  * metadata mapping information of a class which describes how a class should be mapped
  * to a relational database.
- *
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ClassMetadataFactory extends AbstractClassMetadataFactory
 {
@@ -62,9 +56,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $loaded;
     }
 
-    /**
-     * @param EntityManagerInterface $em
-     */
     public function setEntityManager(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -77,8 +68,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      */
     protected function initialize() : void
     {
-        $this->driver = $this->em->getConfiguration()->getMetadataDriverImpl();
-        $this->evm = $this->em->getEventManager();
+        $this->driver      = $this->em->getConfiguration()->getMetadataDriverImpl();
+        $this->evm         = $this->em->getEventManager();
         $this->initialized = true;
     }
 
@@ -88,8 +79,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     protected function onNotFoundMetadata(
         string $className,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ?ClassMetadata
-    {
+    ) : ?ClassMetadata {
         if (! $this->evm->hasListeners(Events::onClassMetadataNotFound)) {
             return null;
         }
@@ -111,8 +101,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         string $className,
         ?ClassMetadata $parent,
         ClassMetadataBuildingContext $metadataBuildingContext
-    ) : ClassMetadata
-    {
+    ) : ClassMetadata {
         $classMetadata = new ClassMetadata($className, $metadataBuildingContext);
 
         if ($parent) {
@@ -152,15 +141,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 $classMetadata->setCache(clone $parent->getCache());
             }
 
-            if ( ! empty($parent->namedNativeQueries)) {
+            if (! empty($parent->namedNativeQueries)) {
                 $this->addInheritedNamedNativeQueries($classMetadata, $parent);
             }
 
-            if ( ! empty($parent->sqlResultSetMappings)) {
+            if (! empty($parent->sqlResultSetMappings)) {
                 $this->addInheritedSqlResultSetMappings($classMetadata, $parent);
             }
 
-            if ( ! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
+            if (! empty($parent->entityListeners) && empty($classMetadata->entityListeners)) {
                 $classMetadata->entityListeners = $parent->entityListeners;
             }
         }
@@ -183,13 +172,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return $classMetadata;
     }
 
-    /**
-     * @param ClassMetadata      $class
-     * @param ClassMetadata|null $parent
-     *
-     * @return void
-     */
-    protected function completeRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null) : void
+    protected function completeRuntimeMetadata(ClassMetadata $class, ?ClassMetadata $parent = null) : void
     {
         if (! $parent || ! $parent->isMappedSuperclass) {
             return;
@@ -224,14 +207,9 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Validate runtime metadata is correctly defined.
      *
-     * @param ClassMetadata      $class
-     * @param ClassMetadata|null $parent
-     *
-     * @return void
-     *
      * @throws MappingException
      */
-    protected function validateRuntimeMetadata(ClassMetadata $class, ClassMetadata $parent = null) : void
+    protected function validateRuntimeMetadata(ClassMetadata $class, ?ClassMetadata $parent = null) : void
     {
         if (! $class->getReflectionClass()) {
             // only validate if there is a reflection class instance
@@ -243,13 +221,13 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $class->validateLifecycleCallbacks($this->getReflectionService());
 
         // verify inheritance
-        if ( ! $class->isMappedSuperclass && $class->inheritanceType !== InheritanceType::NONE) {
-            if ( ! $parent) {
+        if (! $class->isMappedSuperclass && $class->inheritanceType !== InheritanceType::NONE) {
+            if (! $parent) {
                 if (! $class->discriminatorMap) {
                     throw MappingException::missingDiscriminatorMap($class->getClassName());
                 }
 
-                if ( ! $class->discriminatorColumn) {
+                if (! $class->discriminatorColumn) {
                     throw MappingException::missingDiscriminatorColumn($class->getClassName());
                 }
             }
@@ -274,10 +252,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Populates the discriminator value of the given metadata (if not set) by iterating over discriminator
      * map classes and looking for a fitting one.
-     *
-     * @param ClassMetadata $metadata
-     *
-     * @return void
      *
      * @throws \InvalidArgumentException
      * @throws \ReflectionException
@@ -321,8 +295,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * The automatically generated discriminator map contains the lowercase short name of
      * each class as key.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     *
      * @throws MappingException
      */
     private function addDefaultDiscriminatorMap(ClassMetadata $class) : void
@@ -355,27 +327,20 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Gets the lower-case short name of a class.
      *
      * @param string $className
-     *
-     * @return string
      */
     private function getShortName($className) : string
     {
-        if (strpos($className, "\\") === false) {
+        if (strpos($className, '\\') === false) {
             return strtolower($className);
         }
 
-        $parts = explode("\\", $className);
+        $parts = explode('\\', $className);
 
         return strtolower(end($parts));
     }
 
     /**
      * Adds inherited fields to the subclass mapping.
-     *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
-     *
-     * @return void
      *
      * @throws MappingException
      */
@@ -395,13 +360,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited named queries to the subclass mapping.
      *
-     * @since 2.2
-     *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
-     *
-     * @return void
-     *
      * @throws MappingException
      */
     private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass) : void
@@ -417,13 +375,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     /**
      * Adds inherited named native queries to the subclass mapping.
-     *
-     * @since 2.3
-     *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
-     *
-     * @return void
      *
      * @throws MappingException
      */
@@ -448,19 +399,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     /**
      * Adds inherited sql result set mappings to the subclass mapping.
      *
-     * @since 2.3
-     *
-     * @param ClassMetadata $subClass
-     * @param ClassMetadata $parentClass
-     *
-     * @return void
-     *
      * @throws MappingException
      */
     private function addInheritedSqlResultSetMappings(ClassMetadata $subClass, ClassMetadata $parentClass) : void
     {
         foreach ($parentClass->sqlResultSetMappings as $name => $mapping) {
-            if (isset ($subClass->sqlResultSetMappings[$name])) {
+            if (isset($subClass->sqlResultSetMappings[$name])) {
                 continue;
             }
 
@@ -488,16 +432,12 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
      * Completes the ID generator mapping. If "auto" is specified we choose the generator
      * most appropriate for the targeted database platform.
      *
-     * @param ClassMetadata $class
-     *
-     * @return void
-     *
      * @throws ORMException
      */
     private function completeIdentifierGeneratorMappings(ClassMetadata $class) : void
     {
         foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            if ( ! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
+            if (! $property instanceof FieldMetadata /*&& ! $property instanceof AssocationMetadata*/) {
                 continue;
             }
 
@@ -507,7 +447,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function completeFieldIdentifierGeneratorMapping(FieldMetadata $field)
     {
-        if (!$field->hasValueGenerator()) {
+        if (! $field->hasValueGenerator()) {
             return;
         }
 
@@ -554,15 +494,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case GeneratorType::TABLE:
-                throw new ORMException("TableGenerator not yet implemented.");
+                throw new ORMException('TableGenerator not yet implemented.');
                 break;
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
-                if ( ! isset($definition['class'])) {
+                if (! isset($definition['class'])) {
                     throw new ORMException(sprintf('Cannot instantiate custom generator, no class has been defined'));
                 }
-                if ( ! class_exists($definition['class'])) {
+                if (! class_exists($definition['class'])) {
                     throw new ORMException(sprintf('Cannot instantiate custom generator : %s', var_export($definition, true))); //$definition['class']));
                 }
 
@@ -574,7 +514,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             default:
-                throw new ORMException("Unknown generator type: " . $generator->getType());
+                throw new ORMException('Unknown generator type: ' . $generator->getType());
         }
     }
 
@@ -602,23 +542,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         return isset($class->isMappedSuperclass) && $class->isMappedSuperclass === false;
     }
 
-    /**
-     * @return Platforms\AbstractPlatform
-     */
     private function getTargetPlatform() : Platforms\AbstractPlatform
     {
-        if (!$this->targetPlatform) {
+        if (! $this->targetPlatform) {
             $this->targetPlatform = $this->em->getConnection()->getDatabasePlatform();
         }
 
         return $this->targetPlatform;
     }
 
-    /**
-     * @param ClassMetadata $class
-     *
-     * @return void
-     */
     private function buildValueGenerationPlan(ClassMetadata $class) : void
     {
         /** @var LocalColumnMetadata[] $generatedProperties */
@@ -638,8 +570,8 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                 break;
 
             case 1:
-                $property  = reset($generatedProperties);
-                $executor  = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+                $property = reset($generatedProperties);
+                $executor = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
 
                 $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executor));
                 break;
@@ -656,17 +588,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         }
     }
 
-    /**
-     * @param ClassMetadata $class
-     * @param LocalColumnMetadata $property
-     *
-     * @return Sequencing\Generator
-     */
     private function createPropertyValueGenerator(
         ClassMetadata $class,
         LocalColumnMetadata $property
-    ) : Sequencing\Generator
-    {
+    ) : Sequencing\Generator {
         $platform = $this->getTargetPlatform();
 
         switch ($property->getValueGenerator()->getType()) {

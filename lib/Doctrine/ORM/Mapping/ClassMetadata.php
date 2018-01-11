@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -16,10 +15,6 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * A <tt>ClassMetadata</tt> instance holds all the object-relational mapping metadata
  * of an entity and its associations.
  *
- * @author Roman Borschel <roman@code-factory.org>
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.0
  */
 class ClassMetadata extends ComponentMetadata implements TableOwner
 {
@@ -34,14 +29,14 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * READ-ONLY: Whether this class describes the mapping of a mapped superclass.
      *
-     * @var boolean
+     * @var bool
      */
     public $isMappedSuperclass = false;
 
     /**
      * READ-ONLY: Whether this class describes the mapping of an embeddable class.
      *
-     * @var boolean
+     * @var bool
      */
     public $isEmbeddedClass = false;
 
@@ -52,28 +47,28 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * either in your domain or through the relation database (coming from a view,
      * or a history table for example).
      *
-     * @var boolean
+     * @var bool
      */
     private $readOnly = false;
 
     /**
      * The names of all subclasses (descendants).
      *
-     * @var array
+     * @var string[]
      */
     protected $subClasses = [];
 
     /**
      * READ-ONLY: The names of all embedded classes based on properties.
      *
-     * @var array
+     * @var string[]
      */
     //public $embeddedClasses = [];
 
     /**
      * The named queries allowed to be called directly from Repository.
      *
-     * @var array
+     * @var string[]
      */
     protected $namedQueries = [];
 
@@ -90,7 +85,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * )
      * </pre>
      *
-     * @var array
+     * @var string[][]
      */
     public $namedNativeQueries = [];
 
@@ -106,21 +101,21 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * )
      * </pre>
      *
-     * @var array
+     * @var mixed[][]
      */
     public $sqlResultSetMappings = [];
 
     /**
      * READ-ONLY: The registered lifecycle callbacks for entities of this class.
      *
-     * @var array<string, array<string>>
+     * @var string[][]
      */
     public $lifecycleCallbacks = [];
 
     /**
      * READ-ONLY: The registered entity listeners.
      *
-     * @var array
+     * @var mixed[][]
      */
     public $entityListeners = [];
 
@@ -164,7 +159,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * <b>This does only apply to the JOINED and SINGLE_TABLE inheritance mapping strategies
      * where a discriminator column is used.</b>
      *
-     * @var array<string, string>
+     * @var string[]
      *
      * @see discriminatorColumn
      */
@@ -189,7 +184,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * READ-ONLY: An array of field names. Used to look up field names from column names.
      * Keys are column names and values are field names.
      *
-     * @var array<string, string>
+     * @var string[]
      */
     public $fieldNames = [];
 
@@ -218,32 +213,22 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Initializes a new ClassMetadata instance that will hold the object-relational mapping
      * metadata of the class with the given name.
      *
-     * @param string                       $entityName              The name of the entity class.
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
+     * @param string $entityName The name of the entity class.
      */
     public function __construct(
         string $entityName,
         ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         parent::__construct($entityName, $metadataBuildingContext);
 
         $this->namingStrategy = $metadataBuildingContext->getNamingStrategy();
     }
 
-    /**
-     * @todo guilhermeblanco Remove once ClassMetadataFactory is finished
-     *
-     * @param string $className
-     */
     public function setClassName(string $className)
     {
         $this->className = $className;
     }
 
-    /**
-     * @return \ArrayIterator
-     */
     public function getColumnsIterator() : \ArrayIterator
     {
         $iterator = parent::getColumnsIterator();
@@ -255,9 +240,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         return $iterator;
     }
 
-    /**
-     * @return \ArrayIterator
-     */
     public function getAncestorsIterator() : \ArrayIterator
     {
         $ancestors = new \ArrayIterator();
@@ -274,9 +256,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         return $ancestors;
     }
 
-    /**
-     * @return string
-     */
     public function getRootClassName() : string
     {
         return ($this->parent instanceof ClassMetadata && ! $this->parent->isMappedSuperclass)
@@ -321,7 +300,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Parts that are also NOT serialized because they can not be properly unserialized:
      * - reflectionClass
      *
-     * @return array The names of all the fields that should be serialized.
+     * @return string[] The names of all the fields that should be serialized.
      */
     public function __sleep()
     {
@@ -401,10 +380,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Restores some state that can not be serialized/unserialized.
-     *
-     * @param ReflectionService $reflectionService
-     *
-     * @return void
      */
     public function wakeupReflection(ReflectionService $reflectionService) : void
     {
@@ -425,8 +400,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Validates Identifier.
-     *
-     * @return void
      *
      * @throws MappingException
      */
@@ -455,8 +428,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Validates association targets actually exist.
      *
-     * @return void
-     *
      * @throws MappingException
      */
     public function validateAssociations() : void
@@ -480,10 +451,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Validates lifecycle callbacks.
      *
-     * @param ReflectionService $reflectionService
-     *
-     * @return void
-     *
      * @throws MappingException
      */
     public function validateLifecycleCallbacks(ReflectionService $reflectionService) : void
@@ -500,10 +467,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Sets the change tracking policy used by this class.
-     *
-     * @param string $policy
-     *
-     * @return void
      */
     public function setChangeTrackingPolicy(string $policy) : void
     {
@@ -530,9 +493,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         return in_array($fieldName, $this->identifier, true);
     }
 
-    /**
-     * @return bool
-     */
     public function isIdentifierComposite() : bool
     {
         return isset($this->identifier[1]);
@@ -544,8 +504,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * @see ClassMetadata::$namedQueries
      *
      * @param string $queryName The query name.
-     *
-     * @return string
      *
      * @throws MappingException
      */
@@ -561,7 +519,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Gets all named queries of the class.
      *
-     * @return array
+     * @return string[]
      */
     public function getNamedQueries() : array
     {
@@ -575,13 +533,13 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $queryName The query name.
      *
-     * @return array
+     * @return string[]
      *
      * @throws MappingException
      */
     public function getNamedNativeQuery($queryName) : array
     {
-        if ( ! isset($this->namedNativeQueries[$queryName])) {
+        if (! isset($this->namedNativeQueries[$queryName])) {
             throw MappingException::queryNotFound($this->className, $queryName);
         }
 
@@ -591,7 +549,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Gets all named native queries of the class.
      *
-     * @return array
+     * @return string[]
      */
     public function getNamedNativeQueries() : array
     {
@@ -605,7 +563,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $name The result set mapping name.
      *
-     * @return array
+     * @return mixed[]
      *
      * @throws MappingException
      */
@@ -621,7 +579,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Gets all sql result set mappings of the class.
      *
-     * @return array
+     * @return mixed[][]
      */
     public function getSqlResultSetMappings()
     {
@@ -630,8 +588,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Validates & completes the basic mapping information for field mapping.
-     *
-     * @param FieldMetadata $property
      *
      * @throws MappingException If something is wrong with the mapping.
      */
@@ -677,8 +633,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Validates & completes the basic mapping information for field mapping.
      *
-     * @param VersionFieldMetadata $property
-     *
      * @throws MappingException If something is wrong with the mapping.
      */
     protected function validateAndCompleteVersionFieldMapping(VersionFieldMetadata $property)
@@ -710,8 +664,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Validates & completes the basic mapping information that is common to all
      * association mappings (one-to-one, many-ot-one, one-to-many, many-to-many).
      *
-     * @param AssociationMetadata $property
-     *
      * @throws MappingException If something is wrong with the mapping.
      * @throws CacheException   If entity is not cacheable.
      */
@@ -734,7 +686,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 throw MappingException::illegalOrphanRemovalOnIdentifierAssociation($this->className, $fieldName);
             }
 
-            if ( ! in_array($property->getName(), $this->identifier)) {
+            if (! in_array($property->getName(), $this->identifier)) {
                 if ($property instanceof ToOneAssociationMetadata && count($property->getJoinColumns()) >= 2) {
                     throw MappingException::cannotMapCompositePrimaryKeyEntitiesAsForeignId(
                         $property->getTargetEntity(),
@@ -746,7 +698,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 $this->identifier[] = $property->getName();
             }
 
-            if ($this->cache && !$property->getCache()) {
+            if ($this->cache && ! $property->getCache()) {
                 throw CacheException::nonCacheableEntityAssociation($this->className, $fieldName);
             }
 
@@ -799,7 +751,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             foreach ($property->getJoinColumns() as $joinColumn) {
                 /** @var JoinColumnMetadata $joinColumn */
                 if ($property instanceof OneToOneAssociationMetadata && $this->inheritanceType !== InheritanceType::SINGLE_TABLE) {
-                    if (1 === count($property->getJoinColumns())) {
+                    if (count($property->getJoinColumns()) === 1) {
                         if (! $property->isPrimaryKey()) {
                             $joinColumn->setUnique(true);
                         }
@@ -822,9 +774,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             }
 
             if ($uniqueConstraintColumns) {
-                if ( ! $this->table) {
+                if (! $this->table) {
                     throw new \RuntimeException(
-                        "ClassMetadata::setTable() has to be called before defining a one to one relationship."
+                        'ClassMetadata::setTable() has to be called before defining a one to one relationship.'
                     );
                 }
 
@@ -948,7 +900,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
                 $joinTable->setName($joinTableName);
             }
 
-            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() == $property->getTargetEntity() && ! $joinTable->hasColumns();
+            $selfReferencingEntityWithoutJoinColumns = $property->getSourceEntity() === $property->getTargetEntity() && ! $joinTable->hasColumns();
 
             if (! $joinTable->getJoinColumns()) {
                 $referencedColumnName = $this->namingStrategy->referenceColumnName();
@@ -1036,7 +988,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             throw MappingException::singleIdNotAllowedOnCompositePrimaryKey($this->className);
         }
 
-        if ( ! isset($this->identifier[0])) {
+        if (! isset($this->identifier[0])) {
             throw MappingException::noIdDefined($this->className);
         }
 
@@ -1048,9 +1000,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Sets the mapped identifier/primary key fields of this class.
      * Mainly used by the ClassMetadataFactory to assign inherited identifiers.
      *
-     * @param array $identifier
-     *
-     * @return void
+     * @param mixed[] $identifier
      */
     public function setIdentifier(array $identifier)
     {
@@ -1077,9 +1027,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Returns an array with identifier column names and their corresponding ColumnMetadata.
      *
-     * @param EntityManagerInterface $em
-     *
-     * @return array
+     * @return ColumnMetadata[]
      */
     public function getIdentifierColumns(EntityManagerInterface $em) : array
     {
@@ -1127,8 +1075,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Gets the name of the primary table.
-     *
-     * @return string|null
      */
     public function getTableName() : ?string
     {
@@ -1137,8 +1083,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Gets primary table's schema name.
-     *
-     * @return string|null
      */
     public function getSchemaName() : ?string
     {
@@ -1147,12 +1091,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Gets the table name to use for temporary identifier tables of this class.
-     *
-     * @return string
      */
     public function getTemporaryIdTableName() : string
     {
-        $schema = null === $this->getSchemaName()
+        $schema = $this->getSchemaName() === null
             ? ''
             : $this->getSchemaName() . '_'
         ;
@@ -1166,9 +1108,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @todo guilhermeblanco Only used for ClassMetadataTest. Remove if possible!
      *
-     * @param array $subclasses The names of all mapped subclasses.
-     *
-     * @return void
+     * @param string[] $subclasses The names of all mapped subclasses.
      */
     public function setSubclasses(array $subclasses) : void
     {
@@ -1178,7 +1118,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getSubClasses() : array
     {
@@ -1188,15 +1128,13 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Sets the inheritance type used by the class and its subclasses.
      *
-     * @param integer $type
-     *
-     * @return void
+     * @param int $type
      *
      * @throws MappingException
      */
     public function setInheritanceType($type) : void
     {
-        if ( ! $this->isInheritanceType($type)) {
+        if (! $this->isInheritanceType($type)) {
             throw MappingException::invalidInheritanceType($this->className, $type);
         }
 
@@ -1205,10 +1143,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Sets the override property mapping for an entity relationship.
-     *
-     * @param Property $property
-     *
-     * @return void
      *
      * @throws \RuntimeException
      * @throws MappingException
@@ -1297,7 +1231,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $fieldName
      *
-     * @return boolean TRUE if the field is inherited, FALSE otherwise.
+     * @return bool TRUE if the field is inherited, FALSE otherwise.
      */
     public function isInheritedProperty($fieldName)
     {
@@ -1321,24 +1255,19 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Checks whether the given type identifies an inheritance type.
      *
-     * @param integer $type
+     * @param int $type
      *
-     * @return boolean TRUE if the given type identifies an inheritance type, FALSe otherwise.
+     * @return bool TRUE if the given type identifies an inheritance type, FALSe otherwise.
      */
     private function isInheritanceType($type)
     {
-        return $type == InheritanceType::NONE
-            || $type == InheritanceType::SINGLE_TABLE
-            || $type == InheritanceType::JOINED
-            || $type == InheritanceType::TABLE_PER_CLASS;
+        return $type === InheritanceType::NONE
+            || $type === InheritanceType::SINGLE_TABLE
+            || $type === InheritanceType::JOINED
+            || $type === InheritanceType::TABLE_PER_CLASS;
     }
 
-    /**
-     * @param string $columnName
-     *
-     * @return LocalColumnMetadata|null
-     */
-    public function getColumn(string $columnName): ?LocalColumnMetadata
+    public function getColumn(string $columnName) : ?LocalColumnMetadata
     {
         foreach ($this->declaredProperties as $property) {
             if ($property instanceof LocalColumnMetadata && $property->getColumnName() === $columnName) {
@@ -1351,8 +1280,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Add a property mapping.
-     *
-     * @param Property $property
      *
      * @throws \RuntimeException
      * @throws MappingException
@@ -1415,10 +1342,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * INTERNAL:
      * Adds a property mapping without completing/validating it.
      * This is mainly used to add inherited property mappings to derived classes.
-     *
-     * @param Property $property
-     *
-     * @return void
      */
     public function addInheritedProperty(Property $property)
     {
@@ -1460,11 +1383,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * INTERNAL:
      * Adds a named query to this class.
      *
-     * @param string $name
-     * @param string $query
-     *
-     * @return void
-     *
      * @throws MappingException
      */
     public function addNamedQuery(string $name, string $query)
@@ -1480,11 +1398,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * INTERNAL:
      * Adds a named native query to this class.
      *
-     * @param string $name
-     * @param string $query
-     * @param array  $queryMapping
-     *
-     * @return void
+     * @param mixed[] $queryMapping
      *
      * @throws MappingException
      */
@@ -1505,15 +1419,13 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * INTERNAL:
      * Adds a sql result set mapping to this class.
      *
-     * @param array $resultMapping
-     *
-     * @return void
+     * @param mixed[] $resultMapping
      *
      * @throws MappingException
      */
     public function addSqlResultSetMapping(array $resultMapping)
     {
-        if (!isset($resultMapping['name'])) {
+        if (! isset($resultMapping['name'])) {
             throw MappingException::nameIsMandatoryForSqlResultSetMapping($this->className);
         }
 
@@ -1557,17 +1469,12 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Registers a custom repository class for the entity class.
      *
      * @param string|null $repositoryClassName The class name of the custom mapper.
-     *
-     * @return void
      */
     public function setCustomRepositoryClassName(?string $repositoryClassName)
     {
         $this->customRepositoryClassName = $repositoryClassName;
     }
 
-    /**
-     * @return string|null
-     */
     public function getCustomRepositoryClassName() : ?string
     {
         return $this->customRepositoryClassName;
@@ -1578,7 +1485,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $lifecycleEvent
      *
-     * @return boolean
+     * @return bool
      */
     public function hasLifecycleCallbacks($lifecycleEvent)
     {
@@ -1590,7 +1497,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $event
      *
-     * @return array
+     * @return string[]
      */
     public function getLifecycleCallbacks($event)
     {
@@ -1602,8 +1509,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      *
      * @param string $callback
      * @param string $event
-     *
-     * @return void
      */
     public function addLifecycleCallback($callback, $event)
     {
@@ -1618,9 +1523,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Sets the lifecycle callbacks for entities of this class.
      * Any previously registered callbacks are overwritten.
      *
-     * @param array $callbacks
-     *
-     * @return void
+     * @param string[][] $callbacks
      */
     public function setLifecycleCallbacks(array $callbacks) : void
     {
@@ -1633,8 +1536,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * @param string $eventName The entity lifecycle event.
      * @param string $class     The listener class.
      * @param string $method    The listener callback method.
-     *
-     * @return void
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
@@ -1663,10 +1564,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Sets the discriminator column definition.
      *
-     * @param DiscriminatorColumnMetadata $discriminatorColumn
-     *
-     * @return void
-     *
      * @throws MappingException
      *
      * @see getDiscriminatorColumn()
@@ -1692,9 +1589,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Sets the discriminator values used by this class.
      * Used for JOINED and SINGLE_TABLE inheritance mapping strategies.
      *
-     * @param array $map
-     *
-     * @return void
+     * @param string[] $map
      *
      * @throws MappingException
      */
@@ -1709,9 +1604,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Adds one entry of the discriminator map with a new class and corresponding name.
      *
      * @param string|int $name
-     * @param string     $className
-     *
-     * @return void
      *
      * @throws MappingException
      */
@@ -1734,17 +1626,11 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
         }
     }
 
-    /**
-     * @return ValueGenerationPlan
-     */
     public function getValueGenerationPlan() : ValueGenerationPlan
     {
         return $this->valueGenerationPlan;
     }
 
-    /**
-     * @param ValueGenerationPlan $valueGenerationPlan
-     */
     public function setValueGenerationPlan(ValueGenerationPlan $valueGenerationPlan) : void
     {
         $this->valueGenerationPlan = $valueGenerationPlan;
@@ -1754,8 +1640,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Checks whether the class has a named query with the given query name.
      *
      * @param string $queryName
-     *
-     * @return boolean
      */
     public function hasNamedQuery($queryName) : bool
     {
@@ -1766,8 +1650,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Checks whether the class has a named native query with the given query name.
      *
      * @param string $queryName
-     *
-     * @return boolean
      */
     public function hasNamedNativeQuery($queryName) : bool
     {
@@ -1778,8 +1660,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      * Checks whether the class has a named native query with the given query name.
      *
      * @param string $name
-     *
-     * @return boolean
      */
     public function hasSqlResultSetMapping($name) : bool
     {
@@ -1788,8 +1668,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Marks this class as read only, no change tracking is applied to it.
-     *
-     * @return void
      */
     public function asReadOnly() : void
     {
@@ -1798,17 +1676,12 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * Whether this class is read only or not.
-     *
-     * @return bool
      */
     public function isReadOnly() : bool
     {
         return $this->readOnly;
     }
 
-    /**
-     * @return bool
-     */
     public function isVersioned() : bool
     {
         return $this->versionProperty !== null;
@@ -1817,10 +1690,9 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Map Embedded Class
      *
-     * @param array $mapping
+     * @param mixed[] $mapping
      *
      * @throws MappingException
-     * @return void
      */
     public function mapEmbedded(array $mapping) : void
     {
@@ -1840,8 +1712,7 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     /**
      * Inline the embeddable class
      *
-     * @param string        $property
-     * @param ClassMetadata $embeddable
+     * @param string $property
      */
     public function inlineEmbeddable($property, ClassMetadata $embeddable) : void
     {

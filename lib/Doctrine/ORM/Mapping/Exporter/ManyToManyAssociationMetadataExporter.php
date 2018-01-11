@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -15,13 +14,13 @@ class ManyToManyAssociationMetadataExporter extends ToManyAssociationMetadataExp
     public function export($value, int $indentationLevel = 0) : string
     {
         /** @var ManyToManyAssociationMetadata $value */
-        $indentation      = str_repeat(self::INDENTATION, $indentationLevel);
-        $objectReference  = $indentation . static::VARIABLE;
-        $lines            = [];
+        $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
+        $objectReference = $indentation . static::VARIABLE;
+        $lines           = [];
 
         $lines[] = parent::export($value, $indentationLevel);
 
-        if (null !== $value->getJoinTable()) {
+        if ($value->getJoinTable() !== null) {
             $joinTableExporter = new JoinColumnMetadataExporter();
 
             $lines[] = null;

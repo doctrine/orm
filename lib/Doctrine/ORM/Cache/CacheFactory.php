@@ -1,22 +1,18 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\CacheMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Contract for building second level cache regions components.
- * 
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CacheFactory
 {
@@ -98,8 +94,6 @@ interface CacheFactory
 
     /**
      * Build \Doctrine\ORM\Cache
-     *
-     * @param EntityManagerInterface $entityManager
      *
      * @return \Doctrine\ORM\Cache
      */

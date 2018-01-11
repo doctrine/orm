@@ -11,11 +11,6 @@ use Doctrine\ORM\PersistentCollection;
 
 /**
  * Persister for one-to-many collections.
- *
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Alexander <iam.asm89@gmail.com>
- * @since   2.0
  */
 class OneToManyPersister extends AbstractCollectionPersister
 {
@@ -62,7 +57,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $association = $collection->getMapping();
 
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
-            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+            throw new \BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
         $persister = $this->uow->getEntityPersister($association->getTargetEntity());
@@ -111,7 +106,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         $association = $collection->getMapping();
 
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
-            throw new \BadMethodCallException("Selecting a collection by index is only supported on indexed collections.");
+            throw new \BadMethodCallException('Selecting a collection by index is only supported on indexed collections.');
         }
 
         $persister = $this->uow->getEntityPersister($association->getTargetEntity());
@@ -119,7 +114,7 @@ class OneToManyPersister extends AbstractCollectionPersister
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
         // 'mappedBy' field.
-        $criteria  = [
+        $criteria = [
             $association->getMappedBy()  => $collection->getOwner(),
             $association->getIndexedBy() => $key,
         ];
@@ -132,12 +127,12 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function contains(PersistentCollection $collection, $element)
     {
-        if ( ! $this->isValidEntityState($element)) {
+        if (! $this->isValidEntityState($element)) {
             return false;
         }
 
         $association = $collection->getMapping();
-        $persister = $this->uow->getEntityPersister($association->getTargetEntity());
+        $persister   = $this->uow->getEntityPersister($association->getTargetEntity());
 
         // only works with single id identifier entities. Will throw an
         // exception in Entity Persisters if that is not the case for the
@@ -175,12 +170,10 @@ class OneToManyPersister extends AbstractCollectionPersister
      */
     public function loadCriteria(PersistentCollection $collection, Criteria $criteria)
     {
-        throw new \BadMethodCallException("Filtering a collection by Criteria is not supported by this CollectionPersister.");
+        throw new \BadMethodCallException('Filtering a collection by Criteria is not supported by this CollectionPersister.');
     }
 
     /**
-     * @param PersistentCollection $collection
-     *
      * @return int
      *
      * @throws \Doctrine\DBAL\DBALException
@@ -211,8 +204,6 @@ class OneToManyPersister extends AbstractCollectionPersister
      * A temporary table is needed to keep IDs to be deleted in both parent and child class' tables.
      *
      * Thanks Steve Ebersole (Hibernate) for idea on how to tackle reliably this scenario, we owe him a beer! =)
-     *
-     * @param PersistentCollection $collection
      *
      * @return int
      *
@@ -265,7 +256,9 @@ class OneToManyPersister extends AbstractCollectionPersister
         // 4) Delete records on each table in the hierarchy
         $hierarchyClasses = array_merge(
             array_map(
-                function ($className) { return $this->em->getClassMetadata($className); },
+                function ($className) {
+                    return $this->em->getClassMetadata($className);
+                },
                 array_reverse($targetClass->getSubClasses())
             ),
             [$targetClass],

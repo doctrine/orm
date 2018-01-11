@@ -16,7 +16,6 @@ use Doctrine\ORM\Query\ResultSetMapping;
  * This object is highly mutable due to performance reasons. Same reasoning
  * behind its properties being public.
  *
- * @author Marco Pivetta <ocramius@gmail.com>
  */
 class CachedPersisterContext
 {
@@ -53,14 +52,14 @@ class CachedPersisterContext
     /**
      * Counter for creating unique SQL table and column aliases.
      *
-     * @var integer
+     * @var int
      */
     public $sqlAliasCounter = 0;
 
     /**
      * Map from class names (FQCN) to the corresponding generated SQL table aliases.
      *
-     * @var array
+     * @var string[]
      */
     public $sqlTableAliases = [];
 
@@ -72,9 +71,7 @@ class CachedPersisterContext
     public $handlesLimits;
 
     /**
-     * @param ClassMetadata    $class
-     * @param ResultSetMapping $rsm
-     * @param bool             $handlesLimits
+     * @param bool $handlesLimits
      */
     public function __construct(
         ClassMetadata $class,

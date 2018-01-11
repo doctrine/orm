@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -8,10 +7,6 @@ namespace Doctrine\ORM\Mapping;
 /**
  * Class CacheMetadata
  *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class CacheMetadata
 {
@@ -24,8 +19,6 @@ class CacheMetadata
     /**
      * Constructor.
      *
-     * @param string $usage
-     * @param string $region
      */
     public function __construct(string $usage, string $region)
     {
@@ -33,17 +26,11 @@ class CacheMetadata
         $this->region = $region;
     }
 
-    /**
-     * @return string
-     */
     public function getUsage() : string
     {
         return $this->usage;
     }
 
-    /**
-     * @return string
-     */
     public function getRegion() : string
     {
         return $this->region;

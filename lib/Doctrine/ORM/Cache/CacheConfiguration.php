@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -9,9 +8,6 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
 
 /**
  * Configuration container for second-level cache.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CacheConfiguration
 {
@@ -43,11 +39,6 @@ class CacheConfiguration
         return $this->cacheFactory;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\CacheFactory $factory
-     *
-     * @return void
-     */
     public function setCacheFactory(CacheFactory $factory)
     {
         $this->cacheFactory = $factory;
@@ -61,9 +52,6 @@ class CacheConfiguration
         return $this->cacheLogger;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
-     */
     public function setCacheLogger(CacheLogger $logger)
     {
         $this->cacheLogger = $logger;
@@ -81,9 +69,6 @@ class CacheConfiguration
         return $this->regionsConfig;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\RegionsConfiguration $regionsConfig
-     */
     public function setRegionsConfiguration(RegionsConfiguration $regionsConfig)
     {
         $this->regionsConfig = $regionsConfig;
@@ -103,9 +88,6 @@ class CacheConfiguration
         return $this->queryValidator;
     }
 
-    /**
-     * @param \Doctrine\ORM\Cache\QueryCacheValidator $validator
-     */
     public function setQueryValidator(QueryCacheValidator $validator)
     {
         $this->queryValidator = $validator;

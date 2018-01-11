@@ -9,13 +9,6 @@ use Doctrine\DBAL\Types\Type;
 
 /**
  * Provides an enclosed support for parameter inferring.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ParameterTypeInferer
 {

@@ -8,8 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Collection class for all the query filters.
- *
- * @author Alexander <iam.asm89@gmail.com>
  */
 class FilterCollection
 {
@@ -18,12 +16,12 @@ class FilterCollection
     /**
      * A filter object is in CLEAN state when it has no changed parameters.
      */
-    const FILTERS_STATE_CLEAN  = 1;
+    public const FILTERS_STATE_CLEAN = 1;
 
     /**
      * A filter object is in DIRTY state when it has changed parameters.
      */
-    const FILTERS_STATE_DIRTY = 2;
+    public const FILTERS_STATE_DIRTY = 2;
 
     /**
      * The used Configuration.
@@ -52,18 +50,13 @@ class FilterCollection
     private $filterHash;
 
     /**
-     * @var integer The current state of this filter.
+     * @var int The current state of this filter.
      */
     private $filtersState = self::FILTERS_STATE_CLEAN;
 
-    /**
-     * Constructor.
-     *
-     * @param EntityManagerInterface $em
-     */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em = $em;
+        $this->em     = $em;
         $this->config = $em->getConfiguration();
     }
 
@@ -88,11 +81,11 @@ class FilterCollection
      */
     public function enable($name)
     {
-        if ( ! $this->has($name)) {
+        if (! $this->has($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' does not exist.");
         }
 
-        if ( ! $this->isEnabled($name)) {
+        if (! $this->isEnabled($name)) {
             $filterClass = $this->config->getFilterClassName($name);
 
             $this->enabledFilters[$name] = new $filterClass($this->em);
@@ -140,7 +133,7 @@ class FilterCollection
      */
     public function getFilter($name)
     {
-        if ( ! $this->isEnabled($name)) {
+        if (! $this->isEnabled($name)) {
             throw new \InvalidArgumentException("Filter '" . $name . "' is not enabled.");
         }
 
@@ -156,7 +149,7 @@ class FilterCollection
      */
     public function has($name)
     {
-        return null !== $this->config->getFilterClassName($name);
+        return $this->config->getFilterClassName($name) !== null;
     }
 
     /**
@@ -164,7 +157,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return boolean True if the filter is enabled, false otherwise.
+     * @return bool True if the filter is enabled, false otherwise.
      */
     public function isEnabled($name)
     {
@@ -172,11 +165,11 @@ class FilterCollection
     }
 
     /**
-     * @return boolean True, if the filter collection is clean.
+     * @return bool True, if the filter collection is clean.
      */
     public function isClean()
     {
-        return self::FILTERS_STATE_CLEAN === $this->filtersState;
+        return $this->filtersState === self::FILTERS_STATE_CLEAN;
     }
 
     /**
@@ -187,7 +180,7 @@ class FilterCollection
     public function getHash()
     {
         // If there are only clean filters, the previous hash can be returned
-        if (self::FILTERS_STATE_CLEAN === $this->filtersState) {
+        if ($this->filtersState === self::FILTERS_STATE_CLEAN) {
             return $this->filterHash;
         }
 

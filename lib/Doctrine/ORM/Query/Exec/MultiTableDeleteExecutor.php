@@ -11,11 +11,6 @@ use Throwable;
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
  * Class Table Inheritance (JOINED).
- *
- * @author      Roman Borschel <roman@code-factory.org>
- * @license     http://www.opensource.org/licenses/mit-license.php MIT
- * @link        http://www.doctrine-project.org
- * @since       2.0
  */
 class MultiTableDeleteExecutor extends AbstractSqlExecutor
 {
@@ -45,9 +40,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {
-        $em             = $sqlWalker->getEntityManager();
-        $conn           = $em->getConnection();
-        $platform       = $conn->getDatabasePlatform();
+        $em       = $sqlWalker->getEntityManager();
+        $conn     = $em->getConnection();
+        $platform = $conn->getDatabasePlatform();
 
         $primaryClass    = $em->getClassMetadata($AST->deleteClause->abstractSchemaName);
         $primaryDqlAlias = $AST->deleteClause->aliasIdentificationVariable;
@@ -63,8 +58,8 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         $this->insertSql = 'INSERT INTO ' . $tempTable . ' (' . $idColumnNameList . ')'
                 . ' SELECT i0.' . implode(', i0.', array_keys($idColumns));
 
-        $rangeDecl = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $primaryDqlAlias);
-        $fromClause = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
+        $rangeDecl        = new AST\RangeVariableDeclaration($primaryClass->getClassName(), $primaryDqlAlias);
+        $fromClause       = new AST\FromClause([new AST\IdentificationVariableDeclaration($rangeDecl, null, [])]);
         $this->insertSql .= $sqlWalker->walkFromClause($fromClause);
 
         // Append WHERE clause, if there is one.
@@ -83,7 +78,9 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
         // 3. Create and store DELETE statements
         $hierarchyClasses = array_merge(
             array_map(
-                function ($className) use ($em) { return $em->getClassMetadata($className); },
+                function ($className) use ($em) {
+                    return $em->getClassMetadata($className);
+                },
                 array_reverse($primaryClass->getSubClasses())
             ),
             [$primaryClass],

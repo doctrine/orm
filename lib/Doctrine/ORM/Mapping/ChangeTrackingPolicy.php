@@ -1,17 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
 /**
  * Class ChangeTrackingPolicy
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 final class ChangeTrackingPolicy
 {
@@ -22,21 +16,21 @@ final class ChangeTrackingPolicy
      *
      * This is the default change tracking policy.
      */
-    const DEFERRED_IMPLICIT = 'DEFERRED_IMPLICIT';
+    public const DEFERRED_IMPLICIT = 'DEFERRED_IMPLICIT';
 
     /**
      * DEFERRED_EXPLICIT means that changes of entities are calculated at commit-time
      * by doing a property-by-property comparison with the original data. This will
      * be done only for entities that were explicitly saved (through persist() or a cascade).
      */
-    const DEFERRED_EXPLICIT = 'DEFERRED_EXPLICIT';
+    public const DEFERRED_EXPLICIT = 'DEFERRED_EXPLICIT';
 
     /**
      * NOTIFY means that Doctrine relies on the entities sending out notifications when their
      * properties change. Such entity classes must implement the <tt>NotifyPropertyChanged</tt>
      * interface.
      */
-    const NOTIFY = 'NOTIFY';
+    public const NOTIFY = 'NOTIFY';
 
     /**
      * Will break upon instantiation.

@@ -6,22 +6,16 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ArithmeticTerm extends Node
 {
     /**
-     * @var array
+     * @var ArithmeticFactor[]
      */
     public $arithmeticFactors;
 
     /**
-     * @param array $arithmeticFactors
+     * @param ArithmeticFactor[] $arithmeticFactors
      */
     public function __construct(array $arithmeticFactors)
     {

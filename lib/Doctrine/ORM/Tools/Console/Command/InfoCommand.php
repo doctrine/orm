@@ -12,10 +12,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Show information about mapped entities.
- *
- * @link    www.doctrine-project.org
- * @since   2.1
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class InfoCommand extends Command
 {
@@ -48,18 +44,18 @@ EOT
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
-        if ( ! $entityClassNames) {
+        if (! $entityClassNames) {
             $ui->caution(
                 [
                     'You do not have any mapped Doctrine ORM entities according to the current configuration.',
-                    'If you have entities or mapping files you should check your mapping configuration for errors.'
+                    'If you have entities or mapping files you should check your mapping configuration for errors.',
                 ]
             );
 
             return 1;
         }
 
-        $ui->text(sprintf("Found <info>%d</info> mapped entities:", count($entityClassNames)));
+        $ui->text(sprintf('Found <info>%d</info> mapped entities:', count($entityClassNames)));
         $ui->newLine();
 
         $failure = false;
@@ -67,13 +63,13 @@ EOT
         foreach ($entityClassNames as $entityClassName) {
             try {
                 $entityManager->getClassMetadata($entityClassName);
-                $ui->text(sprintf("<info>[OK]</info>   %s", $entityClassName));
+                $ui->text(sprintf('<info>[OK]</info>   %s', $entityClassName));
             } catch (MappingException $e) {
                 $ui->text(
                     [
-                        sprintf("<error>[FAIL]</error> %s", $entityClassName),
-                        sprintf("<comment>%s</comment>", $e->getMessage()),
-                        ''
+                        sprintf('<error>[FAIL]</error> %s', $entityClassName),
+                        sprintf('<comment>%s</comment>', $e->getMessage()),
+                        '',
                     ]
                 );
 

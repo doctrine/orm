@@ -11,12 +11,6 @@ namespace Doctrine\ORM\Query\AST;
  *                          EnumExpression ("=" | "<>" | "!=") (EnumExpression | QuantifiedExpression) |
  *                          DatetimeExpression ComparisonOperator (DatetimeExpression | QuantifiedExpression) |
  *                          EntityExpression ("=" | "<>") (EntityExpression | QuantifiedExpression)
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ComparisonExpression extends Node
 {
@@ -42,9 +36,9 @@ class ComparisonExpression extends Node
      */
     public function __construct($leftExpr, $operator, $rightExpr)
     {
-        $this->leftExpression = $leftExpr;
+        $this->leftExpression  = $leftExpr;
         $this->rightExpression = $rightExpr;
-        $this->operator = $operator;
+        $this->operator        = $operator;
     }
 
     /**

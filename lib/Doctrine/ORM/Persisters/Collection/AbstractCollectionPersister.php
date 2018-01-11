@@ -10,8 +10,6 @@ use Doctrine\ORM\UnitOfWork;
 /**
  * Base class for all collection persisters.
  *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
  */
 abstract class AbstractCollectionPersister implements CollectionPersister
 {
@@ -40,7 +38,6 @@ abstract class AbstractCollectionPersister implements CollectionPersister
     /**
      * Initializes a new instance of a class derived from AbstractCollectionPersister.
      *
-     * @param EntityManagerInterface $em
      */
     public function __construct(EntityManagerInterface $em)
     {

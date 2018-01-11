@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -9,7 +8,7 @@ use Doctrine\ORM\Mapping\ColumnMetadata;
 
 abstract class ColumnMetadataExporter implements Exporter
 {
-    const VARIABLE = '$column';
+    public const VARIABLE = '$column';
 
     /**
      * {@inheritdoc}
@@ -25,7 +24,7 @@ abstract class ColumnMetadataExporter implements Exporter
         $lines[] = $objectReference . ' = ' . $this->exportInstantiation($value);
 
         if (! empty($value->getColumnDefinition())) {
-            $lines[] = $objectReference. '->setColumnDefinition("' . $value->getColumnDefinition() . '");';
+            $lines[] = $objectReference . '->setColumnDefinition("' . $value->getColumnDefinition() . '");';
         }
 
         $lines[] = $objectReference . '->setTableName("' . $value->getTableName() . '");';
@@ -37,10 +36,5 @@ abstract class ColumnMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param ColumnMetadata $metadata
-     *
-     * @return string
-     */
     abstract protected function exportInstantiation(ColumnMetadata $metadata) : string;
 }

@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Base class for EntityManager decorators
- *
- * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
@@ -21,9 +18,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     protected $wrapped;
 
-    /**
-     * @param EntityManagerInterface $wrapped
-     */
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;

@@ -11,8 +11,6 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 /**
  * Class that holds event arguments for a loadMetadata event.
  *
- * @author Jonathan H. Wage <jonwage@gmail.com>
- * @since  2.0
  */
 class LoadClassMetadataEventArgs extends EventArgs
 {
@@ -28,9 +26,6 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Constructor.
-     *
-     * @param ClassMetadata          $classMetadata
-     * @param EntityManagerInterface $entityManager
      */
     public function __construct(ClassMetadata $classMetadata, EntityManagerInterface $entityManager)
     {
@@ -40,8 +35,6 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieves the associated ClassMetadata.
-     *
-     * @return ClassMetadata
      */
     public function getClassMetadata() : ClassMetadata
     {
@@ -50,8 +43,6 @@ class LoadClassMetadataEventArgs extends EventArgs
 
     /**
      * Retrieve associated EntityManager.
-     *
-     * @return EntityManagerInterface
      */
     public function getEntityManager() : EntityManagerInterface
     {

@@ -8,9 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Interface for entity repository factory.
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.4
  */
 interface RepositoryFactory
 {
