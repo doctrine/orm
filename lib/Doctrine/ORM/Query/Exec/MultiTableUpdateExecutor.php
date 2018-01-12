@@ -46,10 +46,10 @@ class MultiTableUpdateExecutor extends AbstractSqlExecutor
      * {@internal Any SQL construction and preparation takes place in the constructor for
      *            best performance. With a query cache the executor will be cached. }}
      *
-     * @param \Doctrine\ORM\Query\AST\Node  $AST       The root AST node of the DQL query.
-     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     * @param \Doctrine\ORM\Query\AST\UpdateStatement $AST       The root AST node of the DQL query.
+     * @param \Doctrine\ORM\Query\SqlWalker           $sqlWalker The walker used for SQL generation from the AST.
      */
-    public function __construct(AST\Node $AST, $sqlWalker)
+    public function __construct(AST\UpdateStatement $AST, $sqlWalker)
     {
         $em       = $sqlWalker->getEntityManager();
         $conn     = $em->getConnection();

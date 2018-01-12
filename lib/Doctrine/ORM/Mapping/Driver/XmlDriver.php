@@ -58,7 +58,9 @@ class XmlDriver extends FileDriver
         // Process table information
         $parent = $metadata->getParent();
 
-        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
+        if ($parent instanceof Mapping\ClassMetadata
+            && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE
+        ) {
             $metadata->setTable($parent->table);
         } else {
             $namingStrategy = $metadataBuildingContext->getNamingStrategy();

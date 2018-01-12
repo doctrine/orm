@@ -26,7 +26,7 @@ class IterableResult implements \Iterator
     private $key = -1;
 
     /**
-     * @var object|null
+     * @var mixed[]|false|null
      */
     private $current;
 
@@ -65,7 +65,7 @@ class IterableResult implements \Iterator
     }
 
     /**
-     * @return mixed
+     * @return mixed[]|false|null
      */
     public function current()
     {

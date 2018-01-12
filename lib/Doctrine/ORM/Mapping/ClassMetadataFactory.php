@@ -135,8 +135,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->completeIdentifierGeneratorMappings($classMetadata);
 
         if ($parent) {
-            if ($parent->getCache()) {
-                $classMetadata->setCache(clone $parent->getCache());
+            $parentCache = $parent->getCache();
+
+            if ($parentCache) {
+                $classMetadata->setCache(clone $parentCache);
             }
 
             if (! empty($parent->namedNativeQueries)) {
@@ -589,16 +591,15 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
                     $platform->quoteIdentifier($definition['sequenceName']),
                     $definition['allocationSize']
                 );
-                break;
 
             case GeneratorType::UUID:
                 return new Sequencing\UuidGenerator();
-                break;
 
             case GeneratorType::CUSTOM:
                 $class = $property->getValueGenerator()->getDefinition()['class'];
                 return new $class();
-                break;
         }
+
+        throw new \UnexpectedValueException('Platform ' . $property->getValueGenerator()->getType() . ' is not supported');
     }
 }

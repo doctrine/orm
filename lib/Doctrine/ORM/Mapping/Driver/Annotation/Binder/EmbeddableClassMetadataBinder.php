@@ -57,7 +57,7 @@ class EmbeddableClassMetadataBinder
     {
         $classMetadata = $this->classMetadata;
 
-        $this->processEmbeddableAnnotation($classMetadata, $this->classMetadata[Annotation\Embeddable::class]);
+        $this->processEmbeddableAnnotation($classMetadata, $this->classAnnotations[Annotation\Embeddable::class]);
 
         return $classMetadata;
     }

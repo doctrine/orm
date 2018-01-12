@@ -60,7 +60,7 @@ class AssociationMetadata implements Property
     }
 
     /**
-     * {@inheritdoc}
+     * @return ClassMetadata
      */
     public function getDeclaringClass() : ComponentMetadata
     {

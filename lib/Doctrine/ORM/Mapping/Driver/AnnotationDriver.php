@@ -992,9 +992,13 @@ class AnnotationDriver implements MappingDriver
     ) : void {
         $parent = $metadata->getParent();
 
-        if ($parent && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
+        if ($parent instanceof Mapping\ClassMetadata
+            && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE
+        ) {
             // Handle the case where a middle mapped super class inherits from a single table inheritance tree.
             do {
+                assert($parent instanceof Mapping\ClassMetadata);
+
                 if (! $parent->isMappedSuperclass) {
                     $metadata->setTable($parent->table);
 

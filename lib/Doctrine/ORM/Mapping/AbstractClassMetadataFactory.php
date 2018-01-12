@@ -182,7 +182,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
                     foreach ($this->loadMetadata($realClassName, $metadataBuildingContext) as $loadedClass) {
                         $loadedClassName = $loadedClass->getClassName();
 
-                        $this->cacheDriver->save($loadedClassName . $this->cacheSalt, $loadedClass, null);
+                        $this->cacheDriver->save($loadedClassName . $this->cacheSalt, $loadedClass, 0);
                     }
                 }
             } else {

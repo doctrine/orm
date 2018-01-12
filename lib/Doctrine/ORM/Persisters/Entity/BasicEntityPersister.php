@@ -280,6 +280,7 @@ class BasicEntityPersister implements EntityPersister
      */
     protected function fetchVersionValue(VersionFieldMetadata $versionProperty, array $id)
     {
+        /** @var ClassMetadata $versionedClass */
         $versionedClass = $versionProperty->getDeclaringClass();
         $tableName      = $versionedClass->table->getQuotedQualifiedName($this->platform);
         $columnName     = $this->platform->quoteIdentifier($versionProperty->getColumnName());
@@ -817,6 +818,8 @@ class BasicEntityPersister implements EntityPersister
         $sourceClass       = $association->getDeclaringClass();
         $owningAssociation = $targetClass->getProperty($association->getMappedBy());
         $targetTableAlias  = $this->getSQLTableAlias($targetClass->getTableName());
+
+        assert($sourceClass instanceof ClassMetadata);
 
         foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
             $sourceKeyColumn = $joinColumn->getReferencedColumnName();

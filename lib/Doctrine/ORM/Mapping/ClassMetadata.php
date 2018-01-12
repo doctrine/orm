@@ -421,20 +421,17 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
      */
     public function validateAssociations() : void
     {
-        array_map(
-            function (Property $property) {
-                if (! ($property instanceof AssociationMetadata)) {
-                    return;
-                }
+        foreach ($this->declaredProperties as $property) {
+            if (! ($property instanceof AssociationMetadata)) {
+                continue;
+            }
 
-                $targetEntity = $property->getTargetEntity();
+            $targetEntity = $property->getTargetEntity();
 
-                if (! class_exists($targetEntity)) {
-                    throw MappingException::invalidTargetEntityClass($targetEntity, $this->className, $property->getName());
-                }
-            },
-            $this->declaredProperties
-        );
+            if (! class_exists($targetEntity)) {
+                throw MappingException::invalidTargetEntityClass($targetEntity, $this->className, $property->getName());
+            }
+        }
     }
 
     /**
@@ -1307,7 +1304,10 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function addInheritedProperty(Property $property)
     {
         $inheritedProperty = clone $property;
-        $declaringClass    = $property->getDeclaringClass();
+        /** @var ClassMetadata $declaringClass */
+        $declaringClass = $property->getDeclaringClass();
+
+        assert($declaringClass instanceof ClassMetadata);
 
         if ($inheritedProperty instanceof FieldMetadata) {
             if (! $declaringClass->isMappedSuperclass) {

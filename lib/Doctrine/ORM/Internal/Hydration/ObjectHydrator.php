@@ -43,7 +43,7 @@ class ObjectHydrator extends AbstractHydrator
     private $resultCounter = 0;
 
     /**
-     * @var bool
+     * @var bool[]
      */
     private $rootAliases = [];
 

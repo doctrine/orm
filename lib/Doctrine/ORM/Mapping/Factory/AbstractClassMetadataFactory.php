@@ -147,8 +147,8 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     protected function createClassMetadata(ClassMetadataDefinition $definition) : ClassMetadata
     {
+        $metadataFqcn = $definition->metadataClassName;
         /** @var ClassMetadata $classMetadata */
-        $metadataFqcn  = $definition->metadataClassName;
         $classMetadata = new $metadataFqcn($definition->parentClassMetadata);
 
         $classMetadata->wakeupReflection($this->getReflectionService());

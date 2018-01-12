@@ -322,6 +322,7 @@ class SqlWalker implements TreeWalker
         $parentClass = $class;
 
         while (($parentClass = $parentClass->getParent()) !== null) {
+            /** @var ClassMetadata $parentClass */
             $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias = $this->getSQLTableAlias($parentClass->getTableName(), $dqlAlias);
 

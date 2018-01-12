@@ -260,12 +260,6 @@ class ArrayHydrator extends AbstractHydrator
      */
     private function updateResultPointer(array &$coll, $index, $dqlAlias, $oneToOne)
     {
-        if ($coll === null) {
-            unset($this->resultPointers[$dqlAlias]); // Ticket #1228
-
-            return;
-        }
-
         if ($oneToOne) {
             $this->resultPointers[$dqlAlias] =& $coll;
 

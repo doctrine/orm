@@ -586,7 +586,7 @@ class Parser
     /**
      * Validates that the given <tt>NewObjectExpression</tt>.
      *
-     * @param \Doctrine\ORM\Query\AST\SelectClause $AST
+     * @param \Doctrine\ORM\Query\AST\SelectStatement $AST
      */
     private function processDeferredNewObjectExpressions($AST)
     {

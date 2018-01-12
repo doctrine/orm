@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -143,6 +144,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Make sure the table with the version column is updated even if no columns on that
         // table were affected.
         if ($isVersioned) {
+            /** @var ClassMetadata $versionedClass */
             $versionedClass = $this->class->versionProperty->getDeclaringClass();
             $versionedTable = $versionedClass->getTableName();
 
@@ -183,6 +185,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         $parentClass  = $this->class;
 
         while (($parentClass = $parentClass->getParent()) !== null) {
+            /** @var ClassMetadata $parentClass */
             $parentTable = $parentClass->table->getQuotedQualifiedName($this->platform);
 
             $this->conn->delete($parentTable, $id);
@@ -302,6 +305,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         while (($parentClass = $parentClass->getParent()) !== null) {
             $conditions = [];
+            /** @var ClassMetadata $parentClass */
             $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias = $this->getSQLTableAlias($parentClass->getTableName());
             $joinSql   .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';
@@ -499,6 +503,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
 
         while (($parentClass = $parentClass->getParent()) !== null) {
             $conditions = [];
+            /** @var ClassMetadata $parentClass */
             $tableName  = $parentClass->table->getQuotedQualifiedName($this->platform);
             $tableAlias = $this->getSQLTableAlias($parentClass->getTableName());
             $joinSql   .= ' INNER JOIN ' . $tableName . ' ' . $tableAlias . ' ON ';

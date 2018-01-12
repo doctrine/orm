@@ -89,7 +89,7 @@ class UnitOfWork implements PropertyChangedListener
      * Since all classes in a hierarchy must share the same identifier set,
      * we always take the root class name of the hierarchy.
      *
-     * @var object[]
+     * @var object[][]
      */
     private $identityMap = [];
 
