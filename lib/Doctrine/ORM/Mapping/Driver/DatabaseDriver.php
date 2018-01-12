@@ -494,11 +494,10 @@ class DatabaseDriver implements MappingDriver
      */
     private function getClassNameForTable($tableName)
     {
-        if (isset($this->classNamesForTables[$tableName])) {
-            return $this->namespace . $this->classNamesForTables[$tableName];
-        }
-
-        return $this->namespace . Inflector::classify(strtolower($tableName));
+        return $this->namespace . (
+            $this->classNamesForTables[$tableName]
+                ?? Inflector::classify(strtolower($tableName))
+        );
     }
 
     /**
