@@ -1,5 +1,19 @@
 # Upgrade to 3.0
 
+## BC Break: Removed support for entity namespace aliases
+
+The support for namespace aliases has been removed.
+Please migrate to using `::class` for referencing classes.
+
+These methods have been removed:
+
+ * `Doctrine\ORM\Configuration::addEntityNamespace()`
+ * `Doctrine\ORM\Configuration::getEntityNamespace()`
+ * `Doctrine\ORM\Configuration::setEntityNamespaces()`
+ * `Doctrine\ORM\Configuration::getEntityNamespaces()`
+ * `Doctrine\ORM\Mapping\AbstractClassMetadataFactory::getFqcnFromAlias()`
+ * `Doctrine\ORM\ORMException::unknownEntityNamespace()`
+
 ## BC Break: Removed same-namespace class name resolution
 
 Support for same-namespace class name resolution in mappings has been removed.

@@ -23,14 +23,6 @@ class EntityRepositoryCriteriaTest extends OrmFunctionalTestCase
         parent::setUp();
     }
 
-    public function tearDown()
-    {
-        if ($this->em) {
-            $this->em->getConfiguration()->setEntityNamespaces([]);
-        }
-        parent::tearDown();
-    }
-
     public function loadFixture()
     {
         $today = new DateTimeModel();

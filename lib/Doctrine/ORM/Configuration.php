@@ -63,11 +63,6 @@ class Configuration extends DBALConfiguration
     private $metadataCache;
 
     /**
-     * @var string[] indexed by alias
-     */
-    private $entityNamespaces = [];
-
-    /**
      * @var string[] of DQL, indexed by query name
      */
     private $namedQueries = [];
@@ -209,48 +204,6 @@ class Configuration extends DBALConfiguration
         $reader = new CachedReader(new AnnotationReader(), new ArrayCache());
 
         return new AnnotationDriver($reader, $paths);
-    }
-
-    /**
-     * Adds a namespace under a certain alias.
-     */
-    public function addEntityNamespace(string $alias, string $namespace) : void
-    {
-        $this->entityNamespaces[$alias] = $namespace;
-    }
-
-    /**
-     * Resolves a registered namespace alias to the full namespace.
-     *
-     * @throws ORMException
-     */
-    public function getEntityNamespace(string $entityNamespaceAlias) : string
-    {
-        if (! isset($this->entityNamespaces[$entityNamespaceAlias])) {
-            throw ORMException::unknownEntityNamespace($entityNamespaceAlias);
-        }
-
-        return trim($this->entityNamespaces[$entityNamespaceAlias], '\\');
-    }
-
-    /**
-     * Sets the entity alias map.
-     *
-     * @param string[] $entityNamespaces indexed by namespace alias
-     */
-    public function setEntityNamespaces(array $entityNamespaces) : void
-    {
-        $this->entityNamespaces = $entityNamespaces;
-    }
-
-    /**
-     * Retrieves the list of registered entity namespace aliases.
-     *
-     * @return string[] indexed by namespace alias
-     */
-    public function getEntityNamespaces() : array
-    {
-        return $this->entityNamespaces;
     }
 
     /**

@@ -307,12 +307,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
 
     private function normalizeClassName(string $className) : string
     {
-        if (strpos($className, ':') !== false) {
-            [$namespaceAlias, $simpleClassName] = explode(':', $className, 2);
-
-            return $this->getFqcnFromAlias($namespaceAlias, $simpleClassName);
-        }
-
         return StaticClassNameConverter::getRealClass($className);
     }
 
@@ -321,14 +315,6 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * since these are not needed at all when a metadata cache is active.
      */
     abstract protected function initialize() : void;
-
-    /**
-     * Gets the fully qualified class-name from the namespace alias.
-     *
-     * @param string $namespaceAlias
-     * @param string $simpleClassName
-     */
-    abstract protected function getFqcnFromAlias($namespaceAlias, $simpleClassName) : string;
 
     /**
      * Returns the mapping driver implementation.
