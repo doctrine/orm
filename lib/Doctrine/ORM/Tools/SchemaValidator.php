@@ -78,7 +78,7 @@ class SchemaValidator
         }
 
         foreach ($class->getSubClasses() as $subClass) {
-            if (! in_array($class->getClassName(), class_parents($subClass))) {
+            if (! in_array($class->getClassName(), class_parents($subClass), true)) {
                 $message = "According to the discriminator map class, '%s' has to be a child of '%s', but these entities are not related through inheritance.";
 
                 $ce[] = sprintf($message, $subClass, $class->getClassName());
@@ -200,7 +200,7 @@ class SchemaValidator
                 $joinTable               = $association->getJoinTable();
 
                 foreach ($joinTable->getJoinColumns() as $joinColumn) {
-                    if (! in_array($joinColumn->getReferencedColumnName(), $classIdentifierColumns)) {
+                    if (! in_array($joinColumn->getReferencedColumnName(), $classIdentifierColumns, true)) {
                         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
                         $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $class->getClassName());
@@ -209,7 +209,7 @@ class SchemaValidator
                 }
 
                 foreach ($joinTable->getInverseJoinColumns() as $inverseJoinColumn) {
-                    if (! in_array($inverseJoinColumn->getReferencedColumnName(), $targetIdentifierColumns)) {
+                    if (! in_array($inverseJoinColumn->getReferencedColumnName(), $targetIdentifierColumns, true)) {
                         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
                         $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $targetMetadata->getClassName());
@@ -251,7 +251,7 @@ class SchemaValidator
                 $joinColumns       = $association->getJoinColumns();
 
                 foreach ($joinColumns as $joinColumn) {
-                    if (! in_array($joinColumn->getReferencedColumnName(), $identifierColumns)) {
+                    if (! in_array($joinColumn->getReferencedColumnName(), $identifierColumns, true)) {
                         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
                         $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $targetMetadata->getClassName());

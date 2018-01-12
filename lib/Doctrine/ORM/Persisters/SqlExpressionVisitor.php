@@ -47,7 +47,7 @@ class SqlExpressionVisitor extends ExpressionVisitor
         if ($property instanceof AssociationMetadata &&
             $value !== null &&
             ! is_object($value) &&
-            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN])) {
+            ! in_array($comparison->getOperator(), [Comparison::IN, Comparison::NIN], true)) {
             throw PersisterException::matchingAssocationFieldRequiresObject($this->classMetadata->getClassName(), $field);
         }
 

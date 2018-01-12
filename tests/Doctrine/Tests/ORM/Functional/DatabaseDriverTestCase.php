@@ -56,7 +56,7 @@ abstract class DatabaseDriverTestCase extends OrmFunctionalTestCase
         $driver = new DatabaseDriver($sm);
 
         foreach ($driver->getAllClassNames() as $className) {
-            if (!in_array(strtolower($className), $classNames)) {
+            if (!in_array(strtolower($className), $classNames, true)) {
                 continue;
             }
 

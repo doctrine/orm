@@ -70,7 +70,7 @@ abstract class Base
             if (! is_string($arg)) {
                 $class = get_class($arg);
 
-                if (! in_array($class, $this->allowedClasses)) {
+                if (! in_array($class, $this->allowedClasses, true)) {
                     throw new \InvalidArgumentException(
                         sprintf("Expression of type '%s' not allowed in this context.", $class)
                     );

@@ -505,7 +505,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $property = $rootClass->getProperty($identifier);
 
             if ($property instanceof FieldMetadata) {
-                foreach (array_keys($this->rsm->fieldMappings, $identifier) as $alias) {
+                foreach (array_keys($this->rsm->fieldMappings, $identifier, true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = [
                             'type'  => $property->getType(),
@@ -517,7 +517,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
                 $joinColumns = $property->getJoinColumns();
                 $joinColumn  = reset($joinColumns);
 
-                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName()) as $alias) {
+                foreach (array_keys($this->rsm->metaMappings, $joinColumn->getColumnName(), true) as $alias) {
                     if ($this->rsm->columnOwnerMap[$alias] === $rootAlias) {
                         $sqlIdentifier[$identifier] = [
                             'type'  => $this->rsm->typeMappings[$alias],
@@ -547,7 +547,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
      */
     public function walkPathExpression($pathExpr)
     {
-        if (! $this->inSubSelect && ! $this->platformSupportsRowNumber() && ! in_array($pathExpr, $this->orderByPathExpressions)) {
+        if (! $this->inSubSelect && ! $this->platformSupportsRowNumber() && ! in_array($pathExpr, $this->orderByPathExpressions, true)) {
             $this->orderByPathExpressions[] = $pathExpr;
         }
 

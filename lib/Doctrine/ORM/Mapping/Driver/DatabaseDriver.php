@@ -329,14 +329,14 @@ class DatabaseDriver implements MappingDriver
         $ids = [];
 
         foreach ($columns as $column) {
-            if (in_array($column->getName(), $allForeignKeys)) {
+            if (in_array($column->getName(), $allForeignKeys, true)) {
                 continue;
             }
 
             $fieldName     = $this->getFieldNameForColumn($tableName, $column->getName(), false);
             $fieldMetadata = $this->convertColumnAnnotationToFieldMetadata($tableName, $column, $fieldName);
 
-            if ($primaryKeys && in_array($column->getName(), $primaryKeys)) {
+            if ($primaryKeys && in_array($column->getName(), $primaryKeys, true)) {
                 $fieldMetadata->setPrimaryKey(true);
 
                 $ids[] = $fieldMetadata;
@@ -435,7 +435,7 @@ class DatabaseDriver implements MappingDriver
                 $associationMapping['fieldName'] .= '2'; // "foo" => "foo2"
             }
 
-            if ($primaryKeys && in_array($localColumn, $primaryKeys)) {
+            if ($primaryKeys && in_array($localColumn, $primaryKeys, true)) {
                 $associationMapping['id'] = true;
             }
 

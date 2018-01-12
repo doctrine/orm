@@ -604,7 +604,7 @@ class SchemaTool
         $idColumns        = $class->getIdentifierColumns($this->em);
         $idColumnNameList = array_keys($idColumns);
 
-        if (! in_array($referencedColumnName, $idColumnNameList)) {
+        if (! in_array($referencedColumnName, $idColumnNameList, true)) {
             return null;
         }
 

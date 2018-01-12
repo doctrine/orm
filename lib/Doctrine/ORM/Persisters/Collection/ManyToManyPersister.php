@@ -645,7 +645,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
         $whereClauses    = [];
         $params          = [];
         $types           = [];
-        $joinNeeded      = ! in_array($indexBy, $targetClass->identifier);
+        $joinNeeded      = ! in_array($indexBy, $targetClass->identifier, true);
 
         if ($joinNeeded) { // extra join needed if indexBy is not a @id
             $joinConditions = [];
