@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\Persistence\Mapping\ClassMetadata as ClassMetadataInterface;
 use Doctrine\ORM\Cache\CacheException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
@@ -16,7 +17,7 @@ use Doctrine\ORM\Utility\PersisterHelper;
  * of an entity and its associations.
  *
  */
-class ClassMetadata extends ComponentMetadata implements TableOwner
+class ClassMetadata extends ComponentMetadata implements TableOwner, ClassMetadataInterface
 {
     /**
      * The name of the custom repository class used for the entity class.
