@@ -30,7 +30,8 @@ class_alias(ClassMetadata::class, ClassMetadataInfo::class);
 if (\false) {
     /* That's right, this piece of code will never be executed. It's not
      * ornemental though, its purpose is to trick IDEs into providing
-     * auto-completion for this class. */
+     * auto-completion for this class, and Composer into generating a proper
+     * classmap. */
     class ClassMetadataInfo extends ClassMetadata
     {
     }
