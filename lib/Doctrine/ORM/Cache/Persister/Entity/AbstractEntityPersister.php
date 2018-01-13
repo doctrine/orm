@@ -46,7 +46,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $class;
 
     /**
-     * @var object[][][]
+     * @var mixed[][]
      */
     protected $queuedCache = [];
 

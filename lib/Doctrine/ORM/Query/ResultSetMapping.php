@@ -136,7 +136,7 @@ class ResultSetMapping
     /**
      * This is necessary to hydrate derivate foreign keys correctly.
      *
-     * @var bool[]
+     * @var bool[][]
      */
     public $isIdentifierColumn = [];
 

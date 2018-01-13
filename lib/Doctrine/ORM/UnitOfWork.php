@@ -137,7 +137,7 @@ class UnitOfWork implements PropertyChangedListener
      * This is only used for entities with a change tracking policy of DEFERRED_EXPLICIT.
      * Keys are object ids (spl_object_id).
      *
-     * @var object[]
+     * @var object[][]
      */
     private $scheduledForSynchronization = [];
 

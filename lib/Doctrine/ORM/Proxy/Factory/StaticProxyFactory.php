@@ -42,7 +42,7 @@ final class StaticProxyFactory implements ProxyFactory
     private $cachedPersisters = [];
 
     /**
-     * @var string[][] indexed by metadata class name
+     * @var string[][][] indexed by metadata class name
      */
     private $cachedSkippedProperties = [];
 
