@@ -11,7 +11,7 @@ class ClassMetadataInfoTest extends TestCase
     /**
      * @runInSeparateProcess
      * @group legacy
-     * @expectedDeprecation Doctrine\ORM\Mapping\ClassMetadataInfo is deprecated since 2.x and will be removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
+     * @expectedDeprecation Class Doctrine\ORM\Mapping\ClassMetadataInfo is deprecated in favor of class Doctrine\ORM\Mapping\ClassMetadata since 2.7, will be removed in 3.0.
      */
     public function testTheClassIsDeprecated() : void
     {
@@ -20,7 +20,7 @@ class ClassMetadataInfoTest extends TestCase
 
     /**
      * @group legacy
-     * @expectedDeprecation Doctrine\ORM\Mapping\ClassMetadataInfo is deprecated since 2.x and will be removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
+     * @expectedDeprecation Class Doctrine\ORM\Mapping\ClassMetadataInfo is deprecated in favor of class Doctrine\ORM\Mapping\ClassMetadata since 2.7, will be removed in 3.0.
      */
     public function testExtendingClassWithOldSignatureStillWorks() : void
     {

@@ -37,7 +37,8 @@
         "symfony/yaml": "If you want to use YAML Metadata Mapping Driver"
     },
     "autoload": {
-        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" }
+        "psr-4": { "Doctrine\\ORM\\": "lib/Doctrine/ORM" },
+        "files": ["deprecating_autoloader.php"]
     },
     "autoload-dev": {
         "psr-4": {
