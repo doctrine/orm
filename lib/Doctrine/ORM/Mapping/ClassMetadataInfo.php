@@ -20,7 +20,7 @@
 namespace Doctrine\ORM\Mapping;
 
 @trigger_error(sprintf(
-    '%s is deprecated since 2.x and will be removed in 3.0. Use %s instead.',
+    '%s is deprecated since doctrine/orm 2.x and will be removed in 3.0. Use %s instead.',
     ClassMetadataInfo::class,
     ClassMetadata::class
 ), E_USER_DEPRECATED);
@@ -33,7 +33,7 @@ if (\false) {
      * auto-completion for this class, and Composer into generating a proper
      * classmap. */
     /**
-     * @deprecated since 2.7, removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
+     * @deprecated since doctrine/orm 2.x, removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
      */
     class ClassMetadataInfo extends ClassMetadata
     {
