@@ -32,6 +32,9 @@ if (\false) {
      * ornemental though, its purpose is to trick IDEs into providing
      * auto-completion for this class, and Composer into generating a proper
      * classmap. */
+    /**
+     * @deprecated since 2.7, removed in 3.0. Use Doctrine\ORM\Mapping\ClassMetadata instead.
+     */
     class ClassMetadataInfo extends ClassMetadata
     {
     }
