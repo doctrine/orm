@@ -118,7 +118,7 @@ Optional attributes:
 -  **options**: Array of additional options:
 
    -  ``default``: The default value to set for the column if no value
-      is supplied. It's possible to use PHP contstants here: ``options={"default": Domain::CONSTANT_VALUE}``
+      is supplied. It's possible to use PHP constants here: ``options={"default": Domain::CONSTANT_VALUE}``
 
    -  ``unsigned``: Boolean value to determine if the column should
       be capable of representing only non-negative integers
