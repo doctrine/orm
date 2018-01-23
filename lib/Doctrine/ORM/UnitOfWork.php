@@ -1087,6 +1087,7 @@ class UnitOfWork implements PropertyChangedListener
                 if(!isset($this->entityIdentifiers[$oid])) {
                     //entity was not added to identity map because some identifiers are foreign keys to new entities.
                     //add it now
+                    $identifier = [];
                     $idFields   = $class->getIdentifierFieldNames();
                     foreach ($idFields as $idField) {
                         $value = $class->getFieldValue($entity, $idField);
