@@ -40,11 +40,18 @@ class IdentityThroughForeignKeyTest extends OrmTestCase {
         $product->variants->add($variant);
 
         $this->em->persist($product);
+
+        //check that flush does not throw
         $this->em->flush();
 
-        /** @var ConnectionMock $conn */
-        $conn = $this->em->getConnection();
-        print_r($conn->getInserts());
-        $this->assertTrue(true);
+        $identifier = $this->em->getClassMetadata(ProductVariant::class)->getIdentifierValues($variant);
+
+        foreach($identifier as $k => $v) {
+            $identifier[$k] = $this->em->getClassMetadata(get_class($v))->getIdentifierValues($v)['id'];
+        }
+
+        //check that identityMap content is correct
+        //find by primary key should return the same instance
+        $this->assertTrue($variant === $this->em->find(ProductVariant::class, $identifier));
     }
 }
