@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\Models\IdentityThroughForeignKeyTest;
 
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,7 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @Entity()
  * @Table(name="identitythroughforeignkey_product")
  */
-class Product {
+class Product
+{
 
     /**
      * @var integer
@@ -41,9 +41,10 @@ class Product {
      */
     public $variants;
 
-    public function __construct() {
-        $this->colors = new ArrayCollection();
-        $this->sizes = new ArrayCollection();
+    public function __construct()
+    {
+        $this->colors   = new ArrayCollection();
+        $this->sizes    = new ArrayCollection();
         $this->variants = new ArrayCollection();
     }
 }

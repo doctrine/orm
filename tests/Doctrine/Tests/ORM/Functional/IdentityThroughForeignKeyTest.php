@@ -2,7 +2,6 @@
 
 namespace Doctrine\Tests\ORM\Functional;
 
-
 use Doctrine\ORM\EntityManager;
 use Doctrine\Tests\Mocks\ConnectionMock;
 use Doctrine\Tests\Models\IdentityThroughForeignKeyTest\Product;
@@ -11,32 +10,35 @@ use Doctrine\Tests\Models\IdentityThroughForeignKeyTest\ProductSize;
 use Doctrine\Tests\Models\IdentityThroughForeignKeyTest\ProductVariant;
 use Doctrine\Tests\OrmTestCase;
 
-class IdentityThroughForeignKeyTest extends OrmTestCase {
+class IdentityThroughForeignKeyTest extends OrmTestCase
+{
 
     /** @var EntityManager */
     protected $em;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         $this->em = $this->_getTestEntityManager();
     }
 
 
-    public function testIdentityThroughForeignKeyCollectionPersistence() {
+    public function testIdentityThroughForeignKeyCollectionPersistence()
+    {
         $product = new Product();
 
-        $color = new ProductColor();
+        $color          = new ProductColor();
         $color->product = $product;
         $product->colors->add($color);
 
-        $size = new ProductSize();
+        $size          = new ProductSize();
         $size->product = $product;
         $product->sizes->add($size);
 
-        $variant = new ProductVariant();
+        $variant          = new ProductVariant();
         $variant->product = $product;
-        $variant->color = $color;
-        $variant->size = $size;
+        $variant->color   = $color;
+        $variant->size    = $size;
         $product->variants->add($variant);
 
         $this->em->persist($product);
@@ -46,7 +48,7 @@ class IdentityThroughForeignKeyTest extends OrmTestCase {
 
         $identifier = $this->em->getClassMetadata(ProductVariant::class)->getIdentifierValues($variant);
 
-        foreach($identifier as $k => $v) {
+        foreach ($identifier as $k => $v) {
             $identifier[$k] = $this->em->getClassMetadata(get_class($v))->getIdentifierValues($v)['id'];
         }
 

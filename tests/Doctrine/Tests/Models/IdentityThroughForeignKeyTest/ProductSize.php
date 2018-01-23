@@ -1,6 +1,7 @@
 <?php
 
 namespace Doctrine\Tests\Models\IdentityThroughForeignKeyTest;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -9,7 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @Entity()
  * @Table(name="identitythroughforeignkey_product_size")
  */
-class ProductSize {
+class ProductSize
+{
 
     /**
      * @var integer

@@ -8,7 +8,8 @@ namespace Doctrine\Tests\Models\IdentityThroughForeignKeyTest;
  * @Entity()
  * @Table(name="identitythroughforeignkey_product_color")
  */
-class ProductColor {
+class ProductColor
+{
 
     /**
      * @var integer

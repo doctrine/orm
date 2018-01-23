@@ -8,7 +8,8 @@ namespace Doctrine\Tests\Models\IdentityThroughForeignKeyTest;
  * @Entity()
  * @Table(name="identitythroughforeignkey_product_variant")
  */
-class ProductVariant {
+class ProductVariant
+{
 
     /**
      * @var Product
