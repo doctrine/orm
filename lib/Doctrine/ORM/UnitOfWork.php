@@ -939,9 +939,17 @@ class UnitOfWork implements PropertyChangedListener
 
                 $class->setIdentifierValues($entity, $idValue);
             }
+
             // Some identifiers may be foreign keys to new entities.
             // In this case, we don't have the value yet and should treat it as if we have a post-insert generator
-            if(!in_array(null, $idValue, true)) {
+            $hasMissingIdsWhichAreForeignKeys = false;
+            foreach($idValue as $idField => $idFieldValue) {
+                if($idFieldValue === null && isset($class->associationMappings[$idField])) {
+                    $hasMissingIdsWhichAreForeignKeys = true;
+                    break;
+                }
+            }
+            if(!$hasMissingIdsWhichAreForeignKeys) {
                 $this->entityIdentifiers[$oid] = $idValue;
             }
         }
@@ -1077,7 +1085,7 @@ class UnitOfWork implements PropertyChangedListener
         } else {
             foreach ($theseInsertions as $oid => $entity) {
                 if(!isset($this->entityIdentifiers[$oid])) {
-                    //entity was not added to identity map because some identifiers ar foreign keys to new entities.
+                    //entity was not added to identity map because some identifiers are foreign keys to new entities.
                     //add it now
                     $idFields   = $class->getIdentifierFieldNames();
                     foreach ($idFields as $idField) {
