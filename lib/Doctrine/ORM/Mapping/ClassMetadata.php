@@ -3397,3 +3397,7 @@ class ClassMetadata implements BaseClassMetadata
         }
     }
 }
+
+if (!class_exists(ClassMetadataInfo::class, false)) {
+    class_alias(ClassMetadata::class, ClassMetadataInfo::class);
+}

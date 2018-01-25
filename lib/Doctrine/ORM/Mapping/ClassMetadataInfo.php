@@ -25,7 +25,9 @@ namespace Doctrine\ORM\Mapping;
     ClassMetadata::class
 ), E_USER_DEPRECATED);
 
-class_alias(ClassMetadata::class, ClassMetadataInfo::class);
+if (!class_exists(ClassMetadataInfo::class, false)) {
+    class_exists(ClassMetadata::class);
+}
 
 if (\false) {
     /* That's right, this piece of code will never be executed. It's not
