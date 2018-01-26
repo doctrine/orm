@@ -46,7 +46,7 @@ class DatabaseDriver implements MappingDriver
     private $classNamesForTables = [];
 
     /**
-     * @var Table[]
+     * @var Table[][]
      */
     private $fieldNamesForColumns = [];
 

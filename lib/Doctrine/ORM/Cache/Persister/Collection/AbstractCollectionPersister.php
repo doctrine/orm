@@ -49,7 +49,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $association;
 
     /**
-     * @var mixed[][][]
+     * @var mixed[][]
      */
     protected $queuedCache = [];
 

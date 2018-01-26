@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class MetadataFilter extends \FilterIterator implements \Countable
 {
     /**
-     * @var string[]|string
+     * @var string[]
      */
     private $filter = [];
 
