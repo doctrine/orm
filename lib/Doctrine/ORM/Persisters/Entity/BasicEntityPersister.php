@@ -451,9 +451,14 @@ class BasicEntityPersister implements EntityPersister
                 continue;
             }
 
-            $params[]       = $identifier[$idField];
-            $where[]        = $this->class->associationMappings[$idField]['joinColumns'][0]['name'];
-            $targetMapping  = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
+            $params[] = $identifier[$idField];
+            $where[]  = $this->quoteStrategy->getJoinColumnName(
+                $this->class->associationMappings[$idField]['joinColumns'][0],
+                $this->class,
+                $this->platform
+            );
+
+            $targetMapping = $this->em->getClassMetadata($this->class->associationMappings[$idField]['targetEntity']);
 
             switch (true) {
                 case (isset($targetMapping->fieldMappings[$targetMapping->identifier[0]])):
