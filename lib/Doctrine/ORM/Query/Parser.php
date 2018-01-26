@@ -1570,7 +1570,7 @@ class Parser
     /**
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration
      *
-     * {Internal note: WARNING: Solution is harder than a bare implementation.
+     * {@internal WARNING: Solution is harder than a bare implementation.
      * Desired EBNF support:
      *
      * SubselectIdentificationVariableDeclaration ::= IdentificationVariableDeclaration | (AssociationPathExpression ["AS"] AliasIdentificationVariable)
@@ -1579,7 +1579,7 @@ class Parser
      * needed because association based subselect requires "WHERE" conditional
      * expressions to be injected, but there is no scope to do that. Only scope
      * accessible is "FROM", prohibiting an easy implementation without larger
-     * changes.}
+     * changes. }}
      *
      * @return \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration |
      *         \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration

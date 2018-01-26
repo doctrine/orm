@@ -48,7 +48,7 @@ use UnexpectedValueException;
  * "object-level" transaction and for writing out changes to the database
  * in the correct order.
  *
- * Internal note: This class contains highly performance-sensitive code.
+ * {@internal This class contains highly performance-sensitive code. }}
  */
 class UnitOfWork implements PropertyChangedListener
 {
@@ -2040,7 +2040,7 @@ class UnitOfWork implements PropertyChangedListener
      * INTERNAL:
      * Creates an entity. Used for reconstitution of persistent entities.
      *
-     * Internal note: Highly performance-sensitive method.
+     * {@internal Highly performance-sensitive method. }}
      *
      * @ignore
      *

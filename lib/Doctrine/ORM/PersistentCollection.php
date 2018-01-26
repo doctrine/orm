@@ -565,8 +565,8 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
      * Called by PHP when this collection is serialized. Ensures that only the
      * elements are properly serialized.
      *
-     * Internal note: Tried to implement Serializable first but that did not work well
-     *                with circular references. This solution seems simpler and works well.
+     * {@internal Tried to implement Serializable first but that did not work well
+     *            with circular references. This solution seems simpler and works well. }}
      *
      * @return string[]
      */

@@ -252,7 +252,7 @@ final class EntityManager implements EntityManagerInterface
      * MyProject\Domain\User
      * sales:PriceRequest
      *
-     * Internal note: Performance-sensitive method.
+     * {@internal Performance-sensitive method. }}
      *
      * @param string $className
      *
