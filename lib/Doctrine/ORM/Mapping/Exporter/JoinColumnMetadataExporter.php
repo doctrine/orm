@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 
 class JoinColumnMetadataExporter extends ColumnMetadataExporter
@@ -28,8 +29,10 @@ class JoinColumnMetadataExporter extends ColumnMetadataExporter
         return implode(PHP_EOL, $lines);
     }
 
-    protected function exportInstantiation(JoinColumnMetadata $metadata) : string
+    protected function exportInstantiation(ColumnMetadata $metadata) : string
     {
+        assert($metadata instanceof JoinColumnMetadata);
+
         return sprintf(
             'new Mapping\JoinColumnMetadata("%s", Type::getType("%s"));',
             $metadata->getColumnName(),

@@ -837,7 +837,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     private function convertTableAnnotationToTableMetadata(
         Annotation\Table $tableAnnot,
         Mapping\TableMetadata $table
-    ) : void {
+    ) : Mapping\TableMetadata {
         if (! empty($tableAnnot->name)) {
             $table->setName($tableAnnot->name);
         }
