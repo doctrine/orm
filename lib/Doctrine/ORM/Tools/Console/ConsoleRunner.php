@@ -18,10 +18,6 @@ final class ConsoleRunner
 {
     /**
      * Create a Symfony Console HelperSet
-     *
-     * @param EntityManagerInterface $entityManager
-     *
-     * @return HelperSet
      */
     public static function createHelperSet(EntityManagerInterface $entityManager) : HelperSet
     {
@@ -36,10 +32,7 @@ final class ConsoleRunner
     /**
      * Runs console with the given helper set.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet  $helperSet
      * @param \Symfony\Component\Console\Command\Command[] $commands
-     *
-     * @return void
      */
     public static function run(HelperSet $helperSet, array $commands = []) : void
     {
@@ -51,10 +44,8 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param \Symfony\Component\Console\Helper\HelperSet $helperSet
-     * @param array                                       $commands
+     * @param \Symfony\Component\Console\Command\Command[] $commands
      *
-     * @return \Symfony\Component\Console\Application
      * @throws \OutOfBoundsException
      */
     public static function createApplication(HelperSet $helperSet, array $commands = []) : Application
@@ -68,11 +59,6 @@ final class ConsoleRunner
         return $cli;
     }
 
-    /**
-     * @param Application $cli
-     *
-     * @return void
-     */
     public static function addCommands(Application $cli) : void
     {
         $cli->addCommands(

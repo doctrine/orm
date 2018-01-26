@@ -1,22 +1,16 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
 /**
  * The default DefaultEntityListener
- *
- * @package Doctrine\ORM\Mapping
- * @since 2.4
- *
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultEntityListenerResolver implements EntityListenerResolver
 {
     /**
-     * @var array Map to store entity listener instances.
+     * @var object[] Map to store entity listener instances.
      */
     private $instances = [];
 
@@ -31,7 +25,9 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
             return;
         }
 
-        if (isset($this->instances[$className = trim($className, '\\')])) {
+        $className = trim($className, '\\');
+
+        if (isset($this->instances[$className])) {
             unset($this->instances[$className]);
         }
     }
@@ -41,7 +37,7 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function register($object)
     {
-        if ( ! is_object($object)) {
+        if (! is_object($object)) {
             throw new \InvalidArgumentException(sprintf('An object was expected, but got "%s".', gettype($object)));
         }
 
@@ -53,7 +49,9 @@ class DefaultEntityListenerResolver implements EntityListenerResolver
      */
     public function resolve($className)
     {
-        if (isset($this->instances[$className = trim($className, '\\')])) {
+        $className = trim($className, '\\');
+
+        if (isset($this->instances[$className])) {
             return $this->instances[$className];
         }
 

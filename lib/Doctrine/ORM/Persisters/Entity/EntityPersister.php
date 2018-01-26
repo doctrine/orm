@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Persisters\Entity;
 
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
-use Doctrine\Common\Collections\Criteria;
 
 /**
  * Entity persister interface
  * Define the behavior that should be implemented by all entity persisters.
- *
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
  */
 interface EntityPersister
 {
@@ -40,23 +37,20 @@ interface EntityPersister
      *
      * @param object $entity
      *
-     * @return array
+     * @return mixed[]
      */
     public function getIdentifier($entity) : array;
 
     /**
      * Populates the entity identifier of an entity.
      *
-     * @param object $entity
-     * @param array  $id
-     *
-     * @return void
+     * @param object  $entity
+     * @param mixed[] $id
      */
     public function setIdentifier($entity, array $id) : void;
 
     /**
      * @param object $entity
-     * @param string $columnName
      *
      * @return mixed|null
      */
@@ -65,18 +59,17 @@ interface EntityPersister
     /**
      * Gets the SELECT SQL to select one or more entities by a set of field criteria.
      *
-     * @param array|\Doctrine\Common\Collections\Criteria $criteria
-     * @param AssociationMetadata|null                    $association
-     * @param int|null                                    $lockMode
-     * @param int|null                                    $limit
-     * @param int|null                                    $offset
-     * @param array                                       $orderBy
+     * @param Criteria|Criteria[] $criteria
+     * @param int|null            $lockMode
+     * @param int|null            $limit
+     * @param int|null            $offset
+     * @param mixed[]             $orderBy
      *
      * @return string
      */
     public function getSelectSQL(
         $criteria,
-        AssociationMetadata $association = null,
+        ?AssociationMetadata $association = null,
         $lockMode = null,
         $limit = null,
         $offset = null,
@@ -86,7 +79,7 @@ interface EntityPersister
     /**
      * Get the COUNT SQL to count entities (optionally based on a criteria)
      *
-     * @param array|\Doctrine\Common\Collections\Criteria $criteria
+     * @param Criteria|mixed[] $criteria
      *
      * @return string
      */
@@ -95,35 +88,32 @@ interface EntityPersister
     /**
      * Expands the parameters from the given criteria and use the correct binding types if found.
      *
-     * @param $criteria
+     * @param mixed[] $criteria
      *
-     * @return array
+     * @return mixed[][]
      */
     public function expandParameters($criteria);
 
     /**
      * Expands Criteria Parameters by walking the expressions and grabbing all parameters and types from it.
      *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array
+     * @return mixed[][]
      */
     public function expandCriteriaParameters(Criteria $criteria);
 
     /**
      * Gets the SQL WHERE condition for matching a field with a given value.
      *
-     * @param string                   $field
-     * @param mixed                    $value
-     * @param AssociationMetadata|null $association
-     * @param string|null              $comparison
+     * @param string      $field
+     * @param mixed       $value
+     * @param string|null $comparison
      *
      * @return string
      */
     public function getSelectConditionStatementSQL(
         $field,
         $value,
-        AssociationMetadata $association = null,
+        ?AssociationMetadata $association = null,
         $comparison = null
     );
 
@@ -165,7 +155,7 @@ interface EntityPersister
     /**
      * Count entities (optionally filtered by a criteria)
      *
-     * @param  array|\Doctrine\Common\Collections\Criteria $criteria
+     * @param  Criteria[]|Criteria $criteria
      *
      * @return int
      */
@@ -174,8 +164,8 @@ interface EntityPersister
     /**
      * Locks all rows of this entity matching the given criteria with the specified pessimistic lock mode.
      *
-     * @param array $criteria
-     * @param int   $lockMode One of the Doctrine\DBAL\LockMode::* constants.
+     * @param Criteria[] $criteria
+     * @param int        $lockMode One of the Doctrine\DBAL\LockMode::* constants.
      *
      * @return void
      */
@@ -184,17 +174,16 @@ interface EntityPersister
     /**
      * Checks whether the given managed entity exists in the database.
      *
-     * @param object        $entity
-     * @param Criteria|null $extraConditions
+     * @param object $entity
      *
-     * @return boolean TRUE if the entity exists in the database, FALSE otherwise.
+     * @return bool TRUE if the entity exists in the database, FALSE otherwise.
      */
-    public function exists($entity, Criteria $extraConditions = null);
+    public function exists($entity, ?Criteria $extraConditions = null);
 
     /**
      * Refreshes a managed entity.
      *
-     * @param array    $id       The identifier of the entity as an associative array from
+     * @param mixed[]  $id       The identifier of the entity as an associative array from
      *                           column or field names to values.
      * @param object   $entity   The entity to refresh.
      * @param int|null $lockMode One of the \Doctrine\DBAL\LockMode::* constants
@@ -208,14 +197,14 @@ interface EntityPersister
     /**
      * Loads an entity by a list of field criteria.
      *
-     * @param array                     $criteria    The criteria by which to load the entity.
-     * @param object|null               $entity      The entity to load the data into. If not specified, a new entity is created.
-     * @param AssociationMetadata|null  $association The association that connects the entity to load to another entity, if any.
-     * @param array                     $hints       Hints for entity creation.
-     * @param int|null                  $lockMode    One of the \Doctrine\DBAL\LockMode::* constants or NULL if no specific lock mode
-     *                                               should be used for loading the entity.
-     * @param int|null                  $limit       Limit number of results.
-     * @param array                     $orderBy     Criteria to order by.
+     * @param mixed[]                  $criteria    The criteria by which to load the entity.
+     * @param object|null              $entity      The entity to load the data into. If not specified, a new entity is created.
+     * @param AssociationMetadata|null $association The association that connects the entity to load to another entity, if any.
+     * @param mixed[]                  $hints       Hints for entity creation.
+     * @param int|null                 $lockMode    One of the \Doctrine\DBAL\LockMode::* constants or NULL if no specific lock mode
+     *                                              should be used for loading the entity.
+     * @param int|null                 $limit       Limit number of results.
+     * @param mixed[]                  $orderBy     Criteria to order by.
      *
      * @return object|null The loaded and managed entity instance or NULL if the entity can not be found.
      *
@@ -224,7 +213,7 @@ interface EntityPersister
     public function load(
         array $criteria,
         $entity = null,
-        AssociationMetadata $association = null,
+        ?AssociationMetadata $association = null,
         array $hints = [],
         $lockMode = null,
         $limit = null,
@@ -234,7 +223,7 @@ interface EntityPersister
     /**
      * Loads an entity by identifier.
      *
-     * @param array       $identifier The entity identifier.
+     * @param mixed[]     $identifier The entity identifier.
      * @param object|null $entity     The entity to load the data into. If not specified, a new entity is created.
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
@@ -246,21 +235,19 @@ interface EntityPersister
     /**
      * Loads Entities matching the given Criteria object.
      *
-     * @param \Doctrine\Common\Collections\Criteria $criteria
-     *
-     * @return array
+     * @return mixed[]
      */
     public function loadCriteria(Criteria $criteria);
 
     /**
      * Loads a list of entities by a list of field criteria.
      *
-     * @param array    $criteria
-     * @param array    $orderBy
+     * @param mixed[]  $criteria
+     * @param mixed[]  $orderBy
      * @param int|null $limit    Limit number of results.
      * @param int|null $offset
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadAll(array $criteria = [], array $orderBy = [], $limit = null, $offset = null);
 
@@ -270,7 +257,7 @@ interface EntityPersister
      *
      * @param ToOneAssociationMetadata $association  The association to load.
      * @param object                   $sourceEntity The entity that owns the association (not necessarily the "owning side").
-     * @param array                    $identifier   The identifier of the entity to load. Must be provided if
+     * @param mixed[]                  $identifier   The identifier of the entity to load. Must be provided if
      *                                               the association to load represents the owning side, otherwise
      *                                               the identifier is derived from the $sourceEntity.
      *
@@ -292,7 +279,7 @@ interface EntityPersister
      * @param int|null                     $offset
      * @param int|null                     $limit        Limit number of results.
      *
-     * @return array
+     * @return mixed[]
      */
     public function getOneToManyCollection(
         OneToManyAssociationMetadata $association,
@@ -308,7 +295,7 @@ interface EntityPersister
      * @param object                       $sourceEntity The entity that owns the collection.
      * @param PersistentCollection         $collection   The collection to load/fill.
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadOneToManyCollection(
         OneToManyAssociationMetadata $association,
@@ -324,7 +311,7 @@ interface EntityPersister
      * @param int|null                      $offset
      * @param int|null                      $limit        Limit number of results.
      *
-     * @return array
+     * @return mixed[]
      */
     public function getManyToManyCollection(
         ManyToManyAssociationMetadata $association,
@@ -340,7 +327,7 @@ interface EntityPersister
      * @param object                        $sourceEntity The entity that owns the collection.
      * @param PersistentCollection          $collection   The collection to load/fill.
      *
-     * @return array
+     * @return mixed[]
      */
     public function loadManyToManyCollection(
         ManyToManyAssociationMetadata $association,

@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -9,12 +8,12 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 
 abstract class AssociationMetadataExporter implements Exporter
 {
-    const VARIABLE = '$property';
+    public const VARIABLE = '$property';
 
     /**
      * {@inheritdoc}
      */
-    public function export($value, int $indentationLevel = 0): string
+    public function export($value, int $indentationLevel = 0) : string
     {
         /** @var AssociationMetadata $value */
         $cacheExporter    = new CacheMetadataExporter();
@@ -48,7 +47,6 @@ abstract class AssociationMetadataExporter implements Exporter
         $lines[] = $objectReference . '->setOrphanRemoval(' . $variableExporter->export($value->isOrphanRemoval(), $indentationLevel + 1) . ');';
         $lines[] = $objectReference . '->setPrimaryKey(' . $variableExporter->export($value->isPrimaryKey(), $indentationLevel + 1) . ');';
 
-
         return implode(PHP_EOL, $lines);
     }
 
@@ -64,10 +62,5 @@ abstract class AssociationMetadataExporter implements Exporter
             : ['all'];
     }
 
-    /**
-     * @param AssociationMetadata $metadata
-     *
-     * @return string
-     */
     abstract protected function exportInstantiation(AssociationMetadata $metadata) : string;
 }

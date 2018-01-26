@@ -14,13 +14,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to clear the result cache of the various cache drivers.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class ResultCommand extends Command
 {
@@ -59,19 +52,19 @@ EOT
     {
         $ui = new SymfonyStyle($input, $output);
 
-        $em = $this->getHelper('em')->getEntityManager();
+        $em          = $this->getHelper('em')->getEntityManager();
         $cacheDriver = $em->getConfiguration()->getResultCacheImpl();
 
-        if ( ! $cacheDriver) {
+        if (! $cacheDriver) {
             throw new \InvalidArgumentException('No Result cache driver is configured on given EntityManager.');
         }
 
         if ($cacheDriver instanceof ApcCache) {
-            throw new \LogicException("Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+            throw new \LogicException('Cannot clear APC Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
         if ($cacheDriver instanceof XcacheCache) {
-            throw new \LogicException("Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.");
+            throw new \LogicException('Cannot clear XCache Cache from Console, its shared in the Webserver memory and not accessible from the CLI.');
         }
 
         $ui->comment('Clearing <info>all</info> Result cache entries');
@@ -79,12 +72,12 @@ EOT
         $result  = $cacheDriver->deleteAll();
         $message = ($result) ? 'Successfully deleted cache entries.' : 'No cache entries were deleted.';
 
-        if (true === $input->getOption('flush')) {
+        if ($input->getOption('flush') === true) {
             $result  = $cacheDriver->flushAll();
             $message = ($result) ? 'Successfully flushed cache entries.' : $message;
         }
 
-        if ( ! $result) {
+        if (! $result) {
             $ui->error($message);
 
             return 1;

@@ -11,22 +11,17 @@ use Doctrine\ORM\PersistentCollection;
 
 /**
  * Class ToManyAssociationMetadata
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class ToManyAssociationMetadata extends AssociationMetadata
 {
-    /** @var array<string, string> */
+    /** @var string[] */
     private $orderBy = [];
 
-    /** @var null|string */
+    /** @var string|null */
     private $indexedBy;
 
     /**
-     * @param array $orderBy
+     * @param mixed[] $orderBy
      */
     public function setOrderBy(array $orderBy) : void
     {
@@ -34,35 +29,26 @@ class ToManyAssociationMetadata extends AssociationMetadata
     }
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getOrderBy() : array
     {
         return $this->orderBy;
     }
 
-    /**
-     * @param null|string $indexedBy
-     */
-    public function setIndexedBy(string $indexedBy = null) : void
+    public function setIndexedBy(?string $indexedBy = null) : void
     {
         $this->indexedBy = $indexedBy;
     }
 
-    /**
-     * @return null|string
-     */
     public function getIndexedBy() : ?string
     {
         return $this->indexedBy;
     }
 
     /**
-     * @param object                 $owner
-     * @param null|array|Collection  $collection
-     * @param EntityManagerInterface $entityManager
-     *
-     * @return PersistentCollection
+     * @param object                         $owner
+     * @param Collection|array|object[]|null $collection
      */
     public function wrap($owner, $collection, EntityManagerInterface $entityManager) : PersistentCollection
     {
@@ -85,7 +71,7 @@ class ToManyAssociationMetadata extends AssociationMetadata
         $collection  = new PersistentCollection($entityManager, $targetClass, $collection);
 
         $collection->setOwner($owner, $this);
-        $collection->setDirty( ! $collection->isEmpty());
+        $collection->setDirty(! $collection->isEmpty());
         $collection->setInitialized(true);
 
         return $collection;

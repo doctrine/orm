@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
@@ -11,9 +10,6 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Interface for second level cache entity persisters.
- *
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @since 2.5
  */
 interface CachedEntityPersister extends CachedPersister, EntityPersister
 {
@@ -23,10 +19,9 @@ interface CachedEntityPersister extends CachedPersister, EntityPersister
     public function getEntityHydrator();
 
     /**
-     * @param object                             $entity
-     * @param \Doctrine\ORM\Cache\EntityCacheKey $key
+     * @param object $entity
      *
-     * @return boolean
+     * @return bool
      */
     public function storeEntityCache($entity, EntityCacheKey $key);
 }

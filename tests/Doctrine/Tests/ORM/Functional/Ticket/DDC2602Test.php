@@ -157,7 +157,7 @@ class DDC2602PostLoadListener
 
             $fieldSelection->field      = $field;
             $fieldSelection->choiceList = $field->choiceList->filter(function ($choice) use ($choiceList) {
-                return in_array($choice->id, $choiceList);
+                return in_array($choice->id, $choiceList, true);
             });
 
             $fieldList->add($fieldSelection);

@@ -1,22 +1,18 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Query cache entry
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class QueryCacheEntry implements CacheEntry
 {
     /**
      * READ-ONLY: Public only for performance reasons, it should be considered immutable.
      *
-     * @var array List of entity identifiers
+     * @var mixed[] List of entity identifiers
      */
     public $result;
 
@@ -28,8 +24,8 @@ class QueryCacheEntry implements CacheEntry
     public $time;
 
     /**
-     * @param array $result
-     * @param float $time
+     * @param mixed[] $result
+     * @param float   $time
      */
     public function __construct($result, $time = null)
     {
@@ -38,7 +34,7 @@ class QueryCacheEntry implements CacheEntry
     }
 
     /**
-     * @param array $values
+     * @param mixed[] $values
      *
      * @return QueryCacheEntry
      */

@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing;
@@ -12,8 +11,7 @@ interface Generator
     /**
      * Generates an identifier for an entity.
      *
-     * @param EntityManagerInterface $em
-     * @param object                 $entity
+     * @param object $entity
      *
      * @return \Generator
      */
@@ -27,7 +25,7 @@ interface Generator
      * By default, this method returns FALSE. Generators that have this requirement
      * must override this method and return TRUE.
      *
-     * @return boolean
+     * @return bool
      */
     public function isPostInsertGenerator();
 }

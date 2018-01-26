@@ -9,9 +9,6 @@ use Serializable;
 
 /**
  * Represents an ID generator that uses a database sequence.
- *
- * @since 2.0
- * @author Roman Borschel <roman@code-factory.org>
  */
 class SequenceGenerator implements Generator, Serializable
 {
@@ -42,12 +39,12 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * Initializes a new sequence generator.
      *
-     * @param string  $sequenceName   The name of the sequence.
-     * @param integer $allocationSize The allocation size of the sequence.
+     * @param string $sequenceName   The name of the sequence.
+     * @param int    $allocationSize The allocation size of the sequence.
      */
     public function __construct($sequenceName, $allocationSize)
     {
-        $this->sequenceName = $sequenceName;
+        $this->sequenceName   = $sequenceName;
         $this->allocationSize = $allocationSize;
     }
 
@@ -56,7 +53,7 @@ class SequenceGenerator implements Generator, Serializable
      */
     public function generate(EntityManagerInterface $em, $entity)
     {
-        if ($this->maxValue === null || $this->nextValue == $this->maxValue) {
+        if ($this->maxValue === null || $this->nextValue === $this->maxValue) {
             // Allocate new values
             $conn = $em->getConnection();
             $sql  = $conn->getDatabasePlatform()->getSequenceNextValSQL($this->sequenceName);
@@ -72,7 +69,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * Gets the maximum value of the currently allocated bag of values.
      *
-     * @return integer|null
+     * @return int|null
      */
     public function getCurrentMaxValue()
     {
@@ -82,7 +79,7 @@ class SequenceGenerator implements Generator, Serializable
     /**
      * Gets the next value that will be returned by generate().
      *
-     * @return integer
+     * @return int
      */
     public function getNextValue()
     {
@@ -97,21 +94,19 @@ class SequenceGenerator implements Generator, Serializable
         return serialize(
             [
             'allocationSize' => $this->allocationSize,
-            'sequenceName'   => $this->sequenceName
+            'sequenceName'   => $this->sequenceName,
             ]
         );
     }
 
     /**
      * @param string $serialized
-     *
-     * @return void
      */
     public function unserialize($serialized)
     {
         $array = unserialize($serialized);
 
-        $this->sequenceName = $array['sequenceName'];
+        $this->sequenceName   = $array['sequenceName'];
         $this->allocationSize = $array['allocationSize'];
     }
 

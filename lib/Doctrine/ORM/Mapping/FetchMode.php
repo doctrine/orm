@@ -1,37 +1,31 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
 /**
  * Class FetchMode
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 final class FetchMode
 {
     /**
      * Specifies that an association is to be fetched when it is first accessed.
      */
-    const LAZY = 'LAZY';
+    public const LAZY = 'LAZY';
 
     /**
      * Specifies that an association is to be fetched when the owner of the
      * association is fetched.
      */
-    const EAGER = 'EAGER';
+    public const EAGER = 'EAGER';
 
     /**
      * Specifies that an association is to be fetched lazy (on first access) and that
      * commands such as Collection#count, Collection#slice are issued directly against
      * the database if the collection is not yet initialized.
      */
-    const EXTRA_LAZY = 'EXTRA_LAZY';
+    public const EXTRA_LAZY = 'EXTRA_LAZY';
 
     /**
      * Will break upon instantiation.

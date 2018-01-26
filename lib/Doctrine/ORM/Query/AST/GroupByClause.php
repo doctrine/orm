@@ -4,24 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\Expr\GroupBy;
+
 /**
  * Description of GroupByClause.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GroupByClause extends Node
 {
     /**
-     * @var array
+     * @var GroupBy[]
      */
     public $groupByItems = [];
 
     /**
-     * @param array $groupByItems
+     * @param GroupBy[] $groupByItems
      */
     public function __construct(array $groupByItems)
     {

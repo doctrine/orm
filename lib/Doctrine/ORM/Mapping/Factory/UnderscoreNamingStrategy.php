@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
@@ -8,23 +7,18 @@ namespace Doctrine\ORM\Mapping\Factory;
 /**
  * Naming strategy implementing the underscore naming convention.
  * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.
- *
- * 
- * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class UnderscoreNamingStrategy implements NamingStrategy
 {
     /**
-     * @var integer
+     * @var int
      */
     private $case;
 
     /**
      * Underscore naming strategy construct.
      *
-     * @param integer $case CASE_LOWER | CASE_UPPER
+     * @param int $case CASE_LOWER | CASE_UPPER
      */
     public function __construct($case = CASE_LOWER)
     {
@@ -32,7 +26,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
     }
 
     /**
-     * @return integer CASE_LOWER | CASE_UPPER
+     * @return int CASE_LOWER | CASE_UPPER
      */
     public function getCase()
     {
@@ -42,10 +36,8 @@ class UnderscoreNamingStrategy implements NamingStrategy
     /**
      * Sets string case CASE_LOWER | CASE_UPPER.
      * Alphabetic characters converted to lowercase or uppercase.
-     * 
-     * @param integer $case
      *
-     * @return void
+     * @param int $case
      */
     public function setCase($case)
     {
@@ -77,7 +69,7 @@ class UnderscoreNamingStrategy implements NamingStrategy
      */
     public function embeddedFieldToColumnName($propertyName, $embeddedColumnName, $className = null, $embeddedClassName = null)
     {
-        return $this->underscore($propertyName).'_'.$embeddedColumnName;
+        return $this->underscore($propertyName) . '_' . $embeddedColumnName;
     }
 
     /**

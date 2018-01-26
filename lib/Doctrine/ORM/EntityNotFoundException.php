@@ -6,9 +6,6 @@ namespace Doctrine\ORM;
 
 /**
  * Exception thrown when a Proxy fails to retrieve an Entity result.
- *
- * @author robo
- * @since 2.0
  */
 class EntityNotFoundException extends ORMException
 {
@@ -27,7 +24,6 @@ class EntityNotFoundException extends ORMException
         foreach ($id as $key => $value) {
             $ids[] = $key . '(' . $value . ')';
         }
-
 
         return new self(
             'Entity of type \'' . $className . '\'' . ($ids ? ' for IDs ' . implode(', ', $ids) : '') . ' was not found'

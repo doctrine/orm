@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 
 /**
  * Hydrator that hydrates a single scalar value from the result set.
- *
- * @since  2.0
- * @author Roman Borschel <roman@code-factory.org>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class SingleScalarHydrator extends AbstractHydrator
 {

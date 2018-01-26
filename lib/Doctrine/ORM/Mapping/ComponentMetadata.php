@@ -1,17 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
 /**
  * A <tt>ComponentMetadata</tt> instance holds object-relational property mapping.
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 abstract class ComponentMetadata
 {
@@ -38,15 +32,12 @@ abstract class ComponentMetadata
     protected $cache;
 
     /**
-     * @var array<string, Property>
+     * @var Property[]
      */
     protected $declaredProperties = [];
 
     /**
      * ComponentMetadata constructor.
-     *
-     * @param string                       $className
-     * @param ClassMetadataBuildingContext $metadataBuildingContext
      */
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
@@ -56,58 +47,38 @@ abstract class ComponentMetadata
         $this->className       = $this->reflectionClass ? $this->reflectionClass->getName() : $className;
     }
 
-    /**
-     * @return string
-     */
     public function getClassName() : string
     {
         return $this->className;
     }
 
-    /**
-     * @param ComponentMetadata $parent
-     */
     public function setParent(ComponentMetadata $parent) : void
     {
         $this->parent = $parent;
     }
 
-    /**
-     * @return ComponentMetadata|null
-     */
     public function getParent() : ?ComponentMetadata
     {
         return $this->parent;
     }
 
-    /**
-     * @return \ReflectionClass|null
-     */
     public function getReflectionClass() : ?\ReflectionClass
     {
         return $this->reflectionClass;
     }
 
-    /**
-     * @param CacheMetadata|null $cache
-     *
-     * @return void
-     */
     public function setCache(?CacheMetadata $cache = null) : void
     {
         $this->cache = $cache;
     }
 
-    /**
-     * @return CacheMetadata|null
-     */
-    public function getCache(): ?CacheMetadata
+    public function getCache() : ?CacheMetadata
     {
         return $this->cache;
     }
 
     /**
-     * @return iterable
+     * @return iterable|Property[]
      */
     public function getDeclaredPropertiesIterator() : iterable
     {
@@ -117,8 +88,6 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @param Property $property
-     *
      * @throws \ReflectionException
      * @throws MappingException
      */
@@ -145,18 +114,13 @@ abstract class ComponentMetadata
         $this->declaredProperties[$propertyName] = $property;
     }
 
-    /**
-     * @param string $propertyName
-     *
-     * @return bool
-     */
     public function hasDeclaredProperty(string $propertyName) : bool
     {
         return isset($this->declaredProperties[$propertyName]);
     }
 
     /**
-     * @return iterable
+     * @return iterable|Property[]
      */
     public function getPropertiesIterator() : iterable
     {
@@ -167,11 +131,6 @@ abstract class ComponentMetadata
         yield from $this->getDeclaredPropertiesIterator();
     }
 
-    /**
-     * @param string $propertyName
-     *
-     * @return null|Property
-     */
     public function getProperty(string $propertyName) : ?Property
     {
         if (isset($this->declaredProperties[$propertyName])) {
@@ -185,11 +144,6 @@ abstract class ComponentMetadata
         return null;
     }
 
-    /**
-     * @param string $propertyName
-     *
-     * @return bool
-     */
     public function hasProperty(string $propertyName) : bool
     {
         if (isset($this->declaredProperties[$propertyName])) {
@@ -200,7 +154,7 @@ abstract class ComponentMetadata
     }
 
     /**
-     * @return \ArrayIterator
+     * @return \ArrayIterator|ColumnMetadata[]
      */
     public function getColumnsIterator() : \ArrayIterator
     {

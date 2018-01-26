@@ -9,11 +9,6 @@ use Doctrine\ORM\Mapping;
 
 /**
  * Class MappedSuperClassMetadataBinder
- *
- * @package Doctrine\ORM\Mapping\Driver\Annotation\Binder
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
 class MappedSuperClassMetadataBinder
 {
@@ -30,7 +25,7 @@ class MappedSuperClassMetadataBinder
     /**
      * [dreaming] One day we would eliminate this and only do: $reflectionClass->getAnnotations()
      *
-     * @var array<string, object>
+     * @var Annotation\Annotation[]
      */
     private $classAnnotations;
 
@@ -44,18 +39,14 @@ class MappedSuperClassMetadataBinder
     /**
      * ComponentMetadataBinder constructor.
      *
-     * @param \ReflectionClass                     $reflectionClass
-     * @param array<string, object>                $classAnnotations
-     * @param Mapping\ClassMetadata                $classMetadata
-     * @param Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+     * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(
         \ReflectionClass $reflectionClass,
         array $classAnnotations,
         Mapping\ClassMetadata $classMetadata,
         Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    )
-    {
+    ) {
         $this->reflectionClass         = $reflectionClass;
         $this->classAnnotations        = $classAnnotations;
         $this->classMetadata           = $classMetadata;
@@ -63,8 +54,6 @@ class MappedSuperClassMetadataBinder
     }
 
     /**
-     * @return Mapping\ClassMetadata
-     *
      * @throws Mapping\MappingException
      */
     public function bind() : Mapping\ClassMetadata
@@ -76,17 +65,10 @@ class MappedSuperClassMetadataBinder
         return $classMetadata;
     }
 
-    /**
-     * @param Mapping\ClassMetadata       $classMetadata
-     * @param Annotation\MappedSuperclass $mappedSuperclassAnnotation
-     *
-     * @return void
-     */
     private function processMappedSuperclassAnnotation(
         Mapping\ClassMetadata $classMetadata,
         Annotation\MappedSuperclass $mappedSuperclassAnnotation
-    ) : void
-    {
+    ) : void {
         if ($mappedSuperclassAnnotation->repositoryClass !== null) {
             $classMetadata->setCustomRepositoryClassName(
                 $mappedSuperclassAnnotation->repositoryClass
@@ -94,6 +76,6 @@ class MappedSuperClassMetadataBinder
         }
 
         $classMetadata->isMappedSuperclass = true;
-        $classMetadata->isEmbeddedClass = false;
+        $classMetadata->isEmbeddedClass    = false;
     }
 }

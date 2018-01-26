@@ -15,13 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Command to (re)generate the proxy classes used by doctrine.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class GenerateProxiesCommand extends Command
 {
@@ -50,25 +43,26 @@ class GenerateProxiesCommand extends Command
 
         $metadatas = $em->getMetadataFactory()->getAllMetadata();
         $metadatas = MetadataFilter::filter($metadatas, $input->getOption('filter'));
+        $destPath  = $input->getArgument('dest-path');
 
         // Process destination directory
-        if (($destPath = $input->getArgument('dest-path')) === null) {
+        if ($destPath === null) {
             $destPath = $em->getConfiguration()->getProxyDir();
         }
 
-        if ( ! is_dir($destPath)) {
+        if (! is_dir($destPath)) {
             mkdir($destPath, 0775, true);
         }
 
         $destPath = realpath($destPath);
 
-        if ( ! file_exists($destPath)) {
+        if (! file_exists($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not exist.", $em->getConfiguration()->getProxyDir())
             );
         }
 
-        if ( ! is_writable($destPath)) {
+        if (! is_writable($destPath)) {
             throw new \InvalidArgumentException(
                 sprintf("Proxies destination directory '<info>%s</info>' does not have write permissions.", $destPath)
             );

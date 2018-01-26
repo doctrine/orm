@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
@@ -9,7 +8,7 @@ use Doctrine\ORM\Mapping;
 
 class ClassMetadataExporter implements Exporter
 {
-    const VARIABLE = '$this';
+    public const VARIABLE = '$this';
 
     /**
      * {@inheritdoc}
@@ -39,12 +38,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportClass(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $reflectionClass   = $metadata->getReflectionClass();
@@ -63,12 +56,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportConstructor(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);
@@ -102,12 +89,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportInheritance(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -128,12 +109,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportTable(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -148,12 +123,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportProperties(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -168,12 +137,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportLifecycleCallbacks(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $bodyIndentation = str_repeat(self::INDENTATION, $indentationLevel + 1);
@@ -194,12 +157,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\ClassMetadata $metadata
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportDiscriminatorMetadata(Mapping\ClassMetadata $metadata, int $indentationLevel) : string
     {
         $variableExporter      = new VariableExporter();
@@ -221,12 +178,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\TableMetadata $table
-     * @param int                   $indentationLevel
-     *
-     * @return string
-     */
     private function exportTableMetadata(Mapping\TableMetadata $table, int $indentationLevel) : string
     {
         $tableExporter   = new TableMetadataExporter();
@@ -241,12 +192,6 @@ class ClassMetadataExporter implements Exporter
         return implode(PHP_EOL, $lines);
     }
 
-    /**
-     * @param Mapping\Property $property
-     * @param int              $indentationLevel
-     *
-     * @return string
-     */
     private function exportProperty(Mapping\Property $property, int $indentationLevel) : string
     {
         $indentation     = str_repeat(self::INDENTATION, $indentationLevel);

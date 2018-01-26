@@ -149,29 +149,6 @@ class ClassMetadataFactoryTest extends OrmTestCase
         self::assertFalse($em->getMetadataFactory()->isTransient(CmsArticle::class));
     }
 
-    /**
-     * @group DDC-1512
-     */
-    public function testIsTransientEntityNamespace()
-    {
-        $cmf = new ClassMetadataFactory();
-        $driver = $this->createMock(MappingDriver::class);
-        $driver->expects($this->at(0))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsUser::class))
-               ->will($this->returnValue(true));
-        $driver->expects($this->at(1))
-               ->method('isTransient')
-               ->with($this->equalTo(CmsArticle::class))
-               ->will($this->returnValue(false));
-
-        $em = $this->createEntityManager($driver);
-        $em->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        self::assertTrue($em->getMetadataFactory()->isTransient('CMS:CmsUser'));
-        self::assertFalse($em->getMetadataFactory()->isTransient('CMS:CmsArticle'));
-    }
-
     public function testAddDefaultDiscriminatorMap()
     {
         $cmf = new ClassMetadataFactory();
@@ -190,9 +167,9 @@ class ClassMetadataFactoryTest extends OrmTestCase
         $childClass = ChildClass::class;
         $anotherChildClass = AnotherChildClass::class;
 
-        $rootClassKey = array_search($rootClass, $rootDiscriminatorMap);
-        $childClassKey = array_search($childClass, $rootDiscriminatorMap);
-        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap);
+        $rootClassKey = array_search($rootClass, $rootDiscriminatorMap, true);
+        $childClassKey = array_search($childClass, $rootDiscriminatorMap, true);
+        $anotherChildClassKey = array_search($anotherChildClass, $rootDiscriminatorMap, true);
 
         self::assertEquals('rootclass', $rootClassKey);
         self::assertEquals('childclass', $childClassKey);

@@ -21,7 +21,7 @@ final class DiscriminatorColumn implements Annotation
     public $type;
 
     /**
-     * @var integer
+     * @var int
      */
     public $length;
 

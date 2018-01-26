@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\Expr;
 
 /**
  * Expression class for building DQL select statements.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Select extends Base
 {
@@ -26,12 +20,12 @@ class Select extends Base
     protected $postSeparator = '';
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $allowedClasses = [Func::class];
 
     /**
-     * @return array
+     * @return mixed[]
      */
     public function getParts()
     {

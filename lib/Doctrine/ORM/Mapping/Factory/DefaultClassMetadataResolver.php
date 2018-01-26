@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
@@ -12,7 +11,7 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
      *
      * @var string
      */
-    const MARKER = '__CG__';
+    public const MARKER = '__CG__';
 
     /**
      * @var string
@@ -26,9 +25,6 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
 
     /**
      * DefaultClassMetadataResolver constructor.
-     *
-     * @param string $namespace
-     * @param string $directory
      */
     public function __construct(string $namespace, string $directory)
     {

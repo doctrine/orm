@@ -8,9 +8,6 @@ namespace Doctrine\ORM\Query;
  * Represents a chain of tree walkers that modify an AST and finally emit output.
  * Only the last walker in the chain can emit output. Any previous walkers can modify
  * the AST to influence the final output produced by the last walker.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since  2.0
  */
 class TreeWalkerChain implements TreeWalker
 {
@@ -22,30 +19,16 @@ class TreeWalkerChain implements TreeWalker
     private $walkers;
 
     /**
-     * The original Query.
-     *
-     * @var \Doctrine\ORM\AbstractQuery
-     */
-    private $query;
-
-    /**
-     * The ParserResult of the original query that was produced by the Parser.
-     *
-     * @var \Doctrine\ORM\Query\ParserResult
-     */
-    private $parserResult;
-
-    /**
      * The query components of the original query (the "symbol table") that was produced by the Parser.
      *
-     * @var array
+     * @var mixed[][]
      */
     private $queryComponents;
 
     /**
      * Returns the internal queryComponents array.
      *
-     * @return array
+     * @return mixed[][]
      */
     public function getQueryComponents()
     {
@@ -71,18 +54,14 @@ class TreeWalkerChain implements TreeWalker
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
-        $this->query = $query;
-        $this->parserResult = $parserResult;
         $this->queryComponents = $queryComponents;
-        $this->walkers = new TreeWalkerChainIterator($this, $query, $parserResult);
+        $this->walkers         = new TreeWalkerChainIterator($this, $query, $parserResult);
     }
 
     /**
      * Adds a tree walker to the chain.
      *
      * @param string $walkerClass The class of the walker to instantiate.
-     *
-     * @return void
      */
     public function addTreeWalker($walkerClass)
     {

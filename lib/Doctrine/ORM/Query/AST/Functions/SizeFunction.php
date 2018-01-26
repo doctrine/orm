@@ -6,17 +6,11 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Query\Lexer;
+use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * "SIZE" "(" CollectionValuedPathExpression ")"
- *
- * 
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class SizeFunction extends FunctionNode
 {
@@ -30,7 +24,7 @@ class SizeFunction extends FunctionNode
      * @inheritdoc
      * @todo If the collection being counted is already joined, the SQL can be simpler (more efficient).
      */
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    public function getSql(SqlWalker $sqlWalker)
     {
         $platform          = $sqlWalker->getEntityManager()->getConnection()->getDatabasePlatform();
         $dqlAlias          = $this->collectionPathExpression->identificationVariable;
@@ -46,9 +40,9 @@ class SizeFunction extends FunctionNode
         ;
 
         if ($association instanceof OneToManyAssociationMetadata) {
-            $targetTableName    = $targetClass->table->getQuotedQualifiedName($platform);
-            $targetTableAlias   = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
-            $sourceTableAlias   = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
+            $targetTableName  = $targetClass->table->getQuotedQualifiedName($platform);
+            $targetTableAlias = $sqlWalker->getSQLTableAlias($targetClass->getTableName());
+            $sourceTableAlias = $sqlWalker->getSQLTableAlias($class->getTableName(), $dqlAlias);
 
             $sql .= $targetTableName . ' ' . $targetTableAlias . ' WHERE ';
 
@@ -56,9 +50,14 @@ class SizeFunction extends FunctionNode
             $first             = true;
 
             foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
-                if ($first) $first = false; else $sql .= ' AND ';
+                if ($first) {
+                    $first = false;
+                } else {
+                    $sql .= ' AND ';
+                }
 
-                $sql .= sprintf('%s.%s = %s.%s',
+                $sql .= sprintf(
+                    '%s.%s = %s.%s',
                     $targetTableAlias,
                     $platform->quoteIdentifier($joinColumn->getColumnName()),
                     $sourceTableAlias,
@@ -89,9 +88,14 @@ class SizeFunction extends FunctionNode
             $first = true;
 
             foreach ($joinColumns as $joinColumn) {
-                if ($first) $first = false; else $sql .= ' AND ';
+                if ($first) {
+                    $first = false;
+                } else {
+                    $sql .= ' AND ';
+                }
 
-                $sql .= sprintf('%s.%s = %s.%s',
+                $sql .= sprintf(
+                    '%s.%s = %s.%s',
                     $joinTableAlias,
                     $platform->quoteIdentifier($joinColumn->getColumnName()),
                     $sourceTableAlias,
@@ -107,7 +111,7 @@ class SizeFunction extends FunctionNode
      * @override
      * @inheritdoc
      */
-    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    public function parse(Parser $parser)
     {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);

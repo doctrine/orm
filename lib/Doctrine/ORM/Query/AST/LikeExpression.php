@@ -6,12 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * LikeExpression ::= StringExpression ["NOT"] "LIKE" string ["ESCAPE" char]
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class LikeExpression extends Node
 {
@@ -43,8 +37,8 @@ class LikeExpression extends Node
     public function __construct($stringExpression, $stringPattern, $escapeChar = null)
     {
         $this->stringExpression = $stringExpression;
-        $this->stringPattern = $stringPattern;
-        $this->escapeChar = $escapeChar;
+        $this->stringPattern    = $stringPattern;
+        $this->escapeChar       = $escapeChar;
     }
 
     /**

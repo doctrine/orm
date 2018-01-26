@@ -8,9 +8,6 @@ use Doctrine\ORM\ORMException;
 
 /**
  * Exception for cache.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CacheException extends ORMException
 {

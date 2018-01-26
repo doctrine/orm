@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
@@ -12,11 +11,6 @@ use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
-/**
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.5
- */
 class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 {
     /**
@@ -30,8 +24,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         ConcurrentRegion $region,
         EntityManagerInterface $em,
         AssociationMetadata $association
-    )
-    {
+    ) {
         parent::__construct($persister, $region, $em, $association);
     }
 
@@ -92,7 +85,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $this->queuedCache['delete'][spl_object_id($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 
@@ -104,7 +97,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
         $isInitialized = $collection->isInitialized();
         $isDirty       = $collection->isDirty();
 
-        if ( ! $isInitialized && ! $isDirty) {
+        if (! $isInitialized && ! $isDirty) {
             return;
         }
 
@@ -120,7 +113,7 @@ class ReadWriteCachedCollectionPersister extends AbstractCollectionPersister
 
         $this->queuedCache['update'][spl_object_id($collection)] = [
             'key'   => $key,
-            'lock'  => $lock
+            'lock'  => $lock,
         ];
     }
 }

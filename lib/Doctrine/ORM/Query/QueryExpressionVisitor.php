@@ -5,32 +5,28 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
+use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
 
 /**
  * Converts Collection expressions to Query expressions.
- *
- * @author Kirill chEbba Chebunin <iam@chebba.org>
- * @since 2.4
  */
 class QueryExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var array
+     * @var string[]
      */
     private static $operatorMap = [
         Comparison::GT => Expr\Comparison::GT,
         Comparison::GTE => Expr\Comparison::GTE,
         Comparison::LT  => Expr\Comparison::LT,
-        Comparison::LTE => Expr\Comparison::LTE
+        Comparison::LTE => Expr\Comparison::LTE,
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
     private $queryAliases;
 
@@ -40,26 +36,26 @@ class QueryExpressionVisitor extends ExpressionVisitor
     private $expr;
 
     /**
-     * @var array
+     * @var mixed[]
      */
     private $parameters = [];
 
     /**
      * Constructor
      *
-     * @param array $queryAliases
+     * @param string[] $queryAliases
      */
     public function __construct($queryAliases)
     {
         $this->queryAliases = $queryAliases;
-        $this->expr = new Expr();
+        $this->expr         = new Expr();
     }
 
     /**
      * Gets bound parameters.
      * Filled after {@link dispach()}.
      *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return \Doctrine\Common\Collections\Collection|mixed[]
      */
     public function getParameters()
     {
@@ -68,8 +64,6 @@ class QueryExpressionVisitor extends ExpressionVisitor
 
     /**
      * Clears parameters.
-     *
-     * @return void
      */
     public function clearParameters()
     {
@@ -107,7 +101,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                 return new Expr\Orx($expressionList);
 
             default:
-                throw new \RuntimeException("Unknown composite " . $expr->getType());
+                throw new \RuntimeException('Unknown composite ' . $expr->getType());
         }
     }
 
@@ -116,7 +110,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      */
     public function walkComparison(Comparison $comparison)
     {
-        if ( ! isset($this->queryAliases[0])) {
+        if (! isset($this->queryAliases[0])) {
             throw new QueryException('No aliases are set before invoking walkComparison().');
         }
 
@@ -129,7 +123,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
             }
         }
 
-        $parameterName = str_replace('.', '_', $comparison->getField());
+        $parameterName  = str_replace('.', '_', $comparison->getField());
         $parameterCount = \count($this->parameters);
 
         foreach ($this->parameters as $parameter) {
@@ -139,7 +133,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
             }
         }
 
-        $parameter = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
+        $parameter   = new Parameter($parameterName, $this->walkValue($comparison->getValue()));
         $placeholder = ':' . $parameterName;
 
         switch ($comparison->getOperator()) {
@@ -193,7 +187,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
                     );
                 }
 
-                throw new \RuntimeException("Unknown comparison operator: " . $comparison->getOperator());
+                throw new \RuntimeException('Unknown comparison operator: ' . $comparison->getOperator());
         }
     }
 

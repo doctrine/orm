@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\ComponentMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\Property;
 use Doctrine\ORM\Mapping\TableMetadata;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -20,10 +21,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Show information about mapped entities.
- *
- * @link    www.doctrine-project.org
- * @since   2.4
- * @author  Daniel Leech <daniel@dantleech.com>
  */
 final class MappingDescribeCommand extends Command
 {
@@ -65,9 +62,7 @@ EOT
     /**
      * Display all the mapping information for a single Entity.
      *
-     * @param string                 $entityName    Full or partial entity class name
-     * @param EntityManagerInterface $entityManager
-     * @param SymfonyStyle           $ui
+     * @param string $entityName Full or partial entity class name
      */
     private function displayEntity($entityName, EntityManagerInterface $entityManager, SymfonyStyle $ui)
     {
@@ -121,8 +116,6 @@ EOT
     /**
      * Return all mapped entity class names
      *
-     * @param EntityManagerInterface $entityManager
-     *
      * @return string[]
      */
     private function getMappedEntities(EntityManagerInterface $entityManager)
@@ -131,9 +124,9 @@ EOT
                                           ->getMetadataDriverImpl()
                                           ->getAllClassNames();
 
-        if ( ! $entityClassNames) {
+        if (! $entityClassNames) {
             throw new \InvalidArgumentException(
-                'You do not have any mapped Doctrine ORM entities according to the current configuration. '.
+                'You do not have any mapped Doctrine ORM entities according to the current configuration. ' .
                 'If you have entities or mapping files you should check your mapping configuration for errors.'
             );
         }
@@ -145,8 +138,7 @@ EOT
      * Return the class metadata for the given entity
      * name
      *
-     * @param string                 $entityName    Full or partial entity name
-     * @param EntityManagerInterface $entityManager
+     * @param string $entityName Full or partial entity name
      *
      * @return \Doctrine\ORM\Mapping\ClassMetadata
      */
@@ -164,7 +156,7 @@ EOT
             }
         );
 
-        if ( ! $matches) {
+        if (! $matches) {
             throw new \InvalidArgumentException(sprintf(
                 'Could not find any mapped Entity classes matching "%s"',
                 $entityName
@@ -174,7 +166,8 @@ EOT
         if (count($matches) > 1) {
             throw new \InvalidArgumentException(sprintf(
                 'Entity name "%s" is ambiguous, possible matches: "%s"',
-                $entityName, implode(', ', $matches)
+                $entityName,
+                implode(', ', $matches)
             ));
         }
 
@@ -182,9 +175,7 @@ EOT
     }
 
     /**
-     * @param ComponentMetadata $metadata
-     *
-     * @return array
+     * @return string[]
      */
     private function formatParentClasses(ComponentMetadata $metadata)
     {
@@ -233,11 +224,11 @@ EOT
      */
     private function formatValue($value)
     {
-        if ('' === $value) {
+        if ($value === '') {
             return '';
         }
 
-        if (null === $value) {
+        if ($value === null) {
             return '<comment>Null</comment>';
         }
 
@@ -270,11 +261,11 @@ EOT
      * @param string $label Label for the value
      * @param mixed  $value A Value to show
      *
-     * @return array
+     * @return string[]
      */
     private function formatField($label, $value)
     {
-        if (null === $value) {
+        if ($value === null) {
             $value = '<comment>None</comment>';
         }
 
@@ -282,34 +273,11 @@ EOT
     }
 
     /**
-     * Format the association mappings
-     *
-     * @param array $propertyMappings
-     *
-     * @return array
-     */
-    private function formatAssociationMappings(array $propertyMappings)
-    {
-        $output = [];
-
-        foreach ($propertyMappings as $propertyName => $mapping) {
-            $output[] = $this->formatField(sprintf('  %s', $propertyName), '');
-
-            foreach ($mapping as $field => $value) {
-                $output[] = $this->formatField(sprintf('    %s', $field), $this->formatValue($value));
-            }
-        }
-
-        return $output;
-    }
-
-
-    /**
      * Format the property mappings
      *
-     * @param iterable $propertyMappings
+     * @param iterable|Property[] $propertyMappings
      *
-     * @return array
+     * @return string[]
      */
     private function formatPropertyMappings(iterable $propertyMappings)
     {
@@ -332,15 +300,13 @@ EOT
     }
 
     /**
-     * @param ColumnMetadata|null $columnMetadata
-     *
-     * @return array|string
+     * @return string[]
      */
-    private function formatColumn(ColumnMetadata $columnMetadata = null)
+    private function formatColumn(?ColumnMetadata $columnMetadata = null)
     {
         $output = [];
 
-        if (null === $columnMetadata) {
+        if ($columnMetadata === null) {
             $output[] = '<comment>Null</comment>';
 
             return $output;
@@ -366,9 +332,9 @@ EOT
     /**
      * Format the entity listeners
      *
-     * @param array $entityListeners
+     * @param object[] $entityListeners
      *
-     * @return array
+     * @return string
      */
     private function formatEntityListeners(array $entityListeners)
     {
@@ -376,15 +342,14 @@ EOT
     }
 
     /**
-     * @param TableMetadata|null $tableMetadata
      *
-     * @return array|string
+     * @return string[]
      */
-    private function formatTable(TableMetadata $tableMetadata = null)
+    private function formatTable(?TableMetadata $tableMetadata = null)
     {
         $output = [];
 
-        if (null === $tableMetadata) {
+        if ($tableMetadata === null) {
             $output[] = '<comment>Null</comment>';
 
             return $output;

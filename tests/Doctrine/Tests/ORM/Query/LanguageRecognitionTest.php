@@ -92,13 +92,6 @@ class LanguageRecognitionTest extends OrmTestCase
     {
         $this->expectException(QueryException::class);
 
-        $this->em->getConfiguration()->setEntityNamespaces(
-            [
-            'Unknown' => 'Unknown',
-            'CMS' => 'Doctrine\Tests\Models\CMS'
-            ]
-        );
-
         $this->parseDql($dql);
     }
 
@@ -116,19 +109,12 @@ class LanguageRecognitionTest extends OrmTestCase
 
             /* Checks for invalid AbstractSchemaName */
             ['SELECT u FROM UnknownClass u'],  // unknown
-            ['SELECT u FROM Unknown\Class u'], // unknown with namespace
             ['SELECT u FROM \Unknown\Class u'], // unknown, leading backslash
             ['SELECT u FROM Unknown\\\\Class u'], // unknown, syntactically bogus (duplicate \\)
             ['SELECT u FROM Unknown\Class\ u'], // unknown, syntactically bogus (trailing \)
-            ['SELECT u FROM Unknown:Class u'], // unknown, with namespace alias
             ['SELECT u FROM Unknown::Class u'], // unknown, with PAAMAYIM_NEKUDOTAYIM
-            ['SELECT u FROM Unknown:Class:Name u'], // unknown, with invalid namespace alias
-            ['SELECT u FROM UnknownClass: u'], // unknown, with invalid namespace alias
-            ['SELECT u FROM Unknown:Class: u'], // unknown, with invalid namespace alias
             ['SELECT u FROM Doctrine\Tests\Models\CMS\\\\CmsUser u'], // syntactically bogus (duplicate \\)array('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser\ u'), // syntactically bogus (trailing \)
             ['SELECT u FROM CMS::User u'],
-            ['SELECT u FROM CMS:User: u'],
-            ['SELECT u FROM CMS:User:Foo u'],
 
             /* Checks for invalid AliasResultVariable */
             ['SELECT \'foo\' AS \foo FROM Doctrine\Tests\Models\CMS\CmsUser u'],

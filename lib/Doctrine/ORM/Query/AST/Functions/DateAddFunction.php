@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
-use Doctrine\ORM\Query\SqlWalker;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\SqlWalker;
 
 /**
  * "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
- *
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Benjamin Eberlei <kontakt@beberlei.de>
  */
 class DateAddFunction extends FunctionNode
 {
+    /** @var Node */
     public $firstDateExpression;
+
+    /** @var Node */
     public $intervalExpression;
+
+    /** @var Node */
     public $unit;
 
     /**

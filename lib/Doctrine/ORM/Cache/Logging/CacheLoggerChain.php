@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Logging;
@@ -11,9 +10,6 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 
 /**
  * Cache logger chain
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class CacheLoggerChain implements CacheLogger
 {
@@ -23,8 +19,7 @@ class CacheLoggerChain implements CacheLogger
     private $loggers = [];
 
     /**
-     * @param string                                  $name
-     * @param \Doctrine\ORM\Cache\Logging\CacheLogger $logger
+     * @param string $name
      */
     public function setLogger($name, CacheLogger $logger)
     {
@@ -42,7 +37,7 @@ class CacheLoggerChain implements CacheLogger
     }
 
     /**
-     * @return array<\Doctrine\ORM\Cache\Logging\CacheLogger>
+     * @return CacheLogger[]
      */
     public function getLoggers()
     {

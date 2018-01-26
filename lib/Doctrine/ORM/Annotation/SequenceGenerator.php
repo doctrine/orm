@@ -16,7 +16,7 @@ final class SequenceGenerator implements Annotation
     public $sequenceName;
 
     /**
-     * @var integer
+     * @var int
      */
     public $allocationSize = 1;
 }

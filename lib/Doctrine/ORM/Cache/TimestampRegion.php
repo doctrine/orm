@@ -1,15 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
 /**
  * Defines the contract for a cache region which will specifically be used to store entity "update timestamps".
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface TimestampRegion extends Region
 {

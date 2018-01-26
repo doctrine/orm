@@ -6,11 +6,6 @@ namespace Doctrine\ORM\Query\AST;
 
 /**
  * JoinClassPathExpression ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
- *
- * @license http://www.opensource.org/licenses/mit-license.php MIT
- * @link    www.doctrine-project.org
- * @since   2.3
- * @author  Alexander <iam.asm89@gmail.com>
  */
 class JoinClassPathExpression extends Node
 {
@@ -30,7 +25,7 @@ class JoinClassPathExpression extends Node
      */
     public function __construct($abstractSchemaName, $aliasIdentificationVar)
     {
-        $this->abstractSchemaName = $abstractSchemaName;
+        $this->abstractSchemaName          = $abstractSchemaName;
         $this->aliasIdentificationVariable = $aliasIdentificationVar;
     }
 

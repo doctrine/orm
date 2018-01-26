@@ -1,15 +1,11 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
 /**
  * A resolver is used to instantiate an entity listener.
- *
- * @since   2.4
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface EntityListenerResolver
 {

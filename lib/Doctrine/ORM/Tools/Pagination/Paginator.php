@@ -13,10 +13,6 @@ use Doctrine\ORM\QueryBuilder;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
- *
- * @author Pablo Díez <pablodip@gmail.com>
- * @author Benjamin Eberlei <kontakt@beberlei.de>
- * @license New BSD
  */
 class Paginator implements \Countable, \IteratorAggregate
 {
@@ -44,7 +40,7 @@ class Paginator implements \Countable, \IteratorAggregate
      * Constructor.
      *
      * @param Query|QueryBuilder $query               A Doctrine ORM query or query builder.
-     * @param boolean            $fetchJoinCollection Whether the query joins a collection (true by default).
+     * @param bool               $fetchJoinCollection Whether the query joins a collection (true by default).
      */
     public function __construct($query, $fetchJoinCollection = true)
     {
@@ -52,7 +48,7 @@ class Paginator implements \Countable, \IteratorAggregate
             $query = $query->getQuery();
         }
 
-        $this->query = $query;
+        $this->query               = $query;
         $this->fetchJoinCollection = (bool) $fetchJoinCollection;
     }
 
@@ -69,7 +65,7 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Returns whether the query joins a collection.
      *
-     * @return boolean Whether the query joins a collection.
+     * @return bool Whether the query joins a collection.
      */
     public function getFetchJoinCollection()
     {
@@ -205,7 +201,6 @@ class Paginator implements \Countable, \IteratorAggregate
     /**
      * Appends a custom tree walker to the tree walkers hint.
      *
-     * @param Query  $query
      * @param string $walkerClass
      */
     private function appendTreeWalker(Query $query, $walkerClass)
@@ -230,7 +225,7 @@ class Paginator implements \Countable, \IteratorAggregate
         /* @var $countQuery Query */
         $countQuery = $this->cloneQuery($this->query);
 
-        if ( ! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
+        if (! $countQuery->hasHint(CountWalker::HINT_DISTINCT)) {
             $countQuery->setHint(CountWalker::HINT_DISTINCT, true);
         }
 
@@ -252,12 +247,12 @@ class Paginator implements \Countable, \IteratorAggregate
         $parser            = new Parser($countQuery);
         $parameterMappings = $parser->parse()->getParameterMappings();
         /* @var $parameters \Doctrine\Common\Collections\Collection|\Doctrine\ORM\Query\Parameter[] */
-        $parameters        = $countQuery->getParameters();
+        $parameters = $countQuery->getParameters();
 
         foreach ($parameters as $key => $parameter) {
             $parameterName = $parameter->getName();
 
-            if ( ! (isset($parameterMappings[$parameterName]) || array_key_exists($parameterName, $parameterMappings))) {
+            if (! (isset($parameterMappings[$parameterName]) || array_key_exists($parameterName, $parameterMappings))) {
                 unset($parameters[$key]);
             }
         }

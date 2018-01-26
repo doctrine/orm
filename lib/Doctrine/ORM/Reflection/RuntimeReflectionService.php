@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Reflection;
@@ -9,8 +8,6 @@ use Doctrine\Common\Persistence\Mapping\MappingException;
 
 /**
  * PHP Runtime Reflection Service.
- *
- * @author Benjamin Eberlei <kontakt@beberlei.de>
  */
 class RuntimeReflectionService implements ReflectionService
 {

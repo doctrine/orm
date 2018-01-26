@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Logging;
@@ -11,9 +10,6 @@ use Doctrine\ORM\Cache\QueryCacheKey;
 
 /**
  * Interface for logging.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface CacheLogger
 {

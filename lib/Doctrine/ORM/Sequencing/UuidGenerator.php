@@ -8,9 +8,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Represents an ID generator that uses the database UUID expression
- *
- * @since 2.3
- * @author Maarten de Keizer <m.de.keizer@markei.nl>
  */
 class UuidGenerator implements Generator
 {
@@ -20,7 +17,7 @@ class UuidGenerator implements Generator
     public function generate(EntityManagerInterface $em, $entity)
     {
         $conn = $em->getConnection();
-        $sql = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
+        $sql  = 'SELECT ' . $conn->getDatabasePlatform()->getGuidExpression();
 
         return $conn->query($sql)->fetchColumn(0);
     }

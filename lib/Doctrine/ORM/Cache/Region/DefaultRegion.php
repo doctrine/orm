@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
@@ -15,13 +14,10 @@ use Doctrine\ORM\Cache\Region;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultRegion implements Region
 {
-    const REGION_KEY_SEPARATOR = '_';
+    public const REGION_KEY_SEPARATOR = '_';
 
     /**
      * @var CacheAdapter
@@ -34,14 +30,13 @@ class DefaultRegion implements Region
     protected $name;
 
     /**
-     * @var integer
+     * @var int
      */
     protected $lifetime = 0;
 
     /**
-     * @param string       $name
-     * @param CacheAdapter $cache
-     * @param integer      $lifetime
+     * @param string $name
+     * @param int    $lifetime
      */
     public function __construct($name, CacheAdapter $cache, $lifetime = 0)
     {
@@ -104,7 +99,6 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @param CacheKey $key
      * @return string
      */
     protected function getCacheEntryKey(CacheKey $key)
@@ -115,7 +109,7 @@ class DefaultRegion implements Region
     /**
      * {@inheritdoc}
      */
-    public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
+    public function put(CacheKey $key, CacheEntry $entry, ?Lock $lock = null)
     {
         return $this->cache->save($this->getCacheEntryKey($key), $entry, $this->lifetime);
     }

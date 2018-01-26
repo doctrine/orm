@@ -21,12 +21,12 @@ final class JoinColumn implements Annotation
     public $referencedColumnName = 'id';
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $unique = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $nullable = true;
 

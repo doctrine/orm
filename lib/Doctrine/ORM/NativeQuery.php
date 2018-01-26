@@ -6,9 +6,6 @@ namespace Doctrine\ORM;
 
 /**
  * Represents a native SQL query.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 final class NativeQuery extends AbstractQuery
 {
@@ -70,8 +67,6 @@ final class NativeQuery extends AbstractQuery
             $types      = array_values($types);
         }
 
-        return $this->em->getConnection()->executeQuery(
-            $this->sql, $parameters, $types, $this->queryCacheProfile
-        );
+        return $this->em->getConnection()->executeQuery($this->sql, $parameters, $types, $this->queryCacheProfile);
     }
 }

@@ -16,7 +16,7 @@ final class Entity implements Annotation
     public $repositoryClass;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $readOnly = false;
 }

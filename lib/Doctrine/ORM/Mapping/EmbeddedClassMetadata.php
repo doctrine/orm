@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
@@ -9,11 +8,6 @@ use Doctrine\ORM\Reflection\ReflectionService;
 
 /**
  * Class EmbeddedClassMetadata
- *
- * @package Doctrine\ORM\Mapping
- * @since 3.0
- *
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  *
  * @property MappedSuperClassMetadata $parent
  */
@@ -28,15 +22,11 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
     /** @var string */
     private $name;
 
-    /** @var boolean */
+    /** @var bool */
     protected $primaryKey = false;
 
     /**
      * EmbeddedClassMetadata constructor.
-     *
-     * @param string                        $name
-     * @param string                        $className
-     * @param MappedSuperClassMetadata|null $parent
      */
     public function __construct(string $name, string $className, ?MappedSuperClassMetadata $parent = null)
     {
@@ -53,9 +43,6 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
         return $this->declaringClass;
     }
 
-    /**
-     * @param ComponentMetadata $declaringClass
-     */
     public function setDeclaringClass(ComponentMetadata $declaringClass) : void
     {
         $this->declaringClass = $declaringClass;
@@ -77,17 +64,11 @@ class EmbeddedClassMetadata extends ComponentMetadata implements Property
         $this->name = $name;
     }
 
-    /**
-     * @param bool $isPrimaryKey
-     */
     public function setPrimaryKey(bool $isPrimaryKey) : void
     {
         $this->primaryKey = $isPrimaryKey;
     }
 
-    /**
-     * @return bool
-     */
     public function isPrimaryKey() : bool
     {
         return $this->primaryKey;

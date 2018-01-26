@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
@@ -11,9 +10,6 @@ namespace Doctrine\ORM\Cache;
  *
  * When a entry is locked another process should not be able to read or write the entry.
  * All evict operation should not consider locks, even though an entry is locked evict should be able to delete the entry and its lock.
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface ConcurrentRegion extends Region
 {

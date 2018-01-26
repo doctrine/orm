@@ -8,14 +8,8 @@ use Doctrine\ORM\Reflection\ReflectionService;
 
 interface Property
 {
-    /**
-     * @param ComponentMetadata $declaringClass
-     */
     public function setDeclaringClass(ComponentMetadata $declaringClass) : void;
 
-    /**
-     * @return ComponentMetadata
-     */
     public function getDeclaringClass() : ComponentMetadata;
 
     /**
@@ -31,23 +25,11 @@ interface Property
      */
     public function getValue($object);
 
-    /**
-     * @return string
-     */
     public function getName() : string;
 
-    /**
-     * @return bool
-     */
     public function isPrimaryKey() : bool;
 
-    /**
-     * @param \ReflectionProperty $reflectionProperty
-     */
     public function setReflectionProperty(\ReflectionProperty $reflectionProperty) : void;
 
-    /**
-     * @param ReflectionService $reflectionService
-     */
     public function wakeupReflection(ReflectionService $reflectionService) : void;
 }

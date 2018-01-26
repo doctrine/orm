@@ -6,20 +6,14 @@ namespace Doctrine\ORM\Query\Expr;
 
 /**
  * Expression class for DQL join.
- *
- * @link    www.doctrine-project.org
- * @since   2.0
- * @author  Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @author  Jonathan Wage <jonwage@gmail.com>
- * @author  Roman Borschel <roman@code-factory.org>
  */
 class Join
 {
-    const INNER_JOIN    = 'INNER';
-    const LEFT_JOIN     = 'LEFT';
+    public const INNER_JOIN = 'INNER';
+    public const LEFT_JOIN  = 'LEFT';
 
-    const ON            = 'ON';
-    const WITH          = 'WITH';
+    public const ON   = 'ON';
+    public const WITH = 'WITH';
 
     /**
      * @var string
@@ -61,16 +55,16 @@ class Join
      */
     public function __construct($joinType, $join, $alias = null, $conditionType = null, $condition = null, $indexBy = null)
     {
-        $this->joinType       = $joinType;
-        $this->join           = $join;
-        $this->alias          = $alias;
-        $this->conditionType  = $conditionType;
-        $this->condition      = $condition;
-        $this->indexBy        = $indexBy;
+        $this->joinType      = $joinType;
+        $this->join          = $join;
+        $this->alias         = $alias;
+        $this->conditionType = $conditionType;
+        $this->condition     = $condition;
+        $this->indexBy       = $indexBy;
     }
 
     /**
-     * @return string 
+     * @return string
      */
     public function getJoinType()
     {

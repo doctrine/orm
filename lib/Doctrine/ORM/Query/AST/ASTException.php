@@ -18,6 +18,6 @@ class ASTException extends QueryException
      */
     public static function noDispatchForNode($node)
     {
-        return new self("Double-dispatch for node " . get_class($node) . " is not supported.");
+        return new self('Double-dispatch for node ' . get_class($node) . ' is not supported.');
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Doctrine\ORM\Sequencing\Planning;
@@ -12,7 +11,7 @@ interface ValueGenerationExecutor
     /**
      * @return mixed[]
      */
-    public function execute(EntityManagerInterface $entityManager, /*object*/ $entity): array;
+    public function execute(EntityManagerInterface $entityManager, /*object*/ $entity) : array;
 
-    public function isDeferred(): bool;
+    public function isDeferred() : bool;
 }
