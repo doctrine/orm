@@ -238,7 +238,8 @@ abstract class OrmFunctionalTestCase extends OrmTestCase
             Models\Quote\Group::class,
             Models\Quote\NumericEntity::class,
             Models\Quote\Phone::class,
-            Models\Quote\User::class
+            Models\Quote\User::class,
+            Models\Quote\UserData::class,
         ],
         'vct_onetoone' => [
             Models\ValueConversionType\InversedOneToOneEntity::class,
