@@ -41,6 +41,7 @@ class ORMException extends Exception
         return new self('Could not find a named native query by the name "' . $nativeQueryName . '"');
     }
 
+    /*
      * @param string $field
      *
      * @return ORMException
