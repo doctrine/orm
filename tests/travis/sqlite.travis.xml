@@ -22,6 +22,7 @@
     </filter>
     <groups>
       <exclude>
+         <group>embedded</group>
          <group>performance</group>
          <group>locking_functional</group>
       </exclude>
