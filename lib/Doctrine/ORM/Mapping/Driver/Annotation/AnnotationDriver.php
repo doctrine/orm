@@ -394,7 +394,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
             );
 
             if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata);
+                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
             }
         }
 
@@ -1007,7 +1007,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     ) : void {
         $parent = $metadata->getParent();
 
-        if ($parent->inheritanceType === InheritanceType::SINGLE_TABLE) {
+        if ($parent !== null && $parent->inheritanceType === Mapping\InheritanceType::SINGLE_TABLE) {
             $metadata->setTable($parent->table);
 
             return;

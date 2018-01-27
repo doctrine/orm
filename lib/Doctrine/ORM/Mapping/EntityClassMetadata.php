@@ -115,7 +115,7 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
-        parent::__construct($className);
+        parent::__construct($className, $metadataBuildingContext);
 
         $this->entityName = $className;
     }
@@ -184,7 +184,8 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     public function addSubClass(SubClassMetadata $subClassMetadata) : void
     {
-        $superClassMetadata = $this->getSuperClass();
+        /** @var EntityClassMetadata|null $superClassMetadata */
+        $superClassMetadata = $this->getParent();
 
         while ($superClassMetadata !== null) {
             if ($superClassMetadata->entityName === $subClassMetadata->entityName) {
