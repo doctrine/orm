@@ -29,7 +29,7 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
     public function __construct(string $namespace, string $directory)
     {
         $this->namespace = ltrim($namespace, '\\');
-        $this->directory = rtrim($this->directory, DIRECTORY_SEPARATOR);
+        $this->directory = rtrim($directory, DIRECTORY_SEPARATOR);
     }
 
     /**
