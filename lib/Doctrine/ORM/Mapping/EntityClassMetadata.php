@@ -42,13 +42,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
     protected $subClasses = [];
 
     /**
-     * The named queries allowed to be called directly from Repository.
-     *
-     * @var string[]
-     */
-    protected $namedQueries = [];
-
-    /**
      * READ-ONLY: The named native queries allowed to be called directly from Repository.
      *
      * A native SQL named query definition has the following structure:
@@ -221,46 +214,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
         $iterator->append(new \ArrayIterator($this->subClasses));
 
         return $iterator;
-    }
-
-    /**
-     * Adds a named query.
-     *
-     * @throws MappingException
-     */
-    public function addNamedQuery(string $name, string $dqlQuery) : void
-    {
-        if (isset($this->namedQueries[$name])) {
-            throw MappingException::duplicateQueryMapping($this->entityName, $name);
-        }
-
-        $this->namedQueries[$name] = $dqlQuery;
-    }
-
-    /**
-     * Gets a named query.
-     *
-     * @param string $queryName The query name.
-     *
-     * @throws MappingException
-     */
-    public function getNamedQuery($queryName) : string
-    {
-        if (! isset($this->namedQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->entityName, $queryName);
-        }
-
-        return $this->namedQueries[$queryName];
-    }
-
-    /**
-     * Gets all named queries of the class.
-     *
-     * @return string[]
-     */
-    public function getNamedQueries() : array
-    {
-        return $this->namedQueries;
     }
 
     /**

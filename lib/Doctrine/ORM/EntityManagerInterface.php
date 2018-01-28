@@ -102,15 +102,6 @@ interface EntityManagerInterface extends ObjectManager
     public function createQuery($dql = '');
 
     /**
-     * Creates a Query from a named query.
-     *
-     * @param string $name
-     *
-     * @return Query
-     */
-    public function createNamedQuery($name);
-
-    /**
      * Creates a native SQL query.
      *
      * @param string           $sql

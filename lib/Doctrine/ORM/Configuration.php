@@ -63,11 +63,6 @@ class Configuration extends DBALConfiguration
     private $metadataCache;
 
     /**
-     * @var string[] of DQL, indexed by query name
-     */
-    private $namedQueries = [];
-
-    /**
      * @var string[][]|ResultSetMapping[][] tuples of [$sqlString, $resultSetMapping] indexed by query name
      */
     private $namedNativeQueries = [];
@@ -260,28 +255,6 @@ class Configuration extends DBALConfiguration
     public function setMetadataCacheImpl(CacheDriver $metadataCache) : void
     {
         $this->metadataCache = $metadataCache;
-    }
-
-    /**
-     * Adds a named DQL query to the configuration.
-     */
-    public function addNamedQuery(string $queryName, string $dqlQuery) : void
-    {
-        $this->namedQueries[$queryName] = $dqlQuery;
-    }
-
-    /**
-     * Gets a previously registered named DQL query.
-     *
-     * @throws ORMException
-     */
-    public function getNamedQuery(string $queryName) : string
-    {
-        if (! isset($this->namedQueries[$queryName])) {
-            throw ORMException::namedQueryNotFound($queryName);
-        }
-
-        return $this->namedQueries[$queryName];
     }
 
     /**
