@@ -66,13 +66,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     //public $embeddedClasses = [];
 
     /**
-     * The named queries allowed to be called directly from Repository.
-     *
-     * @var string[]
-     */
-    protected $namedQueries = [];
-
-    /**
      * READ-ONLY: The named native queries allowed to be called directly from Repository.
      *
      * A native SQL named query definition has the following structure:
@@ -355,10 +348,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
             $serialized[] = 'entityListeners';
         }
 
-        if ($this->namedQueries) {
-            $serialized[] = 'namedQueries';
-        }
-
         if ($this->namedNativeQueries) {
             $serialized[] = 'namedNativeQueries';
         }
@@ -496,34 +485,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function isIdentifierComposite() : bool
     {
         return isset($this->identifier[1]);
-    }
-
-    /**
-     * Gets the named query.
-     *
-     * @see ClassMetadata::$namedQueries
-     *
-     * @param string $queryName The query name.
-     *
-     * @throws MappingException
-     */
-    public function getNamedQuery($queryName) : string
-    {
-        if (! isset($this->namedQueries[$queryName])) {
-            throw MappingException::queryNotFound($this->className, $queryName);
-        }
-
-        return $this->namedQueries[$queryName];
-    }
-
-    /**
-     * Gets all named queries of the class.
-     *
-     * @return string[]
-     */
-    public function getNamedQueries() : array
-    {
-        return $this->namedQueries;
     }
 
     /**
@@ -1381,21 +1342,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
 
     /**
      * INTERNAL:
-     * Adds a named query to this class.
-     *
-     * @throws MappingException
-     */
-    public function addNamedQuery(string $name, string $query)
-    {
-        if (isset($this->namedQueries[$name])) {
-            throw MappingException::duplicateQueryMapping($this->className, $name);
-        }
-
-        $this->namedQueries[$name] = $query;
-    }
-
-    /**
-     * INTERNAL:
      * Adds a named native query to this class.
      *
      * @param mixed[] $queryMapping
@@ -1634,16 +1580,6 @@ class ClassMetadata extends ComponentMetadata implements TableOwner
     public function setValueGenerationPlan(ValueGenerationPlan $valueGenerationPlan) : void
     {
         $this->valueGenerationPlan = $valueGenerationPlan;
-    }
-
-    /**
-     * Checks whether the class has a named query with the given query name.
-     *
-     * @param string $queryName
-     */
-    public function hasNamedQuery($queryName) : bool
-    {
-        return isset($this->namedQueries[$queryName]);
     }
 
     /**

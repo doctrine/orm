@@ -10,9 +10,6 @@ use Doctrine\ORM\Annotation as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="cms_users")
- * @ORM\NamedQueries({
- *     @ORM\NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")
- * })
  *
  * @ORM\NamedNativeQueries({
  *      @ORM\NamedNativeQuery(

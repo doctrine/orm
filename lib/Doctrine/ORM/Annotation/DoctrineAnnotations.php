@@ -33,8 +33,6 @@ require_once __DIR__ . '/ManyToOne.php';
 require_once __DIR__ . '/MappedSuperclass.php';
 require_once __DIR__ . '/NamedNativeQueries.php';
 require_once __DIR__ . '/NamedNativeQuery.php';
-require_once __DIR__ . '/NamedQueries.php';
-require_once __DIR__ . '/NamedQuery.php';
 require_once __DIR__ . '/OneToMany.php';
 require_once __DIR__ . '/OneToOne.php';
 require_once __DIR__ . '/OrderBy.php';

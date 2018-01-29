@@ -28,10 +28,6 @@
             <lifecycle-callback type="postPersist" method="doStuffOnPostPersist"/>
         </lifecycle-callbacks>
 
-        <named-queries>
-            <named-query name="all" query="SELECT u FROM __CLASS__ u"/>
-        </named-queries>
-
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
             <sequence-generator sequence-name="tablename_seq" allocation-size="100"/>

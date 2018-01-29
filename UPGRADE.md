@@ -1,5 +1,25 @@
 # Upgrade to 3.0
 
+## BC Break: Removed support named queries
+
+These classes have been removed:
+
+ * `Doctrine/ORM/Annotation/NamedQueries`
+ * `Doctrine/ORM/Annotation/NamedQuery`
+
+These methods have been removed:
+
+ * `Doctrine/ORM/Configuration::addNamedQuery()`
+ * `Doctrine/ORM/Configuration::getNamedQuery()`
+ * `Doctrine/ORM/Decorator/EntityManagerDecorator::createNamedQuery()`
+ * `Doctrine/ORM/EntityManager::createNamedQuery()`
+ * `Doctrine/ORM/EntityManagerInterface::createNamedQuery()`
+ * `Doctrine/ORM/EntityRepository::createNamedQuery()` 
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQuery()`
+ * `Doctrine/ORM/Mapping/ClassMetadata::getNamedQueries()` 
+ * `Doctrine/ORM/Mapping/ClassMetadata::addNamedQuery()` 
+ * `Doctrine/ORM/Mapping/ClassMetadata::hasNamedQuery()`  
+
 ## BC Break: Removed support for entity namespace aliases
 
 The support for namespace aliases has been removed.

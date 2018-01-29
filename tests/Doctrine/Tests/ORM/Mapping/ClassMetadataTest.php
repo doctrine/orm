@@ -85,7 +85,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->setCustomRepositoryClassName('Doctrine\Tests\Models\CMS\UserRepository');
         $cm->setDiscriminatorColumn($discrColumn);
         $cm->asReadOnly();
-        $cm->addNamedQuery('dql', 'foo');
 
         $association = new Mapping\OneToOneAssociationMetadata('phonenumbers');
 
@@ -118,7 +117,6 @@ class ClassMetadataTest extends OrmTestCase
         self::assertEquals(CMS\CmsEmployee::class, $cm->getAncestorsIterator()->current()->getClassName());
         self::assertEquals($discrColumn, $cm->discriminatorColumn);
         self::assertTrue($cm->isReadOnly());
-        self::assertEquals(['dql' => 'foo'], $cm->getNamedQueries());
         self::assertCount(1, $cm->getDeclaredPropertiesIterator());
         self::assertInstanceOf(Mapping\OneToOneAssociationMetadata::class, $cm->getProperty('phonenumbers'));
 
@@ -815,18 +813,6 @@ class ClassMetadataTest extends OrmTestCase
         $cm->addProperty($fieldMetadata);
     }
 
-    public function testRetrievalOfNamedQueries()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
-        $cm->setTable(new Mapping\TableMetadata('cms_users'));
-
-        self::assertCount(0, $cm->getNamedQueries());
-
-        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
-
-        self::assertCount(1, $cm->getNamedQueries());
-    }
-
     /**
      * @group DDC-1663
      */
@@ -848,17 +834,6 @@ class ClassMetadataTest extends OrmTestCase
         );
 
         self::assertCount(1, $cm->getSqlResultSetMappings());
-    }
-
-    public function testExistanceOfNamedQuery()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
-        $cm->setTable(new Mapping\TableMetadata('cms_users'));
-
-        $cm->addNamedQuery('all', 'SELECT u FROM __CLASS__ u');
-
-        self::assertTrue($cm->hasNamedQuery('all'));
-        self::assertFalse($cm->hasNamedQuery('userById'));
     }
 
     /**
@@ -999,21 +974,6 @@ class ClassMetadataTest extends OrmTestCase
         self::assertFalse($cm->hasNamedNativeQuery('find-by-id'));
     }
 
-    public function testRetrieveOfNamedQuery()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
-        $cm->setTable(new Mapping\TableMetadata('cms_users'));
-
-        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
-
-        self::assertEquals('SELECT u FROM __CLASS__ u WHERE u.id = ?1', $cm->getNamedQuery('userById'));
-
-        // Named queries are only resolved when created
-        $repo = new EntityRepository($this->getTestEntityManager(), $cm);
-
-        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE u.id = ?1', $repo->createNamedQuery('userById')->getDQL());
-    }
-
     /**
      * @group DDC-1663
      */
@@ -1049,19 +1009,6 @@ class ClassMetadataTest extends OrmTestCase
         $unserialize = unserialize($serialize);
 
         self::assertEquals($metadata->entityListeners, $unserialize->entityListeners);
-    }
-
-    /**
-     * @expectedException \Doctrine\ORM\Mapping\MappingException
-     * @expectedExceptionMessage Query named "userById" in "Doctrine\Tests\Models\CMS\CmsUser" was already declared, but it must be declared only once
-     */
-    public function testNamingCollisionNamedQueryShouldThrowException()
-    {
-        $cm = new ClassMetadata(CMS\CmsUser::class, $this->metadataBuildingContext);
-        $cm->setTable(new Mapping\TableMetadata('cms_users'));
-
-        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
-        $cm->addNamedQuery('userById', 'SELECT u FROM __CLASS__ u WHERE u.id = ?1');
     }
 
     /**

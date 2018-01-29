@@ -140,18 +140,6 @@ class EntityManagerTest extends OrmTestCase
         self::assertEquals('SELECT 1', $q->getDql());
     }
 
-    /**
-     * @covers \Doctrine\ORM\EntityManager::createNamedQuery
-     */
-    public function testCreateNamedQuery()
-    {
-        $this->em->getConfiguration()->addNamedQuery('foo', 'SELECT 1');
-
-        $query = $this->em->createNamedQuery('foo');
-        self::assertInstanceOf(Query::class, $query);
-        self::assertEquals('SELECT 1', $query->getDql());
-    }
-
     static public function dataMethodsAffectedByNoObjectArguments()
     {
         return [

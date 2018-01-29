@@ -130,13 +130,6 @@ class XmlDriver extends FileDriver
             $metadata->setCache($cache);
         }
 
-        // Evaluate named queries
-        if (isset($xmlRoot->{'named-queries'})) {
-            foreach ($xmlRoot->{'named-queries'}->{'named-query'} as $namedQueryElement) {
-                $metadata->addNamedQuery((string) $namedQueryElement['name'], (string) $namedQueryElement['query']);
-            }
-        }
-
         // Evaluate native named queries
         if (isset($xmlRoot->{'named-native-queries'})) {
             foreach ($xmlRoot->{'named-native-queries'}->{'named-native-query'} as $nativeQueryElement) {

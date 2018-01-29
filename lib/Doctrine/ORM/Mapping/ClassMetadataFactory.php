@@ -135,8 +135,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
         $this->completeIdentifierGeneratorMappings($classMetadata);
 
         if ($parent) {
-            $this->addInheritedNamedQueries($classMetadata, $parent);
-
             if ($parent->getCache()) {
                 $classMetadata->setCache(clone $parent->getCache());
             }
@@ -354,22 +352,6 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
             }
 
             $subClass->addInheritedProperty($property);
-        }
-    }
-
-    /**
-     * Adds inherited named queries to the subclass mapping.
-     *
-     * @throws MappingException
-     */
-    private function addInheritedNamedQueries(ClassMetadata $subClass, ClassMetadata $parentClass) : void
-    {
-        foreach ($parentClass->getNamedQueries() as $name => $query) {
-            if ($subClass->hasNamedQuery($name)) {
-                continue;
-            }
-
-            $subClass->addNamedQuery($name, $query);
         }
     }
 

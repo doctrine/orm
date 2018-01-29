@@ -7,10 +7,6 @@
                               
     <entity name="Doctrine\Tests\Models\CMS\CmsUser" table="cms_users">
 
-        <named-queries>
-            <named-query name="all" query="SELECT u FROM __CLASS__ u"/>
-        </named-queries>
-
         <named-native-queries>
             <named-native-query name="fetchIdAndUsernameWithResultClass" result-class="Doctrine\Tests\Models\CMS\CmsUser">
                 <query>SELECT id, username FROM cms_users WHERE username = ?</query>

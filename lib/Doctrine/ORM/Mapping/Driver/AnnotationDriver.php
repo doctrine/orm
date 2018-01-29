@@ -387,7 +387,6 @@ class AnnotationDriver implements MappingDriver
             }
         }
 
-        $this->attachNamedQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
         $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
@@ -413,7 +412,6 @@ class AnnotationDriver implements MappingDriver
         $metadata->isMappedSuperclass = true;
         $metadata->isEmbeddedClass    = false;
 
-        $this->attachNamedQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
         $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
         $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
@@ -1069,35 +1067,6 @@ class AnnotationDriver implements MappingDriver
             $discriminatorMap           = $discriminatorMapAnnotation->value;
 
             $metadata->setDiscriminatorMap($discriminatorMap);
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws \UnexpectedValueException
-     * @throws Mapping\MappingException
-     */
-    private function attachNamedQueries(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Evaluate @NamedQueries annotation
-        if (isset($classAnnotations[Annotation\NamedQueries::class])) {
-            $namedQueriesAnnot = $classAnnotations[Annotation\NamedQueries::class];
-
-            if (! is_array($namedQueriesAnnot->value)) {
-                throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-            }
-
-            foreach ($namedQueriesAnnot->value as $namedQuery) {
-                if (! ($namedQuery instanceof Annotation\NamedQuery)) {
-                    throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-                }
-
-                $metadata->addNamedQuery($namedQuery->name, $namedQuery->query);
-            }
         }
     }
 

@@ -459,25 +459,6 @@ class EntityRepositoryTest extends OrmFunctionalTestCase
         self::assertEquals($addressId, $address->id);
     }
 
-    public function testValidNamedQueryRetrieval()
-    {
-        $repos = $this->em->getRepository(CmsUser::class);
-
-        $query = $repos->createNamedQuery('all');
-
-        self::assertInstanceOf(Query::class, $query);
-        self::assertEquals('SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u', $query->getDQL());
-    }
-
-    public function testInvalidNamedQueryRetrieval()
-    {
-        $repos = $this->em->getRepository(CmsUser::class);
-
-        $this->expectException(\Doctrine\ORM\Mapping\MappingException::class);
-
-        $repos->createNamedQuery('invalidNamedQuery');
-    }
-
     /**
      * @group DDC-1087
      */

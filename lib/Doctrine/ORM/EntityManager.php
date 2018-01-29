@@ -283,14 +283,6 @@ final class EntityManager implements EntityManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function createNamedQuery($name)
-    {
-        return $this->createQuery($this->config->getNamedQuery($name));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public function createNativeQuery($sql, ResultSetMapping $rsm)
     {
         $query = new NativeQuery($this);

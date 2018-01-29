@@ -80,21 +80,6 @@ class EntityRepository implements ObjectRepository, Selectable
     }
 
     /**
-     * Creates a new Query instance based on a predefined metadata named query.
-     *
-     * @param string $queryName
-     *
-     * @return Query
-     */
-    public function createNamedQuery($queryName)
-    {
-        $namedQuery    = $this->class->getNamedQuery($queryName);
-        $resolvedQuery = str_replace('__CLASS__', $this->class->getClassName(), $namedQuery);
-
-        return $this->em->createQuery($resolvedQuery);
-    }
-
-    /**
      * Creates a native SQL query.
      *
      * @param string $queryName

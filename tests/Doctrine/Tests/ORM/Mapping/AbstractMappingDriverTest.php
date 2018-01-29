@@ -650,14 +650,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         $factory->getMetadataFor(DDC889Entity::class);
     }
 
-    public function testNamedQuery()
-    {
-        $driver = $this->loadDriver();
-        $class = $this->createClassMetadata(User::class);
-
-        self::assertCount(1, $class->getNamedQueries(), sprintf("Named queries not processed correctly by driver %s", get_class($driver)));
-    }
-
     /**
      * @group DDC-1663
      */
@@ -1203,7 +1195,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
  *  indexes={@ORM\Index(name="name_idx", columns={"name"}), @ORM\Index(columns={"user_email"})},
  *  options={"foo": "bar", "baz": {"key": "val"}}
  * )
- * @ORM\NamedQueries({@ORM\NamedQuery(name="all", query="SELECT u FROM __CLASS__ u")})
  */
 class User
 {

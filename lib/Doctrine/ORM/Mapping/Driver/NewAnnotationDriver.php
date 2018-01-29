@@ -263,24 +263,6 @@ class NewAnnotationDriver implements MappingDriver
             }
         }
 
-        // Evaluate @NamedQueries annotation
-        if (isset($classAnnotations[Annotation\NamedQueries::class])) {
-            /** @var Annotation\NamedQueries $namedQueriesAnnot */
-            $namedQueriesAnnot = $classAnnotations[Annotation\NamedQueries::class];
-
-            if (! is_array($namedQueriesAnnot->value)) {
-                throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-            }
-
-            foreach ($namedQueriesAnnot->value as $namedQuery) {
-                if (! ($namedQuery instanceof Annotation\NamedQuery)) {
-                    throw new \UnexpectedValueException('@NamedQueries should contain an array of @NamedQuery annotations.');
-                }
-
-                $classMetadata->addNamedQuery($namedQuery->name, $namedQuery->query);
-            }
-        }
-
         // Evaluate @EntityListeners annotation
         if (isset($classAnnotations[Annotation\EntityListeners::class])) {
             /** @var Annotation\EntityListeners $entityListenersAnnot */
