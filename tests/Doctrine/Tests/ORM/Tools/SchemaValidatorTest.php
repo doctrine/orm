@@ -200,6 +200,21 @@ class SchemaValidatorTest extends OrmTestCase
             $ce
         );
     }
+
+    public function testInvalidReferencedJoinTableColumnIsNotPrimary() : void
+    {
+        $class = $this->em->getClassMetadata(InvalidEntity3::class);
+        $ce = $this->validator->validateClass($class);
+
+        $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
+
+        self::assertEquals(
+            [
+                sprintf($message, 'nonId4', InvalidEntity4::class)
+            ],
+            $ce
+        );
+    }
 }
 
 /**
@@ -244,6 +259,42 @@ class InvalidEntity2
      * @ORM\ManyToOne(targetEntity=InvalidEntity1::class)
      */
     protected $assoc;
+}
+
+/**
+ * @ORM\Entity
+ */
+class InvalidEntity3
+{
+    /**
+     * @ORM\Id @ORM\Column
+     */
+    protected $id3;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=InvalidEntity4::class)
+     * @ORM\JoinTable(name="invalid_entity_3_4")
+     * @ORM\JoinTable (name="Entity1Entity2",
+     *      joinColumns={@ORM\JoinColumn(name="id3_fk", referencedColumnName="id3")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="id4_fk", referencedColumnName="nonId4")}
+     * )
+     */
+    protected $invalid4;
+}
+
+/**
+ * @ORM\Entity
+ */
+class InvalidEntity4
+{
+    /**
+     * @ORM\Id @ORM\Column
+     */
+    protected $id4;
+    /**
+     * @ORM\Column
+     */
+    protected $nonId4;
 }
 
 /**
