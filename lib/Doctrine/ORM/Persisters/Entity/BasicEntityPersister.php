@@ -12,6 +12,7 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\GeneratorType;
@@ -119,7 +120,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * The map of column names to DBAL columns used when INSERTing or UPDATEing an entity.
      *
-     * @var array<ColumnMetadata>
+     * @var ColumnMetadata[]
      *
      * @see prepareInsertData($entity)
      * @see prepareUpdateData($entity)
@@ -1064,6 +1065,7 @@ class BasicEntityPersister implements EntityPersister
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
             $property         = $sourceClass->getProperty($fieldName);
+            $value            = null;
 
             if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);
@@ -1900,6 +1902,7 @@ class BasicEntityPersister implements EntityPersister
             $quotedColumnName = $this->platform->quoteIdentifier($joinColumn->getColumnName());
             $fieldName        = $sourceClass->fieldNames[$joinColumn->getReferencedColumnName()];
             $property         = $sourceClass->getProperty($fieldName);
+            $value            = null;
 
             if ($property instanceof FieldMetadata) {
                 $value = $property->getValue($sourceEntity);

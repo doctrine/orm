@@ -1,5 +1,11 @@
 # Upgrade to 3.0
 
+## BC Break: Removed `Doctrine\ORM\Mapping\Exporter\VariableExporter` constants
+
+This constant has been removed
+
+ * `Doctrine\ORM\Mapping\Exporter\VariableExporter::INDENTATION`
+
 ## BC Break: Removed support named queries
 
 These classes have been removed:

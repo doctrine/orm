@@ -6,8 +6,6 @@ namespace Doctrine\ORM\Mapping\Exporter;
 
 class VariableExporter implements Exporter
 {
-    public const INDENTATION =  '    ';
-
     /**
      * {@inheritdoc}
      */

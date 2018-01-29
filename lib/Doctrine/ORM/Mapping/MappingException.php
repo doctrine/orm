@@ -842,4 +842,18 @@ class MappingException extends ORMException
             )
         );
     }
+
+    /**
+     * @param string[] $namespaces
+     */
+    public static function classNotFoundInNamespaces(string $className, array $namespaces) : self
+    {
+        return new self(
+            sprintf(
+                'Class %s not found in namespaces %s.' .
+                $className,
+                implode(', ', $namespaces)
+            )
+        );
+    }
 }
