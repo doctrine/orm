@@ -312,12 +312,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     ) : Mapping\ClassMetadata {
         switch (true) {
             case isset($classAnnotations[Annotation\Entity::class]):
-                $binder = new Binder\EntityClassMetadataBinder(
-                    $reflectionClass,
-                    $classAnnotations,
-                    $metadata,
-                    $metadataBuildingContext
-                );
+                $binder = new Binder\EntityClassMetadataBinder($classAnnotations, $metadata);
 
                 break;
 
@@ -344,91 +339,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         }
 
         return $binder->bind();
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @return Mapping\ClassMetadata
-     *
-     * @throws Mapping\MappingException
-     * @throws \UnexpectedValueException
-     */
-    private function convertClassAnnotationsToEntityClassMetadata(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) {
-        /** @var Annotation\Entity $entityAnnot */
-        $entityAnnot = $classAnnotations[Annotation\Entity::class];
-
-        if ($entityAnnot->repositoryClass !== null) {
-            $metadata->setCustomRepositoryClassName($entityAnnot->repositoryClass);
-        }
-
-        if ($entityAnnot->readOnly) {
-            $metadata->asReadOnly();
-        }
-
-        $metadata->isMappedSuperclass = false;
-        $metadata->isEmbeddedClass    = false;
-
-        $this->attachTable($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
-
-        // Evaluate @ChangeTrackingPolicy annotation
-        if (isset($classAnnotations[Annotation\ChangeTrackingPolicy::class])) {
-            $changeTrackingAnnot = $classAnnotations[Annotation\ChangeTrackingPolicy::class];
-
-            $metadata->setChangeTrackingPolicy(
-                constant(sprintf('%s::%s', Mapping\ChangeTrackingPolicy::class, $changeTrackingAnnot->value))
-            );
-        }
-
-        // Evaluate @InheritanceType annotation
-        if (isset($classAnnotations[Annotation\InheritanceType::class])) {
-            $inheritanceTypeAnnot = $classAnnotations[Annotation\InheritanceType::class];
-
-            $metadata->setInheritanceType(
-                constant(sprintf('%s::%s', Mapping\InheritanceType::class, $inheritanceTypeAnnot->value))
-            );
-
-            if ($metadata->inheritanceType !== Mapping\InheritanceType::NONE) {
-                $this->attachDiscriminatorColumn($classAnnotations, $reflectionClass, $metadata, $metadataBuildingContext);
-            }
-        }
-
-        $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
-        $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
-
-        return $metadata;
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function convertClassAnnotationsToMappedSuperClassMetadata(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : Mapping\ClassMetadata {
-        /** @var Annotation\MappedSuperclass $mappedSuperclassAnnot */
-        $mappedSuperclassAnnot = $classAnnotations[Annotation\MappedSuperclass::class];
-
-        if ($mappedSuperclassAnnot->repositoryClass !== null) {
-            $metadata->setCustomRepositoryClassName($mappedSuperclassAnnot->repositoryClass);
-        }
-
-        $metadata->isMappedSuperclass = true;
-        $metadata->isEmbeddedClass    = false;
-
-        $this->attachNamedNativeQueries($classAnnotations, $reflectionClass, $metadata);
-        $this->attachLifecycleCallbacks($classAnnotations, $reflectionClass, $metadata);
-        $this->attachEntityListeners($classAnnotations, $reflectionClass, $metadata);
-
-        return $metadata;
     }
 
     /**
@@ -956,45 +866,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
     }
 
     /**
-     * @return mixed[]
-     */
-    private function convertSqlResultSetMapping(Annotation\SqlResultSetMapping $resultSetMapping)
-    {
-        $entities = [];
-
-        foreach ($resultSetMapping->entities as $entityResultAnnot) {
-            $entityResult = [
-                'fields'                => [],
-                'entityClass'           => $entityResultAnnot->entityClass,
-                'discriminatorColumn'   => $entityResultAnnot->discriminatorColumn,
-            ];
-
-            foreach ($entityResultAnnot->fields as $fieldResultAnnot) {
-                $entityResult['fields'][] = [
-                    'name'      => $fieldResultAnnot->name,
-                    'column'    => $fieldResultAnnot->column,
-                ];
-            }
-
-            $entities[] = $entityResult;
-        }
-
-        $columns = [];
-
-        foreach ($resultSetMapping->columns as $columnResultAnnot) {
-            $columns[] = [
-                'name' => $columnResultAnnot->name,
-            ];
-        }
-
-        return [
-            'name'     => $resultSetMapping->name,
-            'entities' => $entities,
-            'columns'  => $columns,
-        ];
-    }
-
-    /**
      * @param Annotation\Annotation[] $classAnnotations
      */
     private function attachTable(
@@ -1024,146 +895,6 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
         }
 
         $metadata->setTable($table);
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws Mapping\MappingException
-     */
-    private function attachDiscriminatorColumn(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
-    ) : void {
-        $discriminatorColumn = new Mapping\DiscriminatorColumnMetadata();
-
-        $discriminatorColumn->setTableName($metadata->getTableName());
-        $discriminatorColumn->setColumnName('dtype');
-        $discriminatorColumn->setType(Type::getType('string'));
-        $discriminatorColumn->setLength(255);
-
-        // Evaluate DiscriminatorColumn annotation
-        if (isset($classAnnotations[Annotation\DiscriminatorColumn::class])) {
-            /** @var Annotation\DiscriminatorColumn $discriminatorColumnAnnotation */
-            $discriminatorColumnAnnotation = $classAnnotations[Annotation\DiscriminatorColumn::class];
-            $typeName                      = ! empty($discriminatorColumnAnnotation->type)
-                ? $discriminatorColumnAnnotation->type
-                : 'string';
-
-            $discriminatorColumn->setType(Type::getType($typeName));
-            $discriminatorColumn->setColumnName($discriminatorColumnAnnotation->name);
-
-            if (! empty($discriminatorColumnAnnotation->columnDefinition)) {
-                $discriminatorColumn->setColumnDefinition($discriminatorColumnAnnotation->columnDefinition);
-            }
-
-            if (! empty($discriminatorColumnAnnotation->length)) {
-                $discriminatorColumn->setLength($discriminatorColumnAnnotation->length);
-            }
-        }
-
-        $metadata->setDiscriminatorColumn($discriminatorColumn);
-
-        // Evaluate DiscriminatorMap annotation
-        if (isset($classAnnotations[Annotation\DiscriminatorMap::class])) {
-            $discriminatorMapAnnotation = $classAnnotations[Annotation\DiscriminatorMap::class];
-            $discriminatorMap           = $discriminatorMapAnnotation->value;
-
-            $metadata->setDiscriminatorMap($discriminatorMap);
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function attachNamedNativeQueries(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Evaluate @NamedNativeQueries annotation
-        if (isset($classAnnotations[Annotation\NamedNativeQueries::class])) {
-            $namedNativeQueriesAnnot = $classAnnotations[Annotation\NamedNativeQueries::class];
-
-            foreach ($namedNativeQueriesAnnot->value as $namedNativeQuery) {
-                $metadata->addNamedNativeQuery(
-                    $namedNativeQuery->name,
-                    $namedNativeQuery->query,
-                    [
-                        'resultClass'      => $namedNativeQuery->resultClass,
-                        'resultSetMapping' => $namedNativeQuery->resultSetMapping,
-                    ]
-                );
-            }
-        }
-
-        // Evaluate @SqlResultSetMappings annotation
-        if (isset($classAnnotations[Annotation\SqlResultSetMappings::class])) {
-            $sqlResultSetMappingsAnnot = $classAnnotations[Annotation\SqlResultSetMappings::class];
-
-            foreach ($sqlResultSetMappingsAnnot->value as $resultSetMapping) {
-                $sqlResultSetMapping = $this->convertSqlResultSetMapping($resultSetMapping);
-
-                $metadata->addSqlResultSetMapping($sqlResultSetMapping);
-            }
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     */
-    private function attachLifecycleCallbacks(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Evaluate @HasLifecycleCallbacks annotation
-        if (isset($classAnnotations[Annotation\HasLifecycleCallbacks::class])) {
-            /* @var $method \ReflectionMethod */
-            foreach ($reflectionClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                foreach ($this->getMethodCallbacks($method) as $callback) {
-                    $metadata->addLifecycleCallback($method->getName(), $callback);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param Annotation\Annotation[] $classAnnotations
-     *
-     * @throws \ReflectionException
-     * @throws Mapping\MappingException
-     */
-    private function attachEntityListeners(
-        array $classAnnotations,
-        \ReflectionClass $reflectionClass,
-        Mapping\ClassMetadata $metadata
-    ) : void {
-        // Evaluate @EntityListeners annotation
-        if (isset($classAnnotations[Annotation\EntityListeners::class])) {
-            /** @var Annotation\EntityListeners $entityListenersAnnot */
-            $entityListenersAnnot = $classAnnotations[Annotation\EntityListeners::class];
-
-            foreach ($entityListenersAnnot->value as $listenerClassName) {
-                if (! class_exists($listenerClassName)) {
-                    throw Mapping\MappingException::entityListenerClassNotFound(
-                        $listenerClassName,
-                        $metadata->getClassName()
-                    );
-                }
-
-                $listenerClass = new \ReflectionClass($listenerClassName);
-
-                /* @var $method \ReflectionMethod */
-                foreach ($listenerClass->getMethods(\ReflectionMethod::IS_PUBLIC) as $method) {
-                    foreach ($this->getMethodCallbacks($method) as $callback) {
-                        $metadata->addEntityListener($callback, $listenerClassName, $method->getName());
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -1407,7 +1138,7 @@ class AnnotationDriver implements Mapping\Driver\MappingDriver
      *
      * @return AnnotationDriver
      */
-    public static function create($paths = [], ?AnnotationReader $reader = null)
+    public static function create(array $paths = [], ?AnnotationReader $reader = null)
     {
         if ($reader === null) {
             $reader = new AnnotationReader();
