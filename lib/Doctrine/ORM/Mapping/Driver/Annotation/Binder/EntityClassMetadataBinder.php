@@ -7,21 +7,8 @@ namespace Doctrine\ORM\Mapping\Driver\Annotation\Binder;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Mapping;
 
-/**
- * Class ComponentMetadataBinder
- */
 class EntityClassMetadataBinder
 {
-    /**
-     * @var Mapping\ClassMetadataBuildingContext
-     */
-    private $metadataBuildingContext;
-
-    /**
-     * @var \ReflectionClass
-     */
-    private $reflectionClass;
-
     /**
      * [dreaming] One day we would eliminate this and only do: $reflectionClass->getAnnotations()
      *
@@ -37,20 +24,14 @@ class EntityClassMetadataBinder
     private $classMetadata;
 
     /**
-     * ComponentMetadataBinder constructor.
-     *
      * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(
-        \ReflectionClass $reflectionClass,
         array $classAnnotations,
-        Mapping\ClassMetadata $classMetadata,
-        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+        Mapping\ClassMetadata $classMetadata
     ) {
-        $this->reflectionClass         = $reflectionClass;
-        $this->classAnnotations        = $classAnnotations;
-        $this->classMetadata           = $classMetadata;
-        $this->metadataBuildingContext = $metadataBuildingContext;
+        $this->classAnnotations = $classAnnotations;
+        $this->classMetadata    = $classMetadata;
     }
 
     public function bind() : Mapping\ClassMetadata
