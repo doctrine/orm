@@ -212,7 +212,7 @@ class SchemaValidator
                     if (! in_array($inverseJoinColumn->getReferencedColumnName(), $targetIdentifierColumns, true)) {
                         $message = "The referenced column name '%s' has to be a primary key column on the target entity class '%s'.";
 
-                        $ce[] = sprintf($message, $joinColumn->getReferencedColumnName(), $targetMetadata->getClassName());
+                        $ce[] = sprintf($message, $inverseJoinColumn->getReferencedColumnName(), $targetMetadata->getClassName());
                         break;
                     }
                 }
