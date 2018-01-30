@@ -52,7 +52,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function beginTransaction()
     {
-        return $this->wrapped->beginTransaction();
+        $this->wrapped->beginTransaction();
     }
 
     /**
@@ -68,7 +68,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function commit()
     {
-        return $this->wrapped->commit();
+        $this->wrapped->commit();
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function rollback()
     {
-        return $this->wrapped->rollback();
+        $this->wrapped->rollback();
     }
 
     /**
@@ -132,7 +132,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function close()
     {
-        return $this->wrapped->close();
+        $this->wrapped->close();
     }
 
     /**
@@ -140,7 +140,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        return $this->wrapped->lock($entity, $lockMode, $lockVersion);
+        $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
     /**
@@ -156,7 +156,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function flush()
     {
-        return $this->wrapped->flush();
+        $this->wrapped->flush();
     }
 
     /**
