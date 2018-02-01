@@ -293,7 +293,5 @@ class ArrayHydrator extends AbstractHydrator
 
         end($coll);
         $this->_resultPointers[$dqlAlias] =& $coll[key($coll)];
-
-        return;
     }
 }
