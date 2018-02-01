@@ -31,7 +31,7 @@ class ParameterTypeInferer
             return Type::BOOLEAN;
         }
 
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
             return Type::DATETIME;
         }
 
