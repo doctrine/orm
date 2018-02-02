@@ -272,10 +272,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
 
         $this->isDirty = true;
 
-        if ($this->association !== null &&
-            $this->association->isOwningSide() &&
-            $this->association instanceof ManyToManyAssociationMetadata &&
+        if ($this->association instanceof ManyToManyAssociationMetadata &&
             $this->owner &&
+            $this->association->isOwningSide() &&
             $this->em->getClassMetadata(get_class($this->owner))->changeTrackingPolicy === ChangeTrackingPolicy::NOTIFY) {
             $this->em->getUnitOfWork()->scheduleForSynchronization($this->owner);
         }
