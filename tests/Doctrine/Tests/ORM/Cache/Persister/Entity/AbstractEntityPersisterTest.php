@@ -335,7 +335,7 @@ abstract class AbstractEntityPersisterTest extends OrmTestCase
             ->with($this->equalTo(['id' => 1]), $this->equalTo($entity), $this->equalTo(0))
             ->will($this->returnValue($entity));
 
-        self::assertNull($persister->refresh(['id' => 1], $entity), 0);
+        self::assertNull($persister->refresh(['id' => 1], $entity));
     }
 
     public function testInvokeLoadCriteria()
