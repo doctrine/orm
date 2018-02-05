@@ -353,8 +353,7 @@ automatically:
 
 -  When serializing an entity. The entity retrieved upon subsequent
    unserialization will be detached (This is the case for all entities
-   that are serialized and stored in some cache, i.e. when using the
-   Query Result Cache).
+   that are serialized and stored in some cache).
 
 Synchronization with the Database
 ---------------------------------

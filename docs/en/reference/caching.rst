@@ -308,9 +308,8 @@ Result Cache
 ~~~~~~~~~~~~
 
 The result cache can be used to cache the results of your queries
-so that we don't have to query the database or hydrate the data
-again after the first time. You just need to configure the result
-cache implementation.
+so that we don't have to query the database again after the first time.
+You just need to configure the result cache implementation.
 
 .. code-block:: php
 
