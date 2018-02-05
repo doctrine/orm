@@ -109,7 +109,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
         $from            = $AST->fromClause->identificationVariableDeclarations;
         $fromRoot        = reset($from);
 
-        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && count($fromRoot->joins)) {
+        if ($query instanceof Query && $query->getMaxResults() && $AST->orderByClause && count($fromRoot->joins) && $query->getValidateLimitSubqueryWalker()) {
             // Check each orderby item.
             // TODO: check complex orderby items too...
             foreach ($AST->orderByClause->orderByItems as $orderByItem) {

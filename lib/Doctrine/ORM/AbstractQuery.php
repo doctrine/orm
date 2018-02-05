@@ -96,6 +96,11 @@ abstract class AbstractQuery
     protected $hydrationCacheProfile;
 
     /**
+     * @var bool
+     */
+    protected $validateLimitSubqueryWalker = true;
+
+    /**
      * Whether to use second level cache, if available.
      *
      * @var bool
@@ -459,6 +464,26 @@ abstract class AbstractQuery
     public function getHydrationCacheProfile()
     {
         return $this->hydrationCacheProfile;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getValidateLimitSubqueryWalker()
+    {
+        return $this->validateLimitSubqueryWalker;
+    }
+
+    /**
+     * @param bool $validateLimitSubqueryWalker
+     *
+     * @return static This query instance.
+     */
+    public function setValidateLimitSubqueryWalker($validateLimitSubqueryWalker)
+    {
+        $this->validateLimitSubqueryWalker = $validateLimitSubqueryWalker;
+
+        return $this;
     }
 
     /**
