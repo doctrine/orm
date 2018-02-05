@@ -388,8 +388,7 @@ automatically without invoking the ``detach`` method:
    currently managed by the EntityManager instance become detached.
 -  When serializing an entity. The entity retrieved upon subsequent
    unserialization will be detached (This is the case for all entities
-   that are serialized and stored in some cache, i.e. when using the
-   Query Result Cache).
+   that are serialized and stored in some cache).
 
 The ``detach`` operation is usually not as frequently needed and
 used as ``persist`` and ``remove``.
