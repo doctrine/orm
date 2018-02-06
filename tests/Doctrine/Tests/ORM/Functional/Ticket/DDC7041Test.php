@@ -49,7 +49,6 @@ class DDC7041Test extends OrmFunctionalTestCase
         $g = $this->em->createQuery($dql)
                   ->setParameter('id', $id)
                   ->setMaxResults(1)
-                  ->getQuery()
                   ->getOneOrNullResult();
         
         $crit = \Doctrine\Common\Collections\Criteria::create();
