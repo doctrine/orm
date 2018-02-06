@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsArticle;
+use Doctrine\Tests\Models\CMS\CmsGroup;
 use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
@@ -25,20 +25,37 @@ class DDC7041Test extends OrmFunctionalTestCase
         $user->name = "John Galt";
         $user->username = "jgalt";
         $user->status = "inactive";
+        
+        $user2 = new CmsUser();
+        $user2->name = "Johnny Depp";
+        $user2->username = "jdepp";
+        $user2->status = "inactive";
 
-        $article = new CmsArticle();
-        $article->topic = "This is John Galt speaking!";
-        $article->text = "Yadda Yadda!";
-        $article->setAuthor($user);
+        $group = new CmsGroup();
+        $group->name = "Main group";
+        $group->addUser($user);
+        $group->addUser($user2);
 
         $this->em->persist($user);
-        $this->em->persist($article);
+        $this->em->persist($user2);
+        $this->em->persist($group);
         $this->em->flush();
+        
+        $id = $group->id;
+        
+        $this->em->clear();
+        
+        $dql = "SELECT a FROM Doctrine\Tests\Models\CMS\CmsGroup a WHERE a.id = :id";
+        $g = $this->em->createQuery($dql)
+                  ->setParameter('id', $id)
+                  ->setMaxResults(1)
+                  ->getQuery()
+                  ->getOneOrNullResult();
         
         $crit = \Doctrine\Common\Collections\Criteria::create();
         // get all articles where text contains '%Yadda%'
-        $crit->andWhere(\Doctrine\Common\Collections\Criteria::expr()->contains('text', 'Yadda'));
-        $result = $user->articles->matching($crit);
+        $crit->andWhere(\Doctrine\Common\Collections\Criteria::expr()->contains('username', 'test'));
+        $result = $g->getUsers()->matching($crit);
         
         self::assertInstanceOf(\Doctrine\Common\Collections\Collection::class, $result);
     }
