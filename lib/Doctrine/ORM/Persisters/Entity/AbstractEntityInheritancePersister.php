@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use function sprintf;
 
 /**
  * Base class for entity persisters that implement a certain inheritance mapping strategy.

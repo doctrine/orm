@@ -12,9 +12,9 @@ interface TimestampRegion extends Region
     /**
      * Update an specific key into the cache region.
      *
-     * @param \Doctrine\ORM\Cache\CacheKey $key The key of the item to update the timestamp.
+     * @param CacheKey $key The key of the item to update the timestamp.
      *
-     * @throws \Doctrine\ORM\Cache\LockException Indicates a problem accessing the region.
+     * @throws LockException Indicates a problem accessing the region.
      */
     public function update(CacheKey $key);
 }

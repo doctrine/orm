@@ -16,8 +16,6 @@ class ValueGeneratorMetadata
     protected $definition;
 
     /**
-     * ValueGeneratorMetadata constructor.
-     *
      * @param mixed[] $definition
      */
     public function __construct(string $type, array $definition = [])

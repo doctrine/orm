@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use function sprintf;
+
 /**
  * Class EntityClassMetadata
  *
@@ -103,9 +105,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
      */
     protected $table;
 
-    /**
-     * MappedSuperClassMetadata constructor.
-     */
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
         parent::__construct($className, $metadataBuildingContext);
@@ -172,7 +171,6 @@ abstract class EntityClassMetadata extends ComponentMetadata
     }
 
     /**
-     *
      * @throws MappingException
      */
     public function addSubClass(SubClassMetadata $subClassMetadata) : void

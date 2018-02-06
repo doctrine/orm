@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Internal\Hydration;
 
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\UnitOfWork;
 use PDO;
+use function array_merge;
 
 /**
  * Base class for all hydrators. A hydrator is a class that provides some form
@@ -18,7 +23,7 @@ abstract class AbstractHydrator
     /**
      * The ResultSetMapping.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     protected $rsm;
 
@@ -32,14 +37,14 @@ abstract class AbstractHydrator
     /**
      * The dbms Platform instance.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $platform;
 
     /**
      * The UnitOfWork of the associated EntityManager.
      *
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     protected $uow;
 
@@ -60,7 +65,7 @@ abstract class AbstractHydrator
     /**
      * The statement that provides the data to hydrate.
      *
-     * @var \Doctrine\DBAL\Driver\Statement
+     * @var Statement
      */
     protected $stmt;
 
@@ -368,7 +373,7 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->getParent() && isset($this->rsm->discriminatorColumns[$ownerMap])) {
-                    return $this->cache[$key] = \array_merge(
+                    return $this->cache[$key] = array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
@@ -427,7 +432,7 @@ abstract class AbstractHydrator
      *
      * @param string $className
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     protected function getClassMetadata($className)
     {

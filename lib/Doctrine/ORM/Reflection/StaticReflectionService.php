@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Reflection;
 
+use function strpos;
+use function strrev;
+use function strrpos;
+use function substr;
+
 /**
  * PHP Runtime Reflection Service.
  */

@@ -11,7 +11,9 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function array_merge;
 
 /**
  * Default hydrator cache for entities
@@ -19,12 +21,12 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
 class DefaultEntityHydrator implements EntityHydrator
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
@@ -34,7 +36,7 @@ class DefaultEntityHydrator implements EntityHydrator
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
+     * @param EntityManagerInterface $em The entity manager.
      */
     public function __construct(EntityManagerInterface $em)
     {

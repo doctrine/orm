@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Query;
@@ -13,6 +12,9 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use function count;
+use function is_string;
+use function reset;
 
 /**
  * Replaces the selectClause of the AST with a SELECT DISTINCT root.id equivalent.
@@ -132,7 +134,7 @@ class LimitSubqueryWalker extends TreeWalkerAdapter
     /**
      * Retrieve either an IdentityFunction (IDENTITY(u.assoc)) or a state field (u.name).
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\IdentityFunction
+     * @return IdentityFunction
      */
     private function createSelectExpressionItem(PathExpression $pathExpression)
     {

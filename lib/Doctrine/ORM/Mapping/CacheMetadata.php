@@ -16,10 +16,6 @@ class CacheMetadata
     /** @var string */
     private $region;
 
-    /**
-     * Constructor.
-     *
-     */
     public function __construct(string $usage, string $region)
     {
         $this->usage  = $usage;

@@ -4,20 +4,40 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\DB2Platform;
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Platforms\PostgreSqlPlatform;
 use Doctrine\DBAL\Platforms\SQLAnywherePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\AST\PartialObjectExpression;
 use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlWalker;
+use function array_diff;
+use function array_keys;
+use function array_map;
+use function count;
+use function implode;
+use function in_array;
+use function is_string;
+use function method_exists;
+use function preg_replace;
+use function reset;
+use function sprintf;
+use function strrpos;
+use function substr;
 
 /**
  * Wraps the query in order to select root entity IDs for pagination.
@@ -33,12 +53,12 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private const ORDER_BY_PATH_EXPRESSION = '/(?<![a-z0-9_])%s\.%s(?![a-z0-9_])/i';
 
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $platform;
 
     /**
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     private $rsm;
 
@@ -58,7 +78,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private $maxResults;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -74,15 +94,13 @@ class LimitSubqueryOutputWalker extends SqlWalker
     private $inSubSelect = false;
 
     /**
-     * Constructor.
-     *
      * Stores various parameters that are otherwise unavailable
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * @param \Doctrine\ORM\Query              $query
-     * @param \Doctrine\ORM\Query\ParserResult $parserResult
-     * @param mixed[][]                        $queryComponents
+     * @param Query        $query
+     * @param ParserResult $parserResult
+     * @param mixed[][]    $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {
@@ -361,9 +379,9 @@ class LimitSubqueryOutputWalker extends SqlWalker
         }
 
         // now only select distinct identifier
-        return \sprintf(
+        return sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result',
-            \implode(', ', $sqlIdentifier),
+            implode(', ', $sqlIdentifier),
             $this->recreateInnerSql($orderByClause, $sqlIdentifier, $innerSql)
         );
     }
@@ -385,25 +403,25 @@ class LimitSubqueryOutputWalker extends SqlWalker
         foreach ($orderByClause->orderByItems as $orderByItem) {
             // Walk order by item to get string representation of it and
             // replace path expressions in the order by clause with their column alias
-            $orderByItemString = \preg_replace(
+            $orderByItemString = preg_replace(
                 $searchPatterns,
                 $replacements,
                 $this->walkOrderByItem($orderByItem)
             );
 
             $orderByItems[] = $orderByItemString;
-            $identifier     = \substr($orderByItemString, 0, \strrpos($orderByItemString, ' '));
+            $identifier     = substr($orderByItemString, 0, strrpos($orderByItemString, ' '));
 
-            if (! \in_array($identifier, $identifiers, true)) {
+            if (! in_array($identifier, $identifiers, true)) {
                 $identifiers[] = $identifier;
             }
         }
 
-        return $sql = \sprintf(
+        return $sql = sprintf(
             'SELECT DISTINCT %s FROM (%s) dctrn_result_inner ORDER BY %s',
-            \implode(', ', $identifiers),
+            implode(', ', $identifiers),
             $innerSql,
-            \implode(', ', $orderByItems)
+            implode(', ', $orderByItems)
         );
     }
 
@@ -431,7 +449,7 @@ class LimitSubqueryOutputWalker extends SqlWalker
             $columnName = $platform->quoteIdentifier($property->getColumnName());
 
             // Compose search and replace patterns
-            $searchPatterns[] = \sprintf(self::ORDER_BY_PATH_EXPRESSION, $tableAlias, $columnName);
+            $searchPatterns[] = sprintf(self::ORDER_BY_PATH_EXPRESSION, $tableAlias, $columnName);
             $replacements[]   = $fieldAlias;
         }
 
@@ -451,8 +469,8 @@ class LimitSubqueryOutputWalker extends SqlWalker
     /**
      * @return string
      *
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws OptimisticLockException
+     * @throws QueryException
      */
     private function getInnerSQL(SelectStatement $AST)
     {

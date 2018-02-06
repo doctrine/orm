@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use function sprintf;
 
 /**
  * "SIZE" "(" CollectionValuedPathExpression ")"
@@ -15,7 +17,7 @@ use Doctrine\ORM\Query\SqlWalker;
 class SizeFunction extends FunctionNode
 {
     /**
-     * @var \Doctrine\ORM\Query\AST\PathExpression
+     * @var PathExpression
      */
     public $collectionPathExpression;
 

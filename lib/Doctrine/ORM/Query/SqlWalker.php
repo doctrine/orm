@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\InheritanceType;
@@ -18,6 +22,23 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_diff;
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function count;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_float;
+use function is_numeric;
+use function is_string;
+use function reset;
+use function sprintf;
+use function strtolower;
+use function strtoupper;
+use function trim;
 
 /**
  * The SqlWalker is a TreeWalker that walks over a DQL AST and constructs
@@ -76,17 +97,17 @@ class SqlWalker implements TreeWalker
     private $parserResult;
 
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     private $conn;
 
     /**
-     * @var \Doctrine\ORM\AbstractQuery
+     * @var AbstractQuery
      */
     private $query;
 
@@ -148,7 +169,7 @@ class SqlWalker implements TreeWalker
     /**
      * The database platform abstraction.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $platform;
 
@@ -179,7 +200,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the Connection used by the walker.
      *
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     public function getConnection()
     {
@@ -189,7 +210,7 @@ class SqlWalker implements TreeWalker
     /**
      * Gets the EntityManager used by the walker.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -2122,7 +2143,7 @@ class SqlWalker implements TreeWalker
 
     /**
      * {@inheritdoc}
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     public function walkInstanceOfExpression($instanceOfExpr)
     {
@@ -2379,7 +2400,6 @@ class SqlWalker implements TreeWalker
     }
 
     /**
-     *
      * @return string The list in parentheses of valid child discriminators from the given class
      *
      * @throws QueryException

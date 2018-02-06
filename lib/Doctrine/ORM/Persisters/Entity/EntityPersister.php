@@ -6,10 +6,13 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Entity persister interface
@@ -18,14 +21,14 @@ use Doctrine\ORM\PersistentCollection;
 interface EntityPersister
 {
     /**
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function getClassMetadata();
 
     /**
      * Gets the ResultSetMapping used for hydration.
      *
-     * @return \Doctrine\ORM\Query\ResultSetMapping
+     * @return ResultSetMapping
      */
     public function getResultSetMapping();
 
@@ -263,7 +266,7 @@ interface EntityPersister
      *
      * @return object The loaded and managed entity instance or NULL if the entity can not be found.
      *
-     * @throws \Doctrine\ORM\Mapping\MappingException
+     * @throws MappingException
      */
     public function loadToOneEntity(
         ToOneAssociationMetadata $association,

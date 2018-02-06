@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use function sprintf;
 
 /**
  * Class TableMetadata
@@ -28,9 +29,6 @@ class TableMetadata
     /** @var mixed[][] */
     protected $uniqueConstraints = [];
 
-    /**
-     * TableMetadata constructor.
-     */
     public function __construct(?string $name = null, ?string $schema = null)
     {
         $this->name   = $name;

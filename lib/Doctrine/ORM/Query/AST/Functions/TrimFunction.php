@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Query\AST\Node;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use function strcasecmp;
 
 /**
  * "TRIM" "(" [["LEADING" | "TRAILING" | "BOTH"] [char] "FROM"] StringPrimary ")"
@@ -35,7 +37,7 @@ class TrimFunction extends FunctionNode
     public $trimChar = false;
 
     /**
-     * @var \Doctrine\ORM\Query\AST\Node
+     * @var Node
      */
     public $stringPrimary;
 

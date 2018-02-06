@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Cache\Logging;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use function array_sum;
 
 /**
  * Provide basic second level cache statistics.

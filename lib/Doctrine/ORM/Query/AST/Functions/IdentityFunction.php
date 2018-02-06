@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use function reset;
+use function sprintf;
 
 /**
  * "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
@@ -15,7 +18,7 @@ use Doctrine\ORM\Query\SqlWalker;
 class IdentityFunction extends FunctionNode
 {
     /**
-     * @var \Doctrine\ORM\Query\AST\PathExpression
+     * @var PathExpression
      */
     public $pathExpression;
 

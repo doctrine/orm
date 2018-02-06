@@ -20,9 +20,6 @@ class TransientMetadata implements Property
     /** @var string */
     protected $name;
 
-    /**
-     * TransientMetadata constructor.
-     */
     public function __construct(string $name)
     {
         $this->name = $name;

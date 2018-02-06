@@ -5,12 +5,28 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\Functions;
 use Doctrine\ORM\Query\AST\Node;
+use function array_intersect;
+use function array_search;
+use function call_user_func;
+use function class_exists;
+use function count;
+use function implode;
+use function in_array;
+use function interface_exists;
+use function is_string;
+use function sprintf;
+use function strlen;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function substr;
 
 /**
  * An LL(*) recursive-descent parser for the context-free grammar of the Doctrine Query Language.
@@ -102,21 +118,21 @@ class Parser
     /**
      * The lexer.
      *
-     * @var \Doctrine\ORM\Query\Lexer
+     * @var Lexer
      */
     private $lexer;
 
     /**
      * The parser result.
      *
-     * @var \Doctrine\ORM\Query\ParserResult
+     * @var ParserResult
      */
     private $parserResult;
 
     /**
      * The EntityManager.
      *
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -197,7 +213,7 @@ class Parser
     /**
      * Gets the lexer used by the parser.
      *
-     * @return \Doctrine\ORM\Query\Lexer
+     * @return Lexer
      */
     public function getLexer()
     {
@@ -207,7 +223,7 @@ class Parser
     /**
      * Gets the ParserResult that is being filled with information during parsing.
      *
-     * @return \Doctrine\ORM\Query\ParserResult
+     * @return ParserResult
      */
     public function getParserResult()
     {
@@ -217,7 +233,7 @@ class Parser
     /**
      * Gets the EntityManager used by the parser.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -227,9 +243,7 @@ class Parser
     /**
      * Parses and builds AST for the given Query.
      *
-     * @return \Doctrine\ORM\Query\AST\SelectStatement |
-     *         \Doctrine\ORM\Query\AST\UpdateStatement |
-     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     * @return AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement
      */
     public function getAST()
     {
@@ -408,7 +422,7 @@ class Parser
      * @param string       $expected Expected string.
      * @param mixed[]|null $token    Got token.
      *
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     public function syntaxError($expected = '', $token = null)
     {
@@ -431,7 +445,7 @@ class Parser
      * @param string       $message Optional message.
      * @param mixed[]|null $token   Optional token.
      *
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     public function semanticalError($message = '', $token = null, ?\Throwable $previousFailure = null)
     {
@@ -586,7 +600,7 @@ class Parser
     /**
      * Validates that the given <tt>NewObjectExpression</tt>.
      *
-     * @param \Doctrine\ORM\Query\AST\SelectClause $AST
+     * @param AST\SelectClause $AST
      */
     private function processDeferredNewObjectExpressions($AST)
     {
@@ -763,7 +777,7 @@ class Parser
 
                 // Build the error message
                 $semanticalError  = 'Invalid PathExpression. ';
-                $semanticalError .= \count($expectedStringTypes) === 1
+                $semanticalError .= count($expectedStringTypes) === 1
                     ? 'Must be a ' . $expectedStringTypes[0] . '.'
                     : implode(' or ', $expectedStringTypes) . ' expected.';
 
@@ -793,9 +807,7 @@ class Parser
     /**
      * QueryLanguage ::= SelectStatement | UpdateStatement | DeleteStatement
      *
-     * @return \Doctrine\ORM\Query\AST\SelectStatement |
-     *         \Doctrine\ORM\Query\AST\UpdateStatement |
-     *         \Doctrine\ORM\Query\AST\DeleteStatement
+     * @return AST\SelectStatement|AST\UpdateStatement|AST\DeleteStatement
      */
     public function QueryLanguage()
     {
@@ -832,7 +844,7 @@ class Parser
     /**
      * SelectStatement ::= SelectClause FromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      *
-     * @return \Doctrine\ORM\Query\AST\SelectStatement
+     * @return AST\SelectStatement
      */
     public function SelectStatement()
     {
@@ -849,7 +861,7 @@ class Parser
     /**
      * UpdateStatement ::= UpdateClause [WhereClause]
      *
-     * @return \Doctrine\ORM\Query\AST\UpdateStatement
+     * @return AST\UpdateStatement
      */
     public function UpdateStatement()
     {
@@ -863,7 +875,7 @@ class Parser
     /**
      * DeleteStatement ::= DeleteClause [WhereClause]
      *
-     * @return \Doctrine\ORM\Query\AST\DeleteStatement
+     * @return AST\DeleteStatement
      */
     public function DeleteStatement()
     {
@@ -950,7 +962,7 @@ class Parser
             return;
         } catch (MappingException $mappingException) {
             $this->semanticalError(
-                \sprintf('Class %s could not be mapped', $schemaName),
+                sprintf('Class %s could not be mapped', $schemaName),
                 $this->lexer->token
             );
         }
@@ -1001,7 +1013,7 @@ class Parser
     /**
      * JoinAssociationPathExpression ::= IdentificationVariable "." (CollectionValuedAssociationField | SingleValuedAssociationField)
      *
-     * @return \Doctrine\ORM\Query\AST\JoinAssociationPathExpression
+     * @return AST\JoinAssociationPathExpression
      */
     public function JoinAssociationPathExpression()
     {
@@ -1038,7 +1050,7 @@ class Parser
      *
      * @param int $expectedTypes
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function PathExpression($expectedTypes)
     {
@@ -1074,7 +1086,7 @@ class Parser
     /**
      * AssociationPathExpression ::= CollectionValuedPathExpression | SingleValuedAssociationPathExpression
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function AssociationPathExpression()
     {
@@ -1087,7 +1099,7 @@ class Parser
     /**
      * SingleValuedPathExpression ::= StateFieldPathExpression | SingleValuedAssociationPathExpression
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function SingleValuedPathExpression()
     {
@@ -1100,7 +1112,7 @@ class Parser
     /**
      * StateFieldPathExpression ::= IdentificationVariable "." StateField
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function StateFieldPathExpression()
     {
@@ -1110,7 +1122,7 @@ class Parser
     /**
      * SingleValuedAssociationPathExpression ::= IdentificationVariable "." SingleValuedAssociationField
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function SingleValuedAssociationPathExpression()
     {
@@ -1120,7 +1132,7 @@ class Parser
     /**
      * CollectionValuedPathExpression ::= IdentificationVariable "." CollectionValuedAssociationField
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression
+     * @return AST\PathExpression
      */
     public function CollectionValuedPathExpression()
     {
@@ -1130,7 +1142,7 @@ class Parser
     /**
      * SelectClause ::= "SELECT" ["DISTINCT"] SelectExpression {"," SelectExpression}
      *
-     * @return \Doctrine\ORM\Query\AST\SelectClause
+     * @return AST\SelectClause
      */
     public function SelectClause()
     {
@@ -1160,7 +1172,7 @@ class Parser
     /**
      * SimpleSelectClause ::= "SELECT" ["DISTINCT"] SimpleSelectExpression
      *
-     * @return \Doctrine\ORM\Query\AST\SimpleSelectClause
+     * @return AST\SimpleSelectClause
      */
     public function SimpleSelectClause()
     {
@@ -1179,7 +1191,7 @@ class Parser
     /**
      * UpdateClause ::= "UPDATE" AbstractSchemaName ["AS"] AliasIdentificationVariable "SET" UpdateItem {"," UpdateItem}*
      *
-     * @return \Doctrine\ORM\Query\AST\UpdateClause
+     * @return AST\UpdateClause
      */
     public function UpdateClause()
     {
@@ -1230,7 +1242,7 @@ class Parser
     /**
      * DeleteClause ::= "DELETE" ["FROM"] AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
-     * @return \Doctrine\ORM\Query\AST\DeleteClause
+     * @return AST\DeleteClause
      */
     public function DeleteClause()
     {
@@ -1274,7 +1286,7 @@ class Parser
     /**
      * FromClause ::= "FROM" IdentificationVariableDeclaration {"," IdentificationVariableDeclaration}*
      *
-     * @return \Doctrine\ORM\Query\AST\FromClause
+     * @return AST\FromClause
      */
     public function FromClause()
     {
@@ -1295,7 +1307,7 @@ class Parser
     /**
      * SubselectFromClause ::= "FROM" SubselectIdentificationVariableDeclaration {"," SubselectIdentificationVariableDeclaration}*
      *
-     * @return \Doctrine\ORM\Query\AST\SubselectFromClause
+     * @return AST\SubselectFromClause
      */
     public function SubselectFromClause()
     {
@@ -1316,7 +1328,7 @@ class Parser
     /**
      * WhereClause ::= "WHERE" ConditionalExpression
      *
-     * @return \Doctrine\ORM\Query\AST\WhereClause
+     * @return AST\WhereClause
      */
     public function WhereClause()
     {
@@ -1328,7 +1340,7 @@ class Parser
     /**
      * HavingClause ::= "HAVING" ConditionalExpression
      *
-     * @return \Doctrine\ORM\Query\AST\HavingClause
+     * @return AST\HavingClause
      */
     public function HavingClause()
     {
@@ -1340,7 +1352,7 @@ class Parser
     /**
      * GroupByClause ::= "GROUP" "BY" GroupByItem {"," GroupByItem}*
      *
-     * @return \Doctrine\ORM\Query\AST\GroupByClause
+     * @return AST\GroupByClause
      */
     public function GroupByClause()
     {
@@ -1361,7 +1373,7 @@ class Parser
     /**
      * OrderByClause ::= "ORDER" "BY" OrderByItem {"," OrderByItem}*
      *
-     * @return \Doctrine\ORM\Query\AST\OrderByClause
+     * @return AST\OrderByClause
      */
     public function OrderByClause()
     {
@@ -1383,7 +1395,7 @@ class Parser
     /**
      * Subselect ::= SimpleSelectClause SubselectFromClause [WhereClause] [GroupByClause] [HavingClause] [OrderByClause]
      *
-     * @return \Doctrine\ORM\Query\AST\Subselect
+     * @return AST\Subselect
      */
     public function Subselect()
     {
@@ -1406,7 +1418,7 @@ class Parser
     /**
      * UpdateItem ::= SingleValuedPathExpression "=" NewValue
      *
-     * @return \Doctrine\ORM\Query\AST\UpdateItem
+     * @return AST\UpdateItem
      */
     public function UpdateItem()
     {
@@ -1422,7 +1434,7 @@ class Parser
     /**
      * GroupByItem ::= IdentificationVariable | ResultVariable | SingleValuedPathExpression
      *
-     * @return string | \Doctrine\ORM\Query\AST\PathExpression
+     * @return string|AST\PathExpression
      */
     public function GroupByItem()
     {
@@ -1451,7 +1463,7 @@ class Parser
      *      ScalarExpression | ResultVariable | FunctionDeclaration
      * ) ["ASC" | "DESC"]
      *
-     * @return \Doctrine\ORM\Query\AST\OrderByItem
+     * @return AST\OrderByItem
      */
     public function OrderByItem()
     {
@@ -1541,7 +1553,7 @@ class Parser
     /**
      * IdentificationVariableDeclaration ::= RangeVariableDeclaration [IndexBy] {Join}*
      *
-     * @return \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration
+     * @return AST\IdentificationVariableDeclaration
      */
     public function IdentificationVariableDeclaration()
     {
@@ -1581,8 +1593,7 @@ class Parser
      * accessible is "FROM", prohibiting an easy implementation without larger
      * changes. }}
      *
-     * @return \Doctrine\ORM\Query\AST\SubselectIdentificationVariableDeclaration |
-     *         \Doctrine\ORM\Query\AST\IdentificationVariableDeclaration
+     * @return AST\SubselectIdentificationVariableDeclaration|AST\IdentificationVariableDeclaration
      */
     public function SubselectIdentificationVariableDeclaration()
     {
@@ -1632,7 +1643,7 @@ class Parser
      *          (JoinAssociationDeclaration | RangeVariableDeclaration)
      *          ["WITH" ConditionalExpression]
      *
-     * @return \Doctrine\ORM\Query\AST\Join
+     * @return AST\Join
      */
     public function Join()
     {
@@ -1686,7 +1697,7 @@ class Parser
     /**
      * RangeVariableDeclaration ::= AbstractSchemaName ["AS"] AliasIdentificationVariable
      *
-     * @return \Doctrine\ORM\Query\AST\RangeVariableDeclaration
+     * @return AST\RangeVariableDeclaration
      *
      * @throws QueryException
      */
@@ -1726,7 +1737,7 @@ class Parser
     /**
      * JoinAssociationDeclaration ::= JoinAssociationPathExpression ["AS"] AliasIdentificationVariable [IndexBy]
      *
-     * @return \Doctrine\ORM\Query\AST\JoinAssociationPathExpression
+     * @return AST\JoinAssociationPathExpression
      */
     public function JoinAssociationDeclaration()
     {
@@ -1765,7 +1776,7 @@ class Parser
      * PartialObjectExpression ::= "PARTIAL" IdentificationVariable "." PartialFieldSet
      * PartialFieldSet ::= "{" SimpleStateField {"," SimpleStateField}* "}"
      *
-     * @return \Doctrine\ORM\Query\AST\PartialObjectExpression
+     * @return AST\PartialObjectExpression
      */
     public function PartialObjectExpression()
     {
@@ -1822,7 +1833,7 @@ class Parser
     /**
      * NewObjectExpression ::= "NEW" AbstractSchemaName "(" NewObjectArg {"," NewObjectArg}* ")"
      *
-     * @return \Doctrine\ORM\Query\AST\NewObjectExpression
+     * @return AST\NewObjectExpression
      */
     public function NewObjectExpression()
     {
@@ -1879,7 +1890,7 @@ class Parser
     /**
      * IndexBy ::= "INDEX" "BY" StateFieldPathExpression
      *
-     * @return \Doctrine\ORM\Query\AST\IndexBy
+     * @return AST\IndexBy
      */
     public function IndexBy()
     {
@@ -2019,7 +2030,7 @@ class Parser
     /**
      * CoalesceExpression ::= "COALESCE" "(" ScalarExpression {"," ScalarExpression}* ")"
      *
-     * @return \Doctrine\ORM\Query\AST\CoalesceExpression
+     * @return AST\CoalesceExpression
      */
     public function CoalesceExpression()
     {
@@ -2044,7 +2055,7 @@ class Parser
     /**
      * NullIfExpression ::= "NULLIF" "(" ScalarExpression "," ScalarExpression ")"
      *
-     * @return \Doctrine\ORM\Query\AST\NullIfExpression
+     * @return AST\NullIfExpression
      */
     public function NullIfExpression()
     {
@@ -2063,7 +2074,7 @@ class Parser
     /**
      * GeneralCaseExpression ::= "CASE" WhenClause {WhenClause}* "ELSE" ScalarExpression "END"
      *
-     * @return \Doctrine\ORM\Query\AST\GeneralCaseExpression
+     * @return AST\GeneralCaseExpression
      */
     public function GeneralCaseExpression()
     {
@@ -2111,7 +2122,7 @@ class Parser
     /**
      * WhenClause ::= "WHEN" ConditionalExpression "THEN" ScalarExpression
      *
-     * @return \Doctrine\ORM\Query\AST\WhenClause
+     * @return AST\WhenClause
      */
     public function WhenClause()
     {
@@ -2125,7 +2136,7 @@ class Parser
     /**
      * SimpleWhenClause ::= "WHEN" ScalarExpression "THEN" ScalarExpression
      *
-     * @return \Doctrine\ORM\Query\AST\SimpleWhenClause
+     * @return AST\SimpleWhenClause
      */
     public function SimpleWhenClause()
     {
@@ -2142,7 +2153,7 @@ class Parser
      *     PartialObjectExpression | "(" Subselect ")" | CaseExpression | NewObjectExpression
      * ) [["AS"] ["HIDDEN"] AliasResultVariable]
      *
-     * @return \Doctrine\ORM\Query\AST\SelectExpression
+     * @return AST\SelectExpression
      */
     public function SelectExpression()
     {
@@ -2271,7 +2282,7 @@ class Parser
      *      AggregateExpression | "(" Subselect ")" | ScalarExpression
      * ) [["AS"] AliasResultVariable]
      *
-     * @return \Doctrine\ORM\Query\AST\SimpleSelectExpression
+     * @return AST\SimpleSelectExpression
      */
     public function SimpleSelectExpression()
     {
@@ -2354,7 +2365,7 @@ class Parser
     /**
      * ConditionalExpression ::= ConditionalTerm {"OR" ConditionalTerm}*
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalExpression
+     * @return AST\ConditionalExpression
      */
     public function ConditionalExpression()
     {
@@ -2369,7 +2380,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalExpression
         // if only one AST\ConditionalTerm is defined
-        if (\count($conditionalTerms) === 1) {
+        if (count($conditionalTerms) === 1) {
             return $conditionalTerms[0];
         }
 
@@ -2379,7 +2390,7 @@ class Parser
     /**
      * ConditionalTerm ::= ConditionalFactor {"AND" ConditionalFactor}*
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalTerm
+     * @return AST\ConditionalTerm
      */
     public function ConditionalTerm()
     {
@@ -2394,7 +2405,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ConditionalTerm
         // if only one AST\ConditionalFactor is defined
-        if (\count($conditionalFactors) === 1) {
+        if (count($conditionalFactors) === 1) {
             return $conditionalFactors[0];
         }
 
@@ -2404,7 +2415,7 @@ class Parser
     /**
      * ConditionalFactor ::= ["NOT"] ConditionalPrimary
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalFactor
+     * @return AST\ConditionalFactor
      */
     public function ConditionalFactor()
     {
@@ -2433,11 +2444,11 @@ class Parser
     /**
      * ConditionalPrimary ::= SimpleConditionalExpression | "(" ConditionalExpression ")"
      *
-     * @return \Doctrine\ORM\Query\AST\ConditionalPrimary
+     * @return AST\ConditionalPrimary
      */
     public function ConditionalPrimary()
     {
-        $condPrimary = new AST\ConditionalPrimary;
+        $condPrimary = new AST\ConditionalPrimary();
 
         if (! $this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $condPrimary->simpleConditionalExpression = $this->SimpleConditionalExpression();
@@ -2563,7 +2574,7 @@ class Parser
     /**
      * EmptyCollectionComparisonExpression ::= CollectionValuedPathExpression "IS" ["NOT"] "EMPTY"
      *
-     * @return \Doctrine\ORM\Query\AST\EmptyCollectionComparisonExpression
+     * @return AST\EmptyCollectionComparisonExpression
      */
     public function EmptyCollectionComparisonExpression()
     {
@@ -2588,7 +2599,7 @@ class Parser
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      *
-     * @return \Doctrine\ORM\Query\AST\CollectionMemberExpression
+     * @return AST\CollectionMemberExpression
      */
     public function CollectionMemberExpression()
     {
@@ -2619,7 +2630,7 @@ class Parser
     /**
      * Literal ::= string | char | integer | float | boolean
      *
-     * @return \Doctrine\ORM\Query\AST\Literal
+     * @return AST\Literal
      */
     public function Literal()
     {
@@ -2650,7 +2661,7 @@ class Parser
     /**
      * InParameter ::= Literal | InputParameter
      *
-     * @return string | \Doctrine\ORM\Query\AST\InputParameter
+     * @return string|AST\InputParameter
      */
     public function InParameter()
     {
@@ -2664,7 +2675,7 @@ class Parser
     /**
      * InputParameter ::= PositionalParameter | NamedParameter
      *
-     * @return \Doctrine\ORM\Query\AST\InputParameter
+     * @return AST\InputParameter
      */
     public function InputParameter()
     {
@@ -2676,11 +2687,11 @@ class Parser
     /**
      * ArithmeticExpression ::= SimpleArithmeticExpression | "(" Subselect ")"
      *
-     * @return \Doctrine\ORM\Query\AST\ArithmeticExpression
+     * @return AST\ArithmeticExpression
      */
     public function ArithmeticExpression()
     {
-        $expr = new AST\ArithmeticExpression;
+        $expr = new AST\ArithmeticExpression();
 
         if ($this->lexer->isNextToken(Lexer::T_OPEN_PARENTHESIS)) {
             $peek = $this->lexer->glimpse();
@@ -2702,7 +2713,7 @@ class Parser
     /**
      * SimpleArithmeticExpression ::= ArithmeticTerm {("+" | "-") ArithmeticTerm}*
      *
-     * @return \Doctrine\ORM\Query\AST\SimpleArithmeticExpression
+     * @return AST\SimpleArithmeticExpression
      */
     public function SimpleArithmeticExpression()
     {
@@ -2718,7 +2729,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\SimpleArithmeticExpression
         // if only one AST\ArithmeticTerm is defined
-        if (\count($terms) === 1) {
+        if (count($terms) === 1) {
             return $terms[0];
         }
 
@@ -2728,7 +2739,7 @@ class Parser
     /**
      * ArithmeticTerm ::= ArithmeticFactor {("*" | "/") ArithmeticFactor}*
      *
-     * @return \Doctrine\ORM\Query\AST\ArithmeticTerm
+     * @return AST\ArithmeticTerm
      */
     public function ArithmeticTerm()
     {
@@ -2744,7 +2755,7 @@ class Parser
 
         // Phase 1 AST optimization: Prevent AST\ArithmeticTerm
         // if only one AST\ArithmeticFactor is defined
-        if (\count($factors) === 1) {
+        if (count($factors) === 1) {
             return $factors[0];
         }
 
@@ -2754,7 +2765,7 @@ class Parser
     /**
      * ArithmeticFactor ::= [("+" | "-")] ArithmeticPrimary
      *
-     * @return \Doctrine\ORM\Query\AST\ArithmeticFactor
+     * @return AST\ArithmeticFactor
      */
     public function ArithmeticFactor()
     {
@@ -2835,8 +2846,7 @@ class Parser
     /**
      * StringExpression ::= StringPrimary | ResultVariable | "(" Subselect ")"
      *
-     * @return \Doctrine\ORM\Query\AST\Subselect |
-     *         string
+     * @return AST\Subselect|string
      */
     public function StringExpression()
     {
@@ -2905,8 +2915,7 @@ class Parser
     /**
      * EntityExpression ::= SingleValuedAssociationPathExpression | SimpleEntityExpression
      *
-     * @return \Doctrine\ORM\Query\AST\PathExpression |
-     *         \Doctrine\ORM\Query\AST\SimpleEntityExpression
+     * @return AST\PathExpression
      */
     public function EntityExpression()
     {
@@ -2922,7 +2931,7 @@ class Parser
     /**
      * SimpleEntityExpression ::= IdentificationVariable | InputParameter
      *
-     * @return string | \Doctrine\ORM\Query\AST\InputParameter
+     * @return string|AST\InputParameter
      */
     public function SimpleEntityExpression()
     {
@@ -2937,7 +2946,7 @@ class Parser
      * AggregateExpression ::=
      *  ("AVG" | "MAX" | "MIN" | "SUM" | "COUNT") "(" ["DISTINCT"] SimpleArithmeticExpression ")"
      *
-     * @return \Doctrine\ORM\Query\AST\AggregateExpression
+     * @return AST\AggregateExpression
      */
     public function AggregateExpression()
     {
@@ -2967,7 +2976,7 @@ class Parser
     /**
      * QuantifiedExpression ::= ("ALL" | "ANY" | "SOME") "(" Subselect ")"
      *
-     * @return \Doctrine\ORM\Query\AST\QuantifiedExpression
+     * @return AST\QuantifiedExpression
      */
     public function QuantifiedExpression()
     {
@@ -2992,7 +3001,7 @@ class Parser
     /**
      * BetweenExpression ::= ArithmeticExpression ["NOT"] "BETWEEN" ArithmeticExpression "AND" ArithmeticExpression
      *
-     * @return \Doctrine\ORM\Query\AST\BetweenExpression
+     * @return AST\BetweenExpression
      */
     public function BetweenExpression()
     {
@@ -3018,7 +3027,7 @@ class Parser
     /**
      * ComparisonExpression ::= ArithmeticExpression ComparisonOperator ( QuantifiedExpression | ArithmeticExpression )
      *
-     * @return \Doctrine\ORM\Query\AST\ComparisonExpression
+     * @return AST\ComparisonExpression
      */
     public function ComparisonExpression()
     {
@@ -3036,7 +3045,7 @@ class Parser
     /**
      * InExpression ::= SingleValuedPathExpression ["NOT"] "IN" "(" (InParameter {"," InParameter}* | Subselect) ")"
      *
-     * @return \Doctrine\ORM\Query\AST\InExpression
+     * @return AST\InExpression
      */
     public function InExpression()
     {
@@ -3072,7 +3081,7 @@ class Parser
     /**
      * InstanceOfExpression ::= IdentificationVariable ["NOT"] "INSTANCE" ["OF"] (InstanceOfParameter | "(" InstanceOfParameter {"," InstanceOfParameter}* ")")
      *
-     * @return \Doctrine\ORM\Query\AST\InstanceOfExpression
+     * @return AST\InstanceOfExpression
      */
     public function InstanceOfExpression()
     {
@@ -3136,7 +3145,7 @@ class Parser
     /**
      * LikeExpression ::= StringExpression ["NOT"] "LIKE" StringPrimary ["ESCAPE" char]
      *
-     * @return \Doctrine\ORM\Query\AST\LikeExpression
+     * @return AST\LikeExpression
      */
     public function LikeExpression()
     {
@@ -3175,7 +3184,7 @@ class Parser
     /**
      * NullComparisonExpression ::= (InputParameter | NullIfExpression | CoalesceExpression | AggregateExpression | FunctionDeclaration | IdentificationVariable | SingleValuedPathExpression | ResultVariable) "IS" ["NOT"] "NULL"
      *
-     * @return \Doctrine\ORM\Query\AST\NullComparisonExpression
+     * @return AST\NullComparisonExpression
      */
     public function NullComparisonExpression()
     {
@@ -3249,7 +3258,7 @@ class Parser
     /**
      * ExistsExpression ::= ["NOT"] "EXISTS" "(" Subselect ")"
      *
-     * @return \Doctrine\ORM\Query\AST\ExistsExpression
+     * @return AST\ExistsExpression
      */
     public function ExistsExpression()
     {
@@ -3323,7 +3332,7 @@ class Parser
     /**
      * FunctionDeclaration ::= FunctionsReturningStrings | FunctionsReturningNumerics | FunctionsReturningDatetime
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionDeclaration()
     {
@@ -3354,7 +3363,7 @@ class Parser
     /**
      * Helper function for FunctionDeclaration grammar rule.
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     private function CustomFunctionDeclaration()
     {
@@ -3391,7 +3400,7 @@ class Parser
      *      "BIT_AND" "(" ArithmeticPrimary "," ArithmeticPrimary ")" |
      *      "BIT_OR" "(" ArithmeticPrimary "," ArithmeticPrimary ")"
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningNumerics()
     {
@@ -3405,7 +3414,7 @@ class Parser
     }
 
     /**
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function CustomFunctionsReturningNumerics()
     {
@@ -3430,7 +3439,7 @@ class Parser
      *     "DATE_ADD" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")" |
      *     "DATE_SUB" "(" ArithmeticPrimary "," ArithmeticPrimary "," StringPrimary ")"
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningDatetime()
     {
@@ -3444,7 +3453,7 @@ class Parser
     }
 
     /**
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function CustomFunctionsReturningDatetime()
     {
@@ -3470,7 +3479,7 @@ class Parser
      *   "UPPER" "(" StringPrimary ")" |
      *   "IDENTITY" "(" SingleValuedAssociationPathExpression {"," string} ")"
      *
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function FunctionsReturningStrings()
     {
@@ -3484,7 +3493,7 @@ class Parser
     }
 
     /**
-     * @return \Doctrine\ORM\Query\AST\Functions\FunctionNode
+     * @return Functions\FunctionNode
      */
     public function CustomFunctionsReturningStrings()
     {

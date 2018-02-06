@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use Doctrine\ORM\ORMException;
+use function array_key_exists;
+use function reset;
 
 /**
  * @internal do not use in your own codebase: no BC compliance on this class
@@ -22,7 +25,7 @@ final class NormalizeIdentifier
      *
      * @return mixed[]
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function __invoke(
         EntityManagerInterface $entityManager,
@@ -32,7 +35,7 @@ final class NormalizeIdentifier
         $normalizedAssociatedId = [];
 
         foreach ($targetClass->getDeclaredPropertiesIterator() as $name => $declaredProperty) {
-            if (! \array_key_exists($name, $flatIdentifier)) {
+            if (! array_key_exists($name, $flatIdentifier)) {
                 continue;
             }
 

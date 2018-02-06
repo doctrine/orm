@@ -15,17 +15,17 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 class GenerateSchemaTableEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     private $classMetadata;
 
     /**
-     * @var \Doctrine\DBAL\Schema\Schema
+     * @var Schema
      */
     private $schema;
 
     /**
-     * @var \Doctrine\DBAL\Schema\Table
+     * @var Table
      */
     private $classTable;
 

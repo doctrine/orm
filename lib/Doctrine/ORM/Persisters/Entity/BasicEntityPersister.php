@@ -7,7 +7,10 @@ namespace Doctrine\ORM\Persisters\Entity;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement as DriverStatement;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
@@ -31,9 +34,25 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlExpressionVisitor;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\PersisterHelper;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function array_combine;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_search;
+use function array_values;
+use function get_class;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_object;
+use function sprintf;
+use function strpos;
+use function strtoupper;
+use function trim;
 
 /**
  * A BasicEntityPersister maps an entity to a single table in a relational database.
@@ -92,21 +111,21 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Metadata object that describes the mapping of the mapped entity class.
      *
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $class;
 
     /**
      * The underlying DBAL Connection of the used EntityManager.
      *
-     * @var \Doctrine\DBAL\Connection $conn
+     * @var Connection $conn
      */
     protected $conn;
 
     /**
      * The database platform.
      *
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     protected $platform;
 
@@ -427,8 +446,8 @@ class BasicEntityPersister implements EntityPersister
      * @param mixed[] $updateData      The map of columns to update (column => value).
      * @param bool    $versioned       Whether the UPDATE should be versioned.
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     final protected function updateTable($entity, $quotedTableName, array $updateData, $versioned = false)
     {
@@ -980,7 +999,7 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Loads an array of entities from a given DBAL statement.
      *
-     * @param \Doctrine\DBAL\Statement $stmt
+     * @param Statement $stmt
      *
      * @return mixed[]
      */
@@ -1002,8 +1021,8 @@ class BasicEntityPersister implements EntityPersister
     /**
      * Hydrates a collection from a given DBAL statement.
      *
-     * @param \Doctrine\DBAL\Statement $stmt
-     * @param PersistentCollection     $collection
+     * @param Statement            $stmt
+     * @param PersistentCollection $collection
      *
      * @return mixed[]
      */
@@ -1030,9 +1049,9 @@ class BasicEntityPersister implements EntityPersister
      * @param int|null $offset
      * @param int|null $limit
      *
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return DriverStatement
      *
-     * @throws \Doctrine\ORM\Mapping\MappingException
+     * @throws MappingException
      */
     private function getManyToManyStatement(
         ManyToManyAssociationMetadata $association,
@@ -1196,7 +1215,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     final protected function getOrderBySQL(array $orderBy, $baseTableAlias)
     {
@@ -1756,7 +1775,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return string[]
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function getSelectConditionStatementColumnSQL($field, ?AssociationMetadata $association = null)
     {
@@ -1881,7 +1900,7 @@ class BasicEntityPersister implements EntityPersister
      * @param int|null $offset
      * @param int|null $limit
      *
-     * @return \Doctrine\DBAL\Statement
+     * @return Statement
      */
     private function getOneToManyStatement(
         OneToManyAssociationMetadata $association,
@@ -1957,7 +1976,6 @@ class BasicEntityPersister implements EntityPersister
      *                             - value to be bound
      *                             - class to which the field belongs to
      *
-     *
      * @return mixed[][]
      */
     private function expandToManyParameters($criteria)
@@ -1985,7 +2003,7 @@ class BasicEntityPersister implements EntityPersister
      *
      * @return mixed[]
      *
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     private function getTypes($field, $value, ClassMetadata $class)
     {

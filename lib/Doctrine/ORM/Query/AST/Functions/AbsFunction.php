@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST\Functions;
 
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
@@ -14,7 +15,7 @@ use Doctrine\ORM\Query\SqlWalker;
 class AbsFunction extends FunctionNode
 {
     /**
-     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression
+     * @var SimpleArithmeticExpression
      */
     public $simpleArithmeticExpression;
 

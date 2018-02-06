@@ -24,9 +24,6 @@ class ClassMetadataBuildingContext
      */
     private $inSecondPass = false;
 
-    /**
-     * ClassMetadataBuildingContext constructor.
-     */
     public function __construct(AbstractClassMetadataFactory $classMetadataFactory)
     {
         $this->classMetadataFactory = $classMetadataFactory;

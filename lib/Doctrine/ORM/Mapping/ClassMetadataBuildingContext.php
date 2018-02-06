@@ -50,9 +50,6 @@ class ClassMetadataBuildingContext
      */
     private $inSecondPass = false;
 
-    /**
-     * ClassMetadataBuildingContext constructor.
-     */
     public function __construct(
         AbstractClassMetadataFactory $classMetadataFactory,
         ReflectionService $reflectionService,

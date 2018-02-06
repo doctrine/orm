@@ -15,6 +15,17 @@ use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use function array_diff;
+use function array_filter;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function class_exists;
+use function class_parents;
+use function count;
+use function implode;
+use function in_array;
+use function sprintf;
 
 /**
  * Performs strict validation of the mapping schema

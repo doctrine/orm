@@ -25,6 +25,8 @@ use Doctrine\ORM\Mapping\CacheUsage;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
+use const DIRECTORY_SEPARATOR;
+use function sprintf;
 
 class DefaultCacheFactory implements CacheFactory
 {
@@ -34,17 +36,17 @@ class DefaultCacheFactory implements CacheFactory
     private $cache;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionsConfiguration
+     * @var RegionsConfiguration
      */
     private $regionsConfig;
 
     /**
-     * @var \Doctrine\ORM\Cache\TimestampRegion|null
+     * @var TimestampRegion|null
      */
     private $timestampRegion;
 
     /**
-     * @var \Doctrine\ORM\Cache\Region[]
+     * @var Region[]
      */
     private $regions = [];
 

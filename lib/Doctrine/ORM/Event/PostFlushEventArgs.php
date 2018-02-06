@@ -13,13 +13,10 @@ use Doctrine\ORM\EntityManagerInterface;
 class PostFlushEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
-    /**
-     * Constructor.
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -28,7 +25,7 @@ class PostFlushEventArgs extends EventArgs
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

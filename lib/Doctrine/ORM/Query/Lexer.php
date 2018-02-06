@@ -4,6 +4,17 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use function constant;
+use function ctype_alpha;
+use function defined;
+use function is_numeric;
+use function str_replace;
+use function stripos;
+use function strlen;
+use function strpos;
+use function strtoupper;
+use function substr;
+
 /**
  * Scans a DQL query for tokens.
  */

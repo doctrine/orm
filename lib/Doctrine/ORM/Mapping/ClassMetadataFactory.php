@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Platforms;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
@@ -16,6 +18,17 @@ use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
 use ReflectionException;
+use function array_map;
+use function class_exists;
+use function count;
+use function end;
+use function explode;
+use function is_subclass_of;
+use function reset;
+use function sprintf;
+use function strpos;
+use function strtolower;
+use function var_export;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -30,7 +43,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $em;
 
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $targetPlatform;
 
@@ -40,7 +53,7 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
     private $driver;
 
     /**
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $evm;
 

@@ -52,8 +52,6 @@ abstract class ColumnMetadata
     protected $unique = false;
 
     /**
-     * ColumnMetadata constructor.
-     *
      * @todo Leverage this implementation instead of default, blank constructor
      */
     /*public function __construct(string $columnName, Type $type)

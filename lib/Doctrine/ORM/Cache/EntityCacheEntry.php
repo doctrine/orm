@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\EntityManagerInterface;
+use function array_map;
 
 /**
  * Entity cache entry

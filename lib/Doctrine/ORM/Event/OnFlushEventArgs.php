@@ -17,9 +17,6 @@ class OnFlushEventArgs extends EventArgs
      */
     private $em;
 
-    /**
-     * Constructor.
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
@@ -28,7 +25,7 @@ class OnFlushEventArgs extends EventArgs
     /**
      * Retrieve associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

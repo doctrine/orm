@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST;
 
 use Doctrine\ORM\Query\QueryException;
+use function is_numeric;
+use function strlen;
+use function substr;
 
 /**
  * Description of InputParameter.
@@ -24,7 +27,7 @@ class InputParameter extends Node
     /**
      * @param string $value
      *
-     * @throws \Doctrine\ORM\Query\QueryException
+     * @throws QueryException
      */
     public function __construct($value)
     {

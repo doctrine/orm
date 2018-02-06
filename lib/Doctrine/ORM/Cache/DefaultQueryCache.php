@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache;
 
 use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
@@ -12,6 +13,13 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function array_map;
+use function array_shift;
+use function array_unshift;
+use function count;
+use function is_array;
+use function key;
+use function reset;
 
 /**
  * Default query cache implementation.
@@ -19,22 +27,22 @@ use ProxyManager\Proxy\GhostObjectInterface;
 class DefaultQueryCache implements QueryCache
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\ORM\Cache\Region
+     * @var Region
      */
     private $region;
 
     /**
-     * @var \Doctrine\ORM\Cache\QueryCacheValidator
+     * @var QueryCacheValidator
      */
     private $validator;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     * @var CacheLogger
      */
     protected $cacheLogger;
 
@@ -44,8 +52,8 @@ class DefaultQueryCache implements QueryCache
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em     The entity manager.
-     * @param \Doctrine\ORM\Cache\Region           $region The query region.
+     * @param EntityManagerInterface $em     The entity manager.
+     * @param Region                 $region The query region.
      */
     public function __construct(EntityManagerInterface $em, Region $region)
     {

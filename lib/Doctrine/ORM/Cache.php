@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\ORM\Cache\QueryCache;
+use Doctrine\ORM\Cache\Region;
+
 /**
  * Provides an API for querying/managing the second level cache regions.
  */
@@ -38,7 +41,7 @@ interface Cache
     /**
      * @param string $className The entity class.
      *
-     * @return \Doctrine\ORM\Cache\Region|null
+     * @return Region|null
      */
     public function getEntityCacheRegion($className);
 
@@ -46,7 +49,7 @@ interface Cache
      * @param string $className   The entity class.
      * @param string $association The field name that represents the association.
      *
-     * @return \Doctrine\ORM\Cache\Region|null
+     * @return Region|null
      */
     public function getCollectionCacheRegion($className, $association);
 
@@ -153,7 +156,7 @@ interface Cache
      *
      * @param string|null $regionName Query cache region name, or default query cache if the region name is NULL.
      *
-     * @return \Doctrine\ORM\Cache\QueryCache The Query Cache associated with the region name.
+     * @return QueryCache The Query Cache associated with the region name.
      */
     public function getQueryCache($regionName = null);
 }

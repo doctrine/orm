@@ -13,20 +13,17 @@ use Doctrine\ORM\EntityManagerInterface;
 class PreFlushEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
-    /**
-     * Constructor.
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;
     }
 
     /**
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Region;
 
 use Doctrine\Common\Cache\Cache as CacheAdapter;
+use Doctrine\Common\Cache\CacheProvider;
 use Doctrine\Common\Cache\ClearableCache;
 use Doctrine\ORM\Cache\CacheEntry;
 use Doctrine\ORM\Cache\CacheKey;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
+use function get_class;
+use function sprintf;
 
 /**
  * The simplest cache region compatible with all doctrine-cache drivers.
@@ -54,7 +57,7 @@ class DefaultRegion implements Region
     }
 
     /**
-     * @return \Doctrine\Common\Cache\CacheProvider
+     * @return CacheProvider
      */
     public function getCache()
     {

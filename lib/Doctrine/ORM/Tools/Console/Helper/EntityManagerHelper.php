@@ -19,9 +19,6 @@ class EntityManagerHelper extends Helper
      */
     protected $em;
 
-    /**
-     * Constructor.
-     */
     public function __construct(EntityManagerInterface $em)
     {
         $this->em = $em;

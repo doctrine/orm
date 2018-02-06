@@ -24,9 +24,6 @@ class LoadClassMetadataEventArgs extends EventArgs
      */
     private $entityManager;
 
-    /**
-     * Constructor.
-     */
     public function __construct(ClassMetadata $classMetadata, EntityManagerInterface $entityManager)
     {
         $this->classMetadata = $classMetadata;

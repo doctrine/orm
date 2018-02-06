@@ -22,8 +22,6 @@ class FieldMetadata extends LocalColumnMetadata implements Property
     protected $name;
 
     /**
-     * FieldMetadata constructor.
-     *
      * @param string $columnName
      * @param Type   $type
      *

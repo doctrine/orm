@@ -14,6 +14,15 @@ use Doctrine\DBAL\Schema\SchemaException;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping;
+use function array_diff;
+use function array_keys;
+use function array_merge;
+use function count;
+use function current;
+use function in_array;
+use function sort;
+use function str_replace;
+use function strtolower;
 
 /**
  * The DatabaseDriver reverse engineers the mapping metadata from a database.

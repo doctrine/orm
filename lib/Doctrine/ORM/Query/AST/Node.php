@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\AST;
 
+use Doctrine\ORM\Query\SqlWalker;
+use const PHP_EOL;
+use function get_class;
+use function get_object_vars;
+use function is_array;
+use function is_object;
+use function str_repeat;
+use function var_export;
+
 /**
  * Abstract class of an AST node.
  */
@@ -14,7 +23,7 @@ abstract class Node
      *
      * Implementation is not mandatory for all nodes.
      *
-     * @param \Doctrine\ORM\Query\SqlWalker $walker
+     * @param SqlWalker $walker
      *
      * @throws ASTException
      */

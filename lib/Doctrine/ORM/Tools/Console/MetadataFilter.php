@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Tools\Console;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
+use function count;
+use function iterator_to_array;
+use function preg_match;
+use function sprintf;
 
 /**
  * Used by CLI Tools to restrict entity-based commands to given patterns.

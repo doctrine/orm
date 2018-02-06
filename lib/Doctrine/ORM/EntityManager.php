@@ -5,14 +5,27 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\EventManager;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\LockMode;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
 use Doctrine\ORM\Proxy\Factory\StaticProxyFactory;
+use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\Repository\RepositoryFactory;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function array_keys;
+use function get_class;
+use function gettype;
+use function is_array;
+use function is_object;
+use function ltrim;
+use function sprintf;
 
 /**
  * The EntityManager is the central access point to ORM functionality.
@@ -44,63 +57,63 @@ final class EntityManager implements EntityManagerInterface
     /**
      * The used Configuration.
      *
-     * @var \Doctrine\ORM\Configuration
+     * @var Configuration
      */
     private $config;
 
     /**
      * The database connection used by the EntityManager.
      *
-     * @var \Doctrine\DBAL\Connection
+     * @var Connection
      */
     private $conn;
 
     /**
      * The metadata factory, used to retrieve the ORM metadata of entity classes.
      *
-     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     private $metadataFactory;
 
     /**
      * The UnitOfWork used to coordinate object-level transactions.
      *
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     private $unitOfWork;
 
     /**
      * The event manager that is the central point of the event system.
      *
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventManager;
 
     /**
      * The proxy factory used to create dynamic proxies.
      *
-     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory
+     * @var ProxyFactory
      */
     private $proxyFactory;
 
     /**
      * The repository factory used to create dynamic repositories.
      *
-     * @var \Doctrine\ORM\Repository\RepositoryFactory
+     * @var RepositoryFactory
      */
     private $repositoryFactory;
 
     /**
      * The expression builder instance used to generate query expressions.
      *
-     * @var \Doctrine\ORM\Query\Expr
+     * @var Expr
      */
     private $expressionBuilder;
 
     /**
      * The IdentifierFlattener used for manipulating identifiers
      *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     * @var IdentifierFlattener
      */
     private $identifierFlattener;
 
@@ -114,12 +127,12 @@ final class EntityManager implements EntityManagerInterface
     /**
      * Collection of query filters.
      *
-     * @var \Doctrine\ORM\Query\FilterCollection
+     * @var FilterCollection
      */
     private $filterCollection;
 
     /**
-     * @var \Doctrine\ORM\Cache The second level cache regions API.
+     * @var Cache The second level cache regions API.
      */
     private $cache;
 
@@ -136,7 +149,7 @@ final class EntityManager implements EntityManagerInterface
 
         $metadataFactoryClassName = $config->getClassMetadataFactoryName();
 
-        $this->metadataFactory = new $metadataFactoryClassName;
+        $this->metadataFactory = new $metadataFactoryClassName();
 
         $this->metadataFactory->setEntityManager($this);
         $this->metadataFactory->setCacheDriver($this->config->getMetadataCacheImpl());
@@ -164,7 +177,7 @@ final class EntityManager implements EntityManagerInterface
     /**
      * Gets the metadata factory used to gather the metadata of classes.
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @return ClassMetadataFactory
      */
     public function getMetadataFactory()
     {
@@ -177,7 +190,7 @@ final class EntityManager implements EntityManagerInterface
     public function getExpressionBuilder()
     {
         if ($this->expressionBuilder === null) {
-            $this->expressionBuilder = new Query\Expr;
+            $this->expressionBuilder = new Query\Expr();
         }
 
         return $this->expressionBuilder;
@@ -256,10 +269,9 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param string $className
      *
-     *
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws MappingException
      */
     public function getClassMetadata($className) : Mapping\ClassMetadata
     {
@@ -339,8 +351,7 @@ final class EntityManager implements EntityManagerInterface
      * If an entity is explicitly passed to this method only this entity and
      * the cascade-persist semantics + scheduled inserts/removals are synchronized.
      *
-     *
-     * @throws \Doctrine\ORM\OptimisticLockException If a version check on an entity that
+     * @throws OptimisticLockException If a version check on an entity that
      *         makes use of optimistic locking fails.
      * @throws ORMException
      */
@@ -622,7 +633,6 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param object $entity The instance to make managed and persistent.
      *
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
@@ -645,7 +655,6 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param object $entity The entity instance to remove.
      *
-     *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
      */
@@ -665,7 +674,6 @@ final class EntityManager implements EntityManagerInterface
      * overriding any local changes that have not yet been persisted.
      *
      * @param object $entity The entity to refresh.
-     *
      *
      * @throws ORMInvalidArgumentException
      * @throws ORMException
@@ -694,7 +702,7 @@ final class EntityManager implements EntityManagerInterface
      *
      * @param string $entityName The name of the entity.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository|\Doctrine\ORM\EntityRepository The repository class.
+     * @return ObjectRepository|EntityRepository The repository class.
      */
     public function getRepository($entityName)
     {
@@ -732,7 +740,6 @@ final class EntityManager implements EntityManagerInterface
 
     /**
      * Throws an exception if the EntityManager is closed or currently not active.
-     *
      *
      * @throws ORMException If the EntityManager is closed.
      */

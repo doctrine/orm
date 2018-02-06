@@ -7,6 +7,7 @@ namespace Doctrine\ORM\Query;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\AST\PathExpression;
+use function sprintf;
 
 /**
  * Description of QueryException.
@@ -186,7 +187,6 @@ class QueryException extends ORMException
     }
 
     /**
-     *
      * @return QueryException
      */
     public static function associationPathInverseSideNotSupported(PathExpression $pathExpr)
@@ -198,7 +198,6 @@ class QueryException extends ORMException
     }
 
     /**
-     *
      * @return QueryException
      */
     public static function iterateWithFetchJoinNotAllowed(AssociationMetadata $association)

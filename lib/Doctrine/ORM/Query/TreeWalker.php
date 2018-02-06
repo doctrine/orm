@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\AbstractQuery;
+
 /**
  * Interface for walkers of DQL ASTs (abstract syntax trees).
  */
@@ -12,9 +14,9 @@ interface TreeWalker
     /**
      * Initializes TreeWalker with important information about the ASTs to be walked.
      *
-     * @param \Doctrine\ORM\AbstractQuery      $query           The parsed Query.
-     * @param \Doctrine\ORM\Query\ParserResult $parserResult    The result of the parsing process.
-     * @param mixed[][]                        $queryComponents The query components (symbol table).
+     * @param AbstractQuery $query           The parsed Query.
+     * @param ParserResult  $parserResult    The result of the parsing process.
+     * @param mixed[][]     $queryComponents The query components (symbol table).
      */
     public function __construct($query, $parserResult, array $queryComponents);
 
@@ -195,7 +197,6 @@ interface TreeWalker
 
     /**
      * Walks down a DeleteStatement AST node, thereby generating the appropriate SQL.
-     *
      *
      * @return string The SQL.
      */

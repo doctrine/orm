@@ -21,8 +21,6 @@ class BigIntegerIdentityGenerator implements Generator
     private $sequenceName;
 
     /**
-     * Constructor.
-     *
      * @param string|null $sequenceName The name of the sequence to pass to lastInsertId()
      *                                  to obtain the last generated identifier within the current
      *                                  database session/connection, if any.

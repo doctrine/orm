@@ -5,9 +5,17 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Mapping\InheritanceType;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_reverse;
+use function array_values;
+use function implode;
+use function sprintf;
 
 /**
  * Persister for one-to-many collections.
@@ -176,7 +184,7 @@ class OneToManyPersister extends AbstractCollectionPersister
     /**
      * @return int
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function deleteEntityCollection(PersistentCollection $collection)
     {
@@ -207,7 +215,7 @@ class OneToManyPersister extends AbstractCollectionPersister
      *
      * @return int
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function deleteJoinedEntityCollection(PersistentCollection $collection)
     {

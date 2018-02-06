@@ -12,27 +12,27 @@ use Doctrine\ORM\Cache\Logging\CacheLogger;
 class CacheConfiguration
 {
     /**
-     * @var \Doctrine\ORM\Cache\CacheFactory|null
+     * @var CacheFactory|null
      */
     private $cacheFactory;
 
     /**
-     * @var \Doctrine\ORM\Cache\RegionsConfiguration|null
+     * @var RegionsConfiguration|null
      */
     private $regionsConfig;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     * @var CacheLogger|null
      */
     private $cacheLogger;
 
     /**
-     * @var \Doctrine\ORM\Cache\QueryCacheValidator|null
+     * @var QueryCacheValidator|null
      */
     private $queryValidator;
 
     /**
-     * @return \Doctrine\ORM\Cache\CacheFactory|null
+     * @return CacheFactory|null
      */
     public function getCacheFactory()
     {
@@ -45,7 +45,7 @@ class CacheConfiguration
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     * @return CacheLogger|null
      */
     public function getCacheLogger()
     {
@@ -58,7 +58,7 @@ class CacheConfiguration
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\RegionsConfiguration
+     * @return RegionsConfiguration
      */
     public function getRegionsConfiguration()
     {
@@ -75,7 +75,7 @@ class CacheConfiguration
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\QueryCacheValidator
+     * @return QueryCacheValidator
      */
     public function getQueryValidator()
     {

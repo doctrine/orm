@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\EventArgs;
+use Doctrine\Common\EventManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\EntityListenerResolver;
 
 /**
  * A method invoker based on entity lifecycle.
@@ -19,14 +21,14 @@ class ListenersInvoker
     public const INVOKE_MANAGER   = 4;
 
     /**
-     * @var \Doctrine\ORM\Mapping\EntityListenerResolver The Entity listener resolver.
+     * @var EntityListenerResolver The Entity listener resolver.
      */
     private $resolver;
 
     /**
      * The EventManager used for dispatching events.
      *
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventManager;
 
@@ -42,8 +44,8 @@ class ListenersInvoker
     /**
      * Get the subscribed event systems
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
-     * @param string                              $eventName The entity lifecycle event.
+     * @param ClassMetadata $metadata  The entity metadata.
+     * @param string        $eventName The entity lifecycle event.
      *
      * @return int Bitmask of subscribed event systems.
      */
@@ -69,11 +71,11 @@ class ListenersInvoker
     /**
      * Dispatches the lifecycle event of the given entity.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata  The entity metadata.
-     * @param string                              $eventName The entity lifecycle event.
-     * @param object                              $entity    The Entity on which the event occurred.
-     * @param \Doctrine\Common\EventArgs          $event     The Event args.
-     * @param int                                 $invoke    Bitmask to invoke listeners.
+     * @param ClassMetadata $metadata  The entity metadata.
+     * @param string        $eventName The entity lifecycle event.
+     * @param object        $entity    The Entity on which the event occurred.
+     * @param EventArgs     $event     The Event args.
+     * @param int           $invoke    Bitmask to invoke listeners.
      */
     public function invoke(ClassMetadata $metadata, $eventName, $entity, EventArgs $event, $invoke)
     {

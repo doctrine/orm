@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
@@ -18,12 +19,12 @@ class SubstringFunction extends FunctionNode
     public $stringPrimary;
 
     /**
-     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression
+     * @var SimpleArithmeticExpression
      */
     public $firstSimpleArithmeticExpression;
 
     /**
-     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression|null
+     * @var SimpleArithmeticExpression|null
      */
     public $secondSimpleArithmeticExpression;
 

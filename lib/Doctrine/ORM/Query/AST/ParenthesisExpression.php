@@ -10,7 +10,7 @@ namespace Doctrine\ORM\Query\AST;
 class ParenthesisExpression extends Node
 {
     /**
-     * @var \Doctrine\ORM\Query\AST\Node
+     * @var Node
      */
     public $expression;
 

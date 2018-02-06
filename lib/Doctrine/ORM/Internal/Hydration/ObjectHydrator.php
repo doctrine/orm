@@ -14,6 +14,11 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\UnitOfWork;
 use PDO;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function array_fill_keys;
+use function array_keys;
+use function count;
+use function key;
+use function spl_object_id;
 
 /**
  * The ObjectHydrator constructs an object graph out of an SQL result set.
@@ -161,7 +166,7 @@ class ObjectHydrator extends AbstractHydrator
      * @param string        $fieldName      The name of the field on the entity that holds the collection.
      * @param string        $parentDqlAlias Alias of the parent fetch joining this collection.
      *
-     * @return \Doctrine\ORM\PersistentCollection
+     * @return PersistentCollection
      */
     private function initRelatedCollection($entity, $class, $fieldName, $parentDqlAlias)
     {
@@ -539,7 +544,7 @@ class ObjectHydrator extends AbstractHydrator
                 $args  = $newObject['args'];
                 $obj   = $class->newInstanceArgs($args);
 
-                if ($hasNoScalars && \count($rowData['newObjects']) === 1) {
+                if ($hasNoScalars && count($rowData['newObjects']) === 1) {
                     $result[$resultKey] = $obj;
 
                     continue;

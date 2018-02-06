@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters\Collection;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
@@ -15,6 +16,13 @@ use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\SqlValueVisitor;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_fill;
+use function count;
+use function get_class;
+use function implode;
+use function in_array;
+use function reset;
+use function sprintf;
 
 /**
  * Persister for many-to-many collections.
@@ -845,7 +853,7 @@ class ManyToManyPersister extends AbstractCollectionPersister
 
     /**
      * @return string
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function getLimitSql(Criteria $criteria)
     {

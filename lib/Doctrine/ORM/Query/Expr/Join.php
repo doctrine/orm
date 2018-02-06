@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function strtoupper;
+
 /**
  * Expression class for DQL join.
  */

@@ -6,6 +6,9 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use function array_shift;
+use function count;
+use function key;
 
 /**
  * Hydrator that hydrates a single scalar value from the result set.

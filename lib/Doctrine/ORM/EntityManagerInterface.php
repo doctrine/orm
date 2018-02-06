@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
+use Doctrine\ORM\Proxy\Factory\ProxyFactory;
+use Doctrine\ORM\Query\Expr;
+use Doctrine\ORM\Query\FilterCollection;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\IdentifierFlattener;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -19,14 +25,14 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Returns the cache API for managing the second level cache regions or NULL if the cache is not enabled.
      *
-     * @return \Doctrine\ORM\Cache|null
+     * @return Cache|null
      */
     public function getCache();
 
     /**
      * Gets the database connection object used by the EntityManager.
      *
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     public function getConnection();
 
@@ -42,7 +48,7 @@ interface EntityManagerInterface extends ObjectManager
      *         ->where($expr->orX($expr->eq('u.id', 1), $expr->eq('u.id', 2)));
      * </code>
      *
-     * @return \Doctrine\ORM\Query\Expr
+     * @return Expr
      */
     public function getExpressionBuilder();
 
@@ -188,7 +194,7 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the EventManager used by the EntityManager.
      *
-     * @return \Doctrine\Common\EventManager
+     * @return EventManager
      */
     public function getEventManager();
 
@@ -223,7 +229,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param int $hydrationMode
      *
-     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     * @return AbstractHydrator
      */
     public function getHydrator($hydrationMode);
 
@@ -232,7 +238,7 @@ interface EntityManagerInterface extends ObjectManager
      *
      * @param int $hydrationMode
      *
-     * @return \Doctrine\ORM\Internal\Hydration\AbstractHydrator
+     * @return AbstractHydrator
      *
      * @throws ORMException
      */
@@ -241,14 +247,14 @@ interface EntityManagerInterface extends ObjectManager
     /**
      * Gets the proxy factory used by the EntityManager to create entity proxies.
      *
-     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
+     * @return ProxyFactory
      */
     public function getProxyFactory();
 
     /**
      * Gets the enabled filters.
      *
-     * @return \Doctrine\ORM\Query\FilterCollection The active filter collection.
+     * @return FilterCollection The active filter collection.
      */
     public function getFilters();
 

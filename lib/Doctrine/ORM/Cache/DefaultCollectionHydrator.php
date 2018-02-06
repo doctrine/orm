@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Default hydrator cache for collections
@@ -15,12 +16,12 @@ use Doctrine\ORM\Query;
 class DefaultCollectionHydrator implements CollectionHydrator
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
@@ -30,7 +31,7 @@ class DefaultCollectionHydrator implements CollectionHydrator
     private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
-     * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
+     * @param EntityManagerInterface $em The entity manager.
      */
     public function __construct(EntityManagerInterface $em)
     {

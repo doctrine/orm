@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Persisters;
 
 use Doctrine\ORM\ORMException;
+use function sprintf;
 
 class PersisterException extends ORMException
 {

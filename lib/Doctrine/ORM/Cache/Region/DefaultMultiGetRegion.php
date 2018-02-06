@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Region;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Cache\MultiGetCache;
 use Doctrine\ORM\Cache\CollectionCacheEntry;
+use function count;
 
 /**
  * A cache region that enables the retrieval of multiple elements with one call
@@ -17,7 +19,7 @@ class DefaultMultiGetRegion extends DefaultRegion
      * Note that the multiple type is due to doctrine/cache not integrating the MultiGetCache interface
      * in its signature due to BC in 1.x
      *
-     * @var MultiGetCache|\Doctrine\Common\Cache\Cache
+     * @var MultiGetCache|Cache
      */
     protected $cache;
 

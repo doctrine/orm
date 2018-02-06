@@ -11,6 +11,13 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\UnitOfWork;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function count;
+use function fclose;
+use function fopen;
+use function fwrite;
+use function gettype;
+use function is_object;
+use function spl_object_id;
 
 /**
  * Use this logger to dump the identity map during the onFlush event. This is useful for debugging

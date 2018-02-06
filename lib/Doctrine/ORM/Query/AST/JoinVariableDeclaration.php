@@ -20,8 +20,6 @@ class JoinVariableDeclaration extends Node
     public $indexBy;
 
     /**
-     * Constructor.
-     *
      * @param Join         $join
      * @param IndexBy|null $indexBy
      */

@@ -10,7 +10,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\ORMInvalidArgumentException;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function is_array;
+use function is_object;
 
 /**
  * Provides an API for querying/managing the second level cache regions.
@@ -18,27 +21,27 @@ use Doctrine\ORM\Utility\StaticClassNameConverter;
 class DefaultCache implements Cache
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     private $uow;
 
     /**
-     * @var \Doctrine\ORM\Cache\CacheFactory
+     * @var CacheFactory
      */
     private $cacheFactory;
 
     /**
-     * @var \Doctrine\ORM\Cache\QueryCache[]
+     * @var QueryCache[]
      */
     private $queryCaches = [];
 
     /**
-     * @var \Doctrine\ORM\Cache\QueryCache
+     * @var QueryCache
      */
     private $defaultQueryCache;
 
@@ -270,10 +273,10 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param mixed                               $identifier The entity identifier.
+     * @param ClassMetadata $metadata   The entity metadata.
+     * @param mixed         $identifier The entity identifier.
      *
-     * @return \Doctrine\ORM\Cache\EntityCacheKey
+     * @return EntityCacheKey
      */
     private function buildEntityCacheKey(ClassMetadata $metadata, $identifier)
     {
@@ -285,11 +288,11 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata        The entity metadata.
-     * @param string                              $association     The field name that represents the association.
-     * @param mixed                               $ownerIdentifier The identifier of the owning entity.
+     * @param ClassMetadata $metadata        The entity metadata.
+     * @param string        $association     The field name that represents the association.
+     * @param mixed         $ownerIdentifier The identifier of the owning entity.
      *
-     * @return \Doctrine\ORM\Cache\CollectionCacheKey
+     * @return CollectionCacheKey
      */
     private function buildCollectionCacheKey(ClassMetadata $metadata, $association, $ownerIdentifier)
     {
@@ -301,8 +304,8 @@ class DefaultCache implements Cache
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $metadata   The entity metadata.
-     * @param mixed                               $identifier The entity identifier.
+     * @param ClassMetadata $metadata   The entity metadata.
+     * @param mixed         $identifier The entity identifier.
      *
      * @return mixed[]
      */

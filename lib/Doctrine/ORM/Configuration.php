@@ -28,6 +28,7 @@ use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\FileLocator\FileLocator;
 use ProxyManager\GeneratorStrategy\EvaluatingGeneratorStrategy;
 use ProxyManager\GeneratorStrategy\FileWriterGeneratorStrategy;
+use function strtolower;
 
 /**
  * Configuration container for all configuration options of Doctrine.
@@ -326,7 +327,7 @@ class Configuration extends DBALConfiguration
      */
     public function addCustomStringFunction(string $functionName, $classNameOrFactory) : void
     {
-        $this->customStringFunctions[\strtolower($functionName)] = $classNameOrFactory;
+        $this->customStringFunctions[strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
@@ -336,7 +337,7 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomStringFunction(string $functionName)
     {
-        return $this->customStringFunctions[\strtolower($functionName)] ?? null;
+        return $this->customStringFunctions[strtolower($functionName)] ?? null;
     }
 
     /**
@@ -367,7 +368,7 @@ class Configuration extends DBALConfiguration
      */
     public function addCustomNumericFunction(string $functionName, $classNameOrFactory) : void
     {
-        $this->customNumericFunctions[\strtolower($functionName)] = $classNameOrFactory;
+        $this->customNumericFunctions[strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
@@ -377,7 +378,7 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomNumericFunction(string $functionName)
     {
-        return $this->customNumericFunctions[\strtolower($functionName)] ?? null;
+        return $this->customNumericFunctions[strtolower($functionName)] ?? null;
     }
 
     /**
@@ -408,7 +409,7 @@ class Configuration extends DBALConfiguration
      */
     public function addCustomDatetimeFunction(string $functionName, $classNameOrFactory)
     {
-        $this->customDatetimeFunctions[\strtolower($functionName)] = $classNameOrFactory;
+        $this->customDatetimeFunctions[strtolower($functionName)] = $classNameOrFactory;
     }
 
     /**
@@ -418,7 +419,7 @@ class Configuration extends DBALConfiguration
      */
     public function getCustomDatetimeFunction(string $functionName)
     {
-        return $this->customDatetimeFunctions[\strtolower($functionName)] ?? null;
+        return $this->customDatetimeFunctions[strtolower($functionName)] ?? null;
     }
 
     /**

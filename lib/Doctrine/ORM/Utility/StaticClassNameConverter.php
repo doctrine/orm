@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Utility;
 
 use ProxyManager\Configuration;
 use ProxyManager\Inflector\ClassNameInflectorInterface;
+use function get_class;
 
 /**
  * This class provides utility method to retrieve class names, and to convert
@@ -51,6 +52,6 @@ abstract class StaticClassNameConverter
         $inflector                       = self::$classNameInflector
             ?? self::$classNameInflector = (new Configuration())->getClassNameInflector();
 
-        return $inflector->getUserClassName(\get_class($object));
+        return $inflector->getUserClassName(get_class($object));
     }
 }
