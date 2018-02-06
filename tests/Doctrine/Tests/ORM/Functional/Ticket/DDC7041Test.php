@@ -35,8 +35,6 @@ class DDC7041Test extends OrmFunctionalTestCase
         $this->em->persist($article);
         $this->em->flush();
         
-        $user->articles
-        
         $crit = \Doctrine\Common\Collections\Criteria::create();
         // get all articles where text contains '%Yadda%'
         $crit->andWhere(\Doctrine\Common\Collections\Criteria::expr()->contains('text', 'Yadda'));
