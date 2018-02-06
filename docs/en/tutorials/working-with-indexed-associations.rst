@@ -296,6 +296,6 @@ Outlook into the Future
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 For the inverse side of a many-to-many associations there will be a way to persist the keys and the order
-as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <http://www.doctrine-project.org/jira/browse/DDC-213>`_
+as a third and fourth parameter into the join table. This feature is discussed in `DDC-213 <https://github.com/doctrine/doctrine2/issues/2817>`_
 This feature cannot be implemented for one-to-many associations, because they are never the owning side.
 
