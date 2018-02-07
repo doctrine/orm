@@ -47,7 +47,7 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
      */
     protected $metadataBuildingContext;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
 
@@ -82,9 +82,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $factory;
     }
 
-    /**
-     * @param ClassMetadata $class
-     */
     public function testEntityTableNameAndInheritance()
     {
         $class = $this->createClassMetadata(User::class);
@@ -95,9 +92,6 @@ abstract class AbstractMappingDriverTest extends OrmTestCase
         return $class;
     }
 
-    /**
-     * @param ClassMetadata $class
-     */
     public function testEntityIndexes()
     {
         $class = $this->createClassMetadata('Doctrine\Tests\ORM\Mapping\User');

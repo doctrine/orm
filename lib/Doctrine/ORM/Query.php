@@ -31,7 +31,6 @@ use function stripos;
 
 /**
  * A Query object represents a DQL query.
- *
  */
 final class Query extends AbstractQuery
 {

@@ -38,7 +38,7 @@ class ConcatFunction extends FunctionNode
             $args[] = $sqlWalker->walkStringPrimary($expression);
         }
 
-        return call_user_func_array([$platform, 'getConcatExpression'], $args);
+        return $platform->getConcatExpression(...$args);
     }
 
     /**

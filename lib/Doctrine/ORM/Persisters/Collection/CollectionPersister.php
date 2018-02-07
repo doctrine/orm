@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\PersistentCollection;
 
 /**
- * Collection persister interface
  * Define the behavior that should be implemented by all collection persisters.
  */
 interface CollectionPersister

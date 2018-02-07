@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\Reflection\ReflectionService;
 
-/**
- * Class TransientMetadata
- */
 class TransientMetadata implements Property
 {
     /** @var ClassMetadata */

@@ -6,9 +6,6 @@ namespace Doctrine\ORM\Mapping;
 
 use function strtoupper;
 
-/**
- * Class JoinColumnMetadata
- */
 class JoinColumnMetadata extends ColumnMetadata
 {
     /** @var string|null */

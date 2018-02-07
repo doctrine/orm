@@ -11,7 +11,6 @@ use function count;
 
 /**
  * A cache region that enables the retrieval of multiple elements with one call
- *
  */
 class DefaultMultiGetRegion extends DefaultRegion
 {

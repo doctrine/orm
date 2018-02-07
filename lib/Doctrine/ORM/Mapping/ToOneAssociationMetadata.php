@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
-/**
- * Class ToOneAssociationMetadata
- */
 class ToOneAssociationMetadata extends AssociationMetadata
 {
     /**

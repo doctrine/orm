@@ -26,9 +26,6 @@ use Doctrine\ORM\Mapping\Factory\DefaultNamingStrategy;
 use Doctrine\ORM\Mapping\Factory\NamingStrategy;
 use Doctrine\ORM\Reflection\ReflectionService;
 
-/**
- * Class ClassMetadataBuildingContext
- */
 class ClassMetadataBuildingContext
 {
     /** @var AbstractClassMetadataFactory */
