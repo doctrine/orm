@@ -5,6 +5,7 @@ namespace Doctrine\Tests\ORM\Mapping;
 use Doctrine\ORM\Mapping\ReservedWordQuoteStrategy;
 use Doctrine\ORM\Mapping\QuoteStrategy;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\TestUtil;
 
 class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
 {
@@ -18,11 +19,15 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
      */
     private $platform;
 
+    /**
+     * @var array
+     */
+    private static $keywordLists = array();
+
     protected function setUp()
     {
         parent::setUp();
-        $em = $this->_getTestEntityManager();
-        $this->platform = $em->getConnection()->getDatabasePlatform();
+        $this->platform = TestUtil::getConnection()->getDatabasePlatform();
         $this->strategy = new ReservedWordQuoteStrategy();
     }
 
@@ -38,16 +43,40 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         return $cm;
     }
 
+    /**
+     * @return array
+     */
+    protected function getKeywordList()
+    {
+        $keywords = TestUtil::getConnection()->getDatabasePlatform()->getReservedKeywordsList();
+        $keywordClassName = get_class($keywords);
+
+        if (isset(self::$keywordLists[$keywordClassName])) {
+            return self::$keywordLists[$keywordClassName];
+        }
+
+        $keywordClass = new \ReflectionObject($keywords);
+        $keywordInitialize = $keywordClass->getMethod('initializeKeywords');
+        $keywordInitialize->setAccessible(true);
+        $keywordInitialize->invoke($keywords);
+
+        $keywordProperty = $keywordClass->getParentClass()->getProperty('keywords');
+        $keywordProperty->setAccessible(true);
+        $keywords = array_keys($keywordProperty->getValue($keywords));
+
+        return self::$keywordLists[$keywordClassName] = is_array($keywords) ? $keywords : array();
+    }
+
     public function generateKeywords()
     {
         $keywords = array_map(
             "strtolower",
-            $this->platform->getReservedKeywordsList()
+            $this->getKeywordList()
         );
 
         do {
             $random = substr(str_shuffle(str_repeat("abcdefghijklmnopqrstuvwxyz", 5)), 0, 5);
-        } while (!in_array($random, $keywords));
+        } while (in_array($random, $keywords));
 
         $data = array();
 
@@ -156,7 +185,7 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         ));
 
         $this->assertEquals(array('"' . $quoted . '"'), $this->strategy->getIdentifierColumnNames($cm1, $this->platform));
-        $this->assertEquals(array('id'), $this->strategy->getIdentifierColumnNames($cm2, $this->platform));
+        $this->assertEquals(array($notQuoted), $this->strategy->getIdentifierColumnNames($cm2, $this->platform));
     }
 
     public function testColumnAlias()
@@ -211,7 +240,8 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
             'joinColumns'    => array(array(
-                'name'  => $quoted
+                'name'   => $quoted,
+                'quoted' => true
             )),
         ));
 
@@ -245,12 +275,13 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
             'fieldName'     => 'article',
             'targetEntity'  => 'Doctrine\Tests\Models\DDC117\DDC117Article',
             'joinColumns'    => array(array(
-                'name'  => $quoted
+                'name'   => $quoted,
+                'quoted' => true
             )),
         ));
 
         $joinColumn = $cm1->associationMappings['article']['joinColumns'][0];
-        $this->assertQuoted($quoted, $this->strategy->getReferencedJoinColumnName($joinColumn, $cm1, $this->platform));
+        $this->assertQuoted($joinColumn['referencedColumnName'], $this->strategy->getReferencedJoinColumnName($joinColumn, $cm1, $this->platform));
 
         $cm2 = $this->createClassMetadata('Doctrine\Tests\Models\DDC117\DDC117ArticleDetails');
 
@@ -264,6 +295,6 @@ class ReservedWordQuoteStrategyTest extends \Doctrine\Tests\OrmTestCase
         ));
 
         $joinColumn = $cm2->associationMappings['article']['joinColumns'][0];
-        $this->assertEquals($notQuoted, $this->strategy->getReferencedJoinColumnName($joinColumn, $cm2, $this->platform));
+        $this->assertEquals($joinColumn['referencedColumnName'], $this->strategy->getReferencedJoinColumnName($joinColumn, $cm2, $this->platform));
     }
 }
