@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -11,28 +14,32 @@ class DDC1360Test extends OrmFunctionalTestCase
 {
     public function testSchemaDoubleQuotedCreate()
     {
-        if ($this->_em->getConnection()->getDatabasePlatform()->getName() != "postgresql") {
+        if ($this->em->getConnection()->getDatabasePlatform()->getName() != "postgresql") {
             $this->markTestSkipped("PostgreSQL only test.");
         }
 
-        $sql = $this->_schemaTool->getCreateSchemaSQL(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1360DoubleQuote')
-        ));
+        $sql = $this->schemaTool->getCreateSchemaSql(
+            [
+            $this->em->getClassMetadata(DDC1360DoubleQuote::class)
+            ]
+        );
 
-        $this->assertEquals(array(
-            'CREATE SCHEMA user',
-            'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
-            'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
-        ), $sql);
+        self::assertEquals(
+            [
+                'CREATE SCHEMA user',
+                'CREATE TABLE "user"."user" (id INT NOT NULL, PRIMARY KEY(id))',
+                'CREATE SEQUENCE "user"."user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1',
+            ],
+            $sql
+        );
     }
 }
 
 /**
- * @Entity @Table(name="`user`.`user`")
+ * @ORM\Entity @ORM\Table(name="user.user")
  */
 class DDC1360DoubleQuote
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 }
-

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\ORM\Events;
@@ -20,15 +22,17 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $test = $this;
         $user = new CmsUser();
-        $uow  = $this->_em->getUnitOfWork();
+        $uow  = $this->em->getUnitOfWork();
 
         $user->name     = 'Marco';
         $user->username = 'ocramius';
 
-        $this->_em->persist($user);
-        $uow->scheduleExtraUpdate($user, array('name' => 'changed name'));
+        $this->em->persist($user);
+        $uow->scheduleExtraUpdate($user, ['name' => 'changed name']);
 
-        $listener = $this->getMock('stdClass', array(Events::postFlush));
+        $listener = $this->getMockBuilder(\stdClass::class)
+                         ->setMethods([Events::postFlush])
+                         ->getMock();
 
         $listener
             ->expects($this->once())
@@ -37,8 +41,8 @@ class DDC3123Test extends \Doctrine\Tests\OrmFunctionalTestCase
                 $test->assertAttributeEmpty('extraUpdates', $uow, 'ExtraUpdates are reset before postFlush');
             }));
 
-        $this->_em->getEventManager()->addEventListener(Events::postFlush, $listener);
+        $this->em->getEventManager()->addEventListener(Events::postFlush, $listener);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 }

@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1595
@@ -13,69 +17,72 @@ class DDC1595Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
+        $this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\DebugStack);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595BaseInheritance'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1595InheritedEntity2'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC1595BaseInheritance::class),
+            $this->em->getClassMetadata(DDC1595InheritedEntity1::class),
+            $this->em->getClassMetadata(DDC1595InheritedEntity2::class),
+            ]
+        );
     }
 
     public function testIssue()
     {
         $e1 = new DDC1595InheritedEntity1();
 
-        $this->_em->persist($e1);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($e1);
+        $this->em->flush();
+        $this->em->clear();
 
-        $sqlLogger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1595InheritedEntity1');
+        $sqlLogger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
+        $repository = $this->em->getRepository(DDC1595InheritedEntity1::class);
 
         $entity1  = $repository->find($e1->id);
 
         // DDC-1596
-        $this->assertSQLEquals(
-            "SELECT t0.id AS id_1, t0.type FROM base t0 WHERE t0.id = ? AND t0.type IN ('Entity1')",
+        self::assertSQLEquals(
+            'SELECT t0."id" AS c1, t0."type" FROM "base" t0 WHERE t0."id" = ? AND t0."type" IN (\'Entity1\')',
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
 
         $entities = $entity1->getEntities()->getValues();
 
-        $this->assertEquals(
-            "SELECT t0.id AS id_1, t0.type FROM base t0 INNER JOIN entity1_entity2 ON t0.id = entity1_entity2.item WHERE entity1_entity2.parent = ? AND t0.type IN ('Entity2')",
+        self::assertSQLEquals(
+            'SELECT t0."id" AS c1, t0."type" FROM "base" t0 INNER JOIN "entity1_entity2" ON t0."id" = "entity1_entity2"."item" WHERE "entity1_entity2"."parent" = ? AND t0."type" IN (\'Entity2\')',
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $entity1  = $repository->find($e1->id);
-        $entities = $entity1->getEntities()->count();
 
-        $this->assertSQLEquals(
-            "SELECT COUNT(*) FROM entity1_entity2 t WHERE t.parent = ?",
+        $entity1->getEntities()->count();
+
+        self::assertSQLEquals(
+            'SELECT COUNT(*) FROM "entity1_entity2" t WHERE t."parent" = ?',
             $sqlLogger->queries[count($sqlLogger->queries)]['sql']
         );
     }
 }
 
 /**
- * @Entity
- * @Table(name="base")
+ * @ORM\Entity
+ * @ORM\Table(name="base")
  *
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({
- *     "Entity1" = "DDC1595InheritedEntity1",
- *     "Entity2" = "DDC1595InheritedEntity2"
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({
+ *     "Entity1" = DDC1595InheritedEntity1::class,
+ *     "Entity2" = DDC1595InheritedEntity2::class
  * })
  */
 abstract class DDC1595BaseInheritance
 {
     /**
-     * @Id @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      *
      * @var int
      */
@@ -83,16 +90,15 @@ abstract class DDC1595BaseInheritance
 }
 
 /**
- * @Entity
- * @Table(name="entity1")
+ * @ORM\Entity
  */
 class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 {
     /**
-     * @ManyToMany(targetEntity="DDC1595InheritedEntity2", fetch="EXTRA_LAZY")
-     * @JoinTable(name="entity1_entity2",
-     *     joinColumns={@JoinColumn(name="parent", referencedColumnName="id")},
-     *     inverseJoinColumns={@JoinColumn(name="item", referencedColumnName="id")}
+     * @ORM\ManyToMany(targetEntity=DDC1595InheritedEntity2::class, fetch="EXTRA_LAZY")
+     * @ORM\JoinTable(name="entity1_entity2",
+     *     joinColumns={@ORM\JoinColumn(name="parent", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="item", referencedColumnName="id")}
      * )
      */
     protected $entities;
@@ -104,8 +110,7 @@ class DDC1595InheritedEntity1 extends DDC1595BaseInheritance
 }
 
 /**
- * @Entity
- * @Table(name="entity2")
+ * @ORM\Entity
  */
 class DDC1595InheritedEntity2 extends DDC1595BaseInheritance
 {

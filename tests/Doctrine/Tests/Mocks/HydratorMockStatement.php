@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
+
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * This class is a mock of the Statement interface that can be passed in to the Hydrator
@@ -8,12 +12,12 @@ namespace Doctrine\Tests\Mocks;
  *
  * @author  Roman Borschel <roman@code-factory.org>
  */
-class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver\Statement
+class HydratorMockStatement implements \IteratorAggregate, Statement
 {
     /**
      * @var array
      */
-    private $_resultSet;
+    private $resultSet;
 
     /**
      * Creates a new mock statement that will serve the provided fake result set to clients.
@@ -22,21 +26,20 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
      */
     public function __construct(array $resultSet)
     {
-        $this->_resultSet = $resultSet;
+        $this->resultSet = $resultSet;
     }
 
     /**
      * Fetches all rows from the result set.
      *
-     * @param int|null   $fetchStyle
-     * @param int|null   $columnIndex
+     * @param int|null   $fetchMode
+     * @param int|null   $fetchArgument
      * @param array|null $ctorArgs
-     *
      * @return array
      */
-    public function fetchAll($fetchStyle = null, $columnIndex = null, array $ctorArgs = null)
+    public function fetchAll($fetchMode = null, $fetchArgument = null, $ctorArgs = null)
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**
@@ -44,8 +47,10 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
      */
     public function fetchColumn($columnNumber = 0)
     {
-        $row = current($this->_resultSet);
-        if ( ! is_array($row)) return false;
+        $row = current($this->resultSet);
+        if ( ! is_array($row)) {
+            return false;
+        }
         $val = array_shift($row);
         return $val !== null ? $val : false;
     }
@@ -53,10 +58,10 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function fetch($fetchStyle = null)
+    public function fetch($fetchStyle = null, $cursorOrientation = \PDO::FETCH_ORI_NEXT, $cursorOffset = 0)
     {
-        $current = current($this->_resultSet);
-        next($this->_resultSet);
+        $current = current($this->resultSet);
+        next($this->resultSet);
         return $current;
     }
 
@@ -106,7 +111,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
     /**
      * {@inheritdoc}
      */
-    public function execute($params = array())
+    public function execute($params = null)
     {
     }
 
@@ -122,7 +127,7 @@ class HydratorMockStatement implements \IteratorAggregate, \Doctrine\DBAL\Driver
      */
     public function getIterator()
     {
-        return $this->_resultSet;
+        return $this->resultSet;
     }
 
     /**

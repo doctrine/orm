@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\Tests\Models\GeoNames\Country;
 use Doctrine\Tests\Models\GeoNames\Admin1;
 use Doctrine\Tests\Models\GeoNames\Admin1AlternateName;
+use Doctrine\Tests\Models\GeoNames\Country;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctionalTestCase
 {
@@ -21,17 +23,17 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
         $this->useModelSet('geonames');
         parent::setUp();
 
-        $this->cache = $this->_em->getCache();
+        $this->cache = $this->em->getCache();
 
         $it = new Country("IT", "Italy");
 
-        $this->_em->persist($it);
-        $this->_em->flush();
+        $this->em->persist($it);
+        $this->em->flush();
 
         $admin1 = new Admin1(1, "Rome", $it);
 
-        $this->_em->persist($admin1);
-        $this->_em->flush();
+        $this->em->persist($admin1);
+        $this->em->flush();
 
         $name1 = new Admin1AlternateName(1, "Roma", $admin1);
         $name2 = new Admin1AlternateName(2, "Rome", $admin1);
@@ -39,37 +41,36 @@ class SecondLevelCacheCompositePrimaryKeyWithAssociationsTest extends OrmFunctio
         $admin1->names[] = $name1;
         $admin1->names[] = $name2;
 
-        $this->_em->persist($admin1);
-        $this->_em->persist($name1);
-        $this->_em->persist($name2);
+        $this->em->persist($admin1);
+        $this->em->persist($name1);
+        $this->em->persist($name2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
         $this->evictRegions();
-
     }
 
     public function testFindByReturnsCachedEntity()
     {
-        $admin1Repo = $this->_em->getRepository('Doctrine\Tests\Models\GeoNames\Admin1');
+        $admin1Repo = $this->em->getRepository(Admin1::class);
 
         $queries = $this->getCurrentQueryCount();
 
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        $this->assertEquals("Italy", $admin1Rome->country->name);
-        $this->assertEquals(2, count($admin1Rome->names));
-        $this->assertEquals($queries + 3, $this->getCurrentQueryCount());
+        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertCount(2, $admin1Rome->names);
+        self::assertEquals($queries + 3, $this->getCurrentQueryCount());
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $queries = $this->getCurrentQueryCount();
 
-        $admin1Rome = $admin1Repo->findOneBy(array('country' => 'IT', 'id' => 1));
+        $admin1Rome = $admin1Repo->findOneBy(['country' => 'IT', 'id' => 1]);
 
-        $this->assertEquals("Italy", $admin1Rome->country->name);
-        $this->assertEquals(2, count($admin1Rome->names));
-        $this->assertEquals($queries, $this->getCurrentQueryCount());
+        self::assertEquals("Italy", $admin1Rome->country->name);
+        self::assertCount(2, $admin1Rome->names);
+        self::assertEquals($queries, $this->getCurrentQueryCount());
     }
 
     private function evictRegions()

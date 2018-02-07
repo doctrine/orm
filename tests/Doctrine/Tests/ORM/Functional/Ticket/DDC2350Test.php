@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
@@ -14,10 +17,12 @@ class DDC2350Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2350Bug'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC2350User::class),
+            $this->em->getClassMetadata(DDC2350Bug::class),
+            ]
+        );
     }
 
     public function testEagerCollectionsAreOnlyRetrievedOnce()
@@ -28,42 +33,42 @@ class DDC2350Test extends OrmFunctionalTestCase
         $bug2 = new DDC2350Bug();
         $bug2->user = $user;
 
-        $this->_em->persist($user);
-        $this->_em->persist($bug1);
-        $this->_em->persist($bug2);
-        $this->_em->flush();
+        $this->em->persist($user);
+        $this->em->persist($bug1);
+        $this->em->persist($bug2);
+        $this->em->flush();
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $cnt = $this->getCurrentQueryCount();
-        $user = $this->_em->find(__NAMESPACE__ . '\DDC2350User', $user->id);
+        $user = $this->em->find(DDC2350User::class, $user->id);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        self::assertEquals($cnt + 1, $this->getCurrentQueryCount());
 
-        $this->assertEquals(2, count($user->reportedBugs));
+        self::assertCount(2, $user->reportedBugs);
 
-        $this->assertEquals($cnt + 1, $this->getCurrentQueryCount());
+        self::assertEquals($cnt + 1, $this->getCurrentQueryCount());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2350User
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @OneToMany(targetEntity="DDC2350Bug", mappedBy="user", fetch="EAGER") */
+    /** @ORM\OneToMany(targetEntity=DDC2350Bug::class, mappedBy="user", fetch="EAGER") */
     public $reportedBugs;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2350Bug
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @ManyToOne(targetEntity="DDC2350User", inversedBy="reportedBugs") */
+    /** @ORM\ManyToOne(targetEntity=DDC2350User::class, inversedBy="reportedBugs") */
     public $user;
 }

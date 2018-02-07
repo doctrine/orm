@@ -11,9 +11,8 @@ request and can greatly improve performance.
     "If you care about performance and don't use a bytecode
     cache then you don't really care about performance. Please get one
     and start using it."
-    
-    *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
+    *Stas Malyshev, Core Contributor to PHP and Zend Employee*
 
 Metadata and Query caches
 -------------------------
@@ -54,15 +53,13 @@ Temporarily change fetch mode in DQL
 
 See :ref:`Doctrine Query Language chapter <dql-temporarily-change-fetch-mode>`
 
-
 Apply Best Practices
 --------------------
 
 A lot of the points mentioned in the Best Practices chapter will
 also positively affect the performance of Doctrine.
 
-
 Change Tracking policies
 ------------------------
 
-See: :doc:`Change Tracking Policies <reference/change-tracking-policies>`
+See: :doc:`Change Tracking Policies <change-tracking-policies>`

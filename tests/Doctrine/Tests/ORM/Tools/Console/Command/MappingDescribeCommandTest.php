@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\MappingDescribeCommand;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
+use Doctrine\Tests\Models\Cache\AttractionInfo;
 use Doctrine\Tests\OrmFunctionalTestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -36,28 +39,26 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
         parent::setUp();
 
         $this->application = new Application();
-        $command = new MappingDescribeCommand();
-
-        $this->application->setHelperSet(new HelperSet(array(
-            'em' => new EntityManagerHelper($this->_em)
-        )));
-
-        $this->application->add($command);
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
+        $this->application->add(new MappingDescribeCommand());
 
         $this->command = $this->application->find('orm:mapping:describe');
-        $this->tester = new CommandTester($command);
+        $this->tester  = new CommandTester($this->command);
     }
 
     public function testShowSpecificFuzzySingle()
     {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionInfo',
-        ));
+        $this->tester->execute(
+            [
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionInfo',
+            ]
+        );
 
         $display = $this->tester->getDisplay();
-        $this->assertContains('Doctrine\Tests\Models\Cache\AttractionInfo', $display);
-        $this->assertContains('Root entity name', $display);
+
+        self::assertContains(AttractionInfo::class, $display);
+        self::assertContains('Root entity name', $display);
     }
 
     /**
@@ -66,10 +67,12 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      */
     public function testShowSpecificFuzzyAmbiguous()
     {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'Attraction',
-        ));
+        $this->tester->execute(
+            [
+                'command'    => $this->command->getName(),
+                'entityName' => 'Attraction',
+            ]
+        );
     }
 
     /**
@@ -78,10 +81,11 @@ class MappingDescribeCommandTest extends OrmFunctionalTestCase
      */
     public function testShowSpecificNotFound()
     {
-        $this->tester->execute(array(
-            'command' => $this->command->getName(),
-            'entityName' => 'AttractionFooBar'
-        ));
+        $this->tester->execute(
+            [
+                'command'    => $this->command->getName(),
+                'entityName' => 'AttractionFooBar',
+            ]
+        );
     }
 }
-

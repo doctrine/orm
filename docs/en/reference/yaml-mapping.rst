@@ -8,7 +8,6 @@ The YAML mapping document of a class is loaded on-demand the first
 time it is requested and subsequently stored in the metadata cache.
 In order to work, this requires certain conventions:
 
-
 -  Each entity/mapped superclass must get its own dedicated YAML
    mapping document.
 -  The name of the mapping document must consist of the fully
@@ -114,7 +113,7 @@ of several common elements:
         phonenumbers:
           targetEntity: Phonenumber
           mappedBy: user
-          cascade: ["persist", "merge"]
+          cascade: ["persist", "refresh"]
       manyToMany:
         groups:
           targetEntity: Group

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3293;
 
 class DDC3293UserPrefixed
@@ -10,7 +12,7 @@ class DDC3293UserPrefixed
     protected $id;
 
     /**
-     * @var Doctrine\Tests\Models\DDC3293\DDC3293Address
+     * @var \Doctrine\Tests\Models\DDC3293\DDC3293Address
      */
     protected $address;
 }

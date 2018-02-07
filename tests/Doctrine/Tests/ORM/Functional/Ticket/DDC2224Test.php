@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Query;
 
 /**
@@ -14,17 +17,18 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public static function setUpBeforeClass()
     {
-        \Doctrine\DBAL\Types\Type::addType('DDC2224Type', __NAMESPACE__ . '\DDC2224Type');
+        Type::addType('DDC2224Type', DDC2224Type::class);
     }
 
     public function testIssue()
     {
         $dql = 'SELECT e FROM ' . __NAMESPACE__ . '\DDC2224Entity e WHERE e.field = :field';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setQueryCacheDriver(new ArrayCache());
 
         $query->setParameter('field', 'test', 'DDC2224Type');
-        $this->assertStringEndsWith('.field = FUNCTION(?)', $query->getSQL());
+
+        self::assertStringEndsWith('."field" = FUNCTION(?)', $query->getSQL());
 
         return $query;
     }
@@ -35,7 +39,8 @@ class DDC2224Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCacheMissWhenTypeChanges(Query $query)
     {
         $query->setParameter('field', 'test', 'string');
-        $this->assertStringEndsWith('.field = ?', $query->getSQL());
+
+        self::assertStringEndsWith('."field" = ?', $query->getSQL());
     }
 }
 
@@ -72,17 +77,17 @@ class DDC2224Type extends Type
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2224Entity
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     public $id;
 
     /**
-     * @Column(type="DDC2224Type")
+     * @ORM\Column(type="DDC2224Type")
      */
     public $field;
 }

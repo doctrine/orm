@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ConversionException;
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2984
@@ -15,18 +18,20 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        
+
         if ( ! Type::hasType('ddc2984_domain_user_id')) {
             Type::addType(
-                'ddc2984_domain_user_id', 
-                __NAMESPACE__ . '\DDC2984UserIdCustomDbalType'
+                'ddc2984_domain_user_id',
+                DDC2984UserIdCustomDbalType::class
             );
         }
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2984User'),
-            ));
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC2984User::class),
+                ]
+            );
         } catch (\Exception $e) {
             // no action needed - schema seems to be already in place
         }
@@ -36,39 +41,39 @@ class DDC2984Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $user = new DDC2984User(new DDC2984DomainUserId('unique_id_within_a_vo'));
         $user->applyName('Alex');
-        
-        $this->_em->persist($user);
-        $this->_em->flush($user);
-        
-        $repository = $this->_em->getRepository(__NAMESPACE__ . "\DDC2984User");
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $repository = $this->em->getRepository(__NAMESPACE__ . "\DDC2984User");
 
         $sameUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
         //Until know, everything works as expected
-        $this->assertTrue($user->sameIdentityAs($sameUser));
+        self::assertTrue($user->sameIdentityAs($sameUser));
 
-        $this->_em->clear();
+        $this->em->clear();
 
         //After clearing the identity map, the UnitOfWork produces the warning described in DDC-2984
         $equalUser = $repository->find(new DDC2984DomainUserId('unique_id_within_a_vo'));
 
-        $this->assertNotSame($user, $equalUser);
-        $this->assertTrue($user->sameIdentityAs($equalUser));
+        self::assertNotSame($user, $equalUser);
+        self::assertTrue($user->sameIdentityAs($equalUser));
     }
 }
 
-/** @Entity @Table(name="users") */
+/** @ORM\Entity @ORM\Table(name="users") */
 class DDC2984User
 {
     /**
-     * @Id @Column(type="ddc2984_domain_user_id")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id @ORM\Column(type="ddc2984_domain_user_id")
+     * @ORM\GeneratedValue(strategy="NONE")
      *
      * @var DDC2984DomainUserId
      */
     private $userId;
 
-    /** @Column(type="string", length=50) */
+    /** @ORM\Column(type="string", length=50) */
     private $name;
 
     public function __construct(DDC2984DomainUserId $aUserId)
@@ -154,7 +159,7 @@ class DDC2984DomainUserId
     {
         return $this->toString() === $other->toString();
     }
-} 
+}
 
 /**
  * Class DDC2984UserIdCustomDbalType
@@ -196,4 +201,4 @@ class DDC2984UserIdCustomDbalType extends StringType
 
         return $value->toString();
     }
-} 
+}

@@ -1,33 +1,15 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Decorator;
 
-use Doctrine\ORM\Query\ResultSetMapping;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\ResultSetMapping;
 
 /**
  * Base class for EntityManager decorators
- *
- * @since   2.4
- * @author  Lars Strojny <lars@strojny.net
  */
 abstract class EntityManagerDecorator extends ObjectManagerDecorator implements EntityManagerInterface
 {
@@ -36,9 +18,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     protected $wrapped;
 
-    /**
-     * @param EntityManagerInterface $wrapped
-     */
     public function __construct(EntityManagerInterface $wrapped)
     {
         $this->wrapped = $wrapped;
@@ -63,15 +42,23 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function beginTransaction()
+    public function getIdentifierFlattener()
     {
-        return $this->wrapped->beginTransaction();
+        return $this->wrapped->getIdentifierFlattener();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function transactional($func)
+    public function beginTransaction()
+    {
+        $this->wrapped->beginTransaction();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function transactional(callable $func)
     {
         return $this->wrapped->transactional($func);
     }
@@ -81,7 +68,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function commit()
     {
-        return $this->wrapped->commit();
+        $this->wrapped->commit();
     }
 
     /**
@@ -89,7 +76,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function rollback()
     {
-        return $this->wrapped->rollback();
+        $this->wrapped->rollback();
     }
 
     /**
@@ -98,14 +85,6 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     public function createQuery($dql = '')
     {
         return $this->wrapped->createQuery($dql);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function createNamedQuery($name)
-    {
-        return $this->wrapped->createNamedQuery($name);
     }
 
     /**
@@ -153,15 +132,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function close()
     {
-        return $this->wrapped->close();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function copy($entity, $deep = false)
-    {
-        return $this->wrapped->copy($entity, $deep);
+        $this->wrapped->close();
     }
 
     /**
@@ -169,7 +140,7 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
      */
     public function lock($entity, $lockMode, $lockVersion = null)
     {
-        return $this->wrapped->lock($entity, $lockMode, $lockVersion);
+        $this->wrapped->lock($entity, $lockMode, $lockVersion);
     }
 
     /**
@@ -183,9 +154,9 @@ abstract class EntityManagerDecorator extends ObjectManagerDecorator implements 
     /**
      * {@inheritdoc}
      */
-    public function flush($entity = null)
+    public function flush()
     {
-        return $this->wrapped->flush($entity);
+        $this->wrapped->flush();
     }
 
     /**

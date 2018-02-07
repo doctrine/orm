@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\Tests\OrmFunctionalTestCase;
@@ -37,10 +39,10 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
 
     static public function dataProviderCacheValues()
     {
-        return array(
-            array(new CacheKeyMock('key.1'), new CacheEntryMock(array('id'=>1, 'name' => 'bar'))),
-            array(new CacheKeyMock('key.2'), new CacheEntryMock(array('id'=>2, 'name' => 'foo'))),
-        );
+        return [
+            [new CacheKeyMock('key.1'), new CacheEntryMock(['id'=>1, 'name' => 'bar'])],
+            [new CacheKeyMock('key.2'), new CacheEntryMock(['id'=>2, 'name' => 'foo'])],
+        ];
     }
 
     /**
@@ -48,19 +50,19 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
      */
     public function testPutGetContainsEvict($key, $value)
     {
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
 
         $this->region->put($key, $value);
 
-        $this->assertTrue($this->region->contains($key));
+        self::assertTrue($this->region->contains($key));
 
         $actual = $this->region->get($key);
 
-        $this->assertEquals($value, $actual);
-        
+        self::assertEquals($value, $actual);
+
         $this->region->evict($key);
 
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
     }
 
     public function testEvictAll()
@@ -68,18 +70,18 @@ abstract class AbstractRegionTest extends OrmFunctionalTestCase
         $key1 = new CacheKeyMock('key.1');
         $key2 = new CacheKeyMock('key.2');
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
 
-        $this->region->put($key1, new CacheEntryMock(array('value' => 'foo')));
-        $this->region->put($key2, new CacheEntryMock(array('value' => 'bar')));
+        $this->region->put($key1, new CacheEntryMock(['value' => 'foo']));
+        $this->region->put($key2, new CacheEntryMock(['value' => 'bar']));
 
-        $this->assertTrue($this->region->contains($key1));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertTrue($this->region->contains($key1));
+        self::assertTrue($this->region->contains($key2));
 
         $this->region->evictAll();
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
     }
 }

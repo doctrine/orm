@@ -1,21 +1,6 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
@@ -23,9 +8,6 @@ namespace Doctrine\ORM;
  * Container for all ORM events.
  *
  * This class cannot be instantiated.
- *
- * @author Roman Borschel <roman@code-factory.org>
- * @since 2.0
  */
 final class Events
 {
@@ -44,7 +26,7 @@ final class Events
      *
      * @var string
      */
-    const preRemove = 'preRemove';
+    public const preRemove = 'preRemove';
 
     /**
      * The postRemove event occurs for an entity after the entity has
@@ -54,7 +36,7 @@ final class Events
      *
      * @var string
      */
-    const postRemove = 'postRemove';
+    public const postRemove = 'postRemove';
 
     /**
      * The prePersist event occurs for a given entity before the respective
@@ -64,7 +46,7 @@ final class Events
      *
      * @var string
      */
-    const prePersist = 'prePersist';
+    public const prePersist = 'prePersist';
 
     /**
      * The postPersist event occurs for an entity after the entity has
@@ -75,7 +57,7 @@ final class Events
      *
      * @var string
      */
-    const postPersist = 'postPersist';
+    public const postPersist = 'postPersist';
 
     /**
      * The preUpdate event occurs before the database update operations to
@@ -85,7 +67,7 @@ final class Events
      *
      * @var string
      */
-    const preUpdate = 'preUpdate';
+    public const preUpdate = 'preUpdate';
 
     /**
      * The postUpdate event occurs after the database update operations to
@@ -95,7 +77,7 @@ final class Events
      *
      * @var string
      */
-    const postUpdate = 'postUpdate';
+    public const postUpdate = 'postUpdate';
 
     /**
      * The postLoad event occurs for an entity after the entity has been loaded
@@ -110,15 +92,15 @@ final class Events
      *
      * @var string
      */
-    const postLoad = 'postLoad';
+    public const postLoad = 'postLoad';
 
     /**
      * The loadClassMetadata event occurs after the mapping metadata for a class
-     * has been loaded from a mapping source (annotations/xml/yaml).
+     * has been loaded from a mapping source (annotations/xml).
      *
      * @var string
      */
-    const loadClassMetadata = 'loadClassMetadata';
+    public const loadClassMetadata = 'loadClassMetadata';
 
     /**
      * The onClassMetadataNotFound event occurs whenever loading metadata for a class
@@ -126,14 +108,14 @@ final class Events
      *
      * @var string
      */
-    const onClassMetadataNotFound = 'onClassMetadataNotFound';
+    public const onClassMetadataNotFound = 'onClassMetadataNotFound';
 
     /**
      * The preFlush event occurs when the EntityManager#flush() operation is invoked,
      * but before any changes to managed entities have been calculated. This event is
      * always raised right after EntityManager#flush() call.
      */
-    const preFlush = 'preFlush';
+    public const preFlush = 'preFlush';
 
     /**
      * The onFlush event occurs when the EntityManager#flush() operation is invoked,
@@ -144,7 +126,7 @@ final class Events
      *
      * @var string
      */
-    const onFlush = 'onFlush';
+    public const onFlush = 'onFlush';
 
     /**
      * The postFlush event occurs when the EntityManager#flush() operation is invoked and
@@ -155,7 +137,7 @@ final class Events
      *
      * @var string
      */
-    const postFlush = 'postFlush';
+    public const postFlush = 'postFlush';
 
     /**
      * The onClear event occurs when the EntityManager#clear() operation is invoked,
@@ -163,5 +145,5 @@ final class Events
      *
      * @var string
      */
-    const onClear = 'onClear';
+    public const onClear = 'onClear';
 }

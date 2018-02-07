@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\ORM\Query;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2494
@@ -23,65 +25,65 @@ class DDC3192Test extends \Doctrine\Tests\OrmFunctionalTestCase
             );
         }
 
-        Type::addType('ddc3192_currency_code', __NAMESPACE__ . '\DDC3192CurrencyCode');
+        Type::addType('ddc3192_currency_code', DDC3192CurrencyCode::class);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(DDC3192Currency::CLASSNAME),
-            $this->_em->getClassMetadata(DDC3192Transaction::CLASSNAME),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC3192Currency::class),
+            $this->em->getClassMetadata(DDC3192Transaction::class),
+            ]
+        );
     }
 
     public function testIssue()
     {
         $currency = new DDC3192Currency('BYR');
 
-        $this->_em->persist($currency);
-        $this->_em->flush();
+        $this->em->persist($currency);
+        $this->em->flush();
 
         $amount = 50;
         $transaction = new DDC3192Transaction($amount, $currency);
 
-        $this->_em->persist($transaction);
-        $this->_em->flush();
-        $this->_em->close();
+        $this->em->persist($transaction);
+        $this->em->flush();
+        $this->em->close();
 
-        $resultByPersister = $this->_em->find(DDC3192Transaction::CLASSNAME, $transaction->id);
+        $resultByPersister = $this->em->find(DDC3192Transaction::class, $transaction->id);
 
         // This works: DDC2494 makes persister set type mapping info to ResultSetMapping
-        $this->assertEquals('BYR', $resultByPersister->currency->code);
+        self::assertEquals('BYR', $resultByPersister->currency->code);
 
-        $this->_em->close();
+        $this->em->close();
 
-        $query = $this->_em->createQuery();
-        $query->setDQL('SELECT t FROM ' . DDC3192Transaction::CLASSNAME . ' t WHERE t.id = ?1');
+        $query = $this->em->createQuery();
+        $query->setDQL('SELECT t FROM ' . DDC3192Transaction::class . ' t WHERE t.id = ?1');
         $query->setParameter(1, $transaction->id);
 
         $resultByQuery = $query->getSingleResult();
 
         // This is fixed here: before the fix it used to return 974.
         // because unlike the BasicEntityPersister, SQLWalker doesn't set type info
-        $this->assertEquals('BYR', $resultByQuery->currency->code);
+        self::assertEquals('BYR', $resultByQuery->currency->code);
     }
 }
 
 /**
- * @Table(name="ddc3192_currency")
- * @Entity
+ * @ORM\Table(name="ddc3192_currency")
+ * @ORM\Entity
  */
 class DDC3192Currency
 {
-    const CLASSNAME = __CLASS__;
-
     /**
-     * @Id
-     * @Column(type="ddc3192_currency_code")
+     * @ORM\Id
+     * @ORM\Column(type="ddc3192_currency_code")
      */
     public $code;
 
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @OneToMany(targetEntity="DDC3192Transaction", mappedBy="currency")
+     * @ORM\OneToMany(targetEntity=DDC3192Transaction::class, mappedBy="currency")
      */
     public $transactions;
 
@@ -92,32 +94,30 @@ class DDC3192Currency
 }
 
 /**
- * @Table(name="ddc3192_transaction")
- * @Entity
+ * @ORM\Table(name="ddc3192_transaction")
+ * @ORM\Entity
  */
 class DDC3192Transaction
 {
-    const CLASSNAME = __CLASS__;
-
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     public $id;
 
     /**
      * @var int
      *
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $amount;
 
     /**
      * @var \Doctrine\Tests\ORM\Functional\Ticket\DDC3192Currency
      *
-     * @ManyToOne(targetEntity="DDC3192Currency", inversedBy="transactions")
-     * @JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC3192Currency::class, inversedBy="transactions")
+     * @ORM\JoinColumn(name="currency_id", referencedColumnName="code", nullable=false)
      */
     public $currency;
 
@@ -130,9 +130,9 @@ class DDC3192Transaction
 
 class DDC3192CurrencyCode extends Type
 {
-    private static $map = array(
+    private static $map = [
         'BYR' => 974,
-    );
+    ];
 
     /**
      * {@inheritdoc}
@@ -155,7 +155,7 @@ class DDC3192CurrencyCode extends Type
      */
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
-        return array_search($value, self::$map);
+        return array_search((int) $value, self::$map, true);
     }
 
     /**

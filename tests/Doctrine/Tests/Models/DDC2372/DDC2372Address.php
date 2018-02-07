@@ -1,18 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2372;
 
-/** @Entity @Table(name="addresses") */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity @ORM\Table(name="addresses") */
 class DDC2372Address
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    /** @Column(type="string", length=255) */
+
+    /** @ORM\Column(type="string", length=255) */
     private $street;
-    /** @OneToOne(targetEntity="User", mappedBy="address") */
+
+    /** @ORM\OneToOne(targetEntity=User::class, mappedBy="address") */
     private $user;
 
     public function getId()

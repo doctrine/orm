@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\Tests\OrmFunctionalTestCase;
-use Doctrine\ORM\Tools\SchemaTool;
 
 class DDC2138Test extends OrmFunctionalTestCase
 {
@@ -13,73 +15,76 @@ class DDC2138Test extends OrmFunctionalTestCase
      */
     public function testForeignKeyOnSTIWithMultipleMapping()
     {
-        $em = $this->_em;
-        $schemaTool = new SchemaTool($em);
-
-        $classes = array(
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138User'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138Structure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedObject'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedStructure'),
-            $em->getClassMetadata(__NAMESPACE__ . '\DDC2138UserFollowedUser')
+        $schema = $this->schemaTool->getSchemaFromMetadata(
+            [
+                $this->em->getClassMetadata(DDC2138User::class),
+                $this->em->getClassMetadata(DDC2138Structure::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedObject::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedStructure::class),
+                $this->em->getClassMetadata(DDC2138UserFollowedUser::class)
+            ]
         );
 
-        $schema = $schemaTool->getSchemaFromMetadata($classes);
-        $this->assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
+        self::assertTrue($schema->hasTable('users_followed_objects'), "Table users_followed_objects should exist.");
 
         /* @var $table \Doctrine\DBAL\Schema\Table */
         $table = ($schema->getTable('users_followed_objects'));
-        $this->assertTrue($table->columnsAreIndexed(array('object_id')));
-        $this->assertTrue($table->columnsAreIndexed(array('user_id')));
+
+        self::assertTrue($table->columnsAreIndexed(['object_id']));
+        self::assertTrue($table->columnsAreIndexed(['user_id']));
+
         $foreignKeys = $table->getForeignKeys();
-        $this->assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
+
+        self::assertCount(1, $foreignKeys, 'user_id column has to have FK, but not object_id');
 
         /* @var $fk \Doctrine\DBAL\Schema\ForeignKeyConstraint */
         $fk = reset($foreignKeys);
-        $this->assertEquals('users', $fk->getForeignTableName());
+
+        self::assertEquals('users', $fk->getForeignTableName());
 
         $localColumns = $fk->getLocalColumns();
-        $this->assertContains('user_id', $localColumns);
-        $this->assertCount(1, $localColumns);
+
+        self::assertContains('"user_id"', $localColumns);
+        self::assertCount(1, $localColumns);
     }
 }
 
 
 
 /**
- * @Table(name="structures")
- * @Entity
+ * @ORM\Table(name="structures")
+ * @ORM\Entity
  */
 class DDC2138Structure
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(type="string", length=32, nullable=true)
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $name;
 }
 
 /**
- * @Entity
- * @Table(name="users_followed_objects")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="object_type", type="smallint")
- * @DiscriminatorMap({4 = "DDC2138UserFollowedUser", 3 = "DDC2138UserFollowedStructure"})
+ * @ORM\Entity
+ * @ORM\Table(name="users_followed_objects")
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="object_type", type="smallint")
+ * @ORM\DiscriminatorMap({4 = DDC2138UserFollowedUser::class, 3 = DDC2138UserFollowedStructure::class})
  */
 abstract class DDC2138UserFollowedObject
 {
     /**
      * @var int $id
      *
-     * @Column(name="id", type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -95,20 +100,20 @@ abstract class DDC2138UserFollowedObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedStructures")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC2138User::class, inversedBy="followedStructures")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     protected $user;
 
     /**
-     * @ManyToOne(targetEntity="DDC2138Structure")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC2138Structure::class)
+     * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
      * @var Structure $followedStructure
      */
     private $followedStructure;
@@ -126,7 +131,6 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
     }
 
     /**
-     *
      * @return User
      */
     public function getUser()
@@ -146,20 +150,20 @@ class DDC2138UserFollowedStructure extends DDC2138UserFollowedObject
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
 {
     /**
-     * @ManyToOne(targetEntity="DDC2138User", inversedBy="followedUsers")
-     * @JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC2138User::class, inversedBy="followedUsers")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     protected $user;
 
     /**
-     * @ManyToOne(targetEntity="DDC2138User")
-     * @JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity=DDC2138User::class)
+     * @ORM\JoinColumn(name="object_id", referencedColumnName="id", nullable=false)
      * @var User $user
      */
     private $followedUser;
@@ -194,36 +198,35 @@ class DDC2138UserFollowedUser extends DDC2138UserFollowedObject
     {
         return $this->followedUser;
     }
-
 }
 
 /**
- * @Table(name="users")
- * @Entity
+ * @ORM\Table(name="users")
+ * @ORM\Entity
  */
 class DDC2138User
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @Column(type="string", length=32, nullable=true)
+     * @ORM\Column(type="string", length=32, nullable=true)
      */
     protected $name;
 
     /**
      * @var ArrayCollection $followedUsers
-     * @OneToMany(targetEntity="DDC2138UserFollowedUser", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=DDC2138UserFollowedUser::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     protected $followedUsers;
 
     /**
      * @var ArrayCollection $followedStructures
-     * @OneToMany(targetEntity="DDC2138UserFollowedStructure", mappedBy="user", cascade={"persist"}, orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=DDC2138UserFollowedStructure::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     protected $followedStructures;
 

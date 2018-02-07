@@ -4,8 +4,8 @@ Caching
 Doctrine provides cache drivers in the ``Common`` package for some
 of the most popular caching implementations such as APC, Memcache
 and Xcache. We also provide an ``ArrayCache`` driver which stores
-the data in a PHP array. Obviously, when using ``ArrayCache``, the 
-cache does not persist between requests, but this is useful for 
+the data in a PHP array. Obviously, when using ``ArrayCache``, the
+cache does not persist between requests, but this is useful for
 testing in a development environment.
 
 Cache Drivers
@@ -18,7 +18,6 @@ this interface.
 
 The interface defines the following public methods for you to implement:
 
-
 -  fetch($id) - Fetches an entry from the cache
 -  contains($id) - Test if an entry exists in the cache
 -  save($id, $data, $lifeTime = false) - Puts data into the cache for x seconds. 0 = infinite time
@@ -27,7 +26,6 @@ The interface defines the following public methods for you to implement:
 Each driver extends the ``CacheProvider`` class which defines a few
 abstract protected methods that each of the drivers must
 implement:
-
 
 -  \_doFetch($id)
 -  \_doContains($id)
@@ -63,6 +61,24 @@ by itself.
     $cacheDriver = new \Doctrine\Common\Cache\ApcCache();
     $cacheDriver->save('cache_id', 'my_data');
 
+APCu
+~~~~
+
+In order to use the APCu cache driver you must have it compiled and
+enabled in your php.ini. You can read about APCu
+`in the PHP Documentation <http://us2.php.net/apcu>`_. It will give
+you a little background information about what it is and how you
+can use it as well as how to install it.
+
+Below is a simple example of how you could use the APCu cache driver
+by itself.
+
+.. code-block:: php
+
+    <?php
+    $cacheDriver = new \Doctrine\Common\Cache\ApcuCache();
+    $cacheDriver->save('cache_id', 'my_data');
+
 Memcache
 ~~~~~~~~
 
@@ -80,7 +96,7 @@ driver by itself.
     <?php
     $memcache = new Memcache();
     $memcache->connect('memcache_host', 11211);
-    
+
     $cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
     $cacheDriver->setMemcache($memcache);
     $cacheDriver->save('cache_id', 'my_data');
@@ -105,7 +121,7 @@ driver by itself.
     <?php
     $memcached = new Memcached();
     $memcached->addServer('memcache_host', 11211);
-    
+
     $cacheDriver = new \Doctrine\Common\Cache\MemcachedCache();
     $cacheDriver->setMemcached($memcached);
     $cacheDriver->save('cache_id', 'my_data');
@@ -154,7 +170,7 @@ Using Cache Drivers
 -------------------
 
 In this section we'll describe how you can fully utilize the API of
-the cache drivers to save data to a cache, check if some cached data 
+the cache drivers to save data to a cache, check if some cached data
 exists, fetch the cached data and delete the cached data. We'll use the
 ``ArrayCache`` implementation as our example here.
 
@@ -176,7 +192,6 @@ Saving some data to the cache driver is as simple as using the
 
 The ``save()`` method accepts three arguments which are described
 below:
-
 
 -  ``$id`` - The cache id
 -  ``$data`` - The cache entry/data.
@@ -227,7 +242,7 @@ Deleting
 ~~~~~~~~
 
 As you might guess, deleting is just as easy as saving, checking
-and fetching. You can delete by an individual ID, or you can 
+and fetching. You can delete by an individual ID, or you can
 delete all entries.
 
 By Cache ID
@@ -287,20 +302,19 @@ use on your ORM configuration.
 
     <?php
     $config = new \Doctrine\ORM\Configuration();
-    $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setQueryCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Result Cache
 ~~~~~~~~~~~~
 
 The result cache can be used to cache the results of your queries
-so that we don't have to query the database or hydrate the data
-again after the first time. You just need to configure the result
-cache implementation.
+so that we don't have to query the database again after the first time.
+You just need to configure the result cache implementation.
 
 .. code-block:: php
 
     <?php
-    $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setResultCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Now when you're executing DQL queries you can configure them to use
 the result cache.
@@ -317,7 +331,7 @@ result cache driver.
 .. code-block:: php
 
     <?php
-    $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcCache());
+    $query->setResultCacheDriver(new \Doctrine\Common\Cache\ApcuCache());
 
 .. note::
 
@@ -329,7 +343,6 @@ result cache driver.
 
         <?php
         $query->useResultCache(false);
-
 
 If you want to set the time the cache has to live you can use the
 ``setResultCacheLifetime()`` method.
@@ -369,7 +382,7 @@ first.
 .. code-block:: php
 
     <?php
-    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcCache());
+    $config->setMetadataCacheImpl(new \Doctrine\Common\Cache\ApcuCache());
 
 Now the metadata information will only be parsed once and stored in
 the cache driver.
@@ -453,5 +466,4 @@ not letting your users' requests populate the cache.
 
 You can read more about cache slams
 `in this blog post <http://notmysock.org/blog/php/user-cache-timebomb.html>`_.
-
 

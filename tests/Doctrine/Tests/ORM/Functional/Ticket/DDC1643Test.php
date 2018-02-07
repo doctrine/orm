@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
+use Doctrine\Tests\Models\CMS\CmsUser;
 
 /**
  * @group DDC-1643
@@ -15,6 +18,7 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         $this->useModelSet('cms');
+
         parent::setUp();
 
         $user1 = new CmsUser();
@@ -32,15 +36,15 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->name = "Roman";
         $user2->status = "active";
 
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->persist($group1);
-        $this->_em->persist($group2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->persist($group1);
+        $this->em->persist($group2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->user1 = $this->_em->find(get_class($user1), $user1->id);
-        $this->user2 = $this->_em->find(get_class($user1), $user2->id);
+        $this->user1 = $this->em->find(get_class($user1), $user1->id);
+        $this->user2 = $this->em->find(get_class($user1), $user2->id);
     }
 
     public function testClonePersistentCollectionAndReuse()
@@ -49,12 +53,12 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user1->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
 
-        $this->assertEquals(2, count($user1->groups));
+        self::assertCount(2, $user1->groups);
     }
 
     public function testClonePersistentCollectionAndShare()
@@ -64,14 +68,14 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $user2->groups = clone $user1->groups;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(2, count($user1->groups));
-        $this->assertEquals(2, count($user2->groups));
+        self::assertCount(2, $user1->groups);
+        self::assertCount(2, $user2->groups);
     }
 
     public function testCloneThenDirtyPersistentCollection()
@@ -84,15 +88,15 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->groups = clone $user1->groups;
         $user2->groups->add($group3);
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(2, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(2, $user1->groups);
     }
 
     public function testNotCloneAndPassAroundFlush()
@@ -105,17 +109,16 @@ class DDC1643Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user2->groups = $user1->groups;
         $user2->groups->add($group3);
 
-        $this->assertEQuals(1, count($user1->groups->getInsertDiff()));
+        self::assertCount(1, $user1->groups->getInsertDiff());
 
-        $this->_em->persist($group3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($group3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user1 = $this->_em->find(get_class($user1), $user1->id);
-        $user2 = $this->_em->find(get_class($user1), $user2->id);
+        $user1 = $this->em->find(get_class($user1), $user1->id);
+        $user2 = $this->em->find(get_class($user1), $user2->id);
 
-        $this->assertEquals(3, count($user2->groups));
-        $this->assertEquals(3, count($user1->groups));
+        self::assertCount(3, $user2->groups);
+        self::assertCount(3, $user1->groups);
     }
 }
-

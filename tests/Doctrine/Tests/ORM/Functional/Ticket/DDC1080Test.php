@@ -1,19 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-1080
  */
-class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1080Test extends OrmFunctionalTestCase
 {
     public function testHydration()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080Bar'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1080FooBar'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+                $this->em->getClassMetadata(DDC1080Foo::class),
+                $this->em->getClassMetadata(DDC1080Bar::class),
+                $this->em->getClassMetadata(DDC1080FooBar::class),
+            ]
+        );
 
         $foo1 = new DDC1080Foo();
         $foo1->setFooTitle('foo title 1');
@@ -42,54 +49,54 @@ class DDC1080Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $foobar3->setBar($bar3);
         $foobar3->setOrderNr(0);
 
-        $this->_em->persist($foo1);
-        $this->_em->persist($foo2);
-        $this->_em->persist($bar1);
-        $this->_em->persist($bar2);
-        $this->_em->persist($bar3);
-        $this->_em->flush();
+        $this->em->persist($foo1);
+        $this->em->persist($foo2);
+        $this->em->persist($bar1);
+        $this->em->persist($bar2);
+        $this->em->persist($bar3);
+        $this->em->flush();
 
-        $this->_em->persist($foobar1);
-        $this->_em->persist($foobar2);
-        $this->_em->persist($foobar3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foobar1);
+        $this->em->persist($foobar2);
+        $this->em->persist($foobar3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $foo = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC1080Foo', $foo1->getFooId());
+        $foo = $this->em->find(DDC1080Foo::class, $foo1->getFooID());
+
         $fooBars = $foo->getFooBars();
 
-        $this->assertEquals(3, count($fooBars), "Should return three foobars.");
+        self::assertCount(3, $fooBars, "Should return three foobars.");
     }
 }
 
-
 /**
- * @Entity
- * @Table(name="foo")
+ * @ORM\Entity
+ * @ORM\Table(name="foo")
  */
 class DDC1080Foo
 {
+    /**
+     * @ORM\Id
+     * @ORM\Column(name="fooID", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $fooID;
 
     /**
-     * @Id
-     * @Column(name="fooID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="fooTitle", type="string")
      */
-    protected $_fooID;
+
+    protected $fooTitle;
     /**
-     * @Column(name="fooTitle", type="string")
+     * @ORM\OneToMany(targetEntity=DDC1080FooBar::class, mappedBy="foo", cascade={"persist"})
+     * @ORM\OrderBy({"orderNr"="ASC"})
      */
-    protected $_fooTitle;
-    /**
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_foo",
-     * cascade={"persist"})
-     * @OrderBy({"_orderNr"="ASC"})
-     */
-    protected $_fooBars;
+    protected $fooBars;
 
     public function __construct()
     {
-        $this->_fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooBars = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -97,7 +104,7 @@ class DDC1080Foo
      */
     public function getFooID()
     {
-        return $this->_fooID;
+        return $this->fooID;
     }
 
     /**
@@ -105,7 +112,7 @@ class DDC1080Foo
      */
     public function getFooTitle()
     {
-        return $this->_fooTitle;
+        return $this->fooTitle;
     }
 
     /**
@@ -113,7 +120,7 @@ class DDC1080Foo
      */
     public function getFooBars()
     {
-        return $this->_fooBars;
+        return $this->fooBars;
     }
 
     /**
@@ -121,7 +128,7 @@ class DDC1080Foo
      */
     public function setFooID($fooID)
     {
-        $this->_fooID = $fooID;
+        $this->fooID = $fooID;
     }
 
     /**
@@ -129,7 +136,7 @@ class DDC1080Foo
      */
     public function setFooTitle($fooTitle)
     {
-        $this->_fooTitle = $fooTitle;
+        $this->fooTitle = $fooTitle;
     }
 
     /**
@@ -137,37 +144,36 @@ class DDC1080Foo
      */
     public function setFooBars($fooBars)
     {
-        $this->_fooBars = $fooBars;
+        $this->fooBars = $fooBars;
     }
-
 }
 /**
- * @Entity
- * @Table(name="bar")
+ * @ORM\Entity
+ * @ORM\Table(name="bar")
  */
 class DDC1080Bar
 {
+    /**
+     * @ORM\Id
+     * @ORM\Column(name="barID", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $barID;
 
     /**
-     * @Id
-     * @Column(name="barID", type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="barTitle", type="string")
      */
-    protected $_barID;
+    protected $barTitle;
+
     /**
-     * @Column(name="barTitle", type="string")
+     * @ORM\OneToMany(targetEntity=DDC1080FooBar::class, mappedBy="bar", cascade={"persist"})
+     * @ORM\OrderBy({"orderNr"="ASC"})
      */
-    protected $_barTitle;
-    /**
-     * @OneToMany(targetEntity="DDC1080FooBar", mappedBy="_bar",
-     * cascade={"persist"})
-     * @OrderBy({"_orderNr"="ASC"})
-     */
-    protected $_fooBars;
+    protected $fooBars;
 
     public function __construct()
     {
-        $this->_fooBars = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->fooBars = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -175,7 +181,7 @@ class DDC1080Bar
      */
     public function getBarID()
     {
-        return $this->_barID;
+        return $this->barID;
     }
 
     /**
@@ -183,7 +189,7 @@ class DDC1080Bar
      */
     public function getBarTitle()
     {
-        return $this->_barTitle;
+        return $this->barTitle;
     }
 
     /**
@@ -191,7 +197,7 @@ class DDC1080Bar
      */
     public function getFooBars()
     {
-        return $this->_fooBars;
+        return $this->fooBars;
     }
 
     /**
@@ -199,7 +205,7 @@ class DDC1080Bar
      */
     public function setBarID($barID)
     {
-        $this->_barID = $barID;
+        $this->barID = $barID;
     }
 
     /**
@@ -207,7 +213,7 @@ class DDC1080Bar
      */
     public function setBarTitle($barTitle)
     {
-        $this->_barTitle = $barTitle;
+        $this->barTitle = $barTitle;
     }
 
     /**
@@ -215,35 +221,33 @@ class DDC1080Bar
      */
     public function setFooBars($fooBars)
     {
-        $this->_fooBars = $fooBars;
+        $this->fooBars = $fooBars;
     }
-
 }
 
 /**
- * @Table(name="fooBar")
- * @Entity
+ * @ORM\Table(name="fooBar")
+ * @ORM\Entity
  */
 class DDC1080FooBar
 {
-
     /**
-     * @ManyToOne(targetEntity="DDC1080Foo")
-     * @JoinColumn(name="fooID", referencedColumnName="fooID")
-     * @Id
+     * @ORM\ManyToOne(targetEntity=DDC1080Foo::class)
+     * @ORM\JoinColumn(name="fooID", referencedColumnName="fooID")
+     * @ORM\Id
      */
-    protected $_foo = null;
+    protected $foo;
     /**
-     * @ManyToOne(targetEntity="DDC1080Bar")
-     * @JoinColumn(name="barID", referencedColumnName="barID")
-     * @Id
+     * @ORM\ManyToOne(targetEntity=DDC1080Bar::class)
+     * @ORM\JoinColumn(name="barID", referencedColumnName="barID")
+     * @ORM\Id
      */
-    protected $_bar = null;
+    protected $bar;
     /**
      * @var int orderNr
-     * @Column(name="orderNr", type="integer", nullable=false)
+     * @ORM\Column(name="orderNr", type="integer", nullable=false)
      */
-    protected $_orderNr = null;
+    protected $orderNr;
 
     /**
      * Retrieve the foo property
@@ -252,7 +256,7 @@ class DDC1080FooBar
      */
     public function getFoo()
     {
-        return $this->_foo;
+        return $this->foo;
     }
 
     /**
@@ -263,7 +267,8 @@ class DDC1080FooBar
      */
     public function setFoo($foo)
     {
-        $this->_foo = $foo;
+        $this->foo = $foo;
+
         return $this;
     }
 
@@ -274,7 +279,7 @@ class DDC1080FooBar
      */
     public function getBar()
     {
-        return $this->_bar;
+        return $this->bar;
     }
 
     /**
@@ -285,7 +290,8 @@ class DDC1080FooBar
      */
     public function setBar($bar)
     {
-        $this->_bar = $bar;
+        $this->bar = $bar;
+
         return $this;
     }
 
@@ -296,7 +302,7 @@ class DDC1080FooBar
      */
     public function getOrderNr()
     {
-        return $this->_orderNr;
+        return $this->orderNr;
     }
 
     /**
@@ -307,9 +313,8 @@ class DDC1080FooBar
      */
     public function setOrderNr($orderNr)
     {
-        $this->_orderNr = $orderNr;
+        $this->orderNr = $orderNr;
+
         return $this;
     }
-
 }
-

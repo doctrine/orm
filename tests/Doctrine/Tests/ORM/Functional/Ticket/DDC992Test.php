@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-992
@@ -13,13 +16,14 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Role'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Parent'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC992Child'),
-            ));
-        } catch(\Exception $e) {
-
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC992Role::class),
+                $this->em->getClassMetadata(DDC992Parent::class),
+                $this->em->getClassMetadata(DDC992Child::class),
+                ]
+            );
+        } catch (\Exception $e) {
         }
     }
 
@@ -33,16 +37,15 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $role->extendedBy[] = $child;
         $child->extends[] = $role;
 
-        $this->_em->persist($role);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($role);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
-        $child = $this->_em->getRepository(get_class($role))->find($child->roleID);
-        $parents = count($child->extends);
-        $this->assertEquals(1, $parents);
-        foreach ($child->extends AS $parent) {
-            $this->assertEquals($role->getRoleID(), $parent->getRoleID());
+        $child = $this->em->getRepository(get_class($role))->find($child->roleID);
+        self::assertCount(1, $child->extends);
+        foreach ($child->extends as $parent) {
+            self::assertEquals($role->getRoleID(), $parent->getRoleID());
         }
     }
 
@@ -53,50 +56,50 @@ class DDC992Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $child->parent = $parent;
         $parent->childs[] = $child;
 
-        $this->_em->persist($parent);
-        $this->_em->persist($child);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+        $this->em->clear();
 
-        $parentRepository = $this->_em->getRepository(get_class($parent));
-        $childRepository = $this->_em->getRepository(get_class($child));
+        $parentRepository = $this->em->getRepository(get_class($parent));
+        $childRepository = $this->em->getRepository(get_class($child));
 
         $parent = $parentRepository->find($parent->id);
-        $this->assertEquals(1, count($parent->childs));
-        $this->assertEquals(0, count($parent->childs[0]->childs()));
+        self::assertCount(1, $parent->childs);
+        self::assertCount(0, $parent->childs[0]->childs());
 
-        $child = $parentRepository->findOneBy(array("id" => $child->id));
-        $this->assertSame($parent->childs[0], $child);
+        $child = $parentRepository->findOneBy(["id" => $child->id]);
+        self::assertSame($parent->childs[0], $child);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $child = $parentRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
 
-        $this->_em->clear();
+        $this->em->clear();
 
         $child = $childRepository->find($child->id);
-        $this->assertEquals(0, count($child->childs));
+        self::assertCount(0, $child->childs);
     }
 }
 
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorMap({"child" = "DDC992Child", "parent" = "DDC992Parent"})
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorMap({"child" = DDC992Child::class, "parent" = DDC992Parent::class})
  */
 class DDC992Parent
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
-    /** @ManyToOne(targetEntity="DDC992Parent", inversedBy="childs") */
+    /** @ORM\ManyToOne(targetEntity=DDC992Parent::class, inversedBy="childs") */
     public $parent;
-    /** @OneToMany(targetEntity="DDC992Child", mappedBy="parent") */
+    /** @ORM\OneToMany(targetEntity=DDC992Child::class, mappedBy="parent") */
     public $childs;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC992Child extends DDC992Parent
 {
@@ -107,7 +110,7 @@ class DDC992Child extends DDC992Parent
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC992Role
 {
@@ -117,28 +120,29 @@ class DDC992Role
     }
 
     /**
-     *  @Id  @Column(name="roleID", type="integer")
-     *  @GeneratedValue(strategy="AUTO")
+     *  @ORM\Id  @ORM\Column(name="roleID", type="integer")
+     *  @ORM\GeneratedValue(strategy="AUTO")
      */
     public $roleID;
     /**
-     * @Column (name="name", type="string", length=45)
+     * @ORM\Column (name="name", type="string", length=45)
      */
     public $name;
     /**
-     * @ManyToMany (targetEntity="DDC992Role", mappedBy="extends")
+     * @ORM\ManyToMany (targetEntity=DDC992Role::class, mappedBy="extends")
      */
     public $extendedBy;
     /**
-     * @ManyToMany (targetEntity="DDC992Role", inversedBy="extendedBy")
-     * @JoinTable (name="RoleRelations",
-     *      joinColumns={@JoinColumn(name="roleID", referencedColumnName="roleID")},
-     *      inverseJoinColumns={@JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}
+     * @ORM\ManyToMany (targetEntity=DDC992Role::class, inversedBy="extendedBy")
+     * @ORM\JoinTable (name="RoleRelations",
+     *      joinColumns={@ORM\JoinColumn(name="roleID", referencedColumnName="roleID")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="extendsRoleID", referencedColumnName="roleID")}
      *      )
      */
     public $extends;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->extends = new ArrayCollection;
         $this->extendedBy = new ArrayCollection;
     }

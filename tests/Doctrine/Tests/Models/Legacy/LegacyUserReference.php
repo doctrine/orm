@@ -1,65 +1,69 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="legacy_users_reference")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_users_reference")
  */
 class LegacyUserReference
 {
     /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser", inversedBy="_references")
-     * @JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=LegacyUser::class, inversedBy="references")
+     * @ORM\JoinColumn(name="iUserIdSource", referencedColumnName="iUserId")
      */
-    private $_source;
+    private $source;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="LegacyUser")
-     * @JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=LegacyUser::class)
+     * @ORM\JoinColumn(name="iUserIdTarget", referencedColumnName="iUserId")
      */
-    private $_target;
+    private $target;
 
     /**
-     * @column(type="string", name="description")
+     * @ORM\Column(type="string", name="description")
      */
-    private $_description;
+    private $description;
 
     /**
-     * @column(type="datetime", name="created")
+     * @ORM\Column(type="datetime", name="created")
      */
-    private $_created;
+    private $created;
 
-    public function __construct($source, $target, $description)
+    public function __construct(LegacyUser $source, LegacyUser $target, $description)
     {
         $source->addReference($this);
         $target->addReference($this);
 
-        $this->_source = $source;
-        $this->_target = $target;
-        $this->_description = $description;
-        $this->_created = new \DateTime("now");
+        $this->source = $source;
+        $this->target = $target;
+        $this->description = $description;
+        $this->created = new \DateTime("now");
     }
 
     public function source()
     {
-        return $this->_source;
+        return $this->source;
     }
 
     public function target()
     {
-        return $this->_target;
+        return $this->target;
     }
 
     public function setDescription($desc)
     {
-        $this->_description = $desc;
+        $this->description = $desc;
     }
 
     public function getDescription()
     {
-        return $this->_description;
+        return $this->description;
     }
 }

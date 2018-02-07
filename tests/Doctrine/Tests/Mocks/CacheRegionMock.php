@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
 
 use Doctrine\ORM\Cache\CacheEntry;
@@ -13,8 +15,8 @@ use Doctrine\ORM\Cache\Region;
  */
 class CacheRegionMock implements Region
 {
-    public $calls   = array();
-    public $returns = array();
+    public $calls   = [];
+    public $returns = [];
     public $name;
 
     /**
@@ -50,7 +52,7 @@ class CacheRegionMock implements Region
      */
     public function getName()
     {
-        $this->calls[__FUNCTION__][] = array();
+        $this->calls[__FUNCTION__][] = [];
 
         return $this->name;
     }
@@ -60,7 +62,7 @@ class CacheRegionMock implements Region
      */
     public function contains(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         return $this->getReturn(__FUNCTION__, false);
     }
@@ -70,7 +72,7 @@ class CacheRegionMock implements Region
      */
     public function evict(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         return $this->getReturn(__FUNCTION__, true);
     }
@@ -80,7 +82,7 @@ class CacheRegionMock implements Region
      */
     public function evictAll()
     {
-        $this->calls[__FUNCTION__][] = array();
+        $this->calls[__FUNCTION__][] = [];
 
         return $this->getReturn(__FUNCTION__, true);
     }
@@ -90,7 +92,7 @@ class CacheRegionMock implements Region
      */
     public function get(CacheKey $key)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key);
+        $this->calls[__FUNCTION__][] = ['key' => $key];
 
         return $this->getReturn(__FUNCTION__, null);
     }
@@ -100,7 +102,7 @@ class CacheRegionMock implements Region
      */
     public function getMultiple(CollectionCacheEntry $collection)
     {
-        $this->calls[__FUNCTION__][] = array('collection' => $collection);
+        $this->calls[__FUNCTION__][] = ['collection' => $collection];
 
         return $this->getReturn(__FUNCTION__, null);
     }
@@ -110,7 +112,7 @@ class CacheRegionMock implements Region
      */
     public function put(CacheKey $key, CacheEntry $entry, Lock $lock = null)
     {
-        $this->calls[__FUNCTION__][] = array('key' => $key, 'entry' => $entry);
+        $this->calls[__FUNCTION__][] = ['key' => $key, 'entry' => $entry];
 
         return $this->getReturn(__FUNCTION__, true);
     }
@@ -120,7 +122,7 @@ class CacheRegionMock implements Region
      */
     public function clear()
     {
-        $this->calls   = array();
-        $this->returns = array();
+        $this->calls   = [];
+        $this->returns = [];
     }
 }

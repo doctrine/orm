@@ -1,42 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="company_managers")
+ * @ORM\Entity
+ * @ORM\Table(name="company_managers")
  */
 class CompanyManager extends CompanyEmployee
 {
     /**
-     * @Column(type="string", length=250)
+     * @ORM\Column(type="string", length=250)
      */
     private $title;
 
     /**
-     * @OneToOne(targetEntity="CompanyCar", cascade={"persist"})
-     * @JoinColumn(name="car_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=CompanyCar::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="car_id", referencedColumnName="id")
      */
     private $car;
 
     /**
-     * @ManyToMany(targetEntity="CompanyFlexContract", mappedBy="managers", fetch="EXTRA_LAZY")
+     * @ORM\ManyToMany(
+     *     targetEntity=CompanyFlexContract::class,
+     *     mappedBy="managers",
+     *     fetch="EXTRA_LAZY"
+     * )
      */
     public $managedContracts;
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function setTitle($title) {
+    public function setTitle($title)
+    {
         $this->title = $title;
     }
 
-    public function getCar() {
+    public function getCar()
+    {
         return $this->car;
     }
 
-    public function setCar(CompanyCar $car) {
+    public function setCar(CompanyCar $car)
+    {
         $this->car = $car;
     }
 }

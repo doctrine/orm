@@ -32,7 +32,7 @@ You can consider the following APIs to be safe from SQL injection:
 - Queries through the Criteria API on ``Doctrine\ORM\PersistentCollection`` and
   ``Doctrine\ORM\EntityRepository``.
 
-You are **NOT** save from SQL injection when using user input with:
+You are **NOT** safe from SQL injection when using user input with:
 
 - Expression API of ``Doctrine\ORM\QueryBuilder``
 - Concatenating user input into DQL SELECT, UPDATE or DELETE statements or
@@ -80,7 +80,6 @@ this is technically impossible. The correct way is:
 
     $query = $entityManager->createQuery($dql);
     $query->setParameter(1, $_GET['status']);
-
 
 Preventing Mass Assignment Vulnerabilities
 ------------------------------------------

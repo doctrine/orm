@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
 use Doctrine\ORM\Cache\Logging\StatisticsCacheLogger;
@@ -29,35 +31,35 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
     public function testEntityCache()
     {
         $name = 'my_entity_region';
-        $key  = new EntityCacheKey(State::CLASSNAME, array('id' => 1));
+        $key  = new EntityCacheKey(State::class, ['id' => 1]);
 
         $this->logger->entityCacheHit($name, $key);
         $this->logger->entityCachePut($name, $key);
         $this->logger->entityCacheMiss($name, $key);
 
-        $this->assertEquals(1, $this->logger->getHitCount());
-        $this->assertEquals(1, $this->logger->getPutCount());
-        $this->assertEquals(1, $this->logger->getMissCount());
-        $this->assertEquals(1, $this->logger->getRegionHitCount($name));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($name));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($name));
+        self::assertEquals(1, $this->logger->getHitCount());
+        self::assertEquals(1, $this->logger->getPutCount());
+        self::assertEquals(1, $this->logger->getMissCount());
+        self::assertEquals(1, $this->logger->getRegionHitCount($name));
+        self::assertEquals(1, $this->logger->getRegionPutCount($name));
+        self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
     public function testCollectionCache()
     {
         $name = 'my_collection_region';
-        $key  = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id' => 1));
+        $key  = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
 
         $this->logger->collectionCacheHit($name, $key);
         $this->logger->collectionCachePut($name, $key);
         $this->logger->collectionCacheMiss($name, $key);
 
-        $this->assertEquals(1, $this->logger->getHitCount());
-        $this->assertEquals(1, $this->logger->getPutCount());
-        $this->assertEquals(1, $this->logger->getMissCount());
-        $this->assertEquals(1, $this->logger->getRegionHitCount($name));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($name));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($name));
+        self::assertEquals(1, $this->logger->getHitCount());
+        self::assertEquals(1, $this->logger->getPutCount());
+        self::assertEquals(1, $this->logger->getMissCount());
+        self::assertEquals(1, $this->logger->getRegionHitCount($name));
+        self::assertEquals(1, $this->logger->getRegionPutCount($name));
+        self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
     public function testQueryCache()
@@ -69,12 +71,12 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         $this->logger->queryCachePut($name, $key);
         $this->logger->queryCacheMiss($name, $key);
 
-        $this->assertEquals(1, $this->logger->getHitCount());
-        $this->assertEquals(1, $this->logger->getPutCount());
-        $this->assertEquals(1, $this->logger->getMissCount());
-        $this->assertEquals(1, $this->logger->getRegionHitCount($name));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($name));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($name));
+        self::assertEquals(1, $this->logger->getHitCount());
+        self::assertEquals(1, $this->logger->getPutCount());
+        self::assertEquals(1, $this->logger->getMissCount());
+        self::assertEquals(1, $this->logger->getRegionHitCount($name));
+        self::assertEquals(1, $this->logger->getRegionPutCount($name));
+        self::assertEquals(1, $this->logger->getRegionMissCount($name));
     }
 
     public function testMultipleCaches()
@@ -83,8 +85,8 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         $entityRegion = 'my_entity_region';
         $queryRegion  = 'my_query_region';
 
-        $coolKey    = new CollectionCacheKey(State::CLASSNAME, 'cities', array('id' => 1));
-        $entityKey  = new EntityCacheKey(State::CLASSNAME, array('id' => 1));
+        $coolKey    = new CollectionCacheKey(State::class, 'cities', ['id' => 1]);
+        $entityKey  = new EntityCacheKey(State::class, ['id' => 1]);
         $queryKey   = new QueryCacheKey('my_query_hash');
 
         $this->logger->queryCacheHit($queryRegion, $queryKey);
@@ -99,36 +101,36 @@ class StatisticsCacheLoggerTest extends DoctrineTestCase
         $this->logger->collectionCachePut($coolRegion, $coolKey);
         $this->logger->collectionCacheMiss($coolRegion, $coolKey);
 
-        $this->assertEquals(3, $this->logger->getHitCount());
-        $this->assertEquals(3, $this->logger->getPutCount());
-        $this->assertEquals(3, $this->logger->getMissCount());
+        self::assertEquals(3, $this->logger->getHitCount());
+        self::assertEquals(3, $this->logger->getPutCount());
+        self::assertEquals(3, $this->logger->getMissCount());
 
-        $this->assertEquals(1, $this->logger->getRegionHitCount($queryRegion));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($queryRegion));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($queryRegion));
+        self::assertEquals(1, $this->logger->getRegionHitCount($queryRegion));
+        self::assertEquals(1, $this->logger->getRegionPutCount($queryRegion));
+        self::assertEquals(1, $this->logger->getRegionMissCount($queryRegion));
 
-        $this->assertEquals(1, $this->logger->getRegionHitCount($coolRegion));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($coolRegion));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($coolRegion));
+        self::assertEquals(1, $this->logger->getRegionHitCount($coolRegion));
+        self::assertEquals(1, $this->logger->getRegionPutCount($coolRegion));
+        self::assertEquals(1, $this->logger->getRegionMissCount($coolRegion));
 
-        $this->assertEquals(1, $this->logger->getRegionHitCount($entityRegion));
-        $this->assertEquals(1, $this->logger->getRegionPutCount($entityRegion));
-        $this->assertEquals(1, $this->logger->getRegionMissCount($entityRegion));
+        self::assertEquals(1, $this->logger->getRegionHitCount($entityRegion));
+        self::assertEquals(1, $this->logger->getRegionPutCount($entityRegion));
+        self::assertEquals(1, $this->logger->getRegionMissCount($entityRegion));
 
         $miss = $this->logger->getRegionsMiss();
         $hit  = $this->logger->getRegionsHit();
         $put  = $this->logger->getRegionsPut();
 
-        $this->assertArrayHasKey($coolRegion, $miss);
-        $this->assertArrayHasKey($queryRegion, $miss);
-        $this->assertArrayHasKey($entityRegion, $miss);
+        self::assertArrayHasKey($coolRegion, $miss);
+        self::assertArrayHasKey($queryRegion, $miss);
+        self::assertArrayHasKey($entityRegion, $miss);
 
-        $this->assertArrayHasKey($coolRegion, $put);
-        $this->assertArrayHasKey($queryRegion, $put);
-        $this->assertArrayHasKey($entityRegion, $put);
+        self::assertArrayHasKey($coolRegion, $put);
+        self::assertArrayHasKey($queryRegion, $put);
+        self::assertArrayHasKey($entityRegion, $put);
 
-        $this->assertArrayHasKey($coolRegion, $hit);
-        $this->assertArrayHasKey($queryRegion, $hit);
-        $this->assertArrayHasKey($entityRegion, $hit);
+        self::assertArrayHasKey($coolRegion, $hit);
+        self::assertArrayHasKey($queryRegion, $hit);
+        self::assertArrayHasKey($entityRegion, $hit);
     }
 }

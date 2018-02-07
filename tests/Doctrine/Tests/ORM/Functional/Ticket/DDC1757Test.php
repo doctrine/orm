@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC1757Test extends OrmFunctionalTestCase
 {
     public function testFailingCase()
     {
-        $qb = $this->_em->createQueryBuilder();
+        $qb = $this->em->createQueryBuilder();
         /* @var $qb \Doctrine\ORM\QueryBuilder */
 
         $qb->select('_a')
-            ->from(__NAMESPACE__ . '\DDC1757A', '_a')
-            ->from(__NAMESPACE__ . '\DDC1757B', '_b')
+            ->from(DDC1757A::class, '_a')
+            ->from(DDC1757B::class, '_b')
             ->join('_b.c', '_c')
             ->join('_c.d', '_d');
 
@@ -28,63 +31,63 @@ class DDC1757Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757A
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757B
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1757C")
+     * @ORM\OneToOne(targetEntity=DDC1757C::class)
      */
     private $c;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757C
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @OneToOne(targetEntity="DDC1757D")
+     * @ORM\OneToOne(targetEntity=DDC1757D::class)
      */
     private $d;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1757D
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 }

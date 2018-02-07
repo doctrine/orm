@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Verifies that the type of parameters being bound to an SQL query is the same
@@ -17,10 +21,12 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Foo'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC2214Bar'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC2214Foo::class),
+            $this->em->getClassMetadata(DDC2214Bar::class),
+            ]
+        );
     }
 
     public function testIssue()
@@ -30,42 +36,42 @@ class DDC2214Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $foo->bar = $bar;
 
-        $this->_em->persist($foo);
-        $this->_em->persist($bar);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($foo);
+        $this->em->persist($bar);
+        $this->em->flush();
+        $this->em->clear();
 
         /* @var $foo \Doctrine\Tests\ORM\Functional\Ticket\DDC2214Foo */
-        $foo = $this->_em->find(__NAMESPACE__ . '\\DDC2214Foo', $foo->id);
+        $foo = $this->em->find(DDC2214Foo::class, $foo->id);
         $bar = $foo->bar;
 
-        $logger  = $this->_em->getConnection()->getConfiguration()->getSQLLogger();
+        $logger  = $this->em->getConnection()->getConfiguration()->getSQLLogger();
 
         $related = $this
-            ->_em
+            ->em
             ->createQuery('SELECT b FROM '.__NAMESPACE__ . '\DDC2214Bar b WHERE b.id IN(:ids)')
-            ->setParameter('ids', array($bar))
+            ->setParameter('ids', [$bar])
             ->getResult();
 
         $query = end($logger->queries);
 
-        $this->assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
+        self::assertEquals(\Doctrine\DBAL\Connection::PARAM_INT_ARRAY, $query['types'][0]);
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2214Foo
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 
-    /** @ManyToOne(targetEntity="DDC2214Bar") */
+    /** @ORM\ManyToOne(targetEntity=DDC2214Bar::class) */
     public $bar;
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class DDC2214Bar
 {
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }

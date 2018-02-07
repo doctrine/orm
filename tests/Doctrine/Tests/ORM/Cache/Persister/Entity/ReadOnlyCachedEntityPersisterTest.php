@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\Region;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Tests\Models\Cache\Country;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
@@ -17,7 +19,7 @@ class ReadOnlyCachedEntityPersisterTest extends AbstractEntityPersisterTest
     /**
      * {@inheritdoc}
      */
-    protected function createPersister(EntityManager $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
+    protected function createPersister(EntityManagerInterface $em, EntityPersister $persister, Region $region, ClassMetadata $metadata)
     {
         return new ReadOnlyCachedEntityPersister($persister, $region, $em, $metadata);
     }

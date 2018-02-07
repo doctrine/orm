@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Annotation as ORM;
 
 class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
@@ -11,11 +13,12 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC381Entity'),
-            ));
-        } catch(\Exception $e) {
-
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC381Entity::class),
+                ]
+            );
+        } catch (\Exception $e) {
         }
     }
 
@@ -23,12 +26,12 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $entity = new DDC381Entity();
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($entity);
+        $this->em->flush();
+        $this->em->clear();
         $persistedId = $entity->getId();
 
-        $entity = $this->_em->getReference('Doctrine\Tests\ORM\Functional\Ticket\DDC381Entity', $persistedId);
+        $entity = $this->em->getReference(DDC381Entity::class, $persistedId);
 
         // explicitly load proxy (getId() does not trigger reload of proxy)
         $id = $entity->getOtherMethod();
@@ -36,17 +39,17 @@ class DDC381Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $data = serialize($entity);
         $entity = unserialize($data);
 
-        $this->assertEquals($persistedId, $entity->getId());
+        self::assertEquals($persistedId, $entity->getId());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC381Entity
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     protected $id;
 
@@ -57,6 +60,5 @@ class DDC381Entity
 
     public function getOtherMethod()
     {
-
     }
 }

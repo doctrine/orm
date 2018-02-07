@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Tests\Models\Generic\BooleanModel;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class DDC949Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC949Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
@@ -24,18 +26,18 @@ class DDC949Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $false = new BooleanModel();
         $false->booleanField = false;
 
-        $this->_em->persist($true);
-        $this->_em->persist($false);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($true);
+        $this->em->persist($false);
+        $this->em->flush();
+        $this->em->clear();
 
-        $true = $this->_em->getRepository('Doctrine\Tests\Models\Generic\BooleanModel')->findOneBy(array('booleanField' => true));
-        $false = $this->_em->getRepository('Doctrine\Tests\Models\Generic\BooleanModel')->findOneBy(array('booleanField' => false));
+        $true = $this->em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => true]);
+        $false = $this->em->getRepository(BooleanModel::class)->findOneBy(['booleanField' => false]);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Generic\BooleanModel', $true, "True model not found");
-        $this->assertTrue($true->booleanField, "True Boolean Model should be true.");
+        self::assertInstanceOf(BooleanModel::class, $true, "True model not found");
+        self::assertTrue($true->booleanField, "True Boolean Model should be true.");
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Generic\BooleanModel', $false, "False model not found");
-        $this->assertFalse($false->booleanField, "False Boolean Model should be false.");
+        self::assertInstanceOf(BooleanModel::class, $false, "False model not found");
+        self::assertFalse($false->booleanField, "False Boolean Model should be false.");
     }
 }

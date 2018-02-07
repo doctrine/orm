@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests;
 
 use Doctrine\DBAL\Connection;
@@ -42,7 +44,8 @@ class TestUtil
      */
     public static function getConnection()
     {
-        $conn = DriverManager::getConnection(self::getConnectionParams());
+        $params = self::getConnectionParams();
+        $conn   = DriverManager::getConnection($params);
 
         self::addDbEventSubscribers($conn);
 
@@ -125,10 +128,10 @@ class TestUtil
 
     private static function getFallbackConnectionParams()
     {
-        $params = array(
+        $params = [
             'driver' => 'pdo_sqlite',
             'memory' => true
-        );
+        ];
 
         if (isset($GLOBALS['db_path'])) {
             $params['path'] = $GLOBALS['db_path'];
@@ -151,14 +154,14 @@ class TestUtil
 
     private static function getParamsForTemporaryConnection()
     {
-        $connectionParams = array(
+        $connectionParams = [
             'driver' => $GLOBALS['tmpdb_type'],
             'user' => $GLOBALS['tmpdb_username'],
             'password' => $GLOBALS['tmpdb_password'],
             'host' => $GLOBALS['tmpdb_host'],
             'dbname' => null,
             'port' => $GLOBALS['tmpdb_port']
-        );
+        ];
 
         if (isset($GLOBALS['tmpdb_name'])) {
             $connectionParams['dbname'] = $GLOBALS['tmpdb_name'];
@@ -177,14 +180,14 @@ class TestUtil
 
     private static function getParamsForMainConnection()
     {
-        $connectionParams = array(
+        $connectionParams = [
             'driver' => $GLOBALS['db_type'],
             'user' => $GLOBALS['db_username'],
             'password' => $GLOBALS['db_password'],
             'host' => $GLOBALS['db_host'],
             'dbname' => $GLOBALS['db_name'],
             'port' => $GLOBALS['db_port']
-        );
+        ];
 
         if (isset($GLOBALS['db_server'])) {
             $connectionParams['server'] = $GLOBALS['db_server'];

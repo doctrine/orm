@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsArticle;
@@ -18,7 +20,7 @@ class DDC812Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testFetchJoinInitializesPreviouslyUninitializedCollectionOfManagedEntity()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
         $article = new CmsArticle;
         $article->topic = "hello";
         $article->text = "talk talk talk";
@@ -28,19 +30,19 @@ class DDC812Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $comment->text = "stuff!";
         $comment->article = $article;
 
-        $this->_em->persist($article);
-        $this->_em->persist($comment);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($article);
+        $this->em->persist($comment);
+        $this->em->flush();
+        $this->em->clear();
 
-        $article2 = $this->_em->find(get_class($article), $article->id);
+        $article2 = $this->em->find(get_class($article), $article->id);
 
-        $article2Again = $this->_em->createQuery(
+        $article2Again = $this->em->createQuery(
             "select a, c from Doctrine\Tests\Models\CMS\CmsArticle a join a.comments c where a.id = ?1")
             ->setParameter(1, $article->id)
             ->getSingleResult();
 
-        $this->assertTrue($article2Again === $article2);
-        $this->assertTrue($article2Again->comments->isInitialized());
+        self::assertSame($article2Again, $article2);
+        self::assertTrue($article2Again->comments->isInitialized());
     }
 }

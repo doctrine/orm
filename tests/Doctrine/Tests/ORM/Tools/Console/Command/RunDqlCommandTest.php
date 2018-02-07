@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Tools\Console\Command;
 
 use Doctrine\ORM\Tools\Console\Command\RunDqlCommand;
@@ -38,13 +40,10 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
         parent::setUp();
 
+        $this->command = new RunDqlCommand();
+
         $this->application = new Application();
-        $this->command     = new RunDqlCommand();
-
-        $this->application->setHelperSet(new HelperSet(array(
-            'em' => new EntityManagerHelper($this->_em)
-        )));
-
+        $this->application->setHelperSet(new HelperSet(['em' => new EntityManagerHelper($this->em)]));
         $this->application->add($this->command);
 
         $this->tester = new CommandTester($this->command);
@@ -52,39 +51,43 @@ class RunDqlCommandTest extends OrmFunctionalTestCase
 
     public function testCommandName()
     {
-        $this->assertSame($this->command, $this->application->get('orm:run-dql'));
+        self::assertSame($this->command, $this->application->get('orm:run-dql'));
     }
 
     public function testWillRunQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
-        $this->assertSame(
+        self::assertSame(
             0,
-            $this->tester->execute(array(
-                'command' => $this->command->getName(),
-                'dql'     => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
-            ))
+            $this->tester->execute(
+                [
+                    'command' => $this->command->getName(),
+                    'dql'     => 'SELECT e FROM ' . DateTimeModel::class . ' e',
+                ]
+            )
         );
 
-        $this->assertContains(DateTimeModel::CLASSNAME, $this->tester->getDisplay());
+        self::assertContains(DateTimeModel::class, $this->tester->getDisplay());
     }
 
     public function testWillShowQuery()
     {
-        $this->_em->persist(new DateTimeModel());
-        $this->_em->flush();
+        $this->em->persist(new DateTimeModel());
+        $this->em->flush();
 
-        $this->assertSame(
+        self::assertSame(
             0,
-            $this->tester->execute(array(
-                'command'    => $this->command->getName(),
-                'dql'        => 'SELECT e FROM ' . DateTimeModel::CLASSNAME . ' e',
-                '--show-sql' => 'true'
-            ))
+            $this->tester->execute(
+                [
+                    'command'    => $this->command->getName(),
+                    'dql'        => 'SELECT e FROM ' . DateTimeModel::class . ' e',
+                    '--show-sql' => 'true',
+                ]
+            )
         );
 
-        $this->assertStringMatchesFormat('%Astring%sSELECT %a', $this->tester->getDisplay());
+        self::assertStringMatchesFormat('SELECT %a', trim($this->tester->getDisplay()));
     }
 }

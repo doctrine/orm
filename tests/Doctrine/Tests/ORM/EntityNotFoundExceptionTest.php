@@ -1,33 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM;
 
 use Doctrine\ORM\EntityNotFoundException;
-use PHPUnit_Framework_TestCase;
+use Doctrine\Tests\DoctrineTestCase;
 
 /**
  * Tests for {@see \Doctrine\ORM\EntityNotFoundException}
  *
  * @covers \Doctrine\ORM\EntityNotFoundException
  */
-class EntityNotFoundExceptionTest extends PHPUnit_Framework_TestCase
+class EntityNotFoundExceptionTest extends DoctrineTestCase
 {
     public function testFromClassNameAndIdentifier()
     {
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            array('foo' => 'bar')
+            ['foo' => 'bar']
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
-        $this->assertSame('Entity of type \'foo\' for IDs foo(bar) was not found', $exception->getMessage());
+        self::assertInstanceOf(EntityNotFoundException::class, $exception);
+        self::assertSame('Entity of type \'foo\' for IDs foo(bar) was not found', $exception->getMessage());
 
         $exception = EntityNotFoundException::fromClassNameAndIdentifier(
             'foo',
-            array()
+            []
         );
 
-        $this->assertInstanceOf('Doctrine\ORM\EntityNotFoundException', $exception);
-        $this->assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
+        self::assertInstanceOf(EntityNotFoundException::class, $exception);
+        self::assertSame('Entity of type \'foo\' was not found', $exception->getMessage());
     }
 }

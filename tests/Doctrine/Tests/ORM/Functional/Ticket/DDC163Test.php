@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Company\CompanyPerson;
@@ -35,13 +37,13 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $p3->addFriend($p4);
 
-        $this->_em->persist($p1);
-        $this->_em->persist($p2);
-        $this->_em->persist($p3);
-        $this->_em->persist($p4);
+        $this->em->persist($p1);
+        $this->em->persist($p2);
+        $this->em->persist($p3);
+        $this->em->persist($p4);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = 'SELECT PARTIAL person.{id,name}, PARTIAL spouse.{id,name}, PARTIAL friend.{id,name}
             FROM  Doctrine\Tests\Models\Company\CompanyPerson person
@@ -51,13 +53,13 @@ class DDC163Test extends \Doctrine\Tests\OrmFunctionalTestCase
             LEFT JOIN friend.friends friend_friend
             WHERE person.name=:name AND (spouse_friend.name=:name2 OR friend_friend.name=:name2)';
 
-        $q = $this->_em->createQuery($dql);
+        $q = $this->em->createQuery($dql);
         $q->setParameter('name', "p1");
         $q->setParameter('name2', "p4");
         $result = $q->getScalarResult();
 
-        $this->assertEquals('p3', $result[0]['spouse_name']);
-        $this->assertEquals('p1', $result[0]['person_name']);
-        $this->assertEquals('p2', $result[0]['friend_name']);
+        self::assertEquals('p3', $result[0]['spouse_name']);
+        self::assertEquals('p1', $result[0]['person_name']);
+        self::assertEquals('p2', $result[0]['friend_name']);
     }
 }

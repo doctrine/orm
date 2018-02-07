@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query\SqlWalker;
@@ -24,7 +26,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     protected function setUp()
     {
-        $this->sqlWalker = new SqlWalker(new Query($this->_getTestEntityManager()), new ParserResult(), array());
+        $this->sqlWalker = new SqlWalker(new Query($this->getTestEntityManager()), new ParserResult(), []);
     }
 
     /**
@@ -32,7 +34,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function testGetSQLTableAlias($tableName, $expectedAlias)
     {
-        $this->assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
+        self::assertSame($expectedAlias, $this->sqlWalker->getSQLTableAlias($tableName));
     }
 
     /**
@@ -40,7 +42,7 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function testGetSQLTableAliasIsSameForMultipleCalls($tableName)
     {
-        $this->assertSame(
+        self::assertSame(
             $this->sqlWalker->getSQLTableAlias($tableName),
             $this->sqlWalker->getSQLTableAlias($tableName)
         );
@@ -53,10 +55,10 @@ class SqlWalkerTest extends OrmTestCase
      */
     public function getColumnNamesAndSqlAliases()
     {
-        return array(
-            array('aaaaa', 'a0_'),
-            array('table', 't0_'),
-            array('çtable', 't0_'),
-        );
+        return [
+            ['aaaaa', 't0'],
+            ['table', 't0'],
+            ['çtable', 't0'],
+        ];
     }
 }

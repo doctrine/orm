@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-2996
@@ -12,67 +13,69 @@ class DDC2996Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testIssue()
     {
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996User'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC2996UserPreference'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC2996User::class),
+            $this->em->getClassMetadata(DDC2996UserPreference::class),
+            ]
+        );
 
         $pref = new DDC2996UserPreference();
         $pref->user = new DDC2996User();
         $pref->value = "foo";
 
-        $this->_em->persist($pref);
-        $this->_em->persist($pref->user);
-        $this->_em->flush();
+        $this->em->persist($pref);
+        $this->em->persist($pref->user);
+        $this->em->flush();
 
         $pref->value = "bar";
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->assertEquals(1, $pref->user->counter);
+        self::assertEquals(1, $pref->user->counter);
 
-        $this->_em->clear();
+        $this->em->clear();
 
-        $pref = $this->_em->find(__NAMESPACE__ . '\\DDC2996UserPreference', $pref->id);
-        $this->assertEquals(1, $pref->user->counter);
+        $pref = $this->em->find(DDC2996UserPreference::class, $pref->id);
+        self::assertEquals(1, $pref->user->counter);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC2996User
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     public $id;
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $counter = 0;
 }
 
 /**
- * @Entity @HasLifecycleCallbacks
+ * @ORM\Entity @ORM\HasLifecycleCallbacks
  */
 class DDC2996UserPreference
 {
     /**
-     * @Id @GeneratedValue @Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer")
      */
     public $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $value;
 
     /**
-     * @ManyToOne(targetEntity="DDC2996User")
+     * @ORM\ManyToOne(targetEntity=DDC2996User::class)
      */
     public $user;
 
     /**
-     * @PreFlush
+     * @ORM\PreFlush
      */
     public function preFlush($event)
     {

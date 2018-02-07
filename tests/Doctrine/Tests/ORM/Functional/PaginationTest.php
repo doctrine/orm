@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsEmail;
-use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\CMS\CmsGroup;
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\Models\CMS\CmsUser;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\Models\Pagination\Company;
 use Doctrine\Tests\Models\Pagination\Department;
 use Doctrine\Tests\Models\Pagination\Logo;
 use Doctrine\Tests\Models\Pagination\User1;
+use Doctrine\Tests\OrmFunctionalTestCase;
 use ReflectionMethod;
 
 /**
  * @group DDC-1613
  */
-class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class PaginationTest extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
@@ -35,11 +38,11 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCountSimpleWithoutJoin($useOutputWalkers)
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -48,36 +51,35 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCountWithFetchJoin($useOutputWalkers)
     {
         $dql = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     public function testCountComplexWithOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(3, $paginator);
+        self::assertCount(3, $paginator);
     }
 
     public function testCountComplexWithoutOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(false);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
-        $this->assertCount(3, $paginator);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
+
+        self::assertCount(3, $paginator);
     }
 
     /**
@@ -86,11 +88,11 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCountWithComplexScalarOrderBy($useOutputWalkers)
     {
         $dql = 'SELECT l FROM Doctrine\Tests\Models\Pagination\Logo l ORDER BY l.image_width * l.image_height DESC';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -99,112 +101,112 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIterateSimpleWithoutJoin($useOutputWalkers, $fetchJoinCollection)
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
 
         // Test with limit
         $query->setMaxResults(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
 
         // Test with limit and offset
         $query->setMaxResults(3)->setFirstResult(4);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
     }
 
     private function iterateWithOrderAsc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
         $dql = "$baseDql ASC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(9, $iter);
+        self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
         $dql = "$baseDql ASC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // With limit
         $query->setMaxResults(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "0", $result[0]->$checkField);
+        self::assertEquals($checkField . "0", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderAscWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         // Ascending
         $dql = "$baseDql ASC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // With offset
         $query->setMaxResults(3)->setFirstResult(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "3", $result[0]->$checkField);
+        self::assertEquals($checkField . "3", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDesc($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         $dql = "$baseDql DESC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(9, $iter);
+        self::assertCount(9, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimit($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         $dql = "$baseDql DESC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // With limit
         $query->setMaxResults(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "8", $result[0]->$checkField);
+        self::assertEquals($checkField . "8", $result[0]->{$checkField});
     }
 
     private function iterateWithOrderDescWithLimitAndOffset($useOutputWalkers, $fetchJoinCollection, $baseDql, $checkField)
     {
         $dql = "$baseDql DESC";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // With offset
         $query->setMaxResults(3)->setFirstResult(3);
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalkers);
         $iter = $paginator->getIterator();
-        $this->assertCount(3, $iter);
+        self::assertCount(3, $iter);
         $result = iterator_to_array($iter);
-        $this->assertEquals($checkField . "5", $result[0]->$checkField);
+        self::assertEquals($checkField . "5", $result[0]->{$checkField});
     }
 
     /**
@@ -279,11 +281,11 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIterateWithFetchJoin($useOutputWalkers)
     {
         $dql = 'SELECT u,g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers($useOutputWalkers);
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     /**
@@ -455,20 +457,20 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testIterateComplexWithOutputWalker()
     {
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(3, $paginator->getIterator());
+        self::assertCount(3, $paginator->getIterator());
     }
 
     public function testJoinedClassTableInheritance()
     {
         $dql = 'SELECT c FROM Doctrine\Tests\Models\Company\CompanyManager c ORDER BY c.startDate';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
-        $this->assertCount(1, $paginator->getIterator());
+        self::assertCount(1, $paginator->getIterator());
     }
 
     /**
@@ -494,7 +496,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromBothWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY c.name';
         $dqlAsc = $dql . " ASC, d.name";
         $dqlDesc = $dql . " DESC, d.name";
@@ -551,7 +555,9 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testIterateWithFetchJoinOneToManyWithOrderByColumnFromJoinedWithLimitWithoutOutputWalker()
     {
-        $this->setExpectedException("RuntimeException", "Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.");
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot select distinct identifiers from query with LIMIT and ORDER BY on a column from a fetch joined to-many association. Use output walkers.');
+
         $dql = 'SELECT c, d FROM Doctrine\Tests\Models\Pagination\Company c JOIN c.departments d ORDER BY d.name';
 
         $this->iterateWithOrderAscWithLimit(false, true, $dql, "name");
@@ -561,25 +567,25 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testCountWithCountSubqueryInWhereClauseWithOutputWalker()
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(true);
-        $this->assertCount(9, $paginator);
+        self::assertCount(9, $paginator);
     }
 
     public function testIterateWithCountSubqueryInWhereClause()
     {
         $dql = "SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u WHERE ((SELECT COUNT(s.id) FROM Doctrine\Tests\Models\CMS\CmsUser s) = 9) ORDER BY u.id desc";
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(true);
 
         $users = iterator_to_array($paginator->getIterator());
-        $this->assertCount(9, $users);
+        self::assertCount(9, $users);
         foreach ($users as $i => $user) {
-            $this->assertEquals("username" . (8 - $i), $user->username);
+            self::assertEquals("username" . (8 - $i), $user->username);
         }
     }
 
@@ -587,17 +593,15 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         // This query works using the output walkers but causes an exception using the TreeWalker
         $dql = 'SELECT g, COUNT(u.id) AS userCount FROM Doctrine\Tests\Models\CMS\CmsGroup g LEFT JOIN g.users u GROUP BY g HAVING COUNT(u.id) > 0';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         // If the Paginator detects the custom output walker it should fall back to using the
         // Tree walkers for pagination, which leads to an exception. If the query works, the output walkers were used
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
         $paginator = new Paginator($query);
 
-        $this->setExpectedException(
-            'RuntimeException',
-            'Cannot count query that uses a HAVING clause. Use the output walkers for pagination'
-        );
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Cannot count query that uses a HAVING clause. Use the output walkers for pagination');
 
         count($paginator);
     }
@@ -608,40 +612,40 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testPaginationWithColumnAttributeNameDifference()
     {
         $dql = 'SELECT c FROM Doctrine\Tests\Models\Pagination\Company c ORDER BY c.id';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->getIterator();
 
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     public function testCloneQuery()
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
 
         $paginator = new Paginator($query);
         $paginator->getIterator();
 
-        $this->assertTrue($query->getParameters()->isEmpty());
+        self::assertTrue($query->getParameters()->isEmpty());
     }
 
     public function testQueryWalkerIsKept()
     {
         $dql = 'SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u';
-        $query = $this->_em->createQuery($dql);
-        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, array('Doctrine\Tests\ORM\Functional\CustomPaginationTestTreeWalker'));
+        $query = $this->em->createQuery($dql);
+        $query->setHint(Query::HINT_CUSTOM_TREE_WALKERS, [CustomPaginationTestTreeWalker::class]);
 
         $paginator = new Paginator($query, true);
         $paginator->setUseOutputWalkers(false);
-        $this->assertCount(1, $paginator->getIterator());
-        $this->assertEquals(1, $paginator->count());
+        self::assertCount(1, $paginator->getIterator());
+        self::assertEquals(1, $paginator->count());
     }
-    
+
     public function testCountQueryStripsParametersInSelect()
     {
-        $query = $this->_em->createQuery(
+        $query = $this->em->createQuery(
             'SELECT u, (CASE WHEN u.id < :vipMaxId THEN 1 ELSE 0 END) AS hidden promotedFirst
             FROM Doctrine\\Tests\\Models\\CMS\\CmsUser u
             WHERE u.id < :id or 1=1'
@@ -656,17 +660,17 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
 
         $getCountQuery->setAccessible(true);
 
-        $this->assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
-        $this->assertCount(9, $paginator);
+        self::assertCount(2, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(9, $paginator);
 
-        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, 'Doctrine\ORM\Query\SqlWalker');
+        $query->setHint(Query::HINT_CUSTOM_OUTPUT_WALKER, Query\SqlWalker::class);
 
         $paginator = new Paginator($query);
 
         // if select part of query is replaced with count(...) paginator should remove
         // parameters from query object not used in new query.
-        $this->assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
-        $this->assertCount(9, $paginator);
+        self::assertCount(1, $getCountQuery->invoke($paginator)->getParameters());
+        self::assertCount(9, $paginator);
     }
 
     /**
@@ -674,7 +678,7 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testPaginationWithSubSelectOrderByExpression($useOutputWalker, $fetchJoinCollection)
     {
-        $query = $this->_em->createQuery(
+        $query = $this->em->createQuery(
             "SELECT u, 
                 (
                     SELECT MAX(a.version)
@@ -688,17 +692,17 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $paginator = new Paginator($query, $fetchJoinCollection);
         $paginator->setUseOutputWalkers($useOutputWalker);
 
-        $this->assertCount(9, $paginator->getIterator());
+        self::assertCount(9, $paginator->getIterator());
     }
 
     public function populate()
     {
-        $groups = array();
-        for ($j = 0; $j < 3; $j++) {;
+        $groups = [];
+        for ($j = 0; $j < 3; $j++) {
             $group = new CmsGroup();
             $group->name = "group$j";
             $groups[] = $group;
-            $this->_em->persist($group);
+            $this->em->persist($group);
         }
 
         for ($i = 0; $i < 9; $i++) {
@@ -712,14 +716,14 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             for ($j = 0; $j < 3; $j++) {
                 $user->addGroup($groups[$j]);
             }
-            $this->_em->persist($user);
+            $this->em->persist($user);
             for ($j = 0; $j < $i + 1; $j++) {
                 $article = new CmsArticle();
                 $article->topic = "topic$i$j";
                 $article->text = "text$i$j";
                 $article->setAuthor($user);
                 $article->version = 0;
-                $this->_em->persist($article);
+                $this->em->persist($article);
             }
         }
 
@@ -731,20 +735,20 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
             $company->logo->image_width = 100 + $i;
             $company->logo->image_height = 100 + $i;
             $company->logo->company = $company;
-            for($j=0;$j<3;$j++) {
+            for ($j=0;$j<3;$j++) {
                 $department = new Department();
                 $department->name = "name$i$j";
                 $department->company = $company;
                 $company->departments[] = $department;
             }
-            $this->_em->persist($company);
+            $this->em->persist($company);
         }
 
         for ($i = 0; $i < 9; $i++) {
             $user = new User1();
             $user->name = "name$i";
             $user->email = "email$i";
-            $this->_em->persist($user);
+            $this->em->persist($user);
         }
 
         $manager = new CompanyManager();
@@ -753,35 +757,35 @@ class PaginationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $manager->setDepartment('IT');
         $manager->setSalary(100000);
 
-        $this->_em->persist($manager);
+        $this->em->persist($manager);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function useOutputWalkers()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function fetchJoinCollection()
     {
-        return array(
-            array(true),
-            array(false),
-        );
+        return [
+            [true],
+            [false],
+        ];
     }
 
     public function useOutputWalkersAndFetchJoinCollection()
     {
-        return array(
-            array(true, false),
-            array(true, true),
-            array(false, false),
-            array(false, true),
-        );
+        return [
+            [true, false],
+            [true, true],
+            [false, false],
+            [false, true],
+        ];
     }
 }
 

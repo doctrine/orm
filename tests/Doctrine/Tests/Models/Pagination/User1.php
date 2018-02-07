@@ -1,17 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Pagination;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Class User1
+ *
  * @package Doctrine\Tests\Models\Pagination
  *
- * @Entity()
+ * @ORM\Entity()
  */
 class User1 extends User
 {
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $email;
 }

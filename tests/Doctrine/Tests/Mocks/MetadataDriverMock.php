@@ -1,16 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
+
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\Driver\MappingDriver;
+use Doctrine\ORM\Mapping\ClassMetadata;
 
 /**
  * Mock class for MappingDriver.
  */
-class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\MappingDriver
+class MetadataDriverMock implements MappingDriver
 {
     /**
      * {@inheritdoc}
      */
-    public function loadMetadataForClass($className, \Doctrine\Common\Persistence\Mapping\ClassMetadata $metadata)
+    public function loadMetadataForClass(
+        string $className,
+        ClassMetadata $metadata,
+        ClassMetadataBuildingContext $metadataBuildingContext
+    )
     {
     }
 
@@ -27,6 +37,6 @@ class MetadataDriverMock implements \Doctrine\Common\Persistence\Mapping\Driver\
      */
     public function getAllClassNames()
     {
-        return array();
+        return [];
     }
 }

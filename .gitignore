@@ -7,8 +7,13 @@ lib/api/
 lib/Doctrine/Common
 lib/Doctrine/DBAL
 /.settings/
+*.iml
 .buildpath
 .project
 .idea
 vendor/
 composer.lock
+/tests/Doctrine/Performance/history.db
+/.phpcs-cache
+phpbench.phar
+phpbench.phar.pubkey

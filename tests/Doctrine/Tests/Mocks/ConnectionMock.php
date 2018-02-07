@@ -1,36 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
+
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Mock class for Connection.
  */
-class ConnectionMock extends \Doctrine\DBAL\Connection
+class ConnectionMock extends Connection
 {
     /**
      * @var mixed
      */
-    private $_fetchOneResult;
+    private $fetchOneResult;
+
+    /**
+     * @var \Exception|null
+     */
+    private $fetchOneException;
+
+    /**
+     * @var Statement|null
+     */
+    private $queryResult;
 
     /**
      * @var DatabasePlatformMock
      */
-    private $_platformMock;
+    private $platformMock;
 
     /**
      * @var int
      */
-    private $_lastInsertId = 0;
+    private $lastInsertId = 0;
 
     /**
      * @var array
      */
-    private $_inserts = array();
+    private $inserts = [];
 
     /**
      * @var array
      */
-    private $_executeUpdates = array();
+    private $executeUpdates = [];
 
     /**
      * @param array                              $params
@@ -40,12 +55,12 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function __construct(array $params, $driver, $config = null, $eventManager = null)
     {
-        $this->_platformMock = new DatabasePlatformMock();
+        $this->platformMock = new DatabasePlatformMock();
 
         parent::__construct($params, $driver, $config, $eventManager);
 
         // Override possible assignment of platform to database platform mock
-        $this->_platform = $this->_platformMock;
+        $this->platform = $this->platformMock;
     }
 
     /**
@@ -53,23 +68,23 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function getDatabasePlatform()
     {
-        return $this->_platformMock;
+        return $this->platformMock;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function insert($tableName, array $data, array $types = array())
+    public function insert($tableName, array $data, array $types = [])
     {
-        $this->_inserts[$tableName][] = $data;
+        $this->inserts[$tableName][] = $data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function executeUpdate($query, array $params = array(), array $types = array())
+    public function executeUpdate($query, array $params = [], array $types = [])
     {
-        $this->_executeUpdates[] = array('query' => $query, 'params' => $params, 'types' => $types);
+        $this->executeUpdates[] = ['query' => $query, 'params' => $params, 'types' => $types];
     }
 
     /**
@@ -77,15 +92,27 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function lastInsertId($seqName = null)
     {
-        return $this->_lastInsertId;
+        return $this->lastInsertId;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($statement, array $params = array(), $colnum = 0, array $types = array())
+    public function fetchColumn($statement, array $params = [], $colnum = 0, array $types = [])
     {
-        return $this->_fetchOneResult;
+        if (null !== $this->fetchOneException) {
+            throw $this->fetchOneException;
+        }
+
+        return $this->fetchOneResult;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function query() : Statement
+    {
+        return $this->queryResult;
     }
 
     /**
@@ -108,7 +135,17 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function setFetchOneResult($fetchOneResult)
     {
-        $this->_fetchOneResult = $fetchOneResult;
+        $this->fetchOneResult = $fetchOneResult;
+    }
+
+    /**
+     * @param \Exception|null $exception
+     *
+     * @return void
+     */
+    public function setFetchOneException(\Exception $exception = null)
+    {
+        $this->fetchOneException = $exception;
     }
 
     /**
@@ -118,7 +155,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function setDatabasePlatform($platform)
     {
-        $this->_platformMock = $platform;
+        $this->platformMock = $platform;
     }
 
     /**
@@ -128,7 +165,15 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function setLastInsertId($id)
     {
-        $this->_lastInsertId = $id;
+        $this->lastInsertId = $id;
+    }
+
+    /**
+     * @param Statement $result
+     */
+    public function setQueryResult(Statement $result)
+    {
+        $this->queryResult = $result;
     }
 
     /**
@@ -136,7 +181,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function getInserts()
     {
-        return $this->_inserts;
+        return $this->inserts;
     }
 
     /**
@@ -144,7 +189,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function getExecuteUpdates()
     {
-        return $this->_executeUpdates;
+        return $this->executeUpdates;
     }
 
     /**
@@ -152,7 +197,7 @@ class ConnectionMock extends \Doctrine\DBAL\Connection
      */
     public function reset()
     {
-        $this->_inserts = array();
-        $this->_lastInsertId = 0;
+        $this->inserts = [];
+        $this->lastInsertId = 0;
     }
 }

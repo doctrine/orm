@@ -1,37 +1,17 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
-use Doctrine\ORM\Persisters\Entity\EntityPersister;
-use Doctrine\ORM\Mapping\ClassMetadata;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
 /**
  * Specific read-write entity persister
- *
- * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
- * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
- * @since 2.5
  */
 class ReadWriteCachedEntityPersister extends AbstractEntityPersister
 {
@@ -73,7 +53,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             $this->timestampRegion->update($this->timestampKey);
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -93,7 +73,7 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             }
         }
 
-        $this->queuedCache = array();
+        $this->queuedCache = [];
     }
 
     /**
@@ -101,7 +81,8 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function delete($entity)
     {
-        $key     = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $uow     = $this->em->getUnitOfWork();
+        $key     = new EntityCacheKey($this->class->getRootClassName(), $uow->getEntityIdentifier($entity));
         $lock    = $this->region->lock($key);
         $deleted = $this->persister->delete($entity);
 
@@ -113,10 +94,10 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             return $deleted;
         }
 
-        $this->queuedCache['delete'][] = array(
+        $this->queuedCache['delete'][] = [
             'lock'   => $lock,
-            'key'    => $key
-        );
+            'key'    => $key,
+        ];
 
         return $deleted;
     }
@@ -126,7 +107,8 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
      */
     public function update($entity)
     {
-        $key  = new EntityCacheKey($this->class->rootEntityName, $this->uow->getEntityIdentifier($entity));
+        $uow  = $this->em->getUnitOfWork();
+        $key  = new EntityCacheKey($this->class->getRootClassName(), $uow->getEntityIdentifier($entity));
         $lock = $this->region->lock($key);
 
         $this->persister->update($entity);
@@ -135,9 +117,9 @@ class ReadWriteCachedEntityPersister extends AbstractEntityPersister
             return;
         }
 
-        $this->queuedCache['update'][] = array(
+        $this->queuedCache['update'][] = [
             'lock'   => $lock,
-            'key'    => $key
-        );
+            'key'    => $key,
+        ];
     }
 }

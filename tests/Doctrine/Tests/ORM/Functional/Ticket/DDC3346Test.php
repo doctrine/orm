@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\DDC3346\DDC3346Article;
@@ -22,38 +24,38 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function testFindOneWithEagerFetchWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author $author */
-        $author = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findOneBy(
-            array('username' => 'bwoogy')
+        $author = $this->em->getRepository(DDC3346Author::class)->findOneBy(
+            ['username' => 'bwoogy']
         );
 
-        $this->assertCount(2, $author->articles);
+        self::assertCount(2, $author->articles);
     }
 
     public function testFindLimitedWithEagerFetchWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => 'bwoogy'),
+        $authors = $this->em->getRepository(DDC3346Author::class)->findBy(
+            ['username' => 'bwoogy'],
             null,
             1
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
     public function testFindWithEagerFetchAndOffsetWillNotHydrateLimitedCollection()
     {
         /* @var DDC3346Author[] $authors */
-        $authors = $this->_em->getRepository(DDC3346Author::CLASSNAME)->findBy(
-            array('username' => 'bwoogy'),
+        $authors = $this->em->getRepository(DDC3346Author::class)->findBy(
+            ['username' => 'bwoogy'],
             null,
             null,
             0 // using an explicitly defined offset
         );
 
-        $this->assertCount(1, $authors);
-        $this->assertCount(2, $authors[0]->articles);
+        self::assertCount(1, $authors);
+        self::assertCount(2, $authors[0]->articles);
     }
 
     private function loadAuthorFixture()
@@ -68,10 +70,10 @@ class DDC3346Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->articles[] = $article1;
         $user->articles[] = $article2;
 
-        $this->_em->persist($user);
-        $this->_em->persist($article1);
-        $this->_em->persist($article2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->persist($article1);
+        $this->em->persist($article2);
+        $this->em->flush();
+        $this->em->clear();
     }
 }

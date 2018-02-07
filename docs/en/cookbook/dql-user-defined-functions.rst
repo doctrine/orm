@@ -17,7 +17,6 @@ and gain access to vendor specific functionalities using the
 ``EntityManager#createNativeQuery()`` API as described in
 the :doc:`Native Query <../reference/native-sql>` chapter.
 
-
 The DQL Parser has hooks to register functions that can then be
 used in your DQL queries and transformed into SQL, allowing to
 extend Doctrines Query capabilities to the vendors strength. This
@@ -45,7 +44,7 @@ configuration:
     $config->addCustomStringFunction($name, $class);
     $config->addCustomNumericFunction($name, $class);
     $config->addCustomDatetimeFunction($name, $class);
-    
+
     $em = EntityManager::create($dbParams, $config);
 
 The ``$name`` is the name the function will be referred to in the
@@ -96,7 +95,7 @@ discuss it step by step:
         // (1)
         public $firstDateExpression = null;
         public $secondDateExpression = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER); // (2)
@@ -106,7 +105,7 @@ discuss it step by step:
             $this->secondDateExpression = $parser->ArithmeticPrimary(); // (6)
             $parser->match(Lexer::T_CLOSE_PARENTHESIS); // (3)
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATEDIFF(' .
@@ -132,7 +131,7 @@ dql statement.
 
 The ``ArithmeticPrimary`` method call is the most common
 denominator of valid EBNF tokens taken from the
-`DQL EBNF grammar <http://www.doctrine-project.org/documentation/manual/2_0/en/dql-doctrine-query-language#ebnf>`_
+`DQL EBNF grammar <http://docs.doctrine-project.org/projects/doctrine-orm/en/latest/reference/dql-doctrine-query-language.html#ebnf>`_
 that matches our requirements for valid input into the DateDiff Dql
 function. Picking the right tokens for your methods is a tricky
 business, but the EBNF grammar is pretty helpful finding it, as is
@@ -180,28 +179,28 @@ I'll skip the blah and show the code for this function:
         public $firstDateExpression = null;
         public $intervalExpression = null;
         public $unit = null;
-    
+
         public function parse(\Doctrine\ORM\Query\Parser $parser)
         {
             $parser->match(Lexer::T_IDENTIFIER);
             $parser->match(Lexer::T_OPEN_PARENTHESIS);
-    
+
             $this->firstDateExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_COMMA);
             $parser->match(Lexer::T_IDENTIFIER);
-    
+
             $this->intervalExpression = $parser->ArithmeticPrimary();
-    
+
             $parser->match(Lexer::T_IDENTIFIER);
-    
+
             /* @var $lexer Lexer */
             $lexer = $parser->getLexer();
             $this->unit = $lexer->token['value'];
-    
+
             $parser->match(Lexer::T_CLOSE_PARENTHESIS);
         }
-    
+
         public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
         {
             return 'DATE_ADD(' .
@@ -247,5 +246,4 @@ vendor sql functions and extend the DQL languages scope.
 Code for this Extension to DQL and other Doctrine Extensions can be
 found
 `in my Github DoctrineExtensions repository <http://github.com/beberlei/DoctrineExtensions>`_.
-
 

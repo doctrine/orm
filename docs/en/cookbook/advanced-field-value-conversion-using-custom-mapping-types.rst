@@ -4,7 +4,7 @@ Advanced field value conversion using custom mapping types
 .. sectionauthor:: Jan Sorgalla <jsorgalla@googlemail.com>
 
 When creating entities, you sometimes have the need to transform field values
-before they are saved to the database. In Doctrine you can use Custom Mapping 
+before they are saved to the database. In Doctrine you can use Custom Mapping
 Types to solve this (see: :ref:`reference-basic-mapping-custom-mapping-types`).
 
 There are several ways to achieve this: converting the value inside the Type
@@ -15,7 +15,7 @@ type `Point <http://dev.mysql.com/doc/refman/5.5/en/gis-class-point.html>`_.
 
 The ``Point`` type is part of the `Spatial extension <http://dev.mysql.com/doc/refman/5.5/en/spatial-extensions.html>`_
 of MySQL and enables you to store a single location in a coordinate space by
-using x and y coordinates. You can use the Point type to store a 
+using x and y coordinates. You can use the Point type to store a
 longitude/latitude pair to represent a geographic location.
 
 The entity
@@ -29,23 +29,25 @@ The entity class:
 .. code-block:: php
 
     <?php
-    
+
     namespace Geo\Entity;
- 
+
+    use Doctrine\ORM\Annotation as ORM;
+
     /**
-     * @Entity
+     * @ORM\Entity
      */
     class Location
     {
         /**
-         * @Column(type="point")
+         * @ORM\Column(type="point")
          *
          * @var \Geo\ValueObject\Point
          */
         private $point;
 
         /**
-         * @Column(type="string")
+         * @ORM\Column(type="string")
          *
          * @var string
          */
@@ -84,7 +86,7 @@ The entity class:
         }
     }
 
-We use the custom type ``point`` in the ``@Column``  docblock annotation of the 
+We use the custom type ``point`` in the ``@Column``  docblock annotation of the
 ``$point`` field. We will create this custom mapping type in the next chapter.
 
 The point class:
@@ -92,7 +94,7 @@ The point class:
 .. code-block:: php
 
     <?php
-    
+
     namespace Geo\ValueObject;
 
     class Point
@@ -196,7 +198,7 @@ The format of the string representation format is called `Well-known text (WKT)
 <http://en.wikipedia.org/wiki/Well-known_text>`_. The advantage of this format
 is, that it is both human readable and parsable by MySQL.
 
-Internally, MySQL stores geometry values in a binary format that is not 
+Internally, MySQL stores geometry values in a binary format that is not
 identical to the WKT format. So, we need to let MySQL transform the WKT
 representation into its internal format.
 
@@ -210,13 +212,13 @@ which convert WKT strings to and from the internal format of MySQL.
 
 .. note::
 
-    When using DQL queries, the ``convertToPHPValueSQL`` and  
+    When using DQL queries, the ``convertToPHPValueSQL`` and
     ``convertToDatabaseValueSQL`` methods only apply to identification variables
-    and path expressions in SELECT clauses. Expressions in  WHERE clauses are 
+    and path expressions in SELECT clauses. Expressions in  WHERE clauses are
     **not** wrapped!
 
     If you want to use Point values in WHERE clauses, you have to implement a
-    :doc:`user defined function <dql-user-defined-functions>` for 
+    :doc:`user defined function <dql-user-defined-functions>` for
     ``PointFromText``.
 
 Example usage

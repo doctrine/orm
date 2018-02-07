@@ -1,30 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
-use Doctrine\Tests\Models\Routing\RoutingRoute;
-use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\Models\Routing\RoutingLocation;
+use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingRouteBooking;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
-class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OrderedCollectionTest extends OrmFunctionalTestCase
 {
-    protected $locations = array();
+    protected $locations = [];
 
     public function setUp()
     {
         $this->useModelSet('routing');
         parent::setUp();
 
-        $locations = array("Berlin", "Bonn", "Brasilia", "Atlanta");
+        $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
 
-        foreach ($locations AS $locationName) {
+        foreach ($locations as $locationName) {
             $location = new RoutingLocation();
             $location->name = $locationName;
-            $this->_em->persist($location);
+            $this->em->persist($location);
             $this->locations[$locationName] = $location;
         }
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function createPersistedRouteWithLegs()
@@ -46,10 +49,10 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $route->legs[] = $leg2;
         $route->legs[] = $leg1;
 
-        $this->_em->persist($route);
-        $this->_em->flush();
+        $this->em->persist($route);
+        $this->em->flush();
         $routeId = $route->id;
-        $this->_em->clear();
+        $this->em->clear();
 
         return $routeId;
     }
@@ -58,19 +61,19 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
-        $route = $this->_em->find('Doctrine\Tests\Models\Routing\RoutingRoute', $routeId);
+        $route = $this->em->find(RoutingRoute::class, $routeId);
 
-        $this->assertEquals(2, count($route->legs));
-        $this->assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
-        $this->assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
+        self::assertCount(2, $route->legs);
+        self::assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
+        self::assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
     }
 
     public function testLazyOneToManyCollection_IsRetrievedWithOrderByClause()
     {
         $route = new RoutingRoute();
 
-        $this->_em->persist($route);
-        $this->_em->flush();
+        $this->em->persist($route);
+        $this->em->flush();
         $routeId = $route->id;
 
         $booking1 = new RoutingRouteBooking();
@@ -83,29 +86,29 @@ class OrderedCollectionTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $route->bookings[] = $booking2;
         $booking2->route = $route;
 
-        $this->_em->persist($booking1);
-        $this->_em->persist($booking2);
+        $this->em->persist($booking1);
+        $this->em->persist($booking2);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $route = $this->_em->find('Doctrine\Tests\Models\Routing\RoutingRoute', $routeId);
+        $route = $this->em->find(RoutingRoute::class, $routeId);
 
-        $this->assertEquals(2, count($route->bookings));
-        $this->assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
-        $this->assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
+        self::assertCount(2, $route->bookings);
+        self::assertEquals('Benjamin', $route->bookings[0]->getPassengerName());
+        self::assertEquals('Guilherme', $route->bookings[1]->getPassengerName());
     }
 
     public function testOrderedResultFromDqlQuery()
     {
         $routeId = $this->createPersistedRouteWithLegs();
 
-        $route = $this->_em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
+        $route = $this->em->createQuery("SELECT r, l FROM Doctrine\Tests\Models\Routing\RoutingRoute r JOIN r.legs l WHERE r.id = ?1")
                            ->setParameter(1, $routeId)
                            ->getSingleResult();
 
-        $this->assertEquals(2, count($route->legs));
-        $this->assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
-        $this->assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
+        self::assertCount(2, $route->legs);
+        self::assertEquals("Berlin", $route->legs[0]->fromLocation->getName());
+        self::assertEquals("Bonn", $route->legs[1]->fromLocation->getName());
     }
 }

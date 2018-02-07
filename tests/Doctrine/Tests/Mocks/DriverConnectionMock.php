@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
+
+use Doctrine\DBAL\Driver\Connection;
 
 /**
  * Mock class for DriverConnection.
  */
-class DriverConnectionMock implements \Doctrine\DBAL\Driver\Connection
+class DriverConnectionMock implements Connection
 {
     /**
      * @var \Doctrine\DBAL\Driver\Statement

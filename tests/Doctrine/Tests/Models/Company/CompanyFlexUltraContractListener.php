@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Company;
 
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 
 class CompanyFlexUltraContractListener
@@ -9,7 +12,7 @@ class CompanyFlexUltraContractListener
     public $prePersistCalls;
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function prePersistHandler1(CompanyContract $contract, LifecycleEventArgs $args)
     {
@@ -17,7 +20,7 @@ class CompanyFlexUltraContractListener
     }
 
     /**
-     * @PrePersist
+     * @ORM\PrePersist
      */
     public function prePersistHandler2(CompanyContract $contract, LifecycleEventArgs $args)
     {

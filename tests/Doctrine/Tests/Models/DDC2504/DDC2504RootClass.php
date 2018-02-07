@@ -1,28 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC2504;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({
- *     "root"  = "DDC2504RootClass",
- *     "child" = "DDC2504ChildClass"
+ * @ORM\Entity
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({
+ *     "root"  = DDC2504RootClass::class,
+ *     "child" = DDC2504ChildClass::class
  * })
  */
 class DDC2504RootClass
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @var Doctrine\Tests\Models\DDC\DDC2504OtherClass
+     * @var \Doctrine\Tests\Models\DDC2504\DDC2504OtherClass
      *
-     * @ManyToOne(targetEntity="DDC2504OtherClass", inversedBy="childClasses")
+     * @ORM\ManyToOne(targetEntity=DDC2504OtherClass::class, inversedBy="childClasses")
      */
     public $other;
 }

@@ -39,7 +39,7 @@ possible either. See the following example:
         name VARCHAR,
         PRIMARY KEY(id)
     );
-    
+
     CREATE TABLE product_attributes (
         product_id INTEGER,
         attribute_name VARCHAR,
@@ -64,15 +64,6 @@ Where the ``attribute_name`` column contains the key and
 
 The feature request for persistence of primitive value arrays
 `is described in the DDC-298 ticket <http://www.doctrine-project.org/jira/browse/DDC-298>`_.
-
-Cascade Merge with Bi-directional Associations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-There are two bugs now that concern the use of cascade merge in combination with bi-directional associations.
-Make sure to study the behavior of cascade merge if you are using it:
-
--  `DDC-875 <http://www.doctrine-project.org/jira/browse/DDC-875>`_ Merge can sometimes add the same entity twice into a collection
--  `DDC-763 <http://www.doctrine-project.org/jira/browse/DDC-763>`_ Cascade merge on associated entities can insert too many rows through "Persistence by Reachability"
 
 Custom Persisters
 ~~~~~~~~~~~~~~~~~
@@ -131,7 +122,6 @@ included in the core of Doctrine 2. However there are already two
 extensions out there that offer support for Nested Set with
 Doctrine 2:
 
-
 -  `Doctrine2 Hierarchical-Structural Behavior <http://github.com/guilhermeblanco/Doctrine2-Hierarchical-Structural-Behavior>`_
 -  `Doctrine2 NestedSet <http://github.com/blt04/doctrine2-nestedset>`_
 
@@ -156,7 +146,6 @@ edge case problems Doctrine 2 does **NOT** do automatic identifier
 quoting. This can lead to problems when trying to get
 legacy-databases to work with Doctrine 2.
 
-
 -  You can quote column-names as described in the
    :doc:`Basic-Mapping <basic-mapping>` section.
 -  You cannot quote join column names.
@@ -180,27 +169,3 @@ MySQL with MyISAM tables
 Doctrine cannot provide atomic operations when calling ``EntityManager#flush()`` if one
 of the tables involved uses the storage engine MyISAM. You must use InnoDB or
 other storage engines that support transactions if you need integrity.
-
-Entities, Proxies and Reflection
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Using methods for Reflection on entities can be prone to error, when the entity
-is actually a proxy the following methods will not work correctly:
-
-- ``new ReflectionClass``
-- ``new ReflectionObject``
-- ``get_class()``
-- ``get_parent_class()``
-
-This is why ``Doctrine\Common\Util\ClassUtils`` class exists that has similar
-methods, which resolve the proxy problem beforehand.
-
-.. code-block:: php
-
-    <?php
-    use Doctrine\Common\Util\ClassUtils;
-
-    $bookProxy = $entityManager->getReference('Acme\Book');
-
-    $reflection = ClassUtils::newReflectionClass($bookProxy);
-    $class = ClassUtils::getClass($bookProxy)¸

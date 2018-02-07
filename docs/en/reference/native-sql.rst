@@ -63,7 +63,7 @@ This has several benefits:
 - The API is much simpler than the usual ``ResultSetMapping`` API.
 
 One downside is that the builder API does not yet support entities
-with inheritance hierachies.
+with inheritance hierarchies.
 
 .. code-block:: php
 
@@ -71,7 +71,7 @@ with inheritance hierachies.
 
     use Doctrine\ORM\Query\ResultSetMappingBuilder;
 
-    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " . 
+    $sql = "SELECT u.id, u.name, a.id AS address_id, a.street, a.city " .
            "FROM users u INNER JOIN address a ON u.address_id = a.id";
 
     $rsm = new ResultSetMappingBuilder($entityManager);
@@ -98,14 +98,12 @@ a mapping from DQL alias (key) to SQL alias (value)
     ));
     $sql = "SELECT " . $selectClause . " FROM users t1 JOIN groups t2 ON t1.group_id = t2.id";
 
-
 The ResultSetMapping
 --------------------
 
 Understanding the ``ResultSetMapping`` is the key to using a
 ``NativeQuery``. A Doctrine result can contain the following
 components:
-
 
 -  Entity results. These represent root result elements.
 -  Joined entity results. These represent joined entities in
@@ -131,7 +129,6 @@ components:
     the query gets parsed and transformed to SQL, Doctrine fills a
     ``ResultSetMapping`` that describes how the results should be
     processed by the hydration routines.
-
 
 We will now look at each of the result types that can appear in a
 ResultSetMapping in detail.
@@ -267,7 +264,7 @@ detail:
     <?php
     /**
      * Adds a meta column (foreign key or discriminator column) to the result set.
-     * 
+     *
      * @param string  $alias
      * @param string  $columnAlias
      * @param string  $columnName
@@ -322,10 +319,10 @@ entity.
     $rsm->addEntityResult('User', 'u');
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
-    
-    $query = $this->_em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
+
+    $query = $this->em->createNativeQuery('SELECT id, name FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 The result would look like this:
@@ -358,10 +355,10 @@ thus owns the foreign key.
     $rsm->addFieldResult('u', 'id', 'id');
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'address_id', 'address_id');
-    
-    $query = $this->_em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
+
+    $query = $this->em->createNativeQuery('SELECT id, name, address_id FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Foreign keys are used by Doctrine for lazy-loading purposes when
@@ -387,12 +384,12 @@ associations that are lazy.
     $rsm->addFieldResult('a', 'address_id', 'id');
     $rsm->addFieldResult('a', 'street', 'street');
     $rsm->addFieldResult('a', 'city', 'city');
-    
+
     $sql = 'SELECT u.id, u.name, a.id AS address_id, a.street, a.city FROM users u ' .
            'INNER JOIN address a ON u.address_id = a.id WHERE u.name = ?';
-    $query = $this->_em->createNativeQuery($sql, $rsm);
+    $query = $this->em->createNativeQuery($sql, $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 In this case the nested entity ``Address`` is registered with the
@@ -422,10 +419,10 @@ to map the hierarchy (both use a discriminator column).
     $rsm->addFieldResult('u', 'name', 'name');
     $rsm->addMetaResult('u', 'discr', 'discr'); // discriminator column
     $rsm->setDiscriminatorColumn('u', 'discr');
-    
-    $query = $this->_em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
+
+    $query = $this->em->createNativeQuery('SELECT id, name, discr FROM users WHERE name = ?', $rsm);
     $query->setParameter(1, 'romanb');
-    
+
     $users = $query->getResult();
 
 Note that in the case of Class Table Inheritance, an example as
@@ -443,7 +440,6 @@ To achieve that, you must describe the SQL resultset structure
 using named native query (and sql resultset mappings if is a several resultset mappings).
 
 Like named query, a named native query can be defined at class level or in a XML or YAML file.
-
 
 A resultSetMapping parameter is defined in @NamedNativeQuery,
 it represents the name of a defined @SqlResultSetMapping.
@@ -579,7 +575,6 @@ it represents the name of a defined @SqlResultSetMapping.
                       name: country
                       column: a_country
 
-
 Things to note:
     - The resultset mapping declares the entities retrieved by this native query.
     - Each field of the entity is bound to a SQL alias (or column name).
@@ -588,7 +583,6 @@ Things to note:
     - Field definitions are optional provided that they map to the same
       column name as the one declared on the class property.
     - ``__CLASS__`` is an alias for the mapped class
-
 
 In the above example,
 the ``fetchJoinedAddress`` named query use the joinMapping result set mapping.
@@ -670,7 +664,6 @@ Let's now see an implicit declaration of the property / column.
                 address:
                   entityClass: Address
 
-
 In this example, we only describe the entity member of the result set mapping.
 The property / column mappings is done using the entity mapping values.
 In this case the model property is bound to the model_txt column.
@@ -678,7 +671,6 @@ If the association to a related entity involve a composite primary key,
 a @FieldResult element should be used for each foreign key column.
 The @FieldResult name is composed of the property name for the relationship,
 followed by a dot ("."), followed by the name or the field or property of the primary key.
-
 
 .. configuration-block::
 
@@ -791,8 +783,6 @@ followed by a dot ("."), followed by the name or the field or property of the pr
                     6:
                       name: address.country
                       column: a_country
-                    
-
 
 If you retrieve a single entity and if you use the default mapping,
 you can use the resultClass attribute instead of resultSetMapping:
@@ -837,7 +827,6 @@ you can use the resultClass attribute instead of resultSetMapping:
               name: findAll
               resultClass: Address
               query: SELECT * FROM addresses
-
 
 In some of your native queries, you'll have to return scalar values,
 for example when building report queries.

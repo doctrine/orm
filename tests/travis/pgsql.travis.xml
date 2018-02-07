@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="../Doctrine/Tests/TestInit.php" colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
+         colors="true"
+         verbose="true"
+         failOnRisky="true"
+         bootstrap="../Doctrine/Tests/TestInit.php"
+>
     <php>
    <!-- "Real" test database -->
         <var name="db_type" value="pdo_pgsql"/>
@@ -16,6 +22,8 @@
         <var name="tmpdb_username" value="postgres" />
         <var name="tmpdb_password" value="" />
         <var name="tmpdb_port" value="5432"/>
+
+        <env name="COLUMNS" value="120"/>
     </php>
 
     <testsuites>
@@ -30,6 +38,7 @@
     </filter>
     <groups>
         <exclude>
+            <group>embedded</group>
             <group>performance</group>
             <group>locking_functional</group>
         </exclude>

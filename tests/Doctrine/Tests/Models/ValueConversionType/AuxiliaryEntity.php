@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="vct_auxiliary")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_auxiliary")
  */
 class AuxiliaryEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id4;
 }

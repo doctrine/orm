@@ -1,17 +1,25 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC258Test extends OrmFunctionalTestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Super'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class1'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class2'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC258Class3'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC258Super::class),
+            $this->em->getClassMetadata(DDC258Class1::class),
+            $this->em->getClassMetadata(DDC258Class2::class),
+            $this->em->getClassMetadata(DDC258Class3::class),
+            ]
+        );
     }
 
     /**
@@ -19,7 +27,7 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testIssue()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger);
 
         $c1 = new DDC258Class1();
         $c1->title = "Foo";
@@ -34,33 +42,33 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c3->apples = "Baz";
         $c3->bananas = "Baz";
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
-        $this->_em->persist($c3);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($c2);
+        $this->em->persist($c3);
+        $this->em->flush();
+        $this->em->clear();
 
-        $e2 = $this->_em->find('Doctrine\Tests\ORM\Functional\Ticket\DDC258Super', $c2->id);
+        $e2 = $this->em->find(DDC258Super::class, $c2->id);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\Ticket\DDC258Class2', $e2);
-        $this->assertEquals('Bar', $e2->title);
-        $this->assertEquals('Bar', $e2->description);
-        $this->assertEquals('Bar', $e2->text);
+        self::assertInstanceOf(DDC258Class2::class, $e2);
+        self::assertEquals('Bar', $e2->title);
+        self::assertEquals('Bar', $e2->description);
+        self::assertEquals('Bar', $e2->text);
 
-        $all = $this->_em->getRepository(__NAMESPACE__.'\DDC258Super')->findAll();
+        $all = $this->em->getRepository(DDC258Super::class)->findAll();
 
         foreach ($all as $obj) {
             if ($obj instanceof DDC258Class1) {
-                $this->assertEquals('Foo', $obj->title);
-                $this->assertEquals('Foo', $obj->description);
-            } else if ($obj instanceof DDC258Class2) {
-                $this->assertTrue($e2 === $obj);
-                $this->assertEquals('Bar', $obj->title);
-                $this->assertEquals('Bar', $obj->description);
-                $this->assertEquals('Bar', $obj->text);
-            } else if ($obj instanceof DDC258Class3) {
-                $this->assertEquals('Baz', $obj->apples);
-                $this->assertEquals('Baz', $obj->bananas);
+                self::assertEquals('Foo', $obj->title);
+                self::assertEquals('Foo', $obj->description);
+            } elseif ($obj instanceof DDC258Class2) {
+                self::assertSame($e2, $obj);
+                self::assertEquals('Bar', $obj->title);
+                self::assertEquals('Bar', $obj->description);
+                self::assertEquals('Bar', $obj->text);
+            } elseif ($obj instanceof DDC258Class3) {
+                self::assertEquals('Baz', $obj->apples);
+                self::assertEquals('Baz', $obj->bananas);
             } else {
                 $this->fail('Instance of DDC258Class1, DDC258Class2 or DDC258Class3 expected.');
             }
@@ -69,54 +77,54 @@ class DDC258Test extends \Doctrine\Tests\OrmFunctionalTestCase
 }
 
 /**
- * @Entity
- * @Table(name="DDC258Super")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"class1" = "DDC258Class1", "class2" = "DDC258Class2", "class3"="DDC258Class3"})
+ * @ORM\Entity
+ * @ORM\Table(name="DDC258Super")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"class1" = DDC258Class1::class, "class2" = DDC258Class2::class, "class3"=DDC258Class3::class})
  */
 abstract class DDC258Super
 {
     /**
-     * @Id @Column(name="id", type="integer")
-     * @GeneratedValue(strategy="AUTO")
-    */
+     * @ORM\Id @ORM\Column(name="id", type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
     public $id;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class1 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class2 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $title;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $description;
 
     /**
-     * @Column(name="text", type="text")
+     * @ORM\Column(name="text", type="text")
      */
     public $text;
 }
@@ -124,17 +132,17 @@ class DDC258Class2 extends DDC258Super
 /**
  * An extra class to demonstrate why title and description aren't in Super
  *
- * @Entity
+ * @ORM\Entity
  */
 class DDC258Class3 extends DDC258Super
 {
     /**
-     * @Column(name="title", type="string", length=150)
+     * @ORM\Column(name="title", type="string", length=150)
      */
     public $apples;
 
     /**
-     * @Column(name="content", type="string", length=500)
+     * @ORM\Column(name="content", type="string", length=500)
      */
     public $bananas;
 }

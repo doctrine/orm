@@ -1,52 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Decorator;
 
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\Tests\DoctrineTestCase;
 
-class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
+class EntityManagerDecoratorTest extends DoctrineTestCase
 {
+    /**
+     * @var EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $wrapped;
+
+    /**
+     * @var EntityManagerDecorator|\PHPUnit_Framework_MockObject_MockObject
+     */
     private $decorator;
 
     public function setUp()
     {
-        $this->wrapped = $this->getMock('Doctrine\ORM\EntityManagerInterface');
-        $this->decorator = $this->getMockBuilder('Doctrine\ORM\Decorator\EntityManagerDecorator')
-            ->setConstructorArgs(array($this->wrapped))
-            ->setMethods(null)
-            ->getMock();
+        $this->wrapped = $this->createMock(EntityManagerInterface::class);
+        $this->decorator = new class($this->wrapped) extends EntityManagerDecorator {};
     }
 
     public function getMethodParameters()
     {
-        $class = new \ReflectionClass('Doctrine\ORM\EntityManager');
+        $class = new \ReflectionClass(EntityManagerInterface::class);
+        $methods = [];
 
-        $methods = array();
         foreach ($class->getMethods() as $method) {
             if ($method->isConstructor() || $method->isStatic() || !$method->isPublic()) {
                 continue;
             }
 
-            /** Special case EntityManager::createNativeQuery() */
-            if ($method->getName() === 'createNativeQuery') {
-                $methods[] = array($method->getName(), array('name', new ResultSetMapping()));
-                continue;
-            }
-
-            if ($method->getNumberOfRequiredParameters() === 0) {
-                $methods[] = array($method->getName(), array());
-            } elseif ($method->getNumberOfRequiredParameters() > 0) {
-                $methods[] = array($method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: array());
-            }
-            if ($method->getNumberOfParameters() != $method->getNumberOfRequiredParameters()) {
-                $methods[] = array($method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: array());
-            }
+            $methods[$method->getName()] = $this->getParameters($method);
         }
 
         return $methods;
+    }
+
+    private function getParameters(\ReflectionMethod $method)
+    {
+        /** Special case EntityManager::createNativeQuery() */
+        if ($method->getName() === 'createNativeQuery') {
+            return [$method->getName(), ['name', new ResultSetMapping()]];
+        }
+
+        /** Special case EntityManager::transactional() */
+        if ($method->getName() === 'transactional') {
+            return [$method->getName(), [function () {}]];
+        }
+
+        if ($method->getNumberOfRequiredParameters() === 0) {
+            return [$method->getName(), []];
+        }
+
+        if ($method->getNumberOfRequiredParameters() > 0) {
+            return [$method->getName(), array_fill(0, $method->getNumberOfRequiredParameters(), 'req') ?: []];
+        }
+
+        if ($method->getNumberOfParameters() !== $method->getNumberOfRequiredParameters()) {
+            return [$method->getName(), array_fill(0, $method->getNumberOfParameters(), 'all') ?: []];
+        }
+
+        return [];
     }
 
     /**
@@ -55,12 +76,10 @@ class EntityManagerDecoratorTest extends \PHPUnit_Framework_TestCase
     public function testAllMethodCallsAreDelegatedToTheWrappedInstance($method, array $parameters)
     {
         $stub = $this->wrapped
-            ->expects($this->once())
-            ->method($method)
-            ->will($this->returnValue('INNER VALUE FROM ' . $method));
+            ->expects(self::once())
+            ->method($method);
 
-        call_user_func_array(array($stub, 'with'), $parameters);
-
-        $this->assertSame('INNER VALUE FROM ' . $method, call_user_func_array(array($this->decorator, $method), $parameters));
+        call_user_func_array([$stub, 'with'], $parameters);
+        call_user_func_array([$this->decorator, $method], $parameters);
     }
 }

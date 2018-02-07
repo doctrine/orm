@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\OneToOneSingleTableInheritance;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class Cat extends Pet
 {
-    const CLASSNAME = __CLASS__;
-
     /**
-     * @OneToOne(targetEntity="LitterBox")
+     * @ORM\OneToOne(targetEntity=LitterBox::class)
      *
      * @var LitterBox
      */

@@ -1,48 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\CMS;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * CmsEmail
  *
- * @Entity
- * @Table(name="cms_emails")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_emails")
  */
 class CmsEmail
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @Column(length=250)
+     * @ORM\Column(length=250)
      */
     public $email;
 
     /**
-     * @OneToOne(targetEntity="CmsUser", mappedBy="email")
+     * @ORM\OneToOne(targetEntity=CmsUser::class, mappedBy="email")
      */
     public $user;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getEmail() {
+    public function getEmail()
+    {
         return $this->email;
     }
 
-    public function setEmail($email) {
+    public function setEmail($email)
+    {
         $this->email = $email;
     }
 
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function setUser(CmsUser $user) {
+    public function setUser(CmsUser $user)
+    {
         $this->user = $user;
     }
 }

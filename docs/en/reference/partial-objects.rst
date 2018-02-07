@@ -23,7 +23,6 @@ of Doctrine2 to this problem is.
     to a fully-loaded object by calling ``EntityManager#refresh()``
     or a DQL query with the refresh flag.
 
-
 What is the problem?
 --------------------
 
@@ -86,5 +85,4 @@ When should I force partial objects?
 Mainly for optimization purposes, but be careful of premature
 optimization as partial objects lead to potentially more fragile
 code.
-
 

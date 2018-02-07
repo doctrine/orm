@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\Tests\Models\CMS\CmsComment;
 use Doctrine\Tests\Models\CMS\CmsArticle;
 use Doctrine\Tests\Models\CMS\CmsUser;
 
@@ -45,11 +44,11 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $article->user = $user;
         }
 
-        $this->_em->persist($article);
-        $this->_em->persist($user);
-        $this->_em->persist($user2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($article);
+        $this->em->persist($user);
+        $this->em->persist($user2);
+        $this->em->flush();
+        $this->em->clear();
 
         $this->articleId = $article->id;
         $this->userId = $user->id;
@@ -61,22 +60,22 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
-        $user = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
     public function testLinkObjectsWithAssociationLoaded()
@@ -84,25 +83,25 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->userId);
+        $user = $this->em->find(CmsUser::class, $this->userId);
 
         $article->user = $user;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user->id, $article->user->id);
     }
 
     public function testUnlinkObjects()
@@ -110,19 +109,19 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(true);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
         $article->user = null;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
     public function testUnlinkObjectsWithAssociationLoaded()
@@ -130,22 +129,22 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(true);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
         $article->user = null;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNull($article->user);
+        self::assertNull($article->user);
     }
 
     public function testChangeLink()
@@ -153,22 +152,22 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // don't join association
-        $article = $this->_em->find('Doctrine\Tests\Models\Cms\CmsArticle', $this->articleId);
+        $article = $this->em->find(CmsArticle::class, $this->articleId);
 
-        $user2 = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->user2Id);
+        $user2 = $this->em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 
     public function testChangeLinkWithAssociationLoaded()
@@ -176,24 +175,24 @@ class DDC1545Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->initDb(false);
 
         // join association
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $user2 = $this->_em->find('Doctrine\Tests\Models\Cms\CmsUser', $this->user2Id);
+        $user2 = $this->em->find(CmsUser::class, $this->user2Id);
 
         $article->user = $user2;
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $article = $this->_em
+        $article = $this->em
             ->createQuery('SELECT a, u FROM Doctrine\Tests\Models\Cms\CmsArticle a LEFT JOIN a.user u WHERE a.id = :id')
             ->setParameter('id', $this->articleId)
             ->getOneOrNullResult();
 
-        $this->assertNotNull($article->user);
-        $this->assertEquals($user2->id, $article->user->id);
+        self::assertNotNull($article->user);
+        self::assertEquals($user2->id, $article->user->id);
     }
 }

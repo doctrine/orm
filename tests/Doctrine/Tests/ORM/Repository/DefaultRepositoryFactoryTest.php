@@ -1,16 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Repository;
 
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataBuildingContext;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
+use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
-use PHPUnit_Framework_TestCase;
+use Doctrine\Tests\DoctrineTestCase;
+use Doctrine\Tests\Models\DDC753\DDC753DefaultRepository;
+use Doctrine\Tests\Models\DDC869\DDC869PaymentRepository;
 
 /**
  * Tests for {@see \Doctrine\ORM\Repository\DefaultRepositoryFactory}
  *
  * @covers \Doctrine\ORM\Repository\DefaultRepositoryFactory
  */
-class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
+class DefaultRepositoryFactoryTest extends DoctrineTestCase
 {
     /**
      * @var \Doctrine\ORM\EntityManagerInterface|\PHPUnit_Framework_MockObject_MockObject
@@ -28,44 +38,50 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
     private $repositoryFactory;
 
     /**
+     * @var ClassMetadataBuildingContext|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $metadataBuildingContext;
+
+    /**
      * {@inheritDoc}
      */
     protected function setUp()
     {
-        $this->configuration     = $this->getMock('Doctrine\\ORM\\Configuration');
-        $this->entityManager     = $this->createEntityManager();
-        $this->repositoryFactory = new DefaultRepositoryFactory();
+        $this->metadataBuildingContext = new ClassMetadataBuildingContext(
+            $this->createMock(ClassMetadataFactory::class),
+            $this->createMock(ReflectionService::class)
+        );
+        $this->configuration           = $this->createMock(Configuration::class);
+        $this->entityManager           = $this->createEntityManager();
+        $this->repositoryFactory       = new DefaultRepositoryFactory();
 
-        $this
-            ->configuration
+        $this->configuration
             ->expects($this->any())
             ->method('getDefaultRepositoryClassName')
-            ->will($this->returnValue('Doctrine\\Tests\\Models\\DDC869\\DDC869PaymentRepository'));
+            ->will($this->returnValue(DDC869PaymentRepository::class));
     }
 
     public function testCreatesRepositoryFromDefaultRepositoryClass()
     {
-        $this
-            ->entityManager
+        $this->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
-        $this->assertInstanceOf(
-            'Doctrine\\Tests\\Models\\DDC869\\DDC869PaymentRepository',
+        self::assertInstanceOf(
+            DDC869PaymentRepository::class,
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
     }
 
     public function testCreatedRepositoriesAreCached()
     {
-        $this
-            ->entityManager
+        $this->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
-        $this->assertSame(
+        self::assertSame(
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__),
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
@@ -75,16 +91,16 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
     {
         $customMetadata = $this->buildClassMetadata(__DIR__);
 
-        $customMetadata->customRepositoryClassName = 'Doctrine\\Tests\\Models\\DDC753\\DDC753DefaultRepository';
+        $customMetadata->setCustomRepositoryClassName(DDC753DefaultRepository::class);
 
-        $this
-            ->entityManager
+        $this->entityManager
             ->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnValue($customMetadata));
+            ->will($this->returnValue($customMetadata))
+        ;
 
-        $this->assertInstanceOf(
-            'Doctrine\\Tests\\Models\\DDC753\\DDC753DefaultRepository',
+        self::assertInstanceOf(
+            DDC753DefaultRepository::class,
             $this->repositoryFactory->getRepository($this->entityManager, __CLASS__)
         );
     }
@@ -94,22 +110,21 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
         $em1 = $this->createEntityManager();
         $em2 = $this->createEntityManager();
 
-        $em1
-            ->expects($this->any())
+        $em1->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
-        $em2
-            ->expects($this->any())
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
+
+        $em2->expects($this->any())
             ->method('getClassMetadata')
-            ->will($this->returnCallback(array($this, 'buildClassMetadata')));
+            ->will($this->returnCallback([$this, 'buildClassMetadata']));
 
         $repo1 = $this->repositoryFactory->getRepository($em1, __CLASS__);
         $repo2 = $this->repositoryFactory->getRepository($em2, __CLASS__);
 
-        $this->assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
-        $this->assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
+        self::assertSame($repo1, $this->repositoryFactory->getRepository($em1, __CLASS__));
+        self::assertSame($repo2, $this->repositoryFactory->getRepository($em2, __CLASS__));
 
-        $this->assertNotSame($repo1, $repo2);
+        self::assertNotSame($repo1, $repo2);
     }
 
     /**
@@ -117,19 +132,13 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      *
      * @param string $className
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|\Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function buildClassMetadata($className)
     {
-        /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata|\PHPUnit_Framework_MockObject_MockObject */
-        $metadata = $this
-            ->getMockBuilder('Doctrine\ORM\Mapping\ClassMetadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $metadata = new ClassMetadata($className, $this->metadataBuildingContext);
 
-        $metadata->expects($this->any())->method('getName')->will($this->returnValue($className));
-
-        $metadata->customRepositoryClassName = null;
+        $metadata->setCustomRepositoryClassName(null);
 
         return $metadata;
     }
@@ -139,10 +148,9 @@ class DefaultRepositoryFactoryTest extends PHPUnit_Framework_TestCase
      */
     private function createEntityManager()
     {
-        $entityManager = $this->getMock('Doctrine\\ORM\\EntityManagerInterface');
+        $entityManager = $this->createMock(EntityManagerInterface::class);
 
-        $entityManager
-            ->expects($this->any())
+        $entityManager->expects($this->any())
             ->method('getConfiguration')
             ->will($this->returnValue($this->configuration));
 

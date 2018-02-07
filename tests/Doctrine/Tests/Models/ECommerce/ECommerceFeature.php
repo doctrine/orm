@@ -1,51 +1,60 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Describes a product feature.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_features")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_features")
  */
 class ECommerceFeature
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue
      */
     private $id;
 
     /**
-     * @Column(length=50)
+     * @ORM\Column(length=50)
      */
     private $description;
 
     /**
-     * @ManyToOne(targetEntity="ECommerceProduct", inversedBy="features")
-     * @JoinColumn(name="product_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity=ECommerceProduct::class, inversedBy="features")
+     * @ORM\JoinColumn(name="product_id", referencedColumnName="id")
      */
     private $product;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function setDescription($description) {
+    public function setDescription($description)
+    {
         $this->description = $description;
     }
 
-    public function setProduct(ECommerceProduct $product) {
+    public function setProduct(ECommerceProduct $product)
+    {
         $this->product = $product;
     }
 
-    public function removeProduct() {
+    public function removeProduct()
+    {
         if ($this->product !== null) {
             $product = $this->product;
             $this->product = null;
@@ -53,7 +62,8 @@ class ECommerceFeature
         }
     }
 
-    public function getProduct() {
+    public function getProduct()
+    {
         return $this->product;
     }
 }

@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Cache;
 
+use Doctrine\ORM\Cache\CacheKey;
+use Doctrine\ORM\Cache\ConcurrentRegion;
+use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region\DefaultRegion;
 use Doctrine\ORM\Cache\Region\FileLockRegion;
-use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\Tests\Mocks\CacheEntryMock;
 use Doctrine\Tests\Mocks\CacheKeyMock;
-use Doctrine\ORM\Cache\CacheKey;
-
-use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 
 /**
  * @group DDC-2183
@@ -21,7 +23,7 @@ class FileLockRegionTest extends AbstractRegionTest
      * @var \Doctrine\ORM\Cache\ConcurrentRegion
      */
     protected $region;
-    
+
     /**
      * @var string
      */
@@ -61,186 +63,186 @@ class FileLockRegionTest extends AbstractRegionTest
 
     public function testGetRegionName()
     {
-        $this->assertEquals('concurren_region_test', $this->region->getName());
+        self::assertEquals('concurren_region_test', $this->region->getName());
     }
 
     public function testLockAndUnlock()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         $lock = $this->region->lock($key);
 
-        $this->assertFileExists($file);
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock);
-        $this->assertEquals($lock->value, file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock);
+        self::assertStringEqualsFile($file, $lock->value);
 
         // should be not available after lock
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
 
-        $this->assertTrue($this->region->unlock($key, $lock));
-        $this->assertFileNotExists($file);
+        self::assertTrue($this->region->unlock($key, $lock));
+        self::assertFileNotExists($file);
     }
 
     public function testLockWithExistingLock()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo' , file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
-        $this->assertNull($this->region->lock($key));
-        $this->assertEquals('foo' , file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertNull($this->region->lock($key));
+        self::assertStringEqualsFile($file, 'foo');
+        self::assertFileExists($file);
 
         // should be not available
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
     }
 
     public function testUnlockWithExistingLock()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
         // change the lock
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo' , file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
         //try to unlock
-        $this->assertFalse($this->region->unlock($key, $lock));
-        $this->assertEquals('foo' , file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertFalse($this->region->unlock($key, $lock));
+        self::assertStringEqualsFile($file, 'foo');
+        self::assertFileExists($file);
 
         // should be not available
-        $this->assertFalse($this->region->contains($key));
-        $this->assertNull($this->region->get($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertNull($this->region->get($key));
     }
 
     public function testPutWithExistingLock()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
         // create lock
         file_put_contents($file, 'foo');
-        $this->assertFileExists($file);
-        $this->assertEquals('foo' , file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertFalse($this->region->put($key, $entry));
-        $this->assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertFalse($this->region->put($key, $entry));
+        self::assertFalse($this->region->contains($key));
 
-        $this->assertFileExists($file);
-        $this->assertEquals('foo' , file_get_contents($file));
+        self::assertFileExists($file);
+        self::assertStringEqualsFile($file, 'foo');
     }
 
     public function testLockedEvict()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->evict($key));
-        $this->assertFalse($this->region->contains($key));
-        $this->assertFileNotExists($file);
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->evict($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertFileNotExists($file);
     }
 
     public function testLockedEvictAll()
     {
         $key1    = new CacheKeyMock('key1');
-        $entry1  = new CacheEntryMock(array('foo1' => 'bar1'));
+        $entry1  = new CacheEntryMock(['foo1' => 'bar1']);
         $file1   = $this->getFileName($this->region, $key1);
 
         $key2    = new CacheKeyMock('key2');
-        $entry2  = new CacheEntryMock(array('foo2' => 'bar2'));
+        $entry2  = new CacheEntryMock(['foo2' => 'bar2']);
         $file2   = $this->getFileName($this->region, $key2);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertTrue($this->region->put($key1, $entry1));
-        $this->assertTrue($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key1));
+        self::assertTrue($this->region->put($key1, $entry1));
+        self::assertTrue($this->region->contains($key1));
 
-        $this->assertFalse($this->region->contains($key2));
-        $this->assertTrue($this->region->put($key2, $entry2));
-        $this->assertTrue($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key2));
+        self::assertTrue($this->region->put($key2, $entry2));
+        self::assertTrue($this->region->contains($key2));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock1 = $this->region->lock($key1));
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock2 = $this->region->lock($key2));
+        self::assertInstanceOf(Lock::class, $lock1 = $this->region->lock($key1));
+        self::assertInstanceOf(Lock::class, $lock2 = $this->region->lock($key2));
 
-        $this->assertEquals($lock2->value, file_get_contents($file2));
-        $this->assertEquals($lock1->value, file_get_contents($file1));
+        self::assertStringEqualsFile($file2, $lock2->value);
+        self::assertStringEqualsFile($file1, $lock1->value);
 
-        $this->assertFileExists($file1);
-        $this->assertFileExists($file2);
+        self::assertFileExists($file1);
+        self::assertFileExists($file2);
 
-        $this->assertTrue($this->region->evictAll());
+        self::assertTrue($this->region->evictAll());
 
-        $this->assertFileNotExists($file1);
-        $this->assertFileNotExists($file2);
+        self::assertFileNotExists($file1);
+        self::assertFileNotExists($file2);
 
-        $this->assertFalse($this->region->contains($key1));
-        $this->assertFalse($this->region->contains($key2));
+        self::assertFalse($this->region->contains($key1));
+        self::assertFalse($this->region->contains($key2));
     }
 
     public function testLockLifetime()
     {
         $key    = new CacheKeyMock('key');
-        $entry  = new CacheEntryMock(array('foo' => 'bar'));
+        $entry  = new CacheEntryMock(['foo' => 'bar']);
         $file   = $this->getFileName($this->region, $key);
         $property = new \ReflectionProperty($this->region, 'lockLifetime');
 
         $property->setAccessible(true);
         $property->setValue($this->region, -10);
 
-        $this->assertFalse($this->region->contains($key));
-        $this->assertTrue($this->region->put($key, $entry));
-        $this->assertTrue($this->region->contains($key));
+        self::assertFalse($this->region->contains($key));
+        self::assertTrue($this->region->put($key, $entry));
+        self::assertTrue($this->region->contains($key));
 
-        $this->assertInstanceOf('Doctrine\ORM\Cache\Lock', $lock = $this->region->lock($key));
-        $this->assertEquals($lock->value, file_get_contents($file));
-        $this->assertFileExists($file);
+        self::assertInstanceOf(Lock::class, $lock = $this->region->lock($key));
+        self::assertStringEqualsFile($file, $lock->value);
+        self::assertFileExists($file);
 
         // outdated lock should be removed
-        $this->assertTrue($this->region->contains($key));
-        $this->assertNotNull($this->region->get($key));
-        $this->assertFileNotExists($file);
+        self::assertTrue($this->region->contains($key));
+        self::assertNotNull($this->region->get($key));
+        self::assertFileNotExists($file);
     }
 
     /**
@@ -256,7 +258,7 @@ class FileLockRegionTest extends AbstractRegionTest
         $reflectionDirectory->setValue($region, str_repeat('a', 10000));
 
         set_error_handler(function () {}, E_WARNING);
-        $this->assertTrue($region->evictAll());
+        self::assertTrue($region->evictAll());
         restore_error_handler();
     }
 
@@ -279,7 +281,7 @@ class FileLockRegionTest extends AbstractRegionTest
         foreach ($directoryIterator as $file) {
             if ($file->isFile()) {
                 @unlink($file->getRealPath());
-            } else {
+            } elseif ($file->getRealPath() !== false) {
                 @rmdir($file->getRealPath());
             }
         }

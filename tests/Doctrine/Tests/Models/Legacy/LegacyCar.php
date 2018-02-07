@@ -1,41 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Legacy;
 
-use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="legacy_cars")
+ * @ORM\Entity
+ * @ORM\Table(name="legacy_cars")
  */
 class LegacyCar
 {
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(name="iCarId", type="integer", nullable=false)
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(name="iCarId", type="integer", nullable=false)
      */
-    public $_id;
-    /**
-     * @ManyToMany(targetEntity="LegacyUser", mappedBy="_cars")
-     */
-    public $_users;
+    public $id;
 
     /**
-     * @Column(name="sDescription", type="string", length=255, unique=true)
+     * @ORM\ManyToMany(targetEntity=LegacyUser::class, mappedBy="cars")
      */
-    public $_description;
+    public $users;
 
-    function getDescription()
+    /**
+     * @ORM\Column(name="sDescription", type="string", length=255, unique=true)
+     */
+    public $description;
+
+    public function getDescription()
     {
-        return $this->_description;
+        return $this->description;
     }
 
-    public function addUser(LegacyUser $user) {
-        $this->_users[] = $user;
+    public function addUser(LegacyUser $user)
+    {
+        $this->users[] = $user;
     }
 
-    public function getUsers() {
-        return $this->_users;
+    public function getUsers()
+    {
+        return $this->users;
     }
 }

@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="../Doctrine/Tests/TestInit.php" colors="true">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="../../vendor/phpunit/phpunit/phpunit.xsd"
+         colors="true"
+         verbose="true"
+         failOnRisky="true"
+         bootstrap="../Doctrine/Tests/TestInit.php"
+>
+    <php>
+        <env name="COLUMNS" value="120"/>
+    </php>
 
    <testsuites>
      <testsuite name="Doctrine ORM Test Suite">
@@ -13,6 +22,7 @@
     </filter>
     <groups>
       <exclude>
+         <group>embedded</group>
          <group>performance</group>
          <group>locking_functional</group>
       </exclude>

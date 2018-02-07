@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * @group DDC-1452
@@ -16,10 +21,12 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1452EntityA'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1452EntityB'),
-            ));
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC1452EntityA::class),
+                $this->em->getClassMetadata(DDC1452EntityB::class),
+                ]
+            );
         } catch (\Exception $ignored) {
         }
     }
@@ -36,18 +43,18 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $b->entityAFrom = $a1;
         $b->entityATo = $a2;
 
-        $this->_em->persist($a1);
-        $this->_em->persist($a2);
-        $this->_em->persist($b);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($a1);
+        $this->em->persist($a2);
+        $this->em->persist($b);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT a, b, ba FROM " . __NAMESPACE__ . "\DDC1452EntityA AS a LEFT JOIN a.entitiesB AS b LEFT JOIN b.entityATo AS ba";
-        $results = $this->_em->createQuery($dql)->setMaxResults(1)->getResult();
+        $results = $this->em->createQuery($dql)->setMaxResults(1)->getResult();
 
-        $this->assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
-        $this->assertFalse( $results[0]->entitiesB[0]->entityATo instanceof \Doctrine\ORM\Proxy\Proxy );
-        $this->assertInstanceOf('Doctrine\Common\Collections\Collection', $results[0]->entitiesB[0]->entityATo->getEntitiesB());
+        self::assertSame($results[0], $results[0]->entitiesB[0]->entityAFrom);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $results[0]->entitiesB[0]->entityATo);
+        self::assertInstanceOf(Collection::class, $results[0]->entitiesB[0]->entityATo->getEntitiesB());
     }
 
     public function testFetchJoinOneToOneFromInverse()
@@ -58,41 +65,41 @@ class DDC1452Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $address->street = "Somestreet";
         $address->zip = 12345;
 
-        $user = new \Doctrine\Tests\Models\CMS\CmsUser();
+        $user = new CmsUser();
         $user->name = "beberlei";
         $user->username = "beberlei";
         $user->status = "active";
         $user->address = $address;
         $address->user = $user;
 
-        $this->_em->persist($address);
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($address);
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $dql = "SELECT a, u FROM Doctrine\Tests\Models\CMS\CmsAddress a INNER JOIN a.user u";
-        $data = $this->_em->createQuery($dql)->getResult();
-        $this->_em->clear();
+        $data = $this->em->createQuery($dql)->getResult();
+        $this->em->clear();
 
-        $this->assertFalse($data[0]->user instanceof \Doctrine\ORM\Proxy\Proxy);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $data[0]->user);
 
         $dql = "SELECT u, a FROM Doctrine\Tests\Models\CMS\CmsUser u INNER JOIN u.address a";
-        $data = $this->_em->createQuery($dql)->getResult();
+        $data = $this->em->createQuery($dql)->getResult();
 
-        $this->assertFalse($data[0]->address instanceof \Doctrine\ORM\Proxy\Proxy);
+        self::assertNotInstanceOf(GhostObjectInterface::class, $data[0]->address);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1452EntityA
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
-    /** @Column */
+    /** @ORM\Column */
     public $title;
-    /** @OneToMany(targetEntity="DDC1452EntityB", mappedBy="entityAFrom") */
+    /** @ORM\OneToMany(targetEntity=DDC1452EntityB::class, mappedBy="entityAFrom") */
     public $entitiesB;
 
     public function __construct()
@@ -107,19 +114,19 @@ class DDC1452EntityA
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1452EntityB
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC1452EntityA", inversedBy="entitiesB")
+     * @ORM\ManyToOne(targetEntity=DDC1452EntityA::class, inversedBy="entitiesB")
      */
     public $entityAFrom;
     /**
-     * @ManyToOne(targetEntity="DDC1452EntityA")
+     * @ORM\ManyToOne(targetEntity=DDC1452EntityA::class)
      */
     public $entityATo;
 }

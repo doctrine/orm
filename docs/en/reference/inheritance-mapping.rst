@@ -25,7 +25,6 @@ appear in the middle of an otherwise mapped inheritance hierarchy
     For further support of inheritance, the single or
     joined table inheritance features have to be used.
 
-
 Example:
 
 .. code-block:: php
@@ -43,10 +42,10 @@ Example:
          * @JoinColumn(name="related1_id", referencedColumnName="id")
          */
         protected $mappedRelated1;
-    
+
         // ... more fields and methods
     }
-    
+
     /** @Entity */
     class EntitySubClass extends MappedSuperclassBase
     {
@@ -54,7 +53,7 @@ Example:
         private $id;
         /** @Column(type="string") */
         private $name;
-    
+
         // ... more fields and methods
     }
 
@@ -84,10 +83,10 @@ Example:
 .. configuration-block::
 
     .. code-block:: php
-    
+
         <?php
         namespace MyProject\Model;
-        
+
         /**
          * @Entity
          * @InheritanceType("SINGLE_TABLE")
@@ -98,7 +97,7 @@ Example:
         {
             // ...
         }
-        
+
         /**
          * @Entity
          */
@@ -108,7 +107,7 @@ Example:
         }
 
     .. code-block:: yaml
-    
+
         MyProject\Model\Person:
           type: entity
           inheritanceType: SINGLE_TABLE
@@ -118,14 +117,13 @@ Example:
           discriminatorMap:
             person: Person
             employee: Employee
-                
+
         MyProject\Model\Employee:
           type: entity
-            
+
 Things to note:
 
-
--  The @InheritanceType and @DiscriminatorColumn must be specified 
+-  The @InheritanceType and @DiscriminatorColumn must be specified
    on the topmost class that is part of the mapped entity hierarchy.
 -  The @DiscriminatorMap specifies which values of the
    discriminator column identify a row as being of a certain type. In
@@ -140,7 +138,7 @@ Things to note:
    namespace as the entity class on which the discriminator map is
    applied.
 -  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
+   automatically. The automatically generated discriminator map
    contains the lowercase short name of each class as key.
 
 Design-time considerations
@@ -159,12 +157,12 @@ This strategy is very efficient for querying across all types in
 the hierarchy or for specific types. No table joins are required,
 only a WHERE clause listing the type identifiers. In particular,
 relationships involving types that employ this mapping strategy are
-very performant.
+very performing.
 
 There is a general performance consideration with Single Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is an STI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is an STI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -196,7 +194,7 @@ Example:
 
     <?php
     namespace MyProject\Model;
-    
+
     /**
      * @Entity
      * @InheritanceType("JOINED")
@@ -207,7 +205,7 @@ Example:
     {
         // ...
     }
-    
+
     /** @Entity */
     class Employee extends Person
     {
@@ -215,7 +213,6 @@ Example:
     }
 
 Things to note:
-
 
 -  The @InheritanceType, @DiscriminatorColumn and @DiscriminatorMap
    must be specified on the topmost class that is part of the mapped
@@ -230,7 +227,7 @@ Things to note:
    namespace as the entity class on which the discriminator map is
    applied.
 -  If no discriminator map is provided, then the map is generated
-   automatically. The automatically generated discriminator map 
+   automatically. The automatically generated discriminator map
    contains the lowercase short name of each class as key.
 
 .. note::
@@ -240,7 +237,6 @@ Things to note:
     inheritance makes use of the foreign key property
     ``ON DELETE CASCADE`` in all database implementations. A failure to
     implement this yourself will lead to dead rows in the database.
-
 
 Design-time considerations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -268,9 +264,9 @@ themselves on access of any subtype fields, so accessing fields of
 subtypes after such a query is not safe.
 
 There is a general performance consideration with Class Table
-Inheritance: If the target-entity of a many-to-one or one-to-one 
-association is a CTI entity, it is preferable for performance reasons that it 
-be a leaf entity in the inheritance hierarchy, (ie. have no subclasses). 
+Inheritance: If the target-entity of a many-to-one or one-to-one
+association is a CTI entity, it is preferable for performance reasons that it
+be a leaf entity in the inheritance hierarchy, (ie. have no subclasses).
 Otherwise Doctrine *CANNOT* create proxy instances
 of this entity and will *ALWAYS* load the entity eagerly.
 
@@ -292,7 +288,6 @@ Overrides
 Used to override a mapping for an entity field or relationship.
 May be applied to an entity that extends a mapped superclass
 to override a relationship or field mapping defined by the mapped superclass.
-
 
 Association Override
 ~~~~~~~~~~~~~~~~~~~~
@@ -365,8 +360,7 @@ Example:
                 <many-to-many field="groups" target-entity="Group" inversed-by="users">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
-                        <cascade-detach/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-table name="users_groups">
                         <join-columns>
@@ -414,7 +408,7 @@ Example:
               joinColumn:
                 name: address_id
                 referencedColumnName: id
-              cascade: [ persist, merge ]
+              cascade: [ persist, refresh ]
           manyToMany:
             groups:
               targetEntity: Group
@@ -426,7 +420,7 @@ Example:
                 inverseJoinColumns:
                   group_id:
                     referencedColumnName: id
-              cascade: [ persist, merge, detach ]
+              cascade: [ persist, refresh ]
 
         # admin mapping
         MyProject\Model\Admin:
@@ -447,7 +441,6 @@ Example:
                   admingroup_id:
                     referencedColumnName: id
 
-
 Things to note:
 
 -  The "association override" specifies the overrides base on the property name.
@@ -455,6 +448,7 @@ Things to note:
 -  The association type *CANNOT* be changed.
 -  The override could redefine the joinTables or joinColumns depending on the association type.
 -  The override could redefine inversedBy to reference more than one extended entity.
+-  The override could redefine fetch to modify the fetch strategy of the extended entity.
 
 Attribute Override
 ~~~~~~~~~~~~~~~~~~~~
@@ -521,7 +515,7 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 <many-to-one field="address" target-entity="Address">
                     <cascade>
                         <cascade-persist/>
-                        <cascade-merge/>
+                        <cascade-refresh/>
                     </cascade>
                     <join-column name="address_id" referenced-column-name="id"/>
                 </many-to-one>
@@ -562,7 +556,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
               nullable: true
               unique: false
           #other fields mapping
-
 
         # guest mapping
         MyProject\Model\Guest:

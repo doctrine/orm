@@ -1,42 +1,25 @@
 <?php
 
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Util\ClassUtils;
-
-use Doctrine\ORM\Query;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Utility\IdentifierFlattener;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\FetchMode;
+use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Mapping\OneToOneAssociationMetadata;
+use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 /**
  * Default hydrator cache for entities
- *
- * @since   2.5
- * @author  Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class DefaultEntityHydrator implements EntityHydrator
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
@@ -46,25 +29,17 @@ class DefaultEntityHydrator implements EntityHydrator
     private $uow;
 
     /**
-     * The IdentifierFlattener used for manipulating identifiers
-     *
-     * @var \Doctrine\ORM\Utility\IdentifierFlattener
+     * @var mixed[]
      */
-    private $identifierFlattener;
-
-    /**
-     * @var array
-     */
-    private static $hints = array(Query::HINT_CACHE_ENABLED => true);
+    private static $hints = [Query::HINT_CACHE_ENABLED => true];
 
     /**
      * @param \Doctrine\ORM\EntityManagerInterface $em The entity manager.
      */
     public function __construct(EntityManagerInterface $em)
     {
-        $this->em   = $em;
-        $this->uow  = $em->getUnitOfWork();
-        $this->identifierFlattener = new IdentifierFlattener($em->getUnitOfWork(), $em->getMetadataFactory());
+        $this->em  = $em;
+        $this->uow = $em->getUnitOfWork();
     }
 
     /**
@@ -72,46 +47,68 @@ class DefaultEntityHydrator implements EntityHydrator
      */
     public function buildCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, $entity)
     {
-        $data = $this->uow->getOriginalEntityData($entity);
-        $data = array_merge($data, $metadata->getIdentifierValues($entity)); // why update has no identifier values ?
+        $identifierFlattener = $this->em->getIdentifierFlattener();
+        $persister           = $this->uow->getEntityPersister($metadata->getClassName());
 
-        foreach ($metadata->associationMappings as $name => $assoc) {
-            if ( ! isset($data[$name])) {
+        $data = $this->uow->getOriginalEntityData($entity);
+        $data = array_merge($data, $persister->getIdentifier($entity)); // why update has no identifier values ?
+
+        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
+            if (! isset($data[$name]) || $association instanceof FieldMetadata) {
                 continue;
             }
 
-            if ( ! ($assoc['type'] & ClassMetadata::TO_ONE)) {
+            if (! $association instanceof ToOneAssociationMetadata) {
                 unset($data[$name]);
 
                 continue;
             }
 
-            if ( ! isset($assoc['cache'])) {
-                $targetClassMetadata = $this->em->getClassMetadata($assoc['targetEntity']);
-                $owningAssociation   = ( ! $assoc['isOwningSide'])
-                    ? $targetClassMetadata->associationMappings[$assoc['mappedBy']]
-                    : $assoc;
-                $associationIds      = $this->identifierFlattener->flattenIdentifier(
+            $targetEntity        = $association->getTargetEntity();
+            $targetClassMetadata = $this->em->getClassMetadata($targetEntity);
+            $targetPersister     = $this->uow->getEntityPersister($targetEntity);
+
+            if (! $association->getCache()) {
+                $owningAssociation = ! $association->isOwningSide()
+                    ? $targetClassMetadata->getProperty($association->getMappedBy())
+                    : $association;
+                $associationIds    = $identifierFlattener->flattenIdentifier(
                     $targetClassMetadata,
-                    $targetClassMetadata->getIdentifierValues($data[$name])
+                    $targetPersister->getIdentifier($data[$name])
                 );
 
                 unset($data[$name]);
 
                 foreach ($associationIds as $fieldName => $fieldValue) {
-                    if (isset($targetClassMetadata->fieldMappings[$fieldName])) {
-                        $fieldMapping = $targetClassMetadata->fieldMappings[$fieldName];
+                    // $fieldName = "name"
+                    // $fieldColumnName = "custom_name"
+                    $property = $targetClassMetadata->getProperty($fieldName);
 
-                        $data[$owningAssociation['targetToSourceKeyColumns'][$fieldMapping['columnName']]] = $fieldValue;
+                    if ($property instanceof FieldMetadata) {
+                        foreach ($owningAssociation->getJoinColumns() as $joinColumn) {
+                            // $joinColumnName = "custom_name"
+                            // $joinColumnReferencedColumnName = "other_side_of_assoc_column_name"
+                            if ($joinColumn->getReferencedColumnName() !== $property->getColumnName()) {
+                                continue;
+                            }
+
+                            $data[$joinColumn->getColumnName()] = $fieldValue;
+
+                            break;
+                        }
 
                         continue;
                     }
 
-                    $targetAssoc = $targetClassMetadata->associationMappings[$fieldName];
+                    $targetAssociation = $targetClassMetadata->getProperty($fieldName);
 
-                    foreach($assoc['targetToSourceKeyColumns'] as $referencedColumn => $localColumn) {
-                        if (isset($targetAssoc['sourceToTargetKeyColumns'][$referencedColumn])) {
-                            $data[$localColumn] = $fieldValue;
+                    foreach ($association->getJoinColumns() as $assocJoinColumn) {
+                        foreach ($targetAssociation->getJoinColumns() as $targetAssocJoinColumn) {
+                            if ($assocJoinColumn->getReferencedColumnName() !== $targetAssocJoinColumn->getColumnName()) {
+                                continue;
+                            }
+
+                            $data[$assocJoinColumn->getColumnName()] = $fieldValue;
                         }
                     }
                 }
@@ -119,8 +116,8 @@ class DefaultEntityHydrator implements EntityHydrator
                 continue;
             }
 
-            if ( ! isset($assoc['id'])) {
-                $targetClass = ClassUtils::getClass($data[$name]);
+            if (! $association->isPrimaryKey()) {
+                $targetClass = StaticClassNameConverter::getClass($data[$name]);
                 $targetId    = $this->uow->getEntityIdentifier($data[$name]);
                 $data[$name] = new AssociationCacheEntry($targetClass, $targetId);
 
@@ -128,55 +125,56 @@ class DefaultEntityHydrator implements EntityHydrator
             }
 
             // handle association identifier
-            $targetId = is_object($data[$name]) && $this->uow->isInIdentityMap($data[$name])
-                ? $this->uow->getEntityIdentifier($data[$name])
-                : $data[$name];
+            $targetId = $this->em->getIdentifierFlattener()->flattenIdentifier(
+                $targetClassMetadata,
+                $targetPersister->getIdentifier($data[$name])
+            );
 
-            // @TODO - fix it !
-            // handle UnitOfWork#createEntity hash generation
-            if ( ! is_array($targetId)) {
-                $data[reset($assoc['joinColumnFieldNames'])] = $targetId;
-
-                $targetEntity = $this->em->getClassMetadata($assoc['targetEntity']);
-                $targetId     = array($targetEntity->identifier[0] => $targetId);
-            }
-
-            $data[$name] = new AssociationCacheEntry($assoc['targetEntity'], $targetId);
+            $data[$name] = new AssociationCacheEntry($targetEntity, $targetId);
         }
 
-        return new EntityCacheEntry($metadata->name, $data);
+        return new EntityCacheEntry($metadata->getClassName(), $data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function loadCacheEntry(ClassMetadata $metadata, EntityCacheKey $key, EntityCacheEntry $entry, $entity = null)
-    {
+    public function loadCacheEntry(
+        ClassMetadata $metadata,
+        EntityCacheKey $key,
+        EntityCacheEntry $entry,
+        $entity = null
+    ) {
         $data  = $entry->data;
         $hints = self::$hints;
 
         if ($entity !== null) {
-            $hints[Query::HINT_REFRESH]         = true;
-            $hints[Query::HINT_REFRESH_ENTITY]  = $entity;
+            $hints[Query::HINT_REFRESH]        = true;
+            $hints[Query::HINT_REFRESH_ENTITY] = $entity;
         }
 
-        foreach ($metadata->associationMappings as $name => $assoc) {
-            if ( ! isset($assoc['cache']) ||  ! isset($data[$name])) {
+        foreach ($metadata->getDeclaredPropertiesIterator() as $name => $association) {
+            if ($association instanceof FieldMetadata || ! isset($data[$name]) || ! $association->getCache()) {
                 continue;
             }
 
-            $assocClass     = $data[$name]->class;
-            $assocId        = $data[$name]->identifier;
-            $isEagerLoad    = ($assoc['fetch'] === ClassMetadata::FETCH_EAGER || ($assoc['type'] === ClassMetadata::ONE_TO_ONE && ! $assoc['isOwningSide']));
+            $assocClass  = $data[$name]->class;
+            $assocId     = $data[$name]->identifier;
+            $isEagerLoad = (
+                $association->getFetchMode() === FetchMode::EAGER ||
+                ($association instanceof OneToOneAssociationMetadata && ! $association->isOwningSide())
+            );
 
-            if ( ! $isEagerLoad) {
+            if (! $isEagerLoad) {
                 $data[$name] = $this->em->getReference($assocClass, $assocId);
 
                 continue;
             }
 
-            $assocKey       = new EntityCacheKey($assoc['targetEntity'], $assocId);
-            $assocPersister = $this->uow->getEntityPersister($assoc['targetEntity']);
+            $targetEntity   = $association->getTargetEntity();
+            $assocMetadata  = $this->em->getClassMetadata($targetEntity);
+            $assocKey       = new EntityCacheKey($assocMetadata->getRootClassName(), $assocId);
+            $assocPersister = $this->uow->getEntityPersister($targetEntity);
             $assocRegion    = $assocPersister->getCacheRegion();
             $assocEntry     = $assocRegion->get($assocKey);
 
@@ -184,7 +182,11 @@ class DefaultEntityHydrator implements EntityHydrator
                 return null;
             }
 
-            $data[$name] = $this->uow->createEntity($assocEntry->class, $assocEntry->resolveAssociationEntries($this->em), $hints);
+            $data[$name] = $this->uow->createEntity(
+                $assocEntry->class,
+                $assocEntry->resolveAssociationEntries($this->em),
+                $hints
+            );
         }
 
         if ($entity !== null) {

@@ -73,7 +73,7 @@ follows:
     <?php
     use Doctrine\Common\NotifyPropertyChanged,
         Doctrine\Common\PropertyChangedListener;
-    
+
     /**
      * @Entity
      * @ChangeTrackingPolicy("NOTIFY")
@@ -81,12 +81,12 @@ follows:
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        private $_listeners = array();
-    
+
+        private $listeners = array();
+
         public function addPropertyChangedListener(PropertyChangedListener $listener)
         {
-            $this->_listeners[] = $listener;
+            $this->listeners[] = $listener;
         }
     }
 
@@ -99,30 +99,30 @@ behaviour:
 
     <?php
     // ...
-    
+
     class MyEntity implements NotifyPropertyChanged
     {
         // ...
-    
-        protected function _onPropertyChanged($propName, $oldValue, $newValue)
+
+        protected function onPropertyChanged($propName, $oldValue, $newValue)
         {
-            if ($this->_listeners) {
-                foreach ($this->_listeners as $listener) {
+            if ($this->listeners) {
+                foreach ($this->listeners as $listener) {
                     $listener->propertyChanged($this, $propName, $oldValue, $newValue);
                 }
             }
         }
-    
+
         public function setData($data)
         {
             if ($data != $this->data) {
-                $this->_onPropertyChanged('data', $this->data, $data);
+                $this->onPropertyChanged('data', $this->data, $data);
                 $this->data = $data;
             }
         }
     }
 
-You have to invoke ``_onPropertyChanged`` inside every method that
+You have to invoke ``onPropertyChanged`` inside every method that
 changes the persistent state of ``MyEntity``.
 
 The check whether the new value is different from the old one is
@@ -147,5 +147,4 @@ The positive point and main advantage of this policy is its
 effectiveness. It has the best performance characteristics of the 3
 policies with larger units of work and a flush() operation is very
 cheap when nothing has changed.
-
 

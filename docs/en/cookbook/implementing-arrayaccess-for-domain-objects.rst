@@ -16,7 +16,6 @@ In this implementation we will make use of PHPs highly dynamic
 nature to dynamically access properties of a subtype in a supertype
 at runtime. Note that this implementation has 2 main caveats:
 
-
 -  It will not work with private fields
 -  It will not go through any getters/setters
 
@@ -28,15 +27,15 @@ at runtime. Note that this implementation has 2 main caveats:
         public function offsetExists($offset) {
             return isset($this->$offset);
         }
-    
+
         public function offsetSet($offset, $value) {
             $this->$offset = $value;
         }
-    
+
         public function offsetGet($offset) {
             return $this->$offset;
         }
-    
+
         public function offsetUnset($offset) {
             $this->$offset = null;
         }
@@ -49,7 +48,6 @@ In this implementation we will dynamically invoke getters/setters.
 Again we use PHPs dynamic nature to invoke methods on a subtype
 from a supertype at runtime. This implementation has the following
 caveats:
-
 
 -  It relies on a naming convention
 -  The semantics of offsetExists can differ
@@ -65,15 +63,15 @@ caveats:
             $value = $this->{"get$offset"}();
             return $value !== null;
         }
-    
+
         public function offsetSet($offset, $value) {
             $this->{"set$offset"}($value);
         }
-    
+
         public function offsetGet($offset) {
             return $this->{"get$offset"}();
         }
-    
+
         public function offsetUnset($offset) {
             $this->{"set$offset"}(null);
         }
@@ -95,18 +93,17 @@ exception (i.e. BadMethodCallException).
         public function offsetExists($offset) {
             // option 1 or option 2
         }
-    
+
         public function offsetSet($offset, $value) {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }
-    
+
         public function offsetGet($offset) {
             // option 1 or option 2
         }
-    
+
         public function offsetUnset($offset) {
             throw new BadMethodCallException("Array access of class " . get_class($this) . " is read-only!");
         }
     }
-
 

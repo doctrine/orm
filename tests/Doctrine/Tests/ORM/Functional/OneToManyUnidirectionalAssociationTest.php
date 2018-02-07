@@ -1,32 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\Routing\RoutingRoute;
 use Doctrine\Tests\Models\Routing\RoutingLocation;
 use Doctrine\Tests\Models\Routing\RoutingLeg;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests a bidirectional one-to-one association mapping (without inheritance).
  */
-class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class OneToManyUnidirectionalAssociationTest extends OrmFunctionalTestCase
 {
-    protected $locations = array();
+    protected $locations = [];
 
     public function setUp()
     {
         $this->useModelSet('routing');
         parent::setUp();
 
-        $locations = array("Berlin", "Bonn", "Brasilia", "Atlanta");
+        $locations = ["Berlin", "Bonn", "Brasilia", "Atlanta"];
 
-        foreach ($locations AS $locationName) {
+        foreach ($locations as $locationName) {
             $location = new RoutingLocation();
             $location->name = $locationName;
-            $this->_em->persist($location);
+            $this->em->persist($location);
             $this->locations[$locationName] = $location;
         }
-        $this->_em->flush();
+        $this->em->flush();
     }
 
     public function testPersistOwning_InverseCascade()
@@ -40,18 +43,18 @@ class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunction
         $route = new RoutingRoute();
         $route->legs[] = $leg;
 
-        $this->_em->persist($route);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($route);
+        $this->em->flush();
+        $this->em->clear();
 
-        $routes = $this->_em->createQuery(
+        $routes = $this->em->createQuery(
             "SELECT r, l, f, t FROM Doctrine\Tests\Models\Routing\RoutingRoute r ".
             "JOIN r.legs l JOIN l.fromLocation f JOIN l.toLocation t"
         )->getSingleResult();
 
-        $this->assertEquals(1, count($routes->legs));
-        $this->assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
-        $this->assertEquals("Bonn", $routes->legs[0]->toLocation->name);
+        self::assertCount(1, $routes->legs);
+        self::assertEquals("Berlin", $routes->legs[0]->fromLocation->name);
+        self::assertEquals("Bonn", $routes->legs[0]->toLocation->name);
     }
 
     public function testLegsAreUniqueToRoutes()
@@ -68,17 +71,17 @@ class OneToManyUnidirectionalAssociationTest extends \Doctrine\Tests\OrmFunction
         $routeB = new RoutingRoute();
         $routeB->legs[] = $leg;
 
-        $this->_em->persist($routeA);
-        $this->_em->persist($routeB);
+        $this->em->persist($routeA);
+        $this->em->persist($routeB);
 
         $exceptionThrown = false;
         try {
             // exception depending on the underlying Database Driver
-            $this->_em->flush();
-        } catch(\Exception $e) {
+            $this->em->flush();
+        } catch (\Exception $e) {
             $exceptionThrown = true;
         }
 
-        $this->assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
+        self::assertTrue($exceptionThrown, "The underlying database driver throws an exception.");
     }
 }

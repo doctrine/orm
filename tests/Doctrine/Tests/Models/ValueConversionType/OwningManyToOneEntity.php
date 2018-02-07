@@ -1,22 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="vct_owning_manytoone")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_owning_manytoone")
  */
 class OwningManyToOneEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id2;
 
     /**
-     * @ManyToOne(targetEntity="InversedOneToManyEntity", inversedBy="associatedEntities")
-     * @JoinColumn(name="associated_id", referencedColumnName="id1")
+     * @ORM\ManyToOne(targetEntity=InversedOneToManyEntity::class, inversedBy="associatedEntities")
+     * @ORM\JoinColumn(name="associated_id", referencedColumnName="id1")
      */
     public $associatedEntity;
 }

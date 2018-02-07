@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\MixedToOneIdentity;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class CompositeToOneKeyState
 {
-    const CLASSNAME = __CLASS__;
-
     /**
-     * @Id
-     * @Column(type="string")
-     * @GeneratedValue(strategy="NONE")
+     * @ORM\Id
+     * @ORM\Column(type="string")
+     * @ORM\GeneratedValue(strategy="NONE")
      */
     public $state;
 
     /**
-     * @Id
-     * @ManyToOne(targetEntity="Country", cascade={"MERGE"})
-     * @JoinColumn(referencedColumnName="country")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=Country::class, cascade={"MERGE"})
+     * @ORM\JoinColumn(referencedColumnName="country")
      */
     public $country;
 }

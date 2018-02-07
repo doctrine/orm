@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\DBAL\Types\StringType;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1998
@@ -13,49 +16,51 @@ class DDC1998Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
     public function testSqlConversionAsIdentifier()
     {
-        Type::addType('ddc1998', __NAMESPACE__ . '\\DDC1998Type');
+        Type::addType('ddc1998', DDC1998Type::class);
 
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1998Entity'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+            $this->em->getClassMetadata(DDC1998Entity::class),
+            ]
+        );
 
         $entity = new DDC1998Entity();
         $entity->id = new DDC1998Id("foo");
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->em->persist($entity);
+        $this->em->flush();
 
         $entity->num++;
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $this->_em->remove($entity);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($entity);
+        $this->em->flush();
+        $this->em->clear();
 
 
-        $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', $entity->id);
-        $this->assertNull($found);
+        $found = $this->em->find(DDC1998Entity::class, $entity->id);
+        self::assertNull($found);
 
-        $found = $this->_em->find(__NAMESPACE__ . '\\DDC1998Entity', "foo");
-        $this->assertNull($found);
+        $found = $this->em->find(DDC1998Entity::class, "foo");
+        self::assertNull($found);
 
-        $this->assertEquals(0, count($this->_em->getRepository(__NAMESPACE__ . '\\DDC1998Entity')->findAll()));
+        self::assertCount(0, $this->em->getRepository(DDC1998Entity::class)->findAll());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1998Entity
 {
     /**
-     * @Id @Column(type="ddc1998")
+     * @ORM\Id @ORM\Column(type="ddc1998")
      */
     public $id;
 
     /**
-     * @Column(type="integer")
+     * @ORM\Column(type="integer")
      */
     public $num = 0;
 }

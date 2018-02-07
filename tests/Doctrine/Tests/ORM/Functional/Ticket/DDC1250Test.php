@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Tests\Models\CMS\CmsEmployee;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1250
@@ -14,11 +15,12 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
     {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1250ClientHistory'),
-            ));
-        } catch(\PDOException $e) {
-
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC1250ClientHistory::class),
+                ]
+            );
+        } catch (\PDOException $e) {
         }
     }
 
@@ -31,40 +33,39 @@ class DDC1250Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $c2->declinedBy = $c1;
         $c2->declinedClientsHistory= $c1;
 
-        $this->_em->persist($c1);
-        $this->_em->persist($c2);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($c1);
+        $this->em->persist($c2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $history = $this->_em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
+        $history = $this->em->createQuery('SELECT h FROM ' . __NAMESPACE__ . '\\DDC1250ClientHistory h WHERE h.id = ?1')
                   ->setParameter(1, $c2->id)->getSingleResult();
 
-        $this->assertInstanceOf(__NAMESPACE__ . '\\DDC1250ClientHistory', $history);
+        self::assertInstanceOf(DDC1250ClientHistory::class, $history);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1250ClientHistory
 {
-    /** @Id @GeneratedValue @Column(type="integer") */
+    /** @ORM\Id @ORM\GeneratedValue @ORM\Column(type="integer") */
     public $id;
 
-    /** @OneToOne(targetEntity="DDC1250ClientHistory", inversedBy="declinedBy")
-     * @JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
+    /** @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, inversedBy="declinedBy")
+     * @ORM\JoinColumn(name="declined_clients_history_id", referencedColumnName="id")
      */
     public $declinedClientsHistory;
 
     /**
-     * @OneToOne(targetEntity="DDC1250ClientHistory", mappedBy="declinedClientsHistory")
+     * @ORM\OneToOne(targetEntity=DDC1250ClientHistory::class, mappedBy="declinedClientsHistory")
      * @var
      */
     public $declinedBy;
 }
 
 /**
- *
 Entities\ClientsHistory:
 type: entity
 table: clients_history
@@ -89,6 +90,4 @@ targetEntity: Entities\ClientsHistory
 mappedBy: declinedClientsHistory
 lifecycleCallbacks: { }
 repositoryClass: Entities\ClientsHistoryRepository
-
-
  */

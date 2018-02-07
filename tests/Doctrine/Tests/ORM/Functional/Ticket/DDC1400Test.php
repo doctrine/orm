@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\ORM\UnitOfWork;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1400
@@ -14,11 +16,13 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400Article'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400User'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1400UserState'),
-            ));
+            $this->schemaTool->createSchema(
+                [
+                    $this->em->getClassMetadata(DDC1400Article::class),
+                    $this->em->getClassMetadata(DDC1400User::class),
+                    $this->em->getClassMetadata(DDC1400UserState::class),
+                ]
+            );
         } catch (\Exception $ignored) {
         }
     }
@@ -29,102 +33,89 @@ class DDC1400Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $user1 = new DDC1400User;
         $user2 = new DDC1400User;
 
-        $this->_em->persist($article);
-        $this->_em->persist($user1);
-        $this->_em->persist($user2);
-        $this->_em->flush();
+        $this->em->persist($article);
+        $this->em->persist($user1);
+        $this->em->persist($user2);
+        $this->em->flush();
 
         $userState1 = new DDC1400UserState;
         $userState1->article = $article;
-        $userState1->articleId = $article->id;
         $userState1->user = $user1;
-        $userState1->userId = $user1->id;
 
         $userState2 = new DDC1400UserState;
         $userState2->article = $article;
-        $userState2->articleId = $article->id;
         $userState2->user = $user2;
-        $userState2->userId = $user2->id;
 
-        $this->_em->persist($userState1);
-        $this->_em->persist($userState2);
+        $this->em->persist($userState1);
+        $this->em->persist($userState2);
+        $this->em->flush();
+        $this->em->clear();
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $user1 = $this->em->getReference(DDC1400User::class, $user1->id);
 
-        $user1 = $this->_em->getReference(__NAMESPACE__.'\DDC1400User', $user1->id);
+        $this->em->createQuery('SELECT a, s FROM ' . DDC1400Article::class . ' a JOIN a.userStates s WITH s.user = :activeUser')
+                  ->setParameter('activeUser', $user1)
+                  ->getResult();
 
-        $q = $this->_em->createQuery("SELECT a, s FROM ".__NAMESPACE__."\DDC1400Article a JOIN a.userStates s WITH s.user = :activeUser");
-        $q->setParameter('activeUser', $user1);
-        $articles = $q->getResult();
+        $queryCount = $this->getCurrentQueryCount();
 
-        $this->_em->flush();
+        $this->em->flush();
+
+        self::assertSame($queryCount, $this->getCurrentQueryCount(), 'No query should be executed during flush in this case');
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400Article
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="article", indexBy="userId", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC1400UserState::class, mappedBy="article", indexBy="user", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400User
 {
 
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @OneToMany(targetEntity="DDC1400UserState", mappedBy="user", indexBy="articleId", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity=DDC1400UserState::class, mappedBy="user", indexBy="article", fetch="EXTRA_LAZY")
      */
     public $userStates;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1400UserState
 {
-
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400Article", inversedBy="userStates")
+     * @ORM\Id
+     *  @ORM\ManyToOne(targetEntity=DDC1400Article::class, inversedBy="userStates")
      */
     public $article;
 
     /**
-      * @Id
-     *  @ManyToOne(targetEntity="DDC1400User", inversedBy="userStates")
+     * @ORM\Id
+     *  @ORM\ManyToOne(targetEntity=DDC1400User::class, inversedBy="userStates")
      */
     public $user;
-
-    /**
-     * @Column(name="user_id", type="integer")
-     */
-    public $userId;
-
-    /**
-     * @Column(name="article_id", type="integer")
-     */
-    public $articleId;
-
 }

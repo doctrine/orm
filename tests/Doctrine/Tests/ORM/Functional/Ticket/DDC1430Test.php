@@ -1,31 +1,35 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1430
  */
 class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
     protected function setUp()
     {
         parent::setUp();
 
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430Order'),
-                $this->_em->getClassMetadata(__NAMESPACE__ . '\DDC1430OrderProduct'),
-            ));
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DDC1430Order::class),
+                $this->em->getClassMetadata(DDC1430OrderProduct::class),
+                ]
+            );
             $this->loadFixtures();
         } catch (\Exception $exc) {
-
         }
     }
 
     public function testOrderByFields()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o.id, o.date, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -33,30 +37,36 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->orderBy('o.id')
                         ->getQuery();
 
-        $this->assertSQLEquals('SELECT o.id, o.date, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date ORDER BY o.id ASC', $query->getDQL());
-        $this->assertSQLEquals('SELECT d0_.order_id AS order_id_0, d0_.created_at AS created_at_1, COUNT(d1_.id) AS sclr_2 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at ORDER BY d0_.order_id ASC', $query->getSQL());
+        self::assertSQLEquals(
+            'SELECT o.id, o.date, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date ORDER BY o.id ASC',
+            $query->getDQL()
+        );
 
+        self::assertSQLEquals(
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, COUNT(t1."id") AS c2 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at" ORDER BY t0."order_id" ASC',
+            $query->getSQL()
+        );
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, sizeof($result));
+        self::assertCount(2, $result);
 
-        $this->assertArrayHasKey('id', $result[0]);
-        $this->assertArrayHasKey('id', $result[1]);
+        self::assertArrayHasKey('id', $result[0]);
+        self::assertArrayHasKey('id', $result[1]);
 
-        $this->assertArrayHasKey('p_count', $result[0]);
-        $this->assertArrayHasKey('p_count', $result[1]);
+        self::assertArrayHasKey('p_count', $result[0]);
+        self::assertArrayHasKey('p_count', $result[1]);
 
-        $this->assertEquals(1, $result[0]['id']);
-        $this->assertEquals(2, $result[1]['id']);
+        self::assertEquals(1, $result[0]['id']);
+        self::assertEquals(2, $result[1]['id']);
 
-        $this->assertEquals(2, $result[0]['p_count']);
-        $this->assertEquals(3, $result[1]['p_count']);
+        self::assertEquals(2, $result[0]['p_count']);
+        self::assertEquals(3, $result[1]['p_count']);
     }
 
     public function testOrderByAllObjectFields()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -65,27 +75,33 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery();
 
 
-        $this->assertSQLEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date, o.status ORDER BY o.id ASC', $query->getDQL());
-        $this->assertSQLEquals('SELECT d0_.order_id AS order_id_0, d0_.created_at AS created_at_1, d0_.order_status AS order_status_2, COUNT(d1_.id) AS sclr_3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
+        self::assertSQLEquals(
+            'SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o.id, o.date, o.status ORDER BY o.id ASC',
+            $query->getDQL()
+        );
+
+        self::assertSQLEquals(
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, t0."order_status" AS c2, COUNT(t1."id") AS c3 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at", t0."order_status" ORDER BY t0."order_id" ASC',
+            $query->getSQL()
+        );
 
         $result = $query->getResult();
 
+        self::assertCount(2, $result);
 
-        $this->assertEquals(2, sizeof($result));
+        self::assertInstanceOf(DDC1430Order::class, $result[0][0]);
+        self::assertInstanceOf(DDC1430Order::class, $result[1][0]);
 
-        $this->assertTrue($result[0][0] instanceof DDC1430Order);
-        $this->assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertEquals($result[0][0]->getId(), 1);
+        self::assertEquals($result[1][0]->getId(), 2);
 
-        $this->assertEquals($result[0][0]->getId(), 1);
-        $this->assertEquals($result[1][0]->getId(), 2);
-
-        $this->assertEquals($result[0]['p_count'], 2);
-        $this->assertEquals($result[1]['p_count'], 3);
+        self::assertEquals($result[0]['p_count'], 2);
+        self::assertEquals($result[1]['p_count'], 3);
     }
 
     public function testTicket()
     {
-        $repository = $this->_em->getRepository(__NAMESPACE__ . '\DDC1430Order');
+        $repository = $this->em->getRepository(DDC1430Order::class);
         $builder    = $repository->createQueryBuilder('o');
         $query      = $builder->select('o, COUNT(p.id) AS p_count')
                         ->leftJoin('o.products', 'p')
@@ -94,22 +110,28 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
                         ->getQuery();
 
 
-        $this->assertSQLEquals('SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o ORDER BY o.id ASC', $query->getDQL());
-        $this->assertSQLEquals('SELECT d0_.order_id AS order_id_0, d0_.created_at AS created_at_1, d0_.order_status AS order_status_2, COUNT(d1_.id) AS sclr_3 FROM DDC1430Order d0_ LEFT JOIN DDC1430OrderProduct d1_ ON d0_.order_id = d1_.order_id GROUP BY d0_.order_id, d0_.created_at, d0_.order_status ORDER BY d0_.order_id ASC', $query->getSQL());
+        self::assertSQLEquals(
+            'SELECT o, COUNT(p.id) AS p_count FROM Doctrine\Tests\ORM\Functional\Ticket\DDC1430Order o LEFT JOIN o.products p GROUP BY o ORDER BY o.id ASC',
+            $query->getDQL()
+        );
 
+        self::assertSQLEquals(
+            'SELECT t0."order_id" AS c0, t0."created_at" AS c1, t0."order_status" AS c2, COUNT(t1."id") AS c3 FROM "DDC1430Order" t0 LEFT JOIN "DDC1430OrderProduct" t1 ON t0."order_id" = t1."order_id" GROUP BY t0."order_id", t0."created_at", t0."order_status" ORDER BY t0."order_id" ASC',
+            $query->getSQL()
+        );
 
         $result = $query->getResult();
 
-        $this->assertEquals(2, sizeof($result));
+        self::assertCount(2, $result);
 
-        $this->assertTrue($result[0][0] instanceof DDC1430Order);
-        $this->assertTrue($result[1][0] instanceof DDC1430Order);
+        self::assertInstanceOf(DDC1430Order::class, $result[0][0]);
+        self::assertInstanceOf(DDC1430Order::class, $result[1][0]);
 
-        $this->assertEquals($result[0][0]->getId(), 1);
-        $this->assertEquals($result[1][0]->getId(), 2);
+        self::assertEquals($result[0][0]->getId(), 1);
+        self::assertEquals($result[1][0]->getId(), 2);
 
-        $this->assertEquals($result[0]['p_count'], 2);
-        $this->assertEquals($result[1]['p_count'], 3);
+        self::assertEquals($result[0]['p_count'], 2);
+        self::assertEquals($result[1]['p_count'], 3);
     }
 
     public function loadFixtures()
@@ -124,43 +146,48 @@ class DDC1430Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $o2->addProduct(new DDC1430OrderProduct(2.2));
         $o2->addProduct(new DDC1430OrderProduct(2.3));
 
-        $this->_em->persist($o1);
-        $this->_em->persist($o2);
+        $this->em->persist($o1);
+        $this->em->persist($o2);
 
-        $this->_em->flush();
+        $this->em->flush();
     }
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1430Order
 {
-
     /**
-     * @Id
-     * @Column(name="order_id", type="integer")
-     * @GeneratedValue()
+     * @ORM\Id
+     * @ORM\Column(name="order_id", type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
     /**
-     * @Column(name="created_at", type="datetime")
+     * @ORM\Column(name="created_at", type="datetime")
      */
     private $date;
 
     /**
-     * @Column(name="order_status", type="string")
+     * @ORM\Column(name="order_status", type="string")
      */
     private $status;
 
     /**
-     * @OneToMany(targetEntity="DDC1430OrderProduct", mappedBy="order", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity=DDC1430OrderProduct::class, mappedBy="order", cascade={"persist", "remove"})
      *
      * @var \Doctrine\Common\Collections\ArrayCollection $products
      */
     private $products;
+
+    public function __construct($status)
+    {
+        $this->status   = $status;
+        $this->date     = new \DateTime();
+        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * @return int
@@ -170,12 +197,6 @@ class DDC1430Order
         return $this->id;
     }
 
-    public function __construct($status)
-    {
-        $this->status   = $status;
-        $this->date     = new \DateTime();
-        $this->products = new \Doctrine\Common\Collections\ArrayCollection();
-    }
     /**
      * @return \DateTime
      */
@@ -219,28 +240,27 @@ class DDC1430Order
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1430OrderProduct
 {
-
-     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue()
+    /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue()
      */
     protected $id;
 
     /**
      * @var DDC1430Order $order
      *
-     * @ManyToOne(targetEntity="DDC1430Order", inversedBy="products")
-     * @JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
+     * @ORM\ManyToOne(targetEntity=DDC1430Order::class, inversedBy="products")
+     * @ORM\JoinColumn(name="order_id", referencedColumnName="order_id", nullable = false)
      */
     private $order;
 
     /**
-     * @column(type="float")
+     * @ORM\Column(type="float")
      */
     private $value;
 
@@ -252,7 +272,7 @@ class DDC1430OrderProduct
         $this->value = $value;
     }
 
-     /**
+    /**
      * @return int
      */
     public function getId()
@@ -291,5 +311,4 @@ class DDC1430OrderProduct
     {
         $this->value = $value;
     }
-
 }

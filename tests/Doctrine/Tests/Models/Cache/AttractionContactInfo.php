@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Cache;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table("cache_attraction_contact_info")
+ * @ORM\Entity
+ * @ORM\Table("cache_attraction_contact_info")
  */
 class AttractionContactInfo extends AttractionInfo
 {
-    const CLASSNAME = __CLASS__;
-
     /**
-     * @Column(unique=true)
+     * @ORM\Column(unique=true)
      */
     protected $fone;
 

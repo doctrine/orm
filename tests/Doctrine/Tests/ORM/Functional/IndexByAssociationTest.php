@@ -1,18 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
 
 use Doctrine\Tests\Models\StockExchange\Stock;
 use Doctrine\Tests\Models\StockExchange\Market;
 use Doctrine\Tests\Models\StockExchange\Bond;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * @group DDC-250
  */
-class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class IndexByAssociationTest extends OrmFunctionalTestCase
 {
     /**
-     * @var Doctrine\Tests\Models\StockExchange\Market
+     * @var Market
      */
     private $market;
 
@@ -35,69 +38,68 @@ class IndexByAssociationTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $this->bond->addStock($stock1);
         $this->bond->addStock($stock2);
 
-        $this->_em->persist($this->market);
-        $this->_em->persist($stock1);
-        $this->_em->persist($stock2);
-        $this->_em->persist($this->bond);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($this->market);
+        $this->em->persist($stock1);
+        $this->em->persist($stock2);
+        $this->em->persist($this->bond);
+        $this->em->flush();
+        $this->em->clear();
     }
 
     public function testManyToOneFinder()
     {
-        /* @var $market Doctrine\Tests\Models\StockExchange\Market */
-        $market = $this->_em->find('Doctrine\Tests\Models\StockExchange\Market', $this->market->getId());
+        /* @var $market Market */
+        $market = $this->em->find(Market::class, $this->market->getId());
 
-        $this->assertEquals(2, count($market->stocks));
-        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
-        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
-        $this->assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
-        $this->assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
+        self::assertCount(2, $market->stocks);
+        self::assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        self::assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
+        self::assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
+        self::assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
     }
 
     public function testManyToOneDQL()
     {
         $dql = "SELECT m, s FROM Doctrine\Tests\Models\StockExchange\Market m JOIN m.stocks s WHERE m.id = ?1";
-        $market = $this->_em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
+        $market = $this->em->createQuery($dql)->setParameter(1, $this->market->getId())->getSingleResult();
 
-        $this->assertEquals(2, count($market->stocks));
-        $this->assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
-        $this->assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
-        $this->assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
-        $this->assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
+        self::assertCount(2, $market->stocks);
+        self::assertTrue(isset($market->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        self::assertTrue(isset($market->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
+        self::assertEquals("AAPL", $market->stocks['AAPL']->getSymbol());
+        self::assertEquals("GOOG", $market->stocks['GOOG']->getSymbol());
     }
 
     public function testManyToMany()
     {
-        $bond = $this->_em->find('Doctrine\Tests\Models\StockExchange\Bond', $this->bond->getId());
+        $bond = $this->em->find(Bond::class, $this->bond->getId());
 
-        $this->assertEquals(2, count($bond->stocks));
-        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
-        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
-        $this->assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
-        $this->assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
+        self::assertCount(2, $bond->stocks);
+        self::assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        self::assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
+        self::assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
+        self::assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
     }
 
     public function testManytoManyDQL()
     {
         $dql = "SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s WHERE b.id = ?1";
-        $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
+        $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
-        $this->assertEquals(2, count($bond->stocks));
-        $this->assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
-        $this->assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
-        $this->assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
-        $this->assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
+        self::assertCount(2, $bond->stocks);
+        self::assertTrue(isset($bond->stocks['AAPL']), "AAPL symbol has to be key in indexed association.");
+        self::assertTrue(isset($bond->stocks['GOOG']), "GOOG symbol has to be key in indexed association.");
+        self::assertEquals("AAPL", $bond->stocks['AAPL']->getSymbol());
+        self::assertEquals("GOOG", $bond->stocks['GOOG']->getSymbol());
     }
 
     public function testDqlOverrideIndexBy()
     {
         $dql = "SELECT b, s FROM Doctrine\Tests\Models\StockExchange\Bond b JOIN b.stocks s INDEX BY s.id WHERE b.id = ?1";
-        $bond = $this->_em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
+        $bond = $this->em->createQuery($dql)->setParameter(1, $this->bond->getId())->getSingleResult();
 
-        $this->assertEquals(2, count($bond->stocks));
-        $this->assertFalse(isset($bond->stocks['AAPL']), "AAPL symbol not exists in re-indexed association.");
-        $this->assertFalse(isset($bond->stocks['GOOG']), "GOOG symbol not exists in re-indexed association.");
+        self::assertCount(2, $bond->stocks);
+        self::assertFalse(isset($bond->stocks['AAPL']), "AAPL symbol not exists in re-indexed association.");
+        self::assertFalse(isset($bond->stocks['GOOG']), "GOOG symbol not exists in re-indexed association.");
     }
 }
-

@@ -1,52 +1,45 @@
 <?php
-/*
- *  $Id$
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the LGPL. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\Mocks;
 
-use Doctrine\ORM\Proxy\ProxyFactory;
+use Doctrine\Common\EventManager;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Decorator\EntityManagerDecorator;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Special EntityManager mock used for testing purposes.
  */
-class EntityManagerMock extends \Doctrine\ORM\EntityManager
+class EntityManagerMock extends EntityManagerDecorator
 {
     /**
      * @var \Doctrine\ORM\UnitOfWork|null
      */
-    private $_uowMock;
+    private $uowMock;
 
     /**
-     * @var \Doctrine\ORM\Proxy\ProxyFactory|null
+     * @var \Doctrine\ORM\Proxy\Factory\ProxyFactory|null
      */
-    private $_proxyFactoryMock;
+    private $proxyFactoryMock;
+
+    /**
+     * @return EntityManagerInterface
+     */
+    public function getWrappedEntityManager() : EntityManagerInterface
+    {
+        return $this->wrapped;
+    }
 
     /**
      * {@inheritdoc}
      */
     public function getUnitOfWork()
     {
-        return isset($this->_uowMock) ? $this->_uowMock : parent::getUnitOfWork();
+        return $this->uowMock ?? $this->wrapped->getUnitOfWork();
     }
-
-    /* Mock API */
 
     /**
      * Sets a (mock) UnitOfWork that will be returned when getUnitOfWork() is called.
@@ -57,25 +50,25 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      */
     public function setUnitOfWork($uow)
     {
-        $this->_uowMock = $uow;
+        $this->uowMock = $uow;
     }
 
     /**
-     * @param \Doctrine\ORM\Proxy\ProxyFactory $proxyFactory
+     * @param \Doctrine\ORM\Proxy\Factory\ProxyFactory $proxyFactory
      *
      * @return void
      */
     public function setProxyFactory($proxyFactory)
     {
-        $this->_proxyFactoryMock = $proxyFactory;
+        $this->proxyFactoryMock = $proxyFactory;
     }
 
     /**
-     * @return \Doctrine\ORM\Proxy\ProxyFactory
+     * @return \Doctrine\ORM\Proxy\Factory\ProxyFactory
      */
     public function getProxyFactory()
     {
-        return isset($this->_proxyFactoryMock) ? $this->_proxyFactoryMock : parent::getProxyFactory();
+        return $this->proxyFactoryMock ?? $this->wrapped->getProxyFactory();
     }
 
     /**
@@ -83,19 +76,22 @@ class EntityManagerMock extends \Doctrine\ORM\EntityManager
      *
      * {@inheritdoc}
      */
-    public static function create($conn, \Doctrine\ORM\Configuration $config = null,
-            \Doctrine\Common\EventManager $eventManager = null)
+    public static function create($conn, Configuration $config = null, EventManager $eventManager = null)
     {
         if (null === $config) {
-            $config = new \Doctrine\ORM\Configuration();
+            $config = new Configuration();
+
             $config->setProxyDir(__DIR__ . '/../Proxies');
             $config->setProxyNamespace('Doctrine\Tests\Proxies');
-            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver(array(), true));
-        }
-        if (null === $eventManager) {
-            $eventManager = new \Doctrine\Common\EventManager();
+            $config->setMetadataDriverImpl($config->newDefaultAnnotationDriver());
         }
 
-        return new EntityManagerMock($conn, $config, $eventManager);
+        if (null === $eventManager) {
+            $eventManager = $conn->getEventManager();
+        }
+
+        $em = EntityManager::create($conn, $config, $eventManager);
+
+        return new EntityManagerMock($em);
     }
 }

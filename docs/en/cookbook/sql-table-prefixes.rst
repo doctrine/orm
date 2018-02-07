@@ -23,29 +23,32 @@ appropriate autoloaders.
 .. code-block:: php
 
     <?php
-    
+
     namespace DoctrineExtensions;
-    use \Doctrine\ORM\Event\LoadClassMetadataEventArgs;
-    
+
+    use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
+    use Doctrine\ORM\Mapping;
+
     class TablePrefix
     {
         protected $prefix = '';
-    
+
         public function __construct($prefix)
         {
             $this->prefix = (string) $prefix;
         }
-    
+
         public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
         {
             $classMetadata = $eventArgs->getClassMetadata();
 
-            if (!$classMetadata->isInheritanceTypeSingleTable() || $classMetadata->getName() === $classMetadata->rootEntityName) {
+            if ($classMetadata->inheritanceType !== Mapping\InheritanceType::SINGLE_TABLE ||
+                $classMetadata->getName() === $classMetadata->rootEntityName) {
                 $classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
             }
 
-            foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping) {
-                if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY && $mapping['isOwningSide']) {
+            foreach ($classMetadata->associationMappings as $fieldName => $mapping) {
+                if ($mapping['type'] == Mapping\ClassMetadata::MANY_TO_MANY && $mapping['isOwningSide']) {
                     $mappedTableName = $mapping['joinTable']['name'];
                     $classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
                 }
@@ -66,19 +69,17 @@ before the prefix has been set.
     If you set this listener up, be aware that you will need
     to clear your caches and drop then recreate your database schema.
 
-
 .. code-block:: php
 
     <?php
-    
+
     // $connectionOptions and $config set earlier
-    
+
     $evm = new \Doctrine\Common\EventManager;
-    
+
     // Table Prefix
     $tablePrefix = new \DoctrineExtensions\TablePrefix('prefix_');
     $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $tablePrefix);
-    
-    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 
+    $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
 

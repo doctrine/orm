@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
+use Doctrine\ORM\Query\QueryException;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmTestCase;
 
-class ParserTest extends \Doctrine\Tests\OrmTestCase
+class ParserTest extends OrmTestCase
 {
 
     /**
@@ -15,9 +20,9 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAbstractSchemaNameSupportsFQCN()
     {
-        $parser = $this->createParser('Doctrine\Tests\Models\CMS\CmsUser');
+        $parser = $this->createParser(CmsUser::class);
 
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals(CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -26,9 +31,9 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAbstractSchemaNameSupportsClassnamesWithLeadingBackslash()
     {
-        $parser = $this->createParser('\Doctrine\Tests\Models\CMS\CmsUser');
+        $parser = $this->createParser('\\' . CmsUser::class);
 
-        $this->assertEquals('\Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals('\\' . CmsUser::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -37,35 +42,9 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testAbstractSchemaNameSupportsIdentifier()
     {
-        $parser = $this->createParser('stdClass');
+        $parser = $this->createParser(\stdClass::class);
 
-        $this->assertEquals('stdClass', $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAlias()
-    {
-        $parser = $this->createParser('CMS:CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('CMS', 'Doctrine\Tests\Models\CMS');
-
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
-    }
-
-    /**
-     * @covers \Doctrine\ORM\Query\Parser::AbstractSchemaName
-     * @group DDC-3715
-     */
-    public function testAbstractSchemaNameSupportsNamespaceAliasWithRelativeClassname()
-    {
-        $parser = $this->createParser('Model:CMS\CmsUser');
-
-        $parser->getEntityManager()->getConfiguration()->addEntityNamespace('Model', 'Doctrine\Tests\Models');
-
-        $this->assertEquals('Doctrine\Tests\Models\CMS\CmsUser', $parser->AbstractSchemaName());
+        self::assertEquals(\stdClass::class, $parser->AbstractSchemaName());
     }
 
     /**
@@ -89,7 +68,7 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testMatchFailure($expectedToken, $inputString)
     {
-        $this->setExpectedException('\Doctrine\ORM\Query\QueryException');
+        $this->expectException(QueryException::class);
 
         $parser = $this->createParser($inputString);
 
@@ -106,33 +85,34 @@ class ParserTest extends \Doctrine\Tests\OrmTestCase
          * The basic checks that tokens are classified correctly do not belong here
          * but in LexerTest.
          */
-        return array(
-            array(Lexer::T_WHERE, 'where'), // keyword
-            array(Lexer::T_DOT, '.'), // token that cannot be an identifier
-            array(Lexer::T_IDENTIFIER, 'someIdentifier'),
-            array(Lexer::T_IDENTIFIER, 'from'), // also a terminal string (the "FROM" keyword) as in DDC-505
-            array(Lexer::T_IDENTIFIER, 'comma') // not even a terminal string, but the name of a constant in the Lexer (whitebox test)
-        );
+        return [
+            [Lexer::T_WHERE, 'where'], // keyword
+            [Lexer::T_DOT, '.'], // token that cannot be an identifier
+            [Lexer::T_IDENTIFIER, 'someIdentifier'],
+            [Lexer::T_IDENTIFIER, 'from'], // also a terminal string (the "FROM" keyword) as in DDC-505
+            [Lexer::T_IDENTIFIER, 'comma']
+            // not even a terminal string, but the name of a constant in the Lexer (whitebox test)
+        ];
     }
 
     public function invalidMatches()
     {
-        return array(
-            array(Lexer::T_DOT, 'ALL'), // ALL is a terminal string (reserved keyword) and also possibly an identifier
-            array(Lexer::T_DOT, ','), // "," is a token on its own, but cannot be used as identifier
-            array(Lexer::T_WHERE, 'WITH'), // as in DDC-3697
-            array(Lexer::T_WHERE, '.'),
+        return [
+            [Lexer::T_DOT, 'ALL'], // ALL is a terminal string (reserved keyword) and also possibly an identifier
+            [Lexer::T_DOT, ','], // "," is a token on its own, but cannot be used as identifier
+            [Lexer::T_WHERE, 'WITH'], // as in DDC-3697
+            [Lexer::T_WHERE, '.'],
 
             // The following are qualified or aliased names and must not be accepted where only an Identifier is expected
-            array(Lexer::T_IDENTIFIER, '\\Some\\Class'),
-            array(Lexer::T_IDENTIFIER, 'Some\\Class'),
-            array(Lexer::T_IDENTIFIER, 'Some:Name'),
-        );
+            [Lexer::T_IDENTIFIER, '\\Some\\Class'],
+            [Lexer::T_IDENTIFIER, 'Some\\Class'],
+            [Lexer::T_IDENTIFIER, 'Some:Name'],
+        ];
     }
 
     private function createParser($dql)
     {
-        $query = new Query($this->_getTestEntityManager());
+        $query = new Query($this->getTestEntityManager());
         $query->setDQL($dql);
 
         $parser = new Parser($query);

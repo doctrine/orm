@@ -1,30 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Mocks;
+
+use Doctrine\ORM\UnitOfWork;
 
 /**
  * Mock class for UnitOfWork.
  */
-class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
+class UnitOfWorkMock extends UnitOfWork
 {
     /**
      * @var array
      */
-    private $_mockDataChangeSets = array();
+    private $mockDataChangeSets = [];
 
     /**
      * @var array|null
      */
-    private $_persisterMock;
+    private $persisterMock;
 
     /**
      * {@inheritdoc}
      */
     public function getEntityPersister($entityName)
     {
-        return isset($this->_persisterMock[$entityName])
-            ? $this->_persisterMock[$entityName]
-            : parent::getEntityPersister($entityName);
+        return $this->persisterMock[$entityName]
+            ?? parent::getEntityPersister($entityName);
     }
 
     /**
@@ -32,10 +35,10 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
      */
     public function & getEntityChangeSet($entity)
     {
-        $oid = spl_object_hash($entity);
+        $oid = spl_object_id($entity);
 
-        if (isset($this->_mockDataChangeSets[$oid])) {
-            return $this->_mockDataChangeSets[$oid];
+        if (isset($this->mockDataChangeSets[$oid])) {
+            return $this->mockDataChangeSets[$oid];
         }
 
         $data = parent::getEntityChangeSet($entity);
@@ -56,14 +59,6 @@ class UnitOfWorkMock extends \Doctrine\ORM\UnitOfWork
      */
     public function setEntityPersister($entityName, $persister)
     {
-        $this->_persisterMock[$entityName] = $persister;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setOriginalEntityData($entity, array $originalData)
-    {
-        $this->_originalEntityData[spl_object_hash($entity)] = $originalData;
+        $this->persisterMock[$entityName] = $persister;
     }
 }

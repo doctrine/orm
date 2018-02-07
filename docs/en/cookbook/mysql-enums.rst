@@ -43,13 +43,16 @@ entities:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
         const STATUS_VISIBLE = 'visible';
         const STATUS_INVISIBLE = 'invisible';
 
-        /** @Column(type="string") */
+        /** @ORM\Column(type="string") */
         private $status;
 
         public function setStatus($status)
@@ -67,10 +70,13 @@ the **columnDefinition** attribute.
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
+        /** @ORM\Column(type="string", columnDefinition="ENUM('visible', 'invisible')") */
         private $status;
     }
 
@@ -98,7 +104,7 @@ For example for the previous enum type:
 
         public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
         {
-            return "ENUM('visible', 'invisible') COMMENT '(DC2Type:enumvisibility)'";
+            return "ENUM('visible', 'invisible')";
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -118,6 +124,11 @@ For example for the previous enum type:
         {
             return self::ENUM_VISIBILITY;
         }
+
+        public function requiresSQLCommentHint(AbstractPlatform $platform)
+        {
+            return true;
+        }
     }
 
 You can register this type with ``Type::addType('enumvisibility', 'MyProject\DBAL\EnumVisibilityType');``.
@@ -126,10 +137,13 @@ Then in your entity you can just use this type:
 .. code-block:: php
 
     <?php
-    /** @Entity */
+
+    use Doctrine\ORM\Annotation as ORM;
+
+    /** @ORM\Entity */
     class Article
     {
-        /** @Column(type="enumvisibility") */
+        /** @ORM\Column(type="enumvisibility") */
         private $status;
     }
 
@@ -152,7 +166,7 @@ You can generalize this approach easily to create a base class for enums:
         {
             $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
 
-            return "ENUM(".implode(", ", $values).") COMMENT '(DC2Type:".$this->name.")'";
+            return "ENUM(".implode(", ", $values).")";
         }
 
         public function convertToPHPValue($value, AbstractPlatform $platform)
@@ -171,6 +185,11 @@ You can generalize this approach easily to create a base class for enums:
         public function getName()
         {
             return $this->name;
+        }
+
+        public function requiresSQLCommentHint(AbstractPlatform $platform)
+        {
+            return true;
         }
     }
 

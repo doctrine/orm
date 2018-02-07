@@ -1,31 +1,139 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Driver;
 
-use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain;
+use Doctrine\ORM\Mapping;
 
 /**
- * {@inheritDoc}
- *
- * @deprecated this driver will be removed. Use Doctrine\Common\Persistence\Mapping\Driver\MappingDriverChain instead
+ * The DriverChain allows you to add multiple other mapping drivers for
+ * certain namespaces.
  */
-class DriverChain extends MappingDriverChain
+class DriverChain implements MappingDriver
 {
+    /**
+     * The default driver.
+     *
+     * @var MappingDriver|null
+     */
+    private $defaultDriver;
+
+    /**
+     * @var MappingDriver[]
+     */
+    private $drivers = [];
+
+    /**
+     * Gets the default driver.
+     *
+     * @return MappingDriver|null
+     */
+    public function getDefaultDriver()
+    {
+        return $this->defaultDriver;
+    }
+
+    /**
+     * Set the default driver.
+     */
+    public function setDefaultDriver(MappingDriver $driver)
+    {
+        $this->defaultDriver = $driver;
+    }
+
+    /**
+     * Adds a nested driver.
+     *
+     * @param string $namespace
+     */
+    public function addDriver(MappingDriver $nestedDriver, $namespace)
+    {
+        $this->drivers[$namespace] = $nestedDriver;
+    }
+
+    /**
+     * Gets the array of nested drivers.
+     *
+     * @return MappingDriver[] $drivers
+     */
+    public function getDrivers()
+    {
+        return $this->drivers;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function loadMetadataForClass(
+        string $className,
+        Mapping\ClassMetadata $metadata,
+        Mapping\ClassMetadataBuildingContext $metadataBuildingContext
+    ) {
+        /* @var $driver MappingDriver */
+        foreach ($this->drivers as $namespace => $driver) {
+            if (strpos($className, $namespace) === 0) {
+                $driver->loadMetadataForClass($className, $metadata, $metadataBuildingContext);
+                return;
+            }
+        }
+
+        if ($this->defaultDriver !== null) {
+            $this->defaultDriver->loadMetadataForClass($className, $metadata, $metadataBuildingContext);
+            return;
+        }
+
+        throw Mapping\MappingException::classNotFoundInNamespaces($className, array_keys($this->drivers));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAllClassNames()
+    {
+        $classNames    = [];
+        $driverClasses = [];
+
+        /* @var $driver MappingDriver */
+        foreach ($this->drivers as $namespace => $driver) {
+            $oid = spl_object_id($driver);
+
+            if (! isset($driverClasses[$oid])) {
+                $driverClasses[$oid] = $driver->getAllClassNames();
+            }
+
+            foreach ($driverClasses[$oid] as $className) {
+                if (strpos($className, $namespace) === 0) {
+                    $classNames[$className] = true;
+                }
+            }
+        }
+
+        if ($this->defaultDriver !== null) {
+            foreach ($this->defaultDriver->getAllClassNames() as $className) {
+                $classNames[$className] = true;
+            }
+        }
+
+        return array_keys($classNames);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function isTransient($className)
+    {
+        /* @var $driver MappingDriver */
+        foreach ($this->drivers as $namespace => $driver) {
+            if (strpos($className, $namespace) === 0) {
+                return $driver->isTransient($className);
+            }
+        }
+
+        if ($this->defaultDriver !== null) {
+            return $this->defaultDriver->isTransient($className);
+        }
+
+        return true;
+    }
 }

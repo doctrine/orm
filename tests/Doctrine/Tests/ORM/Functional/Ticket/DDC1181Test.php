@@ -1,17 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+
+class DDC1181Test extends OrmFunctionalTestCase
 {
     public function setUp()
     {
         parent::setUp();
-        $this->_schemaTool->createSchema(array(
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Hotel'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Booking'),
-            $this->_em->getClassMetadata(__NAMESPACE__ . '\\DDC1181Room'),
-        ));
+        $this->schemaTool->createSchema(
+            [
+                $this->em->getClassMetadata(DDC1181Hotel::class),
+                $this->em->getClassMetadata(DDC1181Booking::class),
+                $this->em->getClassMetadata(DDC1181Room::class),
+            ]
+        );
     }
 
     /**
@@ -23,10 +30,10 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $room1 = new DDC1181Room();
         $room2 = new DDC1181Room();
 
-        $this->_em->persist($hotel);
-        $this->_em->persist($room1);
-        $this->_em->persist($room2);
-        $this->_em->flush();
+        $this->em->persist($hotel);
+        $this->em->persist($room1);
+        $this->em->persist($room2);
+        $this->em->flush();
 
         $booking1 = new DDC1181Booking;
         $booking1->hotel = $hotel;
@@ -37,63 +44,64 @@ class DDC1181Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $hotel->bookings[] = $booking1;
         $hotel->bookings[] = $booking2;
 
-        $this->_em->persist($booking1);
-        $this->_em->persist($booking2);
-        $this->_em->flush();
+        $this->em->persist($booking1);
+        $this->em->persist($booking2);
+        $this->em->flush();
 
-        $this->_em->remove($hotel);
-        $this->_em->flush();
+        $this->em->remove($hotel);
+        $this->em->flush();
+
+        self::assertEmpty($this->em->getRepository(DDC1181Booking::class)->findAll());
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1181Hotel
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 
     /**
-     * @oneToMany(targetEntity="DDC1181Booking", mappedBy="hotel", cascade={"remove"})
+     * @ORM\OneToMany(targetEntity=DDC1181Booking::class, mappedBy="hotel", cascade={"remove"})
      * @var Booking[]
      */
     public $bookings;
-
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1181Booking
 {
     /**
      * @var Hotel
      *
-     * @Id
-     * @ManyToOne(targetEntity="DDC1181Hotel", inversedBy="bookings")
-     * @JoinColumns({
-     *   @JoinColumn(name="hotel_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC1181Hotel::class, inversedBy="bookings")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="hotel_id", referencedColumnName="id")
      * })
      */
     public $hotel;
     /**
      * @var Room
      *
-     * @Id
-     * @ManyToOne(targetEntity="DDC1181Room")
-     * @JoinColumns({
-     *   @JoinColumn(name="room_id", referencedColumnName="id")
+     * @ORM\Id
+     * @ORM\ManyToOne(targetEntity=DDC1181Room::class)
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="room_id", referencedColumnName="id")
      * })
      */
     public $room;
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1181Room
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     public $id;
 }

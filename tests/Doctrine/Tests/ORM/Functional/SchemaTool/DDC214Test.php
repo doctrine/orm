@@ -1,27 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\SchemaTool;
 
-use Doctrine\ORM\Tools;
+use Doctrine\DBAL\Schema\Comparator;
+use Doctrine\Tests\Models;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * WARNING: This test should be run as last test! It can affect others very easily!
  */
-class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
+class DDC214Test extends OrmFunctionalTestCase
 {
-    private $classes = array();
-    private $schemaTool = null;
+    private $classes = [];
 
     public function setUp()
     {
         parent::setUp();
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->em->getConnection();
 
         if (strpos($conn->getDriver()->getName(), "sqlite") !== false) {
             $this->markTestSkipped('SQLite does not support ALTER TABLE statements.');
         }
-        $this->schemaTool = new Tools\SchemaTool($this->_em);
     }
 
     /**
@@ -29,16 +31,16 @@ class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testCmsAddressModel()
     {
-        $this->classes = array(
-            'Doctrine\Tests\Models\CMS\CmsUser',
-            'Doctrine\Tests\Models\CMS\CmsPhonenumber',
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            'Doctrine\Tests\Models\CMS\CmsGroup',
-            'Doctrine\Tests\Models\CMS\CmsArticle',
-            'Doctrine\Tests\Models\CMS\CmsEmail',
-        );
+        $this->classes = [
+            Models\CMS\CmsUser::class,
+            Models\CMS\CmsPhonenumber::class,
+            Models\CMS\CmsAddress::class,
+            Models\CMS\CmsGroup::class,
+            Models\CMS\CmsArticle::class,
+            Models\CMS\CmsEmail::class,
+        ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     /**
@@ -46,44 +48,44 @@ class DDC214Test extends \Doctrine\Tests\OrmFunctionalTestCase
      */
     public function testCompanyModel()
     {
-        $this->classes = array(
-            'Doctrine\Tests\Models\Company\CompanyPerson',
-            'Doctrine\Tests\Models\Company\CompanyEmployee',
-            'Doctrine\Tests\Models\Company\CompanyManager',
-            'Doctrine\Tests\Models\Company\CompanyOrganization',
-            'Doctrine\Tests\Models\Company\CompanyEvent',
-            'Doctrine\Tests\Models\Company\CompanyAuction',
-            'Doctrine\Tests\Models\Company\CompanyRaffle',
-            'Doctrine\Tests\Models\Company\CompanyCar'
-        );
+        $this->classes = [
+            Models\Company\CompanyPerson::class,
+            Models\Company\CompanyEmployee::class,
+            Models\Company\CompanyManager::class,
+            Models\Company\CompanyOrganization::class,
+            Models\Company\CompanyEvent::class,
+            Models\Company\CompanyAuction::class,
+            Models\Company\CompanyRaffle::class,
+            Models\Company\CompanyCar::class
+        ];
 
-        $this->assertCreatedSchemaNeedsNoUpdates($this->classes);
+        self::assertCreatedSchemaNeedsNoUpdates($this->classes);
     }
 
     public function assertCreatedSchemaNeedsNoUpdates($classes)
     {
-        $classMetadata = array();
-        foreach ($classes AS $class) {
-            $classMetadata[] = $this->_em->getClassMetadata($class);
+        $classMetadata = [];
+        foreach ($classes as $class) {
+            $classMetadata[] = $this->em->getClassMetadata($class);
         }
 
         try {
             $this->schemaTool->createSchema($classMetadata);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             // was already created
         }
 
-        $sm = $this->_em->getConnection()->getSchemaManager();
+        $sm = $this->em->getConnection()->getSchemaManager();
 
         $fromSchema = $sm->createSchema();
         $toSchema = $this->schemaTool->getSchemaFromMetadata($classMetadata);
 
-        $comparator = new \Doctrine\DBAL\Schema\Comparator();
+        $comparator = new Comparator();
         $schemaDiff = $comparator->compare($fromSchema, $toSchema);
 
-        $sql = $schemaDiff->toSql($this->_em->getConnection()->getDatabasePlatform());
+        $sql = $schemaDiff->toSql($this->em->getConnection()->getDatabasePlatform());
         $sql = array_filter($sql, function($sql) { return strpos($sql, 'DROP') === false; });
 
-        $this->assertEquals(0, count($sql), "SQL: " . implode(PHP_EOL, $sql));
+        self::assertCount(0, $sql, "SQL: " . implode(PHP_EOL, $sql));
     }
 }

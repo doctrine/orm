@@ -1,23 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
+use ProxyManager\Proxy\GhostObjectInterface;
 
 /**
  * Functional tests for the Class Table Inheritance mapping strategy.
  *
  * @author robo
  */
-class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
+class ClassTableInheritanceTest2 extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIParent'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIChild'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\CTIRelated2')
-            ));
+            $this->schemaTool->createSchema(
+                [
+                    $this->em->getClassMetadata(CTIParent::class),
+                    $this->em->getClassMetadata(CTIChild::class),
+                    $this->em->getClassMetadata(CTIRelated::class),
+                    $this->em->getClassMetadata(CTIRelated2::class)
+                ]
+            );
         } catch (\Exception $ignored) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -31,144 +41,158 @@ class ClassTableInheritanceTest2 extends \Doctrine\Tests\OrmFunctionalTestCase
         $related = new CTIRelated;
         $related->setCTIParent($child);
 
-        $this->_em->persist($related);
-        $this->_em->persist($child);
+        $this->em->persist($related);
+        $this->em->persist($child);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
         $relatedId = $related->getId();
 
-        $related2 = $this->_em->find('Doctrine\Tests\ORM\Functional\CTIRelated', $relatedId);
+        $related2 = $this->em->find(CTIRelated::class, $relatedId);
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIRelated', $related2);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $related2->getCTIParent());
-        $this->assertNotInstanceOf('Doctrine\ORM\Proxy\Proxy', $related2->getCTIParent());
-        $this->assertEquals('hello', $related2->getCTIParent()->getData());
+        self::assertInstanceOf(CTIRelated::class, $related2);
+        self::assertInstanceOf(CTIChild::class, $related2->getCTIParent());
+        self::assertNotInstanceOf(GhostObjectInterface::class, $related2->getCTIParent());
+        self::assertEquals('hello', $related2->getCTIParent()->getData());
 
-        $this->assertSame($related2, $related2->getCTIParent()->getRelated());
+        self::assertSame($related2, $related2->getCTIParent()->getRelated());
     }
 
     public function testManyToManyToCTIHierarchy()
     {
-        //$this->_em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
+        //$this->em->getConnection()->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
         $mmrel = new CTIRelated2;
         $child = new CTIChild;
         $child->setData('child');
         $mmrel->addCTIChild($child);
 
-        $this->_em->persist($mmrel);
-        $this->_em->persist($child);
+        $this->em->persist($mmrel);
+        $this->em->persist($child);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $mmrel2 = $this->_em->find(get_class($mmrel), $mmrel->getId());
-        $this->assertFalse($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertEquals(1, count($mmrel2->getCTIChildren()));
-        $this->assertTrue($mmrel2->getCTIChildren()->isInitialized());
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\CTIChild', $mmrel2->getCTIChildren()->get(0));
+        $mmrel2 = $this->em->find(get_class($mmrel), $mmrel->getId());
+        self::assertFalse($mmrel2->getCTIChildren()->isInitialized());
+        self::assertCount(1, $mmrel2->getCTIChildren());
+        self::assertTrue($mmrel2->getCTIChildren()->isInitialized());
+        self::assertInstanceOf(CTIChild::class, $mmrel2->getCTIChildren()->get(0));
     }
 }
 
 /**
- * @Entity @Table(name="cti_parents")
- * @InheritanceType("JOINED")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"parent" = "CTIParent", "child" = "CTIChild"})
+ * @ORM\Entity @ORM\Table(name="cti_parents")
+ * @ORM\InheritanceType("JOINED")
+ * @ORM\DiscriminatorColumn(name="type", type="string")
+ * @ORM\DiscriminatorMap({"parent" = CTIParent::class, "child" = CTIChild::class})
  */
-class CTIParent {
-   /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+class CTIParent
+{
+    /**
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
-    /** @OneToOne(targetEntity="CTIRelated", mappedBy="ctiParent") */
+    /** @ORM\OneToOne(targetEntity=CTIRelated::class, mappedBy="ctiParent") */
     private $related;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getRelated() {
+    public function getRelated()
+    {
         return $this->related;
     }
 
-    public function setRelated($related) {
+    public function setRelated($related)
+    {
         $this->related = $related;
         $related->setCTIParent($this);
     }
 }
 
 /**
- * @Entity @Table(name="cti_children")
+ * @ORM\Entity @ORM\Table(name="cti_children")
  */
-class CTIChild extends CTIParent {
-   /**
-     * @Column(type="string")
+class CTIChild extends CTIParent
+{
+    /**
+     * @ORM\Column(type="string")
      */
     private $data;
 
-    public function getData() {
+    public function getData()
+    {
         return $this->data;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
-
 }
 
-/** @Entity */
-class CTIRelated {
+/** @ORM\Entity */
+class CTIRelated
+{
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @OneToOne(targetEntity="CTIParent")
-     * @JoinColumn(name="ctiparent_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=CTIParent::class)
+     * @ORM\JoinColumn(name="ctiparent_id", referencedColumnName="id")
      */
     private $ctiParent;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getCTIParent() {
+    public function getCTIParent()
+    {
         return $this->ctiParent;
     }
 
-    public function setCTIParent($ctiParent) {
+    public function setCTIParent($ctiParent)
+    {
         $this->ctiParent = $ctiParent;
     }
 }
 
-/** @Entity */
+/** @ORM\Entity */
 class CTIRelated2
 {
-    /** @Id @Column(type="integer") @GeneratedValue */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue */
     private $id;
-    /** @ManyToMany(targetEntity="CTIChild") */
+    /** @ORM\ManyToMany(targetEntity=CTIChild::class) */
     private $ctiChildren;
 
 
-    public function __construct() {
-        $this->ctiChildren = new \Doctrine\Common\Collections\ArrayCollection;
+    public function __construct()
+    {
+        $this->ctiChildren = new ArrayCollection();
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function addCTIChild(CTIChild $child) {
+    public function addCTIChild(CTIChild $child)
+    {
         $this->ctiChildren->add($child);
     }
 
-    public function getCTIChildren() {
+    public function getCTIChildren()
+    {
         return $this->ctiChildren;
     }
 }

@@ -1,31 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ECommerce;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * ECommerceCustomer
  * Represents a registered user of a shopping application.
  *
  * @author Giorgio Sironi
- * @Entity
- * @Table(name="ecommerce_customers")
+ * @ORM\Entity
+ * @ORM\Table(name="ecommerce_customers")
  */
 class ECommerceCustomer
 {
     /**
-     * @Column(type="integer")
-     * @Id
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     private $name;
 
     /**
-     * @OneToOne(targetEntity="ECommerceCart", mappedBy="customer", cascade={"persist"})
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCart::class,
+     *     mappedBy="customer",
+     *     cascade={"persist"}
+     * )
      */
     private $cart;
 
@@ -34,20 +42,27 @@ class ECommerceCustomer
      * only one customer at the time, while a customer can choose only one
      * mentor. Not properly appropriate but it works.
      *
-     * @OneToOne(targetEntity="ECommerceCustomer", cascade={"persist"}, fetch="EAGER")
-     * @JoinColumn(name="mentor_id", referencedColumnName="id")
+     * @ORM\OneToOne(
+     *     targetEntity=ECommerceCustomer::class,
+     *     cascade={"persist"},
+     *     fetch="EAGER"
+     * )
+     * @ORM\JoinColumn(name="mentor_id", referencedColumnName="id")
      */
     private $mentor;
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
@@ -60,11 +75,13 @@ class ECommerceCustomer
     }
 
     /* Does not properly maintain the bidirectional association! */
-    public function brokenSetCart(ECommerceCart $cart) {
+    public function brokenSetCart(ECommerceCart $cart)
+    {
         $this->cart = $cart;
     }
 
-    public function getCart() {
+    public function getCart()
+    {
         return $this->cart;
     }
 

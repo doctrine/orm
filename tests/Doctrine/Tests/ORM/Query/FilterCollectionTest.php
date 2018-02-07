@@ -1,52 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
-use Doctrine\ORM\Mapping\ClassMetaData,
-    Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Query\Filter\SQLFilter;
+use Doctrine\Tests\OrmTestCase;
 
 /**
  * Test case for FilterCollection
  *
  * @author Guilherme Blanco <guilhermeblanco@hotmail.com>
  */
-class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
+class FilterCollectionTest extends OrmTestCase
 {
     /**
-     * @var \Doctrine\ORM\EntityManager
+     * @var \Doctrine\ORM\EntityManagerInterface
      */
     private $em;
 
     protected function setUp()
     {
-        $this->em = $this->_getTestEntityManager();
-
-        $this->em->getConfiguration()->addFilter('testFilter', 'Doctrine\Tests\ORM\Query\MyFilter');
+        $this->em = $this->getTestEntityManager();
+        $this->em->getConfiguration()->addFilter('testFilter', MyFilter::class);
     }
 
     public function testEnable()
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertCount(0, $filterCollection->getEnabledFilters());
 
         $filterCollection->enable('testFilter');
 
         $enabledFilters = $filterCollection->getEnabledFilters();
 
-        $this->assertCount(1, $enabledFilters);
-        $this->assertContainsOnly('Doctrine\Tests\ORM\Query\MyFilter', $enabledFilters);
+        self::assertCount(1, $enabledFilters);
+        self::assertContainsOnly(MyFilter::class, $enabledFilters);
 
         $filterCollection->disable('testFilter');
-        $this->assertCount(0, $filterCollection->getEnabledFilters());
+        self::assertCount(0, $filterCollection->getEnabledFilters());
     }
 
     public function testHasFilter()
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertTrue($filterCollection->has('testFilter'));
-        $this->assertFalse($filterCollection->has('fakeFilter'));
+        self::assertTrue($filterCollection->has('testFilter'));
+        self::assertFalse($filterCollection->has('fakeFilter'));
     }
 
     /**
@@ -56,11 +58,11 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
     {
         $filterCollection = $this->em->getFilters();
 
-        $this->assertFalse($filterCollection->isEnabled('testFilter'));
+        self::assertFalse($filterCollection->isEnabled('testFilter'));
 
         $filterCollection->enable('testFilter');
 
-        $this->assertTrue($filterCollection->isEnabled('testFilter'));
+        self::assertTrue($filterCollection->isEnabled('testFilter'));
     }
 
     /**
@@ -69,17 +71,15 @@ class FilterCollectionTest extends \Doctrine\Tests\OrmTestCase
     public function testGetFilterInvalidArgument()
     {
         $filterCollection = $this->em->getFilters();
-
         $filterCollection->getFilter('testFilter');
     }
 
     public function testGetFilter()
     {
         $filterCollection = $this->em->getFilters();
-
         $filterCollection->enable('testFilter');
 
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Query\MyFilter', $filterCollection->getFilter('testFilter'));
+        self::assertInstanceOf(MyFilter::class, $filterCollection->getFilter('testFilter'));
     }
 }
 

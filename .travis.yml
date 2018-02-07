@@ -1,79 +1,99 @@
+dist: trusty
+sudo: false
 language: php
 
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - hhvm
+  - 7.2
+  - nightly
 
 env:
+  - DB=sqlite
   - DB=mysql
   - DB=pgsql
-  - DB=sqlite
 
-before_script:
-  - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then PHPUNIT_FLAGS="--coverage-clover ./build/logs/clover.xml"; else PHPUNIT_FLAGS=""; fi
-  - if [[ $TRAVIS_PHP_VERSION != '7.0' && $TRAVIS_PHP_VERSION != 'hhvm' ]]; then phpenv config-rm xdebug.ini; fi
+before_install:
+  - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{,.disabled} || echo "xdebug not available"
   - composer self-update
-  - composer install --prefer-source
+
+install: travis_retry composer update --prefer-dist
 
 script:
-  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml $PHPUNIT_FLAGS
-  - ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
+  - if [[ "$DB" == "mysql" || "$DB" == "mariadb" ]]; then mysql -e "CREATE SCHEMA doctrine_tests; GRANT ALL PRIVILEGES ON doctrine_tests.* to travis@'%'"; fi
+  - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml
+  # temporarily disabled
+  #- ENABLE_SECOND_LEVEL_CACHE=1 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --exclude-group performance,non-cacheable,locking_functional
 
-after_script:
-  - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then wget https://scrutinizer-ci.com/ocular.phar; fi
-  - if [[ $TRAVIS_PHP_VERSION = '7.0' && $DB = 'sqlite' ]]; then php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
-
-matrix:
+jobs:
   include:
-    - php: 5.4
+    - stage: Test
       env: DB=mariadb
       addons:
-        mariadb: 5.5
-    - php: 5.5
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
-    - php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
-    - php: 7.0
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
-    - php: hhvm
-      env: DB=mariadb
-      addons:
-        mariadb: 5.5
+        mariadb: 10.1
 
-    - php: 5.4
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: 5.5
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: 7.0
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-    - php: hhvm
-      env: DB=mariadb
-      addons:
-        mariadb: 10.1
-  exclude:
-    - php: hhvm
-      env: DB=pgsql  # driver for PostgreSQL currently unsupported by HHVM, requires 3rd party dependency
+    - stage: Test
+      env: DB=mysql MYSQL_VERSION=5.7
+      php: 7.2
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      sudo: required
 
-sudo: false
+    - stage: Test
+      env: DB=mysql MYSQL_VERSION=5.7
+      php: nightly
+      before_script:
+        - ./tests/travis/install-mysql-$MYSQL_VERSION.sh
+      sudo: required
+
+    - stage: Test
+      env: DB=sqlite DEPENDENCIES=low
+      install: travis_retry composer update --prefer-dist --prefer-lowest
+
+    - stage: Test
+      if: type = cron
+      env: DB=sqlite DEV_DEPENDENCIES
+      install:
+        - composer config minimum-stability dev
+        - travis_retry composer update --prefer-dist
+
+    - stage: Test
+      env: DB=sqlite COVERAGE
+      before_script:
+        - mv ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini{.disabled,}
+        - if [[ ! $(php -m | grep -si xdebug) ]]; then echo "xdebug required for coverage"; exit 1; fi
+      script:
+        - ENABLE_SECOND_LEVEL_CACHE=0 ./vendor/bin/phpunit -v -c tests/travis/$DB.travis.xml --coverage-clover ./build/logs/clover.xml
+      after_script:
+        - wget https://scrutinizer-ci.com/ocular.phar
+        - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
+
+    - stage: Code Quality
+      env: DB=none STATIC_ANALYSIS
+      install: travis_retry composer update --prefer-dist --prefer-stable
+      before_script:
+        - echo "extension=memcached.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        - echo "extension=redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+        - travis_retry composer require --dev --prefer-dist --prefer-stable phpstan/phpstan:^0.9
+      script: vendor/bin/phpstan analyse -l 1 -c phpstan.neon lib
+
+    - stage: Code Quality
+      env: DB=none BENCHMARK
+      before_script: wget https://phpbench.github.io/phpbench/phpbench.phar https://phpbench.github.io/phpbench/phpbench.phar.pubkey
+      script: php phpbench.phar run --bootstrap=tests/Doctrine/Tests/TestInit.php -l dots --report=default
+
+    - stage: Code Quality
+      env: DB=none CODING_STANDARDS
+      php: 7.2
+      script:
+        - ./vendor/bin/phpcs lib
+        - ./vendor/bin/phpcs tests tools || true # disabled on CI until ported to new CS
+
+  allow_failures:
+    - php: nightly
+    # temporarily disabled
+    - env: DB=mysql
+    - env: DB=mariadb
+    - env: DB=pgsql
+    - env: DB=mysql MYSQL_VERSION=5.7
 
 cache:
   directories:

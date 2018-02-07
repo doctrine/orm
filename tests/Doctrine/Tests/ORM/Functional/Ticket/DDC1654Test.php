@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * @group DDC-1654
@@ -10,15 +14,17 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->setUpEntitySchema(array(
-            __NAMESPACE__ . '\\DDC1654Post',
-            __NAMESPACE__ . '\\DDC1654Comment',
-        ));
+        $this->setUpEntitySchema(
+            [
+            DDC1654Post::class,
+            DDC1654Comment::class,
+            ]
+        );
     }
 
     public function tearDown()
     {
-        $conn = static::$_sharedConn;
+        $conn = static::$sharedConn;
         $conn->executeUpdate('DELETE FROM ddc1654post_ddc1654comment');
         $conn->executeUpdate('DELETE FROM DDC1654Comment');
         $conn->executeUpdate('DELETE FROM DDC1654Post');
@@ -30,17 +36,17 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->remove(0);
         $post->comments->remove(1);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
-        $this->assertEquals(0, count($comments));
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
+        self::assertCount(0, $comments);
     }
 
     public function testManyToManyRemoveElementFromCollectionOrphanRemoval()
@@ -49,17 +55,17 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->removeElement($post->comments[0]);
         $post->comments->removeElement($post->comments[1]);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
-        $this->assertEquals(0, count($comments));
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
+        self::assertCount(0, $comments);
     }
 
     /**
@@ -71,18 +77,18 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $comment = $post->comments[0];
         $post->comments->removeElement($comment);
         $post->comments->add($comment);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
-        $this->assertEquals(2, count($comments));
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
+        self::assertCount(2, $comments);
     }
 
     public function testManyToManyClearCollectionOrphanRemoval()
@@ -91,17 +97,16 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $post->comments->clear();
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
-        $this->assertEquals(0, count($comments));
-
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
+        self::assertCount(0, $comments);
     }
 
     /**
@@ -113,45 +118,45 @@ class DDC1654Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $post->comments[] = new DDC1654Comment();
         $post->comments[] = new DDC1654Comment();
 
-        $this->_em->persist($post);
-        $this->_em->flush();
+        $this->em->persist($post);
+        $this->em->flush();
 
         $comment = $post->comments[0];
         $post->comments->clear();
         $post->comments->add($comment);
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $comments = $this->_em->getRepository(__NAMESPACE__ . '\\DDC1654Comment')->findAll();
-        $this->assertEquals(1, count($comments));
+        $comments = $this->em->getRepository(DDC1654Comment::class)->findAll();
+        self::assertCount(1, $comments);
     }
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1654Post
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 
     /**
-     * @ManyToMany(targetEntity="DDC1654Comment", orphanRemoval=true,
+     * @ORM\ManyToMany(targetEntity=DDC1654Comment::class, orphanRemoval=true,
      * cascade={"persist"})
      */
-    public $comments = array();
+    public $comments = [];
 }
 
 /**
- * @Entity
+ * @ORM\Entity
  */
 class DDC1654Comment
 {
     /**
-     * @Id @Column(type="integer") @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue
      */
     public $id;
 }

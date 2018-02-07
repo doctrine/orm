@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Hydration;
 
-/** @Entity */
+use Doctrine\ORM\Annotation as ORM;
+
+/** @ORM\Entity */
 class SimpleEntity
 {
-    const CLASSNAME = __CLASS__;
-
-    /** @Id @Column(type="integer") @GeneratedValue(strategy="AUTO") */
+    /** @ORM\Id @ORM\Column(type="integer") @ORM\GeneratedValue(strategy="AUTO") */
     public $id;
 }

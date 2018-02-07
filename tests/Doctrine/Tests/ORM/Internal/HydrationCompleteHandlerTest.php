@@ -1,29 +1,16 @@
 <?php
-/*
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * and is licensed under the MIT license. For more information, see
- * <http://www.doctrine-project.org>.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\ORM\Internal;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\ListenersInvoker;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Internal\HydrationCompleteHandler;
-use PHPUnit_Framework_TestCase;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\Tests\DoctrineTestCase;
 use stdClass;
 
 /**
@@ -31,7 +18,7 @@ use stdClass;
  *
  * @covers \Doctrine\ORM\Internal\HydrationCompleteHandler
  */
-class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
+class HydrationCompleteHandlerTest extends DoctrineTestCase
 {
     /**
      * @var \Doctrine\ORM\Event\ListenersInvoker|\PHPUnit_Framework_MockObject_MockObject
@@ -53,20 +40,20 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->listenersInvoker = $this->getMock('Doctrine\ORM\Event\ListenersInvoker', array(), array(), '', false);
-        $this->entityManager    = $this->getMock('Doctrine\ORM\EntityManagerInterface');
+        $this->listenersInvoker = $this->createMock(ListenersInvoker::class);
+        $this->entityManager    = $this->createMock(EntityManagerInterface::class);
         $this->handler          = new HydrationCompleteHandler($this->listenersInvoker, $this->entityManager);
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
     public function testDefersPostLoadOfEntity($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata      = $this->createMock(ClassMetadata::class);
         $entity        = new stdClass();
         $entityManager = $this->entityManager;
 
@@ -97,14 +84,14 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
     public function testDefersPostLoadOfEntityOnlyOnce($listenersFlag)
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
         $this
@@ -123,7 +110,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider testGetValidListenerInvocationFlags
+     * @dataProvider invocationFlagProvider
      *
      * @param int $listenersFlag
      */
@@ -131,8 +118,8 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     {
         /* @var $metadata1 \Doctrine\ORM\Mapping\ClassMetadata */
         /* @var $metadata2 \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata1      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
-        $metadata2      = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata1      = $this->createMock(ClassMetadata::class);
+        $metadata2      = $this->createMock(ClassMetadata::class);
         $entity1        = new stdClass();
         $entity2        = new stdClass();
         $entityManager  = $this->entityManager;
@@ -156,7 +143,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
                 Events::postLoad,
                 $this->logicalOr($entity1, $entity2),
                 $this->callback(function (LifecycleEventArgs $args) use ($entityManager, $entity1, $entity2) {
-                    return in_array($args->getEntity(), array($entity1, $entity2), true)
+                    return in_array($args->getEntity(), [$entity1, $entity2], true)
                         && $entityManager === $args->getObjectManager();
                 }),
                 $listenersFlag
@@ -168,7 +155,7 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
     public function testSkipsDeferredPostLoadOfMetadataWithNoInvokedListeners()
     {
         /* @var $metadata \Doctrine\ORM\Mapping\ClassMetadata */
-        $metadata = $this->getMock('Doctrine\ORM\Mapping\ClassMetadata', array(), array(), '', false);
+        $metadata = $this->createMock(ClassMetadata::class);
         $entity   = new stdClass();
 
         $this
@@ -185,15 +172,15 @@ class HydrationCompleteHandlerTest extends PHPUnit_Framework_TestCase
         $this->handler->hydrationComplete();
     }
 
-    public function testGetValidListenerInvocationFlags()
+    public function invocationFlagProvider()
     {
-        return array(
-            array(ListenersInvoker::INVOKE_LISTENERS),
-            array(ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER),
-            array(ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER),
-        );
+        return [
+            [ListenersInvoker::INVOKE_LISTENERS],
+            [ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_MANAGER],
+            [ListenersInvoker::INVOKE_LISTENERS | ListenersInvoker::INVOKE_CALLBACKS | ListenersInvoker::INVOKE_MANAGER],
+        ];
     }
 }

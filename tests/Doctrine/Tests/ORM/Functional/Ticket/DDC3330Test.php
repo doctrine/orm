@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
-use Doctrine\Tests\OrmFunctionalTestCase;
+use Doctrine\ORM\Annotation as ORM;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Functional tests for paginator with collection order
@@ -16,10 +19,12 @@ class DDC3330Test extends OrmFunctionalTestCase
     {
         parent::setUp();
 
-        $this->setUpEntitySchema(array(
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Building',
-            'Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Hall',
-        ));
+        $this->setUpEntitySchema(
+            [
+            DDC3330_Building::class,
+            DDC3330_Hall::class,
+            ]
+        );
     }
 
     public function testIssueCollectionOrderWithPaginator()
@@ -28,59 +33,52 @@ class DDC3330Test extends OrmFunctionalTestCase
         $this->createBuildingAndHalls();
         $this->createBuildingAndHalls();
 
-        $this->_em->clear();
-        
-        $query = $this->_em->createQuery(
+        $this->em->clear();
+
+        $query = $this->em->createQuery(
             'SELECT b, h'.
             ' FROM Doctrine\Tests\ORM\Functional\Ticket\DDC3330_Building b'.
             ' LEFT JOIN b.halls h'.
             ' ORDER BY b.id ASC, h.name DESC'
         )
         ->setMaxResults(3);
-        
+
         $paginator = new Paginator($query, true);
-        
-        /*foreach ($paginator as $building) {
-             echo 'BUILDING ID: '.$building->id."\n";
-             foreach ($building->halls as $hall) {
-                 echo '   - HALL: '.$hall->id.' - '.$hall->name."\n";
-             }
-         }*/
-        
-        $this->assertEquals(3, count(iterator_to_array($paginator)), 'Count is not correct for pagination');
+
+        self::assertCount(3, iterator_to_array($paginator), 'Count is not correct for pagination');
     }
-    
+
     /**
      * Create a building and 10 halls
      */
     private function createBuildingAndHalls()
     {
         $building = new DDC3330_Building();
-    
+
         for ($i = 0; $i < 10; $i++) {
             $hall = new DDC3330_Hall();
             $hall->name = 'HALL-'.$i;
             $building->addHall($hall);
         }
-    
-        $this->_em->persist($building);
-        $this->_em->flush();
+
+        $this->em->persist($building);
+        $this->em->flush();
     }
 }
 
 /**
- * @Entity @Table(name="ddc3330_building")
+ * @ORM\Entity @ORM\Table(name="ddc3330_building")
  */
 class DDC3330_Building
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
-    
+
     /**
-     * @OneToMany(targetEntity="DDC3330_Hall", mappedBy="building", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=DDC3330_Hall::class, mappedBy="building", cascade={"persist"})
      */
     public $halls;
 
@@ -92,23 +90,23 @@ class DDC3330_Building
 }
 
 /**
- * @Entity @Table(name="ddc3330_hall")
+ * @ORM\Entity @ORM\Table(name="ddc3330_hall")
  */
 class DDC3330_Hall
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @ManyToOne(targetEntity="DDC3330_Building", inversedBy="halls")
+     * @ORM\ManyToOne(targetEntity=DDC3330_Building::class, inversedBy="halls")
      */
     public $building;
 
     /**
-     * @Column(type="string", length=100)
+     * @ORM\Column(type="string", length=100)
      */
     public $name;
 }

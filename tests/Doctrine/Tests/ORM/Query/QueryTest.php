@@ -1,48 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Query;
 
 use Doctrine\Common\Cache\ArrayCache;
 use Doctrine\Common\Collections\ArrayCollection;
-
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\Tests\Mocks\DriverConnectionMock;
 use Doctrine\Tests\Mocks\StatementArrayMock;
+use Doctrine\Tests\Models\CMS\CmsAddress;
+use Doctrine\Tests\Models\CMS\CmsUser;
+use Doctrine\Tests\OrmTestCase;
 
-class QueryTest extends \Doctrine\Tests\OrmTestCase
+class QueryTest extends OrmTestCase
 {
-    /** @var EntityManager */
-    protected $_em = null;
+    /** @var EntityManagerInterface */
+    protected $em;
 
     protected function setUp()
     {
-        $this->_em = $this->_getTestEntityManager();
+        $this->em = $this->getTestEntityManager();
     }
 
     public function testGetParameters()
     {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
 
         $parameters = new ArrayCollection();
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testGetParameters_HasSomeAlready()
     {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
         $query->setParameter(2, 84);
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter(2, 84));
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testSetParameters()
     {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
 
         $parameters = new ArrayCollection();
         $parameters->add(new Parameter(1, 'foo'));
@@ -50,37 +56,37 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
 
         $query->setParameters($parameters);
 
-        $this->assertEquals($parameters, $query->getParameters());
+        self::assertEquals($parameters, $query->getParameters());
     }
 
     public function testFree()
     {
-        $query = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1");
         $query->setParameter(2, 84, \PDO::PARAM_INT);
 
         $query->free();
 
-        $this->assertEquals(0, count($query->getParameters()));
+        self::assertCount(0, $query->getParameters());
     }
 
     public function testClone()
     {
         $dql = "select u from Doctrine\Tests\Models\CMS\CmsUser u where u.username = ?1";
 
-        $query = $this->_em->createQuery($dql);
+        $query = $this->em->createQuery($dql);
         $query->setParameter(2, 84, \PDO::PARAM_INT);
         $query->setHint('foo', 'bar');
 
         $cloned = clone $query;
 
-        $this->assertEquals($dql, $cloned->getDql());
-        $this->assertEquals(0, count($cloned->getParameters()));
-        $this->assertFalse($cloned->getHint('foo'));
+        self::assertEquals($dql, $cloned->getDQL());
+        self::assertCount(0, $cloned->getParameters());
+        self::assertFalse($cloned->getHint('foo'));
     }
 
     public function testFluentQueryInterface()
     {
-        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $q = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
         $q2 = $q->expireQueryCache(true)
           ->setQueryCacheLifetime(3600)
           ->setQueryCacheDriver(null)
@@ -88,14 +94,14 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
           ->setHint('foo', 'bar')
           ->setHint('bar', 'baz')
           ->setParameter(1, 'bar')
-          ->setParameters(new ArrayCollection(array(new Parameter(2, 'baz'))))
+          ->setParameters(new ArrayCollection([new Parameter(2, 'baz')]))
           ->setResultCacheDriver(null)
           ->setResultCacheId('foo')
-          ->setDql('foo')
+          ->setDQL('foo')
           ->setFirstResult(10)
           ->setMaxResults(10);
 
-        $this->assertSame($q2, $q);
+        self::assertSame($q2, $q);
     }
 
     /**
@@ -103,14 +109,14 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testHints()
     {
-        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $q = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
         $q->setHint('foo', 'bar')->setHint('bar', 'baz');
 
-        $this->assertEquals('bar', $q->getHint('foo'));
-        $this->assertEquals('baz', $q->getHint('bar'));
-        $this->assertEquals(array('foo' => 'bar', 'bar' => 'baz'), $q->getHints());
-        $this->assertTrue($q->hasHint('foo'));
-        $this->assertFalse($q->hasHint('barFooBaz'));
+        self::assertEquals('bar', $q->getHint('foo'));
+        self::assertEquals('baz', $q->getHint('bar'));
+        self::assertEquals(['foo' => 'bar', 'bar' => 'baz'], $q->getHints());
+        self::assertTrue($q->hasHint('foo'));
+        self::assertFalse($q->hasHint('barFooBaz'));
     }
 
     /**
@@ -118,34 +124,35 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testQueryDefaultResultCache()
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-        $q = $this->_em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
+        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $q = $this->em->createQuery("select a from Doctrine\Tests\Models\CMS\CmsArticle a");
         $q->useResultCache(true);
-        $this->assertSame($this->_em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
+        self::assertSame($this->em->getConfiguration()->getResultCacheImpl(), $q->getQueryCacheProfile()->getResultCacheDriver());
     }
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     **/
+     */
     public function testIterateWithNoDistinctAndWrongSelectClause()
     {
-        $q = $this->_em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q = $this->em->createQuery("select u, a from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }
 
     /**
      * @expectedException Doctrine\ORM\Query\QueryException
-     **/
+     */
     public function testIterateWithNoDistinctAndWithValidSelectClause()
     {
-        $q = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+        $q = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
         $q->iterate();
     }
 
     public function testIterateWithDistinct()
     {
-        $q = $this->_em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
-        $q->iterate();
+        $q = $this->em->createQuery("SELECT DISTINCT u from Doctrine\Tests\Models\CMS\CmsUser u LEFT JOIN u.articles a");
+
+        self::assertInstanceOf(IterableResult::class, $q->iterate());
     }
 
     /**
@@ -153,21 +160,21 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testCollectionParameters()
     {
-        $cities = array(
+        $cities = [
             0 => "Paris",
             3 => "Canne",
             9 => "St Julien"
-        );
+        ];
 
-        $query  = $this->_em
+        $query  = $this->em
                 ->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)")
                 ->setParameter('cities', $cities);
 
         $parameters = $query->getParameters();
         $parameter  = $parameters->first();
 
-        $this->assertEquals('cities', $parameter->getName());
-        $this->assertEquals($cities, $parameter->getValue());
+        self::assertEquals('cities', $parameter->getName());
+        self::assertEquals($cities, $parameter->getValue());
     }
 
     /**
@@ -175,29 +182,29 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testProcessParameterValueClassMetadata()
     {
-        $query  = $this->_em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
-        $this->assertEquals(
-            'Doctrine\Tests\Models\CMS\CmsAddress',
-            $query->processParameterValue($this->_em->getClassMetadata('Doctrine\Tests\Models\CMS\CmsAddress'))
+        $query  = $this->em->createQuery("SELECT a FROM Doctrine\Tests\Models\CMS\CmsAddress a WHERE a.city IN (:cities)");
+        self::assertEquals(
+            CmsAddress::class,
+            $query->processParameterValue($this->em->getClassMetadata(CmsAddress::class))
         );
     }
 
     public function testDefaultQueryHints()
     {
-        $config = $this->_em->getConfiguration();
-        $defaultHints = array(
+        $config = $this->em->getConfiguration();
+        $defaultHints = [
             'hint_name_1' => 'hint_value_1',
             'hint_name_2' => 'hint_value_2',
             'hint_name_3' => 'hint_value_3',
-        );
+        ];
 
         $config->setDefaultQueryHints($defaultHints);
-        $query = $this->_em->createQuery();
-        $this->assertSame($config->getDefaultQueryHints(), $query->getHints());
-        $this->_em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
-        $this->assertNotSame($config->getDefaultQueryHints(), $query->getHints());
+        $query = $this->em->createQuery();
+        self::assertSame($config->getDefaultQueryHints(), $query->getHints());
+        $this->em->getConfiguration()->setDefaultQueryHint('hint_name_1', 'hint_another_value_1');
+        self::assertNotSame($config->getDefaultQueryHints(), $query->getHints());
         $q2 = clone $query;
-        $this->assertSame($config->getDefaultQueryHints(), $q2->getHints());
+        self::assertSame($config->getDefaultQueryHints(), $q2->getHints());
     }
 
     /**
@@ -205,31 +212,31 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testResultCacheCaching()
     {
-        $this->_em->getConfiguration()->setResultCacheImpl(new ArrayCache());
-        $this->_em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+        $this->em->getConfiguration()->setQueryCacheImpl(new ArrayCache());
         /** @var DriverConnectionMock $driverConnectionMock */
-        $driverConnectionMock = $this->_em->getConnection()->getWrappedConnection();
+        $driverConnectionMock = $this->em->getConnection()->getWrappedConnection();
         $stmt = new StatementArrayMock([
             [
-                'id_0' => 1,
+                'c0' => 1,
             ]
         ]);
         $driverConnectionMock->setStatementMock($stmt);
-        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+        $res = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
             ->useQueryCache(true)
             ->useResultCache(true, 60)
             //let it cache
             ->getResult();
 
-        $this->assertCount(1, $res);
+        self::assertCount(1, $res);
 
         $driverConnectionMock->setStatementMock(null);
 
-        $res = $this->_em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
+        $res = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u")
             ->useQueryCache(true)
             ->useResultCache(false)
             ->getResult();
-        $this->assertCount(0, $res);
+        self::assertCount(0, $res);
     }
 
     /**
@@ -237,8 +244,145 @@ class QueryTest extends \Doctrine\Tests\OrmTestCase
      */
     public function testSetHydrationCacheProfileNull()
     {
-        $query = $this->_em->createQuery();
+        $query = $this->em->createQuery();
         $query->setHydrationCacheProfile(null);
-        $this->assertNull($query->getHydrationCacheProfile());
+
+        self::assertNull($query->getHydrationCacheProfile());
+    }
+
+    /**
+     * @group 2947
+     */
+    public function testResultCacheEviction()
+    {
+        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->em->createQuery("SELECT u FROM Doctrine\Tests\Models\CMS\CmsUser u")
+                          ->useResultCache(true);
+
+        /** @var DriverConnectionMock $driverConnectionMock */
+        $driverConnectionMock = $this->em->getConnection()
+            ->getWrappedConnection();
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(0, $query->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1]]));
+
+        // Performs the query and sets up the initial cache
+        self::assertCount(1, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1], ['c0' => 2]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(1, $query->expireResultCache(false)->getResult());
+
+        // Performs the query and caches the result set since expire flag is true
+        self::assertCount(2, $query->expireResultCache(true)->getResult());
+
+        $driverConnectionMock->setStatementMock(new StatementArrayMock([['c0' => 1]]));
+
+        // Retrieves cached data since expire flag is false and we have a cached result set
+        self::assertCount(2, $query->expireResultCache(false)->getResult());
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectJoinSubquery()
+    {
+        $query = $this->em->createQuery("select u from Doctrine\Tests\Models\CMS\CmsUser u JOIN (SELECT )");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
+    }
+
+    /**
+     * @group #6162
+     */
+    public function testSelectFromSubquery()
+    {
+        $query = $this->em->createQuery("select u from (select Doctrine\Tests\Models\CMS\CmsUser c) as u");
+
+        $this->expectException(QueryException::class);
+        $this->expectExceptionMessage('Subquery');
+        $query->getSQL();
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testGetParameterTypeJuggling() : void
+    {
+        $query = $this->em->createQuery('select u from ' . CmsUser::class . ' u where u.id = ?0');
+
+        $query->setParameter(0, 0);
+
+        self::assertCount(1, $query->getParameters());
+        self::assertSame(0, $query->getParameter(0)->getValue());
+        self::assertSame(0, $query->getParameter('0')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroIsNotOverridden() : void
+    {
+        $query = $this->em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter(0, 0);
+        $query->setParameter('name', 'Doctrine');
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(0, $query->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithNameZeroDoesNotOverrideAnotherParameter() : void
+    {
+        $query = $this->em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter('name', 'Doctrine');
+        $query->setParameter(0, 0);
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(0, $query->getParameter(0)->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6699
+     */
+    public function testSetParameterWithTypeJugglingWorks() : void
+    {
+        $query = $this->em->createQuery('select u from ' . CmsUser::class . ' u where u.id != ?0 and u.username = :name');
+
+        $query->setParameter('0', 1);
+        $query->setParameter('name', 'Doctrine');
+        $query->setParameter(0, 2);
+        $query->setParameter('0', 3);
+
+        self::assertCount(2, $query->getParameters());
+        self::assertSame(3, $query->getParameter(0)->getValue());
+        self::assertSame(3, $query->getParameter('0')->getValue());
+        self::assertSame('Doctrine', $query->getParameter('name')->getValue());
+    }
+
+    /**
+     * @group 6748
+     */
+    public function testResultCacheProfileCanBeRemovedViaSetter() : void
+    {
+        $this->em->getConfiguration()->setResultCacheImpl(new ArrayCache());
+
+        $query = $this->em->createQuery('SELECT u FROM ' . CmsUser::class . ' u');
+        $query->useResultCache(true);
+        $query->setResultCacheProfile();
+
+        self::assertAttributeSame(null, 'queryCacheProfile', $query);
     }
 }

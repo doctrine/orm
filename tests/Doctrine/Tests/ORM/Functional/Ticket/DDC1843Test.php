@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\Quote\Group;
@@ -10,40 +12,30 @@ use Doctrine\Tests\Models\Quote\Group;
  */
 class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
 {
-
-    protected function setUp()
+    protected function setUp() : void
     {
-        parent::setUp();
+        $this->useModelSet('quote');
 
-        try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\User'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Group'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Phone'),
-                $this->_em->getClassMetadata('Doctrine\Tests\Models\Quote\Address'),
-            ));
-        } catch(\Exception $e) {
-        }
+        parent::setUp();
     }
 
     public function testCreateRetrieveUpdateDelete()
     {
-
         $e1 = new Group('Parent Bar 1');
         $e2 = new Group('Parent Foo 2');
 
-        $this->_em->persist($e1);
-        $this->_em->persist($e2);
-        $this->_em->flush();
+        $this->em->persist($e1);
+        $this->em->persist($e2);
+        $this->em->flush();
 
         $e3 = new Group('Bar 3', $e1);
         $e4 = new Group('Foo 4', $e2);
 
         // Create
-        $this->_em->persist($e3);
-        $this->_em->persist($e4);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($e3);
+        $this->em->persist($e4);
+        $this->em->flush();
+        $this->em->clear();
 
         $e1Id   = $e1->id;
         $e2Id   = $e2->id;
@@ -51,26 +43,26 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e4Id   = $e4->id;
 
         // Retrieve
-        $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
-        $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
-        $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);
-        $e4     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e4Id);
+        $e1     = $this->em->find(Group::class, $e1Id);
+        $e2     = $this->em->find(Group::class, $e2Id);
+        $e3     = $this->em->find(Group::class, $e3Id);
+        $e4     = $this->em->find(Group::class, $e4Id);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
+        self::assertInstanceOf(Group::class, $e1);
+        self::assertInstanceOf(Group::class, $e2);
+        self::assertInstanceOf(Group::class, $e3);
+        self::assertInstanceOf(Group::class, $e4);
 
-        $this->assertEquals($e1Id, $e1->id);
-        $this->assertEquals($e2Id, $e2->id);
-        $this->assertEquals($e3Id, $e3->id);
-        $this->assertEquals($e4Id, $e4->id);
+        self::assertEquals($e1Id, $e1->id);
+        self::assertEquals($e2Id, $e2->id);
+        self::assertEquals($e3Id, $e3->id);
+        self::assertEquals($e4Id, $e4->id);
 
 
-        $this->assertEquals('Parent Bar 1', $e1->name);
-        $this->assertEquals('Parent Foo 2', $e2->name);
-        $this->assertEquals('Bar 3', $e3->name);
-        $this->assertEquals('Foo 4', $e4->name);
+        self::assertEquals('Parent Bar 1', $e1->name);
+        self::assertEquals('Parent Foo 2', $e2->name);
+        self::assertEquals('Bar 3', $e3->name);
+        self::assertEquals('Foo 4', $e4->name);
 
         $e1->name = 'Parent Bar 11';
         $e2->name = 'Parent Foo 22';
@@ -78,57 +70,56 @@ class DDC1843Test extends \Doctrine\Tests\OrmFunctionalTestCase
         $e4->name = 'Foo 44';
 
         // Update
-        $this->_em->persist($e1);
-        $this->_em->persist($e2);
-        $this->_em->persist($e3);
-        $this->_em->persist($e4);
-        $this->_em->flush();
+        $this->em->persist($e1);
+        $this->em->persist($e2);
+        $this->em->persist($e3);
+        $this->em->persist($e4);
+        $this->em->flush();
 
-        $this->assertEquals('Parent Bar 11', $e1->name);
-        $this->assertEquals('Parent Foo 22', $e2->name);
-        $this->assertEquals('Bar 33', $e3->name);
-        $this->assertEquals('Foo 44', $e4->name);
+        self::assertEquals('Parent Bar 11', $e1->name);
+        self::assertEquals('Parent Foo 22', $e2->name);
+        self::assertEquals('Bar 33', $e3->name);
+        self::assertEquals('Foo 44', $e4->name);
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
+        self::assertInstanceOf(Group::class, $e1);
+        self::assertInstanceOf(Group::class, $e2);
+        self::assertInstanceOf(Group::class, $e3);
+        self::assertInstanceOf(Group::class, $e4);
 
-        $this->assertEquals($e1Id, $e1->id);
-        $this->assertEquals($e2Id, $e2->id);
-        $this->assertEquals($e3Id, $e3->id);
-        $this->assertEquals($e4Id, $e4->id);
+        self::assertEquals($e1Id, $e1->id);
+        self::assertEquals($e2Id, $e2->id);
+        self::assertEquals($e3Id, $e3->id);
+        self::assertEquals($e4Id, $e4->id);
 
-        $this->assertEquals('Parent Bar 11', $e1->name);
-        $this->assertEquals('Parent Foo 22', $e2->name);
-        $this->assertEquals('Bar 33', $e3->name);
-        $this->assertEquals('Foo 44', $e4->name);
+        self::assertEquals('Parent Bar 11', $e1->name);
+        self::assertEquals('Parent Foo 22', $e2->name);
+        self::assertEquals('Bar 33', $e3->name);
+        self::assertEquals('Foo 44', $e4->name);
 
         // Delete
-        $this->_em->remove($e4);
-        $this->_em->remove($e3);
-        $this->_em->remove($e2);
-        $this->_em->remove($e1);
-        
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->remove($e4);
+        $this->em->remove($e3);
+        $this->em->remove($e2);
+        $this->em->remove($e1);
+
+        $this->em->flush();
+        $this->em->clear();
 
 
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e1);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e2);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e3);
-        $this->assertInstanceOf('Doctrine\Tests\Models\Quote\Group', $e4);
+        self::assertInstanceOf(Group::class, $e1);
+        self::assertInstanceOf(Group::class, $e2);
+        self::assertInstanceOf(Group::class, $e3);
+        self::assertInstanceOf(Group::class, $e4);
 
         // Retrieve
-        $e1     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e1Id);
-        $e2     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e2Id);
-        $e3     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e3Id);
-        $e4     = $this->_em->find('Doctrine\Tests\Models\Quote\Group', $e4Id);
+        $e1     = $this->em->find(Group::class, $e1Id);
+        $e2     = $this->em->find(Group::class, $e2Id);
+        $e3     = $this->em->find(Group::class, $e3Id);
+        $e4     = $this->em->find(Group::class, $e4Id);
 
-        $this->assertNull($e1);
-        $this->assertNull($e2);
-        $this->assertNull($e3);
-        $this->assertNull($e4);
+        self::assertNull($e1);
+        self::assertNull($e2);
+        self::assertNull($e3);
+        self::assertNull($e4);
     }
-
 }

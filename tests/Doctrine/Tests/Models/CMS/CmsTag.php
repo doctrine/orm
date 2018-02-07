@@ -1,48 +1,51 @@
 <?php
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
+declare(strict_types=1);
 
 namespace Doctrine\Tests\Models\CMS;
+
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of CmsTag
  *
- * @Entity
- * @Table(name="cms_tags")
+ * @ORM\Entity
+ * @ORM\Table(name="cms_tags")
  */
 class CmsTag
 {
     /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue
      */
     public $id;
     /**
-     * @Column(length=50, name="tag_name", nullable=true)
+     * @ORM\Column(length=50, name="tag_name", nullable=true)
      */
     public $name;
     /**
-     * @ManyToMany(targetEntity="CmsUser", mappedBy="tags")
+     * @ORM\ManyToMany(targetEntity=CmsUser::class, mappedBy="tags")
      */
     public $users;
 
-    public function setName($name) {
+    public function setName($name)
+    {
         $this->name = $name;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function addUser(CmsUser $user) {
+    public function addUser(CmsUser $user)
+    {
         $this->users[] = $user;
     }
 
-    public function getUsers() {
+    public function getUsers()
+    {
         return $this->users;
     }
 }
-

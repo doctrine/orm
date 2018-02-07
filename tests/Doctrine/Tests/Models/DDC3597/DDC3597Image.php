@@ -1,29 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\DDC3597;
 
 use Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
  * Description of Image
  *
  * @author Volker von Hoesslin <volker.von.hoesslin@empora.com>
- * @Entity
+ * @ORM\Entity
  */
-class DDC3597Image extends DDC3597Media {
-
-    const CLASSNAME = __CLASS__;
-
+class DDC3597Image extends DDC3597Media
+{
     /**
      * @var DDC3597Dimension
-     * @Embedded(class = "Doctrine\Tests\Models\DDC3597\Embeddable\DDC3597Dimension", columnPrefix = false)
+     * @ORM\Embedded(class = DDC3597Dimension::class, columnPrefix = false)
      */
     private $dimension;
 
     /**
      * @param string $distributionHash
      */
-    function __construct($distributionHash) {
+    public function __construct($distributionHash)
+    {
         parent::__construct($distributionHash);
         $this->dimension = new DDC3597Dimension();
     }
@@ -31,7 +33,8 @@ class DDC3597Image extends DDC3597Media {
     /**
      * @return DDC3597Dimension
      */
-    public function getDimension() {
+    public function getDimension()
+    {
         return $this->dimension;
     }
 }

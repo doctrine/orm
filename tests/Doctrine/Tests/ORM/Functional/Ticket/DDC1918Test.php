@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional\Ticket;
 
 use Doctrine\Tests\Models\CMS\CmsUser;
@@ -19,11 +21,11 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
 
     public function testLastPageCorrect()
     {
-        $groups = array();
+        $groups = [];
         for ($i = 0; $i < 3; $i++) {
             $group = new CmsGroup();
             $group->name = "test";
-            $this->_em->persist($group);
+            $this->em->persist($group);
 
             $groups[] = $group;
         }
@@ -35,28 +37,28 @@ class DDC1918Test extends \Doctrine\Tests\OrmFunctionalTestCase
             $user->status = "active";
             $user->groups = $groups;
 
-            $this->_em->persist($user);
+            $this->em->persist($user);
         }
 
-        $this->_em->flush();
+        $this->em->flush();
 
-        $query = $this->_em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
+        $query = $this->em->createQuery('SELECT u, g FROM Doctrine\Tests\Models\CMS\CmsUser u JOIN u.groups g');
         $query->setFirstResult(6);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(3, count(iterator_to_array($paginator)));
+        self::assertCount(3, iterator_to_array($paginator));
 
         $query->setFirstResult(8);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(2, count(iterator_to_array($paginator)));
+        self::assertCount(2, iterator_to_array($paginator));
 
         $query->setFirstResult(10);
         $query->setMaxResults(3);
 
         $paginator = new Paginator($query, true);
-        $this->assertEquals(0, count(iterator_to_array($paginator)));
+        self::assertCount(0, iterator_to_array($paginator));
     }
 }

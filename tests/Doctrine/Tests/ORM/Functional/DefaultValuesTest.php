@@ -1,21 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\ORM\Functional;
+
+use Doctrine\ORM\Annotation as ORM;
+use Doctrine\Tests\OrmFunctionalTestCase;
 
 /**
  * Tests basic operations on entities with default values.
  *
  * @author robo
  */
-class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
+class DefaultValuesTest extends OrmFunctionalTestCase
 {
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
         try {
-            $this->_schemaTool->createSchema(array(
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueUser'),
-                $this->_em->getClassMetadata('Doctrine\Tests\ORM\Functional\DefaultValueAddress')
-            ));
+            $this->schemaTool->createSchema(
+                [
+                $this->em->getClassMetadata(DefaultValueUser::class),
+                $this->em->getClassMetadata(DefaultValueAddress::class)
+                ]
+            );
         } catch (\Exception $e) {
             // Swallow all exceptions. We do not test the schema tool here.
         }
@@ -24,18 +32,19 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
     /**
      * @group non-cacheable
      */
-    public function testSimpleDetachMerge() {
+    public function testSimpleDetachMerge()
+    {
         $user = new DefaultValueUser;
         $user->name = 'romanb';
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
         $userId = $user->id; // e.g. from $_REQUEST
-        $user2 = $this->_em->getReference(get_class($user), $userId);
+        $user2 = $this->em->getReference(get_class($user), $userId);
 
-        $this->_em->flush();
-        $this->assertFalse($user2->__isInitialized__);
+        $this->em->flush();
+        self::assertFalse($user2->isProxyInitialized());
 
         $a = new DefaultValueAddress;
         $a->country = 'de';
@@ -44,16 +53,16 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $a->street = 'Sesamestreet';
 
         $a->user = $user2;
-        $this->_em->persist($a);
-        $this->_em->flush();
+        $this->em->persist($a);
+        $this->em->flush();
 
-        $this->assertFalse($user2->__isInitialized__);
-        $this->_em->clear();
+        self::assertFalse($user2->isProxyInitialized());
+        $this->em->clear();
 
-        $a2 = $this->_em->find(get_class($a), $a->id);
-        $this->assertInstanceOf('Doctrine\Tests\ORM\Functional\DefaultValueUser', $a2->getUser());
-        $this->assertEquals($userId, $a2->getUser()->getId());
-        $this->assertEquals('Poweruser', $a2->getUser()->type);
+        $a2 = $this->em->find(get_class($a), $a->id);
+        self::assertInstanceOf(DefaultValueUser::class, $a2->getUser());
+        self::assertEquals($userId, $a2->getUser()->getId());
+        self::assertEquals('Poweruser', $a2->getUser()->type);
     }
 
     /**
@@ -65,74 +74,77 @@ class DefaultValuesTest extends \Doctrine\Tests\OrmFunctionalTestCase
         $user->name = 'romanb';
         $user->type = 'Normaluser';
 
-        $this->_em->persist($user);
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->persist($user);
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->getPartialReference('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
-        $this->assertTrue($this->_em->getUnitOfWork()->isReadOnly($user));
+        $user = $this->em->getPartialReference(DefaultValueUser::class, $user->id);
+        self::assertTrue($this->em->getUnitOfWork()->isReadOnly($user));
 
-        $this->_em->flush();
-        $this->_em->clear();
+        $this->em->flush();
+        $this->em->clear();
 
-        $user = $this->_em->find('Doctrine\Tests\ORM\Functional\DefaultValueUser', $user->id);
+        $user = $this->em->find(DefaultValueUser::class, $user->id);
 
-        $this->assertEquals('Normaluser', $user->type);
+        self::assertEquals('Normaluser', $user->type);
     }
 }
 
 
 /**
- * @Entity @Table(name="defaultvalueuser")
+ * @ORM\Entity @ORM\Table(name="defaultvalueuser")
  */
 class DefaultValueUser
 {
     /**
-     * @Id @Column(type="integer")
-     * @GeneratedValue(strategy="AUTO")
+     * @ORM\Id @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $name = '';
     /**
-     * @Column(type="string")
+     * @ORM\Column(type="string")
      */
     public $type = 'Poweruser';
     /**
-     * @OneToOne(targetEntity="DefaultValueAddress", mappedBy="user", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity=DefaultValueAddress::class, mappedBy="user", cascade={"persist"})
      */
     public $address;
 
-    public function getId() {return $this->id;}
+    public function getId()
+    {
+        return $this->id;
+    }
 }
 
 /**
  * CmsAddress
  *
- * @Entity @Table(name="defaultvalueaddresses")
+ * @ORM\Entity @ORM\Table(name="defaultvalueaddresses")
  */
 class DefaultValueAddress
 {
     /**
-     * @Column(type="integer")
-     * @Id @GeneratedValue(strategy="AUTO")
+     * @ORM\Column(type="integer")
+     * @ORM\Id @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $country;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $zip;
 
     /**
-     * @Column(type="string", length=50)
+     * @ORM\Column(type="string", length=50)
      */
     public $city;
 
@@ -142,10 +154,13 @@ class DefaultValueAddress
     public $street;
 
     /**
-     * @OneToOne(targetEntity="DefaultValueUser")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
+     * @ORM\OneToOne(targetEntity=DefaultValueUser::class)
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
      */
     public $user;
 
-    public function getUser() {return $this->user;}
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

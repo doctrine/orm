@@ -337,7 +337,6 @@ BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
     License is not intended to restrict the license of any rights under
     applicable law.
 
-
 Creative Commons Notice
 
     Creative Commons is not a party to this License, and makes no warranty
@@ -360,4 +359,4 @@ Creative Commons Notice
     this trademark restriction does not form part of this License.
 
     Creative Commons may be contacted at http://creativecommons.org/.
-   
+

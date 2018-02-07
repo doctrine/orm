@@ -1,36 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\Quote;
 
+use Doctrine\ORM\Annotation as ORM;
+
 /**
- * @Entity
- * @Table(name="`quote-group`")
+ * @ORM\Entity
+ * @ORM\Table(name="quote-group")
  */
 class Group
 {
-
     /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer", name="`group-id`")
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer", name="group-id")
      */
     public $id;
 
     /**
-     * @Column(name="`group-name`")
+     * @ORM\Column(name="group-name")
      */
     public $name;
 
     /**
      * @var Group
      *
-     * @ManyToOne(targetEntity="Group", cascade={"persist"})
-     * @JoinColumn(name="`parent-id`", referencedColumnName="`group-id`")
+     * @ORM\ManyToOne(targetEntity=Group::class, cascade={"persist"})
+     * @ORM\JoinColumn(name="parent-id", referencedColumnName="group-id")
      */
     public $parent;
 
     /**
-     * @ManyToMany(targetEntity="User", mappedBy="groups")
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="groups")
      */
     public $users;
 

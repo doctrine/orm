@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Doctrine\Tests\Models\ValueConversionType;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Annotation as ORM;
 
 /**
- * @Entity
- * @Table(name="vct_inversed_onetomany_extralazy")
+ * @ORM\Entity
+ * @ORM\Table(name="vct_inversed_onetomany_extralazy")
  */
 class InversedOneToManyExtraLazyEntity
 {
     /**
-     * @Column(type="rot13")
-     * @Id
+     * @ORM\Column(type="rot13")
+     * @ORM\Id
      */
     public $id1;
 
     /**
-     * @OneToMany(
-     *     targetEntity="OwningManyToOneExtraLazyEntity",
+     * @ORM\OneToMany(
+     *     targetEntity=OwningManyToOneExtraLazyEntity::class,
      *     mappedBy="associatedEntity",
      *     fetch="EXTRA_LAZY",
      *     indexBy="id2"
