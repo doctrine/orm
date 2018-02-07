@@ -20,11 +20,6 @@
 
 namespace Doctrine\ORM\Query\AST;
 
-/**
- * Description of BetweenExpression.
- *
- * @link    www.doctrine-project.org
- */
 class BetweenExpression extends Node
 {
     /** @var ArithmeticExpression */

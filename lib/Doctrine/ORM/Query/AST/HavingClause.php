@@ -20,11 +20,6 @@
 
 namespace Doctrine\ORM\Query\AST;
 
-/**
- * Description of HavingClause.
- *
- * @link    www.doctrine-project.org
- */
 class HavingClause extends Node
 {
     /** @var ConditionalExpression */

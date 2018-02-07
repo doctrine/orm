@@ -22,11 +22,6 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Exception\ORMException;
 
-/**
- * Pessimistic Lock Exception
- *
- * @link        www.doctrine-project.com
- */
 class PessimisticLockException extends ORMException
 {
     /**

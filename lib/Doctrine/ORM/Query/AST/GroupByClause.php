@@ -20,11 +20,8 @@
 
 namespace Doctrine\ORM\Query\AST;
 
-/**
- * Description of GroupByClause.
- *
- * @link    www.doctrine-project.org
- */
+use Doctrine\ORM\Query\Expr\GroupBy;
+
 class GroupByClause extends Node
 {
     /** @var mixed[] */
