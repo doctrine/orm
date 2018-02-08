@@ -307,23 +307,6 @@ Entity cache definition
           </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Country:
-          type: entity
-          cache:
-            usage : READ_ONLY
-            region : my_entity_region
-          id:
-            id:
-              type: integer
-              id: true
-              generator:
-                strategy: IDENTITY
-          fields:
-            name:
-              type: string
-
 Association cache definition
 ----------------------------
 The most common use case is to cache entities. But we can also cache relationships.
@@ -395,38 +378,6 @@ It caches the primary keys of association and cache each element will be cached 
             </one-to-many>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        State:
-          type: entity
-          cache:
-            usage : NONSTRICT_READ_WRITE
-          id:
-            id:
-              type: integer
-              id: true
-              generator:
-                strategy: IDENTITY
-          fields:
-            name:
-              type: string
-
-          manyToOne:
-            state:
-              targetEntity: Country
-              joinColumns:
-                country_id:
-                  referencedColumnName: id
-              cache:
-                usage : NONSTRICT_READ_WRITE
-
-          oneToMany:
-            cities:
-              targetEntity:City
-              mappedBy: state
-              cache:
-                usage : NONSTRICT_READ_WRITE
 
 > Note: for this to work, the target entity must also be marked as cacheable.
 

@@ -465,23 +465,6 @@ Before 2.5 the ResultSetMappingBuilder did not work with entities
 that are using Single-Table-Inheritance. This restriction was lifted
 by adding the missing support.
 
-YAML Mapping: Many-To-Many doesnt require join column definition
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In Annotations and XML it was not necessary using conventions for naming
-the many-to-many join column names, in YAML it was not possible however.
-
-A many-to-many definition in YAML is now possible using this minimal
-definition:
-
-.. code-block:: yaml
-
-    manyToMany:
-        groups:
-            targetEntity: Group
-            joinTable:
-                name: users_groups
-
 Schema Validator Command: Allow to skip sub-checks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

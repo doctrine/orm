@@ -85,9 +85,6 @@ In XML Mappings:
         </entity>
     </doctrine-mapping>
 
-YAML needs some little change yet, to allow multiple lifecycle
-events for one method, this will happen before Beta 1 though.
-
 Now validation is performed whenever you call
 ``EntityManager#persist($order)`` or when you call
 ``EntityManager#flush()`` and an order is about to be updated. Any

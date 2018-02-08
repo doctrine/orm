@@ -152,7 +152,7 @@ As you can see, we have a method "setBlockEntity" which ties a potential strateg
          * that is used for this blockitem. (This string (!) value will be persisted by Doctrine 2)
          *
          * This is a doctrine field, so make sure that you use an @column annotation or setup your
-         * yaml or xml files correctly
+         * xml files correctly
          * @var string
          */
         protected $strategyClassName;

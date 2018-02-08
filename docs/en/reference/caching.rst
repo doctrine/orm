@@ -373,7 +373,7 @@ Metadata Cache
 ~~~~~~~~~~~~~~
 
 Your class metadata can be parsed from a few different sources like
-YAML, XML, Annotations, etc. Instead of parsing this information on
+XML, Annotations, etc. Instead of parsing this information on
 each request we should cache it using one of the cache drivers.
 
 Just like the query and result cache we need to configure it

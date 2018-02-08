@@ -106,21 +106,6 @@ Example:
             // ...
         }
 
-    .. code-block:: yaml
-
-        MyProject\Model\Person:
-          type: entity
-          inheritanceType: SINGLE_TABLE
-          discriminatorColumn:
-            name: discr
-            type: string
-          discriminatorMap:
-            person: Person
-            employee: Employee
-
-        MyProject\Model\Employee:
-          type: entity
-
 Things to note:
 
 -  The @InheritanceType and @DiscriminatorColumn must be specified
@@ -396,50 +381,6 @@ Example:
                 </association-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          # other fields mapping
-          manyToOne:
-            address:
-              targetEntity: Address
-              joinColumn:
-                name: address_id
-                referencedColumnName: id
-              cascade: [ persist, refresh ]
-          manyToMany:
-            groups:
-              targetEntity: Group
-              joinTable:
-                name: users_groups
-                joinColumns:
-                  user_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  group_id:
-                    referencedColumnName: id
-              cascade: [ persist, refresh ]
-
-        # admin mapping
-        MyProject\Model\Admin:
-          type: entity
-          associationOverride:
-            address:
-              joinColumn:
-                adminaddress_id:
-                  name: adminaddress_id
-                  referencedColumnName: id
-            groups:
-              joinTable:
-                name: users_admingroups
-                joinColumns:
-                  adminuser_id:
-                    referencedColumnName: id
-                inverseJoinColumns:
-                  admingroup_id:
-                    referencedColumnName: id
 
 Things to note:
 
@@ -536,41 +477,6 @@ Could be used by an entity that extends a mapped superclass to override a field 
                 </attribute-overrides>
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        # user mapping
-        MyProject\Model\User:
-          type: mappedSuperclass
-          id:
-            id:
-              type: integer
-              column: user_id
-              length: 150
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-              column: user_name
-              length: 250
-              nullable: true
-              unique: false
-          #other fields mapping
-
-        # guest mapping
-        MyProject\Model\Guest:
-          type: entity
-          attributeOverride:
-            id:
-              column: guest_id
-              type: integer
-              length: 140
-            name:
-              column: guest_name
-              type: string
-              length: 240
-              nullable: false
-              unique: true
 
 Things to note:
 

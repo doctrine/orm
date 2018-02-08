@@ -74,16 +74,6 @@ and year of production as primary keys:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        VehicleCatalogue\Model\Car:
-          type: entity
-          id:
-            name:
-              type: string
-            year:
-              type: integer
-
 Now you can use this entity:
 
 .. code-block:: php
@@ -142,7 +132,6 @@ The semantics of mapping identity through foreign entities are easy:
 -   Only allowed on Many-To-One or One-To-One associations.
 -   Plug an ``@ORM\Id`` annotation onto every association.
 -   Set an attribute ``association-key`` with the field name of the association in XML.
--   Set a key ``associationKey:`` with the field name of the association in YAML.
 
 Use-Case 1: Dynamic Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,23 +210,6 @@ We keep up the example of an Article with arbitrary attributes, the mapping look
 
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Application\Model\ArticleAttribute:
-          type: entity
-          id:
-            article:
-              associationKey: true
-            attribute:
-              type: string
-          fields:
-            value:
-              type: string
-          manyToOne:
-            article:
-              targetEntity: Article
-              inversedBy: attributes
-
 Use-Case 2: Simple Derived Identity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -270,25 +242,6 @@ One good example for this is a user-address relationship:
             /** @ORM\Id @ORM\OneToOne(targetEntity="User") */
             private $user;
         }
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-
-        Address:
-          type: entity
-          id:
-            user:
-              associationKey: true
-          oneToOne:
-            user:
-              targetEntity: User
 
 Use-Case 3: Join-Table with Metadata
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

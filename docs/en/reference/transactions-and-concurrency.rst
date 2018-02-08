@@ -200,15 +200,6 @@ example we'll use an integer.
           </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            version:
-              type: integer
-              version: true
-
 Alternatively a datetime type can be used (which maps to a SQL
 timestamp or datetime):
 
@@ -232,15 +223,6 @@ timestamp or datetime):
             <field name="version" type="datetime" version="true" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        User:
-          type: entity
-          fields:
-            version:
-              type: datetime
-              version: true
 
 Version numbers (not timestamps) should however be preferred as
 they can not potentially conflict in a highly concurrent
