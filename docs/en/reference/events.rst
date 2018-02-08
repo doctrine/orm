@@ -171,7 +171,7 @@ the life-time of their registered entities.
    database or after the refresh operation has been applied to it.
 -  loadClassMetadata - The loadClassMetadata event occurs after the
    mapping metadata for a class has been loaded from a mapping source
-   (annotations/xml/yaml). This event is not a lifecycle callback.
+   (annotations/xml). This event is not a lifecycle callback.
 -  onClassMetadataNotFound - Loading class metadata for a particular
    requested class name failed. Manipulating the given event args instance
    allows providing fallback metadata even when no actual metadata exists
@@ -292,26 +292,8 @@ Note that the methods set as lifecycle callbacks need to be public and,
 when using these annotations, you have to apply the
 ``@HasLifecycleCallbacks`` marker annotation on the entity class.
 
-If you want to register lifecycle callbacks from YAML or XML you
-can do it with the following.
-
-.. code-block:: yaml
-
-    User:
-      type: entity
-      fields:
-    # ...
-        name:
-          type: string(50)
-      lifecycleCallbacks:
-        prePersist: [ doStuffOnPrePersist, doOtherStuffOnPrePersist ]
-        postPersist: [ doStuffOnPostPersist ]
-
-In YAML the ``key`` of the lifecycleCallbacks entry is the event that you
-are triggering on and the value is the method (or methods) to call. The allowed
-event types are the ones listed in the previous Lifecycle Events section.
-
-XML would look something like this:
+If you want to register lifecycle callbacks from XML it would look
+something like this:
 
 .. code-block:: xml
 
@@ -337,7 +319,7 @@ In XML the ``type`` of the lifecycle-callback entry is the event that you
 are triggering on and the ``method`` is the method to call. The allowed event
 types are the ones listed in the previous Lifecycle Events section.
 
-When using YAML or XML you need to remember to create public methods to match the
+When using XML you need to remember to create public methods to match the
 callback names you defined. E.g. in these examples ``doStuffOnPrePersist()``,
 ``doOtherStuffOnPrePersist()`` and ``doStuffOnPostPersist()`` methods need to be
 defined on your ``User`` model.
@@ -771,13 +753,6 @@ An entity listener is a lifecycle listener class used for an entity.
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-          # ....
 
 .. _reference-entity-listeners:
 
@@ -860,24 +835,6 @@ you need to map the listener method using the event type mapping:
                 <!-- .... -->
             </entity>
         </doctrine-mapping>
-    .. code-block:: yaml
-
-        MyProject\Entity\User:
-          type: entity
-          entityListeners:
-            UserListener:
-              preFlush: [preFlushHandler]
-              postLoad: [postLoadHandler]
-
-              postPersist: [postPersistHandler]
-              prePersist: [prePersistHandler]
-
-              postUpdate: [postUpdateHandler]
-              preUpdate: [preUpdateHandler]
-
-              postRemove: [postRemoveHandler]
-              preRemove: [preRemoveHandler]
-          # ....
 
 .. note::
 

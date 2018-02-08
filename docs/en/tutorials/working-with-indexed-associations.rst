@@ -29,7 +29,6 @@ You can map indexed associations by adding:
 
     * ``indexBy`` attribute to any ``@OneToMany`` or ``@ManyToMany`` annotation.
     * ``index-by`` attribute to any ``<one-to-many />`` or ``<many-to-many />`` xml element.
-    * ``indexBy:`` key-value pair to any association defined in ``manyToMany:`` or ``oneToMany:`` YAML mapping files.
 
 The code and mappings for the Market entity looks like this:
 
@@ -121,24 +120,6 @@ The code and mappings for the Market entity looks like this:
             </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\StockExchange\Market:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type:string
-          oneToMany:
-            stocks:
-              targetEntity: Stock
-              mappedBy: market
-              indexBy: symbol
-
 Inside the ``addStock()`` method you can see how we directly set the key of the association to the symbol,
 so that we can work with the indexed association directly after invoking ``addStock()``. Inside ``getStock($symbol)``
 we pick a stock traded on the particular market by symbol. If this stock doesn't exist an exception is thrown.
@@ -209,23 +190,6 @@ here are the code and mappings for it:
                 <many-to-one target-entity="Market" field="market" inversed-by="stocks" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Doctrine\Tests\Models\StockExchange\Stock:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            symbol:
-              type: string
-          manyToOne:
-            market:
-              targetEntity: Market
-              inversedBy: stocks
 
 Querying indexed associations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

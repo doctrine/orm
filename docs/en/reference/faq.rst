@@ -13,7 +13,7 @@ Database Schema
 How do I set the charset and collation for MySQL tables?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can't set these values inside the annotations, yml or xml mapping files. To make a database
+You can't set these values inside the annotations or xml mapping files. To make a database
 work with the default charset and collation you should configure MySQL to use it as default charset,
 or create the database with charset and collation details. This way they get inherited to all newly
 created database tables and columns.

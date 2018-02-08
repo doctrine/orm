@@ -213,7 +213,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
      * is still not loaded.
      *
      * Important: The class $name does not necessarily exist at this point here.
-     * Scenarios in a code-generation setup might have access to XML/YAML
+     * Scenarios in a code-generation setup might have access to XML
      * Mapping files without the actual PHP code existing here. That is why the
      * {@see Doctrine\Common\Persistence\Mapping\ReflectionService} interface
      * should be used for reflection.

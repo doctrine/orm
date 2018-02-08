@@ -52,16 +52,15 @@ mapping metadata:
 
 -  :doc:`Docblock Annotations <annotations-reference>`
 -  :doc:`XML <xml-mapping>`
--  :doc:`YAML <yaml-mapping>`
 -  :doc:`PHP code <php-mapping>`
 
 This manual will usually show mapping metadata via docblock annotations, though
-many examples also show the equivalent configuration in YAML and XML.
+many examples also show the equivalent configuration in XML.
 
 .. note::
 
     All metadata drivers perform equally. Once the metadata of a class has been
-    read from the source (annotations, xml or yaml) it is stored in an instance
+    read from the source (annotations or xml) it is stored in an instance
     of the ``Doctrine\ORM\Mapping\ClassMetadata`` class and these instances are
     stored in the metadata cache.  If you're not using a metadata cache (not
     recommended!) then the XML driver is the fastest.
@@ -86,12 +85,6 @@ Marking our ``Message`` class as an entity for Doctrine is straightforward:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          # ...
 
 With no additional information, Doctrine expects the entity to be saved
 into a table with the same name as the class in our case ``Message``.
@@ -118,13 +111,6 @@ You can change this by configuring information about the table:
               <!-- ... -->
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          table: message
-          # ...
 
 Now the class ``Message`` will be saved and fetched from the table ``message``.
 
@@ -164,19 +150,6 @@ default.
             <field name="postedAt" column="posted_at" type="datetime" />
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          fields:
-            id:
-              type: integer
-            text:
-              length: 140
-            postedAt:
-              type: datetime
-              column: posted_at
 
 When we don't explicitly specify a column name via the ``name`` option, Doctrine
 assumes the field name is also the column name. This means that:
@@ -314,18 +287,6 @@ annotation.
           </entity>
         </doctrine-mapping>
 
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            # fields here
-
 In most cases using the automatic generator strategy (``@GeneratedValue``) is
 what you want. It defaults to the identifier generation mechanism your current
 database vendor prefers: AUTO_INCREMENT with MySQL, SERIAL with PostgreSQL,
@@ -400,20 +361,6 @@ besides specifying the sequence's name:
             </id>
           </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Message:
-          type: entity
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: SEQUENCE
-              sequenceGenerator:
-                sequenceName: message_seq
-                allocationSize: 100
-                initialValue: 1
 
 The initial value specifies at which value the sequence should
 start.

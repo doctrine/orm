@@ -107,13 +107,11 @@ There are currently 4 available implementations:
 
 -  ``Doctrine\ORM\Mapping\Driver\AnnotationDriver``
 -  ``Doctrine\ORM\Mapping\Driver\XmlDriver``
--  ``Doctrine\ORM\Mapping\Driver\YamlDriver``
 -  ``Doctrine\ORM\Mapping\Driver\DriverChain``
 
 Throughout the most part of this manual the AnnotationDriver is
 used in the examples. For information on the usage of the XmlDriver
-or YamlDriver please refer to the dedicated chapters
-``XML Mapping`` and ``YAML Mapping``.
+please refer to the dedicated chapters ``XML Mapping``.
 
 The annotation driver can be configured with a factory method on
 the ``Doctrine\ORM\Configuration``:
@@ -142,7 +140,7 @@ Metadata Cache (***RECOMMENDED***)
 
 Gets or sets the cache implementation to use for caching metadata
 information, that is, all the information you supply via
-annotations, xml or yaml, so that they do not need to be parsed and
+annotations or xml, so that they do not need to be parsed and
 loaded from scratch on every single request which is a waste of
 resources. The cache implementation must implement the
 ``Doctrine\Common\Cache\Cache`` interface.
@@ -388,7 +386,7 @@ Multiple Metadata Sources
 
 When using different components using Doctrine 2 you may end up
 with them using two different metadata drivers, for example XML and
-YAML. You can use the DriverChain Metadata implementations to
+annotationsL. You can use the DriverChain Metadata implementations to
 aggregate these drivers based on namespaces:
 
 .. code-block:: php
@@ -398,7 +396,7 @@ aggregate these drivers based on namespaces:
 
     $chain = new DriverChain();
     $chain->addDriver($xmlDriver, 'Doctrine\Tests\Models\Company');
-    $chain->addDriver($yamlDriver, 'Doctrine\Tests\ORM\Mapping');
+    $chain->addDriver($annotationDriver, 'Doctrine\Tests\ORM\Mapping');
 
 Based on the namespace of the entity the loading of entities is
 delegated to the appropriate driver. The chain semantics come from

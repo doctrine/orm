@@ -24,7 +24,7 @@ annotations for supplying object-relational mapping metadata.
 
     If you're not comfortable with the concept of docblock
     annotations, don't worry, as mentioned earlier Doctrine 2 provides
-    XML and YAML alternatives and you could easily implement your own
+    the XML alternative and you could easily implement your own
     favourite mechanism for defining ORM metadata.
 
 In this chapter a reference of every Doctrine 2 Annotation is given

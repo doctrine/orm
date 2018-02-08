@@ -87,8 +87,7 @@ the following contents:
 
     {
         "require": {
-            "doctrine/orm": "2.4.*",
-            "symfony/yaml": "2.*"
+            "doctrine/orm": "2.4.*"
         },
         "autoload": {
             "psr-0": {"": "src/"}
@@ -101,8 +100,8 @@ Install Doctrine using the Composer Dependency Management tool, by calling:
 
     $ composer install
 
-This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM,
-Symfony YAML and Symfony Console into the `vendor` directory. The Symfony
+This will install the packages Doctrine Common, Doctrine DBAL, Doctrine ORM
+and Symfony Console into the `vendor` directory. The Symfony
 dependencies are not required by Doctrine but will be used in this tutorial.
 
 Add the following directories:
@@ -110,8 +109,6 @@ Add the following directories:
 
     doctrine2-tutorial
     |-- config
-    |   |-- xml
-    |   `-- yaml
     `-- src
 
 Obtaining the EntityManager
@@ -136,9 +133,8 @@ step:
     // Create a simple "default" Doctrine ORM configuration for Annotations
     $isDevMode = true;
     $config = Setup::createAnnotationMetadataConfiguration(array(__DIR__."/src"), $isDevMode);
-    // or if you prefer yaml or XML
-    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config/xml"), $isDevMode);
-    //$config = Setup::createYAMLMetadataConfiguration(array(__DIR__."/config/yaml"), $isDevMode);
+    // or if you prefer XML
+    //$config = Setup::createXMLMetadataConfiguration(array(__DIR__."/config"), $isDevMode);
 
     // database configuration parameters
     $conn = array(
@@ -267,8 +263,8 @@ properties and references should be persisted and what constraints
 should be applied to them.
 
 Metadata for an Entity can be configured using DocBlock annotations directly
-in the Entity class itself, or in an external XML or YAML file. This Getting
-Started guide will demonstrate metadata mappings using all three methods,
+in the Entity class itself, or in an external XML file. This Getting
+Started guide will demonstrate metadata mappings using two methods,
 but you only need to choose one.
 
 .. configuration-block::
@@ -296,7 +292,7 @@ but you only need to choose one.
 
     .. code-block:: xml
 
-        <!-- config/xml/Product.dcm.xml -->
+        <!-- config/Product.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
@@ -310,21 +306,6 @@ but you only need to choose one.
                   <field name="name" type="string" />
               </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        # config/yaml/Product.dcm.yml
-        Product:
-          type: entity
-          table: products
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
 
 The top-level ``entity`` definition tag specifies information about
 the class and table-name. The primitive type ``Product#name`` is
@@ -851,7 +832,7 @@ the ``Product`` before:
 
     .. code-block:: xml
 
-        <!-- config/xml/Bug.dcm.xml -->
+        <!-- config/Bug.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
@@ -872,35 +853,6 @@ the ``Product`` before:
                 <many-to-many target-entity="Product" field="products" />
             </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        # config/yaml/Bug.dcm.yml
-        Bug:
-          type: entity
-          table: bugs
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            description:
-              type: text
-            created:
-              type: datetime
-            status:
-              type: string
-          manyToOne:
-            reporter:
-              targetEntity: User
-              inversedBy: reportedBugs
-            engineer:
-              targetEntity: User
-              inversedBy: assignedBugs
-          manyToMany:
-            products:
-              targetEntity: Product
 
 Here we have the entity, id and primitive type definitions.
 For the "created" field we have used the ``datetime`` type,
@@ -970,7 +922,7 @@ Finally, we'll add metadata mappings for the ``User`` entity.
 
     .. code-block:: xml
 
-        <!-- config/xml/User.dcm.xml -->
+        <!-- config/User.dcm.xml -->
         <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
@@ -987,28 +939,6 @@ Finally, we'll add metadata mappings for the ``User`` entity.
                  <one-to-many target-entity="Bug" field="assignedBugs" mapped-by="engineer" />
              </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        # config/yaml/User.dcm.yml
-        User:
-          type: entity
-          table: users
-          id:
-            id:
-              type: integer
-              generator:
-                strategy: AUTO
-          fields:
-            name:
-              type: string
-          oneToMany:
-            reportedBugs:
-              targetEntity: Bug
-              mappedBy: reporter
-            assignedBugs:
-              targetEntity: Bug
-              mappedBy: engineer
 
 Here are some new things to mention about the ``one-to-many`` tags.
 Remember that we discussed about the inverse and owning side. Now
@@ -1508,12 +1438,6 @@ we have to adjust the metadata slightly.
 
               </entity>
         </doctrine-mapping>
-
-    .. code-block:: yaml
-
-        Bug:
-          type: entity
-          repositoryClass: BugRepository
 
 Now we can remove our query logic in all the places and instead use them through the EntityRepository.
 As an example here is the code of the first use case "List of Bugs":

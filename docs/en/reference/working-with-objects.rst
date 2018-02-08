@@ -709,7 +709,7 @@ By default the EntityManager returns a default implementation of
 ``Doctrine\ORM\EntityRepository`` when you call
 ``EntityManager#getRepository($entityClass)``. You can overwrite
 this behaviour by specifying the class name of your own Entity
-Repository in the Annotation, XML or YAML metadata. In large
+Repository in the Annotation or XML metadata. In large
 applications that require lots of specialized DQL queries using a
 custom repository is one recommended way of grouping these queries
 in a central location.
