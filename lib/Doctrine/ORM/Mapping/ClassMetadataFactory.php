@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
-use Doctrine\ORM\NotImplementedYet;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Sequencing;
 use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
@@ -409,10 +408,10 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
             case GeneratorType::CUSTOM:
                 $definition = $generator->getDefinition();
-                if ( ! isset($definition['class'])) {
+                if (! isset($definition['class'])) {
                     throw InvalidCustomGenerator::onClassNotConfigured();
                 }
-                if ( ! class_exists($definition['class'])) {
+                if (! class_exists($definition['class'])) {
                     throw InvalidCustomGenerator::onMissingClass($definition);
                 }
 

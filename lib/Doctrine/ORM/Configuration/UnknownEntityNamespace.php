@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Configuration;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\ConfigurationException;
 
 final class UnknownEntityNamespace extends \Exception implements ConfigurationException

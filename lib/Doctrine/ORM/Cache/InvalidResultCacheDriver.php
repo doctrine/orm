@@ -9,7 +9,7 @@ final class InvalidResultCacheDriver extends \Exception implements CacheExceptio
     public static function create() : self
     {
         return new self(
-            "Invalid result cache driver; it must implement Doctrine\\Common\\Cache\\Cache."
+            'Invalid result cache driver; it must implement Doctrine\\Common\\Cache\\Cache.'
         );
     }
 }

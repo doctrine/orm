@@ -8,6 +8,6 @@ final class TableGeneratorNotImplementedYet extends \Exception implements ORMExc
 {
     public static function create() : self
     {
-        return new self("TableGenerator not yet implemented.");
+        return new self('TableGenerator not yet implemented.');
     }
 }

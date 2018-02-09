@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\PersisterException;
-
 class NonCacheableEntityAssociation extends \Exception implements CacheException
 {
     public static function fromEntityAndField(string $entityName, string $field) : self

@@ -11,8 +11,8 @@ final class MissingMappingDriverImplementation extends \Exception implements Man
     public static function create() : self
     {
         return new self(
-            "It's a requirement to specify a Metadata Driver and pass it ".
-            "to Doctrine\\ORM\\Configuration::setMetadataDriverImpl()."
+            "It's a requirement to specify a Metadata Driver and pass it " .
+            'to Doctrine\\ORM\\Configuration::setMetadataDriverImpl().'
         );
     }
 }

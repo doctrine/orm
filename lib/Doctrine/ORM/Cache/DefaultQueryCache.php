@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Proxy\Proxy;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\FeatureNotImplemented;
 use Doctrine\ORM\Cache\Logging\CacheLogger;
@@ -13,9 +11,7 @@ use Doctrine\ORM\Cache\NonCacheableEntity;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\ResultSetMapping;
 use ProxyManager\Proxy\GhostObjectInterface;
@@ -242,7 +238,7 @@ class DefaultQueryCache implements QueryCache
             throw FeatureNotImplemented::multipleRootEntities();
         }
 
-        if ( ! $rsm->isSelect) {
+        if (! $rsm->isSelect) {
             throw FeatureNotImplemented::nonSelectStatements();
         }
 

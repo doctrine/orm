@@ -14,13 +14,13 @@ final class InvalidMagicMethodCall extends \BadMethodCallException implements Re
         string $method
     ) : self {
         return new self(
-            "Entity '".$entityName."' has no field '".$fieldName."'. ".
-            "You can therefore not call '".$method."' on the entities' repository."
+            "Entity '" . $entityName . "' has no field '" . $fieldName . "'. " .
+            "You can therefore not call '" . $method . "' on the entities' repository."
         );
     }
 
-    public static function onMissingParameter(string $methodName): self
+    public static function onMissingParameter(string $methodName) : self
     {
-        return new self("You need to pass a parameter to '".$methodName."'");
+        return new self("You need to pass a parameter to '" . $methodName . "'");
     }
 }

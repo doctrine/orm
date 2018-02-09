@@ -10,6 +10,6 @@ final class EntityManagerClosed extends \Exception implements ManagerException
 {
     public static function create() : self
     {
-        return new self("The EntityManager is closed.");
+        return new self('The EntityManager is closed.');
     }
 }

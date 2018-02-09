@@ -11,7 +11,6 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Util\Inflector;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
-use Doctrine\ORM\Repository\InvalidFindByCall;
 use Doctrine\ORM\Repository\InvalidMagicMethodCall;
 use function array_slice;
 use function lcfirst;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
-use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Cache\CannotUpdateReadOnlyCollection;
+use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 
 class ReadOnlyCachedCollectionPersister extends NonStrictReadWriteCachedCollectionPersister

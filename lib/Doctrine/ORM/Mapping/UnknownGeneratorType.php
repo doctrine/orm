@@ -8,6 +8,6 @@ final class UnknownGeneratorType extends \Exception implements ORMException
 {
     public static function create(string $generatorType) : self
     {
-        return new self("Unknown generator type: " . $generatorType);
+        return new self('Unknown generator type: ' . $generatorType);
     }
 }

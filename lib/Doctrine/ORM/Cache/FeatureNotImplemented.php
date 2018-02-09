@@ -4,27 +4,25 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
-use Doctrine\ORM\PersisterException;
-
 class FeatureNotImplemented extends \Exception implements CacheException
 {
     public static function scalarResults() : self
     {
-        return new self("Second level cache does not support scalar results.");
+        return new self('Second level cache does not support scalar results.');
     }
 
     public static function multipleRootEntities() : self
     {
-        throw new self("Second level cache does not support multiple root entities.");
+        throw new self('Second level cache does not support multiple root entities.');
     }
 
     public static function nonSelectStatements() : self
     {
-        throw new self("Second-level cache query supports only select statements.");
+        throw new self('Second-level cache query supports only select statements.');
     }
 
     public static function partialEntities() : self
     {
-        throw new self("Second level cache does not support partial entities.");
+        throw new self('Second level cache does not support partial entities.');
     }
 }
