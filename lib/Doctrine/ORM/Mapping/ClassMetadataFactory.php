@@ -13,10 +13,12 @@ use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Sequencing;
+use Doctrine\ORM\Sequencing\Planning\AssociationValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\ColumnValueGeneratorExecutor;
 use Doctrine\ORM\Sequencing\Planning\CompositeValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\NoopValueGenerationPlan;
 use Doctrine\ORM\Sequencing\Planning\SingleValueGenerationPlan;
+use Doctrine\ORM\Sequencing\Planning\ValueGenerationExecutor;
 use ReflectionException;
 use function array_map;
 use function class_exists;
@@ -24,7 +26,6 @@ use function count;
 use function end;
 use function explode;
 use function is_subclass_of;
-use function reset;
 use function sprintf;
 use function strpos;
 use function strtolower;
@@ -524,39 +525,54 @@ class ClassMetadataFactory extends AbstractClassMetadataFactory
 
     private function buildValueGenerationPlan(ClassMetadata $class) : void
     {
-        /** @var LocalColumnMetadata[] $generatedProperties */
-        $generatedProperties = [];
+        $executors = $this->buildValueGenerationExecutorList($class);
 
-        foreach ($class->getDeclaredPropertiesIterator() as $property) {
-            if (! ($property instanceof LocalColumnMetadata && $property->hasValueGenerator())) {
-                continue;
-            }
-
-            $generatedProperties[] = $property;
-        }
-
-        switch (count($generatedProperties)) {
+        switch (count($executors)) {
             case 0:
                 $class->setValueGenerationPlan(new NoopValueGenerationPlan());
                 break;
 
             case 1:
-                $property = reset($generatedProperties);
-                $executor = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
-
-                $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executor));
+                $class->setValueGenerationPlan(new SingleValueGenerationPlan($class, $executors[0]));
                 break;
 
             default:
-                $executors = [];
-
-                foreach ($generatedProperties as $property) {
-                    $executors[] = new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
-                }
-
                 $class->setValueGenerationPlan(new CompositeValueGenerationPlan($class, $executors));
                 break;
         }
+    }
+
+    /**
+     * @return ValueGenerationExecutor[]
+     */
+    private function buildValueGenerationExecutorList(ClassMetadata $class) : array
+    {
+        $executors = [];
+
+        foreach ($class->getDeclaredPropertiesIterator() as $property) {
+            $executor = $this->buildValueGenerationExecutorForProperty($class, $property);
+
+            if ($executor instanceof ValueGenerationExecutor) {
+                $executors[] = $executor;
+            }
+        }
+
+        return $executors;
+    }
+
+    private function buildValueGenerationExecutorForProperty(
+        ClassMetadata $class,
+        Property $property
+    ) : ?ValueGenerationExecutor {
+        if ($property instanceof LocalColumnMetadata && $property->hasValueGenerator()) {
+            return new ColumnValueGeneratorExecutor($property, $this->createPropertyValueGenerator($class, $property));
+        }
+
+        if ($property instanceof ToOneAssociationMetadata && $property->isPrimaryKey()) {
+            return new AssociationValueGeneratorExecutor();
+        }
+
+        return null;
     }
 
     private function createPropertyValueGenerator(
