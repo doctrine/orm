@@ -7,6 +7,7 @@ namespace Doctrine\Tests\ORM\Functional;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\Tests\Models\Company\CompanyManager;
 use Doctrine\Tests\OrmFunctionalTestCase;
+use function sprintf;
 
 /**
  * Functional Query tests.
@@ -294,7 +295,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
      *
      * @dataProvider dateAddSubProvider
      */
-    public function testDateAdd(string $unit, int $amount, int $expectedValue, int $delta = 0) : void
+    public function testDateAdd(string $unit, int $amount, int $delta = 0) : void
     {
         $query = sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_ADD(CURRENT_TIMESTAMP(), %d, \'%s\') AS add FROM %s m',
@@ -310,9 +311,12 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('add', $result);
 
-        $diff = strtotime($result['add']) - strtotime($result['now']);
-
-        self::assertEquals($expectedValue, $diff, '', $delta);
+        self::assertEquals(
+            (new \DateTimeImmutable($result['now']))->modify(sprintf('+%d %s', $amount, $unit)),
+            new \DateTimeImmutable($result['add']),
+            '',
+            $delta
+        );
     }
 
     /**
@@ -321,7 +325,7 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
      *
      * @dataProvider dateAddSubProvider
      */
-    public function testDateSub(string $unit, int $amount, int $expectedValue, int $delta = 0) : void
+    public function testDateSub(string $unit, int $amount, int $delta = 0) : void
     {
         $query = sprintf(
             'SELECT CURRENT_TIMESTAMP() as now, DATE_SUB(CURRENT_TIMESTAMP(), %d, \'%s\') AS sub FROM %s m',
@@ -337,9 +341,12 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         self::assertArrayHasKey('now', $result);
         self::assertArrayHasKey('sub', $result);
 
-        $diff = strtotime($result['now']) - strtotime($result['sub']);
-
-        self::assertEquals($expectedValue, $diff, '', $delta);
+        self::assertEquals(
+            (new \DateTimeImmutable($result['now']))->modify(sprintf('-%d %s', $amount, $unit)),
+            new \DateTimeImmutable($result['sub']),
+            '',
+            $delta
+        );
     }
 
     public function dateAddSubProvider() : array
@@ -347,9 +354,9 @@ class QueryDqlFunctionTest extends OrmFunctionalTestCase
         $secondsInDay = 86400;
 
         return [
-            'year'   => ['year', 1, 365 * $secondsInDay, 3 * $secondsInDay],
-            'month'  => ['month', 1, 30 * $secondsInDay, 2.5 * $secondsInDay],
-            'week'   => ['week', 1, 7 * $secondsInDay, $secondsInDay],
+            'year'   => ['year', 1, $secondsInDay],
+            'month'  => ['month', 1, $secondsInDay],
+            'week'   => ['week', 1, $secondsInDay],
             'hour'   => ['hour', 1, 3600],
             'minute' => ['minute', 1, 60],
             'second' => ['second', 10, 10],
