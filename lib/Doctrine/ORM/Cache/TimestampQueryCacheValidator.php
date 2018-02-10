@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use function microtime;
+
 class TimestampQueryCacheValidator implements QueryCacheValidator
 {
     /**
@@ -33,7 +35,6 @@ class TimestampQueryCacheValidator implements QueryCacheValidator
     }
 
     /**
-     *
      * @return bool
      */
     private function regionUpdated(QueryCacheKey $key, QueryCacheEntry $entry)

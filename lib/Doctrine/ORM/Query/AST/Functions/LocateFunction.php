@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\AST\Node;
+use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\Lexer;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
@@ -21,7 +22,7 @@ class LocateFunction extends FunctionNode
     public $secondStringPrimary;
 
     /**
-     * @var \Doctrine\ORM\Query\AST\SimpleArithmeticExpression|bool
+     * @var SimpleArithmeticExpression|bool
      */
     public $simpleArithmeticExpression = false;
 

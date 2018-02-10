@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query;
+use function key;
+use function next;
+use function reset;
 
 class TreeWalkerChainIterator implements \Iterator, \ArrayAccess
 {

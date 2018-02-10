@@ -36,9 +36,6 @@ abstract class ComponentMetadata
      */
     protected $declaredProperties = [];
 
-    /**
-     * ComponentMetadata constructor.
-     */
     public function __construct(string $className, ClassMetadataBuildingContext $metadataBuildingContext)
     {
         $reflectionService = $metadataBuildingContext->getReflectionService();

@@ -11,6 +11,22 @@ use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
 use Doctrine\ORM\Mapping\Factory;
+use function array_diff;
+use function array_filter;
+use function array_intersect;
+use function array_map;
+use function array_merge;
+use function class_exists;
+use function constant;
+use function count;
+use function defined;
+use function get_class;
+use function in_array;
+use function is_numeric;
+use function sprintf;
+use function str_replace;
+use function strtolower;
+use function strtoupper;
 
 class NewAnnotationDriver implements MappingDriver
 {
@@ -1089,7 +1105,6 @@ class NewAnnotationDriver implements MappingDriver
     }
 
     /**
-     *
      * @return Annotation\Annotation[]
      */
     private function getPropertyAnnotations(\ReflectionProperty $reflectionProperty)
@@ -1108,7 +1123,6 @@ class NewAnnotationDriver implements MappingDriver
     }
 
     /**
-     *
      * @return Annotation\Annotation[]
      */
     private function getMethodAnnotations(\ReflectionMethod $reflectionMethod)

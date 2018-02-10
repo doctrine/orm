@@ -6,6 +6,10 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Type;
+use function current;
+use function is_array;
+use function is_bool;
+use function is_int;
 
 /**
  * Provides an enclosed support for parameter inferring.

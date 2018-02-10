@@ -14,9 +14,6 @@ class EvaluatingClassMetadataGeneratorStrategy implements ClassMetadataGenerator
      */
     private $generator;
 
-    /**
-     * EvaluatingClassMetadataGeneratorStrategy constructor.
-     */
     public function __construct(ClassMetadataGenerator $generator)
     {
         $this->generator = $generator;

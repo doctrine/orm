@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Filter\SQLFilter;
+use function ksort;
 
 /**
  * Collection class for all the query filters.
@@ -26,21 +29,21 @@ class FilterCollection
     /**
      * The used Configuration.
      *
-     * @var \Doctrine\ORM\Configuration
+     * @var Configuration
      */
     private $config;
 
     /**
      * The EntityManager that "owns" this FilterCollection instance.
      *
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
      * Instances of enabled filters.
      *
-     * @var \Doctrine\ORM\Query\Filter\SQLFilter[]
+     * @var SQLFilter[]
      */
     private $enabledFilters = [];
 
@@ -63,7 +66,7 @@ class FilterCollection
     /**
      * Gets all the enabled filters.
      *
-     * @return \Doctrine\ORM\Query\Filter\SQLFilter[] The enabled filters.
+     * @return SQLFilter[] The enabled filters.
      */
     public function getEnabledFilters()
     {
@@ -75,7 +78,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return \Doctrine\ORM\Query\Filter\SQLFilter The enabled filter.
+     * @return SQLFilter The enabled filter.
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
@@ -105,7 +108,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return \Doctrine\ORM\Query\Filter\SQLFilter The disabled filter.
+     * @return SQLFilter The disabled filter.
      *
      * @throws \InvalidArgumentException If the filter does not exist.
      */
@@ -127,7 +130,7 @@ class FilterCollection
      *
      * @param string $name Name of the filter.
      *
-     * @return \Doctrine\ORM\Query\Filter\SQLFilter The filter.
+     * @return SQLFilter The filter.
      *
      * @throws \InvalidArgumentException If the filter is not enabled.
      */

@@ -37,8 +37,6 @@ class MappedSuperClassMetadataBinder
     private $classMetadata;
 
     /**
-     * ComponentMetadataBinder constructor.
-     *
      * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(

@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use const DIRECTORY_SEPARATOR;
+use function ltrim;
+use function rtrim;
+use function sprintf;
+use function str_replace;
+
 class DefaultClassMetadataResolver implements ClassMetadataResolver
 {
     /**
@@ -23,9 +29,6 @@ class DefaultClassMetadataResolver implements ClassMetadataResolver
      */
     private $directory;
 
-    /**
-     * DefaultClassMetadataResolver constructor.
-     */
     public function __construct(string $namespace, string $directory)
     {
         $this->namespace = ltrim($namespace, '\\');

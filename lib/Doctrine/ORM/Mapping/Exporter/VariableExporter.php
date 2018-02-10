@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Exporter;
 
+use const PHP_EOL;
+use function array_keys;
+use function array_reduce;
+use function implode;
+use function is_array;
+use function is_numeric;
+use function ltrim;
+use function sprintf;
+use function str_pad;
+use function str_repeat;
+use function strlen;
+use function var_export;
+
 class VariableExporter implements Exporter
 {
     /**

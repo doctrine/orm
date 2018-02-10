@@ -18,6 +18,26 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
+use function array_filter;
+use function array_map;
+use function array_merge;
+use function count;
+use function current;
+use function get_class;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_object;
+use function is_scalar;
+use function json_encode;
+use function preg_match;
+use function preg_quote;
+use function print_r;
+use function sprintf;
+use function strtolower;
+use function ucfirst;
 
 /**
  * Show information about mapped entities.
@@ -139,7 +159,7 @@ EOT
      *
      * @param string $entityName Full or partial entity name
      *
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     private function getClassMetadata($entityName, EntityManagerInterface $entityManager)
     {
@@ -341,7 +361,6 @@ EOT
     }
 
     /**
-     *
      * @return string[]
      */
     private function formatTable(?TableMetadata $tableMetadata = null)

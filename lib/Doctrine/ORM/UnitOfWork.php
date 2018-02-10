@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\EventManager;
 use Doctrine\Common\NotifyPropertyChanged;
 use Doctrine\Common\PropertyChangedListener;
 use Doctrine\DBAL\LockMode;
@@ -42,6 +43,25 @@ use Doctrine\ORM\Utility\NormalizeIdentifier;
 use InvalidArgumentException;
 use ProxyManager\Proxy\GhostObjectInterface;
 use UnexpectedValueException;
+use function array_combine;
+use function array_diff_key;
+use function array_filter;
+use function array_key_exists;
+use function array_map;
+use function array_merge;
+use function array_pop;
+use function array_reverse;
+use function array_sum;
+use function array_values;
+use function current;
+use function get_class;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_object;
+use function method_exists;
+use function spl_object_id;
+use function sprintf;
 
 /**
  * The UnitOfWork is responsible for tracking changes to objects during an
@@ -229,14 +249,14 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * The EventManager used for dispatching events.
      *
-     * @var \Doctrine\Common\EventManager
+     * @var EventManager
      */
     private $eventManager;
 
     /**
      * The ListenersInvoker used for dispatching events.
      *
-     * @var \Doctrine\ORM\Event\ListenersInvoker
+     * @var ListenersInvoker
      */
     private $listenersInvoker;
 
@@ -781,7 +801,7 @@ class UnitOfWork implements PropertyChangedListener
             switch ($state) {
                 case self::STATE_NEW:
                     if (! in_array('persist', $association->getCascade(), true)) {
-                        $this->nonCascadedNewDetectedEntities[\spl_object_id($entry)] = [$association, $entry];
+                        $this->nonCascadedNewDetectedEntities[spl_object_id($entry)] = [$association, $entry];
 
                         break;
                     }
@@ -813,8 +833,8 @@ class UnitOfWork implements PropertyChangedListener
     }
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
-     * @param object                              $entity
+     * @param ClassMetadata $class
+     * @param object        $entity
      */
     private function persistNew($class, $entity)
     {
@@ -964,7 +984,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity updates for entities of the specified type.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param ClassMetadata $class
      */
     private function executeUpdates($class)
     {
@@ -1002,7 +1022,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Executes all entity deletions for entities of the specified type.
      *
-     * @param \Doctrine\ORM\Mapping\ClassMetadata $class
+     * @param ClassMetadata $class
      */
     private function executeDeletions($class)
     {
@@ -1059,7 +1079,7 @@ class UnitOfWork implements PropertyChangedListener
         // are not yet available.
         $newNodes = [];
 
-        foreach (\array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
+        foreach (array_merge($this->entityInsertions, $this->entityUpdates, $this->entityDeletions) as $entity) {
             $class = $this->em->getClassMetadata(get_class($entity));
 
             if ($calc->hasNode($class->getClassName())) {
@@ -1852,7 +1872,7 @@ class UnitOfWork implements PropertyChangedListener
 
             switch (true) {
                 case ($relatedEntities instanceof Collection):
-                case (\is_array($relatedEntities)):
+                case (is_array($relatedEntities)):
                     // If its a PersistentCollection initialization is intended! No unwrap!
                     foreach ($relatedEntities as $relatedEntity) {
                         $entitiesToCascade[] = $relatedEntity;
@@ -2361,7 +2381,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Initializes (loads) an uninitialized persistent collection of an entity.
      *
-     * @param \Doctrine\ORM\PersistentCollection $collection The collection to initialize.
+     * @param PersistentCollection $collection The collection to initialize.
      *
      * @todo Maybe later move to EntityManager#initialize($proxyOrCollection). See DDC-733.
      */
@@ -2452,7 +2472,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @return mixed A scalar value.
      *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws ORMInvalidArgumentException
      */
     public function getSingleIdentifierValue($entity)
     {
@@ -2517,7 +2537,7 @@ class UnitOfWork implements PropertyChangedListener
      */
     public function size()
     {
-        return \array_sum(\array_map('count', $this->identityMap));
+        return array_sum(array_map('count', $this->identityMap));
     }
 
     /**
@@ -2525,7 +2545,7 @@ class UnitOfWork implements PropertyChangedListener
      *
      * @param string $entityName The name of the Entity.
      *
-     * @return \Doctrine\ORM\Persisters\Entity\EntityPersister
+     * @return EntityPersister
      */
     public function getEntityPersister($entityName)
     {
@@ -2567,7 +2587,7 @@ class UnitOfWork implements PropertyChangedListener
     /**
      * Gets a collection persister for a collection-valued association.
      *
-     * @return \Doctrine\ORM\Persisters\Collection\CollectionPersister
+     * @return CollectionPersister
      */
     public function getCollectionPersister(ToManyAssociationMetadata $association)
     {
@@ -2864,13 +2884,13 @@ class UnitOfWork implements PropertyChangedListener
      */
     private function assertThatThereAreNoUnintentionallyNonPersistedAssociations() : void
     {
-        $entitiesNeedingCascadePersist = \array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);
+        $entitiesNeedingCascadePersist = array_diff_key($this->nonCascadedNewDetectedEntities, $this->entityInsertions);
 
         $this->nonCascadedNewDetectedEntities = [];
 
         if ($entitiesNeedingCascadePersist) {
             throw ORMInvalidArgumentException::newEntitiesFoundThroughRelationships(
-                \array_values($entitiesNeedingCascadePersist)
+                array_values($entitiesNeedingCascadePersist)
             );
         }
     }

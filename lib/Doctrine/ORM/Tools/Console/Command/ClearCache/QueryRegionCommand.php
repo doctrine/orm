@@ -12,6 +12,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function get_class;
+use function gettype;
+use function is_object;
+use function sprintf;
 
 /**
  * Command to clear a query cache region.

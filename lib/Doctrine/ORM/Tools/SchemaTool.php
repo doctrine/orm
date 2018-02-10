@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Comparator;
 use Doctrine\DBAL\Schema\Index;
@@ -25,6 +26,17 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
+use function array_diff;
+use function array_key_exists;
+use function array_keys;
+use function count;
+use function implode;
+use function in_array;
+use function is_int;
+use function is_numeric;
+use function reset;
+use function sprintf;
+use function strtolower;
 
 /**
  * The SchemaTool is a tool to create/drop/update database schemas based on
@@ -33,12 +45,12 @@ use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 class SchemaTool
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $platform;
 
@@ -112,7 +124,7 @@ class SchemaTool
      *
      * @return Schema
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     public function getSchemaFromMetadata(array $classes)
     {
@@ -129,7 +141,7 @@ class SchemaTool
         $blacklistedFks = [];
 
         foreach ($classes as $class) {
-            /** @var \Doctrine\ORM\Mapping\ClassMetadata $class */
+            /** @var ClassMetadata $class */
             if ($this->processingNotRequired($class, $processedClasses)) {
                 continue;
             }
@@ -501,7 +513,7 @@ class SchemaTool
      * @param mixed[][]     $addedFks
      * @param bool[]        $blacklistedFks
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function gatherRelationsSql($class, $table, $schema, &$addedFks, &$blacklistedFks)
     {
@@ -645,7 +657,7 @@ class SchemaTool
      * @param mixed[][]            $addedFks
      * @param bool[]               $blacklistedFks
      *
-     * @throws \Doctrine\ORM\ORMException
+     * @throws ORMException
      */
     private function gatherRelationJoinColumns(
         $joinColumns,
@@ -669,7 +681,7 @@ class SchemaTool
             );
 
             if (! $definingClass) {
-                throw new \Doctrine\ORM\ORMException(sprintf(
+                throw new ORMException(sprintf(
                     'Column name "%s" referenced for relation from %s towards %s does not exist.',
                     $joinColumn->getReferencedColumnName(),
                     $mapping->getSourceEntity(),

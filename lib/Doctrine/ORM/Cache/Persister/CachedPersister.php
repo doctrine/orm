@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister;
 
+use Doctrine\ORM\Cache\Region;
+
 /**
  * Interface for persister that support second level cache.
  */
@@ -22,7 +24,7 @@ interface CachedPersister
     /**
      * Gets the The region access.
      *
-     * @return \Doctrine\ORM\Cache\Region
+     * @return Region
      */
     public function getCacheRegion();
 }

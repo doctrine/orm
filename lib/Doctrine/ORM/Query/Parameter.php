@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use function trim;
+
 /**
  * Defines a Query Parameter.
  */
@@ -31,8 +33,6 @@ class Parameter
     private $type;
 
     /**
-     * Constructor.
-     *
      * @param string $name  Parameter name
      * @param mixed  $value Parameter value
      * @param mixed  $type  Parameter type

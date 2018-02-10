@@ -9,6 +9,8 @@ use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Event\OnClassMetadataNotFoundEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use function array_key_exists;
+use function ltrim;
 
 /**
  * ResolveTargetEntityListener

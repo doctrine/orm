@@ -7,6 +7,10 @@ namespace Doctrine\ORM\Mapping\Driver;
 use Doctrine\Common\Persistence\Mapping\Driver\DefaultFileLocator;
 use Doctrine\Common\Persistence\Mapping\Driver\FileLocator;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use function array_keys;
+use function array_merge;
+use function is_file;
+use function str_replace;
 
 /**
  * Base driver for file-based metadata drivers.

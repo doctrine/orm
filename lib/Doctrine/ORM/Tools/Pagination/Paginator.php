@@ -10,6 +10,10 @@ use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
+use function array_key_exists;
+use function array_map;
+use function array_sum;
+use function count;
 
 /**
  * The paginator can handle various complex scenarios with DQL.
@@ -37,8 +41,6 @@ class Paginator implements \Countable, \IteratorAggregate
     private $count;
 
     /**
-     * Constructor.
-     *
      * @param Query|QueryBuilder $query               A Doctrine ORM query or query builder.
      * @param bool               $fetchJoinCollection Whether the query joins a collection (true by default).
      */

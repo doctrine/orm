@@ -6,6 +6,11 @@ namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
+use const PHP_EOL;
+use function assert;
+use function implode;
+use function sprintf;
+use function str_repeat;
 
 class JoinColumnMetadataExporter extends ColumnMetadataExporter
 {

@@ -6,6 +6,8 @@ namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\ColumnMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
+use function assert;
+use function sprintf;
 
 class VersionFieldMetadataExporter extends FieldMetadataExporter
 {

@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Mapping\Factory;
 
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Factory\Strategy\ClassMetadataGeneratorStrategy;
+use function class_exists;
 
 class ClassMetadataDefinitionFactory
 {
@@ -19,9 +20,6 @@ class ClassMetadataDefinitionFactory
      */
     private $generatorStrategy;
 
-    /**
-     * ClassMetadataDefinitionFactory constructor.
-     */
     public function __construct(ClassMetadataResolver $resolver, ClassMetadataGeneratorStrategy $generatorStrategy)
     {
         $this->resolver          = $resolver;

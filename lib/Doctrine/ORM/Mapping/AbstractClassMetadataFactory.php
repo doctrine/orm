@@ -11,6 +11,7 @@ use Doctrine\ORM\Reflection\ReflectionService;
 use Doctrine\ORM\Reflection\RuntimeReflectionService;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
 use ReflectionException;
+use function array_reverse;
 
 /**
  * The ClassMetadataFactory is used to create ClassMetadata objects that contain all the
@@ -29,7 +30,7 @@ abstract class AbstractClassMetadataFactory implements ClassMetadataFactory
     protected $cacheSalt = '$CLASSMETADATA';
 
     /**
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var Cache|null
      */
     private $cacheDriver;
 

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Expr;
 
+use function implode;
+use function is_object;
+use function stripos;
+
 /**
  * Expression class for building DQL and parts.
  */

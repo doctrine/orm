@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Reflection;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use function class_exists;
+use function class_parents;
 
 /**
  * PHP Runtime Reflection Service.

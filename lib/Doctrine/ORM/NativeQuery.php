@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use function array_values;
+use function is_int;
+use function key;
+use function ksort;
+
 /**
  * Represents a native SQL query.
  */

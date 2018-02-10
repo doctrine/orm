@@ -14,6 +14,10 @@ use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function explode;
+use function in_array;
+use function sprintf;
+use function strpos;
 
 /**
  * A ResultSetMappingBuilder uses the EntityManager to automatically populate entity fields.

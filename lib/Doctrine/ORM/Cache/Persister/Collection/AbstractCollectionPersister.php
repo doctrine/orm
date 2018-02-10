@@ -7,44 +7,51 @@ namespace Doctrine\ORM\Cache\Persister\Collection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache\CollectionCacheKey;
+use Doctrine\ORM\Cache\CollectionHydrator;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
+use Doctrine\ORM\UnitOfWork;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function array_values;
+use function count;
 
 abstract class AbstractCollectionPersister implements CachedCollectionPersister
 {
     /**
-     * @var \Doctrine\ORM\UnitOfWork
+     * @var UnitOfWork
      */
     protected $uow;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     protected $metadataFactory;
 
     /**
-     * @var \Doctrine\ORM\Persisters\Collection\CollectionPersister
+     * @var CollectionPersister
      */
     protected $persister;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $sourceEntity;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $targetEntity;
 
     /**
-     * @var \Doctrine\ORM\Mapping\AssociationMetadata
+     * @var AssociationMetadata
      */
     protected $association;
 
@@ -54,7 +61,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $queuedCache = [];
 
     /**
-     * @var \Doctrine\ORM\Cache\Region
+     * @var Region
      */
     protected $region;
 
@@ -64,12 +71,12 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     protected $regionName;
 
     /**
-     * @var \Doctrine\ORM\Cache\CollectionHydrator
+     * @var CollectionHydrator
      */
     protected $hydrator;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     * @var CacheLogger
      */
     protected $cacheLogger;
 
@@ -126,8 +133,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
     }
 
     /**
-     *
-     * @return \Doctrine\ORM\PersistentCollection|null
+     * @return PersistentCollection|null
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key)
     {
@@ -160,7 +166,7 @@ abstract class AbstractCollectionPersister implements CachedCollectionPersister
         // Only preserve ordering if association configured it
         if (! ($association instanceof ToManyAssociationMetadata && $association->getIndexedBy())) {
             // Elements may be an array or a Collection
-            $elements = \array_values($elements instanceof Collection ? $elements->getValues() : $elements);
+            $elements = array_values($elements instanceof Collection ? $elements->getValues() : $elements);
         }
 
         $entry = $this->hydrator->buildCacheEntry($this->targetEntity, $key, $elements);

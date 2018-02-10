@@ -6,6 +6,8 @@ namespace Doctrine\ORM\Sequencing;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Serializable;
+use function serialize;
+use function unserialize;
 
 /**
  * Represents an ID generator that uses a database sequence.

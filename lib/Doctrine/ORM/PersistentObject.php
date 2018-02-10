@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use function get_class;
+use function lcfirst;
+use function substr;
 
 /**
  * PersistentObject base class that implements getter/setter methods for all mapped fields and associations

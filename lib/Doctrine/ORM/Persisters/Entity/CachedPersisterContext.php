@@ -22,14 +22,14 @@ class CachedPersisterContext
     /**
      * Metadata object that describes the mapping of the mapped entity class.
      *
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     public $class;
 
     /**
      * ResultSetMapping that is used for all queries. Is generated lazily once per request.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     public $rsm;
 

@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Persisters\Entity;
 
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
@@ -16,6 +17,10 @@ use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Mapping\VersionFieldMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_combine;
+use function array_keys;
+use function implode;
+use function is_array;
 
 /**
  * The joined subclass persister maps a single entity instance to several tables in the
@@ -89,7 +94,7 @@ class JoinedSubclassPersister extends AbstractEntityInheritancePersister
         // Execute inserts on subtables.
         // The order doesn't matter because all child tables link to the root table via FK.
         foreach ($subTableStmts as $tableName => $stmt) {
-            /** @var \Doctrine\DBAL\Statement $stmt */
+            /** @var Statement $stmt */
             $paramIndex = 1;
             $data       = $insertData[$tableName] ?? [];
 

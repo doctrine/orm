@@ -16,6 +16,14 @@ use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\ToManyAssociationMetadata;
+use function array_combine;
+use function array_diff_key;
+use function array_map;
+use function array_values;
+use function array_walk;
+use function get_class;
+use function is_object;
+use function spl_object_id;
 
 /**
  * A PersistentCollection represents a collection of elements that have persistent state.
@@ -54,7 +62,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * The EntityManager that manages the persistence of the collection.
      *
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
@@ -229,9 +237,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $collectionItems = $this->collection->toArray();
 
-        return \array_values(\array_diff_key(
-            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot),
-            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems)
+        return array_values(array_diff_key(
+            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot),
+            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems)
         ));
     }
 
@@ -245,9 +253,9 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     {
         $collectionItems = $this->collection->toArray();
 
-        return \array_values(\array_diff_key(
-            \array_combine(\array_map('spl_object_id', $collectionItems), $collectionItems),
-            \array_combine(\array_map('spl_object_id', $this->snapshot), $this->snapshot)
+        return array_values(array_diff_key(
+            array_combine(array_map('spl_object_id', $collectionItems), $collectionItems),
+            array_combine(array_map('spl_object_id', $this->snapshot), $this->snapshot)
         ));
     }
 
@@ -667,7 +675,7 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     /**
      * Retrieves the wrapped Collection instance.
      *
-     * @return \Doctrine\Common\Collections\Collection|object[]
+     * @return Collection|object[]
      */
     public function unwrap()
     {
@@ -706,13 +714,13 @@ final class PersistentCollection extends AbstractLazyCollection implements Selec
     private function restoreNewObjectsInDirtyCollection(array $newObjects) : void
     {
         $loadedObjects               = $this->collection->toArray();
-        $newObjectsByOid             = \array_combine(\array_map('spl_object_id', $newObjects), $newObjects);
-        $loadedObjectsByOid          = \array_combine(\array_map('spl_object_id', $loadedObjects), $loadedObjects);
-        $newObjectsThatWereNotLoaded = \array_diff_key($newObjectsByOid, $loadedObjectsByOid);
+        $newObjectsByOid             = array_combine(array_map('spl_object_id', $newObjects), $newObjects);
+        $loadedObjectsByOid          = array_combine(array_map('spl_object_id', $loadedObjects), $loadedObjects);
+        $newObjectsThatWereNotLoaded = array_diff_key($newObjectsByOid, $loadedObjectsByOid);
 
         if ($newObjectsThatWereNotLoaded) {
             // Reattach NEW objects added through add(), if any.
-            \array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
+            array_walk($newObjectsThatWereNotLoaded, [$this->collection, 'add']);
 
             $this->isDirty = true;
         }

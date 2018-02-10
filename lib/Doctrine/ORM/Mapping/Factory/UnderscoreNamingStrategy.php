@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping\Factory;
 
+use const CASE_LOWER;
+use const CASE_UPPER;
+use function preg_replace;
+use function strpos;
+use function strrpos;
+use function strtolower;
+use function strtoupper;
+use function substr;
+
 /**
  * Naming strategy implementing the underscore naming convention.
  * Converts 'MyEntity' to 'my_entity' or 'MY_ENTITY'.

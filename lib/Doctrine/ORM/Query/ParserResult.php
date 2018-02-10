@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use Doctrine\ORM\Query\Exec\AbstractSqlExecutor;
+
 /**
  * Encapsulates the resulting components from a DQL query parsing process that
  * can be serialized.
@@ -13,14 +15,14 @@ class ParserResult
     /**
      * The SQL executor used for executing the SQL.
      *
-     * @var \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
+     * @var AbstractSqlExecutor
      */
     private $sqlExecutor;
 
     /**
      * The ResultSetMapping that describes how to map the SQL result set.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     private $resultSetMapping;
 
@@ -37,7 +39,7 @@ class ParserResult
      */
     public function __construct()
     {
-        $this->resultSetMapping = new ResultSetMapping;
+        $this->resultSetMapping = new ResultSetMapping();
     }
 
     /**
@@ -62,7 +64,7 @@ class ParserResult
     /**
      * Sets the SQL executor that should be used for this ParserResult.
      *
-     * @param \Doctrine\ORM\Query\Exec\AbstractSqlExecutor $executor
+     * @param AbstractSqlExecutor $executor
      */
     public function setSqlExecutor($executor)
     {
@@ -72,7 +74,7 @@ class ParserResult
     /**
      * Gets the SQL executor used by this ParserResult.
      *
-     * @return \Doctrine\ORM\Query\Exec\AbstractSqlExecutor
+     * @return AbstractSqlExecutor
      */
     public function getSqlExecutor()
     {

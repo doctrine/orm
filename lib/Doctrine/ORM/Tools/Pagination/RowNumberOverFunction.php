@@ -6,8 +6,10 @@ namespace Doctrine\ORM\Tools\Pagination;
 
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
+use Doctrine\ORM\Query\AST\OrderByClause;
 use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\SqlWalker;
+use function trim;
 
 /**
  * RowNumberOverFunction
@@ -17,7 +19,7 @@ use Doctrine\ORM\Query\SqlWalker;
 class RowNumberOverFunction extends FunctionNode
 {
     /**
-     * @var \Doctrine\ORM\Query\AST\OrderByClause
+     * @var OrderByClause
      */
     public $orderByClause;
 

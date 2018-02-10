@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Cache\QueryCacheProfile;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
 
 /**
  * Base class for SQL statement executors.
@@ -53,7 +54,7 @@ abstract class AbstractSqlExecutor
      * @param mixed[]    $params The parameters.
      * @param mixed[]    $types  The parameter types.
      *
-     * @return \Doctrine\DBAL\Driver\Statement
+     * @return Statement
      */
     abstract public function execute(Connection $conn, array $params, array $types);
 }

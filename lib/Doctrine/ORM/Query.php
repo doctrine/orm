@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Cache\Cache;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\LockMode;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\AST\DeleteStatement;
 use Doctrine\ORM\Query\AST\SelectStatement;
@@ -17,6 +18,16 @@ use Doctrine\ORM\Query\Parser;
 use Doctrine\ORM\Query\ParserResult;
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Utility\HierarchyDiscriminatorResolver;
+use function array_keys;
+use function array_values;
+use function count;
+use function in_array;
+use function ksort;
+use function md5;
+use function reset;
+use function serialize;
+use function sha1;
+use function stripos;
 
 /**
  * A Query object represents a DQL query.
@@ -134,7 +145,7 @@ final class Query extends AbstractQuery
     /**
      * The parser result that holds DQL => SQL information.
      *
-     * @var \Doctrine\ORM\Query\ParserResult
+     * @var ParserResult
      */
     private $parserResult;
 
@@ -155,7 +166,7 @@ final class Query extends AbstractQuery
     /**
      * The cache driver used for caching queries.
      *
-     * @var \Doctrine\Common\Cache\Cache|null
+     * @var Cache|null
      */
     private $queryCache;
 
@@ -195,7 +206,7 @@ final class Query extends AbstractQuery
     /**
      * Returns the corresponding AST for this DQL query.
      *
-     * @return \Doctrine\ORM\Query\AST\SelectStatement |
+     * @return SelectStatement |
      *         \Doctrine\ORM\Query\AST\UpdateStatement |
      *         \Doctrine\ORM\Query\AST\DeleteStatement
      */
@@ -224,7 +235,7 @@ final class Query extends AbstractQuery
      *
      * Note: Populates $this->parserResult as a side-effect.
      *
-     * @return \Doctrine\ORM\Query\ParserResult
+     * @return ParserResult
      */
     private function parse()
     {
@@ -434,7 +445,7 @@ final class Query extends AbstractQuery
     /**
      * Defines a cache driver to be used for caching queries.
      *
-     * @param \Doctrine\Common\Cache\Cache|null $queryCache Cache driver.
+     * @param Cache|null $queryCache Cache driver.
      *
      * @return Query This query instance.
      */
@@ -462,7 +473,7 @@ final class Query extends AbstractQuery
     /**
      * Returns the cache driver used for query caching.
      *
-     * @return \Doctrine\Common\Cache\Cache|null The cache driver used for query caching or NULL, if
+     * @return Cache|null The cache driver used for query caching or NULL, if
      *                                           this Query does not use query caching.
      */
     public function getQueryCacheDriver()
@@ -539,7 +550,7 @@ final class Query extends AbstractQuery
      *
      * @param string $dqlQuery DQL Query.
      *
-     * @return \Doctrine\ORM\AbstractQuery
+     * @return AbstractQuery
      */
     public function setDQL($dqlQuery)
     {
@@ -647,7 +658,7 @@ final class Query extends AbstractQuery
      * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters    The query parameters.
      * @param int                                            $hydrationMode The hydration mode to use.
      *
-     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     * @return IterableResult
      */
     public function iterate($parameters = null, $hydrationMode = self::HYDRATE_OBJECT)
     {

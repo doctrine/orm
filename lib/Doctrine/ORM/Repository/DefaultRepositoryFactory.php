@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Repository;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use function spl_object_id;
 
 /**
  * This factory is used to create default repository objects for entities at runtime.
@@ -14,7 +16,7 @@ final class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * The list of EntityRepository instances.
      *
-     * @var \Doctrine\Common\Persistence\ObjectRepository[]
+     * @var ObjectRepository[]
      */
     private $repositoryList = [];
 
@@ -32,10 +34,10 @@ final class DefaultRepositoryFactory implements RepositoryFactory
     /**
      * Create a new repository instance for an entity class.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $entityManager The EntityManager instance.
-     * @param string                               $entityName    The name of the entity.
+     * @param EntityManagerInterface $entityManager The EntityManager instance.
+     * @param string                 $entityName    The name of the entity.
      *
-     * @return \Doctrine\Common\Persistence\ObjectRepository
+     * @return ObjectRepository
      */
     private function createRepository(EntityManagerInterface $entityManager, $entityName)
     {

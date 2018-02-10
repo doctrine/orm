@@ -19,6 +19,8 @@ use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\AST\SimpleArithmeticExpression;
 use Doctrine\ORM\Query\AST\WhereClause;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use function count;
+use function reset;
 
 /**
  * Replaces the whereClause of the AST with a WHERE id IN (:foo_1, :foo_2) equivalent.
@@ -93,7 +95,7 @@ class WhereInWalker extends TreeWalkerAdapter
             $expression->not = false;
         }
 
-        $conditionalPrimary                              = new ConditionalPrimary;
+        $conditionalPrimary                              = new ConditionalPrimary();
         $conditionalPrimary->simpleConditionalExpression = $expression;
 
         if ($AST->whereClause) {
@@ -112,7 +114,7 @@ class WhereInWalker extends TreeWalkerAdapter
             } elseif ($AST->whereClause->conditionalExpression instanceof ConditionalExpression
                 || $AST->whereClause->conditionalExpression instanceof ConditionalFactor
             ) {
-                $tmpPrimary                              = new ConditionalPrimary;
+                $tmpPrimary                              = new ConditionalPrimary();
                 $tmpPrimary->conditionalExpression       = $AST->whereClause->conditionalExpression;
                 $AST->whereClause->conditionalExpression = new ConditionalTerm(
                     [

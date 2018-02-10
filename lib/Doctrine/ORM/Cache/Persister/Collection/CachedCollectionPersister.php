@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache\Persister\Collection;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 
@@ -15,26 +17,26 @@ use Doctrine\ORM\Persisters\Collection\CollectionPersister;
 interface CachedCollectionPersister extends CachedPersister, CollectionPersister
 {
     /**
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function getSourceEntityMetadata();
 
     /**
-     * @return \Doctrine\ORM\Mapping\ClassMetadata
+     * @return ClassMetadata
      */
     public function getTargetEntityMetadata();
 
     /**
      * Loads a collection from cache
      *
-     * @return \Doctrine\ORM\PersistentCollection|mixed[]|null
+     * @return PersistentCollection|mixed[]|null
      */
     public function loadCollectionCache(PersistentCollection $collection, CollectionCacheKey $key);
 
     /**
      * Stores a collection into cache
      *
-     * @param array|\Doctrine\Common\Collections\Collection|mixed[] $elements
+     * @param array|Collection|mixed[] $elements
      *
      * @return void
      */

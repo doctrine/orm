@@ -6,6 +6,7 @@ namespace Doctrine\ORM\Query\AST\Functions;
 
 use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\Query\SqlWalker;
+use function strtolower;
 
 /**
  * "DATE_SUB(date1, interval, unit)"

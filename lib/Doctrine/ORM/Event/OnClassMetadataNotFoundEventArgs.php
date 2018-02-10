@@ -32,9 +32,6 @@ class OnClassMetadataNotFoundEventArgs extends ManagerEventArgs
      */
     private $foundMetadata;
 
-    /**
-     * Constructor.
-     */
     public function __construct(
         string $className,
         ClassMetadataBuildingContext $metadataBuildingContext,

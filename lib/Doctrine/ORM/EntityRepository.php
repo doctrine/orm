@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
+use function array_slice;
+use function lcfirst;
+use function sprintf;
+use function strpos;
+use function substr;
 
 /**
  * An EntityRepository serves as a repository for entities with generic as well as
@@ -30,7 +37,7 @@ class EntityRepository implements ObjectRepository, Selectable
     protected $em;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $class;
 
@@ -247,7 +254,7 @@ class EntityRepository implements ObjectRepository, Selectable
      * Select all elements from a selectable that match the expression and
      * return a new collection containing these elements.
      *
-     * @return \Doctrine\Common\Collections\Collection|object[]
+     * @return Collection|object[]
      */
     public function matching(Criteria $criteria)
     {

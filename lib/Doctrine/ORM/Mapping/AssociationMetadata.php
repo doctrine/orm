@@ -51,9 +51,6 @@ class AssociationMetadata implements Property
     /** @var CacheMetadata|null */
     private $cache;
 
-    /**
-     * AssociationMetadata constructor.
-     */
     public function __construct(string $name)
     {
         $this->name = $name;

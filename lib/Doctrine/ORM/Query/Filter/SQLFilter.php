@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query\Filter;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Query\ParameterTypeInferer;
+use function ksort;
+use function serialize;
 
 /**
  * The base class that user defined filters should extend.
@@ -113,7 +116,7 @@ abstract class SQLFilter
     /**
      * Returns the database connection used by the entity manager
      *
-     * @return \Doctrine\DBAL\Connection
+     * @return Connection
      */
     final protected function getConnection()
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Cache\Persister\Entity;
 
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityHydrator;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 
@@ -14,7 +15,7 @@ use Doctrine\ORM\Persisters\Entity\EntityPersister;
 interface CachedEntityPersister extends CachedPersister, EntityPersister
 {
     /**
-     * @return \Doctrine\ORM\Cache\EntityHydrator
+     * @return EntityHydrator
      */
     public function getEntityHydrator();
 

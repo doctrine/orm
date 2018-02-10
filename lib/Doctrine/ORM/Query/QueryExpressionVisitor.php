@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Query;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Expr\Comparison;
 use Doctrine\Common\Collections\Expr\CompositeExpression;
 use Doctrine\Common\Collections\Expr\ExpressionVisitor;
 use Doctrine\Common\Collections\Expr\Value;
+use function count;
+use function str_replace;
+use function strpos;
 
 /**
  * Converts Collection expressions to Query expressions.
@@ -55,7 +59,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
      * Gets bound parameters.
      * Filled after {@link dispach()}.
      *
-     * @return \Doctrine\Common\Collections\Collection|mixed[]
+     * @return Collection|mixed[]
      */
     public function getParameters()
     {
@@ -124,7 +128,7 @@ class QueryExpressionVisitor extends ExpressionVisitor
         }
 
         $parameterName  = str_replace('.', '_', $comparison->getField());
-        $parameterCount = \count($this->parameters);
+        $parameterCount = count($this->parameters);
 
         foreach ($this->parameters as $parameter) {
             if ($parameter->getName() === $parameterName) {

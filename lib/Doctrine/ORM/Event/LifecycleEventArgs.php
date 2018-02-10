@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs as BaseLifecycleEventArgs;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Lifecycle Events are triggered by the UnitOfWork during lifecycle transitions
@@ -27,7 +28,7 @@ class LifecycleEventArgs extends BaseLifecycleEventArgs
     /**
      * Retrieves associated EntityManager.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {

@@ -9,6 +9,28 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Annotation;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping;
+use function array_diff;
+use function array_intersect;
+use function array_map;
+use function array_merge;
+use function array_unique;
+use function class_exists;
+use function constant;
+use function count;
+use function defined;
+use function get_class;
+use function get_declared_classes;
+use function in_array;
+use function is_dir;
+use function is_numeric;
+use function preg_match;
+use function preg_quote;
+use function realpath;
+use function sprintf;
+use function str_replace;
+use function strpos;
+use function strtolower;
+use function strtoupper;
 
 /**
  * The AnnotationDriver reads the mapping metadata from docblock annotations.

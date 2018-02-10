@@ -11,6 +11,9 @@ use Doctrine\Common\Collections\Expr\Value;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
+use function implode;
+use function in_array;
+use function is_object;
 
 /**
  * Visit Expressions and generate SQL WHERE conditions from them.
@@ -18,12 +21,12 @@ use Doctrine\ORM\Persisters\Entity\BasicEntityPersister;
 class SqlExpressionVisitor extends ExpressionVisitor
 {
     /**
-     * @var \Doctrine\ORM\Persisters\Entity\BasicEntityPersister
+     * @var BasicEntityPersister
      */
     private $persister;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     private $classMetadata;
 

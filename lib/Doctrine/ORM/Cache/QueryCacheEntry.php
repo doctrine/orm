@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use function microtime;
+
 /**
  * Query cache entry
  */

@@ -29,7 +29,7 @@ class CacheLoggerChain implements CacheLogger
     /**
      * @param string $name
      *
-     * @return \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     * @return CacheLogger|null
      */
     public function getLogger($name)
     {

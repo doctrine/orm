@@ -33,7 +33,7 @@ interface QueryCache
     public function get(QueryCacheKey $key, ResultSetMapping $rsm, array $hints = []);
 
     /**
-     * @return \Doctrine\ORM\Cache\Region
+     * @return Region
      */
     public function getRegion();
 }

@@ -6,7 +6,15 @@ namespace Doctrine\ORM\Query\Exec;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\Query\AST;
+use Doctrine\ORM\Query\AST\Node;
+use Doctrine\ORM\Query\SqlWalker;
 use Throwable;
+use function array_keys;
+use function array_map;
+use function array_merge;
+use function array_reverse;
+use function implode;
+use function sprintf;
 
 /**
  * Executes the SQL statements for bulk DQL DELETE statements on classes in
@@ -35,8 +43,8 @@ class MultiTableDeleteExecutor extends AbstractSqlExecutor
      * {@internal Any SQL construction and preparation takes place in the constructor for
      *            best performance. With a query cache the executor will be cached. }}
      *
-     * @param \Doctrine\ORM\Query\AST\Node  $AST       The root AST node of the DQL query.
-     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker The walker used for SQL generation from the AST.
+     * @param Node      $AST       The root AST node of the DQL query.
+     * @param SqlWalker $sqlWalker The walker used for SQL generation from the AST.
      */
     public function __construct(AST\Node $AST, $sqlWalker)
     {

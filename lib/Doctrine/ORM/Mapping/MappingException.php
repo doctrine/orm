@@ -5,6 +5,12 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping;
 
 use Doctrine\ORM\ORMException;
+use function array_keys;
+use function array_map;
+use function array_values;
+use function get_parent_class;
+use function implode;
+use function sprintf;
 
 /**
  * A MappingException indicates that something is wrong with the mapping setup.

@@ -8,13 +8,17 @@ use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Cache;
 use Doctrine\ORM\Cache\CollectionCacheKey;
 use Doctrine\ORM\Cache\EntityCacheKey;
+use Doctrine\ORM\Cache\EntityHydrator;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\Persister\CachedPersister;
 use Doctrine\ORM\Cache\QueryCacheKey;
 use Doctrine\ORM\Cache\Region;
 use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\Cache\TimestampRegion;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use Doctrine\ORM\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\Mapping\FetchMode;
 use Doctrine\ORM\Mapping\ManyToManyAssociationMetadata;
 use Doctrine\ORM\Mapping\OneToManyAssociationMetadata;
@@ -22,26 +26,28 @@ use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\PersistentCollection;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function serialize;
+use function sha1;
 
 abstract class AbstractEntityPersister implements CachedEntityPersister
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     protected $em;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadataFactory
+     * @var ClassMetadataFactory
      */
     protected $metadataFactory;
 
     /**
-     * @var \Doctrine\ORM\Persisters\Entity\EntityPersister
+     * @var EntityPersister
      */
     protected $persister;
 
     /**
-     * @var \Doctrine\ORM\Mapping\ClassMetadata
+     * @var ClassMetadata
      */
     protected $class;
 
@@ -51,32 +57,32 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $queuedCache = [];
 
     /**
-     * @var \Doctrine\ORM\Cache\Region
+     * @var Region
      */
     protected $region;
 
     /**
-     * @var \Doctrine\ORM\Cache\TimestampRegion
+     * @var TimestampRegion
      */
     protected $timestampRegion;
 
     /**
-     * @var \Doctrine\ORM\Cache\TimestampCacheKey
+     * @var TimestampCacheKey
      */
     protected $timestampKey;
 
     /**
-     * @var \Doctrine\ORM\Cache\EntityHydrator
+     * @var EntityHydrator
      */
     protected $hydrator;
 
     /**
-     * @var \Doctrine\ORM\Cache
+     * @var Cache
      */
     protected $cache;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger
+     * @var CacheLogger
      */
     protected $cacheLogger;
 
@@ -93,10 +99,10 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     protected $joinedAssociations;
 
     /**
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister The entity persister to cache.
-     * @param \Doctrine\ORM\Cache\Region                      $region    The entity cache region.
-     * @param \Doctrine\ORM\EntityManagerInterface            $em        The entity manager.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata             $class     The entity metadata.
+     * @param EntityPersister        $persister The entity persister to cache.
+     * @param Region                 $region    The entity cache region.
+     * @param EntityManagerInterface $em        The entity manager.
+     * @param ClassMetadata          $class     The entity metadata.
      */
     public function __construct(EntityPersister $persister, Region $region, EntityManagerInterface $em, ClassMetadata $class)
     {
@@ -192,7 +198,7 @@ abstract class AbstractEntityPersister implements CachedEntityPersister
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\EntityHydrator
+     * @return EntityHydrator
      */
     public function getEntityHydrator()
     {

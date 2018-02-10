@@ -6,6 +6,8 @@ namespace Doctrine\ORM\Query;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\AssociationMetadata;
+use function array_merge;
+use function count;
 
 /**
  * A ResultSetMapping describes how a result set of an SQL query maps to a Doctrine result.

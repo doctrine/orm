@@ -6,6 +6,9 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Cache\Cache as CacheDriver;
 use Exception;
+use function get_class;
+use function implode;
+use function sprintf;
 
 /**
  * Base exception class for all ORM exceptions.
@@ -57,7 +60,7 @@ class ORMException extends Exception
      * @param string $given
      * @param string $expected
      *
-     * @return \Doctrine\ORM\ORMInvalidArgumentException
+     * @return ORMInvalidArgumentException
      */
     public static function unexpectedAssociationValue($class, $association, $given, $expected)
     {

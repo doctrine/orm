@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Query;
 
+use function func_get_args;
+use function implode;
+use function is_array;
+use function is_bool;
+use function is_numeric;
+use function is_string;
+use function str_replace;
+
 /**
  * This class is used to generate DQL expressions via a set of PHP static functions.
  * @todo Rename: ExpressionBuilder

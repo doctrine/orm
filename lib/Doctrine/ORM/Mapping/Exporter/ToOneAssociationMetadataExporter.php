@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
+use const PHP_EOL;
+use function implode;
+use function str_repeat;
 
 abstract class ToOneAssociationMetadataExporter extends AssociationMetadataExporter
 {

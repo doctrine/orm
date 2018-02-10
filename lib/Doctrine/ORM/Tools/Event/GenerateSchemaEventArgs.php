@@ -14,12 +14,12 @@ use Doctrine\ORM\EntityManagerInterface;
 class GenerateSchemaEventArgs extends EventArgs
 {
     /**
-     * @var \Doctrine\ORM\EntityManagerInterface
+     * @var EntityManagerInterface
      */
     private $em;
 
     /**
-     * @var \Doctrine\DBAL\Schema\Schema
+     * @var Schema
      */
     private $schema;
 

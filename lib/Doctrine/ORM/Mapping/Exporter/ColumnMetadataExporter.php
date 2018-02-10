@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Mapping\Exporter;
 
 use Doctrine\ORM\Mapping\ColumnMetadata;
+use const PHP_EOL;
+use function implode;
+use function ltrim;
+use function str_repeat;
 
 abstract class ColumnMetadataExporter implements Exporter
 {

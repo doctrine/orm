@@ -20,8 +20,6 @@ class SubselectIdentificationVariableDeclaration
     public $aliasIdentificationVariable;
 
     /**
-     * Constructor.
-     *
      * @param PathExpression $associationPathExpression
      * @param string         $aliasIdentificationVariable
      */

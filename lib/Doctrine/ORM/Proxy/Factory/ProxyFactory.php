@@ -39,7 +39,7 @@ interface ProxyFactory
     public const AUTOGENERATE_EVAL = 3;
 
     /**
-     * @param \Doctrine\ORM\Mapping\ClassMetadata[] $classes
+     * @param ClassMetadata[] $classes
      */
     public function generateProxyClasses(array $classes) : int;
 

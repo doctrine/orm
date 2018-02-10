@@ -6,6 +6,16 @@ namespace Doctrine\ORM;
 
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\ClassMetadata;
+use function array_map;
+use function count;
+use function get_class;
+use function gettype;
+use function implode;
+use function is_object;
+use function method_exists;
+use function reset;
+use function spl_object_id;
+use function sprintf;
 
 /**
  * Contains exception messages for all invalid lifecycle state exceptions inside UnitOfWork

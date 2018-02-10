@@ -23,9 +23,6 @@ class ClassMetadataDefinition
      */
     public $parentClassMetadata;
 
-    /**
-     * ClassMetadataDefinition constructor.
-     */
     public function __construct(
         string $entityClassName,
         string $metadataClassName,

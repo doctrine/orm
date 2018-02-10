@@ -4,10 +4,20 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Tools\Pagination;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\FieldMetadata;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\AST\SelectStatement;
+use Doctrine\ORM\Query\ParserResult;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Query\SqlWalker;
+use function array_diff;
+use function array_keys;
+use function count;
+use function implode;
+use function reset;
+use function sprintf;
 
 /**
  * Wraps the query in order to accurately count the root objects.
@@ -21,12 +31,12 @@ use Doctrine\ORM\Query\SqlWalker;
 class CountOutputWalker extends SqlWalker
 {
     /**
-     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     * @var AbstractPlatform
      */
     private $platform;
 
     /**
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     private $rsm;
 
@@ -36,15 +46,13 @@ class CountOutputWalker extends SqlWalker
     private $queryComponents;
 
     /**
-     * Constructor.
-     *
      * Stores various parameters that are otherwise unavailable
      * because Doctrine\ORM\Query\SqlWalker keeps everything private without
      * accessors.
      *
-     * @param \Doctrine\ORM\Query              $query
-     * @param \Doctrine\ORM\Query\ParserResult $parserResult
-     * @param mixed[][]                        $queryComponents
+     * @param Query        $query
+     * @param ParserResult $parserResult
+     * @param mixed[][]    $queryComponents
      */
     public function __construct($query, $parserResult, array $queryComponents)
     {

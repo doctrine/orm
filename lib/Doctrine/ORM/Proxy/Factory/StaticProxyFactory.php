@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping\TransientMetadata;
 use Doctrine\ORM\Persisters\Entity\EntityPersister;
 use ProxyManager\Factory\LazyLoadingGhostFactory;
 use ProxyManager\Proxy\GhostObjectInterface;
+use function array_filter;
+use function array_merge;
+use function count;
 
 /**
  * Static factory for proxy objects.
@@ -61,7 +64,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     public function generateProxyClasses(array $classes) : int
     {
-        $concreteClasses = \array_filter($classes, function (ClassMetadata $metadata) : bool {
+        $concreteClasses = array_filter($classes, function (ClassMetadata $metadata) : bool {
             return ! ($metadata->isMappedSuperclass || $metadata->getReflectionClass()->isAbstract());
         });
 
@@ -77,13 +80,13 @@ final class StaticProxyFactory implements ProxyFactory
                 );
         }
 
-        return \count($concreteClasses);
+        return count($concreteClasses);
     }
 
     /**
      * {@inheritdoc}
      *
-     * @throws \Doctrine\ORM\EntityNotFoundException
+     * @throws EntityNotFoundException
      */
     public function getProxy(ClassMetadata $metadata, array $identifier) : GhostObjectInterface
     {
@@ -149,7 +152,7 @@ final class StaticProxyFactory implements ProxyFactory
      */
     private function skippedFieldsFqns(ClassMetadata $metadata) : array
     {
-        return \array_merge(
+        return array_merge(
             $this->identifierFieldFqns($metadata),
             $this->transientFieldsFqns($metadata)
         );

@@ -11,6 +11,8 @@ use Doctrine\ORM\Query\AST\PathExpression;
 use Doctrine\ORM\Query\AST\SelectExpression;
 use Doctrine\ORM\Query\AST\SelectStatement;
 use Doctrine\ORM\Query\TreeWalkerAdapter;
+use function count;
+use function reset;
 
 /**
  * Replaces the selectClause of the AST with a COUNT statement.

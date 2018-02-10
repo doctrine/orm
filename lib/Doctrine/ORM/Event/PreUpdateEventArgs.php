@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Doctrine\ORM\Event;
 
 use Doctrine\ORM\EntityManagerInterface;
+use function get_class;
+use function sprintf;
 
 /**
  * Class that holds event arguments for a preInsert/preUpdate event.
@@ -17,8 +19,6 @@ class PreUpdateEventArgs extends LifecycleEventArgs
     private $entityChangeSet;
 
     /**
-     * Constructor.
-     *
      * @param object  $entity
      * @param mixed[] $changeSet
      */

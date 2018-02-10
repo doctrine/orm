@@ -37,8 +37,6 @@ class EmbeddableClassMetadataBinder
     private $classMetadata;
 
     /**
-     * ComponentMetadataBinder constructor.
-     *
      * @param Annotation\Annotation[] $classAnnotations
      */
     public function __construct(

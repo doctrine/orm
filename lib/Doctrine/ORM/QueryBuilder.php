@@ -6,9 +6,25 @@ namespace Doctrine\ORM;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
-
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\Query\QueryExpressionVisitor;
+use function array_keys;
+use function array_merge;
+use function array_unshift;
+use function func_get_args;
+use function func_num_args;
+use function implode;
+use function in_array;
+use function is_array;
+use function is_numeric;
+use function is_object;
+use function is_string;
+use function key;
+use function reset;
+use function sprintf;
+use function strpos;
+use function strrpos;
+use function substr;
 
 /**
  * This class is responsible for building DQL query strings via an object oriented
@@ -539,7 +555,7 @@ class QueryBuilder
      *        )));
      * </code>
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection|array|mixed[] $parameters The query parameters to set.
+     * @param ArrayCollection|array|mixed[] $parameters The query parameters to set.
      *
      * @return self
      */
@@ -566,7 +582,7 @@ class QueryBuilder
     /**
      * Gets all defined query parameters for the query being constructed.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection The currently defined query parameters.
+     * @return ArrayCollection The currently defined query parameters.
      */
     public function getParameters()
     {
@@ -1252,7 +1268,6 @@ class QueryBuilder
      * Adds where expressions with AND operator.
      * Adds orderings.
      * Overrides firstResult and maxResults if they're set.
-     *
      *
      * @return self
      *

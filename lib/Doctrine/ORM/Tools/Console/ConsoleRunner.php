@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Helper\HelperSet;
 
 /**
@@ -32,7 +33,7 @@ final class ConsoleRunner
     /**
      * Runs console with the given helper set.
      *
-     * @param \Symfony\Component\Console\Command\Command[] $commands
+     * @param SymfonyCommand[] $commands
      */
     public static function run(HelperSet $helperSet, array $commands = []) : void
     {
@@ -44,7 +45,7 @@ final class ConsoleRunner
      * Creates a console application with the given helperset and
      * optional commands.
      *
-     * @param \Symfony\Component\Console\Command\Command[] $commands
+     * @param SymfonyCommand[] $commands
      *
      * @throws \OutOfBoundsException
      */

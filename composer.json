@@ -29,7 +29,7 @@
         "symfony/console": "~3.2|~4.0"
     },
     "require-dev": {
-        "doctrine/coding-standard": "~2.0.0",
+        "doctrine/coding-standard": "~3.0.0",
         "phpunit/phpunit": "^7.0"
     },
     "autoload": {

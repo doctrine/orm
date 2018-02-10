@@ -10,6 +10,22 @@ use Doctrine\ORM\Cache\CollectionCacheEntry;
 use Doctrine\ORM\Cache\ConcurrentRegion;
 use Doctrine\ORM\Cache\Lock;
 use Doctrine\ORM\Cache\Region;
+use const DIRECTORY_SEPARATOR;
+use const LOCK_EX;
+use function array_filter;
+use function array_map;
+use function chmod;
+use function file_get_contents;
+use function file_put_contents;
+use function fileatime;
+use function glob;
+use function is_dir;
+use function is_file;
+use function is_writable;
+use function mkdir;
+use function sprintf;
+use function time;
+use function unlink;
 
 /**
  * Very naive concurrent region, based on file locks.
@@ -19,7 +35,7 @@ class FileLockRegion implements ConcurrentRegion
     public const LOCK_EXTENSION = 'lock';
 
     /**
-     * @var \Doctrine\ORM\Cache\Region
+     * @var Region
      */
     private $region;
 

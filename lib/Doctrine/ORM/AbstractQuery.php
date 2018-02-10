@@ -7,9 +7,25 @@ namespace Doctrine\ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Cache\QueryCacheProfile;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\ORM\Cache\Logging\CacheLogger;
 use Doctrine\ORM\Cache\QueryCacheKey;
+use Doctrine\ORM\Cache\TimestampCacheKey;
+use Doctrine\ORM\Internal\Hydration\IterableResult;
 use Doctrine\ORM\Query\Parameter;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\Utility\StaticClassNameConverter;
+use function array_map;
+use function array_shift;
+use function count;
+use function is_array;
+use function is_numeric;
+use function is_object;
+use function is_scalar;
+use function ksort;
+use function reset;
+use function serialize;
+use function sha1;
 
 /**
  * Base contract for ORM queries. Base class for Query and NativeQuery.
@@ -46,14 +62,14 @@ abstract class AbstractQuery
     /**
      * The parameter map of this query.
      *
-     * @var \Doctrine\Common\Collections\ArrayCollection
+     * @var ArrayCollection
      */
     protected $parameters;
 
     /**
      * The user-specified ResultSetMapping to use.
      *
-     * @var \Doctrine\ORM\Query\ResultSetMapping
+     * @var ResultSetMapping
      */
     protected $resultSetMapping;
 
@@ -79,7 +95,7 @@ abstract class AbstractQuery
     protected $hydrationMode = self::HYDRATE_OBJECT;
 
     /**
-     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var QueryCacheProfile
      */
     protected $queryCacheProfile;
 
@@ -91,7 +107,7 @@ abstract class AbstractQuery
     protected $expireResultCache = false;
 
     /**
-     * @var \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @var QueryCacheProfile
      */
     protected $hydrationCacheProfile;
 
@@ -122,7 +138,7 @@ abstract class AbstractQuery
     protected $cacheMode;
 
     /**
-     * @var \Doctrine\ORM\Cache\Logging\CacheLogger|null
+     * @var CacheLogger|null
      */
     protected $cacheLogger;
 
@@ -254,7 +270,7 @@ abstract class AbstractQuery
     /**
      * Retrieves the associated EntityManager of this Query instance.
      *
-     * @return \Doctrine\ORM\EntityManagerInterface
+     * @return EntityManagerInterface
      */
     public function getEntityManager()
     {
@@ -276,7 +292,7 @@ abstract class AbstractQuery
     /**
      * Get all defined parameters.
      *
-     * @return \Doctrine\Common\Collections\ArrayCollection The defined query parameters.
+     * @return ArrayCollection The defined query parameters.
      */
     public function getParameters()
     {
@@ -306,7 +322,7 @@ abstract class AbstractQuery
     /**
      * Sets a collection of query parameters.
      *
-     * @param \Doctrine\Common\Collections\ArrayCollection|array|Parameter[]|mixed[] $parameters
+     * @param ArrayCollection|array|Parameter[]|mixed[] $parameters
      *
      * @return static This query instance.
      */
@@ -361,7 +377,7 @@ abstract class AbstractQuery
      *
      * @return string|mixed[]
      *
-     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws ORMInvalidArgumentException
      */
     public function processParameterValue($value)
     {
@@ -400,7 +416,6 @@ abstract class AbstractQuery
     /**
      * Sets the ResultSetMapping that should be used for hydration.
      *
-     *
      * @return static This query instance.
      */
     public function setResultSetMapping(Query\ResultSetMapping $rsm)
@@ -413,7 +428,7 @@ abstract class AbstractQuery
     /**
      * Gets the ResultSetMapping used for hydration.
      *
-     * @return \Doctrine\ORM\Query\ResultSetMapping
+     * @return ResultSetMapping
      */
     protected function getResultSetMapping()
     {
@@ -438,7 +453,6 @@ abstract class AbstractQuery
      * $query->setHydrationCacheProfile(new QueryCacheProfile());
      * $query->setHydrationCacheProfile(new QueryCacheProfile($lifetime, $resultKey));
      *
-     *
      * @return static This query instance.
      */
     public function setHydrationCacheProfile(?QueryCacheProfile $profile = null)
@@ -454,7 +468,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return \Doctrine\DBAL\Cache\QueryCacheProfile
+     * @return QueryCacheProfile
      */
     public function getHydrationCacheProfile()
     {
@@ -466,7 +480,6 @@ abstract class AbstractQuery
      *
      * If no result cache driver is set in the QueryCacheProfile, the default
      * result cache driver is used from the configuration.
-     *
      *
      * @return static This query instance.
      */
@@ -717,7 +730,7 @@ abstract class AbstractQuery
         }
 
         if (count($result) > 1) {
-            throw new NonUniqueResultException;
+            throw new NonUniqueResultException();
         }
 
         return array_shift($result);
@@ -743,7 +756,7 @@ abstract class AbstractQuery
         $result = $this->execute(null, $hydrationMode);
 
         if ($this->hydrationMode !== self::HYDRATE_SINGLE_SCALAR && ! $result) {
-            throw new NoResultException;
+            throw new NoResultException();
         }
 
         if (! is_array($result)) {
@@ -751,7 +764,7 @@ abstract class AbstractQuery
         }
 
         if (count($result) > 1) {
-            throw new NonUniqueResultException;
+            throw new NonUniqueResultException();
         }
 
         return array_shift($result);
@@ -828,7 +841,7 @@ abstract class AbstractQuery
      * @param ArrayCollection|array|Parameter[]|mixed[]|null $parameters    The query parameters.
      * @param int|null                                       $hydrationMode The hydration mode to use.
      *
-     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     * @return IterableResult
      */
     public function iterate($parameters = null, $hydrationMode = null)
     {
@@ -966,7 +979,7 @@ abstract class AbstractQuery
     }
 
     /**
-     * @return \Doctrine\ORM\Cache\TimestampCacheKey|null
+     * @return TimestampCacheKey|null
      */
     private function getTimestampKey()
     {
@@ -1039,7 +1052,7 @@ abstract class AbstractQuery
     /**
      * Executes the query and returns a the resulting Statement object.
      *
-     * @return \Doctrine\DBAL\Driver\Statement The executed database statement that holds the results.
+     * @return Statement The executed database statement that holds the results.
      */
     abstract protected function doExecute();
 

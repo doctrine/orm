@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Mapping;
 
+use function strtoupper;
+
 /**
  * Class JoinColumnMetadata
  */

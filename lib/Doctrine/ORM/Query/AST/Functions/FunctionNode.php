@@ -27,13 +27,12 @@ abstract class FunctionNode extends Node
     }
 
     /**
-     *
      * @return string
      */
     abstract public function getSql(SqlWalker $sqlWalker);
 
     /**
-     * @param \Doctrine\ORM\Query\SqlWalker $sqlWalker
+     * @param SqlWalker $sqlWalker
      *
      * @return string
      */
@@ -43,7 +42,6 @@ abstract class FunctionNode extends Node
     }
 
     /**
-     *
      * @return void
      */
     abstract public function parse(Parser $parser);

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Doctrine\ORM\Cache;
 
+use Doctrine\ORM\Cache;
+use Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister;
+use Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\AssociationMetadata;
 use Doctrine\ORM\Mapping\CacheMetadata;
@@ -19,11 +22,11 @@ interface CacheFactory
     /**
      * Build an entity persister for the given entity metadata.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface            $em        The entity manager.
-     * @param \Doctrine\ORM\Persisters\Entity\EntityPersister $persister The entity persister that will be cached.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata             $metadata  The entity metadata.
+     * @param EntityManagerInterface $em        The entity manager.
+     * @param EntityPersister        $persister The entity persister that will be cached.
+     * @param ClassMetadata          $metadata  The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\Persister\Entity\CachedEntityPersister
+     * @return CachedEntityPersister
      */
     public function buildCachedEntityPersister(
         EntityManagerInterface $em,
@@ -34,11 +37,11 @@ interface CacheFactory
     /**
      * Build a collection persister for the given relation mapping.
      *
-     * @param \Doctrine\ORM\EntityManagerInterface                    $em          The entity manager.
-     * @param \Doctrine\ORM\Persisters\Collection\CollectionPersister $persister   The collection persister that will be cached.
-     * @param \Doctrine\ORM\Mapping\AssociationMetadata               $association The association mapping.
+     * @param EntityManagerInterface $em          The entity manager.
+     * @param CollectionPersister    $persister   The collection persister that will be cached.
+     * @param AssociationMetadata    $association The association mapping.
      *
-     * @return \Doctrine\ORM\Cache\Persister\Collection\CachedCollectionPersister
+     * @return CachedCollectionPersister
      */
     public function buildCachedCollectionPersister(
         EntityManagerInterface $em,
@@ -49,53 +52,53 @@ interface CacheFactory
     /**
      * Build a query cache based on the given region name
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em         The Entity manager.
-     * @param string                               $regionName The region name.
+     * @param EntityManagerInterface $em         The Entity manager.
+     * @param string                 $regionName The region name.
      *
-     * @return \Doctrine\ORM\Cache\QueryCache The built query cache.
+     * @return QueryCache The built query cache.
      */
     public function buildQueryCache(EntityManagerInterface $em, $regionName = null);
 
     /**
      * Build an entity hydrator
      *
-     * @param \Doctrine\ORM\EntityManagerInterface $em       The Entity manager.
-     * @param \Doctrine\ORM\Mapping\ClassMetadata  $metadata The entity metadata.
+     * @param EntityManagerInterface $em       The Entity manager.
+     * @param ClassMetadata          $metadata The entity metadata.
      *
-     * @return \Doctrine\ORM\Cache\EntityHydrator The built entity hydrator.
+     * @return EntityHydrator The built entity hydrator.
      */
     public function buildEntityHydrator(EntityManagerInterface $em, ClassMetadata $metadata);
 
     /**
      * Build a collection hydrator
      *
-     * @param \Doctrine\ORM\EntityManagerInterface      $em          The Entity manager.
-     * @param \Doctrine\ORM\Mapping\AssociationMetadata $association The association mapping.
+     * @param EntityManagerInterface $em          The Entity manager.
+     * @param AssociationMetadata    $association The association mapping.
      *
-     * @return \Doctrine\ORM\Cache\CollectionHydrator The built collection hydrator.
+     * @return CollectionHydrator The built collection hydrator.
      */
     public function buildCollectionHydrator(EntityManagerInterface $em, AssociationMetadata $association);
 
     /**
      * Build a cache region
      *
-     * @param \Doctrine\ORM\Mapping\CacheMetadata $cache The cache configuration.
+     * @param CacheMetadata $cache The cache configuration.
      *
-     * @return \Doctrine\ORM\Cache\Region The cache region.
+     * @return Region The cache region.
      */
     public function getRegion(CacheMetadata $cache);
 
     /**
      * Build timestamp cache region
      *
-     * @return \Doctrine\ORM\Cache\TimestampRegion The timestamp region.
+     * @return TimestampRegion The timestamp region.
      */
     public function getTimestampRegion();
 
     /**
      * Build \Doctrine\ORM\Cache
      *
-     * @return \Doctrine\ORM\Cache
+     * @return Cache
      */
     public function createCache(EntityManagerInterface $entityManager);
 }

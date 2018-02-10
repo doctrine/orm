@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping\FieldMetadata;
 use Doctrine\ORM\Mapping\JoinColumnMetadata;
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use Doctrine\ORM\Utility\PersisterHelper;
+use function array_flip;
+use function implode;
+use function sprintf;
 
 /**
  * Persister for entities that participate in a hierarchy mapped with the

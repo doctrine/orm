@@ -6,6 +6,11 @@ namespace Doctrine\ORM\Internal\Hydration;
 
 use Doctrine\ORM\Mapping\ToOneAssociationMetadata;
 use PDO;
+use function count;
+use function end;
+use function is_array;
+use function key;
+use function reset;
 
 /**
  * The ArrayHydrator produces a nested array "graph" that is often (not always)
@@ -237,7 +242,7 @@ class ArrayHydrator extends AbstractHydrator
                 $args  = $newObject['args'];
                 $obj   = $class->newInstanceArgs($args);
 
-                if ($onlyOneRootAlias || \count($args) === $scalarCount) {
+                if ($onlyOneRootAlias || count($args) === $scalarCount) {
                     $result[$resultKey] = $obj;
 
                     continue;

@@ -13,6 +13,10 @@ use Doctrine\Common\Cache\RedisCache;
 use Doctrine\Common\ClassLoader;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\Mapping\Driver\XmlDriver;
+use function class_exists;
+use function extension_loaded;
+use function md5;
+use function sys_get_temp_dir;
 
 /**
  * Convenience class for setting up Doctrine from different installations and configurations.
