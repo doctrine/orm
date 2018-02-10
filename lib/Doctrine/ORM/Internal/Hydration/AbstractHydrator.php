@@ -269,7 +269,8 @@ abstract class AbstractHydrator
                     // to only hydrate if we are looking at the correct discriminator value
                     if (isset($cacheKeyInfo['discriminatorColumn'], $data[$cacheKeyInfo['discriminatorColumn']]) &&
                         // Note: loose comparison required. See https://github.com/doctrine/doctrine2/pull/6304#issuecomment-323294442
-                        $data[$cacheKeyInfo['discriminatorColumn']] != $cacheKeyInfo['discriminatorValue'] // TODO get rid of loose comparison
+                        ! in_array($data[$cacheKeyInfo['discriminatorColumn']], $cacheKeyInfo['discriminatorValues'])
+
                     ) {
                         break;
                     }
@@ -368,11 +369,16 @@ abstract class AbstractHydrator
                 // the current discriminator value must be saved in order to disambiguate fields hydration,
                 // should there be field name collisions
                 if ($classMetadata->getParent() && isset($this->rsm->discriminatorColumns[$ownerMap])) {
+                    $disriminatorValues = [$classMetadata->discriminatorValue];
+                    foreach ($classMetadata->subClasses as $subClass) {
+                        $disriminatorValues[] = $this->getClassMetadata($subClass)->discriminatorValue;
+                    }
                     return $this->cache[$key] = \array_merge(
                         $columnInfo,
                         [
                             'discriminatorColumn' => $this->rsm->discriminatorColumns[$ownerMap],
                             'discriminatorValue'  => $classMetadata->discriminatorValue,
+                            'discriminatorValues' => $disriminatorValues,
                         ]
                     );
                 }
